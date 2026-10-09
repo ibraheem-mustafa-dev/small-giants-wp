@@ -1,48 +1,16 @@
 {
  "surface": "mega-sunglasses",
- "report": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-07T04-01-16/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-07T04-01-16/round-1/report.json",
- "date": "2026-10-07",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-08T20-26-21/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-08T20-26-21/round-1/report.json",
+ "date": "2026-10-09",
  "counts": {
-  "W": 30,
-  "F": 2,
-  "T": 16,
-  "U": 0
+  "W": 23,
+  "F": 1,
+  "T": 15,
+  "U": 0,
+  "L": 0
  },
  "verdicts": [
-  {
-   "key": "cr-ref-mega-sunglasses-3||style|transition-duration",
-   "ref": "cr-ref-mega-sunglasses-3",
-   "pair": "shop-heading-style",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
   {
    "key": "cr-ref-mega-sunglasses-3||style|width",
    "ref": "cr-ref-mega-sunglasses-3",
@@ -154,39 +122,6 @@
      "values": [
       "subheading"
      ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-19||style|transition-duration",
-   "ref": "cr-ref-mega-sunglasses-19",
-   "pair": "shop-heading-shopby",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
     }
    ]
   },
@@ -1617,7 +1552,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -1810,47 +1745,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-sunglasses-0||style|box-shadow",
-   "ref": "cr-ref-mega-sunglasses-0",
-   "pair": "gen-mega-sunglasses-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "box-shadow",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "shadow"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-0",
-      "block": "sgs/mega-panel",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "shadow",
-     "css_property": "box-shadow",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-sunglasses-0||style|painted-ground",
    "ref": "cr-ref-mega-sunglasses-0",
    "pair": "gen-mega-sunglasses-0",
@@ -1865,15 +1759,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "consequence",
    "evidence": [
     {
      "check": "consequence",
-     "partial": true,
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|painted-ground",
+     "ref": "cr-ref-header-4",
+     "key": "painted-ground",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": null,
      "widths": [
-      1440
-     ],
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|painted-ground"
+      1440,
+      1920
+     ]
     },
     {
      "check": "resolver",
@@ -2274,7 +2174,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "flexGrow"
@@ -2439,7 +2339,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -2448,272 +2348,54 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
   },
   {
-   "key": "cr-ref-mega-sunglasses-27||hover|border-top-color",
-   "ref": "cr-ref-mega-sunglasses-27",
-   "pair": "gen-mega-sunglasses-27",
+   "key": "cr-ref-mega-sunglasses-28||hover|border-top-width",
+   "ref": "cr-ref-mega-sunglasses-28",
+   "pair": "gen-mega-sunglasses-28",
    "path": "",
-   "block": "sgs/mega-group",
+   "block": "sgs/container",
    "kind": "hover",
-   "property": "border-top-color",
+   "property": "border-top-width",
    "widths": [
     1440,
     1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/mega-group has no setting for border-top-color (hover)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "mega-group/render.php",
-      "mentions": [],
-      "absent": [
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "mega-panel/render.php",
-      "mentions": [],
-      "absent": [
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "nav-bar-menu/render.php",
-      "mentions": [],
-      "absent": [
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "google-reviews/render.php",
-      "mentions": [],
-      "absent": [
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "borderTopColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "mega-panel",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
-      ]
-     },
-     {
-      "block": "mega-panel",
-      "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
-      "mentions": [],
-      "declares": [
-       "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
-       "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
-      ]
-     },
-     {
-      "block": "mega-panel",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
-      ]
-     },
-     {
-      "block": "nav-bar-menu",
-      "cite": "includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css",
-      "mentions": [],
-      "declares": [
-       "-nm-submenu-border-style, solid);' . 'border-color:var(--wp--preset--color--border, transparent);"
-      ]
-     },
-     {
-      "block": "nav-bar-menu",
-      "cite": "includes/nav-menu-css.php::sgs_nav_shared_item_state_css",
-      "mentions": [],
-      "declares": [
-       "{ $sgs_nm_ancestor_current_decls[] = 'border-color:' . sgs_colour_value( $sgs_nm_item_border_colo",
-       "ur ) { $item_hover_decls['border'] = 'border-color:' . $item_border_hover_colour; } } // Onl"
-      ]
-     },
-     {
-      "block": "nav-bar-menu",
-      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
-      "mentions": [],
-      "declares": [
-       ". ( '' !== $burger_border_colour ? 'border-color:' . $burger_border_colour . ';' : '' ) . '}';"
-      ]
-     },
-     {
-      "block": "nav-bar-menu",
-      "cite": "includes/nav-menu-item-hover-scope-css.php::includes/nav-menu-item-hover-scope-css.php",
-      "mentions": [],
-      "declares": [
-       "gs_hover_state_rules( $no_submenu_link, 'border-color:' . $reset_colour, ':focus-within' ); retur"
-      ]
-     },
-     {
-      "block": "nav-bar-menu",
-      "cite": "includes/nav-menu-item-hover-scope-css.php::sgs_nav_item_hover_scope_border_css",
-      "mentions": [],
-      "declares": [
-       "gs_hover_state_rules( $no_submenu_link, 'border-color:' . $reset_colour, ':focus-within' ); retur"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-0||style|margin-right",
-   "ref": "cr-ref-mega-sunglasses-0",
-   "pair": "gen-mega-sunglasses-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "margin-right",
-   "widths": [
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "attribute",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|margin-right",
-     "ref": "cr-ref-header-4",
-     "key": "margin-right",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1920,
-     "delta": -240,
-     "widths": [
-      1920
-     ]
-    },
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "no margin-right setting on sgs/mega-panel paints \"\" (candidates: drawerCardTagMargin)"
+     "detail": "sgs/container has no setting for border-top-width (hover)"
     },
     {
      "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardTagMargin",
-     "css_property": "margin",
-     "css_element": "drawerCardTag",
+     "block": "sgs/container",
+     "setting": "gridItemBorder",
+     "css_property": "border-color,border-style,border-width",
+     "css_element": "grid-item",
      "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-0||style|margin-left",
-   "ref": "cr-ref-mega-sunglasses-0",
-   "pair": "gen-mega-sunglasses-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "margin-left",
-   "widths": [
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|margin-left",
-     "ref": "cr-ref-header-4",
-     "key": "margin-left",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1920,
-     "delta": -240,
-     "widths": [
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no margin-left setting on sgs/mega-panel paints \"\" (candidates: drawerCardTagMargin)"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardTagMargin",
-     "css_property": "margin",
-     "css_element": "drawerCardTag",
+     "block": "sgs/container",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-3||box|y-after-gen-mega-sunglasses-0",
-   "ref": "cr-ref-mega-sunglasses-3",
-   "pair": "shop-heading-style",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "box",
-   "property": "y-after-gen-mega-sunglasses-0",
-   "widths": [
-    1440
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|box|y-after-shop-trigger",
-     "ref": "cr-ref-header-4",
-     "key": "y-after-shop-trigger",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": 6,
-     "widths": [
-      1440
-     ]
+     "source": "sgs",
+     "reaches": true
     }
    ]
   },
@@ -2817,37 +2499,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-sunglasses-2||box|y-after-shop-heading-style",
-   "ref": "cr-ref-mega-sunglasses-2",
-   "pair": "gen-mega-sunglasses-2",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "y-after-shop-heading-style",
-   "widths": [
-    1440
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mega-sunglasses-0||box|y-after-shop-panel",
-     "ref": "cr-ref-mega-sunglasses-0",
-     "key": "y-after-shop-panel",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -6,
-     "widths": [
-      1440
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-sunglasses-2||box|h",
    "ref": "cr-ref-mega-sunglasses-2",
    "pair": "gen-mega-sunglasses-2",
@@ -2873,39 +2524,6 @@
      "match": "layout-row",
      "width": 1440,
      "delta": -28,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-0||box|y-after-shop-panel",
-   "ref": "cr-ref-mega-sunglasses-0",
-   "pair": "gen-mega-sunglasses-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "box",
-   "property": "y-after-shop-panel",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|padding-top",
-     "ref": "cr-ref-header-4",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": -6,
      "widths": [
       1440,
       1920
@@ -3009,35 +2627,6 @@
       1440,
       1920
      ]
-    }
-   ]
-  },
-  {
-   "key": "shop-link-mens||text|text",
-   "ref": null,
-   "pair": "shop-link-mens",
-   "path": null,
-   "block": null,
-   "kind": "text",
-   "property": "text",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "content",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "content",
-   "evidence": [
-    {
-     "check": "content",
-     "kinds": [
-      "text"
-     ],
-     "keys": [
-      "text"
-     ],
-     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   },

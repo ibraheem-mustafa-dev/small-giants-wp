@@ -86,11 +86,11 @@ test( 'positive control: no fitting setting anywhere and the resolver finds none
 	assert.ok( verdicts[ 0 ].source.render[ 0 ].absent.includes( 'marginTop' ) );
 } );
 
-test( 'a database row with no css_property fits by name (max-width ↔ width), so the row is W', () => {
+test( 'a database row with no css_property fits by name (max-width ↔ width), so the row is W (uncalibrated: no calibration measured it)', () => {
 	const r = row( { key: 'max-width', draft: 'none', live: '100%' } );
 	const v = run( { missing: [ r ] }, [ r ], ctxOf( { attrRows: () => [ { attr_name: 'width', css_property: null, source: 'sgs' } ] } ) ).verdicts[ 0 ];
 	assert.equal( v.class, 'W' );
-	assert.equal( v.decidedBy, 'attribute' );
+	assert.equal( v.decidedBy, 'uncalibrated-fit' );
 	assert.equal( nameFits( 'max-width', 'contentWidth' ), true );
 	assert.equal( nameFits( 'max-width', 'borderWidth' ), false );
 	assert.equal( nameFits( 'padding-top', 'fieldPadding' ), true );
@@ -105,6 +105,25 @@ test( 'an enum setting calibration saw paint the property on the element is a fi
 	const v = run( { missing: [ r ] }, [ r ], ctxOf( { calFor, resolver: () => ( { gap: 'no-setting', detail: 'none' } ) } ) ).verdicts[ 0 ];
 	assert.equal( v.class, 'W' );
 	assert.deepEqual( v.evidence.find( ( e ) => 'discovered' === e.check ), { check: 'discovered', block: 'sgs/field-textarea', setting: 'layout', values: [ 'list' ] } );
+} );
+
+// A setting whose name fits but that calibration never measured (Contact 2026-10-08: sgs/text firstLetterColour, which
+// paints ::first-letter, "fitting" a link's hover colour): its reach is unknown, so the row is labelled for what it is.
+test( 'MUST FAIL: a name-fitting setting calibration never measured decides W as uncalibrated-fit, never attribute', () => {
+	const r = row( { kind: 'hover', key: 'color', draft: 'rgb(31, 107, 92)', live: 'rgb(20, 20, 20)', path: 'a' } );
+	const attrRows = () => [ { attr_name: 'firstLetterColour', css_property: 'color', css_element: 'first-letter', source: 'sgs' } ];
+	const calFor = () => ( { elements: { '': {} }, settings: { textColour: { slot: '', slots: [ '' ] } } } );
+	const v = run( { unresolved: [ r ] }, [ r ], ctxOf( { attrRows, calFor, stateMap: { rest: null } } ) ).verdicts[ 0 ];
+	assert.equal( v.class, 'W' );
+	assert.equal( v.decidedBy, 'uncalibrated-fit' );
+} );
+
+test( 'positive control: a fitting setting calibration measured reaching the element decides W as attribute', () => {
+	const r = row( { key: 'line-height', draft: '16px', live: '19.5px', path: '.sgs-field__button' } );
+	const attrRows = () => [ { attr_name: 'lineHeight', css_property: 'line-height', css_element: 'wrapper', source: 'sgs' } ];
+	const calFor = () => ( { elements: { '': {}, '.sgs-field__button': {} }, settings: { lineHeight: { slot: '', slots: [ '' ], reaches: [ '', '.sgs-field__button' ] } } } );
+	const v = run( { missing: [ r ] }, [ r ], ctxOf( { attrRows, calFor } ) ).verdicts[ 0 ];
+	assert.equal( v.decidedBy, 'attribute' );
 } );
 
 test( 'a fitting setting calibration measured not reaching the element never decides', () => {
@@ -325,7 +344,8 @@ test( 'MUST FAIL: a modifier row fits its property, and a pseudo-namespaced row 
 	const r = row( { key: 'grid-template-columns', draft: '1fr 1fr', live: 'none', path: '' } );
 	const v = run( { missing: [ r ] }, [ r ], ctxOf( { attrRows: () => [ { attr_name: 'columns', css_property: 'grid-template-columns:count', source: 'sgs' } ] } ) ).verdicts[ 0 ];
 	assert.equal( v.class, 'W' );
-	assert.equal( v.decidedBy, 'attribute' );
+	assert.equal( v.decidedBy, 'uncalibrated-fit' );
+	assert.equal( v.evidence.find( ( e ) => 'attribute' === e.check ).setting, 'columns' );
 } );
 
 // L8.9: resolveIssue hands the ancestor hop the element paths it measured an open row of the row's property on
@@ -499,6 +519,107 @@ test( 'not over-suppressing: one row with a live value keeps the ordinary classi
 	const v = run( { missing: rows }, rows, ctxOf() ).verdicts[ 0 ];
 	assert.equal( v.class, 'F' );
 	assert.equal( v.decidedBy, 'no-setting' );
+} );
+
+// A row whose draft side the walker never read (mega-brands' button paired with the draft's inner text span, whose padding
+// sits on its outer link; Solve classes it `unmeasured-side`, 2026-10-08 report): the node "holding" the resolver's write
+// proves nothing, because there is no draft value to hold.
+const unreadDraft = ( draft = [ undefined, undefined ] ) => [ 1440, 1920 ].map( ( width, i ) => row( { key: 'padding-top', draft: draft[ i ], live: '5px', path: '', width,
+	reason: 'unmeasured-side: the draft padding-top was not read (the draft element carries no value for it)' } ) );
+const buttonHolding = () => ( {
+	nodeFor: ( ref ) => ( 'cr-ref-s-1' === ref ? { name: 'sgs/button', attributes: { padding: { desktop: { top: '5px' } } } } : null ),
+	resolver: () => ( { writes: [ { attr: 'padding', value: { desktop: { top: '5px' } }, merge: 'deep' } ] } ),
+} );
+
+test( 'MUST FAIL: rows whose draft side was never read are W, unmeasured-side, never F hardcode', () => {
+	const rows = unreadDraft();
+	const v = run( { unresolved: rows }, rows, ctxOf( buttonHolding() ) ).verdicts[ 0 ];
+	assert.equal( v.class, 'W' );
+	assert.equal( v.decidedBy, 'unmeasured-side' );
+	assert.deepEqual( v.evidence[ 0 ], { check: 'unmeasured-side', sides: [ 'draft' ], detail: '2 rows, the draft value was never read at any width: no paint is compared' } );
+} );
+
+test( 'negative control: the same rows with one draft value read keep the ordinary verdict (F hardcode)', () => {
+	const rows = unreadDraft( [ undefined, '5px' ] );
+	const v = run( { hardcode: rows }, rows, ctxOf( buttonHolding() ) ).verdicts[ 0 ];
+	assert.equal( v.class, 'F' );
+	assert.equal( v.decidedBy, 'hardcode' );
+} );
+
+// One element measured from several blocks (mega-brands 2026-10-08): a heading's own row, and the same h3 read as the text
+// carrier of an enclosing block's pair, stamped on that block with its path to the h3 (its owner frame).
+const H3_IN_MENU = '.sgs-nav-bar-menu__mega > .sgs-mega-panel > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)';
+const ownH3 = () => row( { key: 'line-height', draft: '17.25px', live: '11.5px', ref: 'cr-ref-s-1', path: '', pair: 'gen-heading',
+	owners: [ { ref: 'cr-ref-s-2', path: H3_IN_MENU, tag: 'h3' } ] } );
+const echoH3 = () => row( { key: 'line-height', draft: '17.25px', live: '11.5px', ref: 'cr-ref-s-2', path: H3_IN_MENU, pair: 'nav-item' } );
+const menuCtx = () => ctxOf( { ancestorsOf: ( ref ) => ( 'cr-ref-s-1' === ref ? [ 'cr-ref-s-2' ] : [] ), ancestorHop: () => null } );
+
+test( 'MUST FAIL: an element\'s own row is never explained by an enclosing block\'s reading of the same element', () => {
+	const own = ownH3();
+	const echo = echoH3();
+	const { verdicts } = run( { unresolved: [ own, echo ] }, [ own, echo ], menuCtx() );
+	const v = verdicts.find( ( x ) => 'cr-ref-s-1' === x.ref );
+	assert.notEqual( v.decidedBy, 'consequence' );
+	assert.equal( v.class, 'F' );
+} );
+
+test( 'MUST FAIL: the enclosing block\'s reading of the element follows the element\'s own row, as the same element', () => {
+	const own = ownH3();
+	const echo = echoH3();
+	const { verdicts } = run( { unresolved: [ own, echo ] }, [ own, echo ], menuCtx() );
+	const v = verdicts.find( ( x ) => 'cr-ref-s-2' === x.ref );
+	assert.equal( v.class, 'W' );
+	assert.equal( v.decidedBy, 'same-element' );
+	const e = v.evidence.find( ( x ) => 'consequence' === x.check );
+	assert.equal( e.parent, 'cr-ref-s-1||style|line-height' );
+	assert.equal( e.match, 'same-element' );
+} );
+
+test( 'negative control: an ancestor\'s row on its OWN element still explains the child\'s inherited value', () => {
+	const own = ownH3();
+	const parent = row( { key: 'line-height', draft: '17.25px', live: '11.5px', ref: 'cr-ref-s-2', path: '', pair: 'menu-root' } );
+	const { verdicts } = run( { unresolved: [ own, parent ] }, [ own, parent ], menuCtx() );
+	const v = verdicts.find( ( x ) => 'cr-ref-s-1' === x.ref );
+	assert.equal( v.decidedBy, 'consequence' );
+	assert.equal( v.evidence.find( ( x ) => 'consequence' === x.check ).relation, 'ancestor' );
+} );
+
+test( 'negative control: a reading of the same element whose values differ (another draft partner) is not the same issue', () => {
+	const own = ownH3();
+	const echo = { ...echoH3(), draft: '20px' };
+	const { verdicts } = run( { unresolved: [ own, echo ] }, [ own, echo ], menuCtx() );
+	assert.notEqual( verdicts.find( ( x ) => 'cr-ref-s-2' === x.ref ).decidedBy, 'same-element' );
+} );
+
+// A row that follows a difference Bean accepted (Contact 2026-10-08: the card after the map is placed by the embedded
+// map D-16 accepts in full; product: a button's hover lift is the site-wide lift D-71 accepts on its ancestor).
+const D16 = { id: 'D-16', scope: 's', node: 'cr-ref-s-3', state: '*', property: '*', expected: { rule: 'bean-choice' }, reason: 'map', register: [ '132' ] };
+const mapRow = ( over = {} ) => row( { kind: 'box', key: 'h', draft: 76, live: 490, ref: 'cr-ref-s-3', path: '', pair: 'map', accepted: 'D-16 (bean-choice): map', decided: { id: 'D-16', rule: 'bean-choice' }, ...over } );
+const afterMap = () => row( { kind: 'box', key: 'y-after-map', draft: 1637, live: 1746, ref: 'cr-ref-s-1', path: '', pair: 'card' } );
+
+test( 'MUST FAIL: a row placed after a node a ledger entry accepts in full is L, citing the entry', () => {
+	const r = afterMap();
+	const { verdicts, counts } = run( { derived: [ r ] }, [ r, mapRow() ], ctxOf( { ledger: [ D16 ] } ) );
+	assert.equal( verdicts[ 0 ].class, 'L' );
+	assert.equal( verdicts[ 0 ].decidedBy, 'ledger-consequence' );
+	assert.equal( verdicts[ 0 ].evidence[ 0 ].entry, 'D-16' );
+	assert.equal( counts.L, 1 );
+} );
+
+test( 'MUST FAIL: a hover row matching a ledger-accepted row on its ancestor is L, citing that entry', () => {
+	const lift = 'matrix(1, 0, 0, 1, 0, -3)';
+	const parent = row( { kind: 'hover', key: 'transform', draft: lift, live: 'none', ref: 'cr-ref-s-1', path: '', pair: 'buybox', accepted: 'D-71 (value)', decided: { id: 'D-71', value: lift } } );
+	const r = row( { kind: 'hover', key: 'transform', draft: lift, live: 'none', ref: 'cr-ref-s-2', path: '', pair: 'button' } );
+	const v = run( { unresolved: [ r ] }, [ r, parent ], ctxOf( { ledger: [] } ) ).verdicts[ 0 ];
+	assert.equal( v.class, 'L' );
+	assert.equal( v.evidence[ 0 ].entry, 'D-71' );
+} );
+
+test( 'negative control: a parent accepted by a walker rule (no ledger entry) and matched only as a layout row stays U', () => {
+	const r = afterMap();
+	const walkerAccept = mapRow( { kind: 'style', key: 'align-items', draft: 'normal', live: 'center', accepted: 'Layout property on an element whose painted box and content match', decided: undefined } );
+	const v = run( { derived: [ r ] }, [ r, walkerAccept ], ctxOf( { ledger: [] } ) ).verdicts[ 0 ];
+	assert.equal( v.class, 'U' );
 } );
 
 // A block that wraps its own root only in some modes: calibrated wrapped (a heading on), measured on a page unwrapped.

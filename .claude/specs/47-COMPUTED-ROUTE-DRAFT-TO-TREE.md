@@ -535,7 +535,7 @@ All in `scripts/computed-route/`. The README lists every exported function (R-47
 | `solve.mjs`, `fill.mjs` | The two commands, with Fill's twelve `lib/fill-*.mjs` modules (skeleton, read, prop, resolve, spacing, values, presence, handover, page, entrance, config, report) |
 | `lib/solve-rows.mjs`, `lib/solve-report.mjs`, `lib/solve-groups.mjs`, `lib/winning-rule.mjs` | Solve's reading of a walker report (open rows, writable groups, draft values, regressions, classification), its report, the report's issue and cause views, and each Hardcode row's winning rule |
 | `sweep.mjs`, `lib/sweep.mjs` | Every surface's newest Solve report as one row per distinct open issue (`qa/sweep/<date>/sweep.json`) |
-| `triage.mjs`, `lib/triage.mjs`, `lib/triage-source.mjs` | A candidate class (W, F, T, U) with evidence per open issue, including the `includes/` helpers a block's render reaches |
+| `triage.mjs`, `lib/triage.mjs`, `lib/triage-source.mjs` | A candidate class (W, F, T, U, L) with evidence per open issue, including the `includes/` helpers a block's render reaches |
 | `register-sweep.mjs`, `lib/register-sweep.mjs` | The fix register bundled for the sweep's status agents, and their verdicts checked before a Sweep column is written |
 | `calibration-targets.json`, `calibration-fixtures.json` | Calibration posts per site; fixture content per block |
 | `cache/` | Calibration cache (gitignored) |

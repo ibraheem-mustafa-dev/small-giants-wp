@@ -2017,7 +2017,7 @@ for the verb you happen to have in mind.
 | `computed-route/register-sweep.mjs` | script-call | Register <-> sweep command (A4). |
 | `computed-route/solve.mjs` | script-call | Solve (FR-47-3): compare a built surface with its draft, turn each open style or hover difference into a setting write through the resolver, rebuild… |
 | `computed-route/sweep.mjs` | manifest+script-call | Sweep command: reads every surface's latest Solve report (`<buildDir>/qa/solve/<surface>/<timestamp>/solve-report.json`) and writes… |
-| `computed-route/triage.mjs` | script-call | Triage command (Spec 47, Session B1): a candidate class (W, F, T, U) with its evidence for every distinct open issue of a surface's Solve report… |
+| `computed-route/triage.mjs` | script-call | Triage command (Spec 47, Session B1): a candidate class (W, F, T, U, L) with its evidence for every distinct open issue of a surface's Solve report… |
 | `css-pattern-audit.js` | — | CSS pattern audit — static analysis for risky patterns in deployed/built CSS. |
 | `font-source-audit.js` | manifest+npm | Font source audit — static analysis for external CDN URLs in theme.json fontFace declarations. |
 | `global-styles-reset.js` | skill | wp_global_styles reset + reapply. |

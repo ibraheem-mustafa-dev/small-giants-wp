@@ -1,48 +1,16 @@
 {
  "surface": "mega-help",
- "report": "sites/eye-care-ward-end/build/qa/solve/mega-help/2026-10-07T04-10-00/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mega-help/2026-10-07T04-10-00/round-1/report.json",
- "date": "2026-10-07",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mega-help/2026-10-08T20-31-21/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mega-help/2026-10-08T20-31-21/round-1/report.json",
+ "date": "2026-10-09",
  "counts": {
-  "W": 24,
+  "W": 18,
   "F": 3,
-  "T": 31,
-  "U": 0
+  "T": 22,
+  "U": 0,
+  "L": 0
  },
  "verdicts": [
-  {
-   "key": "cr-ref-mega-help-3||style|transition-duration",
-   "ref": "cr-ref-mega-help-3",
-   "pair": "help-heading-buying",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
   {
    "key": "cr-ref-mega-help-3||style|width",
    "ref": "cr-ref-mega-help-3",
@@ -162,39 +130,6 @@
      "values": [
       "subheading"
      ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-17||style|transition-duration",
-   "ref": "cr-ref-mega-help-17",
-   "pair": "help-heading-talk",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
     }
    ]
   },
@@ -1191,7 +1126,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "flexGrow"
@@ -1377,47 +1312,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-help-0||style|box-shadow",
-   "ref": "cr-ref-mega-help-0",
-   "pair": "gen-mega-help-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "box-shadow",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "shadow"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-help-0",
-      "block": "sgs/mega-panel",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "shadow",
-     "css_property": "box-shadow",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-help-0||style|painted-ground",
    "ref": "cr-ref-mega-help-0",
    "pair": "gen-mega-help-0",
@@ -1432,15 +1326,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "consequence",
    "evidence": [
     {
      "check": "consequence",
-     "partial": true,
+     "parent": "cr-ref-header-12|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|painted-ground",
+     "ref": "cr-ref-header-12",
+     "key": "painted-ground",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": null,
      "widths": [
-      1440
-     ],
-     "parent": "cr-ref-header-12|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|painted-ground"
+      1440,
+      1920
+     ]
     },
     {
      "check": "resolver",
@@ -1568,88 +1468,6 @@
      "setting": "colourScheme",
      "values": [
       "dark"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-5||hover|border-top-color",
-   "ref": "cr-ref-mega-help-5",
-   "pair": "gen-mega-help-5",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-help-5",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
      ]
     }
    ]
@@ -1933,88 +1751,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-help-6||hover|border-top-color",
-   "ref": "cr-ref-mega-help-6",
-   "pair": "gen-mega-help-6",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-help-6",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-help-7|.sgs-button__label|hover|color",
    "ref": "cr-ref-mega-help-7",
    "pair": "gen-mega-help-7",
@@ -2198,121 +1934,6 @@
      "setting": "sgsClickRippleColour",
      "css_property": null,
      "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-7||hover|border-top-color",
-   "ref": "cr-ref-mega-help-7",
-   "pair": "gen-mega-help-7",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-help-7",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-10||style|transition-duration",
-   "ref": "cr-ref-mega-help-10",
-   "pair": "gen-mega-help-10",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
     }
    ]
   },
@@ -2631,7 +2252,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "flexGrow"
@@ -2833,88 +2454,6 @@
      "setting": "sgsClickRippleColour",
      "css_property": null,
      "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-12||hover|border-top-color",
-   "ref": "cr-ref-mega-help-12",
-   "pair": "gen-mega-help-12",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-help-12",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
-     ]
     }
    ]
   },
@@ -3197,88 +2736,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-help-13||hover|border-top-color",
-   "ref": "cr-ref-mega-help-13",
-   "pair": "gen-mega-help-13",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-help-13",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-help-14|.sgs-button__label|hover|color",
    "ref": "cr-ref-mega-help-14",
    "pair": "gen-mega-help-14",
@@ -3462,88 +2919,6 @@
      "setting": "sgsClickRippleColour",
      "css_property": null,
      "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-14||hover|border-top-color",
-   "ref": "cr-ref-mega-help-14",
-   "pair": "gen-mega-help-14",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-help-14",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
-     ]
     }
    ]
   },
@@ -3740,7 +3115,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "flexGrow"
@@ -3942,88 +3317,6 @@
      "setting": "sgsClickRippleColour",
      "css_property": null,
      "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-19||hover|border-top-color",
-   "ref": "cr-ref-mega-help-19",
-   "pair": "gen-mega-help-19",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-help-19",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
-     ]
     }
    ]
   },
@@ -4306,178 +3599,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-help-21||hover|border-top-color",
-   "ref": "cr-ref-mega-help-21",
-   "pair": "gen-mega-help-21",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-help-21",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-0||style|margin-right",
-   "ref": "cr-ref-mega-help-0",
-   "pair": "gen-mega-help-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "margin-right",
-   "widths": [
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-12|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|margin-right",
-     "ref": "cr-ref-header-12",
-     "key": "margin-right",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1920,
-     "delta": -240,
-     "widths": [
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no margin-right setting on sgs/mega-panel paints \"\" (candidates: drawerCardTagMargin)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardTagMargin",
-     "css_property": "margin",
-     "css_element": "drawerCardTag",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-0||style|margin-left",
-   "ref": "cr-ref-mega-help-0",
-   "pair": "gen-mega-help-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "margin-left",
-   "widths": [
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-12|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|margin-left",
-     "ref": "cr-ref-header-12",
-     "key": "margin-left",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1920,
-     "delta": -240,
-     "widths": [
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no margin-left setting on sgs/mega-panel paints \"\" (candidates: drawerCardTagMargin)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardTagMargin",
-     "css_property": "margin",
-     "css_element": "drawerCardTag",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-help-5||box|w",
    "ref": "cr-ref-mega-help-5",
    "pair": "help-link-delivery",
@@ -4544,39 +3665,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-help-0||box|y-after-help-panel",
-   "ref": "cr-ref-mega-help-0",
-   "pair": "gen-mega-help-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "box",
-   "property": "y-after-help-panel",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-12|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|padding-top",
-     "ref": "cr-ref-header-12",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": -6,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-help-4||box|w",
    "ref": "cr-ref-mega-help-4",
    "pair": "gen-mega-help-4",
@@ -4634,7 +3722,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 8,
+     "delta": 7,
      "widths": [
       1440,
       1920

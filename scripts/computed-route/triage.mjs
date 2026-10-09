@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// Triage command (Spec 47, Session B1): a candidate class (W, F, T, U) with its evidence for every distinct open issue
+// Triage command (Spec 47, Session B1): a candidate class (W, F, T, U, L) with its evidence for every distinct open issue
 // of a surface's Solve report (lib/triage.mjs).
 //   node scripts/computed-route/triage.mjs --client <slug> --surface <s> [--report <solve-report.json>] [--out <file>]
 // Reads sites/<client>/build/surfaces.json, every surface tree it names (refs from an embedding page resolve there),
 // the report (default: the surface's newest) and the final walker report beside it (the highest round-N/report.json),
-// the framework DB read-only, calibration files, the extension roster, block sources and every PHP file under the
+// the divergence ledger, the framework DB read-only, calibration files, the extension roster, block sources and every PHP file under the
 // plugin's includes/ (the helpers a render.php reaches, lib/triage-source.mjs). Writes only the triage file
 // (default <build>/qa/triage/<surface>.json) and prints one summary line.
 import fs from 'fs';
@@ -18,6 +18,7 @@ import { detectReferences } from './lib/references.mjs';
 import { latestReport } from './lib/sweep.mjs';
 import { triage, measuredReachFrom } from './lib/triage.mjs';
 import { helperIndex } from './lib/triage-source.mjs';
+import { load as loadLedger } from './lib/ledger.mjs';
 import { calibrationFor } from './solve.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
@@ -156,6 +157,8 @@ export function surfaceContext( { client, surface, report: reportArg = null, mea
 		roster: JSON.parse( fs.readFileSync( ROSTER, 'utf8' ) ).extensions || [],
 		supportsFor: ( block ) => supports[ block ] || {},
 		calFor: calibrationFor,
+		// The client's divergence ledger: an entry accepting a node in full places every row positioned after it.
+		ledger: loadLedger( path.join( buildDir, 'qa', 'divergences.json' ) ),
 		measuredReach,
 		refs: detectReferences(),
 		helpers: helperIndex( [ ...phpFiles( path.join( PLUGIN, 'includes' ) ), ...phpFiles( BLOCKS_DIR ).filter( ( f ) => ! f.file.endsWith( '/render.php' ) ) ] ),
@@ -199,5 +202,5 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		process.exit( 1 );
 	}
 	const { verdicts, counts, file } = result;
-	console.log( `triage ${ surface }: ${ verdicts.length } issues: W ${ counts.W }, F ${ counts.F }, T ${ counts.T }, U ${ counts.U } (box rows nothing explains); ${ file }` );
+	console.log( `triage ${ surface }: ${ verdicts.length } issues: W ${ counts.W }, F ${ counts.F }, T ${ counts.T }, U ${ counts.U } (box rows nothing explains), L ${ counts.L } (follow a ledger entry); ${ file }` );
 }

@@ -596,7 +596,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `merge(registerFile, sweepFile, pairsDir, verdictFiles, out)` → `{ problems, items }`; writes `out` only with no problems.
 
 ### `lib/triage.mjs`
-- `TRIAGE_CLASSES`: W, F, T, U (a box row nothing explains).
+- `TRIAGE_CLASSES`: W, F, T, U (a box row nothing explains), L (a row that follows a difference the divergence ledger accepts, citing the entry).
 - `issuesOf(report, surface)` → `[{ key, solveClass, rows }]`: distinct hardcode, missing, unresolved and derived issues, then the unmapped-state rows of `other` (a visual row from a walker state the surface maps to no setting state) under `solveClass` `unmapped-state`, in the sweep's class order so a key a Solve class already holds stays under it (`lib/sweep.mjs::issueRows`).
 - `emissionOf(cite, props, ctx)` → the classes and pseudo-elements a cited control actually emits to, or null when that cannot be read. Either `ctx.emissionFor(block, setting, property)`, or the PHP index `ctx.helpers`: every `sgs_*` function emitting the property whose file names the setting contributes the `.sgs-*` classes and `::` pseudos in its string literals; a function emitting to the root is skipped.
 - `reachesElement(cite, issue, ctx)` → whether that emission can match the row's element. `canvasSettable` and `resolveIssue`'s ancestor hop both credit a control only when it does. An UNKNOWN emission keeps the old credit, because refusing unknowns would turn every such claim into a false F. This is what stopped all 20 `sgs/container::bgHoverZoom*` claims being classed `W/canvas-settable` on form inputs, tab buttons and filter inputs that `container-bg-hover-zoom.php` can never paint.
@@ -607,15 +607,16 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `rosterApplies(ext, block, supports)` → whether a roster extension reaches a block.
 - `delta(row)` → live minus draft in px, or null.
 - `anchorOf(walk, row)` → the ref a `y-from-`/`y-after-`/`x-`/`right-` row is placed against, or null.
-- `explainRow(row, open, { ancestorsOf, walk })` → the open row it follows, or null.
+- `explainRow(row, open, { ancestorsOf, walk })` → the open row it follows, or null. A row measuring this row's own element from an enclosing block (its owner frame: one element is read by every pair it carries text or layout for) is never its parent; a row that IS such a reading follows the element's own row with the same values (`match: 'same-element'`).
+- `ledgerParent(issue, ctx)` → `{ check: 'ledger-consequence', entry, parent, match, widths }` for an issue with no open parent whose every row follows a ledger decision: a ledger-accepted row (`ctx.ledgerRows`, stamped `decided.id` by the walker) explaining it by the same amount or as the same element, or a position row placed after a node an entry accepts in full (property `*`); else null. A walker accept (an equivalence rule) or a bare layout row never attributes a row.
 - `transientOf(rows)` → transient evidence (a motion property at an entrance start value) or null.
 - `usedValueOf(issue, walk)` → used-value evidence (a width or height with no declared plain length) or null.
 - `resolveIssue(issue, ctx)` → the resolver read-only as `writeRound` builds it: `{ gap, detail }` or `{ writes, on, holds }`.
 - `holdsValue(current, value, merge)` → whether an attribute already holds a write.
 - `fittingSettings(issue, ctx)` → attribute, discovered, extension and enclosing evidence (`reaches: false` where calibration shows a setting not reaching the element).
-- `triageIssue(issue, ctx)` → `{ key, class, decidedBy, evidence, source? }`.
+- `triageIssue(issue, ctx)` → `{ key, class, decidedBy, evidence, source? }`. Before any setting lookup: `no-live-element` (live empty at every width), `unmeasured-side` (a side the walker never read at any width, as Solve's classify), `same-element` (an enclosing block's reading of an open element row), then `L`/`ledger-consequence`. A fitting attribute calibration never measured decides W as `uncalibrated-fit` (its reach is unknown: a calibration gap), never `attribute`.
 - `canvasSettable(issue, ctx)` → FR-47-8 (c): the citation for the nearest block already in the canvas that declares the row's property **in the row's state** — enclosing blocks first, then `ctx.canvasBlocks()` — or null. A declaration is a `css_property` match or a modifier of it, never a name that merely reads like the property. A classification only: the route cannot decide which sibling should own the value, so it refuses F and hands the row on with its citation.
-- `issueContext(report, walk, ctx)` → the per-issue ctx `triageIssue` and `canvasSettable` read (the walk, its open rows and writable groups, Solve's gaps and writes); `triage` and `confirm-canvas.mjs::candidatesFrom` both build it here.
+- `issueContext(report, walk, ctx)` → the per-issue ctx `triageIssue` and `canvasSettable` read (the walk, its open rows, its ledger-accepted rows (`ledgerRows`) and writable groups, Solve's gaps and writes); `triage` and `confirm-canvas.mjs::candidatesFrom` both build it here.
 - `triage(report, walk, surface, ctx)` → `{ verdicts, counts }`.
 
 ### `lib/triage-source.mjs`

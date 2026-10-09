@@ -1,13 +1,14 @@
 {
  "surface": "mega-lenses",
- "report": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-07T04-07-07/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-07T04-07-07/round-1/report.json",
- "date": "2026-10-07",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-08T20-29-47/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-08T20-29-47/round-1/report.json",
+ "date": "2026-10-09",
  "counts": {
-  "W": 55,
+  "W": 45,
   "F": 24,
-  "T": 37,
-  "U": 0
+  "T": 40,
+  "U": 0,
+  "L": 0
  },
  "verdicts": [
   {
@@ -25,26 +26,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "same-element",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-lenses-3||style|line-height",
+     "ref": "cr-ref-mega-lenses-3",
      "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
+     "relation": "same-element",
+     "match": "same-element",
      "width": 1440,
      "delta": -3.4499999999999993,
      "widths": [
       1440,
       1920
      ]
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/mega-group path \".sgs-container > .sgs-container__inner > span\" is not a calibrated element"
     }
    ]
   },
@@ -100,7 +96,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -118,18 +114,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -185,7 +170,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -249,7 +234,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -267,18 +252,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -334,7 +308,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -398,7 +372,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -416,18 +390,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -483,7 +446,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -547,7 +510,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -565,18 +528,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -632,7 +584,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -691,7 +643,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "flexGrow"
@@ -756,7 +708,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "transitionDuration"
@@ -782,7 +734,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -790,7 +742,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
@@ -867,25 +819,9 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
-     "ref": "cr-ref-header-4",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -3.4499999999999993,
-     "widths": [
-      1440,
-      1440,
-      1920,
-      1920
-     ]
-    },
     {
      "check": "resolver",
      "wouldWrite": [
@@ -925,26 +861,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "same-element",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-lenses-18||style|line-height",
+     "ref": "cr-ref-mega-lenses-18",
      "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
+     "relation": "same-element",
+     "match": "same-element",
      "width": 1440,
      "delta": -3.4499999999999993,
      "widths": [
       1440,
       1920
      ]
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/mega-group path \".sgs-container > .sgs-container__inner > span\" is not a calibrated element"
     }
    ]
   },
@@ -1000,7 +931,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -1018,18 +949,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -1085,7 +1005,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -1149,7 +1069,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -1167,18 +1087,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -1234,7 +1143,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -1298,7 +1207,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -1316,18 +1225,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -1383,7 +1281,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -1447,7 +1345,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -1465,18 +1363,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -1532,7 +1419,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -1591,7 +1478,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "flexGrow"
@@ -1656,7 +1543,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "transitionDuration"
@@ -1682,7 +1569,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -1690,7 +1577,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
@@ -1768,36 +1655,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "same-element",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-lenses-3||style|line-height",
+     "ref": "cr-ref-mega-lenses-3",
      "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
+     "relation": "same-element",
+     "match": "same-element",
      "width": 1440,
      "delta": -3.4499999999999993,
      "widths": [
       1440,
       1920
      ]
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-container__inner > span\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "css_property": "line-height",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
     }
    ]
   },
@@ -1967,7 +1839,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -1976,9 +1848,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -2126,7 +1998,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -2135,9 +2007,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -2257,7 +2129,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -2266,9 +2138,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -2499,7 +2371,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -2508,9 +2380,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -2530,45 +2402,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "same-element",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-lenses-1|.sgs-container > .sgs-container__inner > span|style|line-height",
+     "ref": "cr-ref-mega-lenses-1",
      "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
+     "relation": "same-element",
+     "match": "same-element",
      "width": 1440,
      "delta": -3.4499999999999993,
      "widths": [
       1440,
       1920
      ]
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/mega-panel path \".sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "brandsEyebrowLineHeight",
-     "css_property": "line-height",
-     "css_element": "eyebrow",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardTitleLineHeight",
-     "css_property": "line-height",
-     "css_element": "drawerCardTitle",
-     "css_state": null,
-     "source": "sgs"
     }
    ]
   },
@@ -2740,47 +2588,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-lenses-0||style|box-shadow",
-   "ref": "cr-ref-mega-lenses-0",
-   "pair": "gen-mega-lenses-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "box-shadow",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "shadow"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-lenses-0",
-      "block": "sgs/mega-panel",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "shadow",
-     "css_property": "box-shadow",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-lenses-0|.sgs-mega-panel__content|style|column-gap",
    "ref": "cr-ref-mega-lenses-0",
    "pair": "gen-mega-lenses-0",
@@ -2794,23 +2601,9 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content|style|column-gap",
-     "ref": "cr-ref-header-4",
-     "key": "column-gap",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -1,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
     {
      "check": "resolver",
      "wouldWrite": [
@@ -2858,23 +2651,9 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content|style|row-gap",
-     "ref": "cr-ref-header-4",
-     "key": "row-gap",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -1,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
     {
      "check": "resolver",
      "wouldWrite": [
@@ -2922,23 +2701,9 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content|style|gap",
-     "ref": "cr-ref-header-4",
-     "key": "gap",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -1,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
     {
      "check": "resolver",
      "wouldWrite": [
@@ -2987,15 +2752,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "consequence",
    "evidence": [
     {
      "check": "consequence",
-     "partial": true,
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|painted-ground",
+     "ref": "cr-ref-header-4",
+     "key": "painted-ground",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": null,
      "widths": [
-      1440
-     ],
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|painted-ground"
+      1440,
+      1920
+     ]
     },
     {
      "check": "resolver",
@@ -3380,58 +3151,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-lenses-4||hover|border-top-color",
-   "ref": "cr-ref-mega-lenses-4",
-   "pair": "gen-mega-lenses-4",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/heading has no setting for border-top-color (hover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "headingRole",
-     "values": [
-      "subheading"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-lenses-8||style|line-height",
    "ref": "cr-ref-mega-lenses-8",
    "pair": "gen-mega-lenses-8",
@@ -3501,36 +3220,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "same-element",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-lenses-8||style|line-height",
+     "ref": "cr-ref-mega-lenses-8",
      "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
+     "relation": "same-element",
+     "match": "same-element",
      "width": 1440,
      "delta": -3.4499999999999993,
      "widths": [
       1440,
       1920
      ]
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-container__inner > span\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "css_property": "line-height",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
     }
    ]
   },
@@ -3700,7 +3404,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -3709,9 +3413,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -3859,7 +3563,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -3868,9 +3572,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -3990,7 +3694,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -3999,9 +3703,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -4232,7 +3936,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -4241,9 +3945,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -4263,26 +3967,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "same-element",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-lenses-8||style|line-height",
+     "ref": "cr-ref-mega-lenses-8",
      "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
+     "relation": "same-element",
+     "match": "same-element",
      "width": 1440,
      "delta": -3.4499999999999993,
      "widths": [
       1440,
       1920
      ]
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/mega-group path \".sgs-container > .sgs-container__inner > span\" is not a calibrated element"
     }
    ]
   },
@@ -4338,7 +4037,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -4356,18 +4055,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -4423,7 +4111,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -4487,7 +4175,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -4505,18 +4193,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -4572,7 +4249,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -4636,7 +4313,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -4654,18 +4331,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -4721,7 +4387,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -4785,7 +4451,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -4803,18 +4469,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -4870,7 +4525,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -4929,7 +4584,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "flexGrow"
@@ -4994,7 +4649,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "transitionDuration"
@@ -5020,7 +4675,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -5028,7 +4683,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
@@ -5344,58 +4999,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-lenses-9||hover|border-top-color",
-   "ref": "cr-ref-mega-lenses-9",
-   "pair": "gen-mega-lenses-9",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/heading has no setting for border-top-color (hover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "headingRole",
-     "values": [
-      "subheading"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-lenses-13||style|line-height",
    "ref": "cr-ref-mega-lenses-13",
    "pair": "gen-mega-lenses-13",
@@ -5465,36 +5068,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "same-element",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-lenses-13||style|line-height",
+     "ref": "cr-ref-mega-lenses-13",
      "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
+     "relation": "same-element",
+     "match": "same-element",
      "width": 1440,
      "delta": -3.4499999999999993,
      "widths": [
       1440,
       1920
      ]
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-container__inner > span\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "css_property": "line-height",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
     }
    ]
   },
@@ -5664,7 +5252,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -5673,9 +5261,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -5823,7 +5411,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -5832,9 +5420,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -5954,7 +5542,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -5963,9 +5551,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -6196,7 +5784,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -6205,9 +5793,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -6227,26 +5815,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "same-element",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-lenses-13||style|line-height",
+     "ref": "cr-ref-mega-lenses-13",
      "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
+     "relation": "same-element",
+     "match": "same-element",
      "width": 1440,
      "delta": -3.4499999999999993,
      "widths": [
       1440,
       1920
      ]
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/mega-group path \".sgs-container > .sgs-container__inner > span\" is not a calibrated element"
     }
    ]
   },
@@ -6302,7 +5885,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -6320,18 +5903,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -6387,7 +5959,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -6451,7 +6023,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -6469,18 +6041,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -6536,7 +6097,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -6600,7 +6161,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -6618,18 +6179,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -6685,7 +6235,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -6749,7 +6299,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [
        "padding"
       ],
@@ -6767,18 +6317,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:28px 26px"
-     },
-     {
-      "file": "google-reviews/style.css",
-      "selector": ".sgs-google-reviews.sgs-google-reviews--card-google-card",
-      "declaration": "padding:20px 16px"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "mega-panel",
@@ -6834,7 +6373,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -6893,7 +6432,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "flexGrow"
@@ -6958,7 +6497,7 @@
       ]
      },
      {
-      "file": "google-reviews/render.php",
+      "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
        "transitionDuration"
@@ -6984,7 +6523,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
@@ -6992,7 +6531,7 @@
       ]
      },
      {
-      "block": "google-reviews",
+      "block": "site-header-row",
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
@@ -7308,58 +6847,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-lenses-14||hover|border-top-color",
-   "ref": "cr-ref-mega-lenses-14",
-   "pair": "gen-mega-lenses-14",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/heading has no setting for border-top-color (hover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "headingRole",
-     "values": [
-      "subheading"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-lenses-18||style|line-height",
    "ref": "cr-ref-mega-lenses-18",
    "pair": "gen-mega-lenses-18",
@@ -7429,36 +6916,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "same-element",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-lenses-18||style|line-height",
+     "ref": "cr-ref-mega-lenses-18",
      "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
+     "relation": "same-element",
+     "match": "same-element",
      "width": 1440,
      "delta": -3.4499999999999993,
      "widths": [
       1440,
       1920
      ]
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-container__inner > span\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "css_property": "line-height",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
     }
    ]
   },
@@ -7628,7 +7100,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -7637,9 +7109,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -7787,7 +7259,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -7796,9 +7268,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -7969,7 +7441,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -7978,9 +7450,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -8049,7 +7521,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -8058,9 +7530,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -8291,7 +7763,7 @@
      "block": "sgs/container",
      "setting": "borderColourHover",
      "css_property": "border-color",
-     "css_element": null,
+     "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -8300,9 +7772,9 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs"
     }
    ]
@@ -8560,148 +8032,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-lenses-19||hover|border-top-color",
-   "ref": "cr-ref-mega-lenses-19",
-   "pair": "gen-mega-lenses-19",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/heading has no setting for border-top-color (hover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "headingRole",
-     "values": [
-      "subheading"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-lenses-0||style|margin-right",
-   "ref": "cr-ref-mega-lenses-0",
-   "pair": "gen-mega-lenses-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "margin-right",
-   "widths": [
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|margin-right",
-     "ref": "cr-ref-header-4",
-     "key": "margin-right",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1920,
-     "delta": -240,
-     "widths": [
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no margin-right setting on sgs/mega-panel paints \"\" (candidates: drawerCardTagMargin)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardTagMargin",
-     "css_property": "margin",
-     "css_element": "drawerCardTag",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-lenses-0||style|margin-left",
-   "ref": "cr-ref-mega-lenses-0",
-   "pair": "gen-mega-lenses-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "margin-left",
-   "widths": [
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|margin-left",
-     "ref": "cr-ref-header-4",
-     "key": "margin-left",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1920,
-     "delta": -240,
-     "widths": [
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no margin-left setting on sgs/mega-panel paints \"\" (candidates: drawerCardTagMargin)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardTagMargin",
-     "css_property": "margin",
-     "css_element": "drawerCardTag",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-lenses-1||box|h",
    "ref": "cr-ref-mega-lenses-1",
    "pair": "lenses-card-single",
@@ -8753,10 +8083,10 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-lenses-3||style|line-height",
+     "ref": "cr-ref-mega-lenses-3",
      "key": "line-height",
-     "relation": "ancestor",
+     "relation": "self",
      "match": "same-delta",
      "width": 1440,
      "delta": -3,
@@ -8924,7 +8254,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 1440,
-     "delta": -6,
+     "delta": -5,
      "widths": [
       1440,
       1920

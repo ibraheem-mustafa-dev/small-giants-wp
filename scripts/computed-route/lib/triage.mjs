@@ -15,7 +15,7 @@ import { USED_VALUES } from '../solve.mjs';
 // The kinds, classes, order and issue key are shared with lib/sweep.mjs so the two counts agree by construction.
 import { SOLVE_CLASSES, UNMAPPED, CONTENT, isContentRow, isIssue, issueKey as keyOf } from './issue-classes.mjs';
 
-export const TRIAGE_CLASSES = [ 'W', 'F', 'T', 'U' ];
+export const TRIAGE_CLASSES = [ 'W', 'F', 'T', 'U', 'L' ];
 const loose = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
 const PX_TOL = 1;
 
@@ -134,10 +134,18 @@ export function explainRow( r, open, { ancestorsOf = () => [], walk = null } = {
 	const anchor = anchorOf( walk, r );
 	const d = delta( r );
 	const near = ( a, b ) => null !== a && null !== b && Math.abs( a - b ) <= PX_TOL;
-	const peers = open.filter( ( c ) => c !== r && c.width === r.width && c.state === r.state && keyOf( c ) !== keyOf( r ) && c.ref );
+	// One element is read by every pair it carries text or layout for, and each reading is stamped on that pair's block with
+	// the block's path to the element (its owner frame). A row measuring this row's own element from an enclosing block
+	// is never its parent; this row, when it is such a reading, follows the element's own row with the same values.
+	const sameFrame = ( frames, ref, path ) => ( frames || [] ).some( ( o ) => o.ref === ref && o.path === path );
+	const peers = open.filter( ( c ) => c !== r && c.width === r.width && c.state === r.state && keyOf( c ) !== keyOf( r ) && c.ref && ! sameFrame( r.owners, c.ref, c.path ) );
 	const relation = ( c ) => ( c.ref === anchor && 'anchor' ) || ( ups.includes( c.ref ) && 'ancestor' ) || ( c.ref === r.ref && 'self' ) ||
 		( r.ref && ancestorsOf( c.ref ).includes( r.ref ) ? 'descendant' : null );
-	const hit = ( c, match ) => ( { parent: keyOf( c ), ref: c.ref, key: c.key, relation: relation( c ), match, width: r.width, delta: d } );
+	const hit = ( c, match ) => ( { parent: keyOf( c ), ref: c.ref, key: c.key, relation: 'same-element' === match ? 'same-element' : relation( c ), match, width: r.width, delta: d } );
+	const own = peers.find( ( c ) => c.kind === r.kind && c.key === r.key && sameFrame( c.owners, r.ref, r.path ) && String( c.draft ) === String( r.draft ) && String( c.live ) === String( r.live ) );
+	if ( own ) {
+		return hit( own, 'same-element' );
+	}
 	if ( 'box' !== r.kind ) {
 		const same = ( c ) => ( null !== d ? near( delta( c ), d ) : String( c.draft ) === String( r.draft ) && String( c.live ) === String( r.live ) );
 		const c = peers.find( ( x ) => x.kind === r.kind && x.key === r.key && [ 'ancestor', 'anchor' ].includes( relation( x ) ) && same( x ) );
@@ -157,6 +165,31 @@ export function explainRow( r, open, { ancestorsOf = () => [], walk = null } = {
 	const layout = peers.find( ( c ) => 'style' === c.kind && LAYOUT_KEY.test( c.key ) && reach( c ) && 'descendant' !== relation( c ) );
 	return layout ? hit( layout, 'layout-row' ) : null;
 }
+
+// (d2) A row with no open parent that follows a difference Bean accepted in the divergence ledger: { check:
+// 'ledger-consequence', entry, parent, match, widths } when every row is explained, else null. Only two proofs count: a
+// ledger-accepted row explaining it by the same amount or as the same element (explainRow over ctx.ledgerRows), or a
+// position row placed after a node an entry accepts in full (property '*'). A walker accept is an equivalence rule, not
+// a decision, and a bare layout row on an accepted node moves nothing provably, so neither ever attributes a row.
+export function ledgerParent( issue, ctx ) {
+	const rows = ctx.ledgerRows || [];
+	const whole = ( ctx.ledger || [] ).filter( ( e ) => '*' === e.property );
+	const hits = issue.rows.map( ( x ) => {
+		const e = explainRow( x, rows, ctx );
+		if ( e && [ 'same-delta', 'same-element' ].includes( e.match ) ) {
+			const p = rows.find( ( c ) => keyOf( c ) === e.parent && c.width === x.width );
+			return { entry: p.decided.id, parent: e.parent, match: e.match, width: x.width };
+		}
+		const anchor = anchorOf( ctx.walk, x );
+		const ent = anchor && whole.find( ( w ) => w.node === anchor && ( '*' === w.state || w.state === x.state ) );
+		return ent ? { entry: ent.id, parent: anchor, match: 'placed-after', width: x.width } : null;
+	} );
+	return hits.length && hits.every( Boolean ) ? { check: 'ledger-consequence', entry: hits[ 0 ].entry, parent: hits[ 0 ].parent, match: hits[ 0 ].match, widths: hits.map( ( h ) => h.width ) } : null;
+}
+
+// The rows a divergence-ledger entry accepted (the walker stamps decided.id on them), shaped as openRows shapes rows.
+const ledgerRowsOf = ( walk ) => ( walk?.runs || [] ).flatMap( ( run ) => Object.entries( run.pairs || {} ).flatMap( ( [ pair, p ] ) =>
+	( p.diffs || [] ).filter( ( d ) => d.accepted && d.decided?.id ).map( ( d ) => ( { ...d, pair, state: run.state, width: run.width } ) ) ) );
 
 // (e) Transient: a motion property whose draft or live sits at an entrance's start value (opacity below 1, a
 // translate) AND whose own snapshot shows an animation in flight when it was measured. The start-value shape alone is
@@ -501,6 +534,23 @@ export function triageIssue( issue, ctx ) {
 		evidence.unshift( { check: 'no-live-element', detail: `${ issue.rows.length } rows, live value empty at every width: the walker found no live element` } );
 		return verdict( 'W', 'no-live-element' );
 	}
+	// A row with a side the walker never read at any width compares no paint: the resolver finding the node "holding" a
+	// value proves nothing against an absent draft value (Solve's classify gives the same rows `unmeasured-side`).
+	const unread = [ 'draft', 'live' ].filter( ( side ) => issue.rows.every( ( x ) => null == x[ side ] ) );
+	if ( issue.rows.every( ( x ) => null == x.draft || null == x.live ) && unread.length ) {
+		evidence.unshift( { check: 'unmeasured-side', sides: unread, detail: `${ issue.rows.length } rows, the ${ unread.join( ' and ' ) } value was never read at any width: no paint is compared` } );
+		return verdict( 'W', 'unmeasured-side' );
+	}
+	// An enclosing block's reading of an element whose own row is open: one issue, owned by that row, whatever its kind.
+	if ( conseq && explained.every( ( e ) => 'same-element' === e.match ) ) {
+		evidence.unshift( conseq );
+		return verdict( 'W', 'same-element' );
+	}
+	const ledgered = conseq ? null : ledgerParent( issue, ctx );
+	if ( ledgered ) {
+		evidence.unshift( ledgered );
+		return verdict( 'L', 'ledger-consequence' );
+	}
 	if ( 'box' === r.kind ) {
 		return conseq ? ( evidence.unshift( conseq ), verdict( 'W', 'consequence' ) ) : verdict( 'U', 'box-unexplained' );
 	}
@@ -534,7 +584,10 @@ export function triageIssue( issue, ctx ) {
 	}
 	const deciding = fits.filter( ( f ) => false !== f.reaches );
 	if ( deciding.length ) {
-		return verdict( 'W', deciding[ 0 ].check, 'hardcode' === issue.solveClass ? withSource() : {} );
+		// An attribute fit calibration never measured fits by name only: its reach is unknown, which is a calibration gap
+		// (the route cannot tell whether the setting paints this element), not a setting Solve failed to write.
+		const by = 'attribute' === deciding[ 0 ].check && undefined === deciding[ 0 ].reaches ? 'uncalibrated-fit' : deciding[ 0 ].check;
+		return verdict( 'W', by, 'hardcode' === issue.solveClass ? withSource() : {} );
 	}
 	// FR-47-8 (c) / R-47-12. The resolver hop's citation (an enclosing block or the block-context channel) and the
 	// canvas roster citation (any block already in that tree) are the same claim reached from two directions; the first
@@ -560,7 +613,7 @@ export function triageIssue( issue, ctx ) {
 // groups and Solve's own gaps and writes. Exported so confirm-canvas.mjs's candidates mode asks canvasSettable exactly
 // what triage asks it.
 export function issueContext( report, walk, ctx ) {
-	return { ...ctx, walk, open: openRows( walk ).filter( isIssue ), groups: writableGroups( walk, ctx.stateMap ).groups, reportGaps: ctx.reportGaps ?? report.gaps, reportWrites: ctx.reportWrites ?? report.writes };
+	return { ...ctx, walk, open: openRows( walk ).filter( isIssue ), ledgerRows: ledgerRowsOf( walk ), groups: writableGroups( walk, ctx.stateMap ).groups, reportGaps: ctx.reportGaps ?? report.gaps, reportWrites: ctx.reportWrites ?? report.writes };
 }
 
 // Every issue of a Solve report: { verdicts, counts }. walk: the final walker report the Solve report classified.

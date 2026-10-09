@@ -1,85 +1,16 @@
 {
  "surface": "help",
- "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-07T15-45-56/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-07T15-45-56/round-1/report.json",
- "date": "2026-10-07",
+ "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-08T20-12-06/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-08T20-12-06/round-1/report.json",
+ "date": "2026-10-09",
  "counts": {
-  "W": 108,
-  "F": 29,
-  "T": 33,
-  "U": 6
+  "W": 106,
+  "F": 25,
+  "T": 31,
+  "U": 6,
+  "L": 0
  },
  "verdicts": [
-  {
-   "key": "cr-ref-help-2||style|transition-duration",
-   "ref": "cr-ref-help-2",
-   "pair": "title",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-14||style|transition-duration",
-   "ref": "cr-ref-help-14",
-   "pair": "questions-heading",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
   {
    "key": "cr-ref-help-15|a:nth-of-type(1)|style|display",
    "ref": "cr-ref-help-15",
@@ -267,7 +198,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -285,13 +216,13 @@
      "reaches": false
     },
     {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-13",
-     "block": "sgs/container",
-     "setting": "textDecoration",
-     "property": "text-decoration",
-     "via": "declared",
-     "reachabilityVerified": false
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkUnderline",
+     "css_property": "text-decoration-line",
+     "css_element": "text-link",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -503,7 +434,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -521,13 +452,13 @@
      "reaches": false
     },
     {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-13",
-     "block": "sgs/container",
-     "setting": "textDecoration",
-     "property": "text-decoration",
-     "via": "declared",
-     "reachabilityVerified": false
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkUnderline",
+     "css_property": "text-decoration-line",
+     "css_element": "text-link",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -644,21 +575,6 @@
    "decidedBy": "no-setting",
    "evidence": [
     {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      375,
-      375,
-      768,
-      768,
-      1440,
-      1440,
-      1920,
-      1920
-     ],
-     "parent": "cr-ref-help-16|.sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height"
-    },
-    {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/accordion-item has no setting for line-height"
@@ -695,7 +611,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+       "!== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — box-"
       ]
      }
     ]
@@ -1172,7 +1088,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -1284,7 +1200,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -1354,91 +1270,6 @@
    ]
   },
   {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|opacity",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "opacity",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for opacity"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "opacity"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "opacity"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "opacity"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "accordion/style.css",
-      "selector": ".sgs-accordion-item[open] .sgs-accordion-item__icon-open",
-      "declaration": "opacity:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "x){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100",
-       "x){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100"
-      ]
-     },
-     {
-      "block": "accordion-item",
-      "cite": "includes/helpers-tokens.php::sgs_overlay_decls",
-      "mentions": [],
-      "declares": [
-       "`; a bare `0` stays `0`. $decls[] = 'opacity:' . rtrim( rtrim( number_format( $pct / 100, 4, '.'"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/shape-dividers.php::includes/shape-dividers.php",
-      "mentions": [],
-      "declares": [
-       "e stop. * @return array{colour: string, opacity: float} Opaque colour + 0-1 opacity. */ function s"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|transform",
    "ref": "cr-ref-help-17",
    "pair": "faq-icon-1",
@@ -1502,13 +1333,13 @@
    }
   },
   {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|transition-duration",
+   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|rotate",
    "ref": "cr-ref-help-17",
    "pair": "faq-icon-1",
    "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
    "block": "sgs/accordion-item",
    "kind": "style",
-   "property": "transition-duration",
+   "property": "rotate",
    "widths": [
     375,
     768,
@@ -1523,128 +1354,35 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for transition-duration"
+     "detail": "sgs/accordion-item has no setting for rotate"
     }
    ],
    "source": {
     "render": [
      {
       "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
+      "mentions": [
+       "rotate"
+      ],
+      "absent": []
      },
      {
       "file": "accordion/render.php",
       "mentions": [],
       "absent": [
-       "transitionDuration"
+       "rotate"
       ]
      },
      {
       "file": "container/render.php",
       "mentions": [],
       "absent": [
-       "transitionDuration"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "accordion/style.css",
-      "selector": ".sgs-accordion-item::details-content, .sgs-accordion-item__header, .sgs-accordion-item__icon-open, .sgs-accordion-item__icon-close, .sgs-accordion-item__chevron, .sgs-accordion-item__content",
-      "declaration": "transition-duration:0.01ms !important"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
-      ]
-     },
-     {
-      "block": "accordion-item",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|transition-timing-function",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "transition-timing-function",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for transition-timing-function"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionTimingFunction"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionTimingFunction"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionTimingFunction"
+       "rotate"
       ]
      }
     ],
     "rules": [],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "erty:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}'; $responsive_"
-      ]
-     },
-     {
-      "block": "accordion-item",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       "ty . ';transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}' . '@media ("
-      ]
-     }
-    ]
+    "helpers": []
    }
   },
   {
@@ -1769,45 +1507,6 @@
    "class": "T",
    "decidedBy": "resolver-writes",
    "evidence": [
-    {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920
-     ],
-     "parent": "cr-ref-help-36|.sgs-container__inner > .sgs-business-info-wrap > .sgs-business-info > .sgs-business-info__before|style|color"
-    },
     {
      "check": "resolver",
      "wouldWrite": [
@@ -2108,69 +1807,6 @@
    "block": "sgs/container",
    "kind": "style",
    "property": "padding-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-help-0",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "css_property": "padding",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-0||style|padding-bottom",
-   "ref": "cr-ref-help-0",
-   "pair": "gen-help-0-opening",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "padding-bottom",
    "widths": [
     375,
     768,
@@ -3207,6 +2843,15 @@
      "css_state": null,
      "source": "sgs",
      "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkUnderline",
+     "css_property": "text-decoration-line",
+     "css_element": "text-link",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -3362,6 +3007,17 @@
    "decidedBy": "no-setting",
    "evidence": [
     {
+     "check": "consequence",
+     "partial": true,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ],
+     "parent": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height"
+    },
+    {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "no line-height setting on sgs/accordion paints \".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title\" (candidates: lineHeight)"
@@ -3401,7 +3057,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+       "!== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — box-"
       ]
      }
     ]
@@ -3891,227 +3547,51 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "same-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-container__inner > .sgs-business-info-wrap > .sgs-business-info > .sgs-business-info__before\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayColour",
-     "css_property": "background-color",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shapeDividerTopColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shapeDividerBottomColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemTextColour",
-     "css_property": "color",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shapeDividerTopColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shapeDividerBottomColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemShadowColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayColourHover",
-     "css_property": "background-color",
-     "css_element": "overlay",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shadowColourHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemTextColourHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemTextColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemTextColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "grid-item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
+     "check": "consequence",
+     "parent": "cr-ref-help-37|.sgs-business-info > .sgs-business-info__before|style|color",
+     "ref": "cr-ref-help-37",
+     "key": "color",
+     "relation": "same-element",
+     "match": "same-element",
+     "width": 375,
+     "delta": null,
+     "widths": [
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920
+     ]
     }
    ]
   },
@@ -4185,7 +3665,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 4.5,
+     "delta": 3.8999999999999986,
      "widths": [
       375,
       375,
@@ -4262,18 +3742,10 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "padding:var(--sgs-accordion-header-pad, var(--sgs-accordion-header-pad-base))"
+      "declaration": "padding-top:var(--sgs-accordion-header-pad-top, var(--sgs-accordion-header-pad-base-y))"
      }
     ],
     "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
      {
       "block": "accordion-item",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
@@ -4282,6 +3754,14 @@
        "dding_top ) { $base_band_decls[] = 'padding-top:' . $band_padding_top; } if ( '' !== $b",
        "let ) { $tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet; } if ( '' !=",
        "ile ) { $mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile; } if ( '' !="
+      ]
+     },
+     {
+      "block": "accordion-item",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
      }
     ]
@@ -4345,18 +3825,10 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "padding:var(--sgs-accordion-header-pad, var(--sgs-accordion-header-pad-base))"
+      "declaration": "padding-bottom:var(--sgs-accordion-header-pad-bottom, var(--sgs-accordion-header-pad-base-y))"
      }
     ],
     "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
      {
       "block": "accordion-item",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
@@ -4365,6 +3837,14 @@
        "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
        "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
        "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
+      ]
+     },
+     {
+      "block": "accordion-item",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
      }
     ]
@@ -4749,7 +4229,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -4861,18 +4341,10 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__content",
-      "declaration": "padding:var(--sgs-accordion-content-pad, var(--sgs-accordion-content-pad-base))"
+      "declaration": "padding-bottom:var(--sgs-accordion-content-pad-bottom, var(--sgs-accordion-content-pad-base-bottom))"
      }
     ],
     "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
      {
       "block": "accordion-item",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
@@ -4881,6 +4353,14 @@
        "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
        "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
        "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
+      ]
+     },
+     {
+      "block": "accordion-item",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
      }
     ]
@@ -4903,7 +4383,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -4994,91 +4474,6 @@
    }
   },
   {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|opacity",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "opacity",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for opacity (open)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "opacity"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "opacity"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "opacity"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "accordion/style.css",
-      "selector": ".sgs-accordion-item[open] .sgs-accordion-item__icon-open",
-      "declaration": "opacity:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "x){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100",
-       "x){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100"
-      ]
-     },
-     {
-      "block": "accordion-item",
-      "cite": "includes/helpers-tokens.php::sgs_overlay_decls",
-      "mentions": [],
-      "declares": [
-       "`; a bare `0` stays `0`. $decls[] = 'opacity:' . rtrim( rtrim( number_format( $pct / 100, 4, '.'"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/shape-dividers.php::includes/shape-dividers.php",
-      "mentions": [],
-      "declares": [
-       "e stop. * @return array{colour: string, opacity: float} Opaque colour + 0-1 opacity. */ function s"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|transform",
    "ref": "cr-ref-help-19",
    "pair": "faq-icon-2",
@@ -5142,13 +4537,13 @@
    }
   },
   {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|transition-duration",
+   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|rotate",
    "ref": "cr-ref-help-19",
    "pair": "faq-icon-2",
    "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
    "block": "sgs/accordion-item",
    "kind": "style",
-   "property": "transition-duration",
+   "property": "rotate",
    "widths": [
     375,
     768,
@@ -5163,128 +4558,35 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for transition-duration (open)"
+     "detail": "sgs/accordion-item has no setting for rotate (open)"
     }
    ],
    "source": {
     "render": [
      {
       "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
+      "mentions": [
+       "rotate"
+      ],
+      "absent": []
      },
      {
       "file": "accordion/render.php",
       "mentions": [],
       "absent": [
-       "transitionDuration"
+       "rotate"
       ]
      },
      {
       "file": "container/render.php",
       "mentions": [],
       "absent": [
-       "transitionDuration"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "accordion/style.css",
-      "selector": ".sgs-accordion-item::details-content, .sgs-accordion-item__header, .sgs-accordion-item__icon-open, .sgs-accordion-item__icon-close, .sgs-accordion-item__chevron, .sgs-accordion-item__content",
-      "declaration": "transition-duration:0.01ms !important"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
-      ]
-     },
-     {
-      "block": "accordion-item",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|transition-timing-function",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "transition-timing-function",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for transition-timing-function (open)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionTimingFunction"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionTimingFunction"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionTimingFunction"
+       "rotate"
       ]
      }
     ],
     "rules": [],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "erty:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}'; $responsive_"
-      ]
-     },
-     {
-      "block": "accordion-item",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       "ty . ';transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}' . '@media ("
-      ]
-     }
-    ]
+    "helpers": []
    }
   },
   {
@@ -5417,7 +4719,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 4.5,
+     "delta": 3.8999999999999986,
      "widths": [
       375,
       768,
@@ -5459,7 +4761,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 4.5,
+     "delta": 3.8999999999999986,
      "widths": [
       375,
       768,
@@ -5501,7 +4803,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 4.5,
+     "delta": 3.8999999999999986,
      "widths": [
       375,
       768,
@@ -5543,7 +4845,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 4.5,
+     "delta": 3.8999999999999986,
      "widths": [
       375,
       768,
@@ -5585,7 +4887,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 4.5,
+     "delta": 3.8999999999999986,
      "widths": [
       375,
       768,
@@ -5627,7 +4929,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 4.5,
+     "delta": 3.8999999999999986,
      "widths": [
       375,
       768,
@@ -5721,87 +5023,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-38||hover|border-top-color",
-   "ref": "cr-ref-help-38",
-   "pair": "gen-help-38-opening",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-help-38",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemBorder",
-     "css_property": "border-color,border-style,border-width",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
     }
    ]
   },
@@ -6073,7 +5294,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -47,
+     "delta": -46,
      "widths": [
       375,
       768,
@@ -6104,13 +5325,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
+     "parent": "cr-ref-help-15||style|width",
      "ref": "cr-ref-help-15",
-     "key": "display",
+     "key": "width",
      "relation": "self",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": -8,
+     "delta": -7,
      "widths": [
       375,
       375,
@@ -6173,13 +5394,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
+     "parent": "cr-ref-help-15||style|width",
      "ref": "cr-ref-help-15",
-     "key": "display",
+     "key": "width",
      "relation": "self",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": -8,
+     "delta": -7,
      "widths": [
       375,
       375,
@@ -6248,7 +5469,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -47,
+     "delta": -46,
      "widths": [
       375,
       375,
@@ -6390,7 +5611,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -9,
+     "delta": -8,
      "widths": [
       375,
       375,
@@ -6487,10 +5708,7 @@
    "kind": "box",
    "property": "y-after-gen-help-17-opening",
    "widths": [
-    375,
-    768,
-    1440,
-    1920
+    375
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -6499,18 +5717,15 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
+     "parent": "cr-ref-help-17|.sgs-accordion-item__header|style|padding-top",
      "ref": "cr-ref-help-17",
-     "key": "line-height",
+     "key": "padding-top",
      "relation": "anchor",
      "match": "same-delta",
      "width": 375,
-     "delta": -5,
+     "delta": -6,
      "widths": [
-      375,
-      768,
-      1440,
-      1920
+      375
      ]
     }
    ]
@@ -6687,13 +5902,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-help-15",
-     "key": "line-height",
-     "relation": "descendant",
-     "match": "same-delta",
+     "parent": "cr-ref-help-0||style|padding-top",
+     "ref": "cr-ref-help-0",
+     "key": "padding-top",
+     "relation": "self",
+     "match": "layout-row",
      "width": 375,
-     "delta": 3,
+     "delta": 33,
      "widths": [
       375,
       375,
@@ -7015,7 +6230,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -40,
+     "delta": -39,
      "widths": [
       375,
       375,
@@ -7121,7 +6336,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -4,
+     "delta": -3,
      "widths": [
       375,
       375,
@@ -7217,13 +6432,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
+     "parent": "cr-ref-help-15||style|width",
      "ref": "cr-ref-help-15",
-     "key": "display",
+     "key": "width",
      "relation": "anchor",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": 8,
+     "delta": 7,
      "widths": [
       375,
       375,
@@ -7240,7 +6455,6 @@
       768,
       768,
       768,
-      768,
       1440,
       1440,
       1440,
@@ -7248,8 +6462,6 @@
       1440,
       1440,
       1440,
-      1440,
-      1920,
       1920,
       1920,
       1920,
@@ -7282,13 +6494,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
+     "parent": "cr-ref-help-17|.sgs-accordion-item__header|style|column-gap",
+     "ref": "cr-ref-help-17",
+     "key": "column-gap",
+     "relation": "descendant",
+     "match": "same-delta",
      "width": 375,
-     "delta": 39,
+     "delta": 8,
      "widths": [
       375,
       375,
@@ -7416,9 +6628,9 @@
      "ref": "cr-ref-help-0",
      "key": "padding-top",
      "relation": "ancestor",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": 57,
+     "delta": 27,
      "widths": [
       375,
       768,
@@ -7540,44 +6752,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -47,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|box|y-after-faq-question-1",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "box",
-   "property": "y-after-faq-question-1",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
-     "ref": "cr-ref-help-17",
-     "key": "line-height",
-     "relation": "anchor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -5,
+     "delta": -46,
      "widths": [
       375,
       768,
@@ -7614,7 +6789,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": 53,
+     "delta": 19,
      "widths": [
       375,
       768,
@@ -7688,7 +6863,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -47,
+     "delta": -46,
      "widths": [
       375,
       768,
@@ -7723,7 +6898,7 @@
      "ref": "cr-ref-help-19",
      "key": "line-height",
      "relation": "self",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
      "delta": 3,
      "widths": [
@@ -7760,9 +6935,9 @@
      "ref": "cr-ref-help-19",
      "key": "line-height",
      "relation": "self",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": -3,
+     "delta": -4,
      "widths": [
       375,
       768,
@@ -7984,7 +7159,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -11,
+     "delta": -12,
      "widths": [
       375,
       768,
@@ -8021,7 +7196,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 40,
+     "delta": 11,
      "widths": [
       375,
       768,
@@ -8095,7 +7270,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -47,
+     "delta": -46,
      "widths": [
       375,
       768,
@@ -8126,13 +7301,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-16||style|column-gap",
-     "ref": "cr-ref-help-16",
-     "key": "column-gap",
-     "relation": "anchor",
-     "match": "same-delta",
+     "parent": "cr-ref-help-0||style|padding-top",
+     "ref": "cr-ref-help-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 20,
+     "delta": 18,
      "widths": [
       375,
       768,
@@ -8169,7 +7344,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -11,
+     "delta": -13,
      "widths": [
       375,
       768,
@@ -8206,7 +7381,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 22,
+     "delta": -5,
      "widths": [
       375,
       768,
@@ -8280,7 +7455,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -47,
+     "delta": -46,
      "widths": [
       375,
       768,
@@ -8317,7 +7492,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 37,
+     "delta": 34,
      "widths": [
       375,
       768,
@@ -8354,7 +7529,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -11,
+     "delta": -37,
      "widths": [
       375,
       768,
@@ -8391,7 +7566,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 6,
+     "delta": 5,
      "widths": [
       375,
       768,
@@ -8465,7 +7640,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -47,
+     "delta": -46,
      "widths": [
       375,
       768,
@@ -8502,7 +7677,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 54,
+     "delta": 24,
      "widths": [
       375,
       768,
@@ -8540,43 +7715,6 @@
      "match": "layout-row",
      "width": 375,
      "delta": -25,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-33||box|y-after-gen-help-26-faq-item5-open",
-   "ref": "cr-ref-help-33",
-   "pair": "gen-help-33-faq-item5-open",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "y-after-gen-help-26-faq-item5-open",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 3,
      "widths": [
       375,
       768,
@@ -8650,7 +7788,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -47,
+     "delta": -46,
      "widths": [
       375,
       768,
@@ -8685,9 +7823,9 @@
      "ref": "cr-ref-help-0",
      "key": "padding-top",
      "relation": "ancestor",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": 57,
+     "delta": 27,
      "widths": [
       375,
       768,
@@ -8798,7 +7936,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -47,
+     "delta": -46,
      "widths": [
       375,
       768,
@@ -8829,13 +7967,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-bottom",
+     "parent": "cr-ref-help-0||style|padding-top",
      "ref": "cr-ref-help-0",
-     "key": "padding-bottom",
+     "key": "padding-top",
      "relation": "ancestor",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": 61,
+     "delta": 30,
      "widths": [
       375,
       768,
@@ -8872,7 +8010,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -24,
+     "delta": -25,
      "widths": [
       375,
       768,
@@ -8891,7 +8029,10 @@
    "kind": "box",
    "property": "y-after-gen-help-30-faq-item7-open",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -8908,7 +8049,10 @@
      "width": 375,
      "delta": -4,
      "widths": [
-      375
+      375,
+      768,
+      1440,
+      1920
      ]
     }
    ]
@@ -8977,7 +8121,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -47,
+     "delta": -46,
      "widths": [
       375,
       768,
@@ -9014,7 +8158,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 64,
+     "delta": 33,
      "widths": [
       375,
       768,
@@ -9088,7 +8232,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -8,
+     "delta": -7,
      "widths": [
       375,
       768,
@@ -9132,6 +8276,41 @@
    ]
   },
   {
+   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|box|y-after-gen-help-16-opening",
+   "ref": "cr-ref-help-17",
+   "pair": "faq-icon-1",
+   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+   "block": "sgs/accordion-item",
+   "kind": "box",
+   "property": "y-after-gen-help-16-opening",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
+     "ref": "cr-ref-help-17",
+     "key": "line-height",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 768,
+     "delta": -4,
+     "widths": [
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|box|y-after-gen-help-19-faq-item2-open",
    "ref": "cr-ref-help-19",
    "pair": "faq-icon-2",
@@ -9151,13 +8330,48 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-19|.sgs-accordion-item__header|style|padding-top",
+     "parent": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
      "ref": "cr-ref-help-19",
-     "key": "padding-top",
+     "key": "line-height",
      "relation": "anchor",
      "match": "same-delta",
      "width": 768,
      "delta": -3,
+     "widths": [
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-33||box|y-after-gen-help-26-faq-item5-open",
+   "ref": "cr-ref-help-33",
+   "pair": "gen-help-33-faq-item5-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-26-faq-item5-open",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-0||style|padding-top",
+     "ref": "cr-ref-help-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 768,
+     "delta": 16,
      "widths": [
       768,
       1440,
@@ -9192,7 +8406,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": 9,
+     "delta": 8,
      "widths": [
       768,
       1440,

@@ -1,50 +1,16 @@
 {
  "surface": "about",
- "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-07T03-45-45/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-07T03-45-45/round-1/report.json",
- "date": "2026-10-07",
+ "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-08T20-10-35/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-08T20-10-35/round-1/report.json",
+ "date": "2026-10-09",
  "counts": {
-  "W": 6,
+  "W": 0,
   "F": 0,
-  "T": 0,
-  "U": 4
+  "T": 1,
+  "U": 0,
+  "L": 0
  },
  "verdicts": [
-  {
-   "key": "cr-ref-about-3||style|transition-duration",
-   "ref": "cr-ref-about-3",
-   "pair": "name",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
   {
    "key": "cr-ref-about-10||style|transition-duration",
    "ref": "cr-ref-about-10",
@@ -54,20 +20,26 @@
    "kind": "style",
    "property": "transition-duration",
    "widths": [
-    375,
     768,
     1440,
     1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/button paints \"\" (candidates: transitionDuration)"
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-about-10",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -76,217 +48,10 @@
      "css_property": "transition-duration",
      "css_element": null,
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     }
    ]
-  },
-  {
-   "key": "cr-ref-about-13||style|transition-duration",
-   "ref": "cr-ref-about-13",
-   "pair": "card-bsc-heading",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-about-16||style|transition-duration",
-   "ref": "cr-ref-about-16",
-   "pair": "card-mcoptom-heading",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-about-19||style|transition-duration",
-   "ref": "cr-ref-about-19",
-   "pair": "card-diptp-heading",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-about-22||style|transition-duration",
-   "ref": "cr-ref-about-22",
-   "pair": "card-paediatric-heading",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-about-2||box|y-after-gen-about-0",
-   "ref": "cr-ref-about-2",
-   "pair": "eyebrow",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-gen-about-0",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
-   "evidence": []
-  },
-  {
-   "key": "cr-ref-about-5||box|y-from-credentials-line",
-   "ref": "cr-ref-about-5",
-   "pair": "intro-text",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-from-credentials-line",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
-   "evidence": []
-  },
-  {
-   "key": "cr-ref-about-11||box|y-from-name",
-   "ref": "cr-ref-about-11",
-   "pair": "credential-stack",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "y-from-name",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
-   "evidence": []
-  },
-  {
-   "key": "cr-ref-about-1||box|y-after-eyebrow",
-   "ref": "cr-ref-about-1",
-   "pair": "gen-about-1",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "y-after-eyebrow",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
-   "evidence": []
   }
  ]
 }

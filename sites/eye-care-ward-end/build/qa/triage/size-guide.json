@@ -1,13 +1,14 @@
 {
  "surface": "size-guide",
- "report": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-07T04-12-00/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-07T04-12-00/round-1/report.json",
- "date": "2026-10-07",
+ "report": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-08T21-50-05/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-08T21-50-05/round-1/report.json",
+ "date": "2026-10-09",
  "counts": {
-  "W": 54,
+  "W": 53,
   "F": 0,
-  "T": 9,
-  "U": 0
+  "T": 10,
+  "U": 0,
+  "L": 0
  },
  "verdicts": [
   {
@@ -409,22 +410,9 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-size-guide-2|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container__inner > p:nth-of-type(1)|style|font-size",
-     "ref": "cr-ref-size-guide-2",
-     "key": "font-size",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -6,
-     "widths": [
-      375
-     ]
-    },
     {
      "check": "resolver",
      "wouldWrite": [
@@ -719,22 +707,20 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "same-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container__inner > p:nth-of-type(1)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "css_property": "font-size",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
+     "check": "consequence",
+     "parent": "cr-ref-size-guide-3|.sgs-container__inner > p:nth-of-type(1)|style|font-size",
+     "ref": "cr-ref-size-guide-3",
+     "key": "font-size",
+     "relation": "same-element",
+     "match": "same-element",
+     "width": 375,
+     "delta": -6,
+     "widths": [
+      375
+     ]
     }
    ]
   },
@@ -752,35 +738,20 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "same-element",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-33|.sgs-modal__dialog > .sgs-modal__close > .sgs-modal__close-glyph|style|line-height",
-     "ref": "cr-ref-footer-33",
+     "parent": "cr-ref-size-guide-3|.sgs-container__inner > p:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-size-guide-3",
      "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
+     "relation": "same-element",
+     "match": "same-element",
      "width": 375,
      "delta": -9,
      "widths": [
       375
      ]
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container__inner > p:nth-of-type(1)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "css_property": "line-height",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
     }
    ]
   },
@@ -2356,7 +2327,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -242,
+     "delta": -68,
      "widths": [
       375
      ]
@@ -2560,7 +2531,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -261,
+     "delta": -87,
      "widths": [
       375
      ]
@@ -2801,7 +2772,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -261,
+     "delta": -87,
      "widths": [
       375
      ]
@@ -2937,7 +2908,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -249,
+     "delta": -75,
      "widths": [
       375
      ]
@@ -3006,7 +2977,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": -250,
+     "delta": -76,
      "widths": [
       375,
       768
@@ -3113,7 +3084,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -259,
+     "delta": -85,
      "widths": [
       375,
       768
@@ -3219,7 +3190,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -259,
+     "delta": -85,
      "widths": [
       375
      ]
@@ -3289,7 +3260,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -256,
+     "delta": -111,
      "widths": [
       768,
       1440,
@@ -3324,7 +3295,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -256,
+     "delta": -111,
      "widths": [
       768,
       1440,
@@ -3357,7 +3328,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -266,
+     "delta": -122,
      "widths": [
       768
      ]
@@ -3389,7 +3360,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -266,
+     "delta": -122,
      "widths": [
       1440,
       1920
@@ -3422,7 +3393,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -259,
+     "delta": -114,
      "widths": [
       1440,
       1920

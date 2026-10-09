@@ -1,13 +1,14 @@
 {
  "surface": "mobile-menu",
- "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-07T10-16-30/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-07T10-16-30/round-1/report.json",
- "date": "2026-10-07",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-08T20-25-07/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-08T20-25-07/round-1/report.json",
+ "date": "2026-10-09",
  "counts": {
-  "W": 65,
-  "F": 6,
-  "T": 18,
-  "U": 0
+  "W": 71,
+  "F": 2,
+  "T": 20,
+  "U": 0,
+  "L": 0
  },
  "verdicts": [
   {
@@ -25,7 +26,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -241,6 +242,33 @@
      "source": "sgs"
     },
     {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeRatingColour",
+     "css_property": "color",
+     "css_element": "chromeRating",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeButtonColourTextGradient",
+     "css_property": "color-gradient",
+     "css_element": "chromeButton",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeButtonColourTextHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "chromeButton",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
      "check": "discovered",
      "block": "sgs/nav-drawer",
      "setting": "chromeSlotType",
@@ -264,8 +292,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -311,6 +339,16 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-16",
+     "block": "sgs/google-rating-badge",
+     "setting": "padding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": true
     }
    ],
    "source": {
@@ -333,18 +371,27 @@
     "helpers": [
      {
       "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
       "mentions": [],
       "declares": [
+       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+      "mentions": [],
+      "declares": [
+       "ing_top ) ) { * $style_parts[] = 'padding-top:' . floatval( $padding_top ) . esc_attr( $paddi",
        "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
      },
      {
       "block": "nav-drawer",
-      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
      },
      {
@@ -373,8 +420,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -420,6 +467,16 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-16",
+     "block": "sgs/google-rating-badge",
+     "setting": "padding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": true
     }
    ],
    "source": {
@@ -442,7 +499,15 @@
     "helpers": [
      {
       "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
       "mentions": [],
       "declares": [
        "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
@@ -450,10 +515,10 @@
      },
      {
       "block": "nav-drawer",
-      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
      },
      {
@@ -482,8 +547,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -529,6 +594,16 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-16",
+     "block": "sgs/google-rating-badge",
+     "setting": "padding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": true
     }
    ],
    "source": {
@@ -551,7 +626,15 @@
     "helpers": [
      {
       "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
       "mentions": [],
       "declares": [
        "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
@@ -559,10 +642,10 @@
      },
      {
       "block": "nav-drawer",
-      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
      },
      {
@@ -591,8 +674,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -638,6 +721,16 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-16",
+     "block": "sgs/google-rating-badge",
+     "setting": "padding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": true
     }
    ],
    "source": {
@@ -660,7 +753,15 @@
     "helpers": [
      {
       "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
       "mentions": [],
       "declares": [
        "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
@@ -668,10 +769,10 @@
      },
      {
       "block": "nav-drawer",
-      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
      },
      {
@@ -701,7 +802,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -759,7 +860,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -859,7 +960,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -1219,71 +1320,6 @@
    }
   },
   {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|transition-duration",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: scrimFadeDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "scrimFadeDuration",
-     "css_property": "transition-duration",
-     "css_element": "scrim",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|margin-left",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "margin-left",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/nav-drawer has no setting for margin-left"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeSlotPlacement",
-     "values": [
-      "end"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close::after|style|content",
    "ref": "cr-ref-mobile-menu-0",
    "pair": "drawer-close",
@@ -1334,10 +1370,19 @@
      },
      {
       "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+      "mentions": [],
+      "declares": [
+       ":isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra",
+       "ng-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
+      ]
+     },
+     {
+      "block": "nav-drawer",
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "g-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
+       "ng-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
       ]
      },
      {
@@ -1345,7 +1390,7 @@
       "cite": "includes/helpers-tokens.php::sgs_block_background_layer_css",
       "mentions": [],
       "declares": [
-       "isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+       ":isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
       ]
      },
      {
@@ -1360,13 +1405,13 @@
    }
   },
   {
-   "key": "cr-ref-mobile-menu-2||style|transition-duration",
+   "key": "cr-ref-mobile-menu-2||style|background-image",
    "ref": "cr-ref-mobile-menu-2",
    "pair": "drawer-link-sunglasses",
    "path": "",
    "block": "sgs/button",
    "kind": "style",
-   "property": "transition-duration",
+   "property": "background-image",
    "widths": [
     375,
     768
@@ -1379,7 +1424,7 @@
     {
      "check": "resolver",
      "wouldWrite": [
-      "transitionDuration"
+      "colourBackgroundGradient"
      ],
      "on": {
       "ref": "cr-ref-mobile-menu-2",
@@ -1391,14 +1436,158 @@
     {
      "check": "attribute",
      "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
+     "setting": "colourBackgroundGradient",
+     "css_property": "background-image",
+     "css_element": "wrapper",
      "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "colourBackgroundHoverGradient",
+     "css_property": "background-image",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs",
      "reaches": true
     }
    ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||style|translate",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "translate",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for translate"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||style|animation-delay",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "animation-delay",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for animation-delay"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "animation",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||style|animation-timing-function",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "animation-timing-function",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for animation-timing-function"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-0",
+     "block": "sgs/nav-drawer",
+     "setting": "entryEasing",
+     "property": "animation,animation-timing-function",
+     "via": "declared",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-mobile-menu-2||style|max-width",
@@ -1415,7 +1604,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -1459,13 +1648,13 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-4||style|transition-duration",
+   "key": "cr-ref-mobile-menu-4||style|background-image",
    "ref": "cr-ref-mobile-menu-4",
    "pair": "drawer-link-lenses",
    "path": "",
    "block": "sgs/button",
    "kind": "style",
-   "property": "transition-duration",
+   "property": "background-image",
    "widths": [
     375,
     768
@@ -1478,7 +1667,7 @@
     {
      "check": "resolver",
      "wouldWrite": [
-      "transitionDuration"
+      "colourBackgroundGradient"
      ],
      "on": {
       "ref": "cr-ref-mobile-menu-4",
@@ -1490,14 +1679,158 @@
     {
      "check": "attribute",
      "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
+     "setting": "colourBackgroundGradient",
+     "css_property": "background-image",
+     "css_element": "wrapper",
      "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "colourBackgroundHoverGradient",
+     "css_property": "background-image",
+     "css_element": "wrapper",
+     "css_state": "hover",
      "source": "sgs",
      "reaches": true
     }
    ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||style|translate",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "translate",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for translate"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||style|animation-delay",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "animation-delay",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for animation-delay"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "animation",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||style|animation-timing-function",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "animation-timing-function",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for animation-timing-function"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-0",
+     "block": "sgs/nav-drawer",
+     "setting": "entryEasing",
+     "property": "animation,animation-timing-function",
+     "via": "declared",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-mobile-menu-4||style|max-width",
@@ -1514,7 +1847,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -1572,14 +1905,218 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-16",
+     "block": "sgs/google-rating-badge",
+     "setting": "sgsHideOnDesktop",
+     "property": "display",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "display"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-item-effects.php::sgs_label_roll_css",
+      "mentions": [],
+      "declares": [
+       "pe_sel . $trigger_sel; $css = $r . '{display:inline-grid;overflow:clip;vertical-align:top;}';"
+      ]
+     },
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       "edia (forced-colors:active){' . $sel . '{display:none}}'; $data = ''; foreach ( (array) ( $args"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "ext' ), true ); return $icon_sel . '{display:' . ( $show_icon ? 'flex' : 'none' ) . ';}' .",
+       "' : 'none' ) . ';}' . $text_sel . '{display:' . ( $show_text ? 'flex' : 'none' ) . ';}'; };"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link|style|background-image",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "drawer-link-about",
+   "path": ".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "background-image",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-0",
+     "block": "sgs/nav-drawer",
+     "setting": "drawerBgGradient",
+     "property": "background-image",
+     "via": "declared",
+     "where": "ancestor",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "backgroundImage"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-link-underline.php::sgs_link_underline_css",
+      "mentions": [],
+      "declares": [
+       "aint ? 'text-decoration:none;' : '' ) . 'background-image:linear-gradient(currentColor,currentColor)"
+      ]
+     },
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
+      "mentions": [],
+      "declares": [
+       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+      ]
+     },
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
+      "mentions": [],
+      "declares": [
+       "background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s:none'; $sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';",
+       "(max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] )",
+       "(max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] )"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-treatments.php::includes/nav-menu-treatments.php",
+      "mentions": [],
+      "declares": [
+       "? 'color:' . $normal . ';' : '' ) . 'background-image:' . $grad . ';' . 'background-size:200%",
+       "d-colors:active),print{' . $selector . '{background-image:none;-webkit-text-fill-color:currentColor;"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-treatments.php::sgs_nav_shared_text_sweep_css",
+      "mentions": [],
+      "declares": [
+       "? 'color:' . $normal . ';' : '' ) . 'background-image:' . $grad . ';' . 'background-size:200%",
+       "d-colors:active),print{' . $selector . '{background-image:none;-webkit-text-fill-color:currentColor;"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link|style|width",
@@ -1625,14 +2162,218 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-16",
+     "block": "sgs/google-rating-badge",
+     "setting": "sgsHideOnDesktop",
+     "property": "display",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "display"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-item-effects.php::sgs_label_roll_css",
+      "mentions": [],
+      "declares": [
+       "pe_sel . $trigger_sel; $css = $r . '{display:inline-grid;overflow:clip;vertical-align:top;}';"
+      ]
+     },
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       "edia (forced-colors:active){' . $sel . '{display:none}}'; $data = ''; foreach ( (array) ( $args"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "ext' ), true ); return $icon_sel . '{display:' . ( $show_icon ? 'flex' : 'none' ) . ';}' .",
+       "' : 'none' ) . ';}' . $text_sel . '{display:' . ( $show_text ? 'flex' : 'none' ) . ';}'; };"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link|style|background-image",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "drawer-link-contact",
+   "path": ".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "background-image",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-0",
+     "block": "sgs/nav-drawer",
+     "setting": "drawerBgGradient",
+     "property": "background-image",
+     "via": "declared",
+     "where": "ancestor",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "backgroundImage"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-link-underline.php::sgs_link_underline_css",
+      "mentions": [],
+      "declares": [
+       "aint ? 'text-decoration:none;' : '' ) . 'background-image:linear-gradient(currentColor,currentColor)"
+      ]
+     },
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
+      "mentions": [],
+      "declares": [
+       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+      ]
+     },
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
+      "mentions": [],
+      "declares": [
+       "background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s:none'; $sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';",
+       "(max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] )",
+       "(max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] )"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-treatments.php::includes/nav-menu-treatments.php",
+      "mentions": [],
+      "declares": [
+       "? 'color:' . $normal . ';' : '' ) . 'background-image:' . $grad . ';' . 'background-size:200%",
+       "d-colors:active),print{' . $selector . '{background-image:none;-webkit-text-fill-color:currentColor;"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-treatments.php::sgs_nav_shared_text_sweep_css",
+      "mentions": [],
+      "declares": [
+       "? 'color:' . $normal . ';' : '' ) . 'background-image:' . $grad . ';' . 'background-size:200%",
+       "d-colors:active),print{' . $selector . '{background-image:none;-webkit-text-fill-color:currentColor;"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link|style|width",
@@ -1664,41 +2405,34 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-11||style|transition-duration",
+   "key": "cr-ref-mobile-menu-11||style|translate",
    "ref": "cr-ref-mobile-menu-11",
    "pair": "drawer-phone",
    "path": "",
    "block": "sgs/button",
    "kind": "style",
-   "property": "transition-duration",
+   "property": "translate",
    "widths": [
     375,
     768
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "attribute",
    "evidence": [
     {
      "check": "resolver",
-     "wouldWrite": [
-      "transitionDuration"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-11",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for translate"
     },
     {
      "check": "attribute",
      "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
+     "setting": "liftHover",
+     "css_property": "translate",
      "css_element": null,
-     "css_state": null,
+     "css_state": "hover",
      "source": "sgs",
      "reaches": true
     }
@@ -1719,7 +2453,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -1797,47 +2531,6 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-15||style|transition-duration",
-   "ref": "cr-ref-mobile-menu-15",
-   "pair": "drawer-whatsapp",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "transitionDuration"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-15",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-9||style|column-gap",
    "ref": "cr-ref-mobile-menu-9",
    "pair": "gen-mobile-menu-9",
@@ -1851,23 +2544,9 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-8|.sgs-icon-list|style|column-gap",
-     "ref": "cr-ref-mobile-menu-8",
-     "key": "column-gap",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -4,
-     "widths": [
-      375,
-      768
-     ]
-    },
     {
      "check": "resolver",
      "wouldWrite": [
@@ -1906,23 +2585,9 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-8|.sgs-icon-list|style|row-gap",
-     "ref": "cr-ref-mobile-menu-8",
-     "key": "row-gap",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -4,
-     "widths": [
-      375,
-      768
-     ]
-    },
     {
      "check": "resolver",
      "wouldWrite": [
@@ -1946,6 +2611,166 @@
      "reaches": true
     }
    ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-9||style|translate",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "gen-mobile-menu-9",
+   "path": "",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "translate",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/icon-list has no setting for translate"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-0",
+     "block": "sgs/nav-drawer",
+     "setting": "itemStaggerAxis",
+     "property": "translate",
+     "via": "declared",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [],
+      "absent": [
+       "translate"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "translate"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "translate"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-9||style|animation-delay",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "gen-mobile-menu-9",
+   "path": "",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "animation-delay",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/icon-list has no setting for animation-delay"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/icon-list",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "animation",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-9||style|animation-timing-function",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "gen-mobile-menu-9",
+   "path": "",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "animation-timing-function",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/icon-list has no setting for animation-timing-function"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-0",
+     "block": "sgs/nav-drawer",
+     "setting": "entryEasing",
+     "property": "animation,animation-timing-function",
+     "via": "declared",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-mobile-menu-9||style|margin-top",
@@ -2002,23 +2827,9 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-8|.sgs-icon-list|style|gap",
-     "ref": "cr-ref-mobile-menu-8",
-     "key": "gap",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -4,
-     "widths": [
-      375,
-      768
-     ]
-    },
     {
      "check": "resolver",
      "wouldWrite": [
@@ -2058,22 +2869,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "same-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-icon-list\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-9||style|column-gap",
+     "ref": "cr-ref-mobile-menu-9",
+     "key": "column-gap",
+     "relation": "same-element",
+     "match": "same-element",
+     "width": 375,
+     "delta": -4,
+     "widths": [
+      375,
+      768
+     ]
     }
    ]
   },
@@ -2092,22 +2902,21 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "same-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-icon-list\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-9||style|row-gap",
+     "ref": "cr-ref-mobile-menu-9",
+     "key": "row-gap",
+     "relation": "same-element",
+     "match": "same-element",
+     "width": 375,
+     "delta": -4,
+     "widths": [
+      375,
+      768
+     ]
     }
    ]
   },
@@ -2177,22 +2986,53 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "same-element",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-9||style|gap",
+     "ref": "cr-ref-mobile-menu-9",
+     "key": "gap",
+     "relation": "same-element",
+     "match": "same-element",
+     "width": 375,
+     "delta": -4,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|transition-duration",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-close",
+   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-icon-list\" is not a calibrated element"
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: scrimFadeDuration)"
     },
     {
      "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
+     "block": "sgs/nav-drawer",
+     "setting": "scrimFadeDuration",
+     "css_property": "transition-duration",
+     "css_element": "scrim",
      "css_state": null,
-     "source": "sgs",
-     "reaches": false
+     "source": "sgs"
     }
    ]
   },
@@ -2210,7 +3050,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -2260,7 +3100,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -2274,6 +3114,78 @@
      "css_property": "opacity",
      "css_element": "close",
      "css_state": "hover",
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||style|transition-duration",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-2",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||style|transition-timing-function",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-timing-function",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-timing-function setting on sgs/button paints \"\" (candidates: transitionEasing)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionEasing",
+     "css_property": "transition-timing-function",
+     "css_element": null,
+     "css_state": null,
      "source": "sgs"
     }
    ]
@@ -2498,35 +3410,74 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-4||style|transform",
+   "key": "cr-ref-mobile-menu-4||style|transition-duration",
    "ref": "cr-ref-mobile-menu-4",
    "pair": "drawer-link-lenses",
    "path": "",
    "block": "sgs/button",
    "kind": "style",
-   "property": "transform",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-4",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||style|transition-timing-function",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-timing-function",
    "widths": [
     768
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/button has no setting for transform"
+     "detail": "no transition-timing-function setting on sgs/button paints \"\" (candidates: transitionEasing)"
     },
     {
      "check": "attribute",
      "block": "sgs/button",
-     "setting": "scaleHover",
-     "css_property": "transform",
-     "css_element": "face",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
+     "setting": "transitionEasing",
+     "css_property": "transition-timing-function",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -2717,6 +3668,103 @@
    ]
   },
   {
+   "key": "cr-ref-mobile-menu-4||hover|transform",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "hover",
+   "property": "transform",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "shape",
+     "detail": "matrix(1, 0, 0, 1, 0, 0) cannot be held"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "scaleHover",
+     "css_property": "transform",
+     "css_element": "face",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link|style|transition-duration",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "drawer-link-about",
+   "path": ".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/icon-list",
+     "setting": "itemMotionDuration",
+     "css_property": "transition-duration",
+     "css_element": "item-dimmed",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link|style|transition-timing-function",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "drawer-link-about",
+   "path": ".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "transition-timing-function",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/icon-list",
+     "setting": "itemMotionEasing",
+     "css_property": "transition-timing-function",
+     "css_element": "item-dimmed",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
    "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link|hover|color",
    "ref": "cr-ref-mobile-menu-9",
    "pair": "drawer-link-about",
@@ -2730,7 +3778,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -2922,6 +3970,70 @@
    ]
   },
   {
+   "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link|style|transition-duration",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "drawer-link-contact",
+   "path": ".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/icon-list",
+     "setting": "itemMotionDuration",
+     "css_property": "transition-duration",
+     "css_element": "item-dimmed",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link|style|transition-timing-function",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "drawer-link-contact",
+   "path": ".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "transition-timing-function",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/icon-list",
+     "setting": "itemMotionEasing",
+     "css_property": "transition-timing-function",
+     "css_element": "item-dimmed",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
    "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link|hover|color",
    "ref": "cr-ref-mobile-menu-9",
    "pair": "drawer-link-contact",
@@ -2935,7 +4047,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
      "check": "resolver",
@@ -3127,6 +4239,46 @@
    ]
   },
   {
+   "key": "cr-ref-mobile-menu-11||style|transition-duration",
+   "ref": "cr-ref-mobile-menu-11",
+   "pair": "drawer-phone",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-11",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
    "key": "cr-ref-mobile-menu-11|.sgs-button__label|hover|color",
    "ref": "cr-ref-mobile-menu-11",
    "pair": "drawer-phone",
@@ -3139,23 +4291,9 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-10|.sgs-button > .sgs-button__label|hover|color",
-     "ref": "cr-ref-mobile-menu-10",
-     "key": "color",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 768,
-     "delta": null,
-     "widths": [
-      768,
-      768
-     ]
-    },
     {
      "check": "resolver",
      "wouldWrite": [
@@ -3451,6 +4589,46 @@
    ]
   },
   {
+   "key": "cr-ref-mobile-menu-15||style|transition-duration",
+   "ref": "cr-ref-mobile-menu-15",
+   "pair": "drawer-whatsapp",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-15",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
    "key": "cr-ref-mobile-menu-15||hover|transform",
    "ref": "cr-ref-mobile-menu-15",
    "pair": "drawer-whatsapp",
@@ -3575,83 +4753,35 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-2||hover|border-top-color",
+   "key": "cr-ref-mobile-menu-2||hover|translate",
    "ref": "cr-ref-mobile-menu-2",
    "pair": "gen-mobile-menu-2",
    "path": "",
    "block": "sgs/button",
    "kind": "hover",
-   "property": "border-top-color",
+   "property": "translate",
    "widths": [
     768
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "attribute",
    "evidence": [
     {
      "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-2",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
+     "gap": "shape",
+     "detail": "none cannot be held"
     },
     {
      "check": "attribute",
      "block": "sgs/button",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
-     ]
     }
    ]
   },
@@ -3842,87 +4972,6 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-3||hover|border-top-color",
-   "ref": "cr-ref-mobile-menu-3",
-   "pair": "gen-mobile-menu-3",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-3",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-3||hover|transform",
    "ref": "cr-ref-mobile-menu-3",
    "pair": "gen-mobile-menu-3",
@@ -3956,94 +5005,13 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-4||hover|border-top-color",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "gen-mobile-menu-4",
+   "key": "cr-ref-mobile-menu-3||hover|translate",
+   "ref": "cr-ref-mobile-menu-3",
+   "pair": "gen-mobile-menu-3",
    "path": "",
    "block": "sgs/button",
    "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-4",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-4||hover|transform",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "gen-mobile-menu-4",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "transform",
+   "property": "translate",
    "widths": [
     768
    ],
@@ -4055,14 +5023,47 @@
     {
      "check": "resolver",
      "gap": "shape",
-     "detail": "matrix(1, 0, 0, 1, 0, 0) cannot be held"
+     "detail": "none cannot be held"
     },
     {
      "check": "attribute",
      "block": "sgs/button",
-     "setting": "scaleHover",
-     "css_property": "transform",
-     "css_element": "face",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||hover|translate",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "gen-mobile-menu-4",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "hover",
+   "property": "translate",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "shape",
+     "detail": "none cannot be held"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -4151,6 +5152,80 @@
    ]
   },
   {
+   "key": "cr-ref-mobile-menu-11||hover|border-top-width",
+   "ref": "cr-ref-mobile-menu-11",
+   "pair": "gen-mobile-menu-11",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "hover",
+   "property": "border-top-width",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for border-top-width (hover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/button",
+     "setting": "inheritStyle",
+     "values": [
+      "outline"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-11||hover|translate",
+   "ref": "cr-ref-mobile-menu-11",
+   "pair": "gen-mobile-menu-11",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "hover",
+   "property": "translate",
+   "widths": [
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "shape",
+     "detail": "none cannot be held"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
    "key": "cr-ref-mobile-menu-10|.sgs-button > .sgs-button__label|hover|color",
    "ref": "cr-ref-mobile-menu-10",
    "pair": "gen-mobile-menu-10",
@@ -4164,568 +5239,18 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-button > .sgs-button__label\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayColour",
-     "css_property": "background-color",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shapeDividerTopColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shapeDividerBottomColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemTextColour",
-     "css_property": "color",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shapeDividerTopColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shapeDividerBottomColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemShadowColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayColourHover",
-     "css_property": "background-color",
-     "css_element": "overlay",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "shadowColourHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemTextColourHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemTextColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemTextColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "grid-item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-10||hover|border-top-color",
-   "ref": "cr-ref-mobile-menu-10",
-   "pair": "gen-mobile-menu-10",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColourHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-10",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemBorder",
-     "css_property": "border-color,border-style,border-width",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "borderColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-0||box|y-in-main",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-panel",
-   "path": "",
-   "block": "sgs/nav-drawer",
-   "kind": "box",
-   "property": "y-in-main",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "same-element",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "self",
-     "match": "layout-row",
-     "width": 375,
-     "delta": -175,
+     "parent": "cr-ref-mobile-menu-11|.sgs-button__label|hover|color",
+     "ref": "cr-ref-mobile-menu-11",
+     "key": "color",
+     "relation": "same-element",
+     "match": "same-element",
+     "width": 768,
+     "delta": null,
      "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-2||box|y-after-menu-button",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "drawer-link-sunglasses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "y-after-menu-button",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||box|y-in-main",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "y-in-main",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -175,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-2||box|h",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "drawer-link-sunglasses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 239,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-2||box|text-inset-y",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "drawer-link-sunglasses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "text-inset-y",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 120,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-4||box|y-after-gen-mobile-menu-3",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "drawer-link-lenses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "y-after-gen-mobile-menu-3",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 119,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-4||box|h",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "drawer-link-lenses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 239,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-4||box|text-inset-y",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "drawer-link-lenses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "text-inset-y",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 120,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link|box|y-after-gen-mobile-menu-4",
-   "ref": "cr-ref-mobile-menu-9",
-   "pair": "drawer-link-about",
-   "path": ".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link",
-   "block": "sgs/icon-list",
-   "kind": "box",
-   "property": "y-after-gen-mobile-menu-4",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": -597,
-     "widths": [
-      375,
       768
      ]
     }
@@ -4915,211 +5440,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-right",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
      "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-right",
+     "key": "padding-top",
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": -23,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-11||box|h",
-   "ref": "cr-ref-mobile-menu-11",
-   "pair": "drawer-phone",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 58,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-11||box|text-inset-y",
-   "ref": "cr-ref-mobile-menu-11",
-   "pair": "drawer-phone",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "text-inset-y",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 29,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-15||box|y-after-gen-mobile-menu-10",
-   "ref": "cr-ref-mobile-menu-15",
-   "pair": "drawer-whatsapp",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "y-after-gen-mobile-menu-10",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 29,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-2||box|y-after-gen-mobile-menu-1",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "gen-mobile-menu-2",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "y-after-gen-mobile-menu-1",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 120,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-3||box|y-after-gen-mobile-menu-2",
-   "ref": "cr-ref-mobile-menu-3",
-   "pair": "gen-mobile-menu-3",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "y-after-gen-mobile-menu-2",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 239,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-4||box|y-after-drawer-link-lenses",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "gen-mobile-menu-4",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "y-after-drawer-link-lenses",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 121,
+     "delta": -19,
      "widths": [
       375,
       768
@@ -5219,39 +5546,6 @@
      "match": "same-delta",
      "width": 375,
      "delta": 31,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-11||box|y-after-drawer-phone",
-   "ref": "cr-ref-mobile-menu-11",
-   "pair": "gen-mobile-menu-11",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "y-after-drawer-phone",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 29,
      "widths": [
       375,
       768
