@@ -219,6 +219,8 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Link', 'sgs-blocks' ) } initialOpen={ false }>
 					{ link.bound ? (
 						<>
 							<BaseControl
