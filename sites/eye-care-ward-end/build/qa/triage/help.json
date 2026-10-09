@@ -1,560 +1,16 @@
 {
  "surface": "help",
- "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-08T20-12-06/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-08T20-12-06/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-09T10-53-55/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-09T10-53-55/round-13/report.json",
  "date": "2026-10-09",
  "counts": {
-  "W": 104,
-  "F": 21,
-  "T": 37,
-  "U": 6,
+  "W": 118,
+  "F": 19,
+  "T": 2,
+  "U": 3,
   "L": 0
  },
  "verdicts": [
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|style|display",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "display",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "resolver-unmapped-element",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(1)\" is not a calibrated element"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|style|line-height",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(1)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "lineHeight",
-     "css_property": "line-height",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|style|text-align",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "text-align",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(1)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textAlign",
-     "css_property": "text-align",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|style|border-bottom-width",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "border-bottom-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "resolver-unmapped-element",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(1)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|style|padding-bottom",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "resolver-unmapped-element",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(1)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|style|text-decoration-line",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "text-decoration-line",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(1)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textDecoration",
-     "css_property": "text-decoration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkUnderline",
-     "css_property": "text-decoration-line",
-     "css_element": "text-link",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|style|width",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(1)::after|style|content",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)::after",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "content",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "resolver-unmapped-element",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(1)::after\" is not a calibrated element"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(2)|style|display",
-   "ref": "cr-ref-help-15",
-   "pair": "contact-link-top",
-   "path": "a:nth-of-type(2)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "display",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "resolver-unmapped-element",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(2)\" is not a calibrated element"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(2)|style|border-bottom-width",
-   "ref": "cr-ref-help-15",
-   "pair": "contact-link-top",
-   "path": "a:nth-of-type(2)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "border-bottom-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "resolver-unmapped-element",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(2)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(2)|style|padding-bottom",
-   "ref": "cr-ref-help-15",
-   "pair": "contact-link-top",
-   "path": "a:nth-of-type(2)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "resolver-unmapped-element",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(2)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(2)|style|text-decoration-line",
-   "ref": "cr-ref-help-15",
-   "pair": "contact-link-top",
-   "path": "a:nth-of-type(2)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "text-decoration-line",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(2)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textDecoration",
-     "css_property": "text-decoration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkUnderline",
-     "css_property": "text-decoration-line",
-     "css_element": "text-link",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(2)|style|width",
-   "ref": "cr-ref-help-15",
-   "pair": "contact-link-top",
-   "path": "a:nth-of-type(2)",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(2)::after|style|content",
-   "ref": "cr-ref-help-15",
-   "pair": "contact-link-top",
-   "path": "a:nth-of-type(2)::after",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "content",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "resolver-unmapped-element",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/text path \"a:nth-of-type(2)::after\" is not a calibrated element"
-    }
-   ]
-  },
   {
    "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
    "ref": "cr-ref-help-17",
@@ -569,15 +25,31 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "solveClass": "hardcode",
+   "solveReason": "sgs/accordion lineHeight holds the draft value but writing it breaks the layout: 5 rows on its node regressed, e.g. line-height@375 23.25px→20.995px; line-height@768 23.25px→20.995px; line-height@1440 23.25px→20.995px (calibration names it)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height"
+     "wouldWrite": [
+      "lineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title"
+     },
+     "holds": false,
+     "blocked": "breaks-layout"
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-help-16",
+     "block": "sgs/accordion",
+     "setting": "lineHeight",
+     "via": "reaches",
+     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title"
     }
    ],
    "source": {
@@ -631,10 +103,10 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
@@ -646,7 +118,9 @@
       "block": "sgs/accordion",
       "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header"
      },
-     "holds": false
+     "holds": true,
+     "solveWrote": "headerPadding",
+     "group": "cr-ref-help-17|.sgs-accordion-item__header|padding-top|"
     },
     {
      "check": "enclosing",
@@ -656,7 +130,67 @@
      "via": "slot",
      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "accordion-item/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "headerPadding",
+       "paddingTop"
+      ]
+     },
+     {
+      "file": "accordion/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "headerPadding",
+       "paddingTop"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "headerPadding",
+       "paddingTop",
+       "padding"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "accordion/style.css",
+      "selector": ".sgs-accordion-item__header",
+      "declaration": "padding-top:var(--sgs-accordion-header-pad-top, var(--sgs-accordion-header-pad-base-y))"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "accordion-item",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "dding_top ) { $base_band_decls[] = 'padding-top:' . $band_padding_top; } if ( '' !== $b",
+       "let ) { $tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet; } if ( '' !=",
+       "ile ) { $mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile; } if ( '' !="
+      ]
+     },
+     {
+      "block": "accordion-item",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-help-17|.sgs-accordion-item__header|style|padding-bottom",
@@ -672,10 +206,10 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
@@ -687,7 +221,9 @@
       "block": "sgs/accordion",
       "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header"
      },
-     "holds": false
+     "holds": true,
+     "solveWrote": "headerPadding",
+     "group": "cr-ref-help-17|.sgs-accordion-item__header|padding-top|"
     },
     {
      "check": "enclosing",
@@ -697,59 +233,36 @@
      "via": "slot",
      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header"
     }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header|style|column-gap",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-question-1",
-   "path": ".sgs-accordion-item__header",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for column-gap"
-    }
    ],
    "source": {
     "render": [
      {
       "file": "accordion-item/render.php",
       "mentions": [
-       "gap"
+       "padding"
       ],
       "absent": [
-       "columnGap"
+       "headerPadding",
+       "paddingBottom"
       ]
      },
      {
       "file": "accordion/render.php",
-      "mentions": [],
+      "mentions": [
+       "padding"
+      ],
       "absent": [
-       "columnGap",
-       "gap"
+       "headerPadding",
+       "paddingBottom"
       ]
      },
      {
       "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
+      "mentions": [],
       "absent": [
-       "columnGap"
+       "headerPadding",
+       "paddingBottom",
+       "padding"
       ]
      }
     ],
@@ -757,7 +270,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
+      "declaration": "padding-bottom:var(--sgs-accordion-header-pad-bottom, var(--sgs-accordion-header-pad-base-y))"
      }
     ],
     "helpers": [
@@ -766,37 +279,62 @@
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
+       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
+       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
+      ]
+     },
+     {
+      "block": "accordion-item",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
      }
     ]
    }
   },
   {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header|style|row-gap",
+   "key": "cr-ref-help-17|.sgs-accordion-item__content|style|padding-bottom",
    "ref": "cr-ref-help-17",
-   "pair": "faq-question-1",
-   "path": ".sgs-accordion-item__header",
+   "pair": "faq-answer-1",
+   "path": ".sgs-accordion-item__content",
    "block": "sgs/accordion-item",
    "kind": "style",
-   "property": "row-gap",
+   "property": "padding-bottom",
    "widths": [
     375,
     768,
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
    "class": "F",
-   "decidedBy": "no-setting",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for row-gap"
+     "wouldWrite": [
+      "contentPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__content"
+     },
+     "holds": true,
+     "solveWrote": "contentPadding",
+     "group": "cr-ref-help-17|.sgs-accordion-item__content|padding-bottom|"
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-help-16",
+     "block": "sgs/accordion",
+     "setting": "contentPadding",
+     "via": "slot",
+     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__content"
     }
    ],
    "source": {
@@ -804,35 +342,38 @@
      {
       "file": "accordion-item/render.php",
       "mentions": [
-       "gap"
+       "padding"
       ],
       "absent": [
-       "rowGap"
+       "contentPadding",
+       "paddingBottom"
       ]
      },
      {
       "file": "accordion/render.php",
-      "mentions": [],
+      "mentions": [
+       "padding"
+      ],
       "absent": [
-       "rowGap",
-       "gap"
+       "contentPadding",
+       "paddingBottom"
       ]
      },
      {
       "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
+      "mentions": [],
       "absent": [
-       "rowGap"
+       "contentPadding",
+       "paddingBottom",
+       "padding"
       ]
      }
     ],
     "rules": [
      {
       "file": "accordion/style.css",
-      "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
+      "selector": ".sgs-accordion-item__content",
+      "declaration": "padding-bottom:var(--sgs-accordion-content-pad-bottom, var(--sgs-accordion-content-pad-base-bottom))"
      }
     ],
     "helpers": [
@@ -841,9 +382,267 @@
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
+       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
+       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
+      ]
+     },
+     {
+      "block": "accordion-item",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-help-17|.sgs-accordion-item__content|style|text-wrap",
+   "ref": "cr-ref-help-17",
+   "pair": "faq-answer-1",
+   "path": ".sgs-accordion-item__content",
+   "block": "sgs/accordion-item",
+   "kind": "style",
+   "property": "text-wrap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "sgs/accordion textWrap holds the draft value but writing it breaks the layout: 32 rows on its node regressed, e.g. text-wrap@375 wrap→pretty; text-wrap@375 wrap→pretty; text-wrap@375 wrap→pretty (calibration names it)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "textWrap"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__content"
+     },
+     "holds": false,
+     "blocked": "breaks-layout"
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-help-16",
+     "block": "sgs/accordion",
+     "setting": "textWrap",
+     "via": "reaches",
+     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__content"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "accordion-item/render.php",
+      "mentions": [],
+      "absent": [
+       "textWrap"
+      ]
+     },
+     {
+      "file": "accordion/render.php",
+      "mentions": [],
+      "absent": [
+       "textWrap"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "textWrap"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "accordion",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "ed_wraps, true ) ) { $base_decls[] = 'text-wrap:' . $attributes[ $k_wrap ] . ';'; } // writin"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-help-16|.sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
+   "ref": "cr-ref-help-16",
+   "pair": "gen-help-16-opening",
+   "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title",
+   "block": "sgs/accordion",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "sgs/accordion lineHeight holds the draft value but writing it breaks the layout: 5 rows on its node regressed, e.g. line-height@375 23.25px→20.995px; line-height@768 23.25px→20.995px; line-height@1440 23.25px→20.995px (calibration names it)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "consequence",
+     "partial": true,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ],
+     "parent": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height"
+    },
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "lineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title"
+     },
+     "holds": false,
+     "blocked": "breaks-layout"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/accordion",
+     "setting": "lineHeight",
+     "css_property": "line-height",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "accordion/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "accordion",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "!== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — box-"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-help-16||style|margin-bottom",
+   "ref": "cr-ref-help-16",
+   "pair": "gen-help-16-opening",
+   "path": "",
+   "block": "sgs/accordion",
+   "kind": "style",
+   "property": "margin-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "sgs/accordion margin holds the draft value but writing it breaks the layout: 4 rows on its node regressed, e.g. line-height@375 23.25px→20.995px; line-height@768 23.25px→20.995px; line-height@1440 23.25px→20.995px (proven: undoing it alone cleared the regression)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "margin"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ""
+     },
+     "holds": false,
+     "blocked": "breaks-layout"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/accordion",
+     "setting": "margin",
+     "css_property": "margin",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "accordion/render.php",
+      "mentions": [
+       "margin"
+      ],
+      "absent": [
+       "marginBottom"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "margin",
+       "marginBottom"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "accordion",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "margin"
+      ],
+      "declares": [
+       "in_bottom ) { $base_band_decls[] = 'margin-bottom:' . $band_margin_bottom; } if ( '' !=",
+       "blet ) { $tablet_margin_decls[] = 'margin-bottom:' . $margin_bottom_tablet; } if ( '",
+       "bile ) { $mobile_margin_decls[] = 'margin-bottom:' . $margin_bottom_mobile; } if ( '"
+      ]
+     },
+     {
+      "block": "accordion",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
       ]
      }
     ]
@@ -863,8 +662,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/accordion-item has no setting for justify-content",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -935,8 +734,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/accordion-item has no setting for min-height",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -1002,76 +801,6 @@
    }
   },
   {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header|style|gap",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-question-1",
-   "path": ".sgs-accordion-item__header",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": []
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": []
-     }
-    ],
-    "rules": [
-     {
-      "file": "accordion/style.css",
-      "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-help-17|.sgs-accordion-item__header|style|painted-ground",
    "ref": "cr-ref-help-17",
    "pair": "faq-question-1",
@@ -1085,8 +814,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no background-color setting on sgs/accordion-item paints \".sgs-accordion-item__header\" (candidates: backgroundColour)",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -1143,47 +872,6 @@
    ]
   },
   {
-   "key": "cr-ref-help-17|.sgs-accordion-item__content|style|padding-bottom",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-answer-1",
-   "path": ".sgs-accordion-item__content",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "contentPadding"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__content"
-     },
-     "holds": false
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "contentPadding",
-     "via": "slot",
-     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__content"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-help-17|.sgs-accordion-item__content|style|max-width",
    "ref": "cr-ref-help-17",
    "pair": "faq-answer-1",
@@ -1197,8 +885,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no max-width setting on sgs/accordion-item paints \".sgs-accordion-item__content\" (candidates: maxWidth)",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -1229,110 +917,6 @@
    ]
   },
   {
-   "key": "cr-ref-help-17|.sgs-accordion-item__content|style|text-wrap",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-answer-1",
-   "path": ".sgs-accordion-item__content",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "text-wrap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__content"
-     },
-     "holds": false
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "textWrap",
-     "via": "reaches",
-     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__content"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|transform",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "transform",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for transform"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
-       "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|rotate",
    "ref": "cr-ref-help-17",
    "pair": "faq-icon-1",
@@ -1346,8 +930,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/accordion-item has no setting for rotate",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -1386,56 +970,6 @@
    }
   },
   {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|width",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "contentWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open > svg|style|icon-colour",
    "ref": "cr-ref-help-17",
    "pair": "faq-icon-1",
@@ -1449,8 +983,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/accordion-item has no setting for icon-colour",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -1489,1201 +1023,6 @@
    }
   },
   {
-   "key": "cr-ref-help-37|.sgs-business-info > .sgs-business-info__before|style|color",
-   "ref": "cr-ref-help-37",
-   "pair": "phone-text",
-   "path": ".sgs-business-info > .sgs-business-info__before",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textColour"
-     ],
-     "on": {
-      "ref": "cr-ref-help-37",
-      "block": "sgs/business-info",
-      "path": ".sgs-business-info > .sgs-business-info__before"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconColour",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "labelColour",
-     "css_property": "color",
-     "css_element": "label",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconColourGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "textColourGradient",
-     "css_property": "background-image",
-     "css_element": "text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "labelColourGradient",
-     "css_property": "background-image",
-     "css_element": "label",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconColourHover",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconColourHoverGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "text",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "textColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "text",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "attributionHoverColour",
-     "css_property": "background-image",
-     "css_element": "link",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "attributionHoverColourFallback",
-     "css_property": "color",
-     "css_element": "link",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "labelColourHover",
-     "css_property": "color",
-     "css_element": "label",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "labelColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "label",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-37||style|margin-top",
-   "ref": "cr-ref-help-37",
-   "pair": "phone-text",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "margin-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "margin"
-     ],
-     "on": {
-      "ref": "cr-ref-help-37",
-      "block": "sgs/business-info",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-37||style|text-wrap",
-   "ref": "cr-ref-help-37",
-   "pair": "phone-text",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "text-wrap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920
-     ],
-     "parent": "cr-ref-help-36||style|text-wrap"
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-37",
-      "block": "sgs/business-info",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "textWrap",
-     "css_property": "text-wrap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-0||style|padding-top",
-   "ref": "cr-ref-help-0",
-   "pair": "gen-help-0-opening",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-help-0",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "css_property": "padding",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-4|.sgs-container__inner|style|column-gap",
-   "ref": "cr-ref-help-4",
-   "pair": "gen-help-4-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-4",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-4|.sgs-container__inner|style|row-gap",
-   "ref": "cr-ref-help-4",
-   "pair": "gen-help-4-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-4",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-4|.sgs-container__inner|style|gap",
-   "ref": "cr-ref-help-4",
-   "pair": "gen-help-4-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-4",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-3||style|painted-ground",
-   "ref": "cr-ref-help-3",
-   "pair": "gen-help-3-opening",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "painted-ground",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "backgroundColour"
-     ],
-     "on": {
-      "ref": "cr-ref-help-3",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundImage",
-     "css_property": "background-image",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundImageTablet",
-     "css_property": "background-image",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundImageMobile",
-     "css_property": "background-image",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundSize",
-     "css_property": "background-size,object-fit",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundPosition",
-     "css_property": "background-position,object-position",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundRepeat",
-     "css_property": "background-repeat",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundAttachment",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayColour",
-     "css_property": "background-color",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgVideo",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgVideoMobile",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgParallax",
-     "css_property": "anim:parallax",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgKenBurns",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgAnimationDuration",
-     "css_property": "anim:duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgContent",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgPosition",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgAnimation",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgAnimationSpeed",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgOpacity",
-     "css_property": "opacity",
-     "css_element": "svg-bg",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgMinHeight",
-     "css_property": "min-height",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgTextShadow",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemBackground",
-     "css_property": "background-color",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgVideoTablet",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayOpacity",
-     "css_property": "opacity",
-     "css_element": "overlay",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayColourHover",
-     "css_property": "background-color",
-     "css_element": "overlay",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayBlendMode",
-     "css_property": "mix-blend-mode",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemBackgroundHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "grid-item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgLottie",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgLottieLoop",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgHoverZoom",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomScale",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomEasing",
-     "css_property": "transition-timing-function",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomEasingCustom",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-7|.sgs-container__inner|style|column-gap",
-   "ref": "cr-ref-help-7",
-   "pair": "gen-help-7-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-7",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-7|.sgs-container__inner|style|row-gap",
-   "ref": "cr-ref-help-7",
-   "pair": "gen-help-7-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-7",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-7|.sgs-container__inner|style|gap",
-   "ref": "cr-ref-help-7",
-   "pair": "gen-help-7-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-7",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-10|.sgs-container__inner|style|column-gap",
-   "ref": "cr-ref-help-10",
-   "pair": "gen-help-10-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-10",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-10|.sgs-container__inner|style|row-gap",
-   "ref": "cr-ref-help-10",
-   "pair": "gen-help-10-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-10",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-10|.sgs-container__inner|style|gap",
-   "ref": "cr-ref-help-10",
-   "pair": "gen-help-10-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-10",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-13|.sgs-container__inner|style|align-items",
-   "ref": "cr-ref-help-13",
-   "pair": "gen-help-13-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "align-items",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "alignItems"
-     ],
-     "on": {
-      "ref": "cr-ref-help-13",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "alignItems",
-     "css_property": "align-items",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-help-15||style|column-gap",
    "ref": "cr-ref-help-15",
    "pair": "gen-help-15-opening",
@@ -2697,8 +1036,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/text has no setting for column-gap",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -2757,8 +1096,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/text has no setting for row-gap",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -2804,13 +1143,70 @@
    }
   },
   {
-   "key": "cr-ref-help-15||style|text-decoration-line",
+   "key": "cr-ref-help-15||style|gap",
    "ref": "cr-ref-help-15",
    "pair": "gen-help-15-opening",
    "path": "",
    "block": "sgs/text",
    "kind": "style",
-   "property": "text-decoration-line",
+   "property": "gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/text has no setting for gap",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/text has no setting for gap"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "text/render.php",
+      "mentions": [],
+      "absent": [
+       "gap"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
+       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
+       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(1)|style|display",
+   "ref": "cr-ref-help-15",
+   "pair": "size-guide-link",
+   "path": "a:nth-of-type(1)",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "display",
    "widths": [
     375,
     768,
@@ -2818,40 +1214,555 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "solveReason": "unmapped-element: sgs/text path \"a:nth-of-type(1)\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
     {
      "check": "resolver",
-     "wouldWrite": [
-      "textDecoration"
-     ],
-     "on": {
-      "ref": "cr-ref-help-15",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
+     "gap": "unmapped-element",
+     "detail": "sgs/text path \"a:nth-of-type(1)\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(1)|style|line-height",
+   "ref": "cr-ref-help-15",
+   "pair": "size-guide-link",
+   "path": "a:nth-of-type(1)",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/text path \"a:nth-of-type(1)\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/text path \"a:nth-of-type(1)\" is not a calibrated element"
     },
     {
      "check": "attribute",
      "block": "sgs/text",
-     "setting": "textDecoration",
-     "css_property": "text-decoration",
+     "setting": "lineHeight",
+     "css_property": "line-height",
      "css_element": "wrapper",
      "css_state": null,
      "source": "sgs",
      "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(1)|style|text-align",
+   "ref": "cr-ref-help-15",
+   "pair": "size-guide-link",
+   "path": "a:nth-of-type(1)",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "text-align",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/text path \"a:nth-of-type(1)\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/text path \"a:nth-of-type(1)\" is not a calibrated element"
     },
     {
      "check": "attribute",
      "block": "sgs/text",
-     "setting": "linkUnderline",
-     "css_property": "text-decoration-line",
-     "css_element": "text-link",
+     "setting": "textAlign",
+     "css_property": "text-align",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(1)|style|border-bottom-width",
+   "ref": "cr-ref-help-15",
+   "pair": "size-guide-link",
+   "path": "a:nth-of-type(1)",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "border-bottom-width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/text path \"a:nth-of-type(1)\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/text path \"a:nth-of-type(1)\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(1)|style|padding-bottom",
+   "ref": "cr-ref-help-15",
+   "pair": "size-guide-link",
+   "path": "a:nth-of-type(1)",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/text path \"a:nth-of-type(1)\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/text path \"a:nth-of-type(1)\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(1)|style|width",
+   "ref": "cr-ref-help-15",
+   "pair": "size-guide-link",
+   "path": "a:nth-of-type(1)",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "maxWidth",
+     "css_property": "max-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "customWidth",
+     "css_property": "width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "childSizing",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(1)::after|style|content",
+   "ref": "cr-ref-help-15",
+   "pair": "size-guide-link",
+   "path": "a:nth-of-type(1)::after",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "content",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/text path \"a:nth-of-type(1)::after\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/text path \"a:nth-of-type(1)::after\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(2)|style|display",
+   "ref": "cr-ref-help-15",
+   "pair": "contact-link-top",
+   "path": "a:nth-of-type(2)",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "display",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/text path \"a:nth-of-type(2)\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/text path \"a:nth-of-type(2)\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(2)|style|border-bottom-width",
+   "ref": "cr-ref-help-15",
+   "pair": "contact-link-top",
+   "path": "a:nth-of-type(2)",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "border-bottom-width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/text path \"a:nth-of-type(2)\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/text path \"a:nth-of-type(2)\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(2)|style|padding-bottom",
+   "ref": "cr-ref-help-15",
+   "pair": "contact-link-top",
+   "path": "a:nth-of-type(2)",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/text path \"a:nth-of-type(2)\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/text path \"a:nth-of-type(2)\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(2)|style|width",
+   "ref": "cr-ref-help-15",
+   "pair": "contact-link-top",
+   "path": "a:nth-of-type(2)",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "maxWidth",
+     "css_property": "max-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "customWidth",
+     "css_property": "width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "childSizing",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-15|a:nth-of-type(2)::after|style|content",
+   "ref": "cr-ref-help-15",
+   "pair": "contact-link-top",
+   "path": "a:nth-of-type(2)::after",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "content",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/text path \"a:nth-of-type(2)::after\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/text path \"a:nth-of-type(2)::after\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|transform",
+   "ref": "cr-ref-help-17",
+   "pair": "faq-icon-1",
+   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+   "block": "sgs/accordion-item",
+   "kind": "style",
+   "property": "transform",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "state-conflict: transform is read at matrix(0.707107, 0.707107, -0.707107, 0.707107, 0, 0) in opening and none in faq-closed at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/accordion-item has no setting for transform"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "accordion-item/render.php",
+      "mentions": [],
+      "absent": [
+       "transform"
+      ]
+     },
+     {
+      "file": "accordion/render.php",
+      "mentions": [],
+      "absent": [
+       "transform"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transform"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "accordion-item",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
+       "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|width",
+   "ref": "cr-ref-help-17",
+   "pair": "faq-icon-1",
+   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+   "block": "sgs/accordion-item",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/accordion-item",
+     "setting": "contentWidth",
+     "css_property": null,
+     "css_element": null,
      "css_state": null,
      "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/accordion-item",
+     "setting": "maxWidth",
+     "css_property": "max-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
     }
    ]
   },
@@ -2870,7 +1781,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -2931,714 +1842,6 @@
    ]
   },
   {
-   "key": "cr-ref-help-15||style|gap",
-   "ref": "cr-ref-help-15",
-   "pair": "gen-help-15-opening",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": []
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-help-16|.sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
-   "ref": "cr-ref-help-16",
-   "pair": "gen-help-16-opening",
-   "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title",
-   "block": "sgs/accordion",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ],
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height"
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no line-height setting on sgs/accordion paints \".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title\" (candidates: lineHeight)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion",
-     "setting": "lineHeight",
-     "css_property": "line-height",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "accordion",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "!== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — box-"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-help-16||style|border-top-width",
-   "ref": "cr-ref-help-16",
-   "pair": "gen-help-16-opening",
-   "path": "",
-   "block": "sgs/accordion",
-   "kind": "style",
-   "property": "border-top-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-16||style|border-top-style",
-   "ref": "cr-ref-help-16",
-   "pair": "gen-help-16-opening",
-   "path": "",
-   "block": "sgs/accordion",
-   "kind": "style",
-   "property": "border-top-style",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderStyle"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion",
-     "setting": "borderStyle",
-     "css_property": "border-style",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-16||style|column-gap",
-   "ref": "cr-ref-help-16",
-   "pair": "gen-help-16-opening",
-   "path": "",
-   "block": "sgs/accordion",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion",
-     "setting": "headerGap",
-     "css_property": "gap",
-     "css_element": "header",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-16||style|row-gap",
-   "ref": "cr-ref-help-16",
-   "pair": "gen-help-16-opening",
-   "path": "",
-   "block": "sgs/accordion",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion",
-     "setting": "headerGap",
-     "css_property": "gap",
-     "css_element": "header",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-16||style|margin-bottom",
-   "ref": "cr-ref-help-16",
-   "pair": "gen-help-16-opening",
-   "path": "",
-   "block": "sgs/accordion",
-   "kind": "style",
-   "property": "margin-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "margin"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-16||style|gap",
-   "ref": "cr-ref-help-16",
-   "pair": "gen-help-16-opening",
-   "path": "",
-   "block": "sgs/accordion",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion",
-     "setting": "headerGap",
-     "css_property": "gap",
-     "css_element": "header",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-34|.sgs-container__inner|style|column-gap",
-   "ref": "cr-ref-help-34",
-   "pair": "gen-help-34-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-34",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-34|.sgs-container__inner|style|row-gap",
-   "ref": "cr-ref-help-34",
-   "pair": "gen-help-34-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-34",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-34|.sgs-container__inner|style|gap",
-   "ref": "cr-ref-help-34",
-   "pair": "gen-help-34-opening",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-34",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-33||style|margin-top",
-   "ref": "cr-ref-help-33",
-   "pair": "gen-help-33-opening",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "margin-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "margin"
-     ],
-     "on": {
-      "ref": "cr-ref-help-33",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentBandMargin",
-     "css_property": "margin-bottom,margin-left,margin-right,margin-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-36|.sgs-container__inner > .sgs-business-info-wrap > .sgs-business-info > .sgs-business-info__before|style|color",
-   "ref": "cr-ref-help-36",
-   "pair": "gen-help-36-opening",
-   "path": ".sgs-container__inner > .sgs-business-info-wrap > .sgs-business-info > .sgs-business-info__before",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "same-element",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-37|.sgs-business-info > .sgs-business-info__before|style|color",
-     "ref": "cr-ref-help-37",
-     "key": "color",
-     "relation": "same-element",
-     "match": "same-element",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-36||style|text-wrap",
-   "ref": "cr-ref-help-36",
-   "pair": "gen-help-36-opening",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "text-wrap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-help-36",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textWrap",
-     "css_property": "text-wrap",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
    "ref": "cr-ref-help-19",
    "pair": "faq-question-2",
@@ -3665,7 +1868,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 3.8999999999999986,
+     "delta": 4.5,
      "widths": [
       375,
       375,
@@ -3679,8 +1882,15 @@
     },
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height"
+     "wouldWrite": [
+      "lineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__header > .sgs-accordion-item__title"
+     },
+     "holds": false
     }
    ]
   },
@@ -3700,8 +1910,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "F",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
@@ -3713,9 +1923,71 @@
       "block": "sgs/accordion",
       "path": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__header"
      },
-     "holds": false
+     "holds": true,
+     "solveWrote": "headerPadding",
+     "group": "cr-ref-help-17|.sgs-accordion-item__header|padding-top|"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "accordion-item/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "headerPadding",
+       "paddingTop"
+      ]
+     },
+     {
+      "file": "accordion/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "headerPadding",
+       "paddingTop"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "headerPadding",
+       "paddingTop",
+       "padding"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "accordion/style.css",
+      "selector": ".sgs-accordion-item__header",
+      "declaration": "padding-top:var(--sgs-accordion-header-pad-top, var(--sgs-accordion-header-pad-base-y))"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "accordion-item",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "dding_top ) { $base_band_decls[] = 'padding-top:' . $band_padding_top; } if ( '' !== $b",
+       "let ) { $tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet; } if ( '' !=",
+       "ile ) { $mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile; } if ( '' !="
+      ]
+     },
+     {
+      "block": "accordion-item",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-help-19|.sgs-accordion-item__header|style|padding-bottom",
@@ -3733,8 +2005,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "F",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
@@ -3746,33 +2018,9 @@
       "block": "sgs/accordion",
       "path": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__header"
      },
-     "holds": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header|style|column-gap",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-question-2",
-   "path": ".sgs-accordion-item__header",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for column-gap"
+     "holds": true,
+     "solveWrote": "headerPadding",
+     "group": "cr-ref-help-17|.sgs-accordion-item__header|padding-top|"
     }
    ],
    "source": {
@@ -3780,27 +2028,30 @@
      {
       "file": "accordion-item/render.php",
       "mentions": [
-       "gap"
+       "padding"
       ],
       "absent": [
-       "columnGap"
+       "headerPadding",
+       "paddingBottom"
       ]
      },
      {
       "file": "accordion/render.php",
-      "mentions": [],
+      "mentions": [
+       "padding"
+      ],
       "absent": [
-       "columnGap",
-       "gap"
+       "headerPadding",
+       "paddingBottom"
       ]
      },
      {
       "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
+      "mentions": [],
       "absent": [
-       "columnGap"
+       "headerPadding",
+       "paddingBottom",
+       "padding"
       ]
      }
     ],
@@ -3808,7 +2059,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
+      "declaration": "padding-bottom:var(--sgs-accordion-header-pad-bottom, var(--sgs-accordion-header-pad-base-y))"
      }
     ],
     "helpers": [
@@ -3817,84 +2068,17 @@
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header|style|row-gap",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-question-2",
-   "path": ".sgs-accordion-item__header",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for row-gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "rowGap"
+       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
+       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
+       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
       ]
      },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "rowGap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "accordion/style.css",
-      "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
-     }
-    ],
-    "helpers": [
      {
       "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
      }
     ]
@@ -4053,76 +2237,6 @@
    }
   },
   {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header|style|gap",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-question-2",
-   "path": ".sgs-accordion-item__header",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": []
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": []
-     }
-    ],
-    "rules": [
-     {
-      "file": "accordion/style.css",
-      "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-help-19|.sgs-accordion-item__header|style|painted-ground",
    "ref": "cr-ref-help-19",
    "pair": "faq-question-2",
@@ -4209,8 +2323,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "F",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
@@ -4222,9 +2336,71 @@
       "block": "sgs/accordion",
       "path": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__content"
      },
-     "holds": false
+     "holds": true,
+     "solveWrote": "contentPadding",
+     "group": "cr-ref-help-17|.sgs-accordion-item__content|padding-bottom|"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "accordion-item/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "contentPadding",
+       "paddingBottom"
+      ]
+     },
+     {
+      "file": "accordion/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "contentPadding",
+       "paddingBottom"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "contentPadding",
+       "paddingBottom",
+       "padding"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "accordion/style.css",
+      "selector": ".sgs-accordion-item__content",
+      "declaration": "padding-bottom:var(--sgs-accordion-content-pad-bottom, var(--sgs-accordion-content-pad-base-bottom))"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "accordion-item",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
+       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
+       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
+      ]
+     },
+     {
+      "block": "accordion-item",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-help-19|.sgs-accordion-item__content|style|max-width",
@@ -4550,7 +2726,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 3.8999999999999986,
+     "delta": 4.5,
      "widths": [
       375,
       768,
@@ -4560,8 +2736,15 @@
     },
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height"
+     "wouldWrite": [
+      "lineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(3) > .sgs-accordion-item__header > .sgs-accordion-item__title"
+     },
+     "holds": false
     }
    ]
   },
@@ -4592,7 +2775,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 3.8999999999999986,
+     "delta": 4.5,
      "widths": [
       375,
       768,
@@ -4602,8 +2785,15 @@
     },
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height"
+     "wouldWrite": [
+      "lineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(4) > .sgs-accordion-item__header > .sgs-accordion-item__title"
+     },
+     "holds": false
     }
    ]
   },
@@ -4634,7 +2824,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 3.8999999999999986,
+     "delta": 4.5,
      "widths": [
       375,
       768,
@@ -4644,8 +2834,15 @@
     },
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height"
+     "wouldWrite": [
+      "lineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(5) > .sgs-accordion-item__header > .sgs-accordion-item__title"
+     },
+     "holds": false
     }
    ]
   },
@@ -4676,7 +2873,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 3.8999999999999986,
+     "delta": 4.5,
      "widths": [
       375,
       768,
@@ -4686,8 +2883,15 @@
     },
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height"
+     "wouldWrite": [
+      "lineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(6) > .sgs-accordion-item__header > .sgs-accordion-item__title"
+     },
+     "holds": false
     }
    ]
   },
@@ -4718,7 +2922,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 3.8999999999999986,
+     "delta": 4.5,
      "widths": [
       375,
       768,
@@ -4728,8 +2932,15 @@
     },
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height"
+     "wouldWrite": [
+      "lineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(7) > .sgs-accordion-item__header > .sgs-accordion-item__title"
+     },
+     "holds": false
     }
    ]
   },
@@ -4760,7 +2971,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 3.8999999999999986,
+     "delta": 4.5,
      "widths": [
       375,
       768,
@@ -4770,8 +2981,15 @@
     },
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height"
+     "wouldWrite": [
+      "lineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(8) > .sgs-accordion-item__header > .sgs-accordion-item__title"
+     },
+     "holds": false
     }
    ]
   },
@@ -4819,59 +3037,6 @@
    ]
   },
   {
-   "key": "cr-ref-help-31||style|border-bottom-color",
-   "ref": "cr-ref-help-31",
-   "pair": "gen-help-31-faq-item8-open",
-   "path": "",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "border-bottom-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColour"
-     ],
-     "on": {
-      "ref": "cr-ref-help-31",
-      "block": "sgs/accordion-item",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-help-17|.sgs-accordion-item__content|style|width",
    "ref": "cr-ref-help-17",
    "pair": "faq-answer-1",
@@ -4884,7 +3049,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -4968,158 +3133,13 @@
    ]
   },
   {
-   "key": "cr-ref-help-1||box|y-after-gen-help-0-opening",
-   "ref": "cr-ref-help-1",
-   "pair": "eyebrow",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-gen-help-0-opening",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 28,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-6||box|y-after-info-uk-heading",
-   "ref": "cr-ref-help-6",
-   "pair": "info-uk-text",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-info-uk-heading",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
-   "evidence": [
-    {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375
-     ],
-     "parent": "cr-ref-help-4|.sgs-container__inner|style|column-gap"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-9||box|y-after-info-collect-heading",
-   "ref": "cr-ref-help-9",
-   "pair": "info-collect-text",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-info-collect-heading",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
-   "evidence": [
-    {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375
-     ],
-     "parent": "cr-ref-help-7|.sgs-container__inner|style|column-gap"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-12||box|y-after-info-returns-heading",
-   "ref": "cr-ref-help-12",
-   "pair": "info-returns-text",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-info-returns-heading",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
-   "evidence": [
-    {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768
-     ],
-     "parent": "cr-ref-help-10|.sgs-container__inner|style|column-gap"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|box|y-after-gen-help-13-opening",
+   "key": "cr-ref-help-15|a:nth-of-type(1)|box|y-after-questions-heading",
    "ref": "cr-ref-help-15",
    "pair": "size-guide-link",
    "path": "a:nth-of-type(1)",
    "block": "sgs/text",
    "kind": "box",
-   "property": "y-after-gen-help-13-opening",
+   "property": "y-after-questions-heading",
    "widths": [
     375,
     768,
@@ -5139,11 +3159,43 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -46,
+     "delta": -35,
      "widths": [
       375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
       768,
       1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
       1920
      ]
     }
@@ -5170,13 +3222,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15||style|width",
+     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
      "ref": "cr-ref-help-15",
-     "key": "width",
+     "key": "display",
      "relation": "self",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -7,
+     "delta": -8,
      "widths": [
       375,
       375,
@@ -5239,13 +3291,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15||style|width",
+     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
      "ref": "cr-ref-help-15",
-     "key": "width",
+     "key": "display",
      "relation": "self",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -7,
+     "delta": -8,
      "widths": [
       375,
       375,
@@ -5314,7 +3366,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -46,
+     "delta": -35,
      "widths": [
       375,
       375,
@@ -5421,7 +3473,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -40,
+     "delta": -39,
      "widths": [
       375,
       375
@@ -5450,13 +3502,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header|style|column-gap",
+     "parent": "cr-ref-help-17|.sgs-accordion-item__content|style|padding-bottom",
      "ref": "cr-ref-help-17",
-     "key": "column-gap",
+     "key": "padding-bottom",
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -8,
+     "delta": -9,
      "widths": [
       375,
       375,
@@ -5528,9 +3580,9 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header|style|column-gap",
+     "parent": "cr-ref-help-17|.sgs-accordion-item__content|style|padding-bottom",
      "ref": "cr-ref-help-17",
-     "key": "column-gap",
+     "key": "padding-bottom",
      "relation": "self",
      "match": "same-delta",
      "width": 375,
@@ -5545,15 +3597,18 @@
    ]
   },
   {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|box|y-after-gen-help-17-opening",
+   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|box|y-after-contact-link-top",
    "ref": "cr-ref-help-17",
    "pair": "faq-icon-1",
    "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
    "block": "sgs/accordion-item",
    "kind": "box",
-   "property": "y-after-gen-help-17-opening",
+   "property": "y-after-contact-link-top",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -5562,15 +3617,22 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header|style|padding-top",
-     "ref": "cr-ref-help-17",
-     "key": "padding-top",
+     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
+     "ref": "cr-ref-help-15",
+     "key": "display",
      "relation": "anchor",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -6,
+     "delta": -10,
      "widths": [
-      375
+      375,
+      375,
+      768,
+      768,
+      1440,
+      1440,
+      1920,
+      1920
      ]
     }
    ]
@@ -5596,13 +3658,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header|style|padding-top",
+     "parent": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
      "ref": "cr-ref-help-17",
-     "key": "padding-top",
+     "key": "line-height",
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -6,
+     "delta": -5,
      "widths": [
       375,
       375,
@@ -5637,13 +3699,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header|style|padding-top",
+     "parent": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
      "ref": "cr-ref-help-17",
-     "key": "padding-top",
+     "key": "line-height",
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -6,
+     "delta": -5,
      "widths": [
       375,
       375,
@@ -5652,6 +3714,43 @@
       1440,
       1440,
       1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-35||box|y-after-gen-help-18-opening",
+   "ref": "cr-ref-help-35",
+   "pair": "still-heading",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-help-18-opening",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -38,
+     "widths": [
+      375,
+      768,
+      1440,
       1920
      ]
     }
@@ -5673,18 +3772,12 @@
    ],
    "solveClass": "derived",
    "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "U",
+   "decidedBy": "box-unexplained",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-37||style|margin-top",
-     "ref": "cr-ref-help-37",
-     "key": "margin-top",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 6,
+     "partial": true,
      "widths": [
       375,
       375,
@@ -5694,8 +3787,6 @@
       375,
       375,
       375,
-      375,
-      768,
       768,
       768,
       768,
@@ -5712,8 +3803,6 @@
       1440,
       1440,
       1440,
-      1440,
-      1920,
       1920,
       1920,
       1920,
@@ -5722,7 +3811,8 @@
       1920,
       1920,
       1920
-     ]
+     ],
+     "parent": "cr-ref-help-33||style|margin-top"
     }
    ]
   },
@@ -5742,314 +3832,9 @@
    ],
    "solveClass": "derived",
    "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "self",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 33,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-4||box|h",
-   "ref": "cr-ref-help-4",
-   "pair": "gen-help-4-opening",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-4|.sgs-container__inner|style|column-gap",
-     "ref": "cr-ref-help-4",
-     "key": "column-gap",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 10,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-3||box|h",
-   "ref": "cr-ref-help-3",
-   "pair": "gen-help-3-opening",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 30,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-7||box|h",
-   "ref": "cr-ref-help-7",
-   "pair": "gen-help-7-opening",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-7|.sgs-container__inner|style|column-gap",
-     "ref": "cr-ref-help-7",
-     "key": "column-gap",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 10,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-10||box|h",
-   "ref": "cr-ref-help-10",
-   "pair": "gen-help-10-opening",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-10|.sgs-container__inner|style|column-gap",
-     "ref": "cr-ref-help-10",
-     "key": "column-gap",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 10,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920
-     ]
-    }
-   ]
+   "class": "U",
+   "decidedBy": "box-unexplained",
+   "evidence": []
   },
   {
    "key": "cr-ref-help-13||box|h",
@@ -6064,18 +3849,38 @@
    ],
    "solveClass": "derived",
    "solveReason": null,
+   "class": "U",
+   "decidedBy": "box-unexplained",
+   "evidence": []
+  },
+  {
+   "key": "cr-ref-help-15||box|y-after-questions-heading",
+   "ref": "cr-ref-help-15",
+   "pair": "gen-help-15-opening",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-questions-heading",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
    "class": "W",
    "decidedBy": "consequence",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
+     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
+     "ref": "cr-ref-help-15",
+     "key": "display",
+     "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -39,
+     "delta": -36,
      "widths": [
       375,
       375,
@@ -6084,7 +3889,31 @@
       375,
       375,
       375,
-      375
+      375,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920
      ]
     }
    ]
@@ -6181,7 +4010,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -3,
+     "delta": -4,
      "widths": [
       375,
       375,
@@ -6214,6 +4043,43 @@
       1920,
       1920,
       1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-17||box|y-after-contact-link-top",
+   "ref": "cr-ref-help-17",
+   "pair": "gen-help-17-opening",
+   "path": "",
+   "block": "sgs/accordion-item",
+   "kind": "box",
+   "property": "y-after-contact-link-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-help-15",
+     "key": "line-height",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -4,
+     "widths": [
+      375,
+      768,
+      1440,
       1920
      ]
     }
@@ -6277,13 +4143,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15||style|width",
+     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|line-height",
      "ref": "cr-ref-help-15",
-     "key": "width",
+     "key": "line-height",
      "relation": "anchor",
      "match": "same-delta",
      "width": 375,
-     "delta": 7,
+     "delta": -4,
      "widths": [
       375,
       375,
@@ -6300,6 +4166,7 @@
       768,
       768,
       768,
+      768,
       1440,
       1440,
       1440,
@@ -6307,6 +4174,8 @@
       1440,
       1440,
       1440,
+      1440,
+      1920,
       1920,
       1920,
       1920,
@@ -6339,13 +4208,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header|style|column-gap",
-     "ref": "cr-ref-help-17",
-     "key": "column-gap",
-     "relation": "descendant",
-     "match": "same-delta",
+     "parent": "cr-ref-help-16|.sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
+     "ref": "cr-ref-help-16",
+     "key": "line-height",
+     "relation": "self",
+     "match": "layout-row",
      "width": 375,
-     "delta": 8,
+     "delta": -100,
      "widths": [
       375,
       375,
@@ -6384,6 +4253,43 @@
    ]
   },
   {
+   "key": "cr-ref-help-34||box|y-after-gen-help-18-opening",
+   "ref": "cr-ref-help-34",
+   "pair": "gen-help-34-opening",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-18-opening",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -38,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-help-34||box|h",
    "ref": "cr-ref-help-34",
    "pair": "gen-help-34-opening",
@@ -6404,9 +4310,9 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-37||style|margin-top",
-     "ref": "cr-ref-help-37",
-     "key": "margin-top",
+     "parent": "cr-ref-help-36||box|h",
+     "ref": "cr-ref-help-36",
+     "key": "h",
      "relation": "descendant",
      "match": "same-delta",
      "width": 375,
@@ -6469,13 +4375,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "same-delta",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "self",
+     "match": "layout-row",
      "width": 375,
-     "delta": 27,
+     "delta": -38,
      "widths": [
       375,
       768,
@@ -6506,9 +4412,9 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-37||style|margin-top",
-     "ref": "cr-ref-help-37",
-     "key": "margin-top",
+     "parent": "cr-ref-help-34||box|h",
+     "ref": "cr-ref-help-34",
+     "key": "h",
      "relation": "descendant",
      "match": "same-delta",
      "width": 375,
@@ -6551,33 +4457,13 @@
    ]
   },
   {
-   "key": "cr-ref-help-1||box|y-in-main",
-   "ref": "cr-ref-help-1",
-   "pair": "eyebrow",
+   "key": "cr-ref-help-36||box|h",
+   "ref": "cr-ref-help-36",
+   "pair": "gen-help-36-opening",
    "path": "",
-   "block": "sgs/text",
+   "block": "sgs/container",
    "kind": "box",
-   "property": "y-in-main",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
-   "evidence": []
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|box|y-after-questions-heading",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-questions-heading",
+   "property": "h",
    "widths": [
     375,
     768,
@@ -6591,18 +4477,79 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
-     "ref": "cr-ref-help-15",
-     "key": "display",
-     "relation": "self",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -46,
+     "delta": 6,
      "widths": [
       375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
       768,
       1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
       1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-38||box|y-after-gen-help-36-opening",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-opening",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-36-opening",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 6,
+     "widths": [
+      375,
+      768
      ]
     }
    ]
@@ -6634,7 +4581,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": 19,
+     "delta": -47,
      "widths": [
       375,
       768,
@@ -6645,87 +4592,13 @@
    ]
   },
   {
-   "key": "cr-ref-help-1||box|y-after-gen-help-0-faq-item2-open",
-   "ref": "cr-ref-help-1",
-   "pair": "eyebrow",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-gen-help-0-faq-item2-open",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 28,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|box|y-after-gen-help-13-faq-item2-open",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-gen-help-13-faq-item2-open",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
-     "ref": "cr-ref-help-15",
-     "key": "display",
-     "relation": "self",
-     "match": "layout-row",
-     "width": 375,
-     "delta": -46,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header|box|y-after-gen-help-16-faq-item2-open",
+   "key": "cr-ref-help-19|.sgs-accordion-item__header|box|y-after-contact-link-top",
    "ref": "cr-ref-help-19",
    "pair": "faq-question-2",
    "path": ".sgs-accordion-item__header",
    "block": "sgs/accordion-item",
    "kind": "box",
-   "property": "y-after-gen-help-16-faq-item2-open",
+   "property": "y-after-contact-link-top",
    "widths": [
     375,
     768,
@@ -6739,13 +4612,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
-     "ref": "cr-ref-help-19",
-     "key": "line-height",
-     "relation": "self",
+     "parent": "cr-ref-help-16||style|column-gap",
+     "ref": "cr-ref-help-16",
+     "key": "column-gap",
+     "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 3,
+     "delta": -21,
      "widths": [
       375,
       768,
@@ -6780,9 +4653,9 @@
      "ref": "cr-ref-help-19",
      "key": "line-height",
      "relation": "self",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -4,
+     "delta": -3,
      "widths": [
       375,
       768,
@@ -6887,13 +4760,50 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-19|.sgs-accordion-item__header|style|column-gap",
+     "parent": "cr-ref-help-19|.sgs-accordion-item__content|style|padding-bottom",
      "ref": "cr-ref-help-19",
-     "key": "column-gap",
+     "key": "padding-bottom",
      "relation": "self",
      "match": "same-delta",
      "width": 375,
      "delta": -8,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|box|y-after-contact-link-top",
+   "ref": "cr-ref-help-19",
+   "pair": "faq-icon-2",
+   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+   "block": "sgs/accordion-item",
+   "kind": "box",
+   "property": "y-after-contact-link-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-16||style|column-gap",
+     "ref": "cr-ref-help-16",
+     "key": "column-gap",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -20,
      "widths": [
       375,
       768,
@@ -6924,13 +4834,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-19|.sgs-accordion-item__header|style|padding-top",
+     "parent": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
      "ref": "cr-ref-help-19",
-     "key": "padding-top",
+     "key": "line-height",
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -6,
+     "delta": -5,
      "widths": [
       375,
       768,
@@ -6961,13 +4871,87 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-19|.sgs-accordion-item__header|style|padding-top",
+     "parent": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
      "ref": "cr-ref-help-19",
-     "key": "padding-top",
+     "key": "line-height",
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -6,
+     "delta": -5,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-35||box|y-after-gen-help-20-faq-item2-open",
+   "ref": "cr-ref-help-35",
+   "pair": "still-heading",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-help-20-faq-item2-open",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -35,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-19||box|y-after-contact-link-top",
+   "ref": "cr-ref-help-19",
+   "pair": "gen-help-19-faq-item2-open",
+   "path": "",
+   "block": "sgs/accordion-item",
+   "kind": "box",
+   "property": "y-after-contact-link-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-16||style|column-gap",
+     "ref": "cr-ref-help-16",
+     "key": "column-gap",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -21,
      "widths": [
       375,
       768,
@@ -7004,7 +4988,44 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -12,
+     "delta": -11,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-34||box|y-after-gen-help-20-faq-item2-open",
+   "ref": "cr-ref-help-34",
+   "pair": "gen-help-34-faq-item2-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-20-faq-item2-open",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -35,
      "widths": [
       375,
       768,
@@ -7035,13 +5056,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": 11,
+     "delta": -35,
      "widths": [
       375,
       768,
@@ -7052,13 +5073,46 @@
    ]
   },
   {
-   "key": "cr-ref-help-1||box|y-after-gen-help-0-faq-item3-open",
-   "ref": "cr-ref-help-1",
-   "pair": "eyebrow",
+   "key": "cr-ref-help-38||box|y-after-gen-help-36-faq-item2-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item2-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-36-faq-item2-open",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 6,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-35||box|y-after-gen-help-22-faq-item3-open",
+   "ref": "cr-ref-help-35",
+   "pair": "still-heading",
    "path": "",
    "block": "sgs/text",
    "kind": "box",
-   "property": "y-after-gen-help-0-faq-item3-open",
+   "property": "y-after-gen-help-22-faq-item3-open",
    "widths": [
     375,
     768,
@@ -7072,13 +5126,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "same-delta",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 28,
+     "delta": -33,
      "widths": [
       375,
       768,
@@ -7089,13 +5143,13 @@
    ]
   },
   {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|box|y-after-gen-help-13-faq-item3-open",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
+   "key": "cr-ref-help-21||box|y-after-contact-link-top",
+   "ref": "cr-ref-help-21",
+   "pair": "gen-help-21-faq-item3-open",
+   "path": "",
+   "block": "sgs/accordion-item",
    "kind": "box",
-   "property": "y-after-gen-help-13-faq-item3-open",
+   "property": "y-after-contact-link-top",
    "widths": [
     375,
     768,
@@ -7112,47 +5166,10 @@
      "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
      "ref": "cr-ref-help-15",
      "key": "display",
-     "relation": "self",
+     "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": -46,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-21||box|y-after-gen-help-16-faq-item3-open",
-   "ref": "cr-ref-help-21",
-   "pair": "gen-help-21-faq-item3-open",
-   "path": "",
-   "block": "sgs/accordion-item",
-   "kind": "box",
-   "property": "y-after-gen-help-16-faq-item3-open",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 18,
+     "delta": -24,
      "widths": [
       375,
       768,
@@ -7183,13 +5200,50 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
+     "parent": "cr-ref-help-16|.sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
+     "ref": "cr-ref-help-16",
+     "key": "line-height",
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -13,
+     "delta": -11,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-34||box|y-after-gen-help-22-faq-item3-open",
+   "ref": "cr-ref-help-34",
+   "pair": "gen-help-34-faq-item3-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-22-faq-item3-open",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -33,
      "widths": [
       375,
       768,
@@ -7220,13 +5274,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -5,
+     "delta": -33,
      "widths": [
       375,
       768,
@@ -7237,13 +5291,46 @@
    ]
   },
   {
-   "key": "cr-ref-help-1||box|y-after-gen-help-0-faq-item4-open",
-   "ref": "cr-ref-help-1",
-   "pair": "eyebrow",
+   "key": "cr-ref-help-38||box|y-after-gen-help-36-faq-item3-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item3-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-36-faq-item3-open",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 6,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-35||box|y-after-gen-help-24-faq-item4-open",
+   "ref": "cr-ref-help-35",
+   "pair": "still-heading",
    "path": "",
    "block": "sgs/text",
    "kind": "box",
-   "property": "y-after-gen-help-0-faq-item4-open",
+   "property": "y-after-gen-help-24-faq-item4-open",
    "widths": [
     375,
     768,
@@ -7257,13 +5344,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "same-delta",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 28,
+     "delta": -29,
      "widths": [
       375,
       768,
@@ -7274,13 +5361,13 @@
    ]
   },
   {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|box|y-after-gen-help-13-faq-item4-open",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
+   "key": "cr-ref-help-23||box|y-after-contact-link-top",
+   "ref": "cr-ref-help-23",
+   "pair": "gen-help-23-faq-item4-open",
+   "path": "",
+   "block": "sgs/accordion-item",
    "kind": "box",
-   "property": "y-after-gen-help-13-faq-item4-open",
+   "property": "y-after-contact-link-top",
    "widths": [
     375,
     768,
@@ -7297,47 +5384,10 @@
      "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
      "ref": "cr-ref-help-15",
      "key": "display",
-     "relation": "self",
+     "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": -46,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-23||box|y-after-gen-help-16-faq-item4-open",
-   "ref": "cr-ref-help-23",
-   "pair": "gen-help-23-faq-item4-open",
-   "path": "",
-   "block": "sgs/accordion-item",
-   "kind": "box",
-   "property": "y-after-gen-help-16-faq-item4-open",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 34,
+     "delta": -27,
      "widths": [
       375,
       768,
@@ -7368,13 +5418,50 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
+     "parent": "cr-ref-help-16|.sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
+     "ref": "cr-ref-help-16",
+     "key": "line-height",
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -37,
+     "delta": -11,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-34||box|y-after-gen-help-24-faq-item4-open",
+   "ref": "cr-ref-help-34",
+   "pair": "gen-help-34-faq-item4-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-24-faq-item4-open",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -29,
      "widths": [
       375,
       768,
@@ -7405,13 +5492,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": 5,
+     "delta": -29,
      "widths": [
       375,
       768,
@@ -7422,16 +5509,48 @@
    ]
   },
   {
-   "key": "cr-ref-help-1||box|y-after-gen-help-0-faq-item5-open",
-   "ref": "cr-ref-help-1",
-   "pair": "eyebrow",
+   "key": "cr-ref-help-38||box|y-after-gen-help-36-faq-item4-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item4-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-36-faq-item4-open",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||box|y-after-gen-help-24-faq-item4-open",
+     "ref": "cr-ref-help-33",
+     "key": "y-after-gen-help-24-faq-item4-open",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": 6,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-35||box|y-after-gen-help-26-faq-item5-open",
+   "ref": "cr-ref-help-35",
+   "pair": "still-heading",
    "path": "",
    "block": "sgs/text",
    "kind": "box",
-   "property": "y-after-gen-help-0-faq-item5-open",
+   "property": "y-after-gen-help-26-faq-item5-open",
    "widths": [
     375,
-    768,
     1440,
     1920
    ],
@@ -7442,16 +5561,15 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "same-delta",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 28,
+     "delta": -14,
      "widths": [
       375,
-      768,
       1440,
       1920
      ]
@@ -7459,13 +5577,13 @@
    ]
   },
   {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|box|y-after-gen-help-13-faq-item5-open",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
+   "key": "cr-ref-help-25||box|y-after-contact-link-top",
+   "ref": "cr-ref-help-25",
+   "pair": "gen-help-25-faq-item5-open",
+   "path": "",
+   "block": "sgs/accordion-item",
    "kind": "box",
-   "property": "y-after-gen-help-13-faq-item5-open",
+   "property": "y-after-contact-link-top",
    "widths": [
     375,
     768,
@@ -7482,47 +5600,10 @@
      "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
      "ref": "cr-ref-help-15",
      "key": "display",
-     "relation": "self",
+     "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": -46,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-25||box|y-after-gen-help-16-faq-item5-open",
-   "ref": "cr-ref-help-25",
-   "pair": "gen-help-25-faq-item5-open",
-   "path": "",
-   "block": "sgs/accordion-item",
-   "kind": "box",
-   "property": "y-after-gen-help-16-faq-item5-open",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 24,
+     "delta": -30,
      "widths": [
       375,
       768,
@@ -7553,9 +5634,9 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
+     "parent": "cr-ref-help-16|.sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
+     "ref": "cr-ref-help-16",
+     "key": "line-height",
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
@@ -7570,13 +5651,116 @@
    ]
   },
   {
-   "key": "cr-ref-help-1||box|y-after-gen-help-0-faq-item6-open",
-   "ref": "cr-ref-help-1",
-   "pair": "eyebrow",
+   "key": "cr-ref-help-34||box|y-after-gen-help-26-faq-item5-open",
+   "ref": "cr-ref-help-34",
+   "pair": "gen-help-34-faq-item5-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-26-faq-item5-open",
+   "widths": [
+    375,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -14,
+     "widths": [
+      375,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-33||box|y-after-gen-help-26-faq-item5-open",
+   "ref": "cr-ref-help-33",
+   "pair": "gen-help-33-faq-item5-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-26-faq-item5-open",
+   "widths": [
+    375,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -14,
+     "widths": [
+      375,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-38||box|y-after-gen-help-36-faq-item5-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item5-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-36-faq-item5-open",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 6,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-35||box|y-after-gen-help-28-faq-item6-open",
+   "ref": "cr-ref-help-35",
+   "pair": "still-heading",
    "path": "",
    "block": "sgs/text",
    "kind": "box",
-   "property": "y-after-gen-help-0-faq-item6-open",
+   "property": "y-after-gen-help-28-faq-item6-open",
    "widths": [
     375,
     768,
@@ -7590,13 +5774,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "same-delta",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 28,
+     "delta": 4,
      "widths": [
       375,
       768,
@@ -7607,13 +5791,13 @@
    ]
   },
   {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|box|y-after-gen-help-13-faq-item6-open",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
+   "key": "cr-ref-help-27||box|y-after-contact-link-top",
+   "ref": "cr-ref-help-27",
+   "pair": "gen-help-27-faq-item6-open",
+   "path": "",
+   "block": "sgs/accordion-item",
    "kind": "box",
-   "property": "y-after-gen-help-13-faq-item6-open",
+   "property": "y-after-contact-link-top",
    "widths": [
     375,
     768,
@@ -7630,47 +5814,10 @@
      "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
      "ref": "cr-ref-help-15",
      "key": "display",
-     "relation": "self",
+     "relation": "anchor",
      "match": "layout-row",
      "width": 375,
      "delta": -46,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-27||box|y-after-gen-help-16-faq-item6-open",
-   "ref": "cr-ref-help-27",
-   "pair": "gen-help-27-faq-item6-open",
-   "path": "",
-   "block": "sgs/accordion-item",
-   "kind": "box",
-   "property": "y-after-gen-help-16-faq-item6-open",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 27,
      "widths": [
       375,
       768,
@@ -7701,9 +5848,9 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
+     "parent": "cr-ref-help-16|.sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
+     "ref": "cr-ref-help-16",
+     "key": "line-height",
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
@@ -7718,13 +5865,13 @@
    ]
   },
   {
-   "key": "cr-ref-help-1||box|y-after-gen-help-0-faq-item7-open",
-   "ref": "cr-ref-help-1",
-   "pair": "eyebrow",
+   "key": "cr-ref-help-34||box|y-after-gen-help-28-faq-item6-open",
+   "ref": "cr-ref-help-34",
+   "pair": "gen-help-34-faq-item6-open",
    "path": "",
-   "block": "sgs/text",
+   "block": "sgs/container",
    "kind": "box",
-   "property": "y-after-gen-help-0-faq-item7-open",
+   "property": "y-after-gen-help-28-faq-item6-open",
    "widths": [
     375,
     768,
@@ -7738,13 +5885,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "same-delta",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 28,
+     "delta": 4,
      "widths": [
       375,
       768,
@@ -7755,13 +5902,120 @@
    ]
   },
   {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|box|y-after-gen-help-13-faq-item7-open",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
+   "key": "cr-ref-help-33||box|y-after-gen-help-28-faq-item6-open",
+   "ref": "cr-ref-help-33",
+   "pair": "gen-help-33-faq-item6-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-28-faq-item6-open",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 4,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-38||box|y-after-gen-help-36-faq-item6-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item6-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-36-faq-item6-open",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 6,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-35||box|y-after-gen-help-30-faq-item7-open",
+   "ref": "cr-ref-help-35",
+   "pair": "still-heading",
+   "path": "",
    "block": "sgs/text",
    "kind": "box",
-   "property": "y-after-gen-help-13-faq-item7-open",
+   "property": "y-after-gen-help-30-faq-item7-open",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 19,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-29||box|y-after-contact-link-top",
+   "ref": "cr-ref-help-29",
+   "pair": "gen-help-29-faq-item7-open",
+   "path": "",
+   "block": "sgs/accordion-item",
+   "kind": "box",
+   "property": "y-after-contact-link-top",
    "widths": [
     375,
     768,
@@ -7778,47 +6032,10 @@
      "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
      "ref": "cr-ref-help-15",
      "key": "display",
-     "relation": "self",
+     "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": -46,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-29||box|y-after-gen-help-16-faq-item7-open",
-   "ref": "cr-ref-help-29",
-   "pair": "gen-help-29-faq-item7-open",
-   "path": "",
-   "block": "sgs/accordion-item",
-   "kind": "box",
-   "property": "y-after-gen-help-16-faq-item7-open",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 30,
+     "delta": -63,
      "widths": [
       375,
       768,
@@ -7849,13 +6066,50 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
+     "parent": "cr-ref-help-16|.sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
+     "ref": "cr-ref-help-16",
+     "key": "line-height",
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -25,
+     "delta": -24,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-34||box|y-after-gen-help-30-faq-item7-open",
+   "ref": "cr-ref-help-34",
+   "pair": "gen-help-34-faq-item7-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-30-faq-item7-open",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 19,
      "widths": [
       375,
       768,
@@ -7886,13 +6140,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -4,
+     "delta": 19,
      "widths": [
       375,
       768,
@@ -7903,13 +6157,46 @@
    ]
   },
   {
-   "key": "cr-ref-help-1||box|y-after-gen-help-0-faq-item8-open",
-   "ref": "cr-ref-help-1",
-   "pair": "eyebrow",
+   "key": "cr-ref-help-38||box|y-after-gen-help-36-faq-item7-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item7-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-36-faq-item7-open",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 6,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-35||box|y-after-gen-help-32-faq-item8-open",
+   "ref": "cr-ref-help-35",
+   "pair": "still-heading",
    "path": "",
    "block": "sgs/text",
    "kind": "box",
-   "property": "y-after-gen-help-0-faq-item8-open",
+   "property": "y-after-gen-help-32-faq-item8-open",
    "widths": [
     375,
     768,
@@ -7923,13 +6210,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "same-delta",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 28,
+     "delta": 36,
      "widths": [
       375,
       768,
@@ -7940,13 +6227,13 @@
    ]
   },
   {
-   "key": "cr-ref-help-15|a:nth-of-type(1)|box|y-after-gen-help-13-faq-item8-open",
-   "ref": "cr-ref-help-15",
-   "pair": "size-guide-link",
-   "path": "a:nth-of-type(1)",
-   "block": "sgs/text",
+   "key": "cr-ref-help-31||box|y-after-contact-link-top",
+   "ref": "cr-ref-help-31",
+   "pair": "gen-help-31-faq-item8-open",
+   "path": "",
+   "block": "sgs/accordion-item",
    "kind": "box",
-   "property": "y-after-gen-help-13-faq-item8-open",
+   "property": "y-after-contact-link-top",
    "widths": [
     375,
     768,
@@ -7963,47 +6250,10 @@
      "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
      "ref": "cr-ref-help-15",
      "key": "display",
-     "relation": "self",
+     "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": -46,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-31||box|y-after-gen-help-16-faq-item8-open",
-   "ref": "cr-ref-help-31",
-   "pair": "gen-help-31-faq-item8-open",
-   "path": "",
-   "block": "sgs/accordion-item",
-   "kind": "box",
-   "property": "y-after-gen-help-16-faq-item8-open",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 33,
+     "delta": -79,
      "widths": [
       375,
       768,
@@ -8034,13 +6284,50 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
+     "parent": "cr-ref-help-16|.sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
+     "ref": "cr-ref-help-16",
+     "key": "line-height",
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
      "delta": -25,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-34||box|y-after-gen-help-32-faq-item8-open",
+   "ref": "cr-ref-help-34",
+   "pair": "gen-help-34-faq-item8-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-32-faq-item8-open",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 36,
      "widths": [
       375,
       768,
@@ -8071,13 +6358,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -7,
+     "delta": 36,
      "widths": [
       375,
       768,
@@ -8088,83 +6375,47 @@
    ]
   },
   {
-   "key": "cr-ref-help-6||box|y-after-info-collect-heading",
-   "ref": "cr-ref-help-6",
-   "pair": "info-uk-text",
+   "key": "cr-ref-help-38||box|y-after-gen-help-36-faq-item8-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item8-open",
    "path": "",
-   "block": "sgs/text",
+   "block": "sgs/container",
    "kind": "box",
-   "property": "y-after-info-collect-heading",
+   "property": "y-after-gen-help-36-faq-item8-open",
    "widths": [
+    375,
     768
    ],
    "solveClass": "derived",
    "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
-   "evidence": [
-    {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768
-     ],
-     "parent": "cr-ref-help-4|.sgs-container__inner|style|column-gap"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|box|y-after-gen-help-16-opening",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "box",
-   "property": "y-after-gen-help-16-opening",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
    "class": "W",
    "decidedBy": "consequence",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
-     "ref": "cr-ref-help-17",
-     "key": "line-height",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 768,
-     "delta": -4,
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 6,
      "widths": [
-      768,
-      1440,
-      1920
+      375,
+      768
      ]
     }
    ]
   },
   {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|box|y-after-gen-help-19-faq-item2-open",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
+   "key": "cr-ref-help-36||box|y-after-call-button",
+   "ref": "cr-ref-help-36",
+   "pair": "gen-help-36-opening",
+   "path": "",
+   "block": "sgs/container",
    "kind": "box",
-   "property": "y-after-gen-help-19-faq-item2-open",
+   "property": "y-after-call-button",
    "widths": [
-    768,
     1440,
     1920
    ],
@@ -8175,31 +6426,43 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
-     "ref": "cr-ref-help-19",
-     "key": "line-height",
-     "relation": "anchor",
-     "match": "same-delta",
-     "width": 768,
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
      "delta": -3,
      "widths": [
-      768,
       1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
       1920
      ]
     }
    ]
   },
   {
-   "key": "cr-ref-help-33||box|y-after-gen-help-26-faq-item5-open",
-   "ref": "cr-ref-help-33",
-   "pair": "gen-help-33-faq-item5-open",
+   "key": "cr-ref-help-38||box|y-after-gen-help-34-opening",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-opening",
    "path": "",
    "block": "sgs/container",
    "kind": "box",
-   "property": "y-after-gen-help-26-faq-item5-open",
+   "property": "y-after-gen-help-34-opening",
    "widths": [
-    768,
     1440,
     1920
    ],
@@ -8210,15 +6473,14 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
      "relation": "ancestor",
      "match": "layout-row",
-     "width": 768,
-     "delta": 16,
+     "width": 1440,
+     "delta": 3,
      "widths": [
-      768,
       1440,
       1920
      ]
@@ -8226,15 +6488,14 @@
    ]
   },
   {
-   "key": "cr-ref-help-33||box|y-after-gen-help-28-faq-item6-open",
-   "ref": "cr-ref-help-33",
-   "pair": "gen-help-33-faq-item6-open",
+   "key": "cr-ref-help-38||box|y-after-gen-help-34-faq-item2-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item2-open",
    "path": "",
    "block": "sgs/container",
    "kind": "box",
-   "property": "y-after-gen-help-28-faq-item6-open",
+   "property": "y-after-gen-help-34-faq-item2-open",
    "widths": [
-    768,
     1440,
     1920
    ],
@@ -8245,15 +6506,14 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
      "relation": "ancestor",
      "match": "layout-row",
-     "width": 768,
-     "delta": 8,
+     "width": 1440,
+     "delta": 3,
      "widths": [
-      768,
       1440,
       1920
      ]
@@ -8261,44 +6521,200 @@
    ]
   },
   {
-   "key": "cr-ref-help-6||box|y-after-info-returns-heading",
-   "ref": "cr-ref-help-6",
-   "pair": "info-uk-text",
+   "key": "cr-ref-help-38||box|y-after-gen-help-34-faq-item3-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item3-open",
    "path": "",
-   "block": "sgs/text",
+   "block": "sgs/container",
    "kind": "box",
-   "property": "y-after-info-returns-heading",
+   "property": "y-after-gen-help-34-faq-item3-open",
    "widths": [
     1440,
     1920
    ],
    "solveClass": "derived",
    "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
+   "class": "W",
+   "decidedBy": "consequence",
    "evidence": [
     {
      "check": "consequence",
-     "partial": true,
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": 3,
      "widths": [
       1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
       1920
-     ],
-     "parent": "cr-ref-help-4|.sgs-container__inner|style|column-gap"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-38||box|y-after-gen-help-34-faq-item4-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item4-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-34-faq-item4-open",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": 3,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-38||box|y-after-gen-help-34-faq-item5-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item5-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-34-faq-item5-open",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": 3,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-38||box|y-after-gen-help-34-faq-item6-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item6-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-34-faq-item6-open",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": 3,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-38||box|y-after-gen-help-34-faq-item7-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item7-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-34-faq-item7-open",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": 3,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-38||box|y-after-gen-help-34-faq-item8-open",
+   "ref": "cr-ref-help-38",
+   "pair": "gen-help-38-faq-item8-open",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-help-34-faq-item8-open",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-help-33||style|margin-top",
+     "ref": "cr-ref-help-33",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": 3,
+     "widths": [
+      1440,
+      1920
+     ]
     }
    ]
   }

@@ -1,11 +1,11 @@
 {
  "surface": "lens",
- "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-08T20-34-03/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-08T20-34-03/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-09T09-03-48/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-09T09-03-48/round-1/report.json",
  "date": "2026-10-09",
  "counts": {
   "W": 41,
-  "F": 28,
+  "F": 11,
   "T": 0,
   "U": 0,
   "L": 0
@@ -25,8 +25,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/choice-flow has no setting for min-height",
    "class": "W",
    "decidedBy": "discovered",
    "evidence": [
@@ -69,8 +69,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/choice-flow has no setting for flex-grow",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -102,43 +102,72 @@
    }
   },
   {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-eyebrow|style|width",
+   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary|style|border-bottom-color",
    "ref": "cr-ref-lens-0",
-   "pair": "header-eyebrow",
-   "path": ".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-eyebrow",
+   "pair": "stage",
+   "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
    "block": "sgs/choice-flow",
    "kind": "style",
-   "property": "width",
+   "property": "border-bottom-color",
    "widths": [
-    375,
-    768,
-    1440,
-    1920
+    375
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no border-bottom-color setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backColourBorder, stageNoteBorderColour, infoToggleBorderColour, stepperActiveColour)",
    "class": "W",
-   "decidedBy": "used-value",
+   "decidedBy": "uncalibrated-fit",
    "evidence": [
     {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
      "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
+     "gap": "no-setting",
+     "detail": "no border-bottom-color setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backColourBorder, stageNoteBorderColour, infoToggleBorderColour, stepperActiveColour)"
     },
     {
      "check": "attribute",
      "block": "sgs/choice-flow",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
+     "setting": "backColourBorder",
+     "css_property": "border-color",
+     "css_element": "back",
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "backColourBorderHover",
+     "css_property": "border-color",
+     "css_element": "back",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "stageNoteBorderColour",
+     "css_property": "border-color",
+     "css_element": "summary-note",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "infoToggleBorderColour",
+     "css_property": "border-color",
+     "css_element": "info-toggle",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "stepperActiveColour",
+     "css_property": "border-color,color",
+     "css_element": "stepper-circle",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -153,8 +182,8 @@
    "widths": [
     375
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no border-bottom-width setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backBorderWidth)",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -226,76 +255,6 @@
    }
   },
   {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary|style|border-bottom-color",
-   "ref": "cr-ref-lens-0",
-   "pair": "stage",
-   "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "border-bottom-color",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-bottom-color setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backColourBorder, stageNoteBorderColour, infoToggleBorderColour, stepperActiveColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "backColourBorder",
-     "css_property": "border-color",
-     "css_element": "back",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "backColourBorderHover",
-     "css_property": "border-color",
-     "css_element": "back",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "stageNoteBorderColour",
-     "css_property": "border-color",
-     "css_element": "summary-note",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "infoToggleBorderColour",
-     "css_property": "border-color",
-     "css_element": "info-toggle",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "stepperActiveColour",
-     "css_property": "border-color,color",
-     "css_element": "stepper-circle",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary|style|padding-top",
    "ref": "cr-ref-lens-0",
    "pair": "stage",
@@ -309,8 +268,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no padding-top setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: padding)",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -401,8 +360,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no padding-right setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: padding)",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -493,8 +452,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no padding-bottom setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: padding)",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -585,8 +544,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no padding-left setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: padding)",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -664,507 +623,266 @@
    }
   },
   {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary|style|justify-content",
+   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary|style|border-right-width",
    "ref": "cr-ref-lens-0",
    "pair": "stage",
-   "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary",
+   "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
    "block": "sgs/choice-flow",
    "kind": "style",
-   "property": "justify-content",
+   "property": "border-right-width",
    "widths": [
-    375
+    768,
+    1440,
+    1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no border-right-width setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backBorderWidth)",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/choice-flow has no setting for justify-content"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "justifyContent"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "justifyContent"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-lens-0||style|left",
-   "ref": "cr-ref-lens-0",
-   "pair": "gen-lens-0",
-   "path": "",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "left",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "no-live-element",
-   "evidence": [
-    {
-     "check": "no-live-element",
-     "detail": "24 rows, live value empty at every width: the walker found no live element"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-0||style|top",
-   "ref": "cr-ref-lens-0",
-   "pair": "gen-lens-0",
-   "path": "",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "no-live-element",
-   "evidence": [
-    {
-     "check": "no-live-element",
-     "detail": "24 rows, live value empty at every width: the walker found no live element"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-4|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-label|style|width",
-   "ref": "cr-ref-lens-4",
-   "pair": "option-title",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-label",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
+     "detail": "no border-right-width setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backBorderWidth)"
     },
     {
      "check": "attribute",
-     "block": "sgs/choice-flow-question",
-     "setting": "introWidth",
-     "css_property": "max-width",
-     "css_element": "intro",
+     "block": "sgs/choice-flow",
+     "setting": "backBorderWidth",
+     "css_property": "border-width",
+     "css_element": "back",
      "css_state": null,
      "source": "sgs",
      "reaches": false
     }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "choice-flow/render.php",
+      "mentions": [],
+      "absent": [
+       "backBorderWidth",
+       "borderRightWidth",
+       "borderWidth"
+      ]
+     },
+     {
+      "file": "modal/render.php",
+      "mentions": [],
+      "absent": [
+       "backBorderWidth",
+       "borderRightWidth",
+       "borderWidth"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "choice-flow",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+      ]
+     },
+     {
+      "block": "modal",
+      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
+      "mentions": [],
+      "declares": [
+       "es'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_map = is_array( $o"
+      ]
+     },
+     {
+      "block": "modal",
+      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+      "mentions": [],
+      "declares": [
+       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary|style|border-right-color",
+   "ref": "cr-ref-lens-0",
+   "pair": "stage",
+   "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
+   "block": "sgs/choice-flow",
+   "kind": "style",
+   "property": "border-right-color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "no border-right-color setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backColourBorder, stageNoteBorderColour, infoToggleBorderColour, stepperActiveColour)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-right-color setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backColourBorder, stageNoteBorderColour, infoToggleBorderColour, stepperActiveColour)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "backColourBorder",
+     "css_property": "border-color",
+     "css_element": "back",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "backColourBorderHover",
+     "css_property": "border-color",
+     "css_element": "back",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "stageNoteBorderColour",
+     "css_property": "border-color",
+     "css_element": "summary-note",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "infoToggleBorderColour",
+     "css_property": "border-color",
+     "css_element": "info-toggle",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "stepperActiveColour",
+     "css_property": "border-color,color",
+     "css_element": "stepper-circle",
+     "css_state": null,
+     "source": "sgs"
+    }
    ]
   },
   {
-   "key": "cr-ref-lens-4|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|style|margin-top",
-   "ref": "cr-ref-lens-4",
-   "pair": "option-band",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
-   "block": "sgs/choice-flow-question",
+   "key": "cr-ref-lens-0|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back|style|column-gap",
+   "ref": "cr-ref-lens-0",
+   "pair": "back",
+   "path": ".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back",
+   "block": "sgs/choice-flow",
    "kind": "style",
-   "property": "margin-top",
+   "property": "column-gap",
    "widths": [
-    375,
     768,
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/choice-flow has no setting for column-gap",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for margin-top"
+     "detail": "sgs/choice-flow has no setting for column-gap"
     }
    ],
    "source": {
     "render": [
      {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "marginTop",
-       "margin"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "marginTop",
-       "margin"
-      ]
-     },
-     {
       "file": "choice-flow/render.php",
-      "mentions": [
-       "margin"
-      ],
+      "mentions": [],
       "absent": [
-       "marginTop"
+       "columnGap",
+       "gap"
       ]
      },
      {
       "file": "modal/render.php",
       "mentions": [],
       "absent": [
-       "marginTop",
-       "margin"
+       "columnGap",
+       "gap"
       ]
      }
     ],
     "rules": [
      {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media",
-      "declaration": "margin:-16px -18px 11px"
+      "file": "choice-flow/style.css",
+      "selector": ".sgs-choice-flow__nav-back",
+      "declaration": "gap:6px"
      }
     ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "argin_top ) { $base_band_decls[] = 'margin-top:' . $band_margin_top; } if ( '' !== $ban",
-       "blet ) { $tablet_margin_decls[] = 'margin-top:' . $margin_top_tablet; } if ( '' !==",
-       "bile ) { $mobile_margin_decls[] = 'margin-top:' . $margin_top_mobile; } if ( '' !=="
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     }
-    ]
+    "helpers": []
    }
   },
   {
-   "key": "cr-ref-lens-4|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|style|margin-right",
-   "ref": "cr-ref-lens-4",
-   "pair": "option-band",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
-   "block": "sgs/choice-flow-question",
+   "key": "cr-ref-lens-0|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back|style|row-gap",
+   "ref": "cr-ref-lens-0",
+   "pair": "back",
+   "path": ".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back",
+   "block": "sgs/choice-flow",
    "kind": "style",
-   "property": "margin-right",
+   "property": "row-gap",
    "widths": [
-    375,
     768,
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/choice-flow has no setting for row-gap",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for margin-right"
+     "detail": "sgs/choice-flow has no setting for row-gap"
     }
    ],
    "source": {
     "render": [
      {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "marginRight",
-       "margin"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "marginRight",
-       "margin"
-      ]
-     },
-     {
       "file": "choice-flow/render.php",
-      "mentions": [
-       "margin"
-      ],
+      "mentions": [],
       "absent": [
-       "marginRight"
+       "rowGap",
+       "gap"
       ]
      },
      {
       "file": "modal/render.php",
       "mentions": [],
       "absent": [
-       "marginRight",
-       "margin"
+       "rowGap",
+       "gap"
       ]
      }
     ],
     "rules": [
      {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media",
-      "declaration": "margin:-16px -18px 11px"
+      "file": "choice-flow/style.css",
+      "selector": ".sgs-choice-flow__nav-back",
+      "declaration": "gap:6px"
      }
     ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "gin_right ) { $base_band_decls[] = 'margin-right:' . $band_margin_right; } if ( '' !==",
-       "blet ) { $tablet_margin_decls[] = 'margin-right:' . $margin_right_tablet; } if ( ''",
-       "bile ) { $mobile_margin_decls[] = 'margin-right:' . $margin_right_mobile; } if ( ''"
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-4|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|style|margin-bottom",
-   "ref": "cr-ref-lens-4",
-   "pair": "option-band",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "margin-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for margin-bottom"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "marginBottom",
-       "margin"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "marginBottom",
-       "margin"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginBottom"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "marginBottom",
-       "margin"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-media",
-      "declaration": "margin-bottom:0"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__option-media",
-      "declaration": "margin-bottom:12px"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media",
-      "declaration": "margin:-16px -18px 11px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "in_bottom ) { $base_band_decls[] = 'margin-bottom:' . $band_margin_bottom; } if ( '' !=",
-       "blet ) { $tablet_margin_decls[] = 'margin-bottom:' . $margin_bottom_tablet; } if ( '",
-       "bile ) { $mobile_margin_decls[] = 'margin-bottom:' . $margin_bottom_mobile; } if ( '"
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-4|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|style|margin-left",
-   "ref": "cr-ref-lens-4",
-   "pair": "option-band",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "margin-left",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for margin-left"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "marginLeft",
-       "margin"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "marginLeft",
-       "margin"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginLeft"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "marginLeft",
-       "margin"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media",
-      "declaration": "margin:-16px -18px 11px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "rgin_left ) { $base_band_decls[] = 'margin-left:' . $band_margin_left; } // (band backg",
-       "blet ) { $tablet_margin_decls[] = 'margin-left:' . $margin_left_tablet; } if ( $tabl",
-       "bile ) { $mobile_margin_decls[] = 'margin-left:' . $margin_left_mobile; } if ( $mobi"
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     }
-    ]
+    "helpers": []
    }
   },
   {
@@ -1176,13 +894,12 @@
    "kind": "style",
    "property": "gap",
    "widths": [
-    375,
     768,
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/choice-flow has no setting for gap",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -1220,6 +937,138 @@
    }
   },
   {
+   "key": "cr-ref-lens-0|.sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-eyebrow|style|width",
+   "ref": "cr-ref-lens-0",
+   "pair": "header-eyebrow",
+   "path": ".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-eyebrow",
+   "block": "sgs/choice-flow",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "state-conflict: width is read at 145.969px in q1-use and 174.984px in q2-thickness and 174.984px in q3-finish and 174.984px in q4-prescription and 174.984px in q4-upload and 174.984px in q4-type at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "maxWidth",
+     "css_property": "max-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-0||style|left",
+   "ref": "cr-ref-lens-0",
+   "pair": "gen-lens-0",
+   "path": "",
+   "block": "sgs/choice-flow",
+   "kind": "style",
+   "property": "left",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmeasured-side: the live left was not read (the live element carries no value for it)",
+   "class": "W",
+   "decidedBy": "no-live-element",
+   "evidence": [
+    {
+     "check": "no-live-element",
+     "detail": "24 rows, live value empty at every width: the walker found no live element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-0||style|top",
+   "ref": "cr-ref-lens-0",
+   "pair": "gen-lens-0",
+   "path": "",
+   "block": "sgs/choice-flow",
+   "kind": "style",
+   "property": "top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmeasured-side: the live top was not read (the live element carries no value for it)",
+   "class": "W",
+   "decidedBy": "no-live-element",
+   "evidence": [
+    {
+     "check": "no-live-element",
+     "detail": "24 rows, live value empty at every width: the walker found no live element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-4|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-label|style|width",
+   "ref": "cr-ref-lens-4",
+   "pair": "option-title",
+   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-label",
+   "block": "sgs/choice-flow-question",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "state-conflict: width is read at 70.3906px in q1-use and 106.562px in q2-thickness and 126.828px in q3-finish at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow-question",
+     "setting": "introWidth",
+     "css_property": "max-width",
+     "css_element": "intro",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
    "key": "cr-ref-lens-0|.sgs-choice-flow__announcer|style|font-size",
    "ref": "cr-ref-lens-0",
    "pair": "gen-lens-0",
@@ -1234,7 +1083,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/choice-flow path \".sgs-choice-flow__announcer\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -1260,7 +1109,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/choice-flow path \".sgs-choice-flow__announcer\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -1286,7 +1135,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/choice-flow path \".sgs-choice-flow__announcer\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -1312,7 +1161,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/choice-flow path \".sgs-choice-flow__announcer\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -1338,7 +1187,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/choice-flow path \".sgs-choice-flow__announcer\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -1535,372 +1384,6 @@
    ]
   },
   {
-   "key": "cr-ref-lens-6|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|column-gap",
-   "ref": "cr-ref-lens-6",
-   "pair": "option-card",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for column-gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "columnGap"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
-      "declaration": "gap:16px"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button",
-      "declaration": "column-gap:10px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-6|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|row-gap",
-   "ref": "cr-ref-lens-6",
-   "pair": "option-card",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      768,
-      1440,
-      1920
-     ],
-     "parent": "cr-ref-lens-0|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back|style|row-gap"
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for row-gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "rowGap"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
-      "declaration": "gap:16px"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button",
-      "declaration": "row-gap:5px"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-button",
-      "declaration": "row-gap:6px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-6|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|align-items",
-   "ref": "cr-ref-lens-6",
-   "pair": "option-card",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "align-items",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for align-items"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
-      "declaration": "align-items:center"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__option-button",
-      "declaration": "align-items:flex-start"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button",
-      "declaration": "align-items:baseline"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-button",
-      "declaration": "align-items:center"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
-      "mentions": [],
-      "declares": [
-       "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-6|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|gap",
-   "ref": "cr-ref-lens-6",
-   "pair": "option-card",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": []
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
-      "declaration": "gap:16px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-lens-6|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-label|style|width",
    "ref": "cr-ref-lens-6",
    "pair": "option-title",
@@ -1914,7 +1397,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "state-conflict: width is read at 70.3906px in q1-use and 106.562px in q2-thickness and 126.828px in q3-finish at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1955,7 +1438,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "state-conflict: font-size is read at 18px in q1-use and 18px in q2-thickness and 18px in q3-finish and 17px in q4-prescription and 17px in q4-upload and 17px in q4-type at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -1981,7 +1464,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/choice-flow-question path \".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-badge\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -2017,7 +1500,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "state-conflict: line-height is read at 23px in q1-use and 23px in q2-thickness and 23px in q3-finish and 21px in q4-prescription and 21px in q4-upload and 21px in q4-type at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -2043,7 +1526,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/choice-flow-question path \".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-badge\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -2069,7 +1552,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/choice-flow-question path \".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-badge\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -2095,7 +1578,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/choice-flow-question path \".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-badge\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -2202,354 +1685,6 @@
    }
   },
   {
-   "key": "cr-ref-lens-8|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|column-gap",
-   "ref": "cr-ref-lens-8",
-   "pair": "option-card",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for column-gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "columnGap"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
-      "declaration": "gap:16px"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button",
-      "declaration": "column-gap:10px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-8|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|align-items",
-   "ref": "cr-ref-lens-8",
-   "pair": "option-card",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "align-items",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for align-items"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
-      "declaration": "align-items:center"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__option-button",
-      "declaration": "align-items:flex-start"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button",
-      "declaration": "align-items:baseline"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-button",
-      "declaration": "align-items:center"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
-      "mentions": [],
-      "declares": [
-       "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-8|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|gap",
-   "ref": "cr-ref-lens-8",
-   "pair": "option-card",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": []
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
-      "declaration": "gap:16px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-10||style|margin-top",
-   "ref": "cr-ref-lens-10",
-   "pair": "rx-note",
-   "path": "",
-   "block": "sgs/choice-flow-result",
-   "kind": "style",
-   "property": "margin-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-result has no setting for margin-top"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-result/render.php",
-      "mentions": [],
-      "absent": [
-       "marginTop",
-       "margin"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "marginTop",
-       "margin"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginTop"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "marginTop",
-       "margin"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "argin_top ) { $base_band_decls[] = 'margin-top:' . $band_margin_top; } if ( '' !== $ban",
-       "blet ) { $tablet_margin_decls[] = 'margin-top:' . $margin_top_tablet; } if ( '' !==",
-       "bile ) { $mobile_margin_decls[] = 'margin-top:' . $margin_top_mobile; } if ( '' !=="
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-lens-0|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__footer-actions > .sgs-choice-flow__add-to-basket|style|width",
    "ref": "cr-ref-lens-0",
    "pair": "add-to-bag",
@@ -2564,7 +1699,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -2591,52 +1726,6 @@
    ]
   },
   {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__footer-actions > .sgs-choice-flow__add-to-basket|style|gap",
-   "ref": "cr-ref-lens-0",
-   "pair": "add-to-bag",
-   "path": ".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__footer-actions > .sgs-choice-flow__add-to-basket",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow has no setting for gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
    "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-name > .sgs-choice-flow__summary-brand|style|font-family",
    "ref": "cr-ref-lens-0",
    "pair": "stage",
@@ -2648,7 +1737,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "state-conflict: font-family is read at \"Playfair Display\", serif in q1-use and \"Playfair Display\", serif in q2-thickness and \"Playfair Display\", serif in q3-finish and Outfit, system-ui, sans-serif in q4-prescription and Outfit, system-ui, sans-serif in q4-upload and Outfit, system-ui, sans-serif in q4-type at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -2671,7 +1760,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "state-conflict: font-size is read at 14px in q1-use and 14px in q2-thickness and 14px in q3-finish and 11px in q4-prescription and 11px in q4-upload and 11px in q4-type at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -2694,7 +1783,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "state-conflict: font-weight is read at 500 in q1-use and 500 in q2-thickness and 500 in q3-finish and 400 in q4-prescription and 400 in q4-upload and 400 in q4-type at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -2717,7 +1806,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "state-conflict: line-height is read at 21px in q1-use and 21px in q2-thickness and 21px in q3-finish and 16.5px in q4-prescription and 16.5px in q4-upload and 16.5px in q4-type at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -2740,7 +1829,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "state-conflict: letter-spacing is read at 3.92px in q1-use and 3.92px in q2-thickness and 3.92px in q3-finish and 1.1px in q4-prescription and 1.1px in q4-upload and 1.1px in q4-type at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -2763,7 +1852,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "state-conflict: color is read at rgb(20, 20, 20) in q1-use and rgb(20, 20, 20) in q2-thickness and rgb(20, 20, 20) in q3-finish and rgb(250, 248, 245) in q4-prescription and rgb(250, 248, 245) in q4-upload and rgb(250, 248, 245) in q4-type at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -2974,7 +2063,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -3008,7 +2097,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -3034,7 +2123,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -3068,7 +2157,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -3094,7 +2183,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "consequence",
    "evidence": [
@@ -3136,7 +2225,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -3241,469 +2330,6 @@
    ]
   },
   {
-   "key": "cr-ref-lens-14||style|column-gap",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": "",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/form-step has no setting for column-gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "form-step/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "columnGap"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-14||style|row-gap",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": "",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/form-step has no setting for row-gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "form-step/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "rowGap"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-14||style|gap",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": "",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/form-step has no setting for gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "form-step/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": []
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary|style|border-right-width",
-   "ref": "cr-ref-lens-0",
-   "pair": "stage",
-   "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "border-right-width",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-right-width setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backBorderWidth)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "backBorderWidth",
-     "css_property": "border-width",
-     "css_element": "back",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "backBorderWidth",
-       "borderRightWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "backBorderWidth",
-       "borderRightWidth",
-       "borderWidth"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "choice-flow",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
-       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
-      ]
-     },
-     {
-      "block": "modal",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "es'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_map = is_array( $o"
-      ]
-     },
-     {
-      "block": "modal",
-      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
-      "mentions": [],
-      "declares": [
-       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary|style|border-right-color",
-   "ref": "cr-ref-lens-0",
-   "pair": "stage",
-   "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "border-right-color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-right-color setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backColourBorder, stageNoteBorderColour, infoToggleBorderColour, stepperActiveColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "backColourBorder",
-     "css_property": "border-color",
-     "css_element": "back",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "backColourBorderHover",
-     "css_property": "border-color",
-     "css_element": "back",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "stageNoteBorderColour",
-     "css_property": "border-color",
-     "css_element": "summary-note",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "infoToggleBorderColour",
-     "css_property": "border-color",
-     "css_element": "info-toggle",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "stepperActiveColour",
-     "css_property": "border-color,color",
-     "css_element": "stepper-circle",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back|style|column-gap",
-   "ref": "cr-ref-lens-0",
-   "pair": "back",
-   "path": ".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow has no setting for column-gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow/style.css",
-      "selector": ".sgs-choice-flow__nav-back",
-      "declaration": "gap:6px"
-     }
-    ],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back|style|row-gap",
-   "ref": "cr-ref-lens-0",
-   "pair": "back",
-   "path": ".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow has no setting for row-gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow/style.css",
-      "selector": ".sgs-choice-flow__nav-back",
-      "declaration": "gap:6px"
-     }
-    ],
-    "helpers": []
-   }
-  },
-  {
    "key": "cr-ref-lens-8|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|transition-duration",
    "ref": "cr-ref-lens-8",
    "pair": "option-card",
@@ -3717,7 +2343,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "state-conflict: transition-duration is read at 0.25s, 0.25s, 0.3s in q1-use and 0.25s, 0.25s, 0.3s in q2-thickness and 0.25s, 0.25s, 0.3s in q3-finish and 0.25s, 0.25s in q4-prescription and 0.25s, 0.25s in q4-upload and 0.25s, 0.25s in q4-type at 375px, and every one of those walker states maps to the setting state \"rest\": one setting cannot hold both draft values (4 widths disagree)",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -4076,7 +2702,7 @@
     1920
    ],
    "solveClass": "content",
-   "solveReason": "not written",
+   "solveReason": "handover to woocommerce-text: sgs/choice-flow holds no setting for this text; its content is not in the tree",
    "class": "W",
    "decidedBy": "content",
    "evidence": [

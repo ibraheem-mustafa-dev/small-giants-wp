@@ -1,16 +1,3000 @@
 {
  "surface": "mobile-menu",
- "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-08T20-25-07/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-08T20-25-07/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-09T08-46-22/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-09T08-46-22/round-13/report.json",
  "date": "2026-10-09",
  "counts": {
-  "W": 71,
-  "F": 2,
-  "T": 20,
+  "W": 72,
+  "F": 11,
+  "T": 1,
   "U": 0,
   "L": 0
  },
  "verdicts": [
+  {
+   "key": "cr-ref-mobile-menu-2||style|background-image",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "background-image",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "colourBackgroundGradient"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-2",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "colourBackgroundGradient",
+     "group": "cr-ref-mobile-menu-2||background-image|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "colourBackgroundGradient",
+     "css_property": "background-image",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "colourBackgroundHoverGradient",
+     "css_property": "background-image",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [
+       "colourBackgroundGradient",
+       "colourBackgroundHoverGradient"
+      ],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "colourBackgroundGradient",
+       "colourBackgroundHoverGradient",
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "backgroundImage"
+      ],
+      "absent": [
+       "colourBackgroundGradient",
+       "colourBackgroundHoverGradient"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "button/style.css",
+      "selector": ".sgs-button",
+      "declaration": "background-image:var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-image-default, none))"
+     },
+     {
+      "file": "button/style.css",
+      "selector": ".sgs-button:hover, .sgs-button:focus-visible",
+      "declaration": "background-image:var(--sgs-btn-bg-hover-image, var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-hover-image-default, var(--sgs-mb-btn-bg-image-default, none))))"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "button",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
+      "mentions": [],
+      "declares": [
+       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+      ]
+     },
+     {
+      "block": "button",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
+      "mentions": [],
+      "declares": [
+       "background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s:none'; $sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';",
+       "(max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] )",
+       "(max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] )"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-treatments.php::includes/nav-menu-treatments.php",
+      "mentions": [],
+      "declares": [
+       "? 'color:' . $normal . ';' : '' ) . 'background-image:' . $grad . ';' . 'background-size:200%",
+       "d-colors:active),print{' . $selector . '{background-image:none;-webkit-text-fill-color:currentColor;"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-treatments.php::sgs_nav_shared_text_sweep_css",
+      "mentions": [],
+      "declares": [
+       "? 'color:' . $normal . ';' : '' ) . 'background-image:' . $grad . ';' . 'background-size:200%",
+       "d-colors:active),print{' . $selector . '{background-image:none;-webkit-text-fill-color:currentColor;"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||style|background-image",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "background-image",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "colourBackgroundGradient"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-4",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "colourBackgroundGradient",
+     "group": "cr-ref-mobile-menu-4||background-image|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "colourBackgroundGradient",
+     "css_property": "background-image",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "colourBackgroundHoverGradient",
+     "css_property": "background-image",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [
+       "colourBackgroundGradient",
+       "colourBackgroundHoverGradient"
+      ],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "colourBackgroundGradient",
+       "colourBackgroundHoverGradient",
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "backgroundImage"
+      ],
+      "absent": [
+       "colourBackgroundGradient",
+       "colourBackgroundHoverGradient"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "button/style.css",
+      "selector": ".sgs-button",
+      "declaration": "background-image:var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-image-default, none))"
+     },
+     {
+      "file": "button/style.css",
+      "selector": ".sgs-button:hover, .sgs-button:focus-visible",
+      "declaration": "background-image:var(--sgs-btn-bg-hover-image, var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-hover-image-default, var(--sgs-mb-btn-bg-image-default, none))))"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "button",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
+      "mentions": [],
+      "declares": [
+       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+      ]
+     },
+     {
+      "block": "button",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
+      "mentions": [],
+      "declares": [
+       "background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s:none'; $sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';",
+       "(max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] )",
+       "(max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] )"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-treatments.php::includes/nav-menu-treatments.php",
+      "mentions": [],
+      "declares": [
+       "? 'color:' . $normal . ';' : '' ) . 'background-image:' . $grad . ';' . 'background-size:200%",
+       "d-colors:active),print{' . $selector . '{background-image:none;-webkit-text-fill-color:currentColor;"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-treatments.php::sgs_nav_shared_text_sweep_css",
+      "mentions": [],
+      "declares": [
+       "? 'color:' . $normal . ';' : '' ) . 'background-image:' . $grad . ';' . 'background-size:200%",
+       "d-colors:active),print{' . $selector . '{background-image:none;-webkit-text-fill-color:currentColor;"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-9||style|column-gap",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "gen-mobile-menu-9",
+   "path": "",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "column-gap",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "gap"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-9",
+      "block": "sgs/icon-list",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "gap",
+     "group": "cr-ref-mobile-menu-9||column-gap|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/icon-list",
+     "setting": "gap",
+     "css_property": "gap",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": [
+       "columnGap"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": [
+       "columnGap"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": [
+       "columnGap"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "icon-list/style.css",
+      "selector": ".sgs-icon-list",
+      "declaration": "gap:var(--sgs-icon-list-gap, var(--wp--preset--spacing--20))"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-separators-css.php::sgs_separators_var_props",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "gap"
+      ],
+      "declares": [
+       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
+       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
+       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-container.php::sgs_container_tier_gap",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-container-separators.php::sgs_container_separators_css",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-9||style|row-gap",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "gen-mobile-menu-9",
+   "path": "",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "row-gap",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "gap"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-9",
+      "block": "sgs/icon-list",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "gap",
+     "group": "cr-ref-mobile-menu-9||column-gap|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/icon-list",
+     "setting": "gap",
+     "css_property": "gap",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": [
+       "rowGap"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": [
+       "rowGap"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": [
+       "rowGap"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "icon-list/style.css",
+      "selector": ".sgs-icon-list",
+      "declaration": "gap:var(--sgs-icon-list-gap, var(--wp--preset--spacing--20))"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-separators-css.php::sgs_separators_var_props",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "gap"
+      ],
+      "declares": [
+       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
+       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
+       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-container.php::sgs_container_tier_gap",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-container-separators.php::sgs_container_separators_css",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-9||style|gap",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "gen-mobile-menu-9",
+   "path": "",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "gap",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "gap"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-9",
+      "block": "sgs/icon-list",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "gap",
+     "group": "cr-ref-mobile-menu-9||column-gap|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/icon-list",
+     "setting": "gap",
+     "css_property": "gap",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": []
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [
+     {
+      "file": "icon-list/style.css",
+      "selector": ".sgs-icon-list",
+      "declaration": "gap:var(--sgs-icon-list-gap, var(--wp--preset--spacing--20))"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-separators-css.php::sgs_separators_var_props",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "gap"
+      ],
+      "declares": [
+       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
+       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
+       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-container.php::sgs_container_tier_gap",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-container-separators.php::sgs_container_separators_css",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
+      "mentions": [
+       "gap"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||style|transition-duration",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-2",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "transitionDuration",
+     "group": "cr-ref-mobile-menu-2||transition-duration|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       ". $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}'; $css .= '@medi",
+       "fers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}'; $css .= '@media (forced-col"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "declares": []
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::sgs_transition_vars",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||style|transition-duration",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-4",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "transitionDuration",
+     "group": "cr-ref-mobile-menu-4||transition-duration|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       ". $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}'; $css .= '@medi",
+       "fers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}'; $css .= '@media (forced-col"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "declares": []
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::sgs_transition_vars",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-11||style|transition-duration",
+   "ref": "cr-ref-mobile-menu-11",
+   "pair": "drawer-phone",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-11",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "transitionDuration",
+     "group": "cr-ref-mobile-menu-11||transition-duration|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       ". $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}'; $css .= '@medi",
+       "fers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}'; $css .= '@media (forced-col"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "declares": []
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::sgs_transition_vars",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-15||style|transition-duration",
+   "ref": "cr-ref-mobile-menu-15",
+   "pair": "drawer-whatsapp",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-15",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "transitionDuration",
+     "group": "cr-ref-mobile-menu-15||transition-duration|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       ". $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}'; $css .= '@medi",
+       "fers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}'; $css .= '@media (forced-col"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "declares": []
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::sgs_transition_vars",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-0||style|padding-top",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-panel",
+   "path": "",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "padding-top",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "no padding-top setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no padding-top setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "drawerPadding",
+     "css_property": "padding",
+     "css_element": "body",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeRowPadding",
+     "css_property": "padding",
+     "css_element": "chrome",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeButtonPadding",
+     "css_property": "padding",
+     "css_element": "chromeButton",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "closePadding",
+     "css_property": "padding",
+     "css_element": "close",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-16",
+     "block": "sgs/google-rating-badge",
+     "setting": "padding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "drawerPadding",
+       "padding"
+      ],
+      "absent": [
+       "chromeRowPadding",
+       "chromeButtonPadding",
+       "closePadding",
+       "paddingTop"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+      "mentions": [],
+      "declares": [
+       "ing_top ) ) { * $style_parts[] = 'padding-top:' . floatval( $padding_top ) . esc_attr( $paddi",
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
+      "mentions": [
+       "chromeRowPadding",
+       "closePadding"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-0||style|padding-right",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-panel",
+   "path": "",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "padding-right",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "no padding-right setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no padding-right setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "drawerPadding",
+     "css_property": "padding",
+     "css_element": "body",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeRowPadding",
+     "css_property": "padding",
+     "css_element": "chrome",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeButtonPadding",
+     "css_property": "padding",
+     "css_element": "chromeButton",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "closePadding",
+     "css_property": "padding",
+     "css_element": "close",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-16",
+     "block": "sgs/google-rating-badge",
+     "setting": "padding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "drawerPadding",
+       "padding"
+      ],
+      "absent": [
+       "chromeRowPadding",
+       "chromeButtonPadding",
+       "closePadding",
+       "paddingRight"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
+      "mentions": [
+       "chromeRowPadding",
+       "closePadding"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-0||style|padding-bottom",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-panel",
+   "path": "",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "no padding-bottom setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no padding-bottom setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "drawerPadding",
+     "css_property": "padding",
+     "css_element": "body",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeRowPadding",
+     "css_property": "padding",
+     "css_element": "chrome",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeButtonPadding",
+     "css_property": "padding",
+     "css_element": "chromeButton",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "closePadding",
+     "css_property": "padding",
+     "css_element": "close",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-16",
+     "block": "sgs/google-rating-badge",
+     "setting": "padding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "drawerPadding",
+       "padding"
+      ],
+      "absent": [
+       "chromeRowPadding",
+       "chromeButtonPadding",
+       "closePadding",
+       "paddingBottom"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
+      "mentions": [
+       "chromeRowPadding",
+       "closePadding"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-0||style|padding-left",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-panel",
+   "path": "",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "padding-left",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "no padding-left setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no padding-left setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "drawerPadding",
+     "css_property": "padding",
+     "css_element": "body",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeRowPadding",
+     "css_property": "padding",
+     "css_element": "chrome",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeButtonPadding",
+     "css_property": "padding",
+     "css_element": "chromeButton",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "closePadding",
+     "css_property": "padding",
+     "css_element": "close",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-16",
+     "block": "sgs/google-rating-badge",
+     "setting": "padding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "drawerPadding",
+       "padding"
+      ],
+      "absent": [
+       "chromeRowPadding",
+       "chromeButtonPadding",
+       "closePadding",
+       "paddingLeft"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
+      "mentions": [
+       "chromeRowPadding",
+       "closePadding"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-0||style|animation-duration",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-panel",
+   "path": "",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "animation-duration",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "no animation-duration setting on sgs/nav-drawer paints \"\" (candidates: entryDuration, exitDuration)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no animation-duration setting on sgs/nav-drawer paints \"\" (candidates: entryDuration, exitDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "entryDuration",
+     "css_property": "animation,animation-duration",
+     "css_element": "body",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "exitDuration",
+     "css_property": "animation,animation-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "sgsAnimationDuration",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "animation",
+     "setting": "sgsAnimationDuration",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-0||style|animation-timing-function",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-panel",
+   "path": "",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "animation-timing-function",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "no animation-timing-function setting on sgs/nav-drawer paints \"\" (candidates: entryEasing)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no animation-timing-function setting on sgs/nav-drawer paints \"\" (candidates: entryEasing)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "entryEasing",
+     "css_property": "animation,animation-timing-function",
+     "css_element": "body",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-0||style|max-width",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-panel",
+   "path": "",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "max-width",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/nav-drawer has no setting for max-width",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/nav-drawer has no setting for max-width"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeLogoWidth",
+     "css_property": "width",
+     "css_element": "chromeLogo",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-1",
+     "block": "sgs/container",
+     "setting": "maxWidth",
+     "property": "max-width",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "chromeLogoWidth",
+       "maxWidth"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
+      "mentions": [
+       "chromeLogoWidth"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|border-radius",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-close",
+   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "border-radius",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "no border-radius setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: borderRadius, closeRadius, chromeButtonBorderRadius)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-radius setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: borderRadius, closeRadius, chromeButtonBorderRadius)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "borderRadius",
+     "css_property": "border-radius",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "closeRadius",
+     "css_property": "border-radius",
+     "css_element": "close",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeButtonBorderRadius",
+     "css_property": "border-radius",
+     "css_element": "chromeButton",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|outline-style",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-close",
+   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "outline-style",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/nav-drawer has no setting for outline-style",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/nav-drawer has no setting for outline-style"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "outlineStyle"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close::after|style|content",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-close",
+   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close::after",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "content",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/nav-drawer has no setting for content",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/nav-drawer has no setting for content"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "content"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [
+     {
+      "file": "nav-drawer/style.css",
+      "selector": ".sgs-nav-drawer__close::after",
+      "declaration": "content:\"\""
+     }
+    ],
+    "helpers": [
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       "$fill . '}'; $css .= $sel . '::before{content:\"\";position:absolute;inset:0;background:var(--sgs-s"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+      "mentions": [],
+      "declares": [
+       ":isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra",
+       "ng-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "ng-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-tokens.php::sgs_block_background_layer_css",
+      "mentions": [],
+      "declares": [
+       ":isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "$css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||style|translate",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "translate",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for translate",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for translate"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||style|animation-delay",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "animation-delay",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for animation-delay",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for animation-delay"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "animation",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||style|animation-timing-function",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "animation-timing-function",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for animation-timing-function",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for animation-timing-function"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-0",
+     "block": "sgs/nav-drawer",
+     "setting": "entryEasing",
+     "property": "animation,animation-timing-function",
+     "via": "declared",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||style|max-width",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "max-width",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for max-width",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for max-width"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "widthType",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "customWidth",
+     "css_property": "width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "childSizing",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||style|translate",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "translate",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for translate",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for translate"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||style|animation-delay",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "animation-delay",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for animation-delay",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for animation-delay"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "animation",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||style|animation-timing-function",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "animation-timing-function",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for animation-timing-function",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for animation-timing-function"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-0",
+     "block": "sgs/nav-drawer",
+     "setting": "entryEasing",
+     "property": "animation,animation-timing-function",
+     "via": "declared",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||style|max-width",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "max-width",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for max-width",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for max-width"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "widthType",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "customWidth",
+     "css_property": "width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "childSizing",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-11||style|translate",
+   "ref": "cr-ref-mobile-menu-11",
+   "pair": "drawer-phone",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "translate",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for translate",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for translate"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-11||style|max-width",
+   "ref": "cr-ref-mobile-menu-11",
+   "pair": "drawer-phone",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "max-width",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for max-width",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for max-width"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "widthType",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "customWidth",
+     "css_property": "width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "childSizing",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-9||style|translate",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "gen-mobile-menu-9",
+   "path": "",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "translate",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/icon-list has no setting for translate",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/icon-list has no setting for translate"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-0",
+     "block": "sgs/nav-drawer",
+     "setting": "itemStaggerAxis",
+     "property": "translate",
+     "via": "declared",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [],
+      "absent": [
+       "translate"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "translate"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "translate"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-9||style|animation-delay",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "gen-mobile-menu-9",
+   "path": "",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "animation-delay",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/icon-list has no setting for animation-delay",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/icon-list has no setting for animation-delay"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/icon-list",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "animation",
+     "setting": "sgsAnimationDelay",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-9||style|animation-timing-function",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "gen-mobile-menu-9",
+   "path": "",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "animation-timing-function",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/icon-list has no setting for animation-timing-function",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/icon-list has no setting for animation-timing-function"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-0",
+     "block": "sgs/nav-drawer",
+     "setting": "entryEasing",
+     "property": "animation,animation-timing-function",
+     "via": "declared",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [],
+      "absent": [
+       "animationTimingFunction"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
+  },
+  {
+   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|transition-duration",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-close",
+   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+   "block": "sgs/nav-drawer",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "no transition-duration setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: scrimFadeDuration)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: scrimFadeDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "scrimFadeDuration",
+     "css_property": "transition-duration",
+     "css_element": "scrim",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|hover|hover-effects",
+   "ref": "cr-ref-mobile-menu-0",
+   "pair": "drawer-close",
+   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+   "block": "sgs/nav-drawer",
+   "kind": "hover",
+   "property": "hover-effects",
+   "widths": [
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/nav-drawer has no setting for hover-effects (hover)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/nav-drawer has no setting for hover-effects (hover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/nav-drawer",
+     "setting": "closeHoverOpacity",
+     "css_property": "opacity",
+     "css_element": "close",
+     "css_state": "hover",
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||style|transition-timing-function",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-timing-function",
+   "widths": [
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "no transition-timing-function setting on sgs/button paints \"\" (candidates: transitionEasing)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-timing-function setting on sgs/button paints \"\" (candidates: transitionEasing)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionEasing",
+     "css_property": "transition-timing-function",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||style|transition-timing-function",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-timing-function",
+   "widths": [
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "no transition-timing-function setting on sgs/button paints \"\" (candidates: transitionEasing)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-timing-function setting on sgs/button paints \"\" (candidates: transitionEasing)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionEasing",
+     "css_property": "transition-timing-function",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-11||hover|hover-effects",
+   "ref": "cr-ref-mobile-menu-11",
+   "pair": "drawer-phone",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "hover",
+   "property": "hover-effects",
+   "widths": [
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for hover-effects (hover)",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for hover-effects (hover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "boxShadowHover",
+     "css_property": "box-shadow",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "scaleHover",
+     "css_property": "transform",
+     "css_element": "face",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "boxShadowColourHover",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "shadowLiftOnHover",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "scaleHoverTarget",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "opacityHover",
+     "css_property": "opacity",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-15||hover|hover-effects",
+   "ref": "cr-ref-mobile-menu-15",
+   "pair": "drawer-whatsapp",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "hover",
+   "property": "hover-effects",
+   "widths": [
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for hover-effects (hover)",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for hover-effects (hover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "boxShadowHover",
+     "css_property": "box-shadow",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "scaleHover",
+     "css_property": "transform",
+     "css_element": "face",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "boxShadowColourHover",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "shadowLiftOnHover",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "scaleHoverTarget",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "opacityHover",
+     "css_property": "opacity",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-11||hover|border-top-width",
+   "ref": "cr-ref-mobile-menu-11",
+   "pair": "gen-mobile-menu-11",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "hover",
+   "property": "border-top-width",
+   "widths": [
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for border-top-width (hover)",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for border-top-width (hover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/button",
+     "setting": "inheritStyle",
+     "values": [
+      "outline"
+     ]
+    }
+   ]
+  },
   {
    "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__chrome-slot|style|color",
    "ref": "cr-ref-mobile-menu-0",
@@ -24,7 +3008,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "ambiguous: chromeSlotColour, chromeButtonColourText all paint color on \".sgs-nav-drawer__chrome > .sgs-nav-drawer__chrome-slot\"",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -279,1618 +3263,6 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-0||style|padding-top",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-panel",
-   "path": "",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-top setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "drawerPadding",
-     "css_property": "padding",
-     "css_element": "body",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeRowPadding",
-     "css_property": "padding",
-     "css_element": "chrome",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeButtonPadding",
-     "css_property": "padding",
-     "css_element": "chromeButton",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "closePadding",
-     "css_property": "padding",
-     "css_element": "close",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-mobile-menu-16",
-     "block": "sgs/google-rating-badge",
-     "setting": "padding",
-     "property": "padding",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": true
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [
-       "drawerPadding",
-       "padding"
-      ],
-      "absent": [
-       "chromeRowPadding",
-       "chromeButtonPadding",
-       "closePadding",
-       "paddingTop"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "nav-drawer",
-      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
-      "mentions": [],
-      "declares": [
-       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
-      "mentions": [],
-      "declares": [
-       "ing_top ) ) { * $style_parts[] = 'padding-top:' . floatval( $padding_top ) . esc_attr( $paddi",
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
-      "mentions": [
-       "chromeRowPadding",
-       "closePadding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-mobile-menu-0||style|padding-right",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-panel",
-   "path": "",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-right setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "drawerPadding",
-     "css_property": "padding",
-     "css_element": "body",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeRowPadding",
-     "css_property": "padding",
-     "css_element": "chrome",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeButtonPadding",
-     "css_property": "padding",
-     "css_element": "chromeButton",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "closePadding",
-     "css_property": "padding",
-     "css_element": "close",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-mobile-menu-16",
-     "block": "sgs/google-rating-badge",
-     "setting": "padding",
-     "property": "padding",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": true
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [
-       "drawerPadding",
-       "padding"
-      ],
-      "absent": [
-       "chromeRowPadding",
-       "chromeButtonPadding",
-       "closePadding",
-       "paddingRight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "nav-drawer",
-      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
-      "mentions": [],
-      "declares": [
-       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
-      "mentions": [
-       "chromeRowPadding",
-       "closePadding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-mobile-menu-0||style|padding-bottom",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-panel",
-   "path": "",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-bottom setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "drawerPadding",
-     "css_property": "padding",
-     "css_element": "body",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeRowPadding",
-     "css_property": "padding",
-     "css_element": "chrome",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeButtonPadding",
-     "css_property": "padding",
-     "css_element": "chromeButton",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "closePadding",
-     "css_property": "padding",
-     "css_element": "close",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-mobile-menu-16",
-     "block": "sgs/google-rating-badge",
-     "setting": "padding",
-     "property": "padding",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": true
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [
-       "drawerPadding",
-       "padding"
-      ],
-      "absent": [
-       "chromeRowPadding",
-       "chromeButtonPadding",
-       "closePadding",
-       "paddingBottom"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "nav-drawer",
-      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
-      "mentions": [],
-      "declares": [
-       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
-      "mentions": [
-       "chromeRowPadding",
-       "closePadding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-mobile-menu-0||style|padding-left",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-panel",
-   "path": "",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-left setting on sgs/nav-drawer paints \"\" (candidates: drawerPadding, chromeRowPadding, chromeButtonPadding, closePadding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "drawerPadding",
-     "css_property": "padding",
-     "css_element": "body",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeRowPadding",
-     "css_property": "padding",
-     "css_element": "chrome",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeButtonPadding",
-     "css_property": "padding",
-     "css_element": "chromeButton",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "closePadding",
-     "css_property": "padding",
-     "css_element": "close",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-mobile-menu-16",
-     "block": "sgs/google-rating-badge",
-     "setting": "padding",
-     "property": "padding",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": true
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [
-       "drawerPadding",
-       "padding"
-      ],
-      "absent": [
-       "chromeRowPadding",
-       "chromeButtonPadding",
-       "closePadding",
-       "paddingLeft"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "nav-drawer",
-      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
-      "mentions": [],
-      "declares": [
-       "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
-      "mentions": [
-       "chromeRowPadding",
-       "closePadding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-mobile-menu-0||style|animation-duration",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-panel",
-   "path": "",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "animation-duration",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no animation-duration setting on sgs/nav-drawer paints \"\" (candidates: entryDuration, exitDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "entryDuration",
-     "css_property": "animation,animation-duration",
-     "css_element": "body",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "exitDuration",
-     "css_property": "animation,animation-duration",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "sgsAnimationDuration",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "animation",
-     "setting": "sgsAnimationDuration",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-0||style|animation-timing-function",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-panel",
-   "path": "",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "animation-timing-function",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no animation-timing-function setting on sgs/nav-drawer paints \"\" (candidates: entryEasing)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "entryEasing",
-     "css_property": "animation,animation-timing-function",
-     "css_element": "body",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-0||style|max-width",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-panel",
-   "path": "",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "max-width",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/nav-drawer has no setting for max-width"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeLogoWidth",
-     "css_property": "width",
-     "css_element": "chromeLogo",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-mobile-menu-1",
-     "block": "sgs/container",
-     "setting": "maxWidth",
-     "property": "max-width",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [],
-      "absent": [
-       "chromeLogoWidth",
-       "maxWidth"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "nav-drawer",
-      "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
-      "mentions": [
-       "chromeLogoWidth"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|border-radius",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "border-radius",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-radius setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: borderRadius, closeRadius, chromeButtonBorderRadius)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "borderRadius",
-     "css_property": "border-radius",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "closeRadius",
-     "css_property": "border-radius",
-     "css_element": "close",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeButtonBorderRadius",
-     "css_property": "border-radius",
-     "css_element": "chromeButton",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|padding-top",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "closePadding"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-0",
-      "block": "sgs/nav-drawer",
-      "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "drawerPadding",
-     "css_property": "padding",
-     "css_element": "body",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeRowPadding",
-     "css_property": "padding",
-     "css_element": "chrome",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeButtonPadding",
-     "css_property": "padding",
-     "css_element": "chromeButton",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "closePadding",
-     "css_property": "padding",
-     "css_element": "close",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|padding-right",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "closePadding"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-0",
-      "block": "sgs/nav-drawer",
-      "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "drawerPadding",
-     "css_property": "padding",
-     "css_element": "body",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeRowPadding",
-     "css_property": "padding",
-     "css_element": "chrome",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeButtonPadding",
-     "css_property": "padding",
-     "css_element": "chromeButton",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "closePadding",
-     "css_property": "padding",
-     "css_element": "close",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|padding-bottom",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "closePadding"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-0",
-      "block": "sgs/nav-drawer",
-      "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "drawerPadding",
-     "css_property": "padding",
-     "css_element": "body",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeRowPadding",
-     "css_property": "padding",
-     "css_element": "chrome",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeButtonPadding",
-     "css_property": "padding",
-     "css_element": "chromeButton",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "closePadding",
-     "css_property": "padding",
-     "css_element": "close",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|padding-left",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "closePadding"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-0",
-      "block": "sgs/nav-drawer",
-      "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "drawerPadding",
-     "css_property": "padding",
-     "css_element": "body",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeRowPadding",
-     "css_property": "padding",
-     "css_element": "chrome",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "chromeButtonPadding",
-     "css_property": "padding",
-     "css_element": "chromeButton",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "closePadding",
-     "css_property": "padding",
-     "css_element": "close",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|outline-style",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "outline-style",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/nav-drawer has no setting for outline-style"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [],
-      "absent": [
-       "outlineStyle"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close::after|style|content",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close::after",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "content",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/nav-drawer has no setting for content"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [
-       "content"
-      ],
-      "absent": []
-     }
-    ],
-    "rules": [
-     {
-      "file": "nav-drawer/style.css",
-      "selector": ".sgs-nav-drawer__close::after",
-      "declaration": "content:\"\""
-     }
-    ],
-    "helpers": [
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
-      "mentions": [],
-      "declares": [
-       "$fill . '}'; $css .= $sel . '::before{content:\"\";position:absolute;inset:0;background:var(--sgs-s"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
-      "mentions": [],
-      "declares": [
-       ":isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra",
-       "ng-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "ng-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-tokens.php::sgs_block_background_layer_css",
-      "mentions": [],
-      "declares": [
-       ":isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "$css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-mobile-menu-2||style|background-image",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "drawer-link-sunglasses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "background-image",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "colourBackgroundGradient"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-2",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-2||style|translate",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "drawer-link-sunglasses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "translate",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for translate"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "liftHover",
-     "css_property": "translate",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-2||style|animation-delay",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "drawer-link-sunglasses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "animation-delay",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for animation-delay"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsAnimationDelay",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "animation",
-     "setting": "sgsAnimationDelay",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-2||style|animation-timing-function",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "drawer-link-sunglasses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "animation-timing-function",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for animation-timing-function"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-mobile-menu-0",
-     "block": "sgs/nav-drawer",
-     "setting": "entryEasing",
-     "property": "animation,animation-timing-function",
-     "via": "declared",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "button/render.php",
-      "mentions": [],
-      "absent": [
-       "animationTimingFunction"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "animationTimingFunction"
-      ]
-     },
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [],
-      "absent": [
-       "animationTimingFunction"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-mobile-menu-2||style|max-width",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "drawer-link-sunglasses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "max-width",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for max-width"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "widthType",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-4||style|background-image",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "drawer-link-lenses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "background-image",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "colourBackgroundGradient"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-4",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-4||style|translate",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "drawer-link-lenses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "translate",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for translate"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "liftHover",
-     "css_property": "translate",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-4||style|animation-delay",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "drawer-link-lenses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "animation-delay",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for animation-delay"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsAnimationDelay",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "animation",
-     "setting": "sgsAnimationDelay",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-4||style|animation-timing-function",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "drawer-link-lenses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "animation-timing-function",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for animation-timing-function"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-mobile-menu-0",
-     "block": "sgs/nav-drawer",
-     "setting": "entryEasing",
-     "property": "animation,animation-timing-function",
-     "via": "declared",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "button/render.php",
-      "mentions": [],
-      "absent": [
-       "animationTimingFunction"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "animationTimingFunction"
-      ]
-     },
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [],
-      "absent": [
-       "animationTimingFunction"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-mobile-menu-4||style|max-width",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "drawer-link-lenses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "max-width",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for max-width"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "widthType",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link|style|display",
    "ref": "cr-ref-mobile-menu-9",
    "pair": "drawer-link-about",
@@ -1903,7 +3275,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -2017,7 +3389,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -2131,7 +3503,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -2160,7 +3532,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/icon-list path \".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -2274,7 +3646,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/icon-list path \".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -2388,7 +3760,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -2405,456 +3777,6 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-11||style|translate",
-   "ref": "cr-ref-mobile-menu-11",
-   "pair": "drawer-phone",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "translate",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for translate"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "liftHover",
-     "css_property": "translate",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-11||style|max-width",
-   "ref": "cr-ref-mobile-menu-11",
-   "pair": "drawer-phone",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "max-width",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for max-width"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "widthType",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-15||style|text-align",
-   "ref": "cr-ref-mobile-menu-15",
-   "pair": "drawer-whatsapp",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "text-align",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "shape",
-     "detail": "start is not one of , left, center, right, justify"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "textAlign",
-     "css_property": "text-align",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-9||style|column-gap",
-   "ref": "cr-ref-mobile-menu-9",
-   "pair": "gen-mobile-menu-9",
-   "path": "",
-   "block": "sgs/icon-list",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-9",
-      "block": "sgs/icon-list",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/icon-list",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-9||style|row-gap",
-   "ref": "cr-ref-mobile-menu-9",
-   "pair": "gen-mobile-menu-9",
-   "path": "",
-   "block": "sgs/icon-list",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-9",
-      "block": "sgs/icon-list",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/icon-list",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-9||style|translate",
-   "ref": "cr-ref-mobile-menu-9",
-   "pair": "gen-mobile-menu-9",
-   "path": "",
-   "block": "sgs/icon-list",
-   "kind": "style",
-   "property": "translate",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/icon-list has no setting for translate"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-mobile-menu-0",
-     "block": "sgs/nav-drawer",
-     "setting": "itemStaggerAxis",
-     "property": "translate",
-     "via": "declared",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "icon-list/render.php",
-      "mentions": [],
-      "absent": [
-       "translate"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "translate"
-      ]
-     },
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [
-       "translate"
-      ],
-      "absent": []
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-mobile-menu-9||style|animation-delay",
-   "ref": "cr-ref-mobile-menu-9",
-   "pair": "gen-mobile-menu-9",
-   "path": "",
-   "block": "sgs/icon-list",
-   "kind": "style",
-   "property": "animation-delay",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/icon-list has no setting for animation-delay"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/icon-list",
-     "setting": "sgsAnimationDelay",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "animation",
-     "setting": "sgsAnimationDelay",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-9||style|animation-timing-function",
-   "ref": "cr-ref-mobile-menu-9",
-   "pair": "gen-mobile-menu-9",
-   "path": "",
-   "block": "sgs/icon-list",
-   "kind": "style",
-   "property": "animation-timing-function",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/icon-list has no setting for animation-timing-function"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-mobile-menu-0",
-     "block": "sgs/nav-drawer",
-     "setting": "entryEasing",
-     "property": "animation,animation-timing-function",
-     "via": "declared",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "icon-list/render.php",
-      "mentions": [],
-      "absent": [
-       "animationTimingFunction"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "animationTimingFunction"
-      ]
-     },
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [],
-      "absent": [
-       "animationTimingFunction"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-mobile-menu-9||style|margin-top",
-   "ref": "cr-ref-mobile-menu-9",
-   "pair": "gen-mobile-menu-9",
-   "path": "",
-   "block": "sgs/icon-list",
-   "kind": "style",
-   "property": "margin-top",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "margin"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-9",
-      "block": "sgs/icon-list",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/icon-list",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-9||style|gap",
-   "ref": "cr-ref-mobile-menu-9",
-   "pair": "gen-mobile-menu-9",
-   "path": "",
-   "block": "sgs/icon-list",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-9",
-      "block": "sgs/icon-list",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/icon-list",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-8|.sgs-icon-list|style|column-gap",
    "ref": "cr-ref-mobile-menu-8",
    "pair": "gen-mobile-menu-8",
@@ -2867,7 +3789,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-icon-list\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -2900,7 +3822,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-icon-list\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -2921,57 +3843,6 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-8||style|margin-top",
-   "ref": "cr-ref-mobile-menu-8",
-   "pair": "gen-mobile-menu-8",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "margin-top",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "margin"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-8",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentBandMargin",
-     "css_property": "margin-bottom,margin-left,margin-right,margin-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-8|.sgs-icon-list|style|gap",
    "ref": "cr-ref-mobile-menu-8",
    "pair": "gen-mobile-menu-8",
@@ -2984,7 +3855,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-icon-list\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -3005,38 +3876,6 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|transition-duration",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: scrimFadeDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "scrimFadeDuration",
-     "css_property": "transition-duration",
-     "css_element": "scrim",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|hover|opacity",
    "ref": "cr-ref-mobile-menu-0",
    "pair": "drawer-close",
@@ -3048,7 +3887,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "uncalibrated: sgs/nav-drawer closeHoverOpacity (hover) not calibrated",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -3087,296 +3926,6 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|hover|hover-effects",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
-   "block": "sgs/nav-drawer",
-   "kind": "hover",
-   "property": "hover-effects",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/nav-drawer has no setting for hover-effects (hover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "closeHoverOpacity",
-     "css_property": "opacity",
-     "css_element": "close",
-     "css_state": "hover",
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-2||style|transition-duration",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "drawer-link-sunglasses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "transitionDuration"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-2",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-2||style|transition-timing-function",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "drawer-link-sunglasses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-timing-function",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-timing-function setting on sgs/button paints \"\" (candidates: transitionEasing)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "transitionEasing",
-     "css_property": "transition-timing-function",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-2|.sgs-button__label|hover|color",
-   "ref": "cr-ref-mobile-menu-2",
-   "pair": "drawer-link-sunglasses",
-   "path": ".sgs-button__label",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "colourTextHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-2",
-      "block": "sgs/button",
-      "path": ".sgs-button__label"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourText",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackground",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColour",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHover",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHoverGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-2||hover|transform",
    "ref": "cr-ref-mobile-menu-2",
    "pair": "drawer-link-sunglasses",
@@ -3388,7 +3937,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: matrix(1, 0, 0, 1, 0, 0) cannot be held",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -3410,264 +3959,6 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-4||style|transition-duration",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "drawer-link-lenses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "transitionDuration"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-4",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-4||style|transition-timing-function",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "drawer-link-lenses",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-timing-function",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-timing-function setting on sgs/button paints \"\" (candidates: transitionEasing)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "transitionEasing",
-     "css_property": "transition-timing-function",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-4|.sgs-button__label|hover|color",
-   "ref": "cr-ref-mobile-menu-4",
-   "pair": "drawer-link-lenses",
-   "path": ".sgs-button__label",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "colourTextHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-4",
-      "block": "sgs/button",
-      "path": ".sgs-button__label"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourText",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackground",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColour",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHover",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHoverGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-4||hover|transform",
    "ref": "cr-ref-mobile-menu-4",
    "pair": "drawer-link-lenses",
@@ -3679,7 +3970,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: matrix(1, 0, 0, 1, 0, 0) cannot be held",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -3712,7 +4003,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -3744,7 +4035,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -3776,7 +4067,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -3892,7 +4183,8 @@
      "css_property": "color",
      "css_element": "item-icon",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3981,7 +4273,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/icon-list path \".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -4013,7 +4305,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/icon-list path \".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -4045,7 +4337,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/icon-list path \".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -4161,7 +4453,8 @@
      "css_property": "color",
      "css_element": "item-icon",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -4239,232 +4532,6 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-11||style|transition-duration",
-   "ref": "cr-ref-mobile-menu-11",
-   "pair": "drawer-phone",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "transitionDuration"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-11",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-11|.sgs-button__label|hover|color",
-   "ref": "cr-ref-mobile-menu-11",
-   "pair": "drawer-phone",
-   "path": ".sgs-button__label",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "colourTextHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-11",
-      "block": "sgs/button",
-      "path": ".sgs-button__label"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourText",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackground",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColour",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHover",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHoverGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-11||hover|transform",
    "ref": "cr-ref-mobile-menu-11",
    "pair": "drawer-phone",
@@ -4476,7 +4543,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: none cannot be held",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -4492,137 +4559,6 @@
      "css_property": "transform",
      "css_element": "face",
      "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-11||hover|hover-effects",
-   "ref": "cr-ref-mobile-menu-11",
-   "pair": "drawer-phone",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "hover-effects",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for hover-effects (hover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowHover",
-     "css_property": "box-shadow",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "scaleHover",
-     "css_property": "transform",
-     "css_element": "face",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "shadowLiftOnHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "scaleHoverTarget",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "opacityHover",
-     "css_property": "opacity",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "liftHover",
-     "css_property": "translate",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-15||style|transition-duration",
-   "ref": "cr-ref-mobile-menu-15",
-   "pair": "drawer-whatsapp",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "transitionDuration"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-15",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
-     "css_state": null,
      "source": "sgs",
      "reaches": true
     }
@@ -4640,7 +4576,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: none cannot be held",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -4655,97 +4591,6 @@
      "setting": "scaleHover",
      "css_property": "transform",
      "css_element": "face",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-15||hover|hover-effects",
-   "ref": "cr-ref-mobile-menu-15",
-   "pair": "drawer-whatsapp",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "hover-effects",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for hover-effects (hover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowHover",
-     "css_property": "box-shadow",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "scaleHover",
-     "css_property": "transform",
-     "css_element": "face",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "shadowLiftOnHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "scaleHoverTarget",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "opacityHover",
-     "css_property": "opacity",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "liftHover",
-     "css_property": "translate",
-     "css_element": null,
      "css_state": "hover",
      "source": "sgs",
      "reaches": true
@@ -4764,7 +4609,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: none cannot be held",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -4786,192 +4631,6 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-3|.sgs-button__label|hover|color",
-   "ref": "cr-ref-mobile-menu-3",
-   "pair": "gen-mobile-menu-3",
-   "path": ".sgs-button__label",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "colourTextHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mobile-menu-3",
-      "block": "sgs/button",
-      "path": ".sgs-button__label"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourText",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackground",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColour",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHover",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHoverGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-3||hover|transform",
    "ref": "cr-ref-mobile-menu-3",
    "pair": "gen-mobile-menu-3",
@@ -4983,7 +4642,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: matrix(1, 0, 0, 1, 0, 0) cannot be held",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -5016,7 +4675,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: none cannot be held",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -5049,7 +4708,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: none cannot be held",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -5082,7 +4741,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "not-painted: the draft has no top border (0px@768): its border-top-color is currentColor and paints nothing",
    "class": "T",
    "decidedBy": "resolver-writes",
    "evidence": [
@@ -5152,47 +4811,6 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-11||hover|border-top-width",
-   "ref": "cr-ref-mobile-menu-11",
-   "pair": "gen-mobile-menu-11",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "border-top-width",
-   "widths": [
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for border-top-width (hover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "outline"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mobile-menu-11||hover|translate",
    "ref": "cr-ref-mobile-menu-11",
    "pair": "gen-mobile-menu-11",
@@ -5204,7 +4822,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: none cannot be held",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -5237,20 +4855,260 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-button > .sgs-button__label\" is not a calibrated element",
    "class": "W",
-   "decidedBy": "same-element",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/container path \".sgs-button > .sgs-button__label\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayColour",
+     "css_property": "background-color",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "shapeDividerTopColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "shapeDividerBottomColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemTextColour",
+     "css_property": "color",
+     "css_element": "grid-item",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "shapeDividerTopColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "shapeDividerBottomColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "shadowColour",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemShadowColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayColourHover",
+     "css_property": "background-color",
+     "css_element": "overlay",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundColour",
+     "css_property": "background-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundColourHover",
+     "css_property": "background-color",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundColourHoverGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "textColour",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "textColourGradient",
+     "css_property": "color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "textColourHover",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "textColourHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "shadowColourHover",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemTextColourHover",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemTextColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemTextColourHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "grid-item",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link|box|y-after-gen-mobile-menu-4",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "drawer-link-about",
+   "path": ".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link",
+   "block": "sgs/icon-list",
+   "kind": "box",
+   "property": "y-after-gen-mobile-menu-4",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mobile-menu-11|.sgs-button__label|hover|color",
-     "ref": "cr-ref-mobile-menu-11",
-     "key": "color",
-     "relation": "same-element",
-     "match": "same-element",
-     "width": 768,
-     "delta": null,
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 34,
      "widths": [
+      375,
       768
      ]
     }
@@ -5323,13 +5181,13 @@
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link|box|y-after-gen-mobile-menu-8",
+   "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link|box|y-after-drawer-link-about",
    "ref": "cr-ref-mobile-menu-9",
    "pair": "drawer-link-contact",
    "path": ".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link",
    "block": "sgs/icon-list",
    "kind": "box",
-   "property": "y-after-gen-mobile-menu-8",
+   "property": "y-after-drawer-link-about",
    "widths": [
     375,
     768
@@ -5341,13 +5199,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mobile-menu-9||style|margin-top",
-     "ref": "cr-ref-mobile-menu-9",
-     "key": "margin-top",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 28,
+     "delta": 22,
      "widths": [
       375,
       768
@@ -5440,28 +5298,30 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0||style|padding-top",
-     "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-top",
+     "parent": "cr-ref-mobile-menu-10||box|y-after-drawer-link-contact",
+     "ref": "cr-ref-mobile-menu-10",
+     "key": "y-after-drawer-link-contact",
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": -19,
+     "delta": -18,
      "widths": [
       375,
+      375,
+      768,
       768
      ]
     }
    ]
   },
   {
-   "key": "cr-ref-mobile-menu-9||box|y-after-drawer-link-about",
+   "key": "cr-ref-mobile-menu-9||box|y-after-gen-mobile-menu-4",
    "ref": "cr-ref-mobile-menu-9",
    "pair": "gen-mobile-menu-9",
    "path": "",
    "block": "sgs/icon-list",
    "kind": "box",
-   "property": "y-after-drawer-link-about",
+   "property": "y-after-gen-mobile-menu-4",
    "widths": [
     375,
     768
@@ -5473,13 +5333,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|padding-right",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
      "ref": "cr-ref-mobile-menu-0",
-     "key": "padding-right",
+     "key": "padding-top",
      "relation": "ancestor",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -7,
+     "delta": 28,
      "widths": [
       375,
       768
@@ -5539,13 +5399,46 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mobile-menu-9||box|h",
-     "ref": "cr-ref-mobile-menu-9",
-     "key": "h",
-     "relation": "descendant",
-     "match": "same-delta",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 31,
+     "delta": 59,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-10||box|y-after-drawer-link-contact",
+   "ref": "cr-ref-mobile-menu-10",
+   "pair": "gen-mobile-menu-10",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-drawer-link-contact",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -18,
      "widths": [
       375,
       768
@@ -5566,7 +5459,7 @@
     1920
    ],
    "solveClass": "content",
-   "solveReason": "not written",
+   "solveReason": "unmapped: ref cr-ref-header-4 is not in the tree",
    "class": "W",
    "decidedBy": "content",
    "evidence": [
@@ -5595,7 +5488,7 @@
     1920
    ],
    "solveClass": "content",
-   "solveReason": "not written",
+   "solveReason": "unmapped: ref cr-ref-footer-9 is not in the tree",
    "class": "W",
    "decidedBy": "content",
    "evidence": [
@@ -5624,7 +5517,7 @@
     1920
    ],
    "solveClass": "content",
-   "solveReason": "not written",
+   "solveReason": "unmapped: ref cr-ref-footer-9 is not in the tree",
    "class": "W",
    "decidedBy": "content",
    "evidence": [
@@ -5653,7 +5546,7 @@
     1920
    ],
    "solveClass": "content",
-   "solveReason": "not written",
+   "solveReason": "unmapped: ref cr-ref-header-12 is not in the tree",
    "class": "W",
    "decidedBy": "content",
    "evidence": [
@@ -5682,7 +5575,7 @@
     1920
    ],
    "solveClass": "content",
-   "solveReason": "not written",
+   "solveReason": "unmapped: ref cr-ref-footer-16 is not in the tree",
    "class": "W",
    "decidedBy": "content",
    "evidence": [
@@ -5711,7 +5604,7 @@
     1920
    ],
    "solveClass": "content",
-   "solveReason": "not written",
+   "solveReason": "unmapped: ref cr-ref-header-11 is not in the tree",
    "class": "W",
    "decidedBy": "content",
    "evidence": [

@@ -1,291 +1,103 @@
 {
  "surface": "size-guide",
- "report": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-08T21-50-05/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-08T21-50-05/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-09T08-59-36/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-09T08-59-36/round-2/report.json",
  "date": "2026-10-09",
  "counts": {
   "W": 53,
-  "F": 0,
-  "T": 10,
+  "F": 1,
+  "T": 0,
   "U": 0,
   "L": 0
  },
  "verdicts": [
   {
-   "key": "cr-ref-size-guide-0||style|line-height",
-   "ref": "cr-ref-size-guide-0",
-   "pair": "gen-size-guide-0",
-   "path": "",
-   "block": "sgs/heading",
+   "key": "cr-ref-size-guide-3|.sgs-container__inner > p:nth-of-type(1)|style|font-size",
+   "ref": "cr-ref-size-guide-3",
+   "pair": "gen-size-guide-3",
+   "path": ".sgs-container__inner > p:nth-of-type(1)",
+   "block": "sgs/container",
    "kind": "style",
-   "property": "line-height",
+   "property": "font-size",
    "widths": [
-    375,
-    768,
-    1440,
-    1920
+    375
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
      "wouldWrite": [
-      "lineHeight"
+      "fontSize"
      ],
      "on": {
-      "ref": "cr-ref-size-guide-0",
-      "block": "sgs/heading",
-      "path": ""
+      "ref": "cr-ref-size-guide-3",
+      "block": "sgs/container",
+      "path": ".sgs-container__inner > p:nth-of-type(1)"
      },
-     "holds": false
+     "holds": true,
+     "solveWrote": "fontSize",
+     "group": "cr-ref-size-guide-3|.sgs-container__inner > p:nth-of-type(1)|font-size|"
     },
     {
      "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "lineHeight",
-     "css_property": "line-height",
+     "block": "sgs/container",
+     "setting": "fontSize",
+     "css_property": "font-size",
      "css_element": "wrapper",
      "css_state": null,
      "source": "sgs",
      "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "headingRole",
-     "values": [
-      "subheading"
-     ]
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "level",
-     "values": [
-      "h1",
-      "h3",
-      "h5",
-      "h6"
-     ]
     }
-   ]
-  },
-  {
-   "key": "cr-ref-size-guide-1||style|color",
-   "ref": "cr-ref-size-guide-1",
-   "pair": "gen-size-guide-1",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textColour"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-1",
-      "block": "sgs/text",
-      "path": ""
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "fontSize"
+      ],
+      "absent": []
      },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColour",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourHover",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColour",
-     "css_property": "color",
-     "css_element": "text-link",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHover",
-     "css_property": "color-link",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHoverGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
+     {
+      "file": "modal/render.php",
+      "mentions": [],
+      "absent": [
+       "fontSize"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+      "mentions": [],
+      "declares": [
+       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line_h"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-size-guide-1||style|width",
@@ -302,7 +114,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -355,244 +167,6 @@
    ]
   },
   {
-   "key": "cr-ref-size-guide-1||style|text-wrap",
-   "ref": "cr-ref-size-guide-1",
-   "pair": "gen-size-guide-1",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "text-wrap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-1",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textWrap",
-     "css_property": "text-wrap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-size-guide-3|.sgs-container__inner > p:nth-of-type(1)|style|font-size",
-   "ref": "cr-ref-size-guide-3",
-   "pair": "gen-size-guide-3",
-   "path": ".sgs-container__inner > p:nth-of-type(1)",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "font-size",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "fontSize"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-3",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner > p:nth-of-type(1)"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "css_property": "font-size",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-size-guide-3|.sgs-container__inner > p:nth-of-type(1)|style|line-height",
-   "ref": "cr-ref-size-guide-3",
-   "pair": "gen-size-guide-3",
-   "path": ".sgs-container__inner > p:nth-of-type(1)",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-33|.sgs-modal__dialog > .sgs-modal__close > .sgs-modal__close-glyph|style|line-height",
-     "ref": "cr-ref-footer-33",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -9,
-     "widths": [
-      375
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "lineHeight"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-3",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner > p:nth-of-type(1)"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "css_property": "line-height",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-size-guide-3||style|text-align",
-   "ref": "cr-ref-size-guide-3",
-   "pair": "gen-size-guide-3",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "text-align",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-size-guide-2||style|text-align",
-     "ref": "cr-ref-size-guide-2",
-     "key": "text-align",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textAlign"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-3",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textAlign",
-     "css_property": "text-align",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-size-guide-3|.sgs-container__inner|style|align-items",
-   "ref": "cr-ref-size-guide-3",
-   "pair": "gen-size-guide-3",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "align-items",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "alignItems"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-3",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "alignItems",
-     "css_property": "align-items",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-size-guide-3||style|width",
    "ref": "cr-ref-size-guide-3",
    "pair": "gen-size-guide-3",
@@ -607,7 +181,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -705,7 +279,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container__inner > p:nth-of-type(1)\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -725,80 +299,6 @@
    ]
   },
   {
-   "key": "cr-ref-size-guide-2|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container__inner > p:nth-of-type(1)|style|line-height",
-   "ref": "cr-ref-size-guide-2",
-   "pair": "gen-size-guide-2",
-   "path": ".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container__inner > p:nth-of-type(1)",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "same-element",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-size-guide-3|.sgs-container__inner > p:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-size-guide-3",
-     "key": "line-height",
-     "relation": "same-element",
-     "match": "same-element",
-     "width": 375,
-     "delta": -9,
-     "widths": [
-      375
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-size-guide-2||style|text-align",
-   "ref": "cr-ref-size-guide-2",
-   "pair": "gen-size-guide-2",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "text-align",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textAlign"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-2",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textAlign",
-     "css_property": "text-align",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-size-guide-2||style|width",
    "ref": "cr-ref-size-guide-2",
    "pair": "gen-size-guide-2",
@@ -813,7 +313,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -884,65 +384,6 @@
    ]
   },
   {
-   "key": "cr-ref-size-guide-7||style|text-align",
-   "ref": "cr-ref-size-guide-7",
-   "pair": "gen-size-guide-7",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "text-align",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-size-guide-2||style|text-align",
-     "ref": "cr-ref-size-guide-2",
-     "key": "text-align",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textAlign"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-7",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textAlign",
-     "css_property": "text-align",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-size-guide-7||style|width",
    "ref": "cr-ref-size-guide-7",
    "pair": "gen-size-guide-7",
@@ -957,7 +398,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1058,7 +499,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1149,7 +590,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1250,7 +691,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1335,7 +776,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1412,57 +853,6 @@
    ]
   },
   {
-   "key": "cr-ref-size-guide-14||style|text-wrap",
-   "ref": "cr-ref-size-guide-14",
-   "pair": "gen-size-guide-14",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "text-wrap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-14",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textWrap",
-     "css_property": "text-wrap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-size-guide-12",
-     "block": "sgs/container",
-     "setting": "textWrap",
-     "via": "reaches",
-     "path": ".sgs-container__inner > p:nth-of-type(2)"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-size-guide-16||style|width",
    "ref": "cr-ref-size-guide-16",
    "pair": "gen-size-guide-16",
@@ -1477,7 +867,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1568,7 +958,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1669,7 +1059,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1746,57 +1136,6 @@
    ]
   },
   {
-   "key": "cr-ref-size-guide-17||style|text-wrap",
-   "ref": "cr-ref-size-guide-17",
-   "pair": "gen-size-guide-17",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "text-wrap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-17",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textWrap",
-     "css_property": "text-wrap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-size-guide-15",
-     "block": "sgs/container",
-     "setting": "textWrap",
-     "via": "reaches",
-     "path": ".sgs-container__inner > p:nth-of-type(2)"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-size-guide-19||style|width",
    "ref": "cr-ref-size-guide-19",
    "pair": "gen-size-guide-19",
@@ -1811,7 +1150,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1902,7 +1241,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -2003,7 +1342,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -2080,57 +1419,6 @@
    ]
   },
   {
-   "key": "cr-ref-size-guide-20||style|text-wrap",
-   "ref": "cr-ref-size-guide-20",
-   "pair": "gen-size-guide-20",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "text-wrap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-20",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textWrap",
-     "css_property": "text-wrap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-size-guide-18",
-     "block": "sgs/container",
-     "setting": "textWrap",
-     "via": "reaches",
-     "path": ".sgs-container__inner > p:nth-of-type(2)"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-size-guide-22||style|width",
    "ref": "cr-ref-size-guide-22",
    "pair": "gen-size-guide-22",
@@ -2145,7 +1433,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -2216,94 +1504,6 @@
    ]
   },
   {
-   "key": "cr-ref-size-guide-22|.sgs-container__inner|style|flex-wrap",
-   "ref": "cr-ref-size-guide-22",
-   "pair": "gen-size-guide-22",
-   "path": ".sgs-container__inner",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "flex-wrap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "flexWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-size-guide-22",
-      "block": "sgs/container",
-      "path": ".sgs-container__inner"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "flexWrap",
-     "css_property": "flex-wrap",
-     "css_element": "inner",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/container",
-     "setting": "layout",
-     "values": [
-      "flex"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-size-guide-0||box|y-after-size-guide-modal",
-   "ref": "cr-ref-size-guide-0",
-   "pair": "gen-size-guide-0",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "box",
-   "property": "y-after-size-guide-modal",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-33|.sgs-modal__dialog > .sgs-modal__close > .sgs-modal__close-glyph|style|font-size",
-     "ref": "cr-ref-footer-33",
-     "key": "font-size",
-     "relation": "anchor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 18,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-size-guide-1||box|y-after-title",
    "ref": "cr-ref-size-guide-1",
    "pair": "gen-size-guide-1",
@@ -2327,7 +1527,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -68,
+     "delta": -56,
      "widths": [
       375
      ]
@@ -2372,6 +1572,37 @@
    ]
   },
   {
+   "key": "cr-ref-size-guide-3||box|y-after-info-uk-heading",
+   "ref": "cr-ref-size-guide-3",
+   "pair": "gen-size-guide-3",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-info-uk-heading",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-33|.sgs-modal__dialog > .sgs-modal__close > .sgs-modal__close-glyph|style|font-size",
+     "ref": "cr-ref-footer-33",
+     "key": "font-size",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -56,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-size-guide-3||box|w",
    "ref": "cr-ref-size-guide-3",
    "pair": "gen-size-guide-3",
@@ -2404,37 +1635,6 @@
       768,
       1440,
       1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-size-guide-3||box|h",
-   "ref": "cr-ref-size-guide-3",
-   "pair": "gen-size-guide-3",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-33|.sgs-modal__dialog > .sgs-modal__close > .sgs-modal__close-glyph|style|line-height",
-     "ref": "cr-ref-footer-33",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -9,
-     "widths": [
-      375
      ]
     }
    ]
@@ -2477,37 +1677,6 @@
    ]
   },
   {
-   "key": "cr-ref-size-guide-2||box|h",
-   "ref": "cr-ref-size-guide-2",
-   "pair": "gen-size-guide-2",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-33|.sgs-modal__dialog > .sgs-modal__close > .sgs-modal__close-glyph|style|line-height",
-     "ref": "cr-ref-footer-33",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -9,
-     "widths": [
-      375
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-size-guide-7||box|y-after-info-uk-text",
    "ref": "cr-ref-size-guide-7",
    "pair": "gen-size-guide-7",
@@ -2531,7 +1700,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -87,
+     "delta": -66,
      "widths": [
       375
      ]
@@ -2741,7 +1910,7 @@
      "relation": "descendant",
      "match": "same-delta",
      "width": 375,
-     "delta": 22,
+     "delta": 21,
      "widths": [
       375
      ]
@@ -2772,7 +1941,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -87,
+     "delta": -66,
      "widths": [
       375
      ]
@@ -2848,6 +2017,37 @@
    ]
   },
   {
+   "key": "cr-ref-size-guide-16||box|y-after-info-collect-text",
+   "ref": "cr-ref-size-guide-16",
+   "pair": "gen-size-guide-16",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-info-collect-text",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-size-guide-15||box|y-after-info-collect-text",
+     "ref": "cr-ref-size-guide-15",
+     "key": "y-after-info-collect-text",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -54,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-size-guide-16||box|w",
    "ref": "cr-ref-size-guide-16",
    "pair": "gen-size-guide-16",
@@ -2908,7 +2108,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -75,
+     "delta": -54,
      "widths": [
       375
      ]
@@ -2977,7 +2177,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": -76,
+     "delta": -55,
      "widths": [
       375,
       768
@@ -3018,6 +2218,39 @@
       768,
       1440,
       1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-size-guide-19||box|y-after-info-returns-text",
+   "ref": "cr-ref-size-guide-19",
+   "pair": "gen-size-guide-19",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-info-returns-text",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-size-guide-18||box|y-after-info-returns-text",
+     "ref": "cr-ref-size-guide-18",
+     "key": "y-after-info-returns-text",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -65,
+     "widths": [
+      375,
+      768
      ]
     }
    ]
@@ -3084,7 +2317,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -85,
+     "delta": -65,
      "widths": [
       375,
       768
@@ -3190,7 +2423,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -85,
+     "delta": -64,
      "widths": [
       375
      ]
@@ -3235,6 +2468,41 @@
    ]
   },
   {
+   "key": "cr-ref-size-guide-0||box|y-in-main",
+   "ref": "cr-ref-size-guide-0",
+   "pair": "gen-size-guide-0",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "box",
+   "property": "y-in-main",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-33|.sgs-modal__dialog > .sgs-modal__close > .sgs-modal__close-glyph|style|font-size",
+     "ref": "cr-ref-footer-33",
+     "key": "font-size",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 768,
+     "delta": -14,
+     "widths": [
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-size-guide-1||box|y-after-eyebrow",
    "ref": "cr-ref-size-guide-1",
    "pair": "gen-size-guide-1",
@@ -3260,7 +2528,42 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -111,
+     "delta": -99,
+     "widths": [
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-size-guide-3||box|y-after-title",
+   "ref": "cr-ref-size-guide-3",
+   "pair": "gen-size-guide-3",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-title",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-size-guide-2||box|y-after-title",
+     "ref": "cr-ref-size-guide-2",
+     "key": "y-after-title",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 768,
+     "delta": -99,
      "widths": [
       768,
       1440,
@@ -3295,11 +2598,73 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -111,
+     "delta": -99,
      "widths": [
       768,
       1440,
       1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-size-guide-13||box|y-after-info-collect-text",
+   "ref": "cr-ref-size-guide-13",
+   "pair": "gen-size-guide-13",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-info-collect-text",
+   "widths": [
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-size-guide-12||box|y-after-info-collect-text",
+     "ref": "cr-ref-size-guide-12",
+     "key": "y-after-info-collect-text",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 768,
+     "delta": -109,
+     "widths": [
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-size-guide-12||box|y-after-info-collect-text",
+   "ref": "cr-ref-size-guide-12",
+   "pair": "gen-size-guide-12",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-info-collect-text",
+   "widths": [
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-size-guide-11||box|y-after-info-collect-text",
+     "ref": "cr-ref-size-guide-11",
+     "key": "y-after-info-collect-text",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 768,
+     "delta": -109,
+     "widths": [
+      768
      ]
     }
    ]
@@ -3328,7 +2693,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -122,
+     "delta": -109,
      "widths": [
       768
      ]
@@ -3360,7 +2725,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -122,
+     "delta": -109,
      "widths": [
       1440,
       1920
@@ -3393,7 +2758,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -114,
+     "delta": -101,
      "widths": [
       1440,
       1920

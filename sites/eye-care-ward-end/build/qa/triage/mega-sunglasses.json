@@ -1,16 +1,442 @@
 {
  "surface": "mega-sunglasses",
- "report": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-08T20-26-21/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-08T20-26-21/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-09T08-17-24/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-09T08-17-24/round-2/report.json",
  "date": "2026-10-09",
  "counts": {
-  "W": 25,
-  "F": 1,
-  "T": 13,
+  "W": 22,
+  "F": 3,
+  "T": 1,
   "U": 0,
   "L": 0
  },
  "verdicts": [
+  {
+   "key": "cr-ref-mega-sunglasses-5||style|transition-duration",
+   "ref": "cr-ref-mega-sunglasses-5",
+   "pair": "shop-link-pilot",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-sunglasses-5",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "transitionDuration",
+     "group": "cr-ref-mega-sunglasses-5||transition-duration|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       ". $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}'; $css .= '@medi",
+       "fers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}'; $css .= '@media (forced-col"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mega-sunglasses-21||style|transition-duration",
+   "ref": "cr-ref-mega-sunglasses-21",
+   "pair": "shop-link-best-sellers",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-sunglasses-21",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "transitionDuration",
+     "group": "cr-ref-mega-sunglasses-21||transition-duration|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       ". $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}'; $css .= '@medi",
+       "fers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}'; $css .= '@media (forced-col"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mega-sunglasses-26||style|transition-duration",
+   "ref": "cr-ref-mega-sunglasses-26",
+   "pair": "shop-link-mens",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "W",
+   "decidedBy": "mispaired",
+   "evidence": [
+    {
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
+     ],
+     "sizes": [
+      "378x34 draft, 36x34 live"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-sunglasses-1||style|max-width",
+   "ref": "cr-ref-mega-sunglasses-1",
+   "pair": "gen-mega-sunglasses-1",
+   "path": "",
+   "block": "sgs/mega-group",
+   "kind": "style",
+   "property": "max-width",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/mega-group has no setting for max-width",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/mega-group has no setting for max-width"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-group",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "childSizing",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-sunglasses-17||style|flex-grow",
+   "ref": "cr-ref-mega-sunglasses-17",
+   "pair": "gen-mega-sunglasses-17",
+   "path": "",
+   "block": "sgs/mega-group",
+   "kind": "style",
+   "property": "flex-grow",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/mega-group has no setting for flex-grow",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/mega-group has no setting for flex-grow"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "flexGrow"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [],
+      "absent": [
+       "flexGrow"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "flexGrow"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "flexGrow"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "flexGrow"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
+  },
+  {
+   "key": "cr-ref-mega-sunglasses-28||hover|border-top-width",
+   "ref": "cr-ref-mega-sunglasses-28",
+   "pair": "gen-mega-sunglasses-28",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "hover",
+   "property": "border-top-width",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/container has no setting for border-top-width (hover)",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/container has no setting for border-top-width (hover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemBorder",
+     "css_property": "border-color,border-style,border-width",
+     "css_element": "grid-item",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
   {
    "key": "cr-ref-mega-sunglasses-3||style|width",
    "ref": "cr-ref-mega-sunglasses-3",
@@ -24,7 +450,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -32,6 +458,20 @@
      "check": "used-value",
      "property": "width",
      "declared": {}
+    },
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mega-sunglasses-2||style|width",
+     "ref": "cr-ref-mega-sunglasses-2",
+     "key": "width",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": -0.5160000000000196,
+     "widths": [
+      1440,
+      1920
+     ]
     },
     {
      "check": "resolver",
@@ -73,169 +513,6 @@
      "setting": "sgsChildWidth",
      "css_property": null,
      "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-3||style|text-wrap",
-   "ref": "cr-ref-mega-sunglasses-3",
-   "pair": "shop-heading-style",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "text-wrap",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-3",
-      "block": "sgs/heading",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "textWrap",
-     "css_property": "text-wrap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "headingRole",
-     "values": [
-      "subheading"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-19||style|width",
-   "ref": "cr-ref-mega-sunglasses-19",
-   "pair": "shop-heading-shopby",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-19||style|text-wrap",
-   "ref": "cr-ref-mega-sunglasses-19",
-   "pair": "shop-heading-shopby",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "text-wrap",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-19",
-      "block": "sgs/heading",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "textWrap",
-     "css_property": "text-wrap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "headingRole",
-     "values": [
-      "subheading"
-     ]
     }
    ]
   },
@@ -252,24 +529,10 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: start is not one of , left, center, right, justify",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "attribute",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__link|style|text-align",
-     "ref": "cr-ref-header-4",
-     "key": "text-align",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": null,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
     {
      "check": "resolver",
      "gap": "shape",
@@ -281,47 +544,6 @@
      "setting": "textAlign",
      "css_property": "text-align",
      "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-5||style|transition-duration",
-   "ref": "cr-ref-mega-sunglasses-5",
-   "pair": "shop-link-pilot",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "transitionDuration"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-5",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
      "css_state": null,
      "source": "sgs",
      "reaches": true
@@ -341,7 +563,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -392,193 +614,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-sunglasses-5|.sgs-button__label|hover|color",
-   "ref": "cr-ref-mega-sunglasses-5",
-   "pair": "shop-link-pilot",
-   "path": ".sgs-button__label",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "colourTextHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-5",
-      "block": "sgs/button",
-      "path": ".sgs-button__label"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourText",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackground",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColour",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHover",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHoverGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-sunglasses-21||style|text-align",
    "ref": "cr-ref-mega-sunglasses-21",
    "pair": "shop-link-best-sellers",
@@ -591,24 +626,10 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: start is not one of , left, center, right, justify",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "attribute",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__link|style|text-align",
-     "ref": "cr-ref-header-4",
-     "key": "text-align",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": null,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
     {
      "check": "resolver",
      "gap": "shape",
@@ -620,47 +641,6 @@
      "setting": "textAlign",
      "css_property": "text-align",
      "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-21||style|transition-duration",
-   "ref": "cr-ref-mega-sunglasses-21",
-   "pair": "shop-link-best-sellers",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "transitionDuration"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-21",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
      "css_state": null,
      "source": "sgs",
      "reaches": true
@@ -680,7 +660,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -731,193 +711,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-sunglasses-21|.sgs-button__label|hover|color",
-   "ref": "cr-ref-mega-sunglasses-21",
-   "pair": "shop-link-best-sellers",
-   "path": ".sgs-button__label",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "colourTextHover"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-21",
-      "block": "sgs/button",
-      "path": ".sgs-button__label"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourText",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackground",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColour",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHover",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHoverGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-sunglasses-26||style|text-align",
    "ref": "cr-ref-mega-sunglasses-26",
    "pair": "shop-link-mens",
@@ -930,36 +723,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "378x34 draft, 36x34 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-26||style|transition-duration",
-   "ref": "cr-ref-mega-sunglasses-26",
-   "pair": "shop-link-mens",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: start is not one of , left, center, right, justify",
    "class": "W",
    "decidedBy": "mispaired",
    "evidence": [
@@ -988,7 +752,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "mispaired",
    "evidence": [
@@ -1001,174 +765,6 @@
      "sizes": [
       "378x34 draft, 36x34 live"
      ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-26|.sgs-button__label|hover|color",
-   "ref": "cr-ref-mega-sunglasses-26",
-   "pair": "shop-link-mens",
-   "path": ".sgs-button__label",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "378x34 draft, 36x34 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-2||style|padding-right",
-   "ref": "cr-ref-mega-sunglasses-2",
-   "pair": "gen-mega-sunglasses-2",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-2",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "css_property": "padding",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-2||style|padding-left",
-   "ref": "cr-ref-mega-sunglasses-2",
-   "pair": "gen-mega-sunglasses-2",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-2",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "css_property": "padding",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsHoverIndent",
-     "css_property": "padding-left",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs-ext",
-     "reaches": true
-    },
-    {
-     "check": "extension",
-     "extension": "hover",
-     "setting": "sgsHoverIndent",
-     "css_property": "padding-left",
-     "css_element": "wrapper"
     }
    ]
   },
@@ -1185,7 +781,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1202,7 +798,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 1440,
-     "delta": -0.5129999999999768,
+     "delta": -0.5160000000000196,
      "widths": [
       1440,
       1920
@@ -1282,7 +878,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1315,213 +911,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-sunglasses-1||style|max-width",
-   "ref": "cr-ref-mega-sunglasses-1",
-   "pair": "gen-mega-sunglasses-1",
-   "path": "",
-   "block": "sgs/mega-group",
-   "kind": "style",
-   "property": "max-width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/mega-group has no setting for max-width"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-group",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-0||style|border-bottom-width",
-   "ref": "cr-ref-mega-sunglasses-0",
-   "pair": "gen-mega-sunglasses-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "border-bottom-width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-0",
-      "block": "sgs/mega-panel",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-0||style|border-bottom-color",
-   "ref": "cr-ref-mega-sunglasses-0",
-   "pair": "gen-mega-sunglasses-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "border-bottom-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColour"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-0",
-      "block": "sgs/mega-panel",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "groupBorderColour",
-     "css_property": "border-color",
-     "css_element": "group",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "groupBorderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "group",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "groupBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "group",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "groupBorderColourGradientHover",
-     "css_property": "border-color-gradient",
-     "css_element": "group",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerLinkDivider",
-     "css_property": "border-color",
-     "css_element": "drawerLinks",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardBorderColour",
-     "css_property": "border-color",
-     "css_element": "drawerCard",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardBorderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "drawerCard",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/mega-panel",
-     "setting": "colourScheme",
-     "values": [
-      "dark"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-sunglasses-0||style|painted-ground",
    "ref": "cr-ref-mega-sunglasses-0",
    "pair": "gen-mega-sunglasses-0",
@@ -1534,7 +923,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: colour none not parsed",
    "class": "W",
    "decidedBy": "consequence",
    "evidence": [
@@ -1695,7 +1084,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -1705,291 +1094,18 @@
      "declared": {}
     },
     {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentWidth",
-     "css_property": "width",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "minColumnWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "scrollItemWidth",
-     "css_property": "flex",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-18||style|padding-right",
-   "ref": "cr-ref-mega-sunglasses-18",
-   "pair": "gen-mega-sunglasses-18",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-18",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "css_property": "padding",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-18||style|padding-left",
-   "ref": "cr-ref-mega-sunglasses-18",
-   "pair": "gen-mega-sunglasses-18",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-sunglasses-18",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "css_property": "padding",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsHoverIndent",
-     "css_property": "padding-left",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs-ext",
-     "reaches": true
-    },
-    {
-     "check": "extension",
-     "extension": "hover",
-     "setting": "sgsHoverIndent",
-     "css_property": "padding-left",
-     "css_element": "wrapper"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-17||style|flex-grow",
-   "ref": "cr-ref-mega-sunglasses-17",
-   "pair": "gen-mega-sunglasses-17",
-   "path": "",
-   "block": "sgs/mega-group",
-   "kind": "style",
-   "property": "flex-grow",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/mega-group has no setting for flex-grow"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "mega-group/render.php",
-      "mentions": [],
-      "absent": [
-       "flexGrow"
-      ]
-     },
-     {
-      "file": "mega-panel/render.php",
-      "mentions": [],
-      "absent": [
-       "flexGrow"
-      ]
-     },
-     {
-      "file": "nav-bar-menu/render.php",
-      "mentions": [],
-      "absent": [
-       "flexGrow"
-      ]
-     },
-     {
-      "file": "site-header-row/render.php",
-      "mentions": [],
-      "absent": [
-       "flexGrow"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "flexGrow"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-20||style|width",
-   "ref": "cr-ref-mega-sunglasses-20",
-   "pair": "gen-mega-sunglasses-20",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
+     "check": "consequence",
+     "parent": "cr-ref-mega-sunglasses-2||style|width",
+     "ref": "cr-ref-mega-sunglasses-2",
+     "key": "width",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": -0.5160000000000196,
+     "widths": [
+      1440,
+      1920
+     ]
     },
     {
      "check": "resolver",
@@ -2065,7 +1181,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "not-painted: the draft has no top border (0px@1440, 0px@1920): its border-top-color is currentColor and paints nothing",
    "class": "T",
    "decidedBy": "resolver-writes",
    "evidence": [
@@ -2129,50 +1245,6 @@
      "css_element": "wrapper",
      "css_state": "hover",
      "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-sunglasses-28||hover|border-top-width",
-   "ref": "cr-ref-mega-sunglasses-28",
-   "pair": "gen-mega-sunglasses-28",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "hover",
-   "property": "border-top-width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/container has no setting for border-top-width (hover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemBorder",
-     "css_property": "border-color,border-style,border-width",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
     }
    ]
   },
@@ -2305,39 +1377,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-sunglasses-4||box|w",
-   "ref": "cr-ref-mega-sunglasses-4",
-   "pair": "gen-mega-sunglasses-4",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "w",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mega-sunglasses-4||style|width",
-     "ref": "cr-ref-mega-sunglasses-4",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -105,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-sunglasses-18||box|h",
    "ref": "cr-ref-mega-sunglasses-18",
    "pair": "gen-mega-sunglasses-18",
@@ -2371,13 +1410,13 @@
    ]
   },
   {
-   "key": "cr-ref-mega-sunglasses-20||box|w",
-   "ref": "cr-ref-mega-sunglasses-20",
-   "pair": "gen-mega-sunglasses-20",
+   "key": "cr-ref-mega-sunglasses-28||box|y-after-gen-mega-sunglasses-25",
+   "ref": "cr-ref-mega-sunglasses-28",
+   "pair": "gen-mega-sunglasses-28",
    "path": "",
    "block": "sgs/container",
    "kind": "box",
-   "property": "w",
+   "property": "y-after-gen-mega-sunglasses-25",
    "widths": [
     1440,
     1920
@@ -2389,13 +1428,46 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mega-sunglasses-20||style|width",
-     "ref": "cr-ref-mega-sunglasses-20",
-     "key": "width",
-     "relation": "self",
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|box|y-after-shop-trigger",
+     "ref": "cr-ref-header-4",
+     "key": "y-after-shop-trigger",
+     "relation": "ancestor",
      "match": "same-delta",
      "width": 1440,
-     "delta": -104,
+     "delta": 8,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-sunglasses-27||box|y-after-gen-mega-sunglasses-25",
+   "ref": "cr-ref-mega-sunglasses-27",
+   "pair": "gen-mega-sunglasses-27",
+   "path": "",
+   "block": "sgs/mega-group",
+   "kind": "box",
+   "property": "y-after-gen-mega-sunglasses-25",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|box|y-after-shop-trigger",
+     "ref": "cr-ref-header-4",
+     "key": "y-after-shop-trigger",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": 8,
      "widths": [
       1440,
       1920

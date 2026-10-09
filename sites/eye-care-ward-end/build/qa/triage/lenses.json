@@ -1,13 +1,13 @@
 {
  "surface": "lenses",
- "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-08T20-11-16/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-08T20-11-16/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-09T09-01-20/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-09T09-01-20/round-1/report.json",
  "date": "2026-10-09",
  "counts": {
   "W": 2,
   "F": 0,
   "T": 0,
-  "U": 0,
+  "U": 1,
   "L": 0
  },
  "verdicts": [
@@ -23,8 +23,8 @@
     375,
     768
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no opacity setting on sgs/container paints \"\" (candidates: bgSvgOpacity, backgroundOverlayOpacity)",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -83,8 +83,8 @@
     375,
     768
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/container has no setting for transform",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -111,6 +111,24 @@
      "css_element": "wrapper"
     }
    ]
+  },
+  {
+   "key": "cr-ref-lenses-22||box|y-after-gen-lenses-20",
+   "ref": "cr-ref-lenses-22",
+   "pair": "gen-lenses-22",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-lenses-20",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "U",
+   "decidedBy": "box-unexplained",
+   "evidence": []
   }
  ]
 }

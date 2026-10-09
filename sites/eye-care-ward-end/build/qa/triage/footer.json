@@ -1,16 +1,1125 @@
 {
  "surface": "footer",
- "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T05-28-37/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T05-28-37/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T08-57-47/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
  "date": "2026-10-09",
  "counts": {
-  "W": 72,
-  "F": 2,
-  "T": 2,
+  "W": 73,
+  "F": 3,
+  "T": 0,
   "U": 0,
   "L": 0
  },
  "verdicts": [
+  {
+   "key": "cr-ref-footer-30||style|text-decoration-line",
+   "ref": "cr-ref-footer-30",
+   "pair": "link-privacy",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "text-decoration-line",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-29||style|text-decoration-line",
+     "ref": "cr-ref-footer-29",
+     "key": "text-decoration-line",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": null,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    },
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "textDecoration"
+     ],
+     "on": {
+      "ref": "cr-ref-footer-30",
+      "block": "sgs/text",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "textDecoration",
+     "group": "cr-ref-footer-30||text-decoration-line|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textDecoration",
+     "css_property": "text-decoration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkUnderline",
+     "css_property": "text-decoration-line",
+     "css_element": "text-link",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "text/render.php",
+      "mentions": [
+       "textDecoration"
+      ],
+      "absent": [
+       "linkUnderline",
+       "textDecorationLine"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "textDecoration",
+       "linkUnderline",
+       "textDecorationLine"
+      ]
+     },
+     {
+      "file": "site-footer-row/render.php",
+      "mentions": [],
+      "absent": [
+       "textDecoration",
+       "linkUnderline",
+       "textDecorationLine"
+      ]
+     },
+     {
+      "file": "site-footer/render.php",
+      "mentions": [],
+      "absent": [
+       "textDecoration",
+       "linkUnderline",
+       "textDecorationLine"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "text",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "orations, true ) ) { $base_decls[] = 'text-decoration:' . $attributes[ $k_decoration ] . ';'; }"
+      ]
+     },
+     {
+      "block": "text",
+      "cite": "includes/helpers-link-underline.php::sgs_link_underline_css",
+      "mentions": [],
+      "declares": [
+       "ia (forced-colors: active){' . $link . '{text-decoration:underline;}}'; if ( 'none' === $mode ) {",
+       "'none' === $mode ) { return $link . '{text-decoration:none;}' . $forced; } $thickness = sgs_",
+       "lways' === $mode ) { return $link . '{text-decoration-line:underline;' . ( '' !== $thickness ? 't"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-footer-31||style|text-decoration-line",
+   "ref": "cr-ref-footer-31",
+   "pair": "link-terms",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "text-decoration-line",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-29||style|text-decoration-line",
+     "ref": "cr-ref-footer-29",
+     "key": "text-decoration-line",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": null,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    },
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "textDecoration"
+     ],
+     "on": {
+      "ref": "cr-ref-footer-31",
+      "block": "sgs/text",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "textDecoration",
+     "group": "cr-ref-footer-31||text-decoration-line|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textDecoration",
+     "css_property": "text-decoration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkUnderline",
+     "css_property": "text-decoration-line",
+     "css_element": "text-link",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "text/render.php",
+      "mentions": [
+       "textDecoration"
+      ],
+      "absent": [
+       "linkUnderline",
+       "textDecorationLine"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "textDecoration",
+       "linkUnderline",
+       "textDecorationLine"
+      ]
+     },
+     {
+      "file": "site-footer-row/render.php",
+      "mentions": [],
+      "absent": [
+       "textDecoration",
+       "linkUnderline",
+       "textDecorationLine"
+      ]
+     },
+     {
+      "file": "site-footer/render.php",
+      "mentions": [],
+      "absent": [
+       "textDecoration",
+       "linkUnderline",
+       "textDecorationLine"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "text",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "orations, true ) ) { $base_decls[] = 'text-decoration:' . $attributes[ $k_decoration ] . ';'; }"
+      ]
+     },
+     {
+      "block": "text",
+      "cite": "includes/helpers-link-underline.php::sgs_link_underline_css",
+      "mentions": [],
+      "declares": [
+       "ia (forced-colors: active){' . $link . '{text-decoration:underline;}}'; if ( 'none' === $mode ) {",
+       "'none' === $mode ) { return $link . '{text-decoration:none;}' . $forced; } $thickness = sgs_",
+       "lways' === $mode ) { return $link . '{text-decoration-line:underline;' . ( '' !== $thickness ? 't"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-footer-29||style|text-decoration-line",
+   "ref": "cr-ref-footer-29",
+   "pair": "gen-footer-29",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "text-decoration-line",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "textDecoration"
+     ],
+     "on": {
+      "ref": "cr-ref-footer-29",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": true,
+     "solveWrote": "textDecoration",
+     "group": "cr-ref-footer-29||text-decoration-line|"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "textDecoration",
+     "css_property": "text-decoration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "textDecoration",
+       "textDecorationLine"
+      ]
+     },
+     {
+      "file": "site-footer-row/render.php",
+      "mentions": [],
+      "absent": [
+       "textDecoration",
+       "textDecorationLine"
+      ]
+     },
+     {
+      "file": "site-footer/render.php",
+      "mentions": [],
+      "absent": [
+       "textDecoration",
+       "textDecorationLine"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "orations, true ) ) { $base_decls[] = 'text-decoration:' . $attributes[ $k_decoration ] . ';'; }"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-footer-2||style|flex-grow",
+   "ref": "cr-ref-footer-2",
+   "pair": "col-brand",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "flex-grow",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/container has no setting for flex-grow",
+   "class": "W",
+   "decidedBy": "discovered",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/container has no setting for flex-grow"
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/container",
+     "setting": "sgsChildSizing",
+     "values": [
+      "fill"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-7||style|flex-grow",
+   "ref": "cr-ref-footer-7",
+   "pair": "col-shop",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "flex-grow",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/container has no setting for flex-grow",
+   "class": "W",
+   "decidedBy": "discovered",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/container has no setting for flex-grow"
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/container",
+     "setting": "sgsChildSizing",
+     "values": [
+      "fill"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-14||style|flex-grow",
+   "ref": "cr-ref-footer-14",
+   "pair": "col-help",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "flex-grow",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/container has no setting for flex-grow",
+   "class": "W",
+   "decidedBy": "discovered",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/container has no setting for flex-grow"
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/container",
+     "setting": "sgsChildSizing",
+     "values": [
+      "fill"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-21||style|flex-grow",
+   "ref": "cr-ref-footer-21",
+   "pair": "col-visit",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "flex-grow",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/container has no setting for flex-grow",
+   "class": "W",
+   "decidedBy": "discovered",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/container has no setting for flex-grow"
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/container",
+     "setting": "sgsChildSizing",
+     "values": [
+      "fill"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-6||style|align-items",
+   "ref": "cr-ref-footer-6",
+   "pair": "social-row",
+   "path": "",
+   "block": "sgs/social-icons",
+   "kind": "style",
+   "property": "align-items",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/social-icons has no setting for align-items",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/social-icons has no setting for align-items"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "social-icons/render.php",
+      "mentions": [],
+      "absent": [
+       "alignItems"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "alignItems"
+      ]
+     },
+     {
+      "file": "site-footer-row/render.php",
+      "mentions": [],
+      "absent": [
+       "alignItems"
+      ]
+     },
+     {
+      "file": "site-footer/render.php",
+      "mentions": [],
+      "absent": [
+       "alignItems"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "social-icons/style.css",
+      "selector": ".sgs-social-icons",
+      "declaration": "align-items:center"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-footer-6||style|flex-wrap",
+   "ref": "cr-ref-footer-6",
+   "pair": "social-row",
+   "path": "",
+   "block": "sgs/social-icons",
+   "kind": "style",
+   "property": "flex-wrap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/social-icons has no setting for flex-wrap",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/social-icons has no setting for flex-wrap"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "social-icons/render.php",
+      "mentions": [],
+      "absent": [
+       "flexWrap"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "flexWrap"
+      ]
+     },
+     {
+      "file": "site-footer-row/render.php",
+      "mentions": [],
+      "absent": [
+       "flexWrap"
+      ]
+     },
+     {
+      "file": "site-footer/render.php",
+      "mentions": [],
+      "absent": [
+       "flexWrap"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "social-icons/style.css",
+      "selector": ".sgs-social-icons",
+      "declaration": "flex-wrap:wrap"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "f ( '' !== $flex_wrap ) { $gd[] = 'flex-wrap:' . esc_attr( $flex_wrap ); } // D288:",
+       "f ( '' !== $flex_wrap ) { $gd[] = 'flex-wrap:' . esc_attr( $flex_wrap ); } // D288:",
+       "`.sgs-container-50841e95 { display:flex; flex-wrap:nowrap }`, and NO rule // anywhere keys `displ"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:str"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-footer-30|a|hover|color",
+   "ref": "cr-ref-footer-30",
+   "pair": "link-privacy",
+   "path": "a",
+   "block": "sgs/text",
+   "kind": "hover",
+   "property": "color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "no color setting on sgs/text paints \"a\" (candidates: textColourHover, firstLetterColourHover)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no color setting on sgs/text paints \"a\" (candidates: textColourHover, firstLetterColourHover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColour",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColour",
+     "css_property": "color",
+     "css_element": "first-letter",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColour",
+     "css_property": "background-color",
+     "css_element": "background",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourHover",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourHover",
+     "css_property": "background-color",
+     "css_element": "background",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourGradient",
+     "css_property": "color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourGradient",
+     "css_property": "background-image",
+     "css_element": "background",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "background",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColourHover",
+     "css_property": "color",
+     "css_element": "first-letter",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "boxShadowColour",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColour",
+     "css_property": "color",
+     "css_element": "text-link",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourHover",
+     "css_property": "color-link",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourGradient",
+     "css_property": "color-link-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourHoverGradient",
+     "css_property": "color-link-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "boxShadowColourHover",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-31|a|hover|color",
+   "ref": "cr-ref-footer-31",
+   "pair": "link-terms",
+   "path": "a",
+   "block": "sgs/text",
+   "kind": "hover",
+   "property": "color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "no color setting on sgs/text paints \"a\" (candidates: textColourHover, firstLetterColourHover)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no color setting on sgs/text paints \"a\" (candidates: textColourHover, firstLetterColourHover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColour",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColour",
+     "css_property": "color",
+     "css_element": "first-letter",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColour",
+     "css_property": "background-color",
+     "css_element": "background",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourHover",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourHover",
+     "css_property": "background-color",
+     "css_element": "background",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourGradient",
+     "css_property": "color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourGradient",
+     "css_property": "background-image",
+     "css_element": "background",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "background",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColourHover",
+     "css_property": "color",
+     "css_element": "first-letter",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "boxShadowColour",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColour",
+     "css_property": "color",
+     "css_element": "text-link",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourHover",
+     "css_property": "color-link",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourGradient",
+     "css_property": "color-link-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourHoverGradient",
+     "css_property": "color-link-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "boxShadowColourHover",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-1|.sgs-container__inner|style|grid-template-columns",
+   "ref": "cr-ref-footer-1",
+   "pair": "columns-row",
+   "path": ".sgs-container__inner",
+   "block": "sgs/site-footer-row",
+   "kind": "style",
+   "property": "grid-template-columns",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "no grid-template-columns setting on sgs/site-footer-row paints \".sgs-container__inner\" (candidates: gridTemplateColumns)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no grid-template-columns setting on sgs/site-footer-row paints \".sgs-container__inner\" (candidates: gridTemplateColumns)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-footer-row",
+     "setting": "gridTemplateColumns",
+     "css_property": "grid-template-columns",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/site-footer-row",
+     "setting": "layout",
+     "values": [
+      "flex"
+     ]
+    }
+   ]
+  },
   {
    "key": "cr-ref-footer-0||style|max-width",
    "ref": "cr-ref-footer-0",
@@ -26,7 +1135,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: none cannot be held",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -58,93 +1167,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-1||style|max-width",
-   "ref": "cr-ref-footer-1",
-   "pair": "columns-row",
-   "path": "",
-   "block": "sgs/site-footer-row",
-   "kind": "style",
-   "property": "max-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "maxWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-footer-1",
-      "block": "sgs/site-footer-row",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-footer-row",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-footer-row",
-     "setting": "contentWidth",
-     "css_property": "width",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-2||style|flex-grow",
-   "ref": "cr-ref-footer-2",
-   "pair": "col-brand",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "flex-grow",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/container has no setting for flex-grow"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/container",
-     "setting": "sgsChildSizing",
-     "values": [
-      "fill"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-7|.sgs-container__inner > h5|style|font-size",
    "ref": "cr-ref-footer-7",
    "pair": "col-shop",
@@ -159,7 +1181,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -258,7 +1280,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -340,7 +1362,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -413,7 +1435,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -640,40 +1662,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-7||style|flex-grow",
-   "ref": "cr-ref-footer-7",
-   "pair": "col-shop",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "flex-grow",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/container has no setting for flex-grow"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/container",
-     "setting": "sgsChildSizing",
-     "values": [
-      "fill"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-14|.sgs-container__inner > h5|style|font-size",
    "ref": "cr-ref-footer-14",
    "pair": "col-help",
@@ -688,7 +1676,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -787,7 +1775,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -869,7 +1857,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -942,7 +1930,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -1169,40 +2157,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-14||style|flex-grow",
-   "ref": "cr-ref-footer-14",
-   "pair": "col-help",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "flex-grow",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/container has no setting for flex-grow"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/container",
-     "setting": "sgsChildSizing",
-     "values": [
-      "fill"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-21|.sgs-container__inner > h5|style|font-size",
    "ref": "cr-ref-footer-21",
    "pair": "col-visit",
@@ -1217,7 +2171,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -1316,7 +2270,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -1398,7 +2352,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -1471,7 +2425,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h5\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -1696,210 +2650,6 @@
      "css_element": null
     }
    ]
-  },
-  {
-   "key": "cr-ref-footer-21||style|flex-grow",
-   "ref": "cr-ref-footer-21",
-   "pair": "col-visit",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "flex-grow",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/container has no setting for flex-grow"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/container",
-     "setting": "sgsChildSizing",
-     "values": [
-      "fill"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6||style|align-items",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-row",
-   "path": "",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "align-items",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for align-items"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons",
-      "declaration": "align-items:center"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
-      "mentions": [],
-      "declares": [
-       "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6||style|flex-wrap",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-row",
-   "path": "",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "flex-wrap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for flex-wrap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "flexWrap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "flexWrap"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "flexWrap"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "flexWrap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons",
-      "declaration": "flex-wrap:wrap"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "f ( '' !== $flex_wrap ) { $gd[] = 'flex-wrap:' . esc_attr( $flex_wrap ); } // D288:",
-       "f ( '' !== $flex_wrap ) { $gd[] = 'flex-wrap:' . esc_attr( $flex_wrap ); } // D288:",
-       "`.sgs-container-50841e95 { display:flex; flex-wrap:nowrap }`, and NO rule // anywhere keys `displ"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
-      "mentions": [],
-      "declares": [
-       "_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:str"
-      ]
-     }
-    ]
-   }
   },
   {
    "key": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-family",
@@ -2154,638 +2904,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-30||style|text-decoration-line",
-   "ref": "cr-ref-footer-30",
-   "pair": "link-privacy",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "text-decoration-line",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-29||style|text-decoration-line",
-     "ref": "cr-ref-footer-29",
-     "key": "text-decoration-line",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textDecoration"
-     ],
-     "on": {
-      "ref": "cr-ref-footer-30",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textDecoration",
-     "css_property": "text-decoration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkUnderline",
-     "css_property": "text-decoration-line",
-     "css_element": "text-link",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-31||style|text-decoration-line",
-   "ref": "cr-ref-footer-31",
-   "pair": "link-terms",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "text-decoration-line",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-29||style|text-decoration-line",
-     "ref": "cr-ref-footer-29",
-     "key": "text-decoration-line",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textDecoration"
-     ],
-     "on": {
-      "ref": "cr-ref-footer-31",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textDecoration",
-     "css_property": "text-decoration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkUnderline",
-     "css_property": "text-decoration-line",
-     "css_element": "text-link",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-29||style|text-decoration-line",
-   "ref": "cr-ref-footer-29",
-   "pair": "gen-footer-29",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "text-decoration-line",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textDecoration"
-     ],
-     "on": {
-      "ref": "cr-ref-footer-29",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "textDecoration",
-     "css_property": "text-decoration",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-30|a|hover|color",
-   "ref": "cr-ref-footer-30",
-   "pair": "link-privacy",
-   "path": "a",
-   "block": "sgs/text",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no color setting on sgs/text paints \"a\" (candidates: textColourHover, firstLetterColourHover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColour",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourHover",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColour",
-     "css_property": "color",
-     "css_element": "text-link",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHover",
-     "css_property": "color-link",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHoverGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-31|a|hover|color",
-   "ref": "cr-ref-footer-31",
-   "pair": "link-terms",
-   "path": "a",
-   "block": "sgs/text",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no color setting on sgs/text paints \"a\" (candidates: textColourHover, firstLetterColourHover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColour",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourHover",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColour",
-     "css_property": "color",
-     "css_element": "text-link",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHover",
-     "css_property": "color-link",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHoverGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-1|.sgs-container__inner|style|grid-template-columns",
-   "ref": "cr-ref-footer-1",
-   "pair": "columns-row",
-   "path": ".sgs-container__inner",
-   "block": "sgs/site-footer-row",
-   "kind": "style",
-   "property": "grid-template-columns",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no grid-template-columns setting on sgs/site-footer-row paints \".sgs-container__inner\" (candidates: gridTemplateColumns)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-footer-row",
-     "setting": "gridTemplateColumns",
-     "css_property": "grid-template-columns",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/site-footer-row",
-     "setting": "layout",
-     "values": [
-      "flex"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-1||style|margin-right",
    "ref": "cr-ref-footer-1",
    "pair": "columns-row",
@@ -2797,7 +2915,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: desktop differs between 1440 (0px) and 1920 (240px)",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -2830,7 +2948,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: desktop differs between 1440 (0px) and 1920 (240px)",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -2863,7 +2981,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: desktop differs between 1440 (0px) and 1920 (240px)",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -2896,7 +3014,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: desktop differs between 1440 (0px) and 1920 (240px)",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -2992,6 +3110,43 @@
    ]
   },
   {
+   "key": "cr-ref-footer-1||box|y-in-main",
+   "ref": "cr-ref-footer-1",
+   "pair": "columns-row",
+   "path": "",
+   "block": "sgs/site-footer-row",
+   "kind": "box",
+   "property": "y-in-main",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-0||box|y-in-main",
+     "ref": "cr-ref-footer-0",
+     "key": "y-in-main",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -16,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-footer-1||box|h",
    "ref": "cr-ref-footer-1",
    "pair": "columns-row",
@@ -3019,6 +3174,43 @@
      "match": "layout-row",
      "width": 375,
      "delta": 22,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-2||box|y-in-main",
+   "ref": "cr-ref-footer-2",
+   "pair": "col-brand",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-in-main",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-0||box|y-in-main",
+     "ref": "cr-ref-footer-0",
+     "key": "y-in-main",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -16,
      "widths": [
       375,
       768,
@@ -3208,6 +3400,43 @@
    ]
   },
   {
+   "key": "cr-ref-footer-3||box|y-in-main",
+   "ref": "cr-ref-footer-3",
+   "pair": "brand-wordmark",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "box",
+   "property": "y-in-main",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-0||box|y-in-main",
+     "ref": "cr-ref-footer-0",
+     "key": "y-in-main",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -16,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-footer-6||box|h",
    "ref": "cr-ref-footer-6",
    "pair": "social-row",
@@ -3313,39 +3542,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-24||box|y-after-link-phone",
-   "ref": "cr-ref-footer-24",
-   "pair": "gen-footer-24",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "y-after-link-phone",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 12,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-16||box|y-after-col-help-heading",
    "ref": "cr-ref-footer-16",
    "pair": "gen-footer-16",
@@ -3377,13 +3573,13 @@
    ]
   },
   {
-   "key": "cr-ref-footer-2||box|y-after-columns-row",
-   "ref": "cr-ref-footer-2",
-   "pair": "col-brand",
+   "key": "cr-ref-footer-7||box|y-after-brand-wordmark",
+   "ref": "cr-ref-footer-7",
+   "pair": "col-shop",
    "path": "",
    "block": "sgs/container",
    "kind": "box",
-   "property": "y-after-columns-row",
+   "property": "y-after-brand-wordmark",
    "widths": [
     768
    ],
@@ -3400,7 +3596,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -6,
+     "delta": 6,
      "widths": [
       768
      ]
@@ -3425,13 +3621,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-14|.sgs-container__inner > h5|style|line-height",
-     "ref": "cr-ref-footer-14",
-     "key": "line-height",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 768,
-     "delta": 4,
+     "delta": 10,
      "widths": [
       768
      ]
@@ -3600,39 +3796,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-1||box|y-after-footer-root",
-   "ref": "cr-ref-footer-1",
-   "pair": "columns-row",
-   "path": "",
-   "block": "sgs/site-footer-row",
-   "kind": "box",
-   "property": "y-after-footer-root",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "anchor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": -5,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-5||box|y-after-link-phone",
    "ref": "cr-ref-footer-5",
    "pair": "brand-description",
@@ -3713,7 +3876,7 @@
     1920
    ],
    "solveClass": "content",
-   "solveReason": "not written",
+   "solveReason": "no calibrated text setting for \".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container__inner > h4\"",
    "class": "W",
    "decidedBy": "content",
    "evidence": [

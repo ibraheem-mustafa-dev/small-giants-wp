@@ -1,0 +1,1769 @@
+diff --git a/sites/eye-care-ward-end/build/about.tree.json b/sites/eye-care-ward-end/build/about.tree.json
+index f59016d84..d2b50fcd2 100644
+--- a/sites/eye-care-ward-end/build/about.tree.json
++++ b/sites/eye-care-ward-end/build/about.tree.json
+@@ -316,7 +316,8 @@
+                       "right": "24px"
+                     }
+                   },
+-                  "className": "cr-ref-about-10"
++                  "className": "cr-ref-about-10",
++                  "transitionDuration": 0
+                 }
+               }
+             ]
+diff --git a/sites/eye-care-ward-end/build/archive-product.tree.json b/sites/eye-care-ward-end/build/archive-product.tree.json
+index 583100b55..789422fad 100644
+--- a/sites/eye-care-ward-end/build/archive-product.tree.json
++++ b/sites/eye-care-ward-end/build/archive-product.tree.json
+@@ -15,7 +15,27 @@
+       "contentWidth": {
+         "desktop": "full"
+       },
+-      "className": "cr-ref-shop-1"
++      "className": "cr-ref-shop-1",
++      "padding": {
++        "mobile": {
++          "top": "28px",
++          "right": "20px",
++          "bottom": "60px",
++          "left": "20px"
++        },
++        "tablet": {
++          "top": "48px",
++          "right": "52px",
++          "bottom": "90px",
++          "left": "52px"
++        },
++        "desktop": {
++          "top": "48px",
++          "right": "52px",
++          "bottom": "90px",
++          "left": "52px"
++        }
++      }
+     },
+     "innerBlocks": [
+       {
+@@ -100,7 +120,56 @@
+                           "bottom": "10px"
+                         }
+                       },
+-                      "className": "cr-ref-shop-5"
++                      "className": "cr-ref-shop-5",
++                      "borderWidth": {
++                        "right": "0px",
++                        "bottom": "0px",
++                        "left": "0px",
++                        "top": "0px"
++                      },
++                      "borderStyle": "none",
++                      "borderRadius": {
++                        "mobile": {
++                          "topLeft": "0px",
++                          "topRight": "0px",
++                          "bottomRight": "0px",
++                          "bottomLeft": "0px"
++                        },
++                        "tablet": {
++                          "topLeft": "0px",
++                          "topRight": "0px",
++                          "bottomRight": "0px",
++                          "bottomLeft": "0px"
++                        },
++                        "desktop": {
++                          "topLeft": "0px",
++                          "topRight": "0px",
++                          "bottomRight": "0px",
++                          "bottomLeft": "0px"
++                        }
++                      },
++                      "boxShadow": "none",
++                      "textWrap": "wrap",
++                      "padding": {
++                        "mobile": {
++                          "top": "0px",
++                          "right": "0px",
++                          "bottom": "0px",
++                          "left": "0px"
++                        },
++                        "tablet": {
++                          "top": "0px",
++                          "right": "0px",
++                          "bottom": "0px",
++                          "left": "0px"
++                        },
++                        "desktop": {
++                          "top": "0px",
++                          "right": "0px",
++                          "bottom": "0px",
++                          "left": "0px"
++                        }
++                      }
+                     }
+                   },
+                   {
+@@ -179,7 +248,19 @@
+                 "attributes": {
+                   "tagName": "aside",
+                   "anchor": "sgs-shop-filters",
+-                  "className": "sgs-shop-filters cr-ref-shop-11"
++                  "className": "sgs-shop-filters cr-ref-shop-11",
++                  "borderWidth": {
++                    "right": "0px",
++                    "bottom": "0px",
++                    "left": "0px",
++                    "top": "0px"
++                  },
++                  "borderStyle": "none",
++                  "shadow": "none",
++                  "sgsChildSizing": {
++                    "desktop": "fill",
++                    "tablet": ""
++                  }
+                 },
+                 "innerBlocks": [
+                   {
+@@ -725,7 +806,32 @@
+                             "bottom": "12px",
+                             "left": "14px"
+                           },
+-                          "className": "cr-ref-shop-50"
++                          "className": "cr-ref-shop-50",
++                          "savingBadgeFontFamily": "heading",
++                          "savingBadgeFontSize": {
++                            "mobile": 12.5,
++                            "tablet": 12.5,
++                            "desktop": 12.5
++                          },
++                          "savingBadgeFontWeight": "500",
++                          "savingBadgeLineHeight": {
++                            "mobile": 1.5,
++                            "tablet": 1.5,
++                            "desktop": 1.5
++                          },
++                          "savingBadgeLetterSpacing": {
++                            "mobile": 0.1,
++                            "tablet": 0.1,
++                            "desktop": 0.1
++                          },
++                          "savingBadgeTextColour": "primary-text",
++                          "borderWidth": {
++                            "right": "1px",
++                            "bottom": "1px",
++                            "left": "1px",
++                            "top": "1px"
++                          },
++                          "noImageLabelColour": "#A39C90"
+                         }
+                       }
+                     ]
+@@ -790,7 +896,8 @@
+                           "top": "28px"
+                         }
+                       },
+-                      "className": "cr-ref-shop-57"
++                      "className": "cr-ref-shop-57",
++                      "textWrap": "pretty"
+                     }
+                   }
+                 ]
+diff --git a/sites/eye-care-ward-end/build/contact-form.tree.json b/sites/eye-care-ward-end/build/contact-form.tree.json
+index ad1b3ad8d..92ad61c57 100644
+--- a/sites/eye-care-ward-end/build/contact-form.tree.json
++++ b/sites/eye-care-ward-end/build/contact-form.tree.json
+@@ -27,7 +27,28 @@
+       "submitMinHeight": 52,
+       "fieldColumnsFrom": "480",
+       "className": "cr-ref-contact-form-0",
+-      "fieldBackground": "surface-alt"
++      "fieldBackground": "surface-alt",
++      "fieldBorderColour": "border",
++      "fieldBorderRadius": {
++        "mobile": {
++          "topLeft": "0px",
++          "topRight": "0px",
++          "bottomRight": "0px",
++          "bottomLeft": "0px"
++        },
++        "tablet": {
++          "topLeft": "0px",
++          "topRight": "0px",
++          "bottomRight": "0px",
++          "bottomLeft": "0px"
++        },
++        "desktop": {
++          "topLeft": "0px",
++          "topRight": "0px",
++          "bottomRight": "0px",
++          "bottomLeft": "0px"
++        }
++      }
+     },
+     "innerBlocks": [
+       {
+diff --git a/sites/eye-care-ward-end/build/footer.tree.json b/sites/eye-care-ward-end/build/footer.tree.json
+index 67cf5b374..46a57bf9a 100644
+--- a/sites/eye-care-ward-end/build/footer.tree.json
++++ b/sites/eye-care-ward-end/build/footer.tree.json
+@@ -77,7 +77,12 @@
+               "bottom": "56px"
+             }
+           },
+-          "className": "cr-ref-footer-1"
++          "className": "cr-ref-footer-1",
++          "maxWidth": {
++            "mobile": "1440px",
++            "tablet": "1440px",
++            "desktop": "1440px"
++          }
+         },
+         "innerBlocks": [
+           {
+@@ -744,7 +749,8 @@
+               "gap": {
+                 "desktop": "14px"
+               },
+-              "className": "cr-ref-footer-29"
++              "className": "cr-ref-footer-29",
++              "textDecoration": "none"
+             },
+             "innerBlocks": [
+               {
+@@ -755,7 +761,8 @@
+                     "desktop": "12px"
+                   },
+                   "className": "cr-ref-footer-30",
+-                  "linkColour": "text-label"
++                  "linkColour": "text-label",
++                  "textDecoration": "none"
+                 }
+               },
+               {
+@@ -766,7 +773,8 @@
+                     "desktop": "12px"
+                   },
+                   "className": "cr-ref-footer-31",
+-                  "linkColour": "text-label"
++                  "linkColour": "text-label",
++                  "textDecoration": "none"
+                 }
+               }
+             ]
+diff --git a/sites/eye-care-ward-end/build/help.tree.json b/sites/eye-care-ward-end/build/help.tree.json
+index 31f38faba..5096cffd5 100644
+--- a/sites/eye-care-ward-end/build/help.tree.json
++++ b/sites/eye-care-ward-end/build/help.tree.json
+@@ -8,15 +8,15 @@
+       },
+       "padding": {
+         "desktop": {
+-          "top": "104px",
++          "top": "48px",
+           "bottom": "90px"
+         },
+         "tablet": {
+-          "top": "104px",
++          "top": "48px",
+           "bottom": "90px"
+         },
+         "mobile": {
+-          "top": "56px",
++          "top": "28px",
+           "bottom": "60px"
+         }
+       },
+@@ -108,7 +108,8 @@
+               "bottom": "56px"
+             }
+           },
+-          "className": "cr-ref-help-3"
++          "className": "cr-ref-help-3",
++          "backgroundColour": "border"
+         },
+         "innerBlocks": [
+           {
+@@ -116,7 +117,9 @@
+             "attributes": {
+               "layout": "stack",
+               "gap": {
+-                "desktop": "10px"
++                "desktop": "0px",
++                "mobile": "0px",
++                "tablet": "0px"
+               },
+               "backgroundColour": "surface-alt",
+               "padding": {
+@@ -183,7 +186,9 @@
+             "attributes": {
+               "layout": "stack",
+               "gap": {
+-                "desktop": "10px"
++                "desktop": "0px",
++                "mobile": "0px",
++                "tablet": "0px"
+               },
+               "backgroundColour": "surface-alt",
+               "padding": {
+@@ -250,7 +255,9 @@
+             "attributes": {
+               "layout": "stack",
+               "gap": {
+-                "desktop": "10px"
++                "desktop": "0px",
++                "mobile": "0px",
++                "tablet": "0px"
+               },
+               "backgroundColour": "surface-alt",
+               "padding": {
+@@ -319,7 +326,7 @@
+         "attributes": {
+           "layout": "flex",
+           "justifyContent": "space-between",
+-          "alignItems": "center",
++          "alignItems": "flex-end",
+           "flexWrap": "wrap",
+           "gap": {
+             "desktop": "16px"
+@@ -380,7 +387,7 @@
+                 "desktop": 0.08
+               },
+               "linkColour": "text",
+-              "textDecoration": "underline",
++              "textDecoration": "none",
+               "className": "cr-ref-help-15"
+             }
+           }
+@@ -408,13 +415,37 @@
+           },
+           "fontSizeUnit": "px",
+           "gap": {
+-            "desktop": "20px"
++            "desktop": "0px",
++            "mobile": "0px",
++            "tablet": "0px"
+           },
+           "className": "cr-ref-help-16",
+           "iconSize": {
+             "desktop": 18
+           },
+-          "iconRotation": 45
++          "iconRotation": 45,
++          "headerGap": {
++            "mobile": "20px",
++            "tablet": "20px",
++            "desktop": "20px"
++          },
++          "headerPadding": {
++            "mobile": "20px",
++            "tablet": "20px",
++            "desktop": "20px"
++          },
++          "borderStyle": "solid",
++          "borderWidth": {
++            "right": "0px",
++            "bottom": "0px",
++            "left": "0px",
++            "top": "1px"
++          },
++          "contentPadding": {
++            "mobile": "22px",
++            "tablet": "22px",
++            "desktop": "22px"
++          }
+         },
+         "innerBlocks": [
+           {
+@@ -561,7 +592,8 @@
+             "name": "sgs/accordion-item",
+             "attributes": {
+               "title": "Can I collect and have them fitted?",
+-              "className": "cr-ref-help-31"
++              "className": "cr-ref-help-31",
++              "borderColour": "border"
+             },
+             "innerBlocks": [
+               {
+@@ -606,7 +638,18 @@
+               "left": "28px"
+             }
+           },
+-          "className": "cr-ref-help-33"
++          "className": "cr-ref-help-33",
++          "margin": {
++            "mobile": {
++              "top": "44px"
++            },
++            "tablet": {
++              "top": "44px"
++            },
++            "desktop": {
++              "top": "44px"
++            }
++          }
+         },
+         "innerBlocks": [
+           {
+@@ -614,7 +657,9 @@
+             "attributes": {
+               "layout": "stack",
+               "gap": {
+-                "desktop": "6px"
++                "desktop": "0px",
++                "mobile": "0px",
++                "tablet": "0px"
+               },
+               "className": "cr-ref-help-34"
+             },
+@@ -646,7 +691,8 @@
+                       "top": "6px"
+                     }
+                   },
+-                  "className": "cr-ref-help-36"
++                  "className": "cr-ref-help-36",
++                  "textWrap": "pretty"
+                 },
+                 "innerBlocks": [
+                   {
+@@ -660,8 +706,20 @@
+                       },
+                       "textBefore": "Call the clinic on ",
+                       "textAfter": ", or send me a message and I'll get back to you.",
+-                      "textColour": "text-soft",
+-                      "className": "cr-ref-help-37"
++                      "textColour": "text-muted",
++                      "className": "cr-ref-help-37",
++                      "margin": {
++                        "mobile": {
++                          "top": "6px"
++                        },
++                        "tablet": {
++                          "top": "6px"
++                        },
++                        "desktop": {
++                          "top": "6px"
++                        }
++                      },
++                      "textWrap": "pretty"
+                     }
+                   }
+                 ]
+diff --git a/sites/eye-care-ward-end/build/home.tree.json b/sites/eye-care-ward-end/build/home.tree.json
+index 496114d6a..e35e0f539 100644
+--- a/sites/eye-care-ward-end/build/home.tree.json
++++ b/sites/eye-care-ward-end/build/home.tree.json
+@@ -282,7 +282,15 @@
+           "logoFit": "contain",
+           "transitionDuration": "250",
+           "transitionEasing": "ease",
+-          "className": "cr-ref-home-8"
++          "className": "cr-ref-home-8",
++          "textColour": "#3A352F",
++          "borderWidth": {
++            "top": "0px",
++            "right": "0px",
++            "left": "0px",
++            "bottom": "1px"
++          },
++          "borderColour": "border"
+         }
+       }
+     ]
+@@ -1339,7 +1347,8 @@
+               "bottom": "52px"
+             }
+           },
+-          "className": "cr-ref-home-25"
++          "className": "cr-ref-home-25",
++          "alignItems": "end"
+         },
+         "innerBlocks": [
+           {
+@@ -1395,7 +1404,8 @@
+                       "bottom": "0"
+                     }
+                   },
+-                  "className": "cr-ref-home-28"
++                  "className": "cr-ref-home-28",
++                  "textColour": "primary-text"
+                 }
+               }
+             ]
+@@ -1458,7 +1468,8 @@
+           "layout": "grid",
+           "textWrap": "wrap",
+           "sgsAnimationStaggerChildren": "70",
+-          "className": "cr-ref-home-30"
++          "className": "cr-ref-home-30",
++          "backgroundColour": "#F9F9F329"
+         },
+         "innerBlocks": [
+           {
+@@ -1484,7 +1495,27 @@
+                 }
+               },
+               "textWrap": "wrap",
+-              "className": "cr-ref-home-31"
++              "className": "cr-ref-home-31",
++              "padding": {
++                "mobile": {
++                  "top": "28px",
++                  "right": "22px",
++                  "bottom": "28px",
++                  "left": "22px"
++                },
++                "tablet": {
++                  "top": "34px",
++                  "right": "30px",
++                  "bottom": "34px",
++                  "left": "30px"
++                },
++                "desktop": {
++                  "top": "34px",
++                  "right": "30px",
++                  "bottom": "34px",
++                  "left": "30px"
++                }
++              }
+             },
+             "innerBlocks": [
+               {
+@@ -1527,7 +1558,8 @@
+                     "desktop": 1.5
+                   },
+                   "lineHeightUnit": "unitless",
+-                  "className": "cr-ref-home-33"
++                  "className": "cr-ref-home-33",
++                  "textColour": "primary-text"
+                 }
+               },
+               {
+@@ -1568,7 +1600,27 @@
+                 }
+               },
+               "textWrap": "wrap",
+-              "className": "cr-ref-home-35"
++              "className": "cr-ref-home-35",
++              "padding": {
++                "mobile": {
++                  "top": "28px",
++                  "right": "22px",
++                  "bottom": "28px",
++                  "left": "22px"
++                },
++                "tablet": {
++                  "top": "34px",
++                  "right": "30px",
++                  "bottom": "34px",
++                  "left": "30px"
++                },
++                "desktop": {
++                  "top": "34px",
++                  "right": "30px",
++                  "bottom": "34px",
++                  "left": "30px"
++                }
++              }
+             },
+             "innerBlocks": [
+               {
+@@ -1611,7 +1663,8 @@
+                     "desktop": 1.5
+                   },
+                   "lineHeightUnit": "unitless",
+-                  "className": "cr-ref-home-37"
++                  "className": "cr-ref-home-37",
++                  "textColour": "primary-text"
+                 }
+               },
+               {
+@@ -1652,7 +1705,27 @@
+                 }
+               },
+               "textWrap": "wrap",
+-              "className": "cr-ref-home-39"
++              "className": "cr-ref-home-39",
++              "padding": {
++                "mobile": {
++                  "top": "28px",
++                  "right": "22px",
++                  "bottom": "28px",
++                  "left": "22px"
++                },
++                "tablet": {
++                  "top": "34px",
++                  "right": "30px",
++                  "bottom": "34px",
++                  "left": "30px"
++                },
++                "desktop": {
++                  "top": "34px",
++                  "right": "30px",
++                  "bottom": "34px",
++                  "left": "30px"
++                }
++              }
+             },
+             "innerBlocks": [
+               {
+@@ -1695,7 +1768,8 @@
+                     "desktop": 1.5
+                   },
+                   "lineHeightUnit": "unitless",
+-                  "className": "cr-ref-home-41"
++                  "className": "cr-ref-home-41",
++                  "textColour": "primary-text"
+                 }
+               },
+               {
+@@ -1736,7 +1810,27 @@
+                 }
+               },
+               "textWrap": "wrap",
+-              "className": "cr-ref-home-43"
++              "className": "cr-ref-home-43",
++              "padding": {
++                "mobile": {
++                  "top": "28px",
++                  "right": "22px",
++                  "bottom": "28px",
++                  "left": "22px"
++                },
++                "tablet": {
++                  "top": "34px",
++                  "right": "30px",
++                  "bottom": "34px",
++                  "left": "30px"
++                },
++                "desktop": {
++                  "top": "34px",
++                  "right": "30px",
++                  "bottom": "34px",
++                  "left": "30px"
++                }
++              }
+             },
+             "innerBlocks": [
+               {
+@@ -1779,7 +1873,8 @@
+                     "desktop": 1.5
+                   },
+                   "lineHeightUnit": "unitless",
+-                  "className": "cr-ref-home-45"
++                  "className": "cr-ref-home-45",
++                  "textColour": "primary-text"
+                 }
+               },
+               {
+@@ -1940,7 +2035,8 @@
+               "minHeight": {
+                 "desktop": "44px"
+               },
+-              "className": "cr-ref-home-52"
++              "className": "cr-ref-home-52",
++              "transitionDuration": 0
+             }
+           }
+         ]
+@@ -2096,7 +2192,7 @@
+           "noImageLabelLetterSpacingUnit": "em",
+           "noImageLabelTextTransform": "uppercase",
+           "noImageLabelColour": "rgba(250,248,245,0.5)",
+-          "cardBackground": "surface-stage",
++          "cardBackground": "#2B2721",
+           "cardPadding": {
+             "desktop": {
+               "top": "18px",
+@@ -2133,7 +2229,15 @@
+       },
+       "textWrap": "wrap",
+       "className": "sgs-google-reviews cr-ref-home-54",
+-      "sgsAnimationStaggerChildren": "70"
++      "sgsAnimationStaggerChildren": "70",
++      "borderWidth": {
++        "right": "0px",
++        "bottom": "0px",
++        "left": "0px",
++        "top": "1px"
++      },
++      "borderStyle": "solid",
++      "borderColour": "border"
+     },
+     "innerBlocks": [
+       {
+@@ -2644,7 +2748,9 @@
+             "right": "0px"
+           },
+           "seeAllBorderStyle": "none",
+-          "seeAllColourBorder": "surface-alt"
++          "seeAllColourBorder": "surface-alt",
++          "arrowColourBorderHover": "#DADCE0",
++          "writeReviewColourBorderHover": "#DADCE0"
+         }
+       }
+     ]
+diff --git a/sites/eye-care-ward-end/build/mega-brands.tree.json b/sites/eye-care-ward-end/build/mega-brands.tree.json
+index 8f047de44..de41221ee 100644
+--- a/sites/eye-care-ward-end/build/mega-brands.tree.json
++++ b/sites/eye-care-ward-end/build/mega-brands.tree.json
+@@ -22,7 +22,7 @@
+       "borderWidth": {
+         "top": "0",
+         "right": "0",
+-        "bottom": "1px",
++        "bottom": "0px",
+         "left": "0"
+       },
+       "borderColour": "border",
+@@ -42,7 +42,16 @@
+             "attributes": {
+               "tagName": "div",
+               "layout": "stack",
+-              "className": "cr-ref-mega-brands-2"
++              "className": "cr-ref-mega-brands-2",
++              "padding": {
++                "desktop": {
++                  "top": "36px",
++                  "bottom": "40px"
++                }
++              },
++              "maxWidth": {
++                "desktop": "1440px"
++              }
+             },
+             "innerBlocks": [
+               {
+@@ -68,7 +77,8 @@
+                       "bottom": "18px"
+                     }
+                   },
+-                  "className": "cr-ref-mega-brands-3"
++                  "className": "cr-ref-mega-brands-3",
++                  "textWrap": "wrap"
+                 }
+               },
+               {
+@@ -307,7 +317,15 @@
+                         }
+                       },
+                       "titleMarginBottom": "6px",
+-                      "className": "cr-ref-mega-brands-5"
++                      "className": "cr-ref-mega-brands-5",
++                      "borderWidth": {
++                        "right": "0px",
++                        "bottom": "0px",
++                        "left": "0px",
++                        "top": "1px"
++                      },
++                      "borderStyle": "solid",
++                      "borderColour": "border"
+                     },
+                     "innerBlocks": []
+                   }
+@@ -336,7 +354,11 @@
+                       "bottom": "14px"
+                     }
+                   },
+-                  "className": "cr-ref-mega-brands-6"
++                  "className": "cr-ref-mega-brands-6",
++                  "lineHeight": {
++                    "desktop": 1.5
++                  },
++                  "textWrap": "wrap"
+                 }
+               },
+               {
+@@ -374,10 +396,10 @@
+                       },
+                       "padding": {
+                         "desktop": {
+-                          "top": "5px",
+-                          "right": "0",
+-                          "bottom": "5px",
+-                          "left": "0"
++                          "top": "20px",
++                          "right": "14px",
++                          "bottom": "20px",
++                          "left": "14px"
+                         }
+                       },
+                       "className": "cr-ref-mega-brands-8",
+@@ -389,7 +411,11 @@
+                         "desktop": 0,
+                         "tablet": 44,
+                         "mobile": 44
+-                      }
++                      },
++                      "iconGap": {
++                        "desktop": "6px"
++                      },
++                      "colourBackground": "surface-alt"
+                     }
+                   },
+                   {
+@@ -1832,7 +1858,8 @@
+                         "desktop": 0,
+                         "tablet": 44,
+                         "mobile": 44
+-                      }
++                      },
++                      "transitionDuration": 0
+                     }
+                   }
+                 ]
+diff --git a/sites/eye-care-ward-end/build/mega-help.tree.json b/sites/eye-care-ward-end/build/mega-help.tree.json
+index 3418ccc74..853726b15 100644
+--- a/sites/eye-care-ward-end/build/mega-help.tree.json
++++ b/sites/eye-care-ward-end/build/mega-help.tree.json
+@@ -25,7 +25,7 @@
+       "borderWidth": {
+         "top": "0px",
+         "right": "0px",
+-        "bottom": "1px",
++        "bottom": "0px",
+         "left": "0px"
+       },
+       "borderColour": "border",
+@@ -49,7 +49,13 @@
+               "gap": {
+                 "desktop": "0px"
+               },
+-              "className": "cr-ref-mega-help-2"
++              "className": "cr-ref-mega-help-2",
++              "padding": {
++                "desktop": {
++                  "right": "0px",
++                  "left": "0px"
++                }
++              }
+             },
+             "innerBlocks": [
+               {
+@@ -79,7 +85,8 @@
+                       "bottom": "14px"
+                     }
+                   },
+-                  "className": "cr-ref-mega-help-3"
++                  "className": "cr-ref-mega-help-3",
++                  "textWrap": "wrap"
+                 }
+               },
+               {
+@@ -129,7 +136,9 @@
+                       "contentAlign": {
+                         "desktop": "flex-start"
+                       },
+-                      "className": "cr-ref-mega-help-5"
++                      "className": "cr-ref-mega-help-5",
++                      "transitionDuration": 0,
++                      "colourTextHover": "accent-text"
+                     }
+                   },
+                   {
+@@ -167,7 +176,8 @@
+                       "contentAlign": {
+                         "desktop": "flex-start"
+                       },
+-                      "className": "cr-ref-mega-help-6"
++                      "className": "cr-ref-mega-help-6",
++                      "colourTextHover": "accent-text"
+                     }
+                   },
+                   {
+@@ -205,7 +215,8 @@
+                       "contentAlign": {
+                         "desktop": "flex-start"
+                       },
+-                      "className": "cr-ref-mega-help-7"
++                      "className": "cr-ref-mega-help-7",
++                      "colourTextHover": "accent-text"
+                     }
+                   }
+                 ]
+@@ -229,7 +240,13 @@
+               "gap": {
+                 "desktop": "0px"
+               },
+-              "className": "cr-ref-mega-help-9"
++              "className": "cr-ref-mega-help-9",
++              "padding": {
++                "desktop": {
++                  "right": "0px",
++                  "left": "0px"
++                }
++              }
+             },
+             "innerBlocks": [
+               {
+@@ -259,7 +276,8 @@
+                       "bottom": "14px"
+                     }
+                   },
+-                  "className": "cr-ref-mega-help-10"
++                  "className": "cr-ref-mega-help-10",
++                  "textWrap": "wrap"
+                 }
+               },
+               {
+@@ -309,7 +327,8 @@
+                       "contentAlign": {
+                         "desktop": "flex-start"
+                       },
+-                      "className": "cr-ref-mega-help-12"
++                      "className": "cr-ref-mega-help-12",
++                      "colourTextHover": "accent-text"
+                     }
+                   },
+                   {
+@@ -347,7 +366,8 @@
+                       "contentAlign": {
+                         "desktop": "flex-start"
+                       },
+-                      "className": "cr-ref-mega-help-13"
++                      "className": "cr-ref-mega-help-13",
++                      "colourTextHover": "accent-text"
+                     }
+                   },
+                   {
+@@ -385,7 +405,8 @@
+                       "contentAlign": {
+                         "desktop": "flex-start"
+                       },
+-                      "className": "cr-ref-mega-help-14"
++                      "className": "cr-ref-mega-help-14",
++                      "colourTextHover": "accent-text"
+                     }
+                   }
+                 ]
+@@ -409,7 +430,13 @@
+               "gap": {
+                 "desktop": "0px"
+               },
+-              "className": "cr-ref-mega-help-16"
++              "className": "cr-ref-mega-help-16",
++              "padding": {
++                "desktop": {
++                  "right": "0px",
++                  "left": "0px"
++                }
++              }
+             },
+             "innerBlocks": [
+               {
+@@ -439,7 +466,8 @@
+                       "bottom": "14px"
+                     }
+                   },
+-                  "className": "cr-ref-mega-help-17"
++                  "className": "cr-ref-mega-help-17",
++                  "textWrap": "wrap"
+                 }
+               },
+               {
+@@ -489,7 +517,8 @@
+                       "contentAlign": {
+                         "desktop": "flex-start"
+                       },
+-                      "className": "cr-ref-mega-help-19"
++                      "className": "cr-ref-mega-help-19",
++                      "colourTextHover": "accent-text"
+                     }
+                   },
+                   {
+@@ -528,7 +557,9 @@
+                         "desktop": "flex-start"
+                       },
+                       "linkSource": "phone",
+-                      "className": "cr-ref-mega-help-20"
++                      "className": "cr-ref-mega-help-20",
++                      "transitionDuration": 0,
++                      "colourTextHover": "accent-text"
+                     }
+                   },
+                   {
+@@ -568,7 +599,8 @@
+                       },
+                       "linkTarget": "_blank",
+                       "rel": "noopener",
+-                      "className": "cr-ref-mega-help-21"
++                      "className": "cr-ref-mega-help-21",
++                      "colourTextHover": "success"
+                     }
+                   }
+                 ]
+diff --git a/sites/eye-care-ward-end/build/mega-lenses.tree.json b/sites/eye-care-ward-end/build/mega-lenses.tree.json
+index cbe1112aa..48be5d2a2 100644
+--- a/sites/eye-care-ward-end/build/mega-lenses.tree.json
++++ b/sites/eye-care-ward-end/build/mega-lenses.tree.json
+@@ -22,14 +22,14 @@
+       "borderWidth": {
+         "top": "0",
+         "right": "0",
+-        "bottom": "1px",
++        "bottom": "0px",
+         "left": "0"
+       },
+       "borderColour": "border",
+       "shadow": "0 24px 48px 0",
+       "shadowColour": "#141414 12%",
+       "groupGap": {
+-        "desktop": "0"
++        "desktop": "1px"
+       },
+       "className": "cr-ref-mega-lenses-0"
+     },
+@@ -65,10 +65,10 @@
+               },
+               "borderStyle": "solid",
+               "borderWidth": {
+-                "top": "1px",
++                "top": "0px",
+                 "right": "0",
+-                "bottom": "1px",
+-                "left": "1px"
++                "bottom": "0px",
++                "left": "0px"
+               },
+               "borderColour": "border",
+               "className": "cr-ref-mega-lenses-2"
+@@ -87,7 +87,8 @@
+                   "letterSpacing": 0.18,
+                   "letterSpacingUnit": "em",
+                   "textTransform": "uppercase",
+-                  "className": "cr-ref-mega-lenses-3"
++                  "className": "cr-ref-mega-lenses-3",
++                  "lineHeight": 1.5
+                 }
+               },
+               {
+@@ -112,7 +113,11 @@
+                       "bottom": "0"
+                     }
+                   },
+-                  "className": "cr-ref-mega-lenses-4"
++                  "className": "cr-ref-mega-lenses-4",
++                  "lineHeight": {
++                    "desktop": 1.5
++                  },
++                  "textColourHover": "accent-text"
+                 }
+               },
+               {
+@@ -166,12 +171,12 @@
+                   "left": "24px"
+                 }
+               },
+-              "borderStyle": "solid",
++              "borderStyle": "none",
+               "borderWidth": {
+-                "top": "1px",
++                "top": "0px",
+                 "right": "0",
+-                "bottom": "1px",
+-                "left": "1px"
++                "bottom": "0px",
++                "left": "0px"
+               },
+               "borderColour": "border",
+               "className": "cr-ref-mega-lenses-7"
+@@ -190,7 +195,8 @@
+                   "letterSpacing": 0.18,
+                   "letterSpacingUnit": "em",
+                   "textTransform": "uppercase",
+-                  "className": "cr-ref-mega-lenses-8"
++                  "className": "cr-ref-mega-lenses-8",
++                  "lineHeight": 1.5
+                 }
+               },
+               {
+@@ -215,7 +221,11 @@
+                       "bottom": "0"
+                     }
+                   },
+-                  "className": "cr-ref-mega-lenses-9"
++                  "className": "cr-ref-mega-lenses-9",
++                  "lineHeight": {
++                    "desktop": 1.5
++                  },
++                  "textColourHover": "accent-text"
+                 }
+               },
+               {
+@@ -269,12 +279,12 @@
+                   "left": "24px"
+                 }
+               },
+-              "borderStyle": "solid",
++              "borderStyle": "none",
+               "borderWidth": {
+-                "top": "1px",
++                "top": "0px",
+                 "right": "0",
+-                "bottom": "1px",
+-                "left": "1px"
++                "bottom": "0px",
++                "left": "0px"
+               },
+               "borderColour": "border",
+               "className": "cr-ref-mega-lenses-12"
+@@ -293,7 +303,8 @@
+                   "letterSpacing": 0.18,
+                   "letterSpacingUnit": "em",
+                   "textTransform": "uppercase",
+-                  "className": "cr-ref-mega-lenses-13"
++                  "className": "cr-ref-mega-lenses-13",
++                  "lineHeight": 1.5
+                 }
+               },
+               {
+@@ -318,7 +329,11 @@
+                       "bottom": "0"
+                     }
+                   },
+-                  "className": "cr-ref-mega-lenses-14"
++                  "className": "cr-ref-mega-lenses-14",
++                  "lineHeight": {
++                    "desktop": 1.5
++                  },
++                  "textColourHover": "accent-text"
+                 }
+               },
+               {
+@@ -372,12 +387,12 @@
+                   "left": "24px"
+                 }
+               },
+-              "borderStyle": "solid",
++              "borderStyle": "none",
+               "borderWidth": {
+-                "top": "1px",
+-                "right": "1px",
+-                "bottom": "1px",
+-                "left": "1px"
++                "top": "0px",
++                "right": "0px",
++                "bottom": "0px",
++                "left": "0px"
+               },
+               "borderColour": "border",
+               "className": "cr-ref-mega-lenses-17"
+@@ -396,7 +411,8 @@
+                   "letterSpacing": 0.18,
+                   "letterSpacingUnit": "em",
+                   "textTransform": "uppercase",
+-                  "className": "cr-ref-mega-lenses-18"
++                  "className": "cr-ref-mega-lenses-18",
++                  "lineHeight": 1.5
+                 }
+               },
+               {
+@@ -421,7 +437,11 @@
+                       "bottom": "0"
+                     }
+                   },
+-                  "className": "cr-ref-mega-lenses-19"
++                  "className": "cr-ref-mega-lenses-19",
++                  "lineHeight": {
++                    "desktop": 1.5
++                  },
++                  "textColourHover": "accent-text"
+                 }
+               },
+               {
+diff --git a/sites/eye-care-ward-end/build/mega-sunglasses.tree.json b/sites/eye-care-ward-end/build/mega-sunglasses.tree.json
+index cb51d46f2..05a642a8c 100644
+--- a/sites/eye-care-ward-end/build/mega-sunglasses.tree.json
++++ b/sites/eye-care-ward-end/build/mega-sunglasses.tree.json
+@@ -25,7 +25,7 @@
+       "borderWidth": {
+         "top": "0px",
+         "right": "0px",
+-        "bottom": "1px",
++        "bottom": "0px",
+         "left": "0px"
+       },
+       "borderColour": "border",
+@@ -55,7 +55,13 @@
+               "gap": {
+                 "desktop": "0px"
+               },
+-              "className": "cr-ref-mega-sunglasses-2"
++              "className": "cr-ref-mega-sunglasses-2",
++              "padding": {
++                "desktop": {
++                  "right": "0px",
++                  "left": "0px"
++                }
++              }
+             },
+             "innerBlocks": [
+               {
+@@ -85,7 +91,8 @@
+                       "bottom": "16px"
+                     }
+                   },
+-                  "className": "cr-ref-mega-sunglasses-3"
++                  "className": "cr-ref-mega-sunglasses-3",
++                  "textWrap": "wrap"
+                 }
+               },
+               {
+@@ -140,7 +147,9 @@
+                       "contentAlign": {
+                         "desktop": "flex-start"
+                       },
+-                      "className": "cr-ref-mega-sunglasses-5"
++                      "className": "cr-ref-mega-sunglasses-5",
++                      "transitionDuration": 0,
++                      "colourTextHover": "accent-text"
+                     }
+                   },
+                   {
+@@ -585,7 +594,13 @@
+               "gap": {
+                 "desktop": "0px"
+               },
+-              "className": "cr-ref-mega-sunglasses-18"
++              "className": "cr-ref-mega-sunglasses-18",
++              "padding": {
++                "desktop": {
++                  "right": "0px",
++                  "left": "0px"
++                }
++              }
+             },
+             "innerBlocks": [
+               {
+@@ -615,7 +630,8 @@
+                       "bottom": "16px"
+                     }
+                   },
+-                  "className": "cr-ref-mega-sunglasses-19"
++                  "className": "cr-ref-mega-sunglasses-19",
++                  "textWrap": "wrap"
+                 }
+               },
+               {
+@@ -665,7 +681,9 @@
+                       "contentAlign": {
+                         "desktop": "flex-start"
+                       },
+-                      "className": "cr-ref-mega-sunglasses-21"
++                      "className": "cr-ref-mega-sunglasses-21",
++                      "transitionDuration": 0,
++                      "colourTextHover": "accent-text"
+                     }
+                   },
+                   {
+@@ -855,7 +873,9 @@
+                       "contentAlign": {
+                         "desktop": "flex-start"
+                       },
+-                      "className": "cr-ref-mega-sunglasses-26"
++                      "className": "cr-ref-mega-sunglasses-26",
++                      "transitionDuration": 0,
++                      "colourTextHover": "accent-text"
+                     }
+                   }
+                 ]
+diff --git a/sites/eye-care-ward-end/build/mobile-menu.tree.json b/sites/eye-care-ward-end/build/mobile-menu.tree.json
+index 888af3e25..86f7f3531 100644
+--- a/sites/eye-care-ward-end/build/mobile-menu.tree.json
++++ b/sites/eye-care-ward-end/build/mobile-menu.tree.json
+@@ -57,7 +57,21 @@
+       "staggerInsideGroups": true,
+       "chromeRating": true,
+       "chromeRatingPlacement": "end",
+-      "chromeRatingShowCount": false
++      "chromeRatingShowCount": false,
++      "closePadding": {
++        "mobile": {
++          "top": "1px",
++          "right": "6px",
++          "bottom": "1px",
++          "left": "6px"
++        },
++        "tablet": {
++          "top": "1px",
++          "right": "6px",
++          "bottom": "1px",
++          "left": "6px"
++        }
++      }
+     },
+     "innerBlocks": [
+       {
+@@ -106,7 +120,7 @@
+               "textDecoration": "none",
+               "textDecorationHover": "none",
+               "colourText": "text",
+-              "colourTextHover": "text",
++              "colourTextHover": "accent-text",
+               "borderStyle": "solid",
+               "borderWidth": {
+                 "bottom": "1px"
+@@ -121,7 +135,9 @@
+                   "left": "0px"
+                 }
+               },
+-              "className": "cr-ref-mobile-menu-2 sgs-hover-underline-slide"
++              "className": "cr-ref-mobile-menu-2 sgs-hover-underline-slide",
++              "colourBackgroundGradient": "none",
++              "transitionDuration": 0
+             }
+           },
+           {
+@@ -150,7 +166,7 @@
+               "textDecoration": "none",
+               "textDecorationHover": "none",
+               "colourText": "text",
+-              "colourTextHover": "text",
++              "colourTextHover": "accent-text",
+               "borderStyle": "solid",
+               "borderWidth": {
+                 "bottom": "1px"
+@@ -194,7 +210,7 @@
+               "textDecoration": "none",
+               "textDecorationHover": "none",
+               "colourText": "text",
+-              "colourTextHover": "text",
++              "colourTextHover": "accent-text",
+               "borderStyle": "solid",
+               "borderWidth": {
+                 "bottom": "1px"
+@@ -209,7 +225,9 @@
+                   "left": "0px"
+                 }
+               },
+-              "className": "cr-ref-mobile-menu-4 sgs-hover-underline-slide"
++              "className": "cr-ref-mobile-menu-4 sgs-hover-underline-slide",
++              "colourBackgroundGradient": "none",
++              "transitionDuration": 0
+             }
+           },
+           {
+@@ -287,6 +305,12 @@
+           "margin": {
+             "desktop": {
+               "top": "23px"
++            },
++            "mobile": {
++              "top": "28px"
++            },
++            "tablet": {
++              "top": "28px"
+             }
+           },
+           "className": "cr-ref-mobile-menu-8"
+@@ -329,10 +353,18 @@
+               "itemLetterSpacing": {
+                 "desktop": 0.04
+               },
+-              "gap": "10",
++              "gap": "14px",
+               "itemPaddingBlock": "5px",
+               "className": "cr-ref-mobile-menu-9",
+-              "textColourHover": "text"
++              "textColourHover": "text",
++              "margin": {
++                "mobile": {
++                  "top": "28px"
++                },
++                "tablet": {
++                  "top": "28px"
++                }
++              }
+             }
+           }
+         ]
+@@ -437,7 +469,7 @@
+               "textDecoration": "none",
+               "textDecorationHover": "none",
+               "colourText": "text",
+-              "colourTextHover": "text",
++              "colourTextHover": "accent-text",
+               "colourBackground": "surface-alt",
+               "colourBackgroundHover": "surface-alt",
+               "borderStyle": "solid",
+@@ -458,7 +490,8 @@
+                 }
+               },
+               "iconSvg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 3h3l2 5-2.5 1.5a12 12 0 0 0 5 5L15 12l5 2v3a2 2 0 0 1-2.2 2A16 16 0 0 1 4 5.2 2 2 0 0 1 6 3z\"></path></svg>",
+-              "className": "cr-ref-mobile-menu-11"
++              "className": "cr-ref-mobile-menu-11",
++              "transitionDuration": 0
+             }
+           },
+           {
+@@ -618,7 +651,8 @@
+                     }
+                   },
+                   "iconSvg": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 12 12 0 0 0 4.6 4.1c1.7.7 2.4.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3c.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.5-.3z\"></path></svg>",
+-                  "className": "cr-ref-mobile-menu-15"
++                  "className": "cr-ref-mobile-menu-15",
++                  "transitionDuration": 0
+                 }
+               }
+             ]
+diff --git a/sites/eye-care-ward-end/build/single-product.tree.json b/sites/eye-care-ward-end/build/single-product.tree.json
+index 4dd09d36c..96604a0e7 100644
+--- a/sites/eye-care-ward-end/build/single-product.tree.json
++++ b/sites/eye-care-ward-end/build/single-product.tree.json
+@@ -15,7 +15,27 @@
+       "contentWidth": {
+         "desktop": "full"
+       },
+-      "className": "cr-ref-product-1"
++      "className": "cr-ref-product-1",
++      "padding": {
++        "mobile": {
++          "top": "28px",
++          "right": "20px",
++          "bottom": "60px",
++          "left": "20px"
++        },
++        "tablet": {
++          "top": "48px",
++          "right": "52px",
++          "bottom": "90px",
++          "left": "52px"
++        },
++        "desktop": {
++          "top": "48px",
++          "right": "52px",
++          "bottom": "90px",
++          "left": "52px"
++        }
++      }
+     },
+     "innerBlocks": [
+       {
+@@ -231,7 +251,8 @@
+                       }
+                     }
+                   },
+-                  "className": "cr-ref-product-6"
++                  "className": "cr-ref-product-6",
++                  "textWrap": "wrap"
+                 }
+               },
+               {
+@@ -242,7 +263,7 @@
+                     "desktop": 13.5
+                   },
+                   "fontSizeUnit": "px",
+-                  "textColour": "text-muted",
++                  "textColour": "text-subtle",
+                   "metadata": {
+                     "bindings": {
+                       "text": {
+@@ -298,14 +319,19 @@
+                     "left": "1px"
+                   },
+                   "cardBorderStyle": "solid",
+-                  "cardTitleColour": "text",
++                  "cardTitleColour": "#12301E",
+                   "cardSublineColour": "text-muted",
+                   "margin": {
+                     "desktop": {
+                       "top": "22px"
+                     }
+                   },
+-                  "className": "cr-ref-product-9"
++                  "className": "cr-ref-product-9",
++                  "cardTitleLineHeight": {
++                    "mobile": 1.5,
++                    "tablet": 1.5,
++                    "desktop": 1.5
++                  }
+                 }
+               },
+               {
+@@ -348,7 +374,27 @@
+                       "text": "Adjustments, tightening and re-fitting are free for as long as you own them."
+                     }
+                   ],
+-                  "className": "cr-ref-product-10"
++                  "className": "cr-ref-product-10",
++                  "textElFontSize": {
++                    "mobile": 12,
++                    "tablet": 12,
++                    "desktop": 12
++                  },
++                  "textElLineHeight": {
++                    "mobile": 1.5,
++                    "tablet": 1.5,
++                    "desktop": 1.5
++                  },
++                  "textColour": "accent-text",
++                  "borderWidth": {
++                    "right": "0px",
++                    "bottom": "0px",
++                    "left": "0px",
++                    "top": "1px"
++                  },
++                  "borderStyle": "solid",
++                  "borderColour": "border",
++                  "gap": "0px"
+                 }
+               }
+             ]
+@@ -429,7 +475,16 @@
+                     "name": "sgs/tab",
+                     "attributes": {
+                       "label": "Details",
+-                      "className": "cr-ref-product-15"
++                      "className": "cr-ref-product-15",
++                      "borderWidth": {
++                        "right": "0px",
++                        "bottom": "0px",
++                        "left": "0px",
++                        "top": "1px"
++                      },
++                      "borderStyle": "solid",
++                      "borderColour": "border",
++                      "backgroundColour": "border"
+                     },
+                     "innerBlocks": [
+                       {
+@@ -465,7 +520,8 @@
+                             "left": "1px"
+                           },
+                           "borderColour": "border",
+-                          "className": "cr-ref-product-16"
++                          "className": "cr-ref-product-16",
++                          "backgroundColour": "border"
+                         },
+                         "innerBlocks": [
+                           {
+@@ -1555,7 +1611,13 @@
+                                 "desktop": 13
+                               },
+                               "fontSizeUnit": "px",
+-                              "className": "cr-ref-product-74"
++                              "className": "cr-ref-product-74",
++                              "lineHeight": {
++                                "mobile": 1.231,
++                                "tablet": 1.231,
++                                "desktop": 1.231
++                              },
++                              "textDecoration": "none"
+                             }
+                           }
+                         ]
+@@ -2314,16 +2376,25 @@
+                         "attributes": {
+                           "text": "Every pair of glasses carries three numbers inside the arm: lens width, bridge, then temple length, the same measurements as above. Compare them against a pair you already wear and you'll know straight away whether these will fit.",
+                           "fontSize": {
+-                            "desktop": 14
++                            "desktop": 30,
++                            "mobile": 30,
++                            "tablet": 30
+                           },
+                           "fontSizeUnit": "px",
+-                          "textColour": "text-muted",
++                          "textColour": "primary",
+                           "margin": {
+                             "desktop": {
+                               "top": "16px"
+                             }
+                           },
+-                          "className": "cr-ref-product-88"
++                          "className": "cr-ref-product-88",
++                          "lineHeight": {
++                            "mobile": 1.5,
++                            "tablet": 1.5,
++                            "desktop": 1.5
++                          },
++                          "fontWeight": "500",
++                          "fontFamily": "heading"
+                         }
+                       }
+                     ]
+@@ -2352,7 +2423,13 @@
+                         "desktop": 30
+                       },
+                       "fontSizeUnit": "px",
+-                      "className": "cr-ref-product-89"
++                      "className": "cr-ref-product-89",
++                      "lineHeight": {
++                        "mobile": 1.5,
++                        "tablet": 1.5,
++                        "desktop": 1.5
++                      },
++                      "textWrap": "wrap"
+                     }
+                   },
+                   {
+@@ -2371,7 +2448,22 @@
+                       "iconSize": {
+                         "desktop": 18
+                       },
+-                      "iconRotation": 45
++                      "iconRotation": 45,
++                      "headerGap": {
++                        "mobile": "16px",
++                        "tablet": "16px",
++                        "desktop": "16px"
++                      },
++                      "headerPadding": {
++                        "mobile": "18px",
++                        "tablet": "18px",
++                        "desktop": "18px"
++                      },
++                      "lineHeight": {
++                        "mobile": 1.25,
++                        "tablet": 1.25,
++                        "desktop": 1.25
++                      }
+                     },
+                     "innerBlocks": [
+                       {
+@@ -2669,7 +2761,13 @@
+                     "desktop": 30
+                   },
+                   "fontSizeUnit": "px",
+-                  "className": "cr-ref-product-111"
++                  "className": "cr-ref-product-111",
++                  "lineHeight": {
++                    "mobile": 1.5,
++                    "tablet": 1.5,
++                    "desktop": 1.5
++                  },
++                  "textWrap": "wrap"
+                 }
+               },
+               {
+@@ -2790,7 +2888,15 @@
+                           "attributeTagText": "Polarised",
+                           "attributeTagFontWeight": "400",
+                           "attributeTagBorderColour": "border-strong",
+-                          "className": "cr-ref-product-114"
++                          "className": "cr-ref-product-114",
++                          "noImageLabelColour": "#A39C90",
++                          "borderWidth": {
++                            "right": "0px",
++                            "bottom": "0px",
++                            "left": "0px",
++                            "top": "1px"
++                          },
++                          "borderColourHover": "border-hover"
+                         }
+                       }
+                     ]
+diff --git a/sites/eye-care-ward-end/build/size-guide.tree.json b/sites/eye-care-ward-end/build/size-guide.tree.json
+index dc9f587c0..3ac518dbe 100644
+--- a/sites/eye-care-ward-end/build/size-guide.tree.json
++++ b/sites/eye-care-ward-end/build/size-guide.tree.json
+@@ -15,7 +15,12 @@
+           "bottom": "20px"
+         }
+       },
+-      "className": "cr-ref-size-guide-0"
++      "className": "cr-ref-size-guide-0",
++      "lineHeight": {
++        "mobile": 1.5,
++        "tablet": 1.5,
++        "desktop": 1.5
++      }
+     }
+   },
+   {
+@@ -26,13 +31,14 @@
+         "desktop": 16
+       },
+       "fontSizeUnit": "px",
+-      "textColour": "text-muted",
++      "textColour": "text-soft",
+       "margin": {
+         "desktop": {
+           "bottom": "20px"
+         }
+       },
+-      "className": "cr-ref-size-guide-1"
++      "className": "cr-ref-size-guide-1",
++      "textWrap": "pretty"
+     }
+   },
+   {
+@@ -59,7 +65,8 @@
+           "left": "22px"
+         }
+       },
+-      "className": "cr-ref-size-guide-2"
++      "className": "cr-ref-size-guide-2",
++      "textAlign": "center"
+     },
+     "innerBlocks": [
+       {
+@@ -73,7 +80,19 @@
+           "gap": {
+             "desktop": "10px"
+           },
+-          "className": "cr-ref-size-guide-3"
++          "className": "cr-ref-size-guide-3",
++          "fontSize": {
++            "mobile": 32,
++            "tablet": 32,
++            "desktop": 32
++          },
++          "lineHeight": {
++            "mobile": 1.5,
++            "tablet": 1.5,
++            "desktop": 1.5
++          },
++          "textAlign": "center",
++          "alignItems": "baseline"
+         },
+         "innerBlocks": [
+           {
+@@ -151,7 +170,8 @@
+               "top": "10px"
+             }
+           },
+-          "className": "cr-ref-size-guide-7"
++          "className": "cr-ref-size-guide-7",
++          "textAlign": "center"
+         },
+         "innerBlocks": [
+           {
+@@ -279,7 +299,8 @@
+                   "top": "5px"
+                 }
+               },
+-              "className": "cr-ref-size-guide-14"
++              "className": "cr-ref-size-guide-14",
++              "textWrap": "pretty"
+             }
+           }
+         ]
+@@ -325,7 +346,8 @@
+                   "top": "5px"
+                 }
+               },
+-              "className": "cr-ref-size-guide-17"
++              "className": "cr-ref-size-guide-17",
++              "textWrap": "pretty"
+             }
+           }
+         ]
+@@ -371,7 +393,8 @@
+                   "top": "5px"
+                 }
+               },
+-              "className": "cr-ref-size-guide-20"
++              "className": "cr-ref-size-guide-20",
++              "textWrap": "pretty"
+             }
+           }
+         ]
+@@ -421,7 +444,8 @@
+           "gap": {
+             "desktop": "12px"
+           },
+-          "className": "cr-ref-size-guide-22"
++          "className": "cr-ref-size-guide-22",
++          "flexWrap": "nowrap"
+         },
+         "innerBlocks": [
+           {

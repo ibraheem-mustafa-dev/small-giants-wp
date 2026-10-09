@@ -1,422 +1,16 @@
 {
  "surface": "mega-brands",
- "report": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-08T21-59-08/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-08T21-59-08/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-09T08-19-54/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-09T08-19-54/round-13/report.json",
  "date": "2026-10-09",
  "counts": {
-  "W": 119,
+  "W": 110,
   "F": 4,
-  "T": 15,
+  "T": 1,
   "U": 0,
   "L": 0
  },
  "verdicts": [
-  {
-   "key": "cr-ref-mega-brands-3||style|line-height",
-   "ref": "cr-ref-mega-brands-3",
-   "pair": "brands-heading-top",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "lineHeight"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-3",
-      "block": "sgs/heading",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "lineHeight",
-     "css_property": "line-height",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "headingRole",
-     "values": [
-      "subheading"
-     ]
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "level",
-     "values": [
-      "h1",
-      "h3",
-      "h5",
-      "h6"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-3||style|width",
-   "ref": "cr-ref-mega-brands-3",
-   "pair": "brands-heading-top",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mega-brands-2||style|width",
-     "ref": "cr-ref-mega-brands-2",
-     "key": "width",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -104,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-mega-brands-0",
-     "block": "sgs/mega-panel",
-     "setting": "asideWidth",
-     "via": "slot",
-     "path": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-3||style|text-wrap",
-   "ref": "cr-ref-mega-brands-3",
-   "pair": "brands-heading-top",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "text-wrap",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-3",
-      "block": "sgs/heading",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "textWrap",
-     "css_property": "text-wrap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "headingRole",
-     "values": [
-      "subheading"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-6||style|line-height",
-   "ref": "cr-ref-mega-brands-6",
-   "pair": "brands-heading-all",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-header-4",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -5.75,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "lineHeight"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-6",
-      "block": "sgs/heading",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "lineHeight",
-     "css_property": "line-height",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "headingRole",
-     "values": [
-      "subheading"
-     ]
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "level",
-     "values": [
-      "h1",
-      "h3",
-      "h5",
-      "h6"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-6||style|width",
-   "ref": "cr-ref-mega-brands-6",
-   "pair": "brands-heading-all",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mega-brands-2||style|width",
-     "ref": "cr-ref-mega-brands-2",
-     "key": "width",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -104,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-mega-brands-0",
-     "block": "sgs/mega-panel",
-     "setting": "asideWidth",
-     "via": "slot",
-     "path": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(2)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-6||style|text-wrap",
-   "ref": "cr-ref-mega-brands-6",
-   "pair": "brands-heading-all",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "style",
-   "property": "text-wrap",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-6",
-      "block": "sgs/heading",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/heading",
-     "setting": "textWrap",
-     "css_property": "text-wrap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/heading",
-     "setting": "headingRole",
-     "values": [
-      "subheading"
-     ]
-    }
-   ]
-  },
   {
    "key": "cr-ref-mega-brands-8|.sgs-button__label|style|font-family",
    "ref": "cr-ref-mega-brands-8",
@@ -429,8 +23,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "hardcode",
+   "solveReason": "sgs/button fontFamily holds the draft value but writing it breaks the layout: 12 rows on its node regressed, e.g. font-family@1440 Outfit, system-ui, sans-serif→\"Playfair Display\", serif; font-weight@1440 400→500; letter-spacing@1440 normal→2.8px (calibration names it)",
    "class": "W",
    "decidedBy": "mispaired",
    "evidence": [
@@ -441,7 +35,7 @@
       1920
      ],
      "sizes": [
-      "266x84 draft, 54x31 live"
+      "266x84 draft, 82x61 live"
      ]
     }
    ]
@@ -458,8 +52,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "hardcode",
+   "solveReason": "sgs/button fontWeight holds the draft value but writing it breaks the layout: 10 rows on its node regressed, e.g. font-weight@1440 400→500; letter-spacing@1440 normal→2.8px; text-transform@1440 none→uppercase (calibration names it)",
    "class": "W",
    "decidedBy": "mispaired",
    "evidence": [
@@ -470,7 +64,7 @@
       1920
      ],
      "sizes": [
-      "266x84 draft, 54x31 live"
+      "266x84 draft, 82x61 live"
      ]
     }
    ]
@@ -487,8 +81,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "hardcode",
+   "solveReason": "sgs/button letterSpacing holds the draft value but writing it breaks the layout: 8 rows on its node regressed, e.g. letter-spacing@1440 normal→2.8px; text-transform@1440 none→uppercase; color@1440 rgb(74, 69, 62)→rgb(20, 20, 20) (calibration names it)",
    "class": "W",
    "decidedBy": "mispaired",
    "evidence": [
@@ -499,7 +93,7 @@
       1920
      ],
      "sizes": [
-      "266x84 draft, 54x31 live"
+      "266x84 draft, 82x61 live"
      ]
     }
    ]
@@ -516,8 +110,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "hardcode",
+   "solveReason": "sgs/button textTransform holds the draft value but writing it breaks the layout: 6 rows on its node regressed, e.g. text-transform@1440 none→uppercase; color@1440 rgb(74, 69, 62)→rgb(20, 20, 20); text-transform@1920 none→uppercase (calibration names it)",
    "class": "W",
    "decidedBy": "mispaired",
    "evidence": [
@@ -528,7 +122,7 @@
       1920
      ],
      "sizes": [
-      "266x84 draft, 54x31 live"
+      "266x84 draft, 82x61 live"
      ]
     }
    ]
@@ -545,8 +139,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "hardcode",
+   "solveReason": "sgs/button colourText holds the draft value but writing it breaks the layout: 4 rows on its node regressed, e.g. color@1440 rgb(74, 69, 62)→rgb(20, 20, 20); color@1920 rgb(74, 69, 62)→rgb(20, 20, 20); h@1440 196→226 (calibration names it)",
    "class": "W",
    "decidedBy": "mispaired",
    "evidence": [
@@ -557,346 +151,8 @@
       1920
      ],
      "sizes": [
-      "266x84 draft, 54x31 live"
+      "266x84 draft, 82x61 live"
      ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||style|padding-top",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "266x84 draft, 54x31 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||style|padding-right",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "266x84 draft, 54x31 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||style|padding-bottom",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "266x84 draft, 54x31 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||style|padding-left",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "266x84 draft, 54x31 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||style|column-gap",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "266x84 draft, 54x31 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||style|row-gap",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "266x84 draft, 54x31 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||style|width",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "266x84 draft, 54x31 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||style|gap",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "266x84 draft, 54x31 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||style|flex-direction",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "flex-direction",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "266x84 draft, 54x31 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||style|painted-ground",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "painted-ground",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "266x84 draft, 54x31 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-47||style|text-align",
-   "ref": "cr-ref-mega-brands-47",
-   "pair": "brands-list-last",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "text-align",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__link|style|text-align",
-     "ref": "cr-ref-header-4",
-     "key": "text-align",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": null,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "shape",
-     "detail": "start is not one of , left, center, right, justify"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "textAlign",
-     "css_property": "text-align",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
     }
    ]
   },
@@ -912,10 +168,10 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
@@ -927,7 +183,9 @@
       "block": "sgs/button",
       "path": ""
      },
-     "holds": false
+     "holds": true,
+     "solveWrote": "transitionDuration",
+     "group": "cr-ref-mega-brands-47||transition-duration|"
     },
     {
      "check": "attribute",
@@ -939,552 +197,114 @@
      "source": "sgs",
      "reaches": true
     }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-47||style|width",
-   "ref": "cr-ref-mega-brands-47",
-   "pair": "brands-list-last",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "widthType",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-47||hover|reached",
-   "ref": "cr-ref-mega-brands-47",
-   "pair": "brands-list-last",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "reached",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for reached (hover)"
-    }
    ],
    "source": {
     "render": [
      {
       "file": "button/render.php",
-      "mentions": [],
-      "absent": [
-       "reached"
-      ]
+      "mentions": [
+       "transitionDuration"
+      ],
+      "absent": []
      },
      {
       "file": "container/render.php",
       "mentions": [],
       "absent": [
-       "reached"
+       "transitionDuration"
       ]
      },
      {
       "file": "mega-group/render.php",
       "mentions": [],
       "absent": [
-       "reached"
+       "transitionDuration"
       ]
      },
      {
       "file": "mega-panel/render.php",
       "mentions": [],
       "absent": [
-       "reached"
+       "transitionDuration"
       ]
      },
      {
       "file": "nav-bar-menu/render.php",
-      "mentions": [
-       "reached"
-      ],
-      "absent": []
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
      },
      {
       "file": "site-header-row/render.php",
       "mentions": [],
       "absent": [
-       "reached"
+       "transitionDuration"
       ]
      },
      {
       "file": "site-header/render.php",
       "mentions": [],
       "absent": [
-       "reached"
+       "transitionDuration"
       ]
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       ". $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}'; $css .= '@medi",
+       "fers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}'; $css .= '@media (forced-col"
+      ]
+     }
+    ]
    }
   },
   {
-   "key": "cr-ref-mega-brands-2|.sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-   "ref": "cr-ref-mega-brands-2",
-   "pair": "gen-mega-brands-2",
-   "path": ".sgs-container__inner > h3:nth-of-type(1)",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "same-element",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mega-brands-3||style|line-height",
-     "ref": "cr-ref-mega-brands-3",
-     "key": "line-height",
-     "relation": "same-element",
-     "match": "same-element",
-     "width": 1440,
-     "delta": -5.75,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-2||style|padding-top",
-   "ref": "cr-ref-mega-brands-2",
-   "pair": "gen-mega-brands-2",
+   "key": "cr-ref-mega-brands-8||style|flex-direction",
+   "ref": "cr-ref-mega-brands-8",
+   "pair": "brands-top-first",
    "path": "",
-   "block": "sgs/container",
+   "block": "sgs/button",
    "kind": "style",
-   "property": "padding-top",
+   "property": "flex-direction",
    "widths": [
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/button has no setting for flex-direction",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|padding-top",
-     "ref": "cr-ref-header-4",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -36,
+     "check": "mispaired",
      "widths": [
       1440,
       1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-2",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "css_property": "padding",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-2||style|padding-bottom",
-   "ref": "cr-ref-mega-brands-2",
-   "pair": "gen-mega-brands-2",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|padding-bottom",
-     "ref": "cr-ref-header-4",
-     "key": "padding-bottom",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -40,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-2",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "css_property": "padding",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-2||style|width",
-   "ref": "cr-ref-mega-brands-2",
-   "pair": "gen-mega-brands-2",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentWidth",
-     "css_property": "width",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "minColumnWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "scrollItemWidth",
-     "css_property": "flex",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-mega-brands-0",
-     "block": "sgs/mega-panel",
-     "setting": "asideWidth",
-     "via": "slot",
-     "path": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-2||style|max-width",
-   "ref": "cr-ref-mega-brands-2",
-   "pair": "gen-mega-brands-2",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "max-width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|max-width",
-     "ref": "cr-ref-header-4",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": null,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "maxWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-2",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentWidth",
-     "css_property": "width",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "minColumnWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "scrollItemWidth",
-     "css_property": "flex",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-1|.sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-   "ref": "cr-ref-mega-brands-1",
-   "pair": "gen-mega-brands-1",
-   "path": ".sgs-container > .sgs-container__inner > h3:nth-of-type(1)",
-   "block": "sgs/mega-group",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "same-element",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mega-brands-3||style|line-height",
-     "ref": "cr-ref-mega-brands-3",
-     "key": "line-height",
-     "relation": "same-element",
-     "match": "same-element",
-     "width": 1440,
-     "delta": -5.75,
-     "widths": [
-      1440,
-      1920
+     "sizes": [
+      "266x84 draft, 82x61 live"
      ]
     }
    ]
@@ -1501,8 +321,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/mega-group has no setting for flex-grow",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -1555,843 +375,6 @@
    }
   },
   {
-   "key": "cr-ref-mega-brands-0|.sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-   "ref": "cr-ref-mega-brands-0",
-   "pair": "gen-mega-brands-0",
-   "path": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "same-element",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mega-brands-3||style|line-height",
-     "ref": "cr-ref-mega-brands-3",
-     "key": "line-height",
-     "relation": "same-element",
-     "match": "same-element",
-     "width": 1440,
-     "delta": -5.75,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-0||style|border-bottom-width",
-   "ref": "cr-ref-mega-brands-0",
-   "pair": "gen-mega-brands-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "border-bottom-width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-0",
-      "block": "sgs/mega-panel",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-0||style|border-bottom-color",
-   "ref": "cr-ref-mega-brands-0",
-   "pair": "gen-mega-brands-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "border-bottom-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColour"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-0",
-      "block": "sgs/mega-panel",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "groupBorderColour",
-     "css_property": "border-color",
-     "css_element": "group",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "groupBorderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "group",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "groupBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "group",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "groupBorderColourGradientHover",
-     "css_property": "border-color-gradient",
-     "css_element": "group",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerLinkDivider",
-     "css_property": "border-color",
-     "css_element": "drawerLinks",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardBorderColour",
-     "css_property": "border-color",
-     "css_element": "drawerCard",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardBorderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "drawerCard",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/mega-panel",
-     "setting": "colourScheme",
-     "values": [
-      "dark"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-0||style|painted-ground",
-   "ref": "cr-ref-mega-brands-0",
-   "pair": "gen-mega-brands-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "style",
-   "property": "painted-ground",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|painted-ground",
-     "ref": "cr-ref-header-4",
-     "key": "painted-ground",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": null,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "shape",
-     "detail": "colour none not parsed"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "panelBg",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "accentBackgroundImage",
-     "css_property": "background-image",
-     "css_element": "aside",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "iconBackground",
-     "css_property": "background-color",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "iconBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "panelBgGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "iconBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "iconBackgroundGradientHover",
-     "css_property": "background-image",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "accentBackgroundImageGradient",
-     "css_property": "background-image-gradient",
-     "css_element": "aside",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerBg",
-     "css_property": "background-color",
-     "css_element": "drawer",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardBg",
-     "css_property": "background-color",
-     "css_element": "drawerCard",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerBgGradient",
-     "css_property": "background-image",
-     "css_element": "drawer",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/mega-panel",
-     "setting": "drawerCardBgGradient",
-     "css_property": "background-image",
-     "css_element": "drawerCard",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/mega-panel",
-     "setting": "colourScheme",
-     "values": [
-      "dark"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|font-family",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "font-family",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "titleFontFamily",
-     "css_property": "font-family",
-     "css_element": "title",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "subtitleFontFamily",
-     "css_property": "font-family",
-     "css_element": "subtitle",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "glyphInitialFontFamily",
-     "css_property": "font-family",
-     "css_element": "glyph-initial",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "badgeFontFamily",
-     "css_property": "font-family",
-     "css_element": "badge",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "pageButtonFontFamily",
-     "css_property": "font-family",
-     "css_element": "page-btn",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|font-size",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "font-size",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "titleFontSize",
-     "css_property": "font-size",
-     "css_element": "title",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "subtitleFontSize",
-     "css_property": "font-size",
-     "css_element": "subtitle",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "glyphSize",
-     "css_property": "font-size,height,width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "noImageLabelFontSize",
-     "css_property": "font-size",
-     "css_element": "no-image-label",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "glyphInitialFontSize",
-     "css_property": "font-size",
-     "css_element": "glyph-initial",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "badgeFontSize",
-     "css_property": "font-size",
-     "css_element": "badge",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "pageButtonFontSize",
-     "css_property": "font-size",
-     "css_element": "page-btn",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|font-weight",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "font-weight",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "titleFontWeight",
-     "css_property": "font-weight",
-     "css_element": "title",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "subtitleFontWeight",
-     "css_property": "font-weight",
-     "css_element": "subtitle",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "noImageLabelFontWeight",
-     "css_property": "font-weight",
-     "css_element": "no-image-label",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "glyphInitialFontWeight",
-     "css_property": "font-weight",
-     "css_element": "glyph-initial",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "badgeFontWeight",
-     "css_property": "font-weight",
-     "css_element": "badge",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "pageButtonFontWeight",
-     "css_property": "font-weight",
-     "css_element": "page-btn",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|line-height",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "titleLineHeight",
-     "css_property": "line-height",
-     "css_element": "title",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "subtitleLineHeight",
-     "css_property": "line-height",
-     "css_element": "subtitle",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "glyphInitialLineHeight",
-     "css_property": "line-height",
-     "css_element": "glyph-initial",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "badgeLineHeight",
-     "css_property": "line-height",
-     "css_element": "badge",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "pageButtonLineHeight",
-     "css_property": "line-height",
-     "css_element": "page-btn",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|letter-spacing",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "letter-spacing",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "noImageLabelLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "no-image-label",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "titleLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "title",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "subtitleLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "subtitle",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "glyphInitialLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "glyph-initial",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "badgeLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "badge",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "pageButtonLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "page-btn",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|text-transform",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "text-transform",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "noImageLabelTextTransform",
-     "css_property": "text-transform",
-     "css_element": "no-image-label",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "titleTextTransform",
-     "css_property": "text-transform",
-     "css_element": "title",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "subtitleTextTransform",
-     "css_property": "text-transform",
-     "css_element": "subtitle",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "glyphInitialTextTransform",
-     "css_property": "text-transform",
-     "css_element": "glyph-initial",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "badgeTextTransform",
-     "css_property": "text-transform",
-     "css_element": "badge",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "pageButtonTextTransform",
-     "css_property": "text-transform",
-     "css_element": "page-btn",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-brands-5||style|text-align",
    "ref": "cr-ref-mega-brands-5",
    "pair": "gen-mega-brands-5",
@@ -2403,15 +386,15 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no text-align setting on sgs/card-grid paints \"\" (candidates: glyphInitialTextAlign, badgeTextAlign)",
    "class": "W",
    "decidedBy": "consequence",
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__link|style|text-align",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-brands-4||style|text-align",
+     "ref": "cr-ref-mega-brands-4",
      "key": "text-align",
      "relation": "ancestor",
      "match": "same-delta",
@@ -2448,644 +431,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|color",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "titleColour",
-     "css_property": "color",
-     "css_element": "title",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "subtitleColour",
-     "css_property": "color",
-     "css_element": "subtitle",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "titleColourGradient",
-     "css_property": "background-image",
-     "css_element": "title",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "subtitleColourGradient",
-     "css_property": "background-image",
-     "css_element": "subtitle",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "titleColourHover",
-     "css_property": "color",
-     "css_element": "title",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "subtitleColourHover",
-     "css_property": "color",
-     "css_element": "subtitle",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "textColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "glyphColour",
-     "css_property": "color",
-     "css_element": "glyph",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "imageFallbackColour",
-     "css_property": "background-color",
-     "css_element": "image-wrap",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "overlayColour",
-     "css_property": "background-color",
-     "css_element": "imageOverlay",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "noImageLabelColour",
-     "css_property": "color",
-     "css_element": "no-image-label",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "sgsColourTreatment",
-     "css_property": "filter",
-     "css_element": "image",
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    },
-    {
-     "check": "extension",
-     "extension": "imageControls",
-     "setting": "sgsColourTreatment",
-     "css_property": "filter",
-     "css_element": "image"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5||style|border-top-width",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": "",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "border-top-width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-5",
-      "block": "sgs/card-grid",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderWidth",
-     "css_property": "border-width",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5||style|border-top-style",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": "",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "border-top-style",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderStyle"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-5",
-      "block": "sgs/card-grid",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderStyle",
-     "css_property": "border-style",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5||style|border-top-color",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": "",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "border-top-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColour"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-5",
-      "block": "sgs/card-grid",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderColour",
-     "css_property": "border-color",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5||style|border-bottom-width",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": "",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "border-bottom-width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-5",
-      "block": "sgs/card-grid",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderWidth",
-     "css_property": "border-width",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5||style|border-bottom-color",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": "",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "border-bottom-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColour"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-5",
-      "block": "sgs/card-grid",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderColour",
-     "css_property": "border-color",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5||style|border-left-width",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": "",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "border-left-width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-5",
-      "block": "sgs/card-grid",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderWidth",
-     "css_property": "border-width",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5||style|border-right-width",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": "",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "border-right-width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-5",
-      "block": "sgs/card-grid",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderWidth",
-     "css_property": "border-width",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-brands-5||style|flex-grow",
    "ref": "cr-ref-mega-brands-5",
    "pair": "gen-mega-brands-5",
@@ -3097,8 +442,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "sgs/card-grid has no setting for flex-grow",
    "class": "W",
    "decidedBy": "consequence",
    "evidence": [
@@ -3124,186 +469,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-brands-5||style|border-left-color",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": "",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "border-left-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColour"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-5",
-      "block": "sgs/card-grid",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderColour",
-     "css_property": "border-color",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5||style|border-right-color",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": "",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "border-right-color",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColour"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-brands-5",
-      "block": "sgs/card-grid",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderColour",
-     "css_property": "border-color",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "cardBorderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourHoverGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-brands-5||style|margin-bottom",
    "ref": "cr-ref-mega-brands-5",
    "pair": "gen-mega-brands-5",
@@ -3315,8 +480,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no margin-bottom setting on sgs/card-grid paints \"\" (candidates: titleMarginBottom)",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -3456,81 +621,6 @@
    }
   },
   {
-   "key": "cr-ref-mega-brands-5||style|width",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "gen-mega-brands-5",
-   "path": "",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "contentWidth",
-     "css_property": "max-width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "glyphSize",
-     "css_property": "font-size,height,width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "sgsMaxWidth",
-     "css_property": "max-width",
-     "css_element": "image",
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "imageControls",
-     "setting": "sgsMaxWidth",
-     "css_property": "max-width",
-     "css_element": "image"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-brands-5||style|painted-ground",
    "ref": "cr-ref-mega-brands-5",
    "pair": "gen-mega-brands-5",
@@ -3542,8 +632,8 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveClass": "missing",
+   "solveReason": "no background-color setting on sgs/card-grid paints \"\" (candidates: cardBackground, imageFallbackColour, overlayColour)",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
@@ -3786,6 +876,2024 @@
    }
   },
   {
+   "key": "cr-ref-mega-brands-3||style|line-height",
+   "ref": "cr-ref-mega-brands-3",
+   "pair": "brands-heading-top",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "lineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-brands-3",
+      "block": "sgs/heading",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "lineHeight",
+     "css_property": "line-height",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/heading",
+     "setting": "headingRole",
+     "values": [
+      "subheading"
+     ]
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/heading",
+     "setting": "level",
+     "values": [
+      "h1",
+      "h3",
+      "h5",
+      "h6"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-3||style|width",
+   "ref": "cr-ref-mega-brands-3",
+   "pair": "brands-heading-top",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mega-brands-2||style|width",
+     "ref": "cr-ref-mega-brands-2",
+     "key": "width",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": -104,
+     "widths": [
+      1440,
+      1920
+     ]
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "customWidth",
+     "css_property": "width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "maxWidth",
+     "css_property": "max-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "childSizing",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-mega-brands-0",
+     "block": "sgs/mega-panel",
+     "setting": "asideWidth",
+     "via": "slot",
+     "path": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-6||style|width",
+   "ref": "cr-ref-mega-brands-6",
+   "pair": "brands-heading-all",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mega-brands-2||style|width",
+     "ref": "cr-ref-mega-brands-2",
+     "key": "width",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": -104,
+     "widths": [
+      1440,
+      1920
+     ]
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "customWidth",
+     "css_property": "width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "maxWidth",
+     "css_property": "max-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "childSizing",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-mega-brands-0",
+     "block": "sgs/mega-panel",
+     "setting": "asideWidth",
+     "via": "slot",
+     "path": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(2)"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-8||style|width",
+   "ref": "cr-ref-mega-brands-8",
+   "pair": "brands-top-first",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
+   "class": "W",
+   "decidedBy": "mispaired",
+   "evidence": [
+    {
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
+     ],
+     "sizes": [
+      "266x84 draft, 82x61 live"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-47||style|text-align",
+   "ref": "cr-ref-mega-brands-47",
+   "pair": "brands-list-last",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "text-align",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "shape: start is not one of , left, center, right, justify",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "shape",
+     "detail": "start is not one of , left, center, right, justify"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "textAlign",
+     "css_property": "text-align",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-47||style|width",
+   "ref": "cr-ref-mega-brands-47",
+   "pair": "brands-list-last",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "widthType",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "customWidth",
+     "css_property": "width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "childSizing",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-2|.sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+   "ref": "cr-ref-mega-brands-2",
+   "pair": "gen-mega-brands-2",
+   "path": ".sgs-container__inner > h3:nth-of-type(1)",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > h3:nth-of-type(1)\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "same-element",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mega-brands-3||style|line-height",
+     "ref": "cr-ref-mega-brands-3",
+     "key": "line-height",
+     "relation": "same-element",
+     "match": "same-element",
+     "width": 1440,
+     "delta": -5.75,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-2||style|width",
+   "ref": "cr-ref-mega-brands-2",
+   "pair": "gen-mega-brands-2",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "maxWidth",
+     "css_property": "max-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "contentWidth",
+     "css_property": "width",
+     "css_element": "content-band",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "minColumnWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "scrollItemWidth",
+     "css_property": "flex",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "childSizing",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-mega-brands-0",
+     "block": "sgs/mega-panel",
+     "setting": "asideWidth",
+     "via": "slot",
+     "path": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-1|.sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+   "ref": "cr-ref-mega-brands-1",
+   "pair": "gen-mega-brands-1",
+   "path": ".sgs-container > .sgs-container__inner > h3:nth-of-type(1)",
+   "block": "sgs/mega-group",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/mega-group path \".sgs-container > .sgs-container__inner > h3:nth-of-type(1)\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "same-element",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mega-brands-3||style|line-height",
+     "ref": "cr-ref-mega-brands-3",
+     "key": "line-height",
+     "relation": "same-element",
+     "match": "same-element",
+     "width": 1440,
+     "delta": -5.75,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-0|.sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+   "ref": "cr-ref-mega-brands-0",
+   "pair": "gen-mega-brands-0",
+   "path": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)",
+   "block": "sgs/mega-panel",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/mega-panel path \".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "same-element",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mega-brands-3||style|line-height",
+     "ref": "cr-ref-mega-brands-3",
+     "key": "line-height",
+     "relation": "same-element",
+     "match": "same-element",
+     "width": 1440,
+     "delta": -5.75,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-0||style|painted-ground",
+   "ref": "cr-ref-mega-brands-0",
+   "pair": "gen-mega-brands-0",
+   "path": "",
+   "block": "sgs/mega-panel",
+   "kind": "style",
+   "property": "painted-ground",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "shape: colour none not parsed",
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|painted-ground",
+     "ref": "cr-ref-header-4",
+     "key": "painted-ground",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": null,
+     "widths": [
+      1440,
+      1920
+     ]
+    },
+    {
+     "check": "resolver",
+     "gap": "shape",
+     "detail": "colour none not parsed"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "panelBg",
+     "css_property": "background-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "accentBackgroundImage",
+     "css_property": "background-image",
+     "css_element": "aside",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "iconBackground",
+     "css_property": "background-color",
+     "css_element": "icon",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "iconBackgroundGradient",
+     "css_property": "background-image",
+     "css_element": "icon",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "panelBgGradient",
+     "css_property": "background-image",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "iconBackgroundHover",
+     "css_property": "background-color",
+     "css_element": "icon",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "iconBackgroundGradientHover",
+     "css_property": "background-image",
+     "css_element": "icon",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "accentBackgroundImageGradient",
+     "css_property": "background-image-gradient",
+     "css_element": "aside",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "drawerBg",
+     "css_property": "background-color",
+     "css_element": "drawer",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "drawerCardBg",
+     "css_property": "background-color",
+     "css_element": "drawerCard",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "drawerBgGradient",
+     "css_property": "background-image",
+     "css_element": "drawer",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/mega-panel",
+     "setting": "drawerCardBgGradient",
+     "css_property": "background-image",
+     "css_element": "drawerCard",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/mega-panel",
+     "setting": "colourScheme",
+     "values": [
+      "dark"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|font-family",
+   "ref": "cr-ref-mega-brands-5",
+   "pair": "gen-mega-brands-5",
+   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
+   "block": "sgs/card-grid",
+   "kind": "style",
+   "property": "font-family",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "titleFontFamily",
+     "css_property": "font-family",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "subtitleFontFamily",
+     "css_property": "font-family",
+     "css_element": "subtitle",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "glyphInitialFontFamily",
+     "css_property": "font-family",
+     "css_element": "glyph-initial",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "badgeFontFamily",
+     "css_property": "font-family",
+     "css_element": "badge",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "pageButtonFontFamily",
+     "css_property": "font-family",
+     "css_element": "page-btn",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|font-size",
+   "ref": "cr-ref-mega-brands-5",
+   "pair": "gen-mega-brands-5",
+   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
+   "block": "sgs/card-grid",
+   "kind": "style",
+   "property": "font-size",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "titleFontSize",
+     "css_property": "font-size",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "subtitleFontSize",
+     "css_property": "font-size",
+     "css_element": "subtitle",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "glyphSize",
+     "css_property": "font-size,height,width",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "noImageLabelFontSize",
+     "css_property": "font-size",
+     "css_element": "no-image-label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "glyphInitialFontSize",
+     "css_property": "font-size",
+     "css_element": "glyph-initial",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "badgeFontSize",
+     "css_property": "font-size",
+     "css_element": "badge",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "pageButtonFontSize",
+     "css_property": "font-size",
+     "css_element": "page-btn",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|font-weight",
+   "ref": "cr-ref-mega-brands-5",
+   "pair": "gen-mega-brands-5",
+   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
+   "block": "sgs/card-grid",
+   "kind": "style",
+   "property": "font-weight",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "titleFontWeight",
+     "css_property": "font-weight",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "subtitleFontWeight",
+     "css_property": "font-weight",
+     "css_element": "subtitle",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "noImageLabelFontWeight",
+     "css_property": "font-weight",
+     "css_element": "no-image-label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "glyphInitialFontWeight",
+     "css_property": "font-weight",
+     "css_element": "glyph-initial",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "badgeFontWeight",
+     "css_property": "font-weight",
+     "css_element": "badge",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "pageButtonFontWeight",
+     "css_property": "font-weight",
+     "css_element": "page-btn",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|line-height",
+   "ref": "cr-ref-mega-brands-5",
+   "pair": "gen-mega-brands-5",
+   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
+   "block": "sgs/card-grid",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "titleLineHeight",
+     "css_property": "line-height",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "subtitleLineHeight",
+     "css_property": "line-height",
+     "css_element": "subtitle",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "glyphInitialLineHeight",
+     "css_property": "line-height",
+     "css_element": "glyph-initial",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "badgeLineHeight",
+     "css_property": "line-height",
+     "css_element": "badge",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "pageButtonLineHeight",
+     "css_property": "line-height",
+     "css_element": "page-btn",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|letter-spacing",
+   "ref": "cr-ref-mega-brands-5",
+   "pair": "gen-mega-brands-5",
+   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
+   "block": "sgs/card-grid",
+   "kind": "style",
+   "property": "letter-spacing",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "noImageLabelLetterSpacing",
+     "css_property": "letter-spacing",
+     "css_element": "no-image-label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "titleLetterSpacing",
+     "css_property": "letter-spacing",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "subtitleLetterSpacing",
+     "css_property": "letter-spacing",
+     "css_element": "subtitle",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "glyphInitialLetterSpacing",
+     "css_property": "letter-spacing",
+     "css_element": "glyph-initial",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "badgeLetterSpacing",
+     "css_property": "letter-spacing",
+     "css_element": "badge",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "pageButtonLetterSpacing",
+     "css_property": "letter-spacing",
+     "css_element": "page-btn",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|text-transform",
+   "ref": "cr-ref-mega-brands-5",
+   "pair": "gen-mega-brands-5",
+   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
+   "block": "sgs/card-grid",
+   "kind": "style",
+   "property": "text-transform",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "noImageLabelTextTransform",
+     "css_property": "text-transform",
+     "css_element": "no-image-label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "titleTextTransform",
+     "css_property": "text-transform",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "subtitleTextTransform",
+     "css_property": "text-transform",
+     "css_element": "subtitle",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "glyphInitialTextTransform",
+     "css_property": "text-transform",
+     "css_element": "glyph-initial",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "badgeTextTransform",
+     "css_property": "text-transform",
+     "css_element": "badge",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "pageButtonTextTransform",
+     "css_property": "text-transform",
+     "css_element": "page-btn",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|color",
+   "ref": "cr-ref-mega-brands-5",
+   "pair": "gen-mega-brands-5",
+   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
+   "block": "sgs/card-grid",
+   "kind": "style",
+   "property": "color",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmapped-element: sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/card-grid path \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "titleColour",
+     "css_property": "color",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "subtitleColour",
+     "css_property": "color",
+     "css_element": "subtitle",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "backgroundColourHover",
+     "css_property": "background-color",
+     "css_element": "item",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "textColourHover",
+     "css_property": "color",
+     "css_element": "item",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "cardShadowColour",
+     "css_property": "box-shadow-color",
+     "css_element": "item",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "backgroundColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "item",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "titleColourGradient",
+     "css_property": "background-image",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "subtitleColourGradient",
+     "css_property": "background-image",
+     "css_element": "subtitle",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "titleColourHover",
+     "css_property": "color",
+     "css_element": "title",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "subtitleColourHover",
+     "css_property": "color",
+     "css_element": "subtitle",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "textColourHoverGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "cardShadowColourHover",
+     "css_property": "box-shadow-color",
+     "css_element": "item",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "glyphColour",
+     "css_property": "color",
+     "css_element": "glyph",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "imageFallbackColour",
+     "css_property": "background-color",
+     "css_element": "image-wrap",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "overlayColour",
+     "css_property": "background-color",
+     "css_element": "imageOverlay",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "noImageLabelColour",
+     "css_property": "color",
+     "css_element": "no-image-label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "sgsColourTreatment",
+     "css_property": "filter",
+     "css_element": "image",
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
+    },
+    {
+     "check": "extension",
+     "extension": "imageControls",
+     "setting": "sgsColourTreatment",
+     "css_property": "filter",
+     "css_element": "image"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-5||style|border-bottom-width",
+   "ref": "cr-ref-mega-brands-5",
+   "pair": "gen-mega-brands-5",
+   "path": "",
+   "block": "sgs/card-grid",
+   "kind": "style",
+   "property": "border-bottom-width",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "conflict: borderWidth.bottom already written with another value this round (one setting, two elements' draft values)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "borderWidth"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-brands-5",
+      "block": "sgs/card-grid",
+      "path": ""
+     },
+     "holds": false,
+     "blocked": "conflict"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "cardBorderWidth",
+     "css_property": "border-width",
+     "css_element": "item",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "card-grid/render.php",
+      "mentions": [
+       "cardBorderWidth"
+      ],
+      "absent": [
+       "borderWidth",
+       "borderBottomWidth"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderBottomWidth"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderBottomWidth"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [
+       "borderWidth"
+      ],
+      "absent": [
+       "cardBorderWidth",
+       "borderBottomWidth"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderBottomWidth"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderBottomWidth"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderBottomWidth"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "card-grid",
+      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
+      "mentions": [],
+      "declares": [
+       "es'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_map = is_array( $o"
+      ]
+     },
+     {
+      "block": "card-grid",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+      ]
+     },
+     {
+      "block": "card-grid",
+      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+      "mentions": [],
+      "declares": [
+       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css",
+      "mentions": [],
+      "declares": [
+       "gs-nm-submenu-bg-gradient, none);' . 'border-width:var(--sgs-nm-submenu-border-width, 1px);' ."
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "order-style:' . $burger_border_style . ';border-width:' . esc_attr( $burger_border_width ) . ';'"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-item-border-featured-css.php::includes/nav-menu-item-border-featured-css.php",
+      "mentions": [],
+      "declares": [
+       "style `none`). $css .= $link_sel . '{border-width:' . $item_border_width . ';border-style:'"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css",
+      "mentions": [],
+      "declares": [
+       "style `none`). $css .= $link_sel . '{border-width:' . $item_border_width . ';border-style:'"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mega-brands-5||style|border-left-width",
+   "ref": "cr-ref-mega-brands-5",
+   "pair": "gen-mega-brands-5",
+   "path": "",
+   "block": "sgs/card-grid",
+   "kind": "style",
+   "property": "border-left-width",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "conflict: borderWidth.left already written with another value this round (one setting, two elements' draft values)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "borderWidth"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-brands-5",
+      "block": "sgs/card-grid",
+      "path": ""
+     },
+     "holds": false,
+     "blocked": "conflict"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "cardBorderWidth",
+     "css_property": "border-width",
+     "css_element": "item",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "card-grid/render.php",
+      "mentions": [
+       "cardBorderWidth"
+      ],
+      "absent": [
+       "borderWidth",
+       "borderLeftWidth"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderLeftWidth"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderLeftWidth"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [
+       "borderWidth"
+      ],
+      "absent": [
+       "cardBorderWidth",
+       "borderLeftWidth"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderLeftWidth"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderLeftWidth"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderLeftWidth"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "card-grid",
+      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
+      "mentions": [],
+      "declares": [
+       "es'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_map = is_array( $o"
+      ]
+     },
+     {
+      "block": "card-grid",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+      ]
+     },
+     {
+      "block": "card-grid",
+      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+      "mentions": [],
+      "declares": [
+       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css",
+      "mentions": [],
+      "declares": [
+       "gs-nm-submenu-bg-gradient, none);' . 'border-width:var(--sgs-nm-submenu-border-width, 1px);' ."
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "order-style:' . $burger_border_style . ';border-width:' . esc_attr( $burger_border_width ) . ';'"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-item-border-featured-css.php::includes/nav-menu-item-border-featured-css.php",
+      "mentions": [],
+      "declares": [
+       "style `none`). $css .= $link_sel . '{border-width:' . $item_border_width . ';border-style:'"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css",
+      "mentions": [],
+      "declares": [
+       "style `none`). $css .= $link_sel . '{border-width:' . $item_border_width . ';border-style:'"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mega-brands-5||style|border-right-width",
+   "ref": "cr-ref-mega-brands-5",
+   "pair": "gen-mega-brands-5",
+   "path": "",
+   "block": "sgs/card-grid",
+   "kind": "style",
+   "property": "border-right-width",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "conflict: borderWidth.right already written with another value this round (one setting, two elements' draft values)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "borderWidth"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-brands-5",
+      "block": "sgs/card-grid",
+      "path": ""
+     },
+     "holds": false,
+     "blocked": "conflict"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "cardBorderWidth",
+     "css_property": "border-width",
+     "css_element": "item",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "card-grid/render.php",
+      "mentions": [
+       "cardBorderWidth"
+      ],
+      "absent": [
+       "borderWidth",
+       "borderRightWidth"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderRightWidth"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderRightWidth"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [
+       "borderWidth"
+      ],
+      "absent": [
+       "cardBorderWidth",
+       "borderRightWidth"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderRightWidth"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderRightWidth"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "cardBorderWidth",
+       "borderRightWidth"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "card-grid",
+      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
+      "mentions": [],
+      "declares": [
+       "es'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_map = is_array( $o"
+      ]
+     },
+     {
+      "block": "card-grid",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+      ]
+     },
+     {
+      "block": "card-grid",
+      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+      "mentions": [],
+      "declares": [
+       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css",
+      "mentions": [],
+      "declares": [
+       "gs-nm-submenu-bg-gradient, none);' . 'border-width:var(--sgs-nm-submenu-border-width, 1px);' ."
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "order-style:' . $burger_border_style . ';border-width:' . esc_attr( $burger_border_width ) . ';'"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-item-border-featured-css.php::includes/nav-menu-item-border-featured-css.php",
+      "mentions": [],
+      "declares": [
+       "style `none`). $css .= $link_sel . '{border-width:' . $item_border_width . ';border-style:'"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css",
+      "mentions": [],
+      "declares": [
+       "style `none`). $css .= $link_sel . '{border-width:' . $item_border_width . ';border-style:'"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-mega-brands-5||style|width",
+   "ref": "cr-ref-mega-brands-5",
+   "pair": "gen-mega-brands-5",
+   "path": "",
+   "block": "sgs/card-grid",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "contentWidth",
+     "css_property": "max-width",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "maxWidth",
+     "css_property": "max-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "glyphSize",
+     "css_property": "font-size,height,width",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/card-grid",
+     "setting": "sgsMaxWidth",
+     "css_property": "max-width",
+     "css_element": "image",
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "imageControls",
+     "setting": "sgsMaxWidth",
+     "css_property": "max-width",
+     "css_element": "image"
+    }
+   ]
+  },
+  {
    "key": "cr-ref-mega-brands-4|.sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|font-family",
    "ref": "cr-ref-mega-brands-4",
    "pair": "gen-mega-brands-4",
@@ -3798,7 +2906,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -3831,7 +2939,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -3864,7 +2972,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -3897,7 +3005,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -3930,7 +3038,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -3963,7 +3071,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -3996,24 +3104,10 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: start is not one of , left, center, right, justify",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "attribute",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__link|style|text-align",
-     "ref": "cr-ref-header-4",
-     "key": "text-align",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": null,
-     "widths": [
-      1440,
-      1920
-     ]
-    },
     {
      "check": "resolver",
      "gap": "shape",
@@ -4044,7 +3138,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/container path \".sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -4077,7 +3171,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -4182,7 +3276,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -5352,7 +4446,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: desktop differs between 1440 (0px) and 1920 (240px)",
    "class": "W",
    "decidedBy": "consequence",
    "evidence": [
@@ -5408,7 +4502,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: desktop differs between 1440 (0px) and 1920 (240px)",
    "class": "W",
    "decidedBy": "consequence",
    "evidence": [
@@ -5449,6 +4543,39 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-3||box|y-after-brands-trigger",
+   "ref": "cr-ref-mega-brands-3",
+   "pair": "brands-heading-top",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "box",
+   "property": "y-after-brands-trigger",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mega-brands-2||box|y-after-brands-trigger",
+     "ref": "cr-ref-mega-brands-2",
+     "key": "y-after-brands-trigger",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": 34,
+     "widths": [
+      1440,
+      1920
+     ]
     }
    ]
   },
@@ -5543,73 +4670,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 23,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-6||box|h",
-   "ref": "cr-ref-mega-brands-6",
-   "pair": "brands-heading-all",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-header-4",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -5,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-6||box|text-inset-y",
-   "ref": "cr-ref-mega-brands-6",
-   "pair": "brands-heading-all",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "box",
-   "property": "text-inset-y",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-header-4",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": -3,
+     "delta": 21,
      "widths": [
       1440,
       1920
@@ -5641,7 +4702,7 @@
       1920
      ],
      "sizes": [
-      "266x84 draft, 54x31 live"
+      "266x84 draft, 82x61 live"
      ]
     }
    ]
@@ -5670,7 +4731,7 @@
       1920
      ],
      "sizes": [
-      "266x84 draft, 54x31 live"
+      "266x84 draft, 82x61 live"
      ]
     }
    ]
@@ -5699,7 +4760,7 @@
       1920
      ],
      "sizes": [
-      "266x84 draft, 54x31 live"
+      "266x84 draft, 82x61 live"
      ]
     }
    ]
@@ -5728,36 +4789,7 @@
       1920
      ],
      "sizes": [
-      "266x84 draft, 54x31 live"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||box|text-inset-y",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "text-inset-y",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "mispaired",
-   "evidence": [
-    {
-     "check": "mispaired",
-     "widths": [
-      1440,
-      1920
-     ],
-     "sizes": [
-      "266x84 draft, 54x31 live"
+      "266x84 draft, 82x61 live"
      ]
     }
    ]
@@ -5796,13 +4828,13 @@
    ]
   },
   {
-   "key": "cr-ref-mega-brands-2||box|y-after-brands-panel",
+   "key": "cr-ref-mega-brands-2||box|y-after-brands-trigger",
    "ref": "cr-ref-mega-brands-2",
    "pair": "gen-mega-brands-2",
    "path": "",
    "block": "sgs/container",
    "kind": "box",
-   "property": "y-after-brands-panel",
+   "property": "y-after-brands-trigger",
    "widths": [
     1440,
     1920
@@ -5814,13 +4846,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|padding-top",
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
      "ref": "cr-ref-header-4",
-     "key": "padding-top",
+     "key": "line-height",
      "relation": "anchor",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 1440,
-     "delta": 36,
+     "delta": 34,
      "widths": [
       1440,
       1920
@@ -5886,7 +4918,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -55,
+     "delta": 59,
      "widths": [
       1440,
       1920
@@ -5913,46 +4945,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-header-4",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": 21,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-0||box|y-after-gen-mega-brands-2",
-   "ref": "cr-ref-mega-brands-0",
-   "pair": "gen-mega-brands-0",
-   "path": "",
-   "block": "sgs/mega-panel",
-   "kind": "box",
-   "property": "y-after-gen-mega-brands-2",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|padding-top",
-     "ref": "cr-ref-header-4",
-     "key": "padding-top",
-     "relation": "ancestor",
+     "parent": "cr-ref-mega-brands-47||style|width",
+     "ref": "cr-ref-mega-brands-47",
+     "key": "width",
+     "relation": "descendant",
      "match": "same-delta",
      "width": 1440,
-     "delta": -36,
+     "delta": 135,
      "widths": [
       1440,
       1920
@@ -5979,13 +4978,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mega-brands-1||box|h",
-     "ref": "cr-ref-mega-brands-1",
-     "key": "h",
+     "parent": "cr-ref-mega-brands-47||style|width",
+     "ref": "cr-ref-mega-brands-47",
+     "key": "width",
      "relation": "descendant",
      "match": "same-delta",
      "width": 1440,
-     "delta": 22,
+     "delta": 135,
      "widths": [
       1440,
       1920
@@ -5994,13 +4993,13 @@
    ]
   },
   {
-   "key": "cr-ref-mega-brands-5||box|y-after-gen-mega-brands-1",
+   "key": "cr-ref-mega-brands-5||box|y-after-brands-heading-top",
    "ref": "cr-ref-mega-brands-5",
    "pair": "gen-mega-brands-5",
    "path": "",
    "block": "sgs/card-grid",
    "kind": "box",
-   "property": "y-after-gen-mega-brands-1",
+   "property": "y-after-brands-heading-top",
    "widths": [
     1440,
     1920
@@ -6012,13 +5011,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|line-height",
+     "ref": "cr-ref-mega-brands-5",
      "key": "line-height",
-     "relation": "ancestor",
+     "relation": "self",
      "match": "same-delta",
      "width": 1440,
-     "delta": -5,
+     "delta": -4,
      "widths": [
       1440,
       1920
@@ -6093,6 +5092,39 @@
    ]
   },
   {
+   "key": "cr-ref-mega-brands-4||box|y-after-brands-heading-top",
+   "ref": "cr-ref-mega-brands-4",
+   "pair": "gen-mega-brands-4",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-brands-heading-top",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-header-4",
+     "key": "line-height",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": -5,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-mega-brands-4||box|w",
    "ref": "cr-ref-mega-brands-4",
    "pair": "gen-mega-brands-4",
@@ -6144,13 +5176,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mega-brands-5||box|h",
-     "ref": "cr-ref-mega-brands-5",
-     "key": "h",
-     "relation": "descendant",
-     "match": "same-delta",
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-header-4",
+     "key": "line-height",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 1440,
-     "delta": 33,
+     "delta": 34,
      "widths": [
       1440,
       1920
@@ -6159,11 +5191,11 @@
    ]
   },
   {
-   "key": "cr-ref-mega-brands-7||box|y-after-brands-heading-all",
-   "ref": "cr-ref-mega-brands-7",
-   "pair": "gen-mega-brands-7",
+   "key": "cr-ref-mega-brands-8||box|y-after-brands-heading-all",
+   "ref": "cr-ref-mega-brands-8",
+   "pair": "gen-mega-brands-8",
    "path": "",
-   "block": "sgs/container",
+   "block": "sgs/button",
    "kind": "box",
    "property": "y-after-brands-heading-all",
    "widths": [
@@ -6183,7 +5215,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -7,
+     "delta": 16,
      "widths": [
       1440,
       1920
@@ -6217,6 +5249,72 @@
      "match": "same-delta",
      "width": 1440,
      "delta": -104,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-7||box|h",
+   "ref": "cr-ref-mega-brands-7",
+   "pair": "gen-mega-brands-7",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-header-4",
+     "key": "line-height",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": 30,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-15||box|y-after-gen-mega-brands-14",
+   "ref": "cr-ref-mega-brands-15",
+   "pair": "gen-mega-brands-15",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "box",
+   "property": "y-after-gen-mega-brands-14",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-header-4",
+     "key": "line-height",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": 15,
      "widths": [
       1440,
       1920
@@ -6336,7 +5434,7 @@
     1920
    ],
    "solveClass": "content",
-   "solveReason": "not written",
+   "solveReason": "shape: the draft text is read through a text-transform, so its source case is unknown",
    "class": "W",
    "decidedBy": "content",
    "evidence": [

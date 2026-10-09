@@ -1,16 +1,1590 @@
 {
  "surface": "header",
- "report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-08T20-23-17/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-08T20-23-17/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-09T08-08-15/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-09T08-08-15/round-9/report.json",
  "date": "2026-10-09",
  "counts": {
-  "W": 49,
+  "W": 47,
   "F": 2,
-  "T": 10,
+  "T": 1,
   "U": 0,
   "L": 0
  },
  "verdicts": [
+  {
+   "key": "cr-ref-header-1||style|border-bottom-width",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "border-bottom-width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "sgs/site-header borderWidth holds the draft value but writing it breaks the layout: 1 rows on its node regressed, e.g. grid-template-columns@1920 593.859px 164.281px 593.859px→594.641px 163.094px 594.641px (proven: undoing it alone cleared the regression)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "borderWidth"
+     ],
+     "on": {
+      "ref": "cr-ref-header-1",
+      "block": "sgs/site-header",
+      "path": ""
+     },
+     "holds": false,
+     "blocked": "breaks-layout"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "borderWidth",
+       "borderBottomWidth"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
+      "mentions": [],
+      "declares": [
+       "es'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_map = is_array( $o"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+      "mentions": [],
+      "declares": [
+       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-1||style|padding-top",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "padding-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "sgs/site-header padding holds the draft value but writing it breaks the layout: 10 rows on its node regressed, e.g. grid-template-columns@768 257.859px 164.281px 257.859px→229.859px 164.281px 229.859px; grid-template-columns@768 272.812px 142.359px 272.828px→229.859px 164.281px 229.859px; grid-template-columns@1440 593.859px 164.281px 593.859px→565.859px 164.281px 565.859px (proven: undoing it alone cleared the regression)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "padding"
+     ],
+     "on": {
+      "ref": "cr-ref-header-1",
+      "block": "sgs/site-header",
+      "path": ""
+     },
+     "holds": false,
+     "blocked": "breaks-layout"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "contentBandPadding",
+     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
+     "css_element": "content-band",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "contentBandPadding",
+       "paddingTop"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "padding",
+       "contentBandPadding"
+      ],
+      "declares": [
+       "dding_top ) { $base_band_decls[] = 'padding-top:' . $band_padding_top; } if ( '' !== $b",
+       "let ) { $tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet; } if ( '' !=",
+       "ile ) { $mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile; } if ( '' !="
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-1||style|padding-right",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "padding-right",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "sgs/site-header padding holds the draft value but writing it breaks the layout: 10 rows on its node regressed, e.g. grid-template-columns@768 257.859px 164.281px 257.859px→229.859px 164.281px 229.859px; grid-template-columns@768 272.812px 142.359px 272.828px→229.859px 164.281px 229.859px; grid-template-columns@1440 593.859px 164.281px 593.859px→565.859px 164.281px 565.859px (proven: undoing it alone cleared the regression)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "padding"
+     ],
+     "on": {
+      "ref": "cr-ref-header-1",
+      "block": "sgs/site-header",
+      "path": ""
+     },
+     "holds": false,
+     "blocked": "breaks-layout"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "contentBandPadding",
+     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
+     "css_element": "content-band",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "contentBandPadding",
+       "paddingRight"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "padding",
+       "contentBandPadding"
+      ],
+      "declares": [
+       "ing_right ) { $base_band_decls[] = 'padding-right:' . $band_padding_right; } if ( '' !=",
+       "let ) { $tablet_padding_decls[] = 'padding-right:' . $padding_right_tablet; } if ( '",
+       "ile ) { $mobile_padding_decls[] = 'padding-right:' . $padding_right_mobile; } if ( '"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-1||style|padding-bottom",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "sgs/site-header padding holds the draft value but writing it breaks the layout: 10 rows on its node regressed, e.g. grid-template-columns@768 257.859px 164.281px 257.859px→229.859px 164.281px 229.859px; grid-template-columns@768 272.812px 142.359px 272.828px→229.859px 164.281px 229.859px; grid-template-columns@1440 593.859px 164.281px 593.859px→565.859px 164.281px 565.859px (proven: undoing it alone cleared the regression)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "padding"
+     ],
+     "on": {
+      "ref": "cr-ref-header-1",
+      "block": "sgs/site-header",
+      "path": ""
+     },
+     "holds": false,
+     "blocked": "breaks-layout"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "contentBandPadding",
+     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
+     "css_element": "content-band",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "contentBandPadding",
+       "paddingBottom"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "padding",
+       "contentBandPadding"
+      ],
+      "declares": [
+       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
+       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
+       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-1||style|padding-left",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "padding-left",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "sgs/site-header padding holds the draft value but writing it breaks the layout: 10 rows on its node regressed, e.g. grid-template-columns@768 257.859px 164.281px 257.859px→229.859px 164.281px 229.859px; grid-template-columns@768 272.812px 142.359px 272.828px→229.859px 164.281px 229.859px; grid-template-columns@1440 593.859px 164.281px 593.859px→565.859px 164.281px 565.859px (proven: undoing it alone cleared the regression)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "padding"
+     ],
+     "on": {
+      "ref": "cr-ref-header-1",
+      "block": "sgs/site-header",
+      "path": ""
+     },
+     "holds": false,
+     "blocked": "breaks-layout"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "contentBandPadding",
+     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
+     "css_element": "content-band",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "contentBandPadding",
+       "paddingLeft"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "padding",
+       "contentBandPadding"
+      ],
+      "declares": [
+       "ding_left ) { $base_band_decls[] = 'padding-left:' . $band_padding_left; } // contentBa",
+       "let ) { $tablet_padding_decls[] = 'padding-left:' . $padding_left_tablet; } if ( $ta",
+       "ile ) { $mobile_padding_decls[] = 'padding-left:' . $padding_left_mobile; } if ( $mo"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-1||style|max-width",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "max-width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "hardcode",
+   "solveReason": "sgs/site-header maxWidth holds the draft value but writing it breaks the layout: 4 rows on its node regressed, e.g. margin-right@1920 240px→0px; margin-left@1920 240px→0px; margin-right@1920 240px→0px (calibration names it)",
+   "class": "W",
+   "decidedBy": "resolver-blocked",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "maxWidth"
+     ],
+     "on": {
+      "ref": "cr-ref-header-1",
+      "block": "sgs/site-header",
+      "path": ""
+     },
+     "holds": false,
+     "blocked": "breaks-layout"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "maxWidth",
+     "css_property": "max-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "contentWidth",
+     "css_property": "width",
+     "css_element": "content-band",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "maxWidth",
+       "contentWidth"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "site-header/style.css",
+      "selector": ".sgs-site-header, .sgs-site-header > .sgs-container__inner",
+      "declaration": "max-width:100%"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "maxWidth",
+       "contentWidth"
+      ],
+      "declares": [
+       "th on the CHILD also fixes it (measured: max-width:100% * -> 327px). Deliberately NOT added as",
+       "{ $responsive_css .= '.' . $uid . '{max-width:' . $base_max_width_css_value . ( $base_max_",
+       "ct-standard 768/1024 breakpoints (tablet max-width:1023px, mobile // max-width:767px). Emitted o"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-3|.sgs-container__inner|style|grid-template-columns",
+   "ref": "cr-ref-header-3",
+   "pair": "header-bar",
+   "path": ".sgs-container__inner",
+   "block": "sgs/site-header-row",
+   "kind": "style",
+   "property": "grid-template-columns",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "no grid-template-columns setting on sgs/site-header-row paints \".sgs-container__inner\" (candidates: gridTemplateColumns)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no grid-template-columns setting on sgs/site-header-row paints \".sgs-container__inner\" (candidates: gridTemplateColumns)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header-row",
+     "setting": "gridTemplateColumns",
+     "css_property": "grid-template-columns",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/site-header-row",
+     "setting": "layout",
+     "values": [
+      "grid"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-6|.sgs-responsive-logo__link > .sgs-responsive-logo__picture > img|style|aspect-ratio",
+   "ref": "cr-ref-header-6",
+   "pair": "header-logo",
+   "path": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img",
+   "block": "sgs/responsive-logo",
+   "kind": "style",
+   "property": "aspect-ratio",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/responsive-logo has no setting for aspect-ratio",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/responsive-logo has no setting for aspect-ratio"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "responsive-logo/render.php",
+      "mentions": [],
+      "absent": [
+       "aspectRatio"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "aspectRatio"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "aspectRatio"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "aspectRatio"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "!== $sgs_box_ratio ) { $styles[] = 'aspect-ratio:' . $sgs_box_ratio; } // Ken-burns dura"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-6|.sgs-responsive-logo__link > .sgs-responsive-logo__picture > img|style|max-width",
+   "ref": "cr-ref-header-6",
+   "pair": "header-logo",
+   "path": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img",
+   "block": "sgs/responsive-logo",
+   "kind": "style",
+   "property": "max-width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "no max-width setting on sgs/responsive-logo paints \".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img\" (candidates: maxWidth, logoId, logoIdTablet, logoIdMobile)",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no max-width setting on sgs/responsive-logo paints \".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img\" (candidates: maxWidth, logoId, logoIdTablet, logoIdMobile)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "width",
+     "css_property": "width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "maxWidth",
+     "css_property": "max-width",
+     "css_element": "image",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "logoId",
+     "css_property": "max-width",
+     "css_element": "image",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "logoIdTablet",
+     "css_property": "max-width",
+     "css_element": "image",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "logoIdMobile",
+     "css_property": "max-width",
+     "css_element": "image",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "shrinkWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "childSizing",
+     "setting": "sgsChildWidth",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-13||style|border-top-style",
+   "ref": "cr-ref-header-13",
+   "pair": "header-bag",
+   "path": "",
+   "block": "sgs/cart",
+   "kind": "style",
+   "property": "border-top-style",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "no border-top-style setting on sgs/cart paints \"\" (candidates: pillBorderStyle)",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-top-style setting on sgs/cart paints \"\" (candidates: pillBorderStyle)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "pillBorderStyle",
+     "css_property": "border-style",
+     "css_element": "pill",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-header-15",
+     "block": "sgs/google-rating-badge",
+     "setting": "borderStyle",
+     "property": "border-style",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "cart/render.php",
+      "mentions": [],
+      "absent": [
+       "pillBorderStyle",
+       "borderTopStyle",
+       "borderStyle"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "pillBorderStyle",
+       "borderTopStyle",
+       "borderStyle"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "pillBorderStyle",
+       "borderTopStyle",
+       "borderStyle"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "pillBorderStyle",
+       "borderTopStyle",
+       "borderStyle"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "cart",
+      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
+      "mentions": [],
+      "declares": [
+       "e ) { $out['rules'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_"
+      ]
+     },
+     {
+      "block": "cart",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "border_has_width ) { $base_decls[] = 'border-style:' . $border_style . ';'; } if ( null !== $"
+      ]
+     },
+     {
+      "block": "cart",
+      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+      "mentions": [],
+      "declares": [
+       "'none' !== $style ) { return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $s"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-13||style|border-radius",
+   "ref": "cr-ref-header-13",
+   "pair": "header-bag",
+   "path": "",
+   "block": "sgs/cart",
+   "kind": "style",
+   "property": "border-radius",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "no border-radius setting on sgs/cart paints \"\" (candidates: pillBorderRadius, itemThumbRadius, emptyCtaRadius, checkoutRadius, freeDeliveryTrackRadius)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-radius setting on sgs/cart paints \"\" (candidates: pillBorderRadius, itemThumbRadius, emptyCtaRadius, checkoutRadius, freeDeliveryTrackRadius)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "pillBorderRadius",
+     "css_property": "border-radius",
+     "css_element": "pill",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "itemThumbRadius",
+     "css_property": "border-radius",
+     "css_element": "itemThumb",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "emptyCtaRadius",
+     "css_property": "border-radius",
+     "css_element": "emptyCta",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "checkoutRadius",
+     "css_property": "border-radius",
+     "css_element": "checkout",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "freeDeliveryTrackRadius",
+     "css_property": "border-radius",
+     "css_element": "freeDeliveryBar",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-13||style|min-height",
+   "ref": "cr-ref-header-13",
+   "pair": "header-bag",
+   "path": "",
+   "block": "sgs/cart",
+   "kind": "style",
+   "property": "min-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "no min-height setting on sgs/cart paints \"\" (candidates: pillMinHeight, checkoutMinHeight)",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no min-height setting on sgs/cart paints \"\" (candidates: pillMinHeight, checkoutMinHeight)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "pillMinHeight",
+     "css_property": "min-height",
+     "css_element": "pill",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "freeDeliveryTrackHeight",
+     "css_property": "height",
+     "css_element": "freeDeliveryBar",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "checkoutMinHeight",
+     "css_property": "min-height",
+     "css_element": "checkout",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-header-10",
+     "block": "sgs/container",
+     "setting": "minHeight",
+     "property": "min-height",
+     "via": "declared",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "cart/render.php",
+      "mentions": [],
+      "absent": [
+       "pillMinHeight",
+       "freeDeliveryTrackHeight",
+       "checkoutMinHeight",
+       "minHeight"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "pillMinHeight",
+       "freeDeliveryTrackHeight",
+       "checkoutMinHeight",
+       "minHeight"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "pillMinHeight",
+       "freeDeliveryTrackHeight",
+       "checkoutMinHeight",
+       "minHeight"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [
+       "minHeight"
+      ],
+      "absent": [
+       "pillMinHeight",
+       "freeDeliveryTrackHeight",
+       "checkoutMinHeight"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "cart",
+      "cite": "includes/helpers-cart-panel-css.php::sgs_cart_panel_css",
+      "mentions": [
+       "freeDeliveryTrackHeight",
+       "checkoutMinHeight"
+      ],
+      "declares": []
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "in_height ) { $base_outer_decls[] = 'min-height:' . esc_attr( $min_height ); } // minHeig",
+       "':where(' . $grid_sel . '>*){min-width:0;min-height:0}'; } if ( $has_responsive_attr ) {",
+       "$responsive_css .= '.' . $uid . '{min-height:' . $min_height . '}'; } if ( '' !== $"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css",
+      "mentions": [],
+      "declares": [
+       "w, array( 'stretch' => 'flex:1 1 auto;min-height:0;' ), 'flex:0 1 auto;min-height:auto;', '",
+       "auto;min-height:0;' ), 'flex:0 1 auto;min-height:auto;', 'center' ); // Each row stays fu"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-1|.sgs-container > .sgs-container__inner|style|grid-template-columns",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": ".sgs-container > .sgs-container__inner",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "grid-template-columns",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/site-header has no setting for grid-template-columns",
+   "class": "W",
+   "decidedBy": "same-element",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-3|.sgs-container__inner|style|grid-template-columns",
+     "ref": "cr-ref-header-3",
+     "key": "grid-template-columns",
+     "relation": "same-element",
+     "match": "same-element",
+     "width": 375,
+     "delta": null,
+     "widths": [
+      375,
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-1||style|backdrop-filter",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "backdrop-filter",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/site-header has no setting for backdrop-filter",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/site-header has no setting for backdrop-filter"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "backdropFilter"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "site-header/style.css",
+      "selector": "header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown]",
+      "declaration": "backdrop-filter:none"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-surface-ground.php::includes/helpers-surface-ground.php",
+      "mentions": [],
+      "declares": [
+       "lode( ' ', $parts ); return array( 'backdrop-filter:' . $value, '-webkit-backdrop-filter:' ."
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-surface-ground.php::sgs_surface_backdrop_decls",
+      "mentions": [],
+      "declares": [
+       "lode( ' ', $parts ); return array( 'backdrop-filter:' . $value, '-webkit-backdrop-filter:' ."
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-3||style|padding-top",
+   "ref": "cr-ref-header-3",
+   "pair": "header-bar",
+   "path": "",
+   "block": "sgs/site-header-row",
+   "kind": "style",
+   "property": "padding-top",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/site-header-row has no setting for padding-top (scrolled)",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/site-header-row has no setting for padding-top (scrolled)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header-row",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header-row",
+     "setting": "rowShrinkPadding",
+     "css_property": "padding",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-3||style|padding-right",
+   "ref": "cr-ref-header-3",
+   "pair": "header-bar",
+   "path": "",
+   "block": "sgs/site-header-row",
+   "kind": "style",
+   "property": "padding-right",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/site-header-row has no setting for padding-right (scrolled)",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/site-header-row has no setting for padding-right (scrolled)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header-row",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header-row",
+     "setting": "rowShrinkPadding",
+     "css_property": "padding",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-3||style|padding-bottom",
+   "ref": "cr-ref-header-3",
+   "pair": "header-bar",
+   "path": "",
+   "block": "sgs/site-header-row",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/site-header-row has no setting for padding-bottom (scrolled)",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/site-header-row has no setting for padding-bottom (scrolled)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header-row",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header-row",
+     "setting": "rowShrinkPadding",
+     "css_property": "padding",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-3||style|padding-left",
+   "ref": "cr-ref-header-3",
+   "pair": "header-bar",
+   "path": "",
+   "block": "sgs/site-header-row",
+   "kind": "style",
+   "property": "padding-left",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/site-header-row has no setting for padding-left (scrolled)",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/site-header-row has no setting for padding-left (scrolled)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header-row",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header-row",
+     "setting": "rowShrinkPadding",
+     "css_property": "padding",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-6|.sgs-responsive-logo__link > .sgs-responsive-logo__picture > img|hover|color",
+   "ref": "cr-ref-header-6",
+   "pair": "header-logo",
+   "path": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img",
+   "block": "sgs/responsive-logo",
+   "kind": "hover",
+   "property": "color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "sgs/responsive-logo has no setting for color (hover)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/responsive-logo has no setting for color (hover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "backgroundColour",
+     "css_property": "background-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "backgroundColourGradient",
+     "css_property": "background-image",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "backgroundColourHover",
+     "css_property": "background-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "backgroundColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "colourTreatment",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/responsive-logo",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-13||style|transition-duration",
+   "ref": "cr-ref-header-13",
+   "pair": "header-bag",
+   "path": "",
+   "block": "sgs/cart",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "missing",
+   "solveReason": "no transition-duration setting on sgs/cart paints \"\" (candidates: panelSlideDuration, freeDeliveryFillDuration)",
+   "class": "W",
+   "decidedBy": "uncalibrated-fit",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/cart paints \"\" (candidates: panelSlideDuration, freeDeliveryFillDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "panelSlideDuration",
+     "css_property": "transition-duration",
+     "css_element": "panelFrame",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "freeDeliveryFillDuration",
+     "css_property": "transition-duration",
+     "css_element": "freeDeliveryFill",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
   {
    "key": "cr-ref-header-0|.sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|font-size",
    "ref": "cr-ref-header-0",
@@ -23,7 +1597,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/trust-bar path \".sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -123,7 +1697,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/trust-bar path \".sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -214,7 +1788,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/trust-bar path \".sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -271,206 +1845,6 @@
    }
   },
   {
-   "key": "cr-ref-header-0||style|column-gap",
-   "ref": "cr-ref-header-0",
-   "pair": "trust-ticker",
-   "path": "",
-   "block": "sgs/trust-bar",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-header-0",
-      "block": "sgs/trust-bar",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/trust-bar",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/trust-bar",
-     "setting": "itemGap",
-     "css_property": "gap",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-0||style|row-gap",
-   "ref": "cr-ref-header-0",
-   "pair": "trust-ticker",
-   "path": "",
-   "block": "sgs/trust-bar",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-header-0",
-      "block": "sgs/trust-bar",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/trust-bar",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/trust-bar",
-     "setting": "itemGap",
-     "css_property": "gap",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-0||style|align-items",
-   "ref": "cr-ref-header-0",
-   "pair": "trust-ticker",
-   "path": "",
-   "block": "sgs/trust-bar",
-   "kind": "style",
-   "property": "align-items",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "alignItems"
-     ],
-     "on": {
-      "ref": "cr-ref-header-0",
-      "block": "sgs/trust-bar",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/trust-bar",
-     "setting": "alignItems",
-     "css_property": "align-items",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/trust-bar",
-     "setting": "layout",
-     "values": [
-      ""
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-0||style|gap",
-   "ref": "cr-ref-header-0",
-   "pair": "trust-ticker",
-   "path": "",
-   "block": "sgs/trust-bar",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "shape",
-     "detail": "6px 32px cannot be held"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/trust-bar",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/trust-bar",
-     "setting": "itemGap",
-     "css_property": "gap",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-header-3|.sgs-container__inner > .sgs-has-block-link > .sgs-container > h2|style|text-transform",
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
@@ -482,7 +1856,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/site-header-row path \".sgs-container__inner > .sgs-has-block-link > .sgs-container > h2\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -533,214 +1907,6 @@
    }
   },
   {
-   "key": "cr-ref-header-3|.sgs-container__inner|style|grid-template-columns",
-   "ref": "cr-ref-header-3",
-   "pair": "header-bar",
-   "path": ".sgs-container__inner",
-   "block": "sgs/site-header-row",
-   "kind": "style",
-   "property": "grid-template-columns",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no grid-template-columns setting on sgs/site-header-row paints \".sgs-container__inner\" (candidates: gridTemplateColumns)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "gridTemplateColumns",
-     "css_property": "grid-template-columns",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/site-header-row",
-     "setting": "layout",
-     "values": [
-      "grid"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-6|.sgs-responsive-logo__link > .sgs-responsive-logo__picture > img|style|aspect-ratio",
-   "ref": "cr-ref-header-6",
-   "pair": "header-logo",
-   "path": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img",
-   "block": "sgs/responsive-logo",
-   "kind": "style",
-   "property": "aspect-ratio",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/responsive-logo has no setting for aspect-ratio"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "responsive-logo/render.php",
-      "mentions": [],
-      "absent": [
-       "aspectRatio"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "aspectRatio"
-      ]
-     },
-     {
-      "file": "site-header-row/render.php",
-      "mentions": [],
-      "absent": [
-       "aspectRatio"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "aspectRatio"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "!== $sgs_box_ratio ) { $styles[] = 'aspect-ratio:' . $sgs_box_ratio; } // Ken-burns dura"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-header-6|.sgs-responsive-logo__link > .sgs-responsive-logo__picture > img|style|max-width",
-   "ref": "cr-ref-header-6",
-   "pair": "header-logo",
-   "path": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img",
-   "block": "sgs/responsive-logo",
-   "kind": "style",
-   "property": "max-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no max-width setting on sgs/responsive-logo paints \".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img\" (candidates: maxWidth, logoId, logoIdTablet, logoIdMobile)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "width",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "image",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "logoId",
-     "css_property": "max-width",
-     "css_element": "image",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "logoIdTablet",
-     "css_property": "max-width",
-     "css_element": "image",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "logoIdMobile",
-     "css_property": "max-width",
-     "css_element": "image",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "shrinkWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
    "key": "cr-ref-header-13|.sgs-cart__trigger-wrap > .sgs-cart__trigger > .sgs-cart__pill-label|style|line-height",
    "ref": "cr-ref-header-13",
    "pair": "header-bag",
@@ -755,7 +1921,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/cart path \".sgs-cart__trigger-wrap > .sgs-cart__trigger > .sgs-cart__pill-label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -820,51 +1986,6 @@
    }
   },
   {
-   "key": "cr-ref-header-13||style|text-align",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": "",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "text-align",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no text-align setting on sgs/cart paints \"\" (candidates: panelNoteTextAlign, panelEmptyTextAlign)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "panelNoteTextAlign",
-     "css_property": "text-align",
-     "css_element": "panel-note",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "panelEmptyTextAlign",
-     "css_property": "text-align",
-     "css_element": "panel-empty",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-header-13|.sgs-cart__trigger-wrap > .sgs-cart__trigger > .sgs-cart__pill-label|style|color",
    "ref": "cr-ref-header-13",
    "pair": "header-bag",
@@ -879,7 +2000,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/cart path \".sgs-cart__trigger-wrap > .sgs-cart__trigger > .sgs-cart__pill-label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -1323,1043 +2444,6 @@
    ]
   },
   {
-   "key": "cr-ref-header-13||style|border-top-width",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": "",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "border-top-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-top-width setting on sgs/cart paints \"\" (candidates: pillBorderWidth)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "pillBorderWidth",
-     "css_property": "border-width",
-     "css_element": "pill",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-15",
-     "block": "sgs/google-rating-badge",
-     "setting": "borderWidth",
-     "property": "border-width",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "cart/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderTopWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderTopWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "site-header-row/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderTopWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderTopWidth",
-       "borderWidth"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "cart",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "es'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_map = is_array( $o"
-      ]
-     },
-     {
-      "block": "cart",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
-       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
-      ]
-     },
-     {
-      "block": "cart",
-      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
-      "mentions": [],
-      "declares": [
-       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-header-13||style|border-top-style",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": "",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "border-top-style",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-top-style setting on sgs/cart paints \"\" (candidates: pillBorderStyle)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "pillBorderStyle",
-     "css_property": "border-style",
-     "css_element": "pill",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-15",
-     "block": "sgs/google-rating-badge",
-     "setting": "borderStyle",
-     "property": "border-style",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "cart/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderStyle",
-       "borderTopStyle",
-       "borderStyle"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderStyle",
-       "borderTopStyle",
-       "borderStyle"
-      ]
-     },
-     {
-      "file": "site-header-row/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderStyle",
-       "borderTopStyle",
-       "borderStyle"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderStyle",
-       "borderTopStyle",
-       "borderStyle"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "cart",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "e ) { $out['rules'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_"
-      ]
-     },
-     {
-      "block": "cart",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "border_has_width ) { $base_decls[] = 'border-style:' . $border_style . ';'; } if ( null !== $"
-      ]
-     },
-     {
-      "block": "cart",
-      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
-      "mentions": [],
-      "declares": [
-       "'none' !== $style ) { return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $s"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-header-13||style|border-bottom-width",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": "",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "border-bottom-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-bottom-width setting on sgs/cart paints \"\" (candidates: pillBorderWidth)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "pillBorderWidth",
-     "css_property": "border-width",
-     "css_element": "pill",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-15",
-     "block": "sgs/google-rating-badge",
-     "setting": "borderWidth",
-     "property": "border-width",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "cart/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderBottomWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderBottomWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "site-header-row/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderBottomWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderBottomWidth",
-       "borderWidth"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "cart",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "es'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_map = is_array( $o"
-      ]
-     },
-     {
-      "block": "cart",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
-       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
-      ]
-     },
-     {
-      "block": "cart",
-      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
-      "mentions": [],
-      "declares": [
-       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-header-13||style|border-left-width",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": "",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "border-left-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-left-width setting on sgs/cart paints \"\" (candidates: pillBorderWidth)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "pillBorderWidth",
-     "css_property": "border-width",
-     "css_element": "pill",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-15",
-     "block": "sgs/google-rating-badge",
-     "setting": "borderWidth",
-     "property": "border-width",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "cart/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderLeftWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderLeftWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "site-header-row/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderLeftWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderLeftWidth",
-       "borderWidth"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "cart",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "es'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_map = is_array( $o"
-      ]
-     },
-     {
-      "block": "cart",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
-       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
-      ]
-     },
-     {
-      "block": "cart",
-      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
-      "mentions": [],
-      "declares": [
-       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-header-13||style|border-right-width",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": "",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "border-right-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-right-width setting on sgs/cart paints \"\" (candidates: pillBorderWidth)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "pillBorderWidth",
-     "css_property": "border-width",
-     "css_element": "pill",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-15",
-     "block": "sgs/google-rating-badge",
-     "setting": "borderWidth",
-     "property": "border-width",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "cart/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderRightWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderRightWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "site-header-row/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderRightWidth",
-       "borderWidth"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "pillBorderWidth",
-       "borderRightWidth",
-       "borderWidth"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "cart",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "es'][] = $selector . '{border-style:none;border-width:0;}'; } else { $colour_map = is_array( $o"
-      ]
-     },
-     {
-      "block": "cart",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
-       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
-      ]
-     },
-     {
-      "block": "cart",
-      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
-      "mentions": [],
-      "declares": [
-       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-header-13||style|border-radius",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": "",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "border-radius",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-radius setting on sgs/cart paints \"\" (candidates: pillBorderRadius, itemThumbRadius, emptyCtaRadius, checkoutRadius, freeDeliveryTrackRadius)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "pillBorderRadius",
-     "css_property": "border-radius",
-     "css_element": "pill",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "itemThumbRadius",
-     "css_property": "border-radius",
-     "css_element": "itemThumb",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "emptyCtaRadius",
-     "css_property": "border-radius",
-     "css_element": "emptyCta",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "checkoutRadius",
-     "css_property": "border-radius",
-     "css_element": "checkout",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "freeDeliveryTrackRadius",
-     "css_property": "border-radius",
-     "css_element": "freeDeliveryBar",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-13||style|padding-right",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": "",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-right setting on sgs/cart paints \"\" (candidates: panelHeadPadding, panelBodyPadding, panelFooterPadding, panelEmptyPadding, emptyCtaPadding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "panelHeadPadding",
-     "css_property": "padding",
-     "css_element": "panelHead",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "panelBodyPadding",
-     "css_property": "padding",
-     "css_element": "panelBody",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "panelFooterPadding",
-     "css_property": "padding",
-     "css_element": "panelFooter",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "panelEmptyPadding",
-     "css_property": "padding",
-     "css_element": "panelEmpty",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "emptyCtaPadding",
-     "css_property": "padding",
-     "css_element": "emptyCta",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-13||style|padding-left",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": "",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-left setting on sgs/cart paints \"\" (candidates: panelHeadPadding, panelBodyPadding, panelFooterPadding, panelEmptyPadding, emptyCtaPadding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "panelHeadPadding",
-     "css_property": "padding",
-     "css_element": "panelHead",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "panelBodyPadding",
-     "css_property": "padding",
-     "css_element": "panelBody",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "panelFooterPadding",
-     "css_property": "padding",
-     "css_element": "panelFooter",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "panelEmptyPadding",
-     "css_property": "padding",
-     "css_element": "panelEmpty",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "emptyCtaPadding",
-     "css_property": "padding",
-     "css_element": "emptyCta",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-13|.sgs-cart__trigger-wrap > .sgs-cart__trigger|style|justify-content",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": ".sgs-cart__trigger-wrap > .sgs-cart__trigger",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "justify-content",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/cart has no setting for justify-content"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-11",
-     "block": "sgs/business-info",
-     "setting": "hoursRowJustify",
-     "property": "justify-content",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "cart/render.php",
-      "mentions": [],
-      "absent": [
-       "justifyContent"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "justifyContent"
-      ]
-     },
-     {
-      "file": "site-header-row/render.php",
-      "mentions": [],
-      "absent": [
-       "justifyContent"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "justifyContent"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "cart/style.css",
-      "selector": ".sgs-cart__trigger",
-      "declaration": "justify-content:center"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "istribute vertically into, so a client's justify-content:'center' // (already correctly routed on",
-       "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }",
-       "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
-      "mentions": [],
-      "declares": [
-       "flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:a"
-      ]
-     },
-     {
-      "block": "site-header",
-      "cite": "includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css",
-      "mentions": [],
-      "declares": [
-       "=> 'display:flex;flex-direction:column;justify-content:flex-start;', 'center' => 'display:fle",
-       "=> 'display:flex;flex-direction:column;justify-content:center;', 'end' => 'display:flex;fl",
-       "=> 'display:flex;flex-direction:column;justify-content:flex-end;', 'stretch' => 'display:flex;"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-header-13||style|min-height",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": "",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "min-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no min-height setting on sgs/cart paints \"\" (candidates: pillMinHeight, checkoutMinHeight)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "pillMinHeight",
-     "css_property": "min-height",
-     "css_element": "pill",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "freeDeliveryTrackHeight",
-     "css_property": "height",
-     "css_element": "freeDeliveryBar",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "checkoutMinHeight",
-     "css_property": "min-height",
-     "css_element": "checkout",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-10",
-     "block": "sgs/container",
-     "setting": "minHeight",
-     "property": "min-height",
-     "via": "declared",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "cart/render.php",
-      "mentions": [],
-      "absent": [
-       "pillMinHeight",
-       "freeDeliveryTrackHeight",
-       "checkoutMinHeight",
-       "minHeight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "pillMinHeight",
-       "freeDeliveryTrackHeight",
-       "checkoutMinHeight",
-       "minHeight"
-      ]
-     },
-     {
-      "file": "site-header-row/render.php",
-      "mentions": [],
-      "absent": [
-       "pillMinHeight",
-       "freeDeliveryTrackHeight",
-       "checkoutMinHeight",
-       "minHeight"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [
-       "minHeight"
-      ],
-      "absent": [
-       "pillMinHeight",
-       "freeDeliveryTrackHeight",
-       "checkoutMinHeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "cart",
-      "cite": "includes/helpers-cart-panel-css.php::sgs_cart_panel_css",
-      "mentions": [
-       "freeDeliveryTrackHeight",
-       "checkoutMinHeight"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "in_height ) { $base_outer_decls[] = 'min-height:' . esc_attr( $min_height ); } // minHeig",
-       "':where(' . $grid_sel . '>*){min-width:0;min-height:0}'; } if ( $has_responsive_attr ) {",
-       "$responsive_css .= '.' . $uid . '{min-height:' . $min_height . '}'; } if ( '' !== $"
-      ]
-     },
-     {
-      "block": "site-header",
-      "cite": "includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css",
-      "mentions": [],
-      "declares": [
-       "w, array( 'stretch' => 'flex:1 1 auto;min-height:0;' ), 'flex:0 1 auto;min-height:auto;', '",
-       "auto;min-height:0;' ), 'flex:0 1 auto;min-height:auto;', 'center' ); // Each row stays fu"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-header-1|.sgs-container > .sgs-container__inner > .sgs-has-block-link > .sgs-container > h2|style|text-transform",
    "ref": "cr-ref-header-1",
    "pair": "gen-header-1",
@@ -2371,7 +2455,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/site-header path \".sgs-container > .sgs-container__inner > .sgs-has-block-link > .sgs-container > h2\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -2392,49 +2476,6 @@
    ]
   },
   {
-   "key": "cr-ref-header-1||style|border-bottom-width",
-   "ref": "cr-ref-header-1",
-   "pair": "gen-header-1",
-   "path": "",
-   "block": "sgs/site-header",
-   "kind": "style",
-   "property": "border-bottom-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-header-1",
-      "block": "sgs/site-header",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-header-1||style|border-bottom-color",
    "ref": "cr-ref-header-1",
    "pair": "gen-header-1",
@@ -2449,7 +2490,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "not-painted: the draft has no bottom border (0px@375, 0px@768, 0px@1440, 0px@1920): its border-bottom-color is currentColor and paints nothing",
    "class": "T",
    "decidedBy": "resolver-writes",
    "evidence": [
@@ -2488,367 +2529,6 @@
    ]
   },
   {
-   "key": "cr-ref-header-1||style|padding-top",
-   "ref": "cr-ref-header-1",
-   "pair": "gen-header-1",
-   "path": "",
-   "block": "sgs/site-header",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-header-1",
-      "block": "sgs/site-header",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-1||style|padding-right",
-   "ref": "cr-ref-header-1",
-   "pair": "gen-header-1",
-   "path": "",
-   "block": "sgs/site-header",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-header-1",
-      "block": "sgs/site-header",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-1||style|padding-bottom",
-   "ref": "cr-ref-header-1",
-   "pair": "gen-header-1",
-   "path": "",
-   "block": "sgs/site-header",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-header-1",
-      "block": "sgs/site-header",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-1||style|padding-left",
-   "ref": "cr-ref-header-1",
-   "pair": "gen-header-1",
-   "path": "",
-   "block": "sgs/site-header",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-header-1",
-      "block": "sgs/site-header",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "contentBandPadding",
-     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-1|.sgs-container > .sgs-container__inner|style|grid-template-columns",
-   "ref": "cr-ref-header-1",
-   "pair": "gen-header-1",
-   "path": ".sgs-container > .sgs-container__inner",
-   "block": "sgs/site-header",
-   "kind": "style",
-   "property": "grid-template-columns",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "same-element",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-3|.sgs-container__inner|style|grid-template-columns",
-     "ref": "cr-ref-header-3",
-     "key": "grid-template-columns",
-     "relation": "same-element",
-     "match": "same-element",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-1||style|backdrop-filter",
-   "ref": "cr-ref-header-1",
-   "pair": "gen-header-1",
-   "path": "",
-   "block": "sgs/site-header",
-   "kind": "style",
-   "property": "backdrop-filter",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/site-header has no setting for backdrop-filter"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "backdropFilter"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "site-header/style.css",
-      "selector": "header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown]",
-      "declaration": "backdrop-filter:none"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "site-header",
-      "cite": "includes/helpers-surface-ground.php::includes/helpers-surface-ground.php",
-      "mentions": [],
-      "declares": [
-       "lode( ' ', $parts ); return array( 'backdrop-filter:' . $value, '-webkit-backdrop-filter:' ."
-      ]
-     },
-     {
-      "block": "site-header",
-      "cite": "includes/helpers-surface-ground.php::sgs_surface_backdrop_decls",
-      "mentions": [],
-      "declares": [
-       "lode( ' ', $parts ); return array( 'backdrop-filter:' . $value, '-webkit-backdrop-filter:' ."
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-header-1||style|max-width",
-   "ref": "cr-ref-header-1",
-   "pair": "gen-header-1",
-   "path": "",
-   "block": "sgs/site-header",
-   "kind": "style",
-   "property": "max-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "maxWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-header-1",
-      "block": "sgs/site-header",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "contentWidth",
-     "css_property": "width",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-header-1||style|painted-ground",
    "ref": "cr-ref-header-1",
    "pair": "gen-header-1",
@@ -2863,7 +2543,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: colour none not parsed",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -3210,7 +2890,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/site-header-row path \".sgs-container__inner > .sgs-has-block-link > .sgs-container > h2\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -3233,7 +2913,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/site-header-row path \".sgs-container__inner > .sgs-has-block-link > .sgs-container > h2\" is not a calibrated element",
    "class": "W",
    "decidedBy": "resolver-unmapped-element",
    "evidence": [
@@ -3241,178 +2921,6 @@
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/site-header-row path \".sgs-container__inner > .sgs-has-block-link > .sgs-container > h2\" is not a calibrated element"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-3||style|padding-top",
-   "ref": "cr-ref-header-3",
-   "pair": "header-bar",
-   "path": "",
-   "block": "sgs/site-header-row",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/site-header-row has no setting for padding-top (scrolled)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "rowShrinkPadding",
-     "css_property": "padding",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-3||style|padding-right",
-   "ref": "cr-ref-header-3",
-   "pair": "header-bar",
-   "path": "",
-   "block": "sgs/site-header-row",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/site-header-row has no setting for padding-right (scrolled)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "rowShrinkPadding",
-     "css_property": "padding",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-3||style|padding-bottom",
-   "ref": "cr-ref-header-3",
-   "pair": "header-bar",
-   "path": "",
-   "block": "sgs/site-header-row",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/site-header-row has no setting for padding-bottom (scrolled)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "rowShrinkPadding",
-     "css_property": "padding",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-3||style|padding-left",
-   "ref": "cr-ref-header-3",
-   "pair": "header-bar",
-   "path": "",
-   "block": "sgs/site-header-row",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/site-header-row has no setting for padding-left (scrolled)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "rowShrinkPadding",
-     "css_property": "padding",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
     }
    ]
   },
@@ -3429,7 +2937,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -3502,7 +3010,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/site-header path \".sgs-container > .sgs-container__inner > .sgs-has-block-link > .sgs-container > h2\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -3533,7 +3041,7 @@
     375
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/site-header path \".sgs-container > .sgs-container__inner > .sgs-has-block-link > .sgs-container > h2\" is not a calibrated element",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -3566,7 +3074,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/trust-bar path \".sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -3668,7 +3176,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/trust-bar path \".sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -3761,7 +3269,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/trust-bar path \".sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element",
    "class": "W",
    "decidedBy": "canvas-settable",
    "evidence": [
@@ -3818,51 +3326,6 @@
    }
   },
   {
-   "key": "cr-ref-header-0||style|justify-content",
-   "ref": "cr-ref-header-0",
-   "pair": "trust-ticker",
-   "path": "",
-   "block": "sgs/trust-bar",
-   "kind": "style",
-   "property": "justify-content",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "shape",
-     "detail": "justifyContent holds one value for every width; draft has \"flex-start\", \"space-between\""
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/trust-bar",
-     "setting": "justifyContent",
-     "css_property": "justify-content",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/trust-bar",
-     "setting": "badgeStyle",
-     "values": [
-      "icon-bare",
-      "text-only",
-      "image-badge"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-header-3|.sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text|style|color",
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
@@ -3874,7 +3337,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element: sgs/site-header-row path \".sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text\" is not a calibrated element",
    "class": "W",
    "decidedBy": "uncalibrated-fit",
    "evidence": [
@@ -4026,140 +3489,6 @@
    ]
   },
   {
-   "key": "cr-ref-header-6|.sgs-responsive-logo__link > .sgs-responsive-logo__picture > img|hover|color",
-   "ref": "cr-ref-header-6",
-   "pair": "header-logo",
-   "path": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img",
-   "block": "sgs/responsive-logo",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/responsive-logo has no setting for color (hover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "colourTreatment",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/responsive-logo",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-13||style|transition-duration",
-   "ref": "cr-ref-header-13",
-   "pair": "header-bag",
-   "path": "",
-   "block": "sgs/cart",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/cart paints \"\" (candidates: panelSlideDuration, freeDeliveryFillDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "panelSlideDuration",
-     "css_property": "transition-duration",
-     "css_element": "panelFrame",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/cart",
-     "setting": "freeDeliveryFillDuration",
-     "css_property": "transition-duration",
-     "css_element": "freeDeliveryFill",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-header-1|.sgs-container > .sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text|style|color",
    "ref": "cr-ref-header-1",
    "pair": "gen-header-1",
@@ -4171,7 +3500,7 @@
     768
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: textColour holds one value for every width; draft has \"primary\", \"#000000\"",
    "class": "W",
    "decidedBy": "same-element",
    "evidence": [
@@ -4203,7 +3532,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: desktop differs between 1440 (0px) and 1920 (240px)",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -4236,7 +3565,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "shape: desktop differs between 1440 (0px) and 1920 (240px)",
    "class": "W",
    "decidedBy": "attribute",
    "evidence": [
@@ -4269,7 +3598,7 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "used-value: width is the box's used size, not a declared value",
    "class": "W",
    "decidedBy": "used-value",
    "evidence": [
@@ -4326,11 +3655,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-3|.sgs-container__inner > .sgs-has-block-link > .sgs-container > h2|style|font-size",
-     "ref": "cr-ref-header-3",
-     "key": "font-size",
-     "relation": "self",
-     "match": "layout-row",
+     "parent": "cr-ref-header-1||box|y-in-main",
+     "ref": "cr-ref-header-1",
+     "key": "y-in-main",
+     "relation": "ancestor",
+     "match": "same-delta",
      "width": 375,
      "delta": -363,
      "widths": [
@@ -4353,7 +3682,6 @@
    "widths": [
     375,
     768,
-    1440,
     1920
    ],
    "solveClass": "derived",
@@ -4374,7 +3702,6 @@
       375,
       768,
       768,
-      1440,
       1920
      ]
     }
@@ -4447,6 +3774,43 @@
    ]
   },
   {
+   "key": "cr-ref-header-1||box|y-in-main",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "box",
+   "property": "y-in-main",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-1|.sgs-container > .sgs-container__inner > .sgs-has-block-link > .sgs-container > h2|style|font-size",
+     "ref": "cr-ref-header-1",
+     "key": "font-size",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -363,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-header-1||box|h",
    "ref": "cr-ref-header-1",
    "pair": "gen-header-1",
@@ -4475,6 +3839,37 @@
      "widths": [
       375,
       768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-6|.sgs-responsive-logo__link > .sgs-responsive-logo__picture > img|box|y-after-header-phone",
+   "ref": "cr-ref-header-6",
+   "pair": "header-logo",
+   "path": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img",
+   "block": "sgs/responsive-logo",
+   "kind": "box",
+   "property": "y-after-header-phone",
+   "widths": [
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-6|.sgs-responsive-logo__link > .sgs-responsive-logo__picture > img|style|max-width",
+     "ref": "cr-ref-header-6",
+     "key": "max-width",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 1920,
+     "delta": 5,
+     "widths": [
+      1920
      ]
     }
    ]

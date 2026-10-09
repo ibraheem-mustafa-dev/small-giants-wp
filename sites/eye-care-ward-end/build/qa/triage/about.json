@@ -1,12 +1,12 @@
 {
  "surface": "about",
- "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-08T20-10-35/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-08T20-10-35/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-09T09-02-01/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-09T09-02-01/round-2/report.json",
  "date": "2026-10-09",
  "counts": {
   "W": 0,
-  "F": 0,
-  "T": 1,
+  "F": 1,
+  "T": 0,
   "U": 0,
   "L": 0
  },
@@ -24,10 +24,10 @@
     1440,
     1920
    ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "solveClass": "hardcode",
+   "solveReason": "the setting holds the draft value; paint still differs",
+   "class": "F",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
@@ -39,7 +39,9 @@
       "block": "sgs/button",
       "path": ""
      },
-     "holds": false
+     "holds": true,
+     "solveWrote": "transitionDuration",
+     "group": "cr-ref-about-10||transition-duration|"
     },
     {
      "check": "attribute",
@@ -51,7 +53,44 @@
      "source": "sgs",
      "reaches": true
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [
+       "transitionDuration"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     }
+    ]
+   }
   }
  ]
 }
