@@ -92,62 +92,15 @@
             },
             "innerBlocks": [
               {
-                "name": "sgs/heading",
+                "name": "sgs/responsive-logo",
                 "attributes": {
-                  "content": "EYE CARE",
-                  "level": "h4",
-                  "letterSpacing": {
-                    "desktop": 0.14
-                  },
-                  "letterSpacingUnit": "em",
-                  "fontSize": {
-                    "desktop": "18px"
-                  },
-                  "className": "cr-ref-footer-3",
-                  "lineHeight": {
-                    "mobile": 1.5,
-                    "tablet": 1.5,
-                    "desktop": 1.5
-                  },
-                  "margin": {
-                    "mobile": {
-                      "bottom": "0px"
-                    },
-                    "tablet": {
-                      "bottom": "0px"
-                    },
-                    "desktop": {
-                      "bottom": "0px"
-                    }
-                  },
-                  "textWrap": "wrap"
-                }
-              },
-              {
-                "name": "sgs/text",
-                "attributes": {
-                  "text": "BIRMINGHAM",
-                  "textColour": "text-label",
-                  "fontSize": {
-                    "desktop": "9.5px"
-                  },
-                  "letterSpacing": {
-                    "desktop": 0.32
-                  },
-                  "letterSpacingUnit": "em",
-                  "className": "cr-ref-footer-4",
-                  "margin": {
-                    "mobile": {
-                      "top": "4px"
-                    },
-                    "tablet": {
-                      "top": "4px"
-                    },
-                    "desktop": {
-                      "top": "4px"
-                    }
-                  }
-                }
+                  "logoId": 1467,
+                  "width": 111,
+                  "linkToHome": true,
+                  "opacityHover": 1,
+                  "className": "cr-ref-footer-3"
+                },
+                "innerBlocks": []
               },
               {
                 "name": "sgs/text",
@@ -452,11 +405,6 @@
                       "iconName": "",
                       "text": "Prescription lenses",
                       "url": "/prescription-lenses/"
-                    },
-                    {
-                      "iconSource": "lucide",
-                      "iconName": "",
-                      "text": "Glasses — arriving soon"
                     }
                   ],
                   "className": "cr-ref-footer-9",
@@ -617,68 +565,48 @@
                 }
               },
               {
-                "name": "sgs/text",
+                "name": "sgs/icon-list",
                 "attributes": {
-                  "text": "<a href=\"/about/\">About Eye Care</a>",
-                  "fontSize": {
+                  "markerType": "none",
+                  "gap": "10px",
+                  "textColour": "text",
+                  "itemFontSize": {
                     "desktop": "14px"
                   },
-                  "linkUnderline": "sweep",
+                  "itemLineHeight": 1.5,
+                  "itemTextDecoration": "none",
+                  "textColourHover": "text",
+                  "items": [
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "About Eye Care",
+                      "url": "/about/"
+                    },
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "",
+                      "siteInfoSource": "phone"
+                    },
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "",
+                      "siteInfoSource": "address",
+                      "siteInfoLink": true
+                    },
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "",
+                      "siteInfoSource": "hours",
+                      "siteInfoLink": true
+                    }
+                  ],
                   "className": "cr-ref-footer-23"
-                }
-              },
-              {
-                "name": "sgs/business-info",
-                "attributes": {
-                  "displayType": "phone",
-                  "textColourHover": "text",
-                  "linkUnderline": "sweep",
-                  "showIcon": false,
-                  "fontSize": {
-                    "desktop": "14px"
-                  },
-                  "className": "cr-ref-footer-24",
-                  "iconGap": {
-                    "mobile": "0px",
-                    "tablet": "0px",
-                    "desktop": "0px"
-                  }
-                }
-              },
-              {
-                "name": "sgs/business-info",
-                "attributes": {
-                  "displayType": "address",
-                  "addressLink": true,
-                  "linkUnderline": "sweep",
-                  "showIcon": false,
-                  "textColour": "text",
-                  "textColourHover": "text",
-                  "fontSize": {
-                    "desktop": "14px"
-                  },
-                  "className": "cr-ref-footer-25",
-                  "lineHeight": {
-                    "mobile": 1.5,
-                    "tablet": 1.5,
-                    "desktop": 1.5
-                  }
-                }
-              },
-              {
-                "name": "sgs/business-info",
-                "attributes": {
-                  "displayType": "hours",
-                  "showIcon": false,
-                  "textColour": "text",
-                  "fontSize": {
-                    "desktop": "13px"
-                  },
-                  "hoursLayout": "condensed",
-                  "hoursRowJustify": "flex-start",
-                  "className": "cr-ref-footer-26",
-                  "labelColour": "text"
-                }
+                },
+                "innerBlocks": []
               }
             ]
           }

@@ -287,50 +287,17 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/heading",
+                    "name": "sgs/responsive-logo",
                     "attributes": {
-                      "level": "h2",
-                      "content": "EYE CARE",
-                      "textTransform": "uppercase",
-                      "letterSpacing": {
-                        "desktop": 0.14
-                      },
-                      "letterSpacingUnit": "em",
-                      "fontSize": {
-                        "desktop": "18px"
-                      },
-                      "fontFamily": "heading",
-                      "fontWeight": "500",
-                      "lineHeight": {
-                        "desktop": 1
-                      },
-                      "margin": {
-                        "desktop": {
-                          "bottom": "0px"
-                        }
-                      },
-                      "shrunkFontSize": "15px",
+                      "logoId": 1467,
+                      "width": 110,
+                      "linkToHome": false,
+                      "shrinkWidth": 91,
+                      "shrinkWidthUnit": "px",
+                      "opacityHover": 1,
                       "className": "cr-ref-header-8"
-                    }
-                  },
-                  {
-                    "name": "sgs/text",
-                    "attributes": {
-                      "text": "BIRMINGHAM",
-                      "textTransform": "uppercase",
-                      "fontSize": {
-                        "desktop": "9.5px"
-                      },
-                      "letterSpacing": {
-                        "desktop": 0.32
-                      },
-                      "letterSpacingUnit": "em",
-                      "textColour": "text-subtle",
-                      "lineHeight": {
-                        "desktop": 1
-                      },
-                      "className": "cr-ref-header-9"
-                    }
+                    },
+                    "innerBlocks": []
                   }
                 ]
               }
