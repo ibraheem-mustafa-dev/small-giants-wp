@@ -59,24 +59,19 @@ per surface are in `sites/eye-care-ward-end/build/qa/triage/*.json`; read them t
 
 - **Dead calibration rows** (`.claude/reports/2026-10-07-dead-calibration-rerun/SUMMARY.md`, the 2026-10-04 pipeline re-run
   unchanged, with its `classify3` split): 546 dead; FIXTURE_LACKS_ELEMENT 210, **UNEXPLAINED 106**,
-  PORTAL_OR_CLOSED_SURFACE 55, READ_CAP_81 53, HOVER_POINTER_MISSES_ELEMENT 38, the rest under 14 each. Still open: the 106,
+  PORTAL_OR_CLOSED_SURFACE 55, READ_CAP_81 53, HOVER_POINTER_MISSES_ELEMENT 38, the rest under 14 each. Still open: 100 of the 106 (the other 6 were `sgs/cta-section`'s),
   to be diagnosed per mechanism, largest groups first (by property: background-image 19, grid-template-columns 10, text-indent
-  9; by block: nav-bar-menu 10, nav-drawer-menu 9, hero 7, cta-section 6), plus the `oneWidth` probe list (23 today).
+  9; by block: nav-bar-menu 10, nav-drawer-menu 9, hero 7), plus the `oneWidth` probe list (23 today).
   The nav groups wait for the nav-bar-menu recalibration another session was running on 2026-10-08 (it rewrites their caches).
-  **hero and cta-section diagnosed 2026-10-08 (13 rows, code and cache reading, not yet proven by a render):**
-  - Block code, 4 rows. `hero/style.css::section.sgs-hero{max-width:none}` out-ranks the wrapper's scoped `max-width`
+  **hero diagnosed 2026-10-08 (7 rows, code and cache reading, not yet proven by a render):**
+  - Block code, 1 row. `hero/style.css::section.sgs-hero{max-width:none}` out-ranks the wrapper's scoped `max-width`
     (`maxWidth`): the known real gap in the backlog; that rule stays (D725, full-bleed sections), so the fix is the
-    emitted rule's specificity, never removing it. `cta-section/style.css::.sgs-cta-section` reads the button-preset
-    `hover-transition` token before `--sgs-transition-duration`, and Eye Care's snapshot sets that token to 0.25s, so
-    `transitionDuration` never wins. `cta-section/render.php` nulls `backgroundImage` for the wrapper, so its tier images
-    (`backgroundImageTablet/Mobile`) have no `::before` layer to paint on.
-  - Calibration preconditions and markers, 8 rows (`lib/calibrate-instances.mjs::preconditionsFor`,
-    `lib/calibrate-markers.mjs::markersFor`). hero's tier images need a base `backgroundImage`. `textIndent` (hero and cta)
+    emitted rule's specificity, never removing it.
+  - Calibration preconditions and markers, 6 rows (`lib/calibrate-instances.mjs::preconditionsFor`,
+    `lib/calibrate-markers.mjs::markersFor`). hero's tier images need a base `backgroundImage`. `textIndent`
     paints only between two adjacent text blocks, which no fixture has. hero's `bgSvgOpacity` needs `bgSvgContent` and an
     integer marker (`absint` turns 0.37 into 0). `bgZoomStart` needs `bgKenBurnsMode: zoom-out-once` and a marker in
-    100-150. `gridTemplateColumns` needs `variant: split` and a track-list marker. cta's `backgroundImage` is the legacy
-    twin of `backgroundMedia`, which the fixture always sets.
-  - Unresolved, 1 row: cta `textColour`; the next step is rendering one instance with a hex colour and reading its `color`.
+    100-150. `gridTemplateColumns` needs `variant: split` and a track-list marker.
 - **Font-family values are preset slugs** (Bean, 2026-10-08). `85f07d38a` makes `heading/edit.js` paint a slug too. It is
   committed; `.claude/LEDGER.md` does not name it, so its deploy state is not recorded there. It ships with the next green
   `build-deploy.py`.
@@ -399,9 +394,8 @@ Results, run records and counts moved out of Spec 47 section 5. Spec 47 section 
        - **No `transition,*` row calibrates anywhere in the library.** `lib/calibrate-markers.mjs::markersFor`
          dispatches on the first comma-segment of `css_property`, which is `transition`, and every branch misses it
          (not colour, not `KEYWORDS`, not enum, not box, not `tier_object` — `LENGTH` fails — not weight, opacity,
-         transform, letter-spacing, number or count), so it falls through to `return []`. Confirmed on all six routed
-         blocks: `sgs/hero`, `sgs/brand-strip`, `sgs/card-grid`, `sgs/info-box`, `sgs/testimonial` and
-         `sgs/cta-section` all carry the pair in `noMarker` with no slot. A transition marker needs a new shape (set a
+         transform, letter-spacing, number or count), so it falls through to `return []`. Confirmed on all five routed
+         blocks: `sgs/hero`, `sgs/brand-strip`, `sgs/card-grid`, `sgs/info-box` and `sgs/testimonial` all carry the pair in `noMarker` with no slot. A transition marker needs a new shape (set a
          duration and an easing, read `transition-duration` and `transition-timing-function` off the root).
        - **`settings[<attr>].overriddenBy` names non-rendering elements.** All ten of `sgs/hero`'s entries name
          `.sgs-hero__video-bg > source`, a metadata element inside `<video>` that renders no box and no text and so
