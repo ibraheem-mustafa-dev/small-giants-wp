@@ -185,8 +185,9 @@ inner row; the logo group against the words span), the other two are the wordmar
 Later the same day: the walker no longer reads visually hidden text (a screen-reader link name) as painted (`walker-sr-only.test.mjs`;
 footer walk 746 open rows to 599), the draft footer and drawer follow the live ones (Bean: live is the ideal), and ledger
 D-40 to D-47 and D-105 to D-108, D-113 to D-125 are removed on Bean's decision. A ref-traced footer walk at 1440/768/375
-after the draft changes decides no row with any remaining footer entry (D-60 to D-66, D-96, D-97, D-101 to D-104,
-D-109 to D-112): they await Bean's decision.
+after the draft changes decides no row with any remaining footer entry, so D-60 to D-64, D-96, D-97, D-101 to D-104 and
+D-109 to D-112 are removed too (Bean); D-65 and D-66 stay as the record of the no-border hover ruling D-88 to D-91 and
+`solve.mjs` cite.
 
 ## Contact (page 190): state at the end of 2026-10-08
 
