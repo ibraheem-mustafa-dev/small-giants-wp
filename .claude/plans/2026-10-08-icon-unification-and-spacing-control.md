@@ -116,7 +116,7 @@ The drawer's social row `cr-ref-mobile-menu-12..15` (three icon-only `sgs/button
 **Done when:** census `--check --strict` exits 0 (met in source); the sandybrown spot-check in item 2 shows each declared default preselected and painted unchanged; item 1 has Bean's decision.
 
 ## QC council on the shipped work (started 2026-10-09, open)
-Raters B (claims vs code) and D (executed edge cases) reported; E (lesson-note traps) and A (live, after the sandybrown deploy) are owed. B: 35 of 41 claims TRUE, none FALSE. Each finding below is a fix-shape HYPOTHESIS: measure its baseline before fixing (qc-council Stage 5).
+Raters B (claims vs code), D (executed edge cases) and E (lesson-note traps) reported; A (live, after the sandybrown deploy) is owed. B: 35 of 41 claims TRUE, none FALSE. Each finding below is a fix-shape HYPOTHESIS: measure its baseline before fixing (qc-council Stage 5).
 1. Site Info phone keeps a UK trunk `(0)`: `+44 (0)121 496 0123` → `tel:+4401214960123` (fails from abroad). `includes/class-sgs-site-info-binding.php::prefix_url_for_key` phone branch: drop `(0)` when the value starts with `+` or `00`.
 2. A social value with a non-web scheme (`javascript:alert(1)`) becomes `https://javascript:alert(1)`, a dead link that does not hide: `::has_scheme` knows only `://`, `mailto:`, `tel:`; return '' for any other `scheme:` prefix.
 3. Email with whitespace (`a b@x.com`) still makes a `mailto:`: require `is_email()`.
@@ -126,6 +126,8 @@ Raters B (claims vs code) and D (executed edge cases) reported; E (lesson-note t
 7. `SgsBoxControl.js::toggleLinked`: a row set to Custom before typing snaps back to Default when sides are linked or unlinked (`customRows` keyed by row).
 8. `SgsBoxControl.js::presetRow` placeholder shows the raw `var(--wp--preset--spacing--N)` when the active scale lacks the slug: run it through the preset-size lookup / length parse.
 9. Wording: `src/blocks/icon/render.php` header claims every length passes `sgs_icon_length_value` (true for sizes and gaps; padding, margin, border use their own sanitisers).
+10. Editor-only phantom border on the social row (E, medium confidence, prove in the editor first): `social-icons/edit.js::rowCanvasStyle` writes `--sgs-si-border-width` into the wrapper's inline style, and core's `:where([style*=border-width]){border-style:solid}` then draws a medium solid border round the row in the editor only. Fix: rename the property so no inline style contains `border-width` (`--sgs-si-border-thickness` in `icon/style.css`, `includes/helpers-icon.php`, `social-icons/edit.js`).
+11. Brand glyph colour lost for an 8-digit hex brand colour (E, conditional: no registry brand has alpha today): `includes/helpers-colour-wcag.php::sgs_wcag_relative_luminance` returns -1 for `#RRGGBBAA`, so `sgs_brand_paint` (and `src/utils/brand-registry.js`) picks no glyph. Fix: drop the alpha byte before the length check in both.
 
 ## Deferred
 - **Cloned social rows (owner: Spec 47 computed route, `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`):** when a draft holds a social or contact link row, the route should emit `sgs/social-icons` with `sgs/icon` children bound to Site Info keys by platform (registry `plugins/sgs-blocks/includes/data/brand-registry.json`, keys `Sgs_Site_Info_Binding::EDITOR_KEYS`), a fixed URL only for a platform the registry lacks. Today a clone gets whatever the route writes from the draft's markup.
