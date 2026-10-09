@@ -295,13 +295,11 @@ def audit() -> dict:
         scan(files, exec_ch, label)
     scan(prod, exec_ch, "script-call")
     # ⚠ TESTS ARE A REAL EXECUTION PATH — false-positive class #7.
-    # package.json prebuild runs `python -m pytest scripts/oracle/tests/
-    # scripts/converter/tests/`, so a module imported ONLY by a test file runs on
-    # every build. Tests are excluded from the CANDIDATE list (nothing names them,
-    # so their own absence of callers is meaningless) but they must still be
-    # SCANNED as a channel. Without this, coverage_report.py, draft_oracle.py,
-    # metamorphic.py and run_canary_proof.py all read as unwired while running on
-    # every single build.
+    # a gate or build step that runs pytest executes the modules its test files
+    # import, so a module imported ONLY by a test file still runs. Tests are
+    # excluded from the CANDIDATE list (nothing names them, so their own absence
+    # of callers is meaningless) but they must still be SCANNED as a channel.
+    # Without this, helper modules used only through tests read as unwired.
     scan(executed_tests(tests), exec_ch, "test-import")
     # ⚠ Scan EVERY markdown file in the repo, not just the ones beside the
     # scripts. Limiting this to SCRIPT_ROOTS + .claude missed
