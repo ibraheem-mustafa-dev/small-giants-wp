@@ -15038,6 +15038,15 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "groupTransitionDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_layer": "CONTENT",
+        "css_element": "group"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "iconBackground",
       "fields": {
         "css_property": "background-color",
@@ -31938,6 +31947,15 @@
         "css_layer": "CONTENT",
         "css_element": "group",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "groupPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "group"
       }
     },
     {
