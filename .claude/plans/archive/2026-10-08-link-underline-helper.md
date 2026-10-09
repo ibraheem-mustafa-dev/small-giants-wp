@@ -2,7 +2,7 @@
 title: Link underline helper for text blocks, and the Eye Care footer "Visit or call" column
 project: small-giants-wp
 created: 2026-10-08
-status: batches 1, 2 and 3 live on eye-care-test, 2026-10-09; open items listed under Batch 3 in the council section
+status: complete 2026-10-09 - batches 1 to 3 and the Eye Care footer column are live on eye-care-test; the Maps link was confirmed by Bean
 authors: Bean, Claude (small-giants-wp-57)
 governs: register CR6 P2-n (moved here from .claude/plans/archive/2026-10-07-cr6-box-longhand-migration.md, which is box-longhand work only)
 ---
@@ -50,8 +50,9 @@ Open, each for a later batch:
   ("Google Maps link"). `includes/class-sgs-site-info-binding.php::Sgs_Site_Info_Binding::link_for_key( 'address' )` is
   the one rule (Maps link, else Maps CID, else a Maps search for the address) and `sgs/business-info`'s linked address
   calls it, so it no longer falls back to `socials.google`, which may hold a review link. Eye Care's `maps_url` is set
-  to its Google share link and the footer address links to it. Open: sandybrown and the other sites get the field when
-  next deployed; open the Eye Care link once in a browser to confirm it lands on the listing, not a review form.
+  to its Google share link and the footer address links to it. Bean opened the link on 2026-10-09: it shows the clinic's Google
+  Business listing, no review form. The Maps link field exists on the Settings page of the site a parallel session deployed,
+  so the other sites get it as they deploy.
 - **Batch 2 (`icon-list` and `sgs/label`; code `e75081461`, `52ca75bac`, `5c2e960b7`, reseeds `d997cec75`, `0a733de55`; live on
   eye-care-test 2026-10-09):** each has `linkUnderline` and `linkUnderlineThickness` in a "Links" panel. `icon-list`'s
   canvas shows linked items as links and previews the setting; `label`'s text field now allows links (`core/link`) and

@@ -165,7 +165,7 @@ Each section: what is built, and what is open.
   - Social icons: owned by the icon-unification plan (P2-r, the brand colour overriding the border colour). The
     "Visit or call" column's link underline, Google-linked address and compact hours are live (2026-10-09) and their
     divergence-ledger entries are logged (D-101 to D-125, register row 163). The one footer-walk row left open in that
-    column is the About link's position under the column heading (`plans/2026-10-08-link-underline-helper.md`).
+    column is the About link's position under the column heading (`plans/archive/2026-10-08-link-underline-helper.md`).
 
 ### Home (page 208, front page, `build/home.tree.json`)
 - **Built:** the brand strip as a logo row in the draft's order; the prescription-strip photo as `sgs/media` with hover
