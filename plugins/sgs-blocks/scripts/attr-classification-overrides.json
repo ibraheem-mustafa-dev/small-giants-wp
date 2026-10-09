@@ -7024,30 +7024,30 @@
 			"attr": "iconRotateHover",
 			"fields": {
 				"role": "select-from-enum",
-				"css_property": "transform",
+				"css_property": "transform:rotate",
 				"css_state": "hover"
 			},
-			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
 		},
 		{
 			"slug": "sgs/icon",
 			"attr": "offsetXHover",
 			"fields": {
 				"role": "select-from-enum",
-				"css_property": "transform",
+				"css_property": "transform:translate-x",
 				"css_state": "hover"
 			},
-			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
 		},
 		{
 			"slug": "sgs/icon",
 			"attr": "offsetYHover",
 			"fields": {
 				"role": "select-from-enum",
-				"css_property": "transform",
+				"css_property": "transform:translate-y",
 				"css_state": "hover"
 			},
-			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
 		},
 		{
 			"slug": "sgs/icon",
@@ -7062,30 +7062,30 @@
 			"attr": "childIconRotateHover",
 			"fields": {
 				"role": "select-from-enum",
-				"css_property": "transform",
+				"css_property": "transform:rotate",
 				"css_state": "hover"
 			},
-			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
 		},
 		{
 			"slug": "sgs/social-icons",
 			"attr": "childIconOffsetXHover",
 			"fields": {
 				"role": "select-from-enum",
-				"css_property": "transform",
+				"css_property": "transform:translate-x",
 				"css_state": "hover"
 			},
-			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
 		},
 		{
 			"slug": "sgs/social-icons",
 			"attr": "childIconOffsetYHover",
 			"fields": {
 				"role": "select-from-enum",
-				"css_property": "transform",
+				"css_property": "transform:translate-y",
 				"css_state": "hover"
 			},
-			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
 		},
 		{
 			"slug": "sgs/social-icons",
