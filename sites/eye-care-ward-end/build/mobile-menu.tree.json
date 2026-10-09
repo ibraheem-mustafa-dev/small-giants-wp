@@ -31,16 +31,6 @@
           "left": "24px"
         }
       },
-      "chromeSlotType": "heading",
-      "chromeSlotText": "EYE CARE",
-      "chromeSlotHeadingLevel": "p",
-      "chromeSlotPlacement": "after-logo",
-      "chromeSlotFontFamily": "heading",
-      "chromeSlotFontWeight": "500",
-      "chromeSlotLetterSpacing": {
-        "desktop": 0.14
-      },
-      "chromeSlotLetterSpacingUnit": "em",
       "closeBorderWidth": {
         "top": "0px",
         "right": "0px",
@@ -57,7 +47,12 @@
       "staggerInsideGroups": true,
       "chromeRating": true,
       "chromeRatingPlacement": "end",
-      "chromeRatingShowCount": false
+      "chromeRatingShowCount": false,
+      "chromeLogoId": 1467,
+      "chromeLogoWidth": {
+        "desktop": "97px"
+      },
+      "chromeLogoLink": true
     },
     "innerBlocks": [
       {
