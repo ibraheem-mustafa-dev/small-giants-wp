@@ -45,7 +45,7 @@ You have finished the detector when it can answer, without you reading any file:
 ### What it costs, and what you are buying
 
 At 4 instances the detector costs more than the edit. Measured floor: **131 lines**
-(`migrate-overlay-tier-axis.py`); typical **242-362**. You are not buying the edit: you are
+(the overlay tier-axis migration); typical **242-362**. You are not buying the edit: you are
 buying the `--check` gate that stops instance 5 arriving next month. **If the change
 genuinely cannot regress, the threshold does not apply.**
 
