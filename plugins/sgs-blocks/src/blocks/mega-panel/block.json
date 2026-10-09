@@ -34,6 +34,7 @@
 			],
 			"boxFamilies": {
 				"panelPadding": [ "panelPadding" ],
+				"groupPadding": [ "groupPadding" ],
 				"borderWidth": [ "borderWidth" ],
 				"brandsEyebrowPadding": [ "brandsEyebrowPadding" ]
 			},
@@ -256,7 +257,9 @@
 					],
 					"attrMap": {
 						"css:border-color": "groupBorderColour",
-						"css:border-color-gradient": "groupBorderColourGradient"
+						"css:border-color-gradient": "groupBorderColourGradient",
+						"css:padding": "groupPadding",
+						"css:transition-duration": "groupTransitionDuration"
 					},
 					"states": {
 						"hover": {
@@ -423,6 +426,16 @@
 			"default": {
 				"desktop": "44px"
 			}
+		},
+		"groupPadding": {
+			"type": "object",
+			"_note": "BOX-object shape (top/right/bottom/left per tier), same contract as panelPadding -- render.php emits it through sgs_emit_responsive_css() with 'box' => true onto the `.sgs-mega-group` tile of every panel style. NO default (empty object): an unset side prints nothing, so the per-style stylesheet padding (the `cards` tile's 17px) keeps painting and a fresh instance renders exactly as before. A side that is set prints only that padding-* longhand and wins over the per-style rule. The editor canvas mirrors it through --sgs-mm-group-pad-{top,right,bottom,left}, which style.css reads with the per-style value as fallback.",
+			"default": {}
+		},
+		"groupTransitionDuration": {
+			"type": "string",
+			"_note": "Milliseconds as a numeric string (the repo-wide transitionDuration convention, validated by sgs_motion_ms()), e.g. '250'. Default '' = no override: the stylesheet's own duration keeps painting. When set, render.php emits `transition-duration:<n>ms` on the `.sgs-mega-group` tile of every panel style; the prefers-reduced-motion rule (`transition:none`) still wins. Only the `cards` style's tile has a transition property today, so the duration is visible there.",
+			"default": ""
 		},
 		"panelBg": {
 			"type": "string",

@@ -178,6 +178,7 @@ $aside_separator   = is_array( $attributes['asideSeparator'] ?? null ) ? $attrib
 $max_width_obj     = is_array( $attributes['maxWidth'] ?? null ) ? $attributes['maxWidth'] : array( 'desktop' => '1120px' );
 $panel_padding_obj = is_array( $attributes['panelPadding'] ?? null ) ? $attributes['panelPadding'] : array();
 $group_gap_obj     = is_array( $attributes['groupGap'] ?? null ) ? $attributes['groupGap'] : array( 'desktop' => '44px' );
+$group_padding_obj = is_array( $attributes['groupPadding'] ?? null ) ? $attributes['groupPadding'] : array();
 
 // brands-variant eyebrow. A plain
 // scalar attr on THIS block (no InnerBlocks role:content concerns — those
@@ -674,6 +675,32 @@ if ( ! $sgs_mm_in_drawer ) {
 $panel_card_lift = sgs_css_single_length_value( $attributes['panelCardLift'] ?? '' );
 $panel_card_lift_decl = '' !== $panel_card_lift ? 'transform:translateY(calc(-1 * ' . $panel_card_lift . '));' : '';
 $css .= sgs_hover_state_rules( $style_crd . $rel_group, $panel_card_lift_decl . 'border-color:var(--sgs-mm-accent-border)', ':focus-within' );
+// groupPadding / groupTransitionDuration: the operator's own override of the
+// group tile, for EVERY panel style. The selector carries the `[data-mega-style]`
+// attribute so it ties the per-style tile rules above (0,4,0) and wins by source
+// order; it is emitted before the reduced-motion block below, whose
+// `transition:none` therefore still stops the animation. Empty groupPadding
+// prints nothing (sgs_emit_responsive_css prints only the sides that are set), so
+// an unset instance keeps the stylesheet padding.
+$group_tile_override_sel = $root_sel . '[data-mega-style]' . $rel_group;
+if ( ! empty( $group_padding_obj ) ) {
+	$css .= sgs_emit_responsive_css(
+		$group_tile_override_sel,
+		array(
+			array(
+				'value'        => $group_padding_obj,
+				'css'          => 'padding',
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+		),
+		array( 'container' => $sgs_mm_in_drawer )
+	);
+}
+$group_transition_raw = $attributes['groupTransitionDuration'] ?? '';
+if ( is_numeric( $group_transition_raw ) ) {
+	$css .= $group_tile_override_sel . '{transition-duration:' . sgs_motion_ms( $group_transition_raw, 0 ) . 'ms;}';
+}
 $css .= '@media (prefers-reduced-motion: reduce){'
 	. $style_crd . $rel_group . '{transition:none;}'
 	. $style_crd . $rel_group . '::after{transition:none;}'

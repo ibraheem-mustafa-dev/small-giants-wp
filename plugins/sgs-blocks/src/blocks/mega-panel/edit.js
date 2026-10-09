@@ -47,6 +47,7 @@ import {
 	ToggleControl,
 	SelectControl,
 	Notice,
+	RangeControl,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -227,6 +228,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		maxWidth,
 		panelPadding,
 		groupGap,
+		groupPadding,
+		groupTransitionDuration,
 		panelBg,
 		panelBgGradient,
 		surfaceBlur,
@@ -407,6 +410,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				? `${ groupBorderColourGradient } 1`
 				: undefined,
 		'--sgs-mm-group-gap': resolveTier( groupGap, deviceTier ).value || undefined,
+		// groupPadding / groupTransitionDuration canvas mirrors — only the sides
+		// the operator set are written, so an unset side keeps style.css's
+		// per-style tile padding (render.php prints the same per-side longhands).
+		'--sgs-mm-group-pad-top': boxAtTier( groupPadding )?.top || undefined,
+		'--sgs-mm-group-pad-right': boxAtTier( groupPadding )?.right || undefined,
+		'--sgs-mm-group-pad-bottom': boxAtTier( groupPadding )?.bottom || undefined,
+		'--sgs-mm-group-pad-left': boxAtTier( groupPadding )?.left || undefined,
+		'--sgs-mm-group-transition-duration': '' !== ( groupTransitionDuration ?? '' ) && ! isNaN( Number( groupTransitionDuration ) )
+			? `${ Number( groupTransitionDuration ) }ms`
+			: undefined,
 		'--sgs-mm-aside-w': asideWidth || undefined,
 		// The divider width render.php paints: the chosen width, else 2px when
 		// none was ever set, else 1px (a cleared field).
@@ -724,6 +737,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							maxWidth: undefined,
 							panelPadding: undefined,
 							groupGap: undefined,
+							groupPadding: undefined,
 							borderRadius: '',
 						} )
 					}
@@ -814,6 +828,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</ResponsiveControl>
 					</ToolsPanelItem>
 
+					<ToolsPanelItem
+						label={ __( 'Group tile padding', 'sgs-blocks' ) }
+						hasValue={ () => !! groupPadding && Object.values( groupPadding ).some( box => box && Object.values( box ).some( v => v ) ) }
+						onDeselect={ () => setAttributes( { groupPadding: undefined } ) }
+					>
+						<ResponsiveBoxControl
+							label={ __( 'Group tile padding', 'sgs-blocks' ) }
+							presets
+							values={ {
+								base: groupPadding?.desktop ?? {},
+								tablet: groupPadding?.tablet ?? {},
+								mobile: groupPadding?.mobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								const key = tier === 'base' ? 'desktop' : tier;
+								setAttributes( {
+									groupPadding: { ...groupPadding, [ key ]: next },
+								} );
+							} }
+						/>
+					</ToolsPanelItem>
+
 					{ /* units array REQUIRED by the box-object interface contract. */ }
 					<ToolsPanelItem
 						label={ __( 'Border radius', 'sgs-blocks' ) }
@@ -901,6 +937,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ itemPaddingShiftHover || '' }
 						onChange={ ( value ) => setAttributes( { itemPaddingShiftHover: value || '' } ) }
 						presets={ false }
+					/>
+					<RangeControl
+						label={ __( 'Group tile transition duration (ms)', 'sgs-blocks' ) }
+						help={ __(
+							'How long the group tile’s hover transition runs. Leave at 0 for the style’s own default; ignored when the visitor prefers reduced motion.',
+							'sgs-blocks'
+						) }
+						value={ Number( groupTransitionDuration ) || 0 }
+						onChange={ ( val ) => setAttributes( { groupTransitionDuration: val ? String( val ) : '' } ) }
+						min={ 0 }
+						max={ 1000 }
+						step={ 10 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ 'cards' === style && (
 						<SgsLengthControl

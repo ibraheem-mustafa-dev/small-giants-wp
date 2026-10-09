@@ -110,6 +110,10 @@
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group {
 	position: relative;
 	transition: transform 0.2s ease;
+	/* groupTransitionDuration editor-canvas mirror (render.php emits the real
+	   rule on the frontend); unset keeps the 0.2s above. The reduced-motion
+	   rule further down still switches the transition off. */
+	transition-duration: var( --sgs-mm-group-transition-duration, 0.2s );
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group::after {
 	content: '';
@@ -267,6 +271,16 @@
 	color: var( --sgs-mm-accent-text, var( --wp--preset--color--accent ) );
 }
 
+/* groupPadding editor-canvas mirror for the styles whose tile has no padding of
+   its own (render.php emits the real per-side rule on the frontend). */
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-mega-group,
+.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-mega-group {
+	padding-top: var( --sgs-mm-group-pad-top, 0 );
+	padding-right: var( --sgs-mm-group-pad-right, 0 );
+	padding-bottom: var( --sgs-mm-group-pad-bottom, 0 );
+	padding-left: var( --sgs-mm-group-pad-left, 0 );
+}
+
 /* -- cards --------------------------------------------------------------- */
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-panel__content {
 	display: grid;
@@ -275,7 +289,12 @@
 	align-content: start;
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group {
-	padding: 17px;
+	/* groupPadding editor-canvas mirror: edit.js sets only the sides the
+	   operator set; an unset side keeps the 17px tile padding. */
+	padding-top: var( --sgs-mm-group-pad-top, 17px );
+	padding-right: var( --sgs-mm-group-pad-right, 17px );
+	padding-bottom: var( --sgs-mm-group-pad-bottom, 17px );
+	padding-left: var( --sgs-mm-group-pad-left, 17px );
 	border-radius: 15px;
 	border: 1px solid var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) );
 	/* Resting-state border-colour override —
