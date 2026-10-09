@@ -133,6 +133,11 @@ Fixed in the walker; keep them in mind when a number looks wrong:
 - **Accept safely:** give the accept a reason naming why nothing paints, scope it by `pair`/`key` where
   possible, and set `notPainted: true` on blanket layout-property accepts: the accept then applies only
   while that pair's box matches, so the difference reopens when the box moves.
+- **Shared rule:** the blanket layout properties (`display`, `gap`, `column-gap`, `row-gap`, `align-items`,
+  `text-align`, `justify-content`) are accepted this way on every surface by
+  `lib/compare.mjs::INERT_LAYOUT`, after the config's own accepts. A client config never repeats them
+  (`scripts/computed-route/tests/walker-inert-layout.test.mjs` fails when one does); it adds only
+  pair-scoped accepts for other properties.
 - **Falsified by:** a `notPainted` accept on a pair that also has a box difference (the walker reopens it),
   or the shot showing the element differently.
 

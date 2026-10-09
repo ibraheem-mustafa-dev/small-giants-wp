@@ -349,13 +349,24 @@ export function compareScroll( d, l ) {
 // notPainted: true (a property that differs without changing the pixels) only applies
 // while the pair's box matches or every box difference is itself accepted: an
 // unexplained box difference may be what the property moved.
+// The config's accepts decide first; then the one shared rule every surface carries.
 export function isAccepted( accept, ctx, diff ) {
-	return accept.find( ( a ) => ( ! a.notPainted || ctx.boxMatches ) &&
+	const holds = ( a ) => ( ! a.notPainted || ctx.boxMatches ) &&
 		( a.pseudo ?? null ) === ( diff.pseudo ?? null ) &&
 		( ! a.pair || a.pair === ctx.pair ) &&
 		( ! a.key || a.key === diff.key ) &&
 		( ! a.kind || a.kind === diff.kind ) &&
 		( ! a.state || a.state === ctx.state ) &&
 		( ! a.width || a.width === ctx.width ) &&
-		( ! a.when || a.when( diff ) ) ) || null;
+		( ! a.when || a.when( diff ) );
+	return accept.find( holds ) || INERT_ACCEPTS.find( holds ) || null;
 }
+
+// Layout properties that paint nothing while the pair's painted box matches (GAP-CHECKLIST 8): a flex against a block
+// wrapper with one child, centred text in a box that fits it, the row half of a gap on a one-row flex. Every surface
+// is judged by this one list; a client config never repeats it.
+export const INERT_LAYOUT = [ 'display', 'gap', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ];
+const INERT_ACCEPTS = INERT_LAYOUT.map( ( key ) => ( {
+	kind: 'style', key, notPainted: true,
+	reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child, centred text, or the row gap of a one-row flex)',
+} ) );

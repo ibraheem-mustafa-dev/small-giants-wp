@@ -292,7 +292,8 @@ test( 'MUST FAIL TO MISPAIR: the about-step live finder is the step element, not
 test( 'positive control: the about-step accept entries are gone and every other accept entry remains', async () => {
 	const home = ( await import( '../../../sites/eye-care-ward-end/build/qa/parity/home.mjs' ) ).default;
 	assert.equal( home.accept.filter( ( a ) => /^about-step-\d$/.test( a.pair ) ).length, 0 );
-	assert.ok( home.accept.length > 90, `the accept list kept its neighbours, holding ${ home.accept.length }` );
+	// 84: the six inert-layout entries now live once in scripts/parity/lib/compare.mjs::INERT_LAYOUT for every surface.
+	assert.ok( home.accept.length > 84, `the accept list kept its neighbours, holding ${ home.accept.length }` );
 	const has = ( pair, key ) => home.accept.some( ( a ) => a.pair === pair && a.key === key );
 	assert.ok( has( 'bestsellers-grid', 'color' ) );
 	assert.ok( has( 'shapetile-wayfarer', 'painted-ground' ) );

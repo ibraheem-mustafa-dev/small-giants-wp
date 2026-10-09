@@ -189,10 +189,6 @@ const config = {
 		'auto-scrolled@375': 'Same content as the wider widths at 375: the footer stacks in the same order on both sides, and nothing is clipped by the viewport edge.',
 	},
 	accept: [
-		// Measured, not painted (GAP-CHECKLIST 8), as shop.mjs's and lens.mjs's first accept.
-		...[ 'display', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ].map( ( key ) => ( {
-			kind: 'style', key, notPainted: true, reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child or centred text)',
-		} ) ),
 		{ kind: 'hover', key: 'color', reason: 'Text colour on an element with no text (an icon button): nothing paints it' },
 		{ pair: '(auto)', reason: 'Accepted (Bean, confirmed 2026-09-28): secondary text uses the darker text-muted #5E584F where the draft uses lighter greys (#6B655E, #77716A, #8B8478, #A39C90; the lightest fail 4.5:1 contrast)', when: ( d ) => /^style:color /.test( d.key ) && 'rgb(94,88,79)' === d.live && [ 'rgb(107,101,94)', 'rgb(119,113,106)', 'rgb(139,132,120)', 'rgb(163,156,144)' ].includes( d.draft ) },
 		// 44px touch targets (2026-09-27): only accepted where live actually meets the 44px floor and

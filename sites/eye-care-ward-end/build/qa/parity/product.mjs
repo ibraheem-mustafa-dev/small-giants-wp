@@ -235,10 +235,6 @@ export default {
 		'auto-scrolled@375': 'Same at full width; no reviews section on live (accepted), single Prada card on both; nothing clipped at the edge.',
 	},
 	accept: [
-		// Measured, not painted (GAP-CHECKLIST 8), as shop.mjs's and lens.mjs's first accept.
-		...[ 'display', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ].map( ( key ) => ( {
-			kind: 'style', key, notPainted: true, reason: 'Layout property on an element whose painted box and content match',
-		} ) ),
 		{ kind: 'hover', key: 'color', reason: 'Text colour on an element with no text (a swatch or dot): nothing paints it' },
 		{
 			kind: 'text', reason: 'Pennies on every price (Bean 2026-09-25)',

@@ -284,10 +284,6 @@ export default {
 		// (reproduced headless 2026-09-29). Measured directly the same day, the draft's swatch grows to
 		// 1.12 on hover, as live's (sgs_shop_filter_swatch_hover 112); the later states compare it equal.
 		{ pair: 'swatch-black', state: 'filters-open', kind: 'hover', reason: 'Hover sampled during the draft\'s view-swap fade-in; measured directly, the draft\'s swatch grows to 1.12 as live\'s', when: ( d ) => ( 'transform' === d.key && /^matrix\(1\.12, 0, 0, 1\.12/.test( d.live ) ) || ( 'hover-effects' === d.key && 'moves' === d.live ) },
-		// Measured, not painted: the property differs but the pixels do not.
-		...[ 'display', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ].map( ( key ) => ( {
-			kind: 'style', key, notPainted: true, reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child or centred text)',
-		} ) ),
 		{ kind: 'hover', key: 'color', reason: 'Text colour on an element with no text (a swatch, dot or icon button): nothing paints it' },
 		...[ 'gender-heading', 'brand-heading' ].map( ( pair ) => ( {
 			pair, kind: 'style', reason: 'The same 52px heading row: live centres the text by min-height, the draft by 16px padding',

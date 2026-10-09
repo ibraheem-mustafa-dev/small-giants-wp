@@ -97,10 +97,6 @@ const config = {
 		'auto-scrolled@375': 'Scrolled: the DipTp(IP) card tail and Paediatric Eye Care card, then the footer, matching 768\'s content at full width. No hairline border on live\'s card column, consistent with every other state; nothing clipped at the edge.',
 	},
 	accept: [
-		// Measured, not painted (GAP-CHECKLIST 8), as shop.mjs's, lens.mjs's and product.mjs's first accept.
-		...[ 'display', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ].map( ( key ) => ( {
-			kind: 'style', key, notPainted: true, reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child or centred text)',
-		} ) ),
 		// The automatic check (GAP-CHECKLIST section 12): the difference Bean has already decided, row by row.
 		{ pair: '(auto)', reason: 'Accepted (Bean, confirmed 2026-09-28): secondary text uses the darker text-muted #5E584F where the draft uses lighter greys (#6B655E, #77716A, #8B8478, #A39C90; the lightest fail 4.5:1 contrast)', when: ( d ) => /^style:color /.test( d.key ) && 'rgb(94,88,79)' === d.live && [ 'rgb(107,101,94)', 'rgb(119,113,106)', 'rgb(139,132,120)', 'rgb(163,156,144)' ].includes( d.draft ) },
 		// Same standing decision, on the named pair rather than the (auto) pseudo-pair (credentials-line

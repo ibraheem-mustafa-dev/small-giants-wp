@@ -287,15 +287,6 @@ export default {
 		{ name: 'optician-qualifications-button', draft: { text: '^my qualifications$', tag: 'a,button' }, live: { text: '^my qualifications$', tag: 'a,button' }, hover: true },
 	],
 	accept: [
-		// Measured, not painted (GAP-CHECKLIST 8), as shop.mjs's, lens.mjs's and product.mjs's first accept.
-		...[ 'display', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ].map( ( key ) => ( {
-			kind: 'style', key, notPainted: true, reason: 'Layout property on an element whose painted box and content match',
-		} ) ),
-		...[ 1, 2, 3 ].map( ( n ) => ( {
-			pair: `about-step-${ n }`, kind: 'style', key: 'gap',
-			reason: 'The column gap matches (16px); only the row half of the gap shorthand differs, and the draft step is a one-row flex where a row gap paints nothing (step boxes 47/47px at 375, 24/23px at 1440, measured 2026-10-08)',
-			when: ( d ) => d.live === `0px ${ d.draft }`,
-		} ) ),
 		{ kind: 'hover', key: 'color', reason: 'Text colour on an element with no text (a swatch, dot or icon button): nothing paints it' },
 		{
 			kind: 'text', reason: 'Pennies on every price (Bean 2026-09-25)',

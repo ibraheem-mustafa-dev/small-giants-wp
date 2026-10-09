@@ -126,10 +126,6 @@ const config = {
 		'auto-scrolled@375': 'Scrolled: here the draft DOES repaint "In every lens"/"How it goes" and the button correctly (unlike 768) — confirms the opening@375 blank was the reveal-on-scroll not having fired for a non-scrolling full-page capture, not a permanent bug at this width. Live matches in content; numbers/button styling differences as above persist.',
 	},
 	accept: [
-		// Measured, not painted (GAP-CHECKLIST 8), as shop.mjs's, lens.mjs's and product.mjs's first accept.
-		...[ 'display', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ].map( ( key ) => ( {
-			kind: 'style', key, notPainted: true, reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child or centred text)',
-		} ) ),
 		// The automatic check (GAP-CHECKLIST section 12): the standing decision Bean has already made
 		// for secondary text, confirmed again here — the draft's card eyebrow ("Single vision" etc.,
 		// measured rgb(119,113,106) = #77716A) is one of the accepted lighter greys.

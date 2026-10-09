@@ -204,10 +204,6 @@ const config = {
 		'auto-scrolled@375': 'Matches opening@375; no floating element besides the nav-track WhatsApp bubble.',
 	},
 	accept: [
-		// Measured, not painted (GAP-CHECKLIST 8), as shop.mjs's, about.mjs's and lens.mjs's first accept.
-		...[ 'display', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ].map( ( key ) => ( {
-			kind: 'style', key, notPainted: true, reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child or centred text)',
-		} ) ),
 		// WordPress runs wptexturize() on post content, converting a straight apostrophe to a
 		// typographic one; the draft's mockup text is unprocessed. Same standing pattern as
 		// lens.mjs's "live's typographic apostrophe" accept.
