@@ -34,8 +34,11 @@
  * text, not an image. Label colour: own (--sgs-icon-label-colour), the row's (--sgs-si-label-colour), then the icon
  * colour a client set, else the site text colour (style.css).
  *
- * NO-INLINE (Spec 32): every declaration goes into the block's own scoped `<style>`; lengths pass
- * sgs_icon_length_value()'s allowlist, colours sgs_colour_value().
+ * NO-INLINE (Spec 32): every declaration goes into the block's own scoped `<style>`. Lengths are sanitised by their
+ * own path: the icon size, the shape's width and height and the label gap pass sgs_icon_length_value()'s allowlist;
+ * desktop padding and margin go through wp_style_engine_get_styles(); tablet and mobile padding and margin go
+ * through sgs_box_object_longhands() (sgs_css_length_value()); border widths go through sgs_border_element_decls()
+ * (sgs_css_length_value()). Colours pass sgs_colour_value().
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused).
@@ -129,7 +132,7 @@ if ( 'dashicon' === $icon_source ) {
 }
 
 // ── Classes ──────────────────────────────────────────────────────────────────
-$uid       = 'sgs-icn-' . substr( md5( wp_json_encode( $attributes ) . $bound_link_key ), 0, 8 );
+$uid       = 'sgs-icn-' . substr( md5( wp_json_encode( $attributes ) . $bound_link_key . wp_json_encode( $group ) ), 0, 8 );
 $root_sel  = '.' . $uid . '.wp-block-sgs-icon';
 $shape_sel = $root_sel . ' .sgs-icon__shape';
 $link_sel  = $root_sel . ' .sgs-icon__link';

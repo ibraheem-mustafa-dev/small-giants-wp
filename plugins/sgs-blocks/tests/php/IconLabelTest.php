@@ -437,4 +437,25 @@ final class IconLabelTest extends TestCase {
 		$this->assertMatchesRegularExpression( '#\.sgs-icon--label-start \.sgs-icon__link,\s*\.sgs-icon--label-start \.sgs-icon__inner \{\s*flex-direction: row-reverse;#', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-icon__label-text \{\s*color: var\(--sgs-icon-label-colour, var\(--sgs-si-label-colour, var\(--sgs-icon-colour,#', $css );
 	}
+
+	/** The icon's scoped class (`sgs-icn-` + 8 hex) from a one-icon row, or ''. */
+	private function icon_uid_in_row( array $row_attributes ): string {
+		$html = $this->row( $row_attributes, array( array( array( 'brandName' => 'instagram' ), 'socials.instagram' ) ) );
+		return preg_match( '#class="sgs-icon [^"]*(sgs-icn-[0-9a-f]{8})#', $html, $m ) ? $m[1] : '';
+	}
+
+	public function test_icon_scope_class_differs_between_rows_with_different_group_settings(): void {
+		$theme = $this->icon_uid_in_row( array( 'colourMode' => 'theme' ) );
+		$brand = $this->icon_uid_in_row( array( 'colourMode' => 'brand' ) );
+		$this->assertNotSame( '', $theme );
+		$this->assertNotSame( '', $brand );
+		$this->assertNotSame( $theme, $brand, 'two rows with different colour modes must not share the icon scope class' );
+	}
+
+	public function test_icon_scope_class_is_shared_by_identically_configured_rows(): void {
+		$this->assertSame(
+			$this->icon_uid_in_row( array( 'colourMode' => 'brand' ) ),
+			$this->icon_uid_in_row( array( 'colourMode' => 'brand' ) )
+		);
+	}
 }
