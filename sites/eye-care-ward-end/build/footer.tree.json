@@ -657,7 +657,7 @@
             "attributes": {
               "displayType": "copyright",
               "copyrightPrefix": "",
-              "textColour": "text-label",
+              "textColour": "text",
               "fontSize": {
                 "desktop": "12px"
               },
@@ -683,7 +683,7 @@
                     "desktop": "12px"
                   },
                   "className": "cr-ref-footer-30",
-                  "linkColour": "text-label"
+                  "linkColour": "text"
                 }
               },
               {
@@ -694,8 +694,19 @@
                     "desktop": "12px"
                   },
                   "className": "cr-ref-footer-31",
-                  "linkColour": "text-label"
+                  "linkColour": "text"
                 }
+              },
+              {
+                "name": "sgs/business-info",
+                "attributes": {
+                  "displayType": "attribution",
+                  "fontSize": {
+                    "desktop": "12px"
+                  },
+                  "className": "cr-ref-footer-42"
+                },
+                "innerBlocks": []
               }
             ]
           }

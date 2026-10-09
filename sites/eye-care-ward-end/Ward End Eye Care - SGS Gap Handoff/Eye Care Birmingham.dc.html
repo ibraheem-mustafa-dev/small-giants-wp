@@ -31,7 +31,7 @@ input:focus,button:focus-visible,select:focus{outline:2px solid var(--acc,#9C8B7
 .rev-rail::-webkit-scrollbar{height:8px}
 .rev-rail::-webkit-scrollbar-track{background:#F1F3F4;border-radius:4px}
 .rev-rail::-webkit-scrollbar-thumb{background:#DADCE0;border-radius:4px}
-.rev-rail::-webkit-scrollbar-thumb:hover{background:#BDC1C6}
+.rev-rail::-webkit-scrollbar-thumb:hover{background:#BDC1C6}footer>div:first-child a:not([aria-label]){background-image:linear-gradient(currentColor,currentColor);background-repeat:no-repeat;background-position:0 100%;background-size:0 1px;transition:background-size .25s ease-out}footer>div:first-child a:not([aria-label]):hover{background-size:100% 1px;color:inherit}footer a.ec-credit{background-image:linear-gradient(to right,#d4a73c 50%,#141414 50%);background-repeat:no-repeat;background-size:200% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;transition:background-position .3s}footer a.ec-credit:hover{background-position:0 0}footer>div:last-child a:hover{color:inherit}
 </style>
 <script src="./image-slot.js"></script>
 <script type="application/json" data-sgs-manifest>
@@ -1613,19 +1613,19 @@ input:focus,button:focus-visible,select:focus{outline:2px solid var(--acc,#9C8B7
         </a>
       </div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px">Shop</span><a href="#" onClick="{{ goSun }}">Sunglasses</a><a href="#" onClick="{{ toggleMegaBrands }}">All brands</a><a href="#" onClick="{{ goLenses }}">Prescription lenses</a><span style="color:#8B8478">Glasses — arriving soon</span></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px">Shop</span><a href="#" onClick="{{ goSun }}">Sunglasses</a><a href="#" onClick="{{ toggleMegaBrands }}">All brands</a><a href="#" onClick="{{ goLenses }}">Prescription lenses</a></div>
     <div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px">Help</span><a href="#" onClick="{{ goHelp }}">Delivery &amp; returns</a><a href="#" onClick="{{ goHelp }}">FAQs</a><a href="#" onClick="{{ openSizeGuide }}">Size guide</a><a href="#" onClick="{{ goContact }}">Contact</a></div>
     <div style="display:flex;flex-direction:column;gap:10px">
       <span style="font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px">Visit or call</span>
       <a href="#" onClick="{{ goAbout }}">About Eye Care</a>
       <a href="{{ phoneHref }}">{{ phone }}</a>
-      <a href="{{ mapHref }}" target="_blank" rel="noopener" style="color:#5E584F">644 Washwood Heath Rd<br>Birmingham B8 2HQ</a>
-      <span style="color:#8B8478;font-size:13px">Mon–Sat 9.30–17.30</span>
+      <a href="{{ mapHref }}" target="_blank" rel="noopener">644 Washwood Heath Rd<br>Birmingham B8 2HQ</a>
+      <a href="{{ gmbHref }}" target="_blank" rel="noopener">Mon–Sat 9.30–17.30</a>
     </div>
   </div>
-  <div style="border-top:1px solid #E6E1DA;padding:16px 24px;font-size:12px;color:#77716A;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto">
+  <div style="border-top:1px solid #E6E1DA;padding:16px 24px;font-size:12px;color:#141414;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto">
     <span>© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span>
-    <span style="display:flex;gap:14px"><a href="#">Privacy</a><a href="#">Terms</a></span>
+    <span style="display:flex;gap:14px"><a href="#" style="text-decoration:underline">Privacy</a><a href="#" style="text-decoration:underline">Terms</a><a class="ec-credit" href="https://smallgiantsstudio.co.uk/" rel="noopener">Website by Small Giants Studio</a></span>
   </div>
 </footer>
 
