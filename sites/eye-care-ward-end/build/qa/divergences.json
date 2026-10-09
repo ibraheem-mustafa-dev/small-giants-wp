@@ -1767,5 +1767,95 @@
       "30"
     ],
     "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-120",
+    "scope": "footer",
+    "node": "cr-ref-footer-24",
+    "state": "opening",
+    "property": "h",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+    "register": [
+      "131"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-121",
+    "scope": "footer",
+    "node": "cr-ref-footer-24",
+    "state": "opening",
+    "property": "text-inset-x",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+    "register": [
+      "131"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-122",
+    "scope": "footer",
+    "node": "cr-ref-footer-24",
+    "state": "opening",
+    "property": "text-inset-y",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+    "register": [
+      "131"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-123",
+    "scope": "footer",
+    "node": "cr-ref-footer-24",
+    "state": "opening",
+    "property": "y-after-link-about",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+    "register": [
+      "131"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-124",
+    "scope": "footer",
+    "node": "cr-ref-footer-24",
+    "state": "opening",
+    "property": "y-after-link-faqs",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+    "register": [
+      "131"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-125",
+    "scope": "footer",
+    "node": "cr-ref-footer-25",
+    "state": "opening",
+    "property": "y-after-link-phone",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+    "register": [
+      "131"
+    ],
+    "decided": "2026-10-09 Bean"
   }
 ]
