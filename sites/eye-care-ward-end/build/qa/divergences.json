@@ -1,1861 +1,1982 @@
 [
-  {
-    "id": "D-2",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-4",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      1440
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-6",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      1920
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-7",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-8",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      1440
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-9",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      1920
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-10",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-11",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-12",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      1440
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-13",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      1440
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-14",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      1920
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-15",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      1920
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-16",
-    "scope": "contact",
-    "node": "cr-ref-contact-25",
-    "state": "*",
-    "property": "*",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 418 (Bean, 2026-10-02): the real embedded Google Map replaces the draft's sketch placeholder, whose own caption asks for that swap; no setting should copy the sketch's paint",
-    "register": [
-      "132",
-      "141"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-17",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "padding-top",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-18",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "padding-right",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-19",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "padding-bottom",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-20",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "padding-left",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-21",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "margin-top",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-22",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "margin-right",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-23",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "margin-bottom",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-24",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "margin-left",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-25",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "w",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-26",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "h",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-27",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "width",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-28",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "text-inset-x",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-29",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "text-inset-y",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-30",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "display",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-31",
-    "scope": "contact",
-    "node": "cr-ref-contact-5",
-    "state": "opening",
-    "property": "transform",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S1 (Bean, 2026-10-02): every button lifts 3px on hover site-wide; the draft's WhatsApp button lifts 2px",
-    "register": [
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-32",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "y-from-detail-phone-label",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link's box is its 44px tap area, which starts above the text it centres; the text itself sits on the draft's line (layout-neutral since the business-info link fix)",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-33",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "y-after-detail-phone-value",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link's box is its 44px tap area, which starts above the text it centres; the text itself sits on the draft's line (layout-neutral since the business-info link fix)",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-34",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-28",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      768,
-      1440,
-      1920
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register N41 / S1 (Bean's decision, 2026-10-02): Choose a frame lifts 3px on hover like every button; the draft's button does not lift",
-    "register": [
-      "N41",
-      "S1"
-    ],
-    "decided": "2026-10-05 Bean (S1)"
-  },
-  {
-    "id": "D-35",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-28",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      768,
-      1440,
-      1920
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register N41 / S1 (Bean's decision, 2026-10-02): Choose a frame lifts 3px on hover like every button; the draft's button does not lift",
-    "register": [
-      "N41",
-      "S1"
-    ],
-    "decided": "2026-10-05 Bean (S1)"
-  },
-  {
-    "id": "D-36",
-    "scope": "help",
-    "node": "cr-ref-help-39",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      768,
-      1440,
-      1920
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Contact me button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
-    "register": [
-      "113",
-      "S1"
-    ],
-    "decided": "2026-10-05 Bean (S1)"
-  },
-  {
-    "id": "D-37",
-    "scope": "help",
-    "node": "cr-ref-help-39",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      768,
-      1440,
-      1920
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Contact me button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
-    "register": [
-      "113",
-      "S1"
-    ],
-    "decided": "2026-10-05 Bean (S1)"
-  },
-  {
-    "id": "D-38",
-    "scope": "help",
-    "node": "cr-ref-help-40",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      768,
-      1440,
-      1920
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Call button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
-    "register": [
-      "113",
-      "S1"
-    ],
-    "decided": "2026-10-05 Bean (S1)"
-  },
-  {
-    "id": "D-39",
-    "scope": "help",
-    "node": "cr-ref-help-40",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      768,
-      1440,
-      1920
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Call button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
-    "register": [
-      "113",
-      "S1"
-    ],
-    "decided": "2026-10-05 Bean (S1)"
-  },
-  {
-    "id": "D-40",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "padding-top",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-41",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "padding-right",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-42",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "padding-bottom",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-43",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "padding-left",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-44",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "margin-top",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-45",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "margin-right",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-46",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "margin-bottom",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-47",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "margin-left",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-48",
-    "scope": "header",
-    "node": "cr-ref-header-11",
-    "state": "closed",
-    "property": "margin-top",
-    "widths": [
-      1440,
-      1920
-    ],
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-49",
-    "scope": "header",
-    "node": "cr-ref-header-11",
-    "state": "closed",
-    "property": "margin-right",
-    "widths": [
-      1440,
-      1920
-    ],
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-50",
-    "scope": "header",
-    "node": "cr-ref-header-11",
-    "state": "closed",
-    "property": "margin-bottom",
-    "widths": [
-      1440,
-      1920
-    ],
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-51",
-    "scope": "header",
-    "node": "cr-ref-header-11",
-    "state": "closed",
-    "property": "margin-left",
-    "widths": [
-      1440,
-      1920
-    ],
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
-    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
-  },
-  {
-    "id": "D-52",
-    "scope": "contact-form",
-    "node": "cr-ref-contact-form-1",
-    "state": "*",
-    "property": "box-shadow",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the name field after an empty submit; the draft shows none",
-    "register": [
-      "162"
-    ],
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-53",
-    "scope": "contact-form",
-    "node": "cr-ref-contact-form-1",
-    "state": "*",
-    "property": "background-image",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the name field after an empty submit; the draft shows none",
-    "register": [
-      "162"
-    ],
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-54",
-    "scope": "contact-form",
-    "node": "cr-ref-contact-form-2",
-    "state": "*",
-    "property": "box-shadow",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the email field after an empty submit; the draft shows none",
-    "register": [
-      "162"
-    ],
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-55",
-    "scope": "contact-form",
-    "node": "cr-ref-contact-form-2",
-    "state": "*",
-    "property": "background-image",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the email field after an empty submit; the draft shows none",
-    "register": [
-      "162"
-    ],
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-56",
-    "scope": "contact-form",
-    "node": "cr-ref-contact-form-4",
-    "state": "*",
-    "property": "box-shadow",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the topic field after an empty submit; the draft shows none",
-    "register": [
-      "162"
-    ],
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-57",
-    "scope": "contact-form",
-    "node": "cr-ref-contact-form-4",
-    "state": "*",
-    "property": "background-image",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the topic field after an empty submit; the draft shows none",
-    "register": [
-      "162"
-    ],
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-58",
-    "scope": "contact-form",
-    "node": "cr-ref-contact-form-5",
-    "state": "*",
-    "property": "box-shadow",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the message field after an empty submit; the draft shows none",
-    "register": [
-      "162"
-    ],
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-59",
-    "scope": "contact-form",
-    "node": "cr-ref-contact-form-5",
-    "state": "*",
-    "property": "background-image",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the message field after an empty submit; the draft shows none",
-    "register": [
-      "162"
-    ],
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-60",
-    "scope": "footer",
-    "node": "cr-ref-footer-6",
-    "state": "*",
-    "property": "padding-top",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
-    "register": [
-      "39-43"
-    ],
-    "decided": "2026-10-02 Bean"
-  },
-  {
-    "id": "D-61",
-    "scope": "footer",
-    "node": "cr-ref-footer-6",
-    "state": "*",
-    "property": "padding-right",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
-    "register": [
-      "39-43"
-    ],
-    "decided": "2026-10-02 Bean"
-  },
-  {
-    "id": "D-62",
-    "scope": "footer",
-    "node": "cr-ref-footer-6",
-    "state": "*",
-    "property": "padding-bottom",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
-    "register": [
-      "39-43"
-    ],
-    "decided": "2026-10-02 Bean"
-  },
-  {
-    "id": "D-63",
-    "scope": "footer",
-    "node": "cr-ref-footer-6",
-    "state": "*",
-    "property": "padding-left",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
-    "register": [
-      "39-43"
-    ],
-    "decided": "2026-10-02 Bean"
-  },
-  {
-    "id": "D-64",
-    "scope": "footer",
-    "node": "cr-ref-footer-6",
-    "state": "*",
-    "property": "width",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
-    "register": [
-      "39-43"
-    ],
-    "decided": "2026-10-02 Bean"
-  },
-  {
-    "id": "D-65",
-    "scope": "footer",
-    "node": "cr-ref-footer-9",
-    "state": "hover",
-    "property": "border-top-color",
-    "expected": {
-      "rule": "not-painted"
-    },
-    "reason": "Register S2 (Bean): footer links stay black on hover; this list root's border-top-color is currentColor following that decided colour on a 0px border, so nothing paints",
-    "register": [
-      "S2"
-    ],
-    "decided": "2026-10-02 Bean"
-  },
-  {
-    "id": "D-66",
-    "scope": "footer",
-    "node": "cr-ref-footer-16",
-    "state": "hover",
-    "property": "border-top-color",
-    "expected": {
-      "rule": "not-painted"
-    },
-    "reason": "Register S2 (Bean): footer links stay black on hover; this list root's border-top-color is currentColor following that decided colour on a 0px border, so nothing paints",
-    "register": [
-      "S2"
-    ],
-    "decided": "2026-10-02 Bean"
-  },
-  {
-    "id": "D-67",
-    "scope": "lens",
-    "node": "cr-ref-lens-0",
-    "state": "*",
-    "property": "box-shadow",
-    "expected": {
-      "rule": "accessibility"
-    },
-    "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
-    "register": [
-      "96"
-    ],
-    "decided": "2026-10-07 house rule"
-  },
-  {
-    "id": "D-68",
-    "scope": "lens",
-    "node": "cr-ref-lens-0",
-    "state": "*",
-    "property": "border-radius",
-    "expected": {
-      "rule": "accessibility"
-    },
-    "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
-    "register": [
-      "96"
-    ],
-    "decided": "2026-10-07 house rule"
-  },
-  {
-    "id": "D-69",
-    "scope": "mobile-menu",
-    "node": "cr-ref-mobile-menu-0",
-    "state": "*",
-    "property": "box-shadow",
-    "expected": {
-      "rule": "accessibility"
-    },
-    "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
-    "register": [
-      "96"
-    ],
-    "decided": "2026-10-07 house rule"
-  },
-  {
-    "id": "D-70",
-    "scope": "shop",
-    "node": "cr-ref-shop-31",
-    "state": "*",
-    "property": "box-shadow",
-    "expected": {
-      "rule": "accessibility"
-    },
-    "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
-    "register": [
-      "96"
-    ],
-    "decided": "2026-10-07 house rule"
-  },
-  {
-    "id": "D-71",
-    "scope": "product",
-    "node": "cr-ref-product-4",
-    "state": "hover",
-    "property": "transform",
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register S1 (Bean 2026-10-02): one site-wide button lift, 3px over 0.25s; the draft's add-to-bag lifts 2px",
-    "register": [
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-72",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-23",
-    "state": "opening",
-    "property": "y-from-lens-grid",
-    "widths": [
-      375
-    ],
-    "expected": {
-      "value": "785"
-    },
-    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-73",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-27",
-    "state": "opening",
-    "property": "flex-grow",
-    "expected": {
-      "value": "1"
-    },
-    "reason": "A flex-grow on a step of a column list with no spare height paints nothing: the steps list measures the same height on both sides (185px at 1440, 254px at 375).",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-74",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-27",
-    "state": "opening",
-    "property": "gap",
-    "expected": {
-      "value": "0px 16px"
-    },
-    "reason": "The number-to-title gap is 16px on both sides; live's 0px row gap applies only between a title and a description, which these steps do not have.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-75",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-25",
-    "state": "opening",
-    "property": "opacity",
-    "widths": [
-      375
-    ],
-    "expected": {
-      "value": "1"
-    },
-    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-76",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-25",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      375
-    ],
-    "expected": {
-      "value": "none"
-    },
-    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-77",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-25",
-    "state": "opening",
-    "property": "y-after-benefits-item-1",
-    "widths": [
-      375
-    ],
-    "expected": {
-      "value": "281"
-    },
-    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-78",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-27",
-    "state": "opening",
-    "property": "y-after-steps-reveal",
-    "widths": [
-      375
-    ],
-    "expected": {
-      "value": "61"
-    },
-    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-79",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-27",
-    "state": "opening",
-    "property": "align-items",
-    "widths": [
-      375
-    ],
-    "expected": {
-      "value": "flex-start"
-    },
-    "reason": "The steps are width:100% grid boxes, so cross-axis alignment changes nothing: each step is the list's full 335px width on both sides at 375.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-80",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-23",
-    "state": "opening",
-    "property": "y-from-lens-grid",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "436"
-    },
-    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-81",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-26",
-    "state": "opening",
-    "property": "y-from-benefits-list",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "234"
-    },
-    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-82",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-25",
-    "state": "opening",
-    "property": "opacity",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "1"
-    },
-    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-83",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-25",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "none"
-    },
-    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-84",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-25",
-    "state": "opening",
-    "property": "y-after-benefits-item-1",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "234"
-    },
-    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-85",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-27",
-    "state": "opening",
-    "property": "y-after-steps-reveal",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "61"
-    },
-    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
-    "decided": "2026-10-07 Bean"
-  },
-  {
-    "id": "D-86",
-    "scope": "lenses",
-    "node": "cr-ref-lenses-26",
-    "state": "opening",
-    "property": "y-from-benefits-list",
-    "widths": [
-      375
-    ],
-    "expected": {
-      "value": "281"
-    },
-    "reason": "One walk (qa/solve/lenses/2026-10-08T02-08-01) read the draft at 255; the walk before it on the same layout (2026-10-07T23-42-47) read 281, the draft steps column then still at its reveal offset. With every draft reveal fired (slow scroll, probe 2026-10-08), draft and live both measure 281 from the benefits list top to the steps heading, with a 40px row gap on both sides; live is right. Why that walk read 255 is not proven (the draft cache shows both columns revealed); the row is the draft scroll reveal's timing, as D-72 to D-81.",
-    "decided": "2026-10-08 Bean"
-  },
-  {
-    "id": "D-87",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "hover",
-    "property": "color",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 131 / S2-S3 (Bean's decision): the Contact phone link keeps its own text colour on hover (textColourHover text) and takes the S2 underline sweep as its hover cue; the draft's taupe hover colour is not applied.",
-    "register": [
-      "131",
-      "S2",
-      "S3"
-    ],
-    "decided": "2026-10-08 Bean (register 131)"
-  },
-  {
-    "id": "D-88",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "hover",
-    "property": "border-top-color",
-    "expected": {
-      "rule": "not-painted"
-    },
-    "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
-    "decided": "2026-10-08 Bean (D-65 ruling)"
-  },
-  {
-    "id": "D-89",
-    "scope": "contact",
-    "node": "cr-ref-contact-15",
-    "state": "hover",
-    "property": "border-top-color",
-    "expected": {
-      "rule": "not-painted"
-    },
-    "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
-    "decided": "2026-10-08 Bean (D-65 ruling)"
-  },
-  {
-    "id": "D-90",
-    "scope": "contact",
-    "node": "cr-ref-contact-18",
-    "state": "hover",
-    "property": "border-top-color",
-    "expected": {
-      "rule": "not-painted"
-    },
-    "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
-    "decided": "2026-10-08 Bean (D-65 ruling)"
-  },
-  {
-    "id": "D-91",
-    "scope": "contact",
-    "node": "cr-ref-contact-19",
-    "state": "hover",
-    "property": "border-top-color",
-    "expected": {
-      "rule": "not-painted"
-    },
-    "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
-    "decided": "2026-10-08 Bean (D-65 ruling)"
-  },
-  {
-    "id": "D-92",
-    "scope": "header",
-    "node": "cr-ref-header-4",
-    "state": "hover",
-    "property": "color",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 2 / S2 (Bean's decision): header menu words stay black on hover; the draft's taupe hover colour is not applied.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-08 Bean (register S2)"
-  },
-  {
-    "id": "D-93",
-    "scope": "header",
-    "node": "cr-ref-header-4",
-    "state": "hover",
-    "property": "border-bottom-color",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 2 / S2 (Bean's decision): a 1px underline sweeps in left to right on hover and retracts right to left (itemBorderHoverTreatment sweep); the draft draws no underline.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-08 Bean (register S2)"
-  },
-  {
-    "id": "D-94",
-    "scope": "header",
-    "node": "cr-ref-header-12",
-    "state": "hover",
-    "property": "color",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 2 / S2 (Bean's decision): header menu words stay black on hover; the draft's taupe hover colour is not applied.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-08 Bean (register S2)"
-  },
-  {
-    "id": "D-95",
-    "scope": "header",
-    "node": "cr-ref-header-12",
-    "state": "hover",
-    "property": "border-bottom-color",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 2 / S2 (Bean's decision): a 1px underline sweeps in left to right on hover and retracts right to left (itemBorderHoverTreatment sweep); the draft draws no underline.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-08 Bean (register S2)"
-  },
-  {
-    "id": "D-96",
-    "scope": "footer",
-    "node": "cr-ref-footer-9",
-    "state": "hover",
-    "property": "color",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 32/33 / S2 (Bean's decision): footer link-list words stay black on hover (textColourHover text) and take the underline sweep (custom.linkSweep); the draft's taupe hover colour is not applied.",
-    "register": [
-      "32",
-      "33",
-      "S2"
-    ],
-    "decided": "2026-10-08 Bean (register S2)"
-  },
-  {
-    "id": "D-97",
-    "scope": "footer",
-    "node": "cr-ref-footer-16",
-    "state": "hover",
-    "property": "color",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 32/33 / S2 (Bean's decision): footer link-list words stay black on hover (textColourHover text) and take the underline sweep (custom.linkSweep); the draft's taupe hover colour is not applied.",
-    "register": [
-      "32",
-      "33",
-      "S2"
-    ],
-    "decided": "2026-10-08 Bean (register S2)"
-  },
-  {
-    "id": "D-98",
-    "scope": "contact",
-    "node": "cr-ref-contact-12",
-    "state": "hover",
-    "property": "color",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 131 / S2-S3 (Bean's decision): the Contact email link keeps its own text colour on hover and takes the S2 underline sweep; the draft's taupe hover colour is not applied. Twin of D-87 (the phone).",
-    "register": [
-      "131",
-      "S2",
-      "S3"
-    ],
-    "decided": "2026-10-08 Bean (register S2)"
-  },
-  {
-    "id": "D-99",
-    "scope": "contact",
-    "node": "cr-ref-contact-5",
-    "state": "*",
-    "property": "found",
-    "expected": {
-      "rule": "draft-flaw"
-    },
-    "reason": "The draft's WhatsApp button reads \"WhatsApp 07960 5978\" and links wa.me/4479605978, two digits short of a UK mobile; live shows the clinic's real number, 07960 597847 (Site Info). Live is right; the button is still paired and measured by the walker.",
-    "register": [
-      "127"
-    ],
-    "decided": "2026-10-08 Session D (draft flaw: a truncated phone number)"
-  },
-  {
-    "id": "D-100",
-    "scope": "contact",
-    "node": "cr-ref-contact-5",
-    "state": "*",
-    "property": "text",
-    "expected": {
-      "rule": "draft-flaw"
-    },
-    "reason": "The draft's WhatsApp button reads \"WhatsApp 07960 5978\" and links wa.me/4479605978, two digits short of a UK mobile; live shows the clinic's real number, 07960 597847 (Site Info). Live is right; the button is still paired and measured by the walker.",
-    "register": [
-      "127"
-    ],
-    "decided": "2026-10-08 Session D (draft flaw: a truncated phone number)"
-  },
-  {
-    "id": "D-101",
-    "scope": "footer",
-    "node": "cr-ref-footer-23",
-    "state": "opening",
-    "property": "background-image",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-102",
-    "scope": "footer",
-    "node": "cr-ref-footer-23",
-    "state": "opening",
-    "property": "transition-duration",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-103",
-    "scope": "footer",
-    "node": "cr-ref-footer-23",
-    "state": "opening",
-    "property": "transition-timing-function",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-104",
-    "scope": "footer",
-    "node": "cr-ref-footer-23",
-    "state": "hover",
-    "property": "color",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision): footer link words stay their own dark colour on hover and take the underline sweep; the draft's taupe hover colour is not applied. Twin of D-96 and D-97.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-105",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "background-image",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-106",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "transition-duration",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-107",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "transition-timing-function",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-108",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "hover",
-    "property": "color",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision): footer link words stay their own dark colour on hover and take the underline sweep; the draft's taupe hover colour is not applied. Twin of D-96 and D-97.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-109",
-    "scope": "footer",
-    "node": "cr-ref-footer-23",
-    "state": "opening",
-    "property": "display",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-110",
-    "scope": "footer",
-    "node": "cr-ref-footer-23",
-    "state": "opening",
-    "property": "width",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-111",
-    "scope": "footer",
-    "node": "cr-ref-footer-23",
-    "state": "opening",
-    "property": "w",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-112",
-    "scope": "footer",
-    "node": "cr-ref-footer-23",
-    "state": "opening",
-    "property": "h",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-113",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "width",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-114",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "w",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
-    "register": [
-      "2",
-      "S2"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-115",
-    "scope": "footer",
-    "node": "cr-ref-footer-25",
-    "state": "opening",
-    "property": "color",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 37 and 163 (Bean's decision): the footer address is a link to the clinic's Google Business link and takes the same dark text colour as the rest of the footer, not the draft's muted taupe text.",
-    "register": [
-      "37",
-      "163"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-116",
-    "scope": "footer",
-    "node": "cr-ref-footer-25",
-    "state": "opening",
-    "property": "gap",
-    "expected": {
-      "rule": "not-painted"
-    },
-    "reason": "Measured 2026-10-09 on cr-ref-footer-25: the address block carries the business-info 0.5em flex gap, but its link has a single child (the text; this address has no icon on the draft or live), so the gap separates nothing and paints nothing.",
-    "register": [
-      "37",
-      "163"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-117",
-    "scope": "footer",
-    "node": "cr-ref-footer-25",
-    "state": "opening",
-    "property": "column-gap",
-    "expected": {
-      "rule": "not-painted"
-    },
-    "reason": "Measured 2026-10-09 on cr-ref-footer-25: the address block carries the business-info 0.5em flex gap, but its link has a single child (the text; this address has no icon on the draft or live), so the gap separates nothing and paints nothing.",
-    "register": [
-      "37",
-      "163"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-118",
-    "scope": "footer",
-    "node": "cr-ref-footer-25",
-    "state": "opening",
-    "property": "row-gap",
-    "expected": {
-      "rule": "not-painted"
-    },
-    "reason": "Measured 2026-10-09 on cr-ref-footer-25: the address block carries the business-info 0.5em flex gap, but its link has a single child (the text; this address has no icon on the draft or live), so the gap separates nothing and paints nothing.",
-    "register": [
-      "37",
-      "163"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-119",
-    "scope": "footer",
-    "node": "cr-ref-footer-26",
-    "state": "opening",
-    "property": "tag",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 30 (Bean's decision): the condensed hours are a description list (dl) of day and time pairs so the time sits beside its day; the draft's inline span paints the same words. Bean confirmed 2026-10-09 the element type changes nothing visible.",
-    "register": [
-      "30"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-120",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "h",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
-    "register": [
-      "131"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-121",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "text-inset-x",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
-    "register": [
-      "131"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-122",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "text-inset-y",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
-    "register": [
-      "131"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-123",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "y-after-link-about",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
-    "register": [
-      "131"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-124",
-    "scope": "footer",
-    "node": "cr-ref-footer-24",
-    "state": "opening",
-    "property": "y-after-link-faqs",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
-    "register": [
-      "131"
-    ],
-    "decided": "2026-10-09 Bean"
-  },
-  {
-    "id": "D-125",
-    "scope": "footer",
-    "node": "cr-ref-footer-25",
-    "state": "opening",
-    "property": "y-after-link-phone",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
-    "register": [
-      "131"
-    ],
-    "decided": "2026-10-09 Bean"
-  }
+ {
+  "id": "D-2",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-4",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   1440
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-6",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   1920
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-7",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-8",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   1440
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-9",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   1920
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-10",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-11",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-12",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   1440
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-13",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   1440
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-14",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   1920
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-15",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   1920
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-16",
+  "scope": "contact",
+  "node": "cr-ref-contact-25",
+  "state": "*",
+  "property": "*",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 418 (Bean, 2026-10-02): the real embedded Google Map replaces the draft's sketch placeholder, whose own caption asks for that swap; no setting should copy the sketch's paint",
+  "register": [
+   "132",
+   "141"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-17",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "padding-top",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-18",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "padding-right",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-19",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "padding-bottom",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-20",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "padding-left",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-21",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "margin-top",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-22",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "margin-right",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-23",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "margin-bottom",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-24",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "margin-left",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-25",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "w",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-26",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "h",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-27",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "width",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-28",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "text-inset-x",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-29",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "text-inset-y",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-30",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "display",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-31",
+  "scope": "contact",
+  "node": "cr-ref-contact-5",
+  "state": "opening",
+  "property": "transform",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S1 (Bean, 2026-10-02): every button lifts 3px on hover site-wide; the draft's WhatsApp button lifts 2px",
+  "register": [
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-32",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "y-from-detail-phone-label",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link's box is its 44px tap area, which starts above the text it centres; the text itself sits on the draft's line (layout-neutral since the business-info link fix)",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-33",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "*",
+  "property": "y-after-detail-phone-value",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link's box is its 44px tap area, which starts above the text it centres; the text itself sits on the draft's line (layout-neutral since the business-info link fix)",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-34",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-28",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register N41 / S1 (Bean's decision, 2026-10-02): Choose a frame lifts 3px on hover like every button; the draft's button does not lift",
+  "register": [
+   "N41",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ },
+ {
+  "id": "D-35",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-28",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register N41 / S1 (Bean's decision, 2026-10-02): Choose a frame lifts 3px on hover like every button; the draft's button does not lift",
+  "register": [
+   "N41",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ },
+ {
+  "id": "D-36",
+  "scope": "help",
+  "node": "cr-ref-help-39",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Contact me button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
+  "register": [
+   "113",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ },
+ {
+  "id": "D-37",
+  "scope": "help",
+  "node": "cr-ref-help-39",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Contact me button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
+  "register": [
+   "113",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ },
+ {
+  "id": "D-38",
+  "scope": "help",
+  "node": "cr-ref-help-40",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Call button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
+  "register": [
+   "113",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ },
+ {
+  "id": "D-39",
+  "scope": "help",
+  "node": "cr-ref-help-40",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Call button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
+  "register": [
+   "113",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ },
+ {
+  "id": "D-40",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "padding-top",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-41",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "padding-right",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-42",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "padding-bottom",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-43",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "padding-left",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-44",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "margin-top",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-45",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "margin-right",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-46",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "margin-bottom",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-47",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "margin-left",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-48",
+  "scope": "header",
+  "node": "cr-ref-header-11",
+  "state": "closed",
+  "property": "margin-top",
+  "widths": [
+   1440,
+   1920
+  ],
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-49",
+  "scope": "header",
+  "node": "cr-ref-header-11",
+  "state": "closed",
+  "property": "margin-right",
+  "widths": [
+   1440,
+   1920
+  ],
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-50",
+  "scope": "header",
+  "node": "cr-ref-header-11",
+  "state": "closed",
+  "property": "margin-bottom",
+  "widths": [
+   1440,
+   1920
+  ],
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-51",
+  "scope": "header",
+  "node": "cr-ref-header-11",
+  "state": "closed",
+  "property": "margin-left",
+  "widths": [
+   1440,
+   1920
+  ],
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+  "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+ },
+ {
+  "id": "D-52",
+  "scope": "contact-form",
+  "node": "cr-ref-contact-form-1",
+  "state": "*",
+  "property": "box-shadow",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the name field after an empty submit; the draft shows none",
+  "register": [
+   "162"
+  ],
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-53",
+  "scope": "contact-form",
+  "node": "cr-ref-contact-form-1",
+  "state": "*",
+  "property": "background-image",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the name field after an empty submit; the draft shows none",
+  "register": [
+   "162"
+  ],
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-54",
+  "scope": "contact-form",
+  "node": "cr-ref-contact-form-2",
+  "state": "*",
+  "property": "box-shadow",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the email field after an empty submit; the draft shows none",
+  "register": [
+   "162"
+  ],
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-55",
+  "scope": "contact-form",
+  "node": "cr-ref-contact-form-2",
+  "state": "*",
+  "property": "background-image",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the email field after an empty submit; the draft shows none",
+  "register": [
+   "162"
+  ],
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-56",
+  "scope": "contact-form",
+  "node": "cr-ref-contact-form-4",
+  "state": "*",
+  "property": "box-shadow",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the topic field after an empty submit; the draft shows none",
+  "register": [
+   "162"
+  ],
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-57",
+  "scope": "contact-form",
+  "node": "cr-ref-contact-form-4",
+  "state": "*",
+  "property": "background-image",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the topic field after an empty submit; the draft shows none",
+  "register": [
+   "162"
+  ],
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-58",
+  "scope": "contact-form",
+  "node": "cr-ref-contact-form-5",
+  "state": "*",
+  "property": "box-shadow",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the message field after an empty submit; the draft shows none",
+  "register": [
+   "162"
+  ],
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-59",
+  "scope": "contact-form",
+  "node": "cr-ref-contact-form-5",
+  "state": "*",
+  "property": "background-image",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the message field after an empty submit; the draft shows none",
+  "register": [
+   "162"
+  ],
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-60",
+  "scope": "footer",
+  "node": "cr-ref-footer-6",
+  "state": "*",
+  "property": "padding-top",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
+  "register": [
+   "39-43"
+  ],
+  "decided": "2026-10-02 Bean"
+ },
+ {
+  "id": "D-61",
+  "scope": "footer",
+  "node": "cr-ref-footer-6",
+  "state": "*",
+  "property": "padding-right",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
+  "register": [
+   "39-43"
+  ],
+  "decided": "2026-10-02 Bean"
+ },
+ {
+  "id": "D-62",
+  "scope": "footer",
+  "node": "cr-ref-footer-6",
+  "state": "*",
+  "property": "padding-bottom",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
+  "register": [
+   "39-43"
+  ],
+  "decided": "2026-10-02 Bean"
+ },
+ {
+  "id": "D-63",
+  "scope": "footer",
+  "node": "cr-ref-footer-6",
+  "state": "*",
+  "property": "padding-left",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
+  "register": [
+   "39-43"
+  ],
+  "decided": "2026-10-02 Bean"
+ },
+ {
+  "id": "D-64",
+  "scope": "footer",
+  "node": "cr-ref-footer-6",
+  "state": "*",
+  "property": "width",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
+  "register": [
+   "39-43"
+  ],
+  "decided": "2026-10-02 Bean"
+ },
+ {
+  "id": "D-65",
+  "scope": "footer",
+  "node": "cr-ref-footer-9",
+  "state": "hover",
+  "property": "border-top-color",
+  "expected": {
+   "rule": "not-painted"
+  },
+  "reason": "Register S2 (Bean): footer links stay black on hover; this list root's border-top-color is currentColor following that decided colour on a 0px border, so nothing paints",
+  "register": [
+   "S2"
+  ],
+  "decided": "2026-10-02 Bean"
+ },
+ {
+  "id": "D-66",
+  "scope": "footer",
+  "node": "cr-ref-footer-16",
+  "state": "hover",
+  "property": "border-top-color",
+  "expected": {
+   "rule": "not-painted"
+  },
+  "reason": "Register S2 (Bean): footer links stay black on hover; this list root's border-top-color is currentColor following that decided colour on a 0px border, so nothing paints",
+  "register": [
+   "S2"
+  ],
+  "decided": "2026-10-02 Bean"
+ },
+ {
+  "id": "D-67",
+  "scope": "lens",
+  "node": "cr-ref-lens-0",
+  "state": "*",
+  "property": "box-shadow",
+  "expected": {
+   "rule": "accessibility"
+  },
+  "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
+  "register": [
+   "96"
+  ],
+  "decided": "2026-10-07 house rule"
+ },
+ {
+  "id": "D-68",
+  "scope": "lens",
+  "node": "cr-ref-lens-0",
+  "state": "*",
+  "property": "border-radius",
+  "expected": {
+   "rule": "accessibility"
+  },
+  "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
+  "register": [
+   "96"
+  ],
+  "decided": "2026-10-07 house rule"
+ },
+ {
+  "id": "D-69",
+  "scope": "mobile-menu",
+  "node": "cr-ref-mobile-menu-0",
+  "state": "*",
+  "property": "box-shadow",
+  "expected": {
+   "rule": "accessibility"
+  },
+  "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
+  "register": [
+   "96"
+  ],
+  "decided": "2026-10-07 house rule"
+ },
+ {
+  "id": "D-70",
+  "scope": "shop",
+  "node": "cr-ref-shop-31",
+  "state": "*",
+  "property": "box-shadow",
+  "expected": {
+   "rule": "accessibility"
+  },
+  "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
+  "register": [
+   "96"
+  ],
+  "decided": "2026-10-07 house rule"
+ },
+ {
+  "id": "D-71",
+  "scope": "product",
+  "node": "cr-ref-product-4",
+  "state": "hover",
+  "property": "transform",
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register S1 (Bean 2026-10-02): one site-wide button lift, 3px over 0.25s; the draft's add-to-bag lifts 2px",
+  "register": [
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-72",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-23",
+  "state": "opening",
+  "property": "y-from-lens-grid",
+  "widths": [
+   375
+  ],
+  "expected": {
+   "value": "785"
+  },
+  "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-73",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-27",
+  "state": "opening",
+  "property": "flex-grow",
+  "expected": {
+   "value": "1"
+  },
+  "reason": "A flex-grow on a step of a column list with no spare height paints nothing: the steps list measures the same height on both sides (185px at 1440, 254px at 375).",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-74",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-27",
+  "state": "opening",
+  "property": "gap",
+  "expected": {
+   "value": "0px 16px"
+  },
+  "reason": "The number-to-title gap is 16px on both sides; live's 0px row gap applies only between a title and a description, which these steps do not have.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-75",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-25",
+  "state": "opening",
+  "property": "opacity",
+  "widths": [
+   375
+  ],
+  "expected": {
+   "value": "1"
+  },
+  "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-76",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-25",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   375
+  ],
+  "expected": {
+   "value": "none"
+  },
+  "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-77",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-25",
+  "state": "opening",
+  "property": "y-after-benefits-item-1",
+  "widths": [
+   375
+  ],
+  "expected": {
+   "value": "281"
+  },
+  "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-78",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-27",
+  "state": "opening",
+  "property": "y-after-steps-reveal",
+  "widths": [
+   375
+  ],
+  "expected": {
+   "value": "61"
+  },
+  "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-79",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-27",
+  "state": "opening",
+  "property": "align-items",
+  "widths": [
+   375
+  ],
+  "expected": {
+   "value": "flex-start"
+  },
+  "reason": "The steps are width:100% grid boxes, so cross-axis alignment changes nothing: each step is the list's full 335px width on both sides at 375.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-80",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-23",
+  "state": "opening",
+  "property": "y-from-lens-grid",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "436"
+  },
+  "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-81",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-26",
+  "state": "opening",
+  "property": "y-from-benefits-list",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "234"
+  },
+  "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-82",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-25",
+  "state": "opening",
+  "property": "opacity",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "1"
+  },
+  "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-83",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-25",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "none"
+  },
+  "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-84",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-25",
+  "state": "opening",
+  "property": "y-after-benefits-item-1",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "234"
+  },
+  "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-85",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-27",
+  "state": "opening",
+  "property": "y-after-steps-reveal",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "61"
+  },
+  "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+  "decided": "2026-10-07 Bean"
+ },
+ {
+  "id": "D-86",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-26",
+  "state": "opening",
+  "property": "y-from-benefits-list",
+  "widths": [
+   375
+  ],
+  "expected": {
+   "value": "281"
+  },
+  "reason": "One walk (qa/solve/lenses/2026-10-08T02-08-01) read the draft at 255; the walk before it on the same layout (2026-10-07T23-42-47) read 281, the draft steps column then still at its reveal offset. With every draft reveal fired (slow scroll, probe 2026-10-08), draft and live both measure 281 from the benefits list top to the steps heading, with a 40px row gap on both sides; live is right. Why that walk read 255 is not proven (the draft cache shows both columns revealed); the row is the draft scroll reveal's timing, as D-72 to D-81.",
+  "decided": "2026-10-08 Bean"
+ },
+ {
+  "id": "D-87",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "hover",
+  "property": "color",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 131 / S2-S3 (Bean's decision): the Contact phone link keeps its own text colour on hover (textColourHover text) and takes the S2 underline sweep as its hover cue; the draft's taupe hover colour is not applied.",
+  "register": [
+   "131",
+   "S2",
+   "S3"
+  ],
+  "decided": "2026-10-08 Bean (register 131)"
+ },
+ {
+  "id": "D-88",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "hover",
+  "property": "border-top-color",
+  "expected": {
+   "rule": "not-painted"
+  },
+  "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
+  "decided": "2026-10-08 Bean (D-65 ruling)"
+ },
+ {
+  "id": "D-89",
+  "scope": "contact",
+  "node": "cr-ref-contact-15",
+  "state": "hover",
+  "property": "border-top-color",
+  "expected": {
+   "rule": "not-painted"
+  },
+  "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
+  "decided": "2026-10-08 Bean (D-65 ruling)"
+ },
+ {
+  "id": "D-90",
+  "scope": "contact",
+  "node": "cr-ref-contact-18",
+  "state": "hover",
+  "property": "border-top-color",
+  "expected": {
+   "rule": "not-painted"
+  },
+  "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
+  "decided": "2026-10-08 Bean (D-65 ruling)"
+ },
+ {
+  "id": "D-91",
+  "scope": "contact",
+  "node": "cr-ref-contact-19",
+  "state": "hover",
+  "property": "border-top-color",
+  "expected": {
+   "rule": "not-painted"
+  },
+  "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
+  "decided": "2026-10-08 Bean (D-65 ruling)"
+ },
+ {
+  "id": "D-92",
+  "scope": "header",
+  "node": "cr-ref-header-4",
+  "state": "hover",
+  "property": "color",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 2 / S2 (Bean's decision): header menu words stay black on hover; the draft's taupe hover colour is not applied.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-08 Bean (register S2)"
+ },
+ {
+  "id": "D-93",
+  "scope": "header",
+  "node": "cr-ref-header-4",
+  "state": "hover",
+  "property": "border-bottom-color",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 2 / S2 (Bean's decision): a 1px underline sweeps in left to right on hover and retracts right to left (itemBorderHoverTreatment sweep); the draft draws no underline.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-08 Bean (register S2)"
+ },
+ {
+  "id": "D-94",
+  "scope": "header",
+  "node": "cr-ref-header-12",
+  "state": "hover",
+  "property": "color",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 2 / S2 (Bean's decision): header menu words stay black on hover; the draft's taupe hover colour is not applied.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-08 Bean (register S2)"
+ },
+ {
+  "id": "D-95",
+  "scope": "header",
+  "node": "cr-ref-header-12",
+  "state": "hover",
+  "property": "border-bottom-color",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 2 / S2 (Bean's decision): a 1px underline sweeps in left to right on hover and retracts right to left (itemBorderHoverTreatment sweep); the draft draws no underline.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-08 Bean (register S2)"
+ },
+ {
+  "id": "D-96",
+  "scope": "footer",
+  "node": "cr-ref-footer-9",
+  "state": "hover",
+  "property": "color",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 32/33 / S2 (Bean's decision): footer link-list words stay black on hover (textColourHover text) and take the underline sweep (custom.linkSweep); the draft's taupe hover colour is not applied.",
+  "register": [
+   "32",
+   "33",
+   "S2"
+  ],
+  "decided": "2026-10-08 Bean (register S2)"
+ },
+ {
+  "id": "D-97",
+  "scope": "footer",
+  "node": "cr-ref-footer-16",
+  "state": "hover",
+  "property": "color",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 32/33 / S2 (Bean's decision): footer link-list words stay black on hover (textColourHover text) and take the underline sweep (custom.linkSweep); the draft's taupe hover colour is not applied.",
+  "register": [
+   "32",
+   "33",
+   "S2"
+  ],
+  "decided": "2026-10-08 Bean (register S2)"
+ },
+ {
+  "id": "D-98",
+  "scope": "contact",
+  "node": "cr-ref-contact-12",
+  "state": "hover",
+  "property": "color",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 131 / S2-S3 (Bean's decision): the Contact email link keeps its own text colour on hover and takes the S2 underline sweep; the draft's taupe hover colour is not applied. Twin of D-87 (the phone).",
+  "register": [
+   "131",
+   "S2",
+   "S3"
+  ],
+  "decided": "2026-10-08 Bean (register S2)"
+ },
+ {
+  "id": "D-99",
+  "scope": "contact",
+  "node": "cr-ref-contact-5",
+  "state": "*",
+  "property": "found",
+  "expected": {
+   "rule": "draft-flaw"
+  },
+  "reason": "The draft's WhatsApp button reads \"WhatsApp 07960 5978\" and links wa.me/4479605978, two digits short of a UK mobile; live shows the clinic's real number, 07960 597847 (Site Info). Live is right; the button is still paired and measured by the walker.",
+  "register": [
+   "127"
+  ],
+  "decided": "2026-10-08 Session D (draft flaw: a truncated phone number)"
+ },
+ {
+  "id": "D-100",
+  "scope": "contact",
+  "node": "cr-ref-contact-5",
+  "state": "*",
+  "property": "text",
+  "expected": {
+   "rule": "draft-flaw"
+  },
+  "reason": "The draft's WhatsApp button reads \"WhatsApp 07960 5978\" and links wa.me/4479605978, two digits short of a UK mobile; live shows the clinic's real number, 07960 597847 (Site Info). Live is right; the button is still paired and measured by the walker.",
+  "register": [
+   "127"
+  ],
+  "decided": "2026-10-08 Session D (draft flaw: a truncated phone number)"
+ },
+ {
+  "id": "D-101",
+  "scope": "footer",
+  "node": "cr-ref-footer-23",
+  "state": "opening",
+  "property": "background-image",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-102",
+  "scope": "footer",
+  "node": "cr-ref-footer-23",
+  "state": "opening",
+  "property": "transition-duration",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-103",
+  "scope": "footer",
+  "node": "cr-ref-footer-23",
+  "state": "opening",
+  "property": "transition-timing-function",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-104",
+  "scope": "footer",
+  "node": "cr-ref-footer-23",
+  "state": "hover",
+  "property": "color",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision): footer link words stay their own dark colour on hover and take the underline sweep; the draft's taupe hover colour is not applied. Twin of D-96 and D-97.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-105",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "background-image",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-106",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "transition-duration",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-107",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "transition-timing-function",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-108",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "hover",
+  "property": "color",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision): footer link words stay their own dark colour on hover and take the underline sweep; the draft's taupe hover colour is not applied. Twin of D-96 and D-97.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-109",
+  "scope": "footer",
+  "node": "cr-ref-footer-23",
+  "state": "opening",
+  "property": "display",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-110",
+  "scope": "footer",
+  "node": "cr-ref-footer-23",
+  "state": "opening",
+  "property": "width",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-111",
+  "scope": "footer",
+  "node": "cr-ref-footer-23",
+  "state": "opening",
+  "property": "w",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-112",
+  "scope": "footer",
+  "node": "cr-ref-footer-23",
+  "state": "opening",
+  "property": "h",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-113",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "width",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-114",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "w",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+  "register": [
+   "2",
+   "S2"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-115",
+  "scope": "footer",
+  "node": "cr-ref-footer-25",
+  "state": "opening",
+  "property": "color",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 37 and 163 (Bean's decision): the footer address is a link to the clinic's Google Business link and takes the same dark text colour as the rest of the footer, not the draft's muted taupe text.",
+  "register": [
+   "37",
+   "163"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-116",
+  "scope": "footer",
+  "node": "cr-ref-footer-25",
+  "state": "opening",
+  "property": "gap",
+  "expected": {
+   "rule": "not-painted"
+  },
+  "reason": "Measured 2026-10-09 on cr-ref-footer-25: the address block carries the business-info 0.5em flex gap, but its link has a single child (the text; this address has no icon on the draft or live), so the gap separates nothing and paints nothing.",
+  "register": [
+   "37",
+   "163"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-117",
+  "scope": "footer",
+  "node": "cr-ref-footer-25",
+  "state": "opening",
+  "property": "column-gap",
+  "expected": {
+   "rule": "not-painted"
+  },
+  "reason": "Measured 2026-10-09 on cr-ref-footer-25: the address block carries the business-info 0.5em flex gap, but its link has a single child (the text; this address has no icon on the draft or live), so the gap separates nothing and paints nothing.",
+  "register": [
+   "37",
+   "163"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-118",
+  "scope": "footer",
+  "node": "cr-ref-footer-25",
+  "state": "opening",
+  "property": "row-gap",
+  "expected": {
+   "rule": "not-painted"
+  },
+  "reason": "Measured 2026-10-09 on cr-ref-footer-25: the address block carries the business-info 0.5em flex gap, but its link has a single child (the text; this address has no icon on the draft or live), so the gap separates nothing and paints nothing.",
+  "register": [
+   "37",
+   "163"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-119",
+  "scope": "footer",
+  "node": "cr-ref-footer-26",
+  "state": "opening",
+  "property": "tag",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register 30 (Bean's decision): the condensed hours are a description list (dl) of day and time pairs so the time sits beside its day; the draft's inline span paints the same words. Bean confirmed 2026-10-09 the element type changes nothing visible.",
+  "register": [
+   "30"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-120",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "h",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+  "register": [
+   "131"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-121",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "text-inset-x",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+  "register": [
+   "131"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-122",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "text-inset-y",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+  "register": [
+   "131"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-123",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "y-after-link-about",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+  "register": [
+   "131"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-124",
+  "scope": "footer",
+  "node": "cr-ref-footer-24",
+  "state": "opening",
+  "property": "y-after-link-faqs",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+  "register": [
+   "131"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-125",
+  "scope": "footer",
+  "node": "cr-ref-footer-25",
+  "state": "opening",
+  "property": "y-after-link-phone",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets), same ruling as D-40 to D-47: the footer phone link keeps a 44px tap area (7px padding, pulled back with negative margins) so its text paints where the draft's does; the box is taller than the draft's 21px link and the rows below it sit by the margin pull-back. Bean decided 2026-10-09 to keep the tap area; the sweep line is drawn on the text, so it sits under the words like the other footer links (read live at 375, 768 and 1440).",
+  "register": [
+   "131"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-126",
+  "scope": "home",
+  "node": "cr-ref-home-58",
+  "state": "*",
+  "property": "icon-fill",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Bean, 2026-10-05 (register N17c): sgs/google-reviews is a look-alike of Google's own review panel, so its colours, sizes, radii and hover behaviour follow Google's UI, not the draft or the theme: the slider arrows keep Google's filled 20px chevron where the draft draws a stroked 18px one.",
+  "register": [
+   "N17c"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-127",
+  "scope": "home",
+  "node": "cr-ref-home-58",
+  "state": "*",
+  "property": "icon-stroke",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Bean, 2026-10-05 (register N17c): sgs/google-reviews is a look-alike of Google's own review panel, so its colours, sizes, radii and hover behaviour follow Google's UI, not the draft or the theme: the slider arrows keep Google's filled 20px chevron where the draft draws a stroked 18px one.",
+  "register": [
+   "N17c"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-128",
+  "scope": "home",
+  "node": "cr-ref-home-58",
+  "state": "*",
+  "property": "icon-stroke-width",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Bean, 2026-10-05 (register N17c): sgs/google-reviews is a look-alike of Google's own review panel, so its colours, sizes, radii and hover behaviour follow Google's UI, not the draft or the theme: the slider arrows keep Google's filled 20px chevron where the draft draws a stroked 18px one.",
+  "register": [
+   "N17c"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-129",
+  "scope": "home",
+  "node": "cr-ref-home-58",
+  "state": "*",
+  "property": "icon-width",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Bean, 2026-10-05 (register N17c): sgs/google-reviews is a look-alike of Google's own review panel, so its colours, sizes, radii and hover behaviour follow Google's UI, not the draft or the theme: the slider arrows keep Google's filled 20px chevron where the draft draws a stroked 18px one.",
+  "register": [
+   "N17c"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-130",
+  "scope": "home",
+  "node": "cr-ref-home-58",
+  "state": "*",
+  "property": "icon-height",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Bean, 2026-10-05 (register N17c): sgs/google-reviews is a look-alike of Google's own review panel, so its colours, sizes, radii and hover behaviour follow Google's UI, not the draft or the theme: the slider arrows keep Google's filled 20px chevron where the draft draws a stroked 18px one.",
+  "register": [
+   "N17c"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-131",
+  "scope": "home",
+  "node": "cr-ref-home-58",
+  "state": "*",
+  "property": "transition-duration",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Bean, 2026-10-05 (register N17c): sgs/google-reviews is a look-alike of Google's own review panel, so its colours, sizes, radii and hover behaviour follow Google's UI, not the draft or the theme: the arrows keep Google's 0.15s timing; the review buttons keep the site's 0.25s lift timing (register N16a, S1) where the draft uses 0.2s.",
+  "register": [
+   "N17c",
+   "N16a"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-132",
+  "scope": "home",
+  "node": "cr-ref-home-58",
+  "state": "hover",
+  "property": "transform",
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register N16a (Bean, 2026-10-07): the review buttons lift 3px on hover as Eye Care site styling (buttonHoverLift 3); the draft's buttons stay still.",
+  "register": [
+   "N16a"
+  ],
+  "decided": "2026-10-09 Bean"
+ },
+ {
+  "id": "D-133",
+  "scope": "home",
+  "node": "cr-ref-home-58",
+  "state": "hover",
+  "property": "hover-effects",
+  "expected": {
+   "rule": "bean-choice"
+  },
+  "reason": "Register N16a (Bean, 2026-10-07): the review buttons lift on hover as Eye Care site styling; the draft's buttons stay still.",
+  "register": [
+   "N16a"
+  ],
+  "decided": "2026-10-09 Bean"
+ }
 ]
