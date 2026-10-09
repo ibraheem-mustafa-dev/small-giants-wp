@@ -78,6 +78,23 @@ test( 'a gap that changes between two pairs is one row on the later pair; a matc
 	assert.deepEqual( flowOffsets( flowPairs, draftSnap, { ...draftSnap }, { draft: 120, live: 120 }, { box: 2 } ), {} );
 } );
 
+// A pair placed after a pair nested with it measures an inset, not the flow (footer 2026-10-09: the generated pair on the
+// phone block's root, placed after the hand pair on the link inside it, read the link's 12px tap-area inset that D-122
+// already decides, as y-after-link-phone 1 -> 13). Its flow row is taken from the nearest earlier pair not nested with it.
+const traced = ( y, ref, path ) => ( { box: { x: 222, y, w: 400, h: 20 }, trace: { ref, path, owners: [] } } );
+const nestedPairs = [ { name: 'about' }, { name: 'link-phone' }, { name: 'gen-block' } ];
+const nestedDraft = { about: traced( 100, 'r-a', '' ), 'link-phone': traced( 131, 'r-b', '.info > .info__link' ), 'gen-block': traced( 132, 'r-b', '' ) };
+
+test( 'MUST FAIL: a pair after a pair nested with it is placed from the nearest earlier pair outside it', () => {
+	const live = { about: traced( 100, 'r-a', '' ), 'link-phone': traced( 119, 'r-b', '.info > .info__link' ), 'gen-block': traced( 132, 'r-b', '' ) };
+	assert.deepEqual( flowOffsets( nestedPairs, nestedDraft, live, { draft: 80, live: 80 }, { box: 2 } ), { 'link-phone': [ { kind: 'box', key: 'y-after-about', draft: 31, live: 19 } ] } );
+} );
+
+test( 'negative control: the nested pair\'s own shift is still a row, measured from outside it', () => {
+	const live = { about: traced( 100, 'r-a', '' ), 'link-phone': traced( 131, 'r-b', '.info > .info__link' ), 'gen-block': traced( 150, 'r-b', '' ) };
+	assert.deepEqual( flowOffsets( nestedPairs, nestedDraft, live, { draft: 80, live: 80 }, { box: 2 } ), { 'gen-block': [ { kind: 'box', key: 'y-after-about', draft: 32, live: 50 } ] } );
+} );
+
 test( 'a pair with a configured anchor keeps its own distance row and gets no flow row', () => {
 	const live = { eyebrow: at( 225 ), name: at( 257 ), intro: at( 317 ) };
 	assert.deepEqual( flowOffsets( [ { name: 'eyebrow', anchor: 'x' }, ...flowPairs.slice( 1 ) ], draftSnap, live, { draft: 120, live: 120 }, { box: 2 } ), {} );

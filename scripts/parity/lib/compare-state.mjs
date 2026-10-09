@@ -1,6 +1,6 @@
 // One state's comparison for draft-live-walk.mjs: every named pair, the drive log, the automatic check,
 // load entrances and links, each difference judged against the config's accepts.
-import { comparePair, compareScroll, isAccepted, acceptHeld } from './compare.mjs';
+import { comparePair, compareScroll, isAccepted, acceptHeld, inside } from './compare.mjs';
 import { compareStructure, driveDiffs } from './structure.mjs';
 import { anchorOffset } from './helpers.mjs';
 import { compareChrome } from './chrome-walk.mjs';
@@ -22,7 +22,10 @@ export function flowOffsets( pairs, ds, ls, mainY, t ) {
 		if ( p.anchor ) {
 			return;
 		}
-		const prev = order[ i - 1 ];
+		// The nearest earlier pair not nested with this one (live traces): a pair inside it, or around it, would measure
+		// an inset, not the flow.
+		const nested = ( q ) => { const a = ls[ q.name ]?.trace; const b = ls[ p.name ]?.trace; return !! a && !! b && ( ( a.ref === b.ref && a.path === b.path ) || inside( a, b ) || inside( b, a ) ); };
+		const prev = order.slice( 0, i ).reverse().find( ( q ) => ! nested( q ) );
 		const from = prev ? ( s ) => s[ prev.name ].box.y : null;
 		if ( ! from && ( null === mainY.draft || null === mainY.live || undefined === mainY.draft ) ) {
 			return;
