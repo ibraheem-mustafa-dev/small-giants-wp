@@ -1,15 +1,17 @@
 ---
 doc_type: spec
-spec_version: 0
+spec_id: 0A
+spec_version: 1.1
+parent_spec: 0
 project: small-giants-wp
 title: SGS Naming Conventions
-date: 2026-05-19
 status: active
+last_verified: 2026-10-09
 ---
 
 # SGS Naming Conventions
 
-Single source of truth for every identifier used across the SGS WordPress Framework. All contributors (human and AI) MUST follow these rules. The CI linter at `scripts/lint-naming-conventions.py` enforces them automatically.
+Single source of truth for every identifier used across the SGS WordPress Framework. All contributors (human and AI) MUST follow these rules. `scripts/lint-naming-conventions.py` checks rules 1 to 7 (see the end of this document).
 
 ---
 
@@ -18,13 +20,13 @@ Single source of truth for every identifier used across the SGS WordPress Framew
 **Rule:** Framework-generic patterns use `sgs/<role>`. Client-specific patterns use `sgs/<client-slug>-<role>`. The namespace separator is a forward slash; the internal separator is a hyphen. No underscores. All lowercase. The `sgs-theme/` namespace is deprecated — do not use it for new patterns.
 
 **Format:**
-- Framework: `sgs/<role>` — e.g. `sgs/header-minimal`, `sgs/footer-columns`
-- Client: `sgs/<client-slug>-<role>` — e.g. `sgs/mamas-munches-header`, `sgs/indus-foods-footer`
+- Framework: `sgs/<role>` — e.g. `sgs/footer-columns`, `sgs/framework-header-minimal`
+- Client (illustrative): `sgs/<client-slug>-<role>` — e.g. `sgs/mamas-munches-header`, `sgs/indus-foods-footer`
 
 **Examples:**
 - `sgs/framework-header-default` — framework default header pattern
-- `sgs/mamas-munches-footer` — Mama's Munches client footer
-- `sgs/indus-foods-header` — Indus Foods client header
+- `sgs/footer-columns` — framework columns footer pattern
+- `sgs/mamas-munches-footer` — client footer (illustrative)
 
 **Anti-pattern:** `sgs-theme/header-mamas-munches` — wrong namespace (`sgs-theme/`), wrong order (role before client slug). Both violations.
 
@@ -45,7 +47,7 @@ Single source of truth for every identifier used across the SGS WordPress Framew
 
 ### 2.1 Header/footer/nav container blocks
 
-Header/footer remain WordPress template parts (Spec 37) — a monolithic block that subsumes the template-part/Site-Info/rules system is still forbidden. **Specialised container blocks used *inside* the template parts are permitted**, exactly like `sgs/card-grid`/`sgs/feature-grid`: `sgs/site-header`, `sgs/site-footer`, `sgs/site-header-row`, `sgs/site-footer-row`, and the nav blocks **`sgs/nav-bar-menu`** (bar + burger) + **`sgs/nav-drawer-menu`** (the drawer's accordion/drill-down list) + **`sgs/nav-drawer`** (off-canvas `<dialog>` drawer). Bare `header`/`footer`/`nav` block slugs remain forbidden. Design-gate: `.claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md`; block FRs owned by Spec 37 and **Spec 36** (the canonical nav home).
+Header/footer remain WordPress template parts (Spec 37) — a monolithic block that subsumes the template-part/Site-Info/rules system is still forbidden. **Specialised container blocks used *inside* the template parts are permitted**, exactly like `sgs/card-grid`/`sgs/feature-grid`: `sgs/site-header`, `sgs/site-footer`, `sgs/site-header-row`, `sgs/site-footer-row`, and the nav blocks **`sgs/nav-bar-menu`** (bar + burger) + **`sgs/nav-drawer-menu`** (the drawer's accordion/drill-down list) + **`sgs/nav-drawer`** (off-canvas `<dialog>` drawer). Bare `header`/`footer`/`nav` block slugs remain forbidden. Block FRs are owned by Spec 37 and **Spec 36** (the canonical nav home).
 
 ---
 
@@ -64,90 +66,46 @@ Header/footer remain WordPress template parts (Spec 37) — a monolithic block t
 
 ### 3.1 BEM element → block recognition (canonical signal)
 
-The BEM element segment is the **canonical signal** for block recognition in the converter walker. The HTML tag is rendering-shape only — it does NOT determine which block the converter emits.
+The block segment of `sgs-<block>` must match a registered block slug. The element segment should use a canonical slot alias from the framework DB (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT slot_name, aliases, standalone_block FROM slots"`), never a per-block invented class. The HTML tag is rendering shape only; the BEM element names the role (`<div class="sgs-X__quote">` and `<blockquote class="sgs-X__quote">` are the same `quote` role; `__body` is generic `text`). Section-root blocks are the blocks with `blocks.tier='class-section'` (query the DB, never a list cached here): `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT slug FROM blocks WHERE tier='class-section'"`. The draft standard checker is `plugins/sgs-blocks/scripts/lints/bem-lint.py`; Spec 47 pairs drafts with built pages.
 
-Recognition path (deterministic, tier-driven post-D107):
-
-**SECTION-ROOT path (tier='class-section' blocks):**
-1. Walker reads the block segment from `sgs-<block>` on a section-root candidate
-2. Voter (`recogniser/per-section-convention-voter.py::vote_block_slug`) queries `blocks.tier` — if `tier='class-section'`, emit the literal block slug with confidence 1.0 (reason: `class-section-block-equivalent`)
-3. If `sgs-` prefix is present but no `class-section` row exists, voter emits `gap-candidate-class-section` instead of literal-slug-match — surfaces unregistered section blocks as gap candidates, never silently routed
-4. Current class-section roster: the blocks with `blocks.tier='class-section'` — query the DB (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT slug FROM blocks WHERE tier='class-section'"`), never a list cached here. It is sourced from `supports.sgs.is_section_root: true` in each block.json and populated into the `blocks.tier` column by `/sgs-update`. Every other block cannot claim a section root by class; a draft that declares one (Spec 31 FR-31-31) has its block root put on an element INSIDE the section instead (`orchestrator/manifest_annotation.py::_choose_owner`).
-
-**ELEMENT path (BEM element inside a section):**
-1. Walker reads the BEM element from the class (`sgs-X__<element>`)
-2. Looks up the canonical slot via `slots` table (count is DB-authoritative — query `SELECT COUNT(1) FROM slots`; replaces retired `slot_synonyms` post-D111 2026-05-30) — e.g. `__quote` → `quote` canonical; `__body` → `text` canonical; `__card` → `card` canonical
-3. Resolves canonical → standalone block via `slots.standalone_block` (e.g. `quote` → `sgs/quote`; `card` → `sgs/info-box`; `label` → `sgs/label`)
-4. Emits the resolved standalone block
-
-**Quote example (illustrates BEM-canonical-only routing):**
-- `<div class="sgs-X__quote">` → `quote` canonical → `sgs/quote` ✓
-- `<blockquote class="sgs-X__quote">` → `quote` canonical → `sgs/quote` ✓ (tag doesn't matter)
-- `<div class="sgs-X__body">` → `text` canonical → `sgs/text` (intentional — `body` is generic text-content)
-- `<blockquote class="sgs-X__body">` → `text` canonical → `sgs/text` (tag doesn't change recognition)
-
-**Canonical vocabulary** lives in `sgs-framework.db.slots` (post-D99 replacement for retired `slot_synonyms`) and is documented in [Spec 31 §13 §3 FR-22-1 + FR-22-2](31-UNIVERSAL-CLONING-PIPELINE.md#fr-22-1--bem-is-the-only-recognition-signal). To author a draft that routes to a specific block, name the BEM element with one of that canonical's aliases.
-
-**Counter-example — a shared root makes a whole family invisible:** the 14 `sgs/form-field-*`
-blocks (address, checkbox, consent, date, email, file, hidden, number, phone, radio, select,
-text, textarea, tiles) all emit `.sgs-form-field__` as their BEM root, and `sgs/form-field`
-itself is not a registered block. Because BEM root is the only recognition signal (this
-section), there is no way for the converter walker to distinguish which `form-field-*` block a
-given `.sgs-form-field__*` element belongs to, or to route to any of them at all — the entire
-family is permanently invisible to the cloning pipeline. This is live, verifiable evidence for
-why a registered block's BEM root must be unique to that block. It is exactly why
-`sgs/nav-bar-menu` and `sgs/nav-drawer-menu` each have their own separate
-root (`.sgs-nav-bar-menu__*` / `.sgs-nav-drawer-menu__*`).
+**Counter-example: a shared root makes a whole family indistinguishable.** The `sgs/form-field-*` blocks all emit `.sgs-form-field__` as their BEM root, and `sgs/form-field` itself is not a registered block, so no `.sgs-form-field__*` element identifies which `form-field-*` block it belongs to. A registered block's BEM root must be unique to that block (D107). This is why `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` each have their own root (`.sgs-nav-bar-menu__*` / `.sgs-nav-drawer-menu__*`).
 
 #### 3.1.1 Label / badge recognition → `sgs/label` (convention)
 
-Every **short standalone label or cosmetic badge** text element routes to the `label` canonical → `sgs/label` (the "Atomic eyebrow / kicker / badge text block; reusable for card-tag badges", style variants `plain` / `pill-fill` / `pill-wrap`). This is the canonical home for pre-heading labels and pill badges — NOT `sgs/text` (which is body copy) and NOT a per-block scalar attr. A draft that emits a badge as a literal `sgs/label` is faithful; a converter workaround that invents a per-block badge class is not (R-22-9).
+Every **short standalone label or cosmetic badge** text element uses the `label` canonical, which resolves to `sgs/label` (the atomic eyebrow / kicker / badge text block, style variants `plain` / `pill-fill` / `pill-wrap`). This is the canonical home for pre-heading labels and pill badges: not `sgs/text` (body copy) and not a per-block scalar attr. A draft that emits a badge as a literal `sgs/label` is faithful; inventing a per-block badge class is not (R-22-9).
 
-`label`-canonical aliases (recognised BEM elements) include: `eyebrow`, `kicker`, `tag`, `pill`, `badge-label`, `badge-text`, `trialTag`, `featuredTag`, `inner-label`, `slot-label`, `node-icon`, and the cosmetic-badge family `discount-label`, `discount-badge`, `value-badge`, `savings-label`, `sale-badge`, `ribbon-label` (added 2026-06-04 alongside the FR-27-B3 product-card "Best value" badge). Source of truth: `slots` row `label` (seeded by `scripts/uimax-tools/seed-slot-synonyms.py`). To route a new badge term, add its alias there + re-run the seed — never hard-code a per-block badge class.
-
-> **Known gap (cloning thread, deferred):** a separate `badge` slot exists with `standalone_block = NULL` and alias `pill` (which also lives on `label`). Wiring the bare `badge` slot → `sgs/label` and resolving the `pill` overlap is a routing change that needs the cloning thread's per-row `/sgs-clone --debug-trace` measurement gate (R-22-4) + a multi-DB audit — not done inline in the theme thread. Tracked in `.claude/archive/parking.md` (`P-BADGE-SLOT-ROUTE-TO-LABEL`).
+The recognised aliases are the `aliases` of the `slots` row `label` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT aliases FROM slots WHERE slot_name='label'"`), seeded by `plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py`. To add a new badge term, add its alias there and re-run the seed; never hard-code a per-block badge class.
 
 ### 3.2 Section-root flag (`supports.sgs.is_section_root`)
 
-To declare a new section-root block (a block whose `sgs-<block>` class identifies a whole page section, not an element within one), set `"is_section_root": true` under `supports.sgs` in the block's `block.json`. `/sgs-update` reads this flag and writes `blocks.tier='class-section'`. The voter then routes section recognition to the literal slug at confidence 1.0.
+`supports.sgs.is_section_root: true` in a block's `block.json` marks a block whose `sgs-<block>` class identifies a whole page section rather than an element within one (D107). `/sgs-update` reads the flag and writes `blocks.tier='class-section'`. The current roster is the DB query in §3.1. Adding a section-root block: set the flag in the block's `block.json`, then run `/sgs-update`. D108 (`block_composition`) holds sibling-routing data; D118 and D152 define the wrapper/container model (`block_composition.container_kind` section | layout | content; a composite with a built-in wrapper offers the `sgs/container` panels it needs, opt-in per block; `supports.sgs.containerKind` is the operator override), specified in Spec 02 (Composite wrapper rule).
 
-Current roster: the blocks with `blocks.tier='class-section'` (query the DB, never a list cached here: `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT slug FROM blocks WHERE tier='class-section'"`). Adding a new section-root block requires:
-1. `block.json` declares `supports.sgs.is_section_root: true`
-2. Run `/sgs-update` to populate `blocks.tier`
-3. Walker recognition flows automatically — no code branches needed
+### 3.3 Content-width cap → `--content-width` on the inner wrapper (D194)
 
-Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_composition table — sibling routing data), D118 + **Spec 31 §13 FR-31-4.1** (Universal wrapper/container resolution — the single rule governing how every sgs-classed wrapper below a section root is resolved: direct-descendant fold, grid/flex absorption, block-match exception, non-direct-descendant own-container), D152 + **Spec 31 §13 FR-31-21** (`block_composition.container_kind` 3-KIND model section|layout|content; composite wrapper rule — a composite with a built-in wrapper offers the `sgs/container` panels it needs, opt-in per block; `supports.sgs.containerKind` operator-override).
+**Rule:** Bean-authored SGS-BEM drafts express the inner content cap as a `--content-width` custom property on the section's direct-descendant inner wrapper (`__inner` / `__card-inner`): `max-width: var(--content-width); --content-width: <value>; margin: 0 auto;` (for example `.sgs-hero__inner { max-width: var(--content-width); --content-width: 1040px; margin: 0 auto; }`). The block's `contentWidth` attribute carries that value (D194).
 
-### 3.3 Content-width cap → `contentWidth` attribute (the inner-wrapper mapping, D194)
+**Why the custom property:** it separates the inner content cap from a section's own `max-width`. A section's own width (for example `.sgs-brand { max-width: 1000px; }`) is the outer layer (`customWidth` / `widthMode`); the inner cap is the content-width layer (`contentWidth`). Bare `max-width` is ambiguous between the two; the named property removes the ambiguity.
 
-**Rule (SUPERSEDES the earlier "max-width stays, NO custom property, NO rename" wording):** Bean-authored SGS-BEM drafts express the inner content-cap as a `--content-width` **custom property** on the section's **direct-descendant inner wrapper** (`__inner` / `__card-inner`): `max-width: var(--content-width); --content-width: <value>; margin: 0 auto;` — e.g. `.sgs-hero__inner { max-width: var(--content-width); --content-width: 1040px; margin: 0 auto; }`. This is the **deterministic CONTENT-WIDTH-layer signal** the converter maps to the block's `contentWidth` attribute (Spec 31 §13 FR-31-21, step 3).
+**External drafts** that do not use `--content-width`: `max-width` plus `margin:auto` (or `margin-inline:auto`) on a direct-descendant wrapper is the fallback signal for the content-width layer. The class names `__inner` / `__card-inner` are never the signal (D85 removed those slot aliases).
 
-**Why the custom property:** it disambiguates the inner content cap from a section's OWN `max-width`. A section's own width (e.g. `.sgs-brand { max-width: 1000px; }`) is an OUTER-layer signal → maps to the OUTER `customWidth` / `widthMode`. The inner cap's `--content-width` is the CONTENT-WIDTH layer → maps to `contentWidth`. An adversarial council (2026-06-09) confirmed bare `max-width` alone is ambiguous between these two layers; the named property removes the ambiguity for Bean-authored drafts.
+### 3.4 State styling → the `--active` selected-state modifier (D299)
 
-**Fallback for scraped / external drafts** (which won't use `--content-width`): the `max-width` + `margin:auto` (or `margin-inline:auto`) heuristic on a direct-descendant wrapper remains the universal fallback signal for the CONTENT-WIDTH layer.
+**Rule:** An element's **selected / active** state uses the BEM **`--active` modifier** (`.sgs-<block>__<el>--active`) plus `aria-pressed="true"` on the interactive control (D299). The resting (unselected) state carries the bare element class with no state modifier (and `aria-pressed="false"`). Transient states use the standard pseudo-classes (`:hover`, `:focus-visible`). Example (a pack-size pill): `.sgs-product-card__pill { … }` (resting) and `.sgs-product-card__pill--active { … }` (selected) with `<button aria-pressed="true">`.
 
-**Routing stays name-free.** The converter reads EITHER the `--content-width` declaration OR the `max-width` + `margin:auto` signature on a slug-None direct-descendant wrapper (FR-22-4.1) — NEVER the `__inner`/`__card-inner` class name (precedent: D85 removed those slot aliases for causing wrong collapse). This is a documented CSS-signature mapping, not a class-name match.
+**Why:** resting, `--active` and `:hover` rules map to a block's resting attrs, selected-state attrs (`pillSelectedBgColour`, `pillSelectedBorderColour`, …) and `hover*` companions, so a multi-state pill or toggle design is expressed in full, not just its resting appearance. The same grammar applies to every state-bearing block, not only pickers (R-31-9).
 
-### 3.4 State styling → the `--active` selected-state signal + `:hover` (the state-modifier mapping, D299)
+### 3.5 Hover-state block attributes → `{base}Hover` SUFFIX (D309)
 
-**Rule:** Bean-authored SGS-BEM drafts express an element's **selected / active** state with the BEM **`--active` modifier** on that element (`.sgs-<block>__<el>--active`) **plus `aria-pressed="true"`** on the interactive control; the **resting (unselected)** state carries the bare element class with no state modifier (and `aria-pressed="false"`). Transient states use the standard CSS pseudo-classes (`:hover`, `:focus-visible`). Example (a pack-size pill): `.sgs-product-card__pill { … }` (resting) and `.sgs-product-card__pill--active { … }` (selected) with `<button aria-pressed="true">`.
+**Rule:** A block attribute representing a `:hover` companion to a base attr uses the **`{base}Hover` suffix** (for example `backgroundColourHover`, `boxShadowHover`, `scaleHover`), appended to the base attr name. **Never a `hover` prefix** (`hoverBackgroundColour`, `hoverBoxShadow`, `hoverScale` are the anti-pattern) (D309).
 
-**Why:** these are the deterministic **state signals** the converter's universal styling lift (Spec 31 §3.B B2) keys each state's `derived_selector` on — the resting rule → the block's resting colour/box attrs (`pillBgColour`, `hoverBackgroundColour`'s base sibling, …), the `--active` rule → the block's **selected-state** attrs (`pillSelectedBgColour`/`pillSelectedBorderColour`/…), and a `:hover` rule → the block's `hover*` attrs. So a draft's full multi-state pill/toggle design clones faithfully, not just its resting appearance. (Enabled 2026-07-10 by D299; the same convention drives every state-bearing block, not just pickers — R-31-9.)
-
-**Routing stays name-free.** The lift matches by the attr's `derived_selector` (a documented per-attr DB mapping, e.g. resting `.sgs-<block>__pill` / selected `.sgs-<block>__pill--active`), never by hardcoding a class-name literal — the `--active`/`:hover` grammar is the STATE signal, exactly as `--content-width` (§3.3) is the width-layer signal.
-
-### 3.5 Hover-state block attributes → `{base}Hover` SUFFIX (D309, 2026-07-11)
-
-**Rule:** A block attribute representing a `:hover` companion to a base attr uses the **`{base}Hover` suffix** — e.g. `backgroundColourHover`, `boxShadowHover`, `scaleHover` — appended to the end of the base attr name. **Never a `hover`-PREFIX** (`hoverBackgroundColour`, `hoverBoxShadow`, `hoverScale` are the anti-pattern).
-
-**Why:** the suffix form lets the converter recognise a hover companion by string-matching the base attr name against a `{attr}Hover` lookup with zero per-block/per-convention branching — a state = modifier-append on the base attr (same grammar family as `--active` in §3.4), not a separately-named property. This was a 17-block prefix→suffix rename (D309) that unlocked the zero-per-convention converter hover-routing.
+**Why:** a state is a modifier appended to the base attr (the same grammar family as `--active` in §3.4), so a hover companion is derived from the base name by string match with no per-block branching.
 
 **Examples:**
 - `backgroundColour` (base) → `backgroundColourHover` (hover companion)
 - `boxShadow` (base) → `boxShadowHover` (hover companion)
 - `scale` (base) → `scaleHover` (hover companion)
 
-**Anti-pattern:** `hoverBackgroundColour`, `hover_background_colour`, `bgColourOnHover` — prefix form, wrong separator, non-standard wording. All three were present pre-D309 and were renamed.
+**Anti-pattern:** `hoverBackgroundColour`, `hover_background_colour`, `bgColourOnHover` — prefix form, wrong separator, non-standard wording.
 
 ---
 
@@ -158,11 +116,10 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_com
 **Format:** `sgs_<descriptive_name>()`
 
 **Examples:**
-- `sgs_site_info_get( $key )` — retrieve a Site Info value
-- `sgs_render_icon( $name )` — render a Lucide icon
-- `sgs_get_active_variation()` — read the active style variation slug
+- `sgs_typography_css_rule()` — build a typography CSS rule (`plugins/sgs-blocks/includes/helpers-typography.php`)
+- `sgs_svg_upload_sanitise()` — sanitise an uploaded SVG (`plugins/sgs-blocks/includes/svg-upload.php`)
 
-**Anti-pattern:** `get_site_info()`, `renderIcon()`, `smallgiants_get_variation()` — missing prefix, wrong case, wrong prefix.
+**Anti-pattern:** `get_site_info()`, `renderIcon()`, `smallgiants_render_icon()` — missing prefix, wrong case, wrong prefix.
 
 ---
 
@@ -173,9 +130,8 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_com
 **Format:** `sgs_<hook_name>`
 
 **Examples:**
-- `sgs_site_info_before_save` — fires before Site Info is written to `wp_options`
-- `sgs_pattern_slug_resolved` — fires after a deprecated slug is resolved via the shim
-- `sgs_block_render_output` — filter on block render output
+- `sgs_show_browse_styles` — filter: show the Browse styles UI (`theme/sgs-theme/functions.php`)
+- `sgs_addon_cart_label` — filter on the add-on cart line label
 
 **Anti-pattern:** `small_giants_site_info_save`, `sgs-block-render`, `SGS_pattern_resolved` — wrong prefix, hyphens in hook names, wrong case.
 
@@ -205,20 +161,19 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_com
 - Public: `sgs_<key>`
 
 **Examples:**
-- `_sgs_cloned_from_pattern_slug` — private; marks a template part as pipeline-seeded
-- `_sgs_last_seeded_variation` — private; slug of the variation that last seeded this template part
-- `sgs_header_mode` — public; per-page header behaviour override
+- `_sgs_base_price_pence` — private; a product's single-item reference price in pence
+- `_sgs_unit_divisor` — private; a product's unit divisor
 
-**Anti-pattern:** `sgs_cloned_from_pattern_slug` (missing underscore for private meta), `_SGS_header_mode` (uppercase, public intent but wrong prefix form).
+**Anti-pattern:** `sgs_base_price_pence` (missing underscore for private meta), `_SGS_base_price_pence` (uppercase, wrong prefix form).
 
 ---
 
-## CI enforcement
+## Linter
 
-The linter at `scripts/lint-naming-conventions.py` scans `theme/sgs-theme/**` and `plugins/sgs-blocks/**` for violations of rules 1–7. Run it locally before committing:
+`scripts/lint-naming-conventions.py` checks rules 1 to 7 over `theme/sgs-theme/**` and `plugins/sgs-blocks/**` (options `--path`, `--skip-rule N`; allow-list of WordPress core hooks in `scripts/wp-core-hooks-allowlist.json`; tests in `plugins/sgs-blocks/scripts/tests/test_naming_lint.py`). Run it before committing:
 
 ```bash
 python scripts/lint-naming-conventions.py
 ```
 
-The linter exits non-zero on first violation. Fix all reported violations before opening a PR.
+It prints every violation and exits 1 if any are found. It is not part of `plugins/sgs-blocks/scripts/run-gates.py` and no CI runs it; third-party hooks the allow-list does not yet list (WooCommerce hooks in particular) are reported as violations.

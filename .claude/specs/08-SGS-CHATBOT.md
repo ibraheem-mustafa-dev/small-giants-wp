@@ -1,8 +1,18 @@
+---
+doc_type: spec
+spec_id: 8
+spec_version: 1.1
+project: small-giants-wp
+title: SGS Chatbot
+status: deferred
+last_verified: 2026-10-09
+---
+
 # SGS Chatbot — WordPress Chat & AI Assistant Plugin
 
 ## Purpose
 
-A self-hosted WordPress plugin providing live chat, AI-powered chatbot, and hybrid chat modes. Replaces Tidio (free-$749/month, enterprise from $2,999), LiveChat ($20-59/month per agent), Crisp (free-EUR 295/month), tawk.to (free but SaaS-hosted), and Intercom ($29-132/seat/month).
+A self-hosted WordPress plugin providing live chat, AI-powered chatbot, and hybrid chat modes. Replaces Tidio, LiveChat, Crisp, tawk.to and Intercom.
 
 **Core advantage over SaaS competitors:** All conversation data stays on the WordPress server. No per-agent licensing. Widget appearance reads from theme.json design tokens. AI processing delegated to N8N (use any LLM — OpenAI, Anthropic, local models). Zero vendor lock-in.
 
@@ -659,29 +669,12 @@ Admin settings under Settings → SGS Chatbot:
 
 ---
 
-## Competitive Edge Summary
-
-| Feature | Tidio | LiveChat | Crisp | tawk.to | Intercom | SGS Chatbot |
-|---|---|---|---|---|---|---|
-| Pricing | Free-$749/mo (enterprise $2,999) | $20-59/mo/agent | Free-EUR 295/mo | Free (+$29 branding) | $29-132/seat/mo | Free (self-hosted) |
-| Data location | SaaS (EU/US) | SaaS | SaaS (EU) | SaaS | SaaS (US) | Your server |
-| AI chatbot | Lyro AI (paid) | ChatBot add-on | Basic | No | Fin AI ($0.99/resolution) | Any LLM via N8N |
-| Custom LLM | No | No | Yes (via API, EUR 0.10/action) | No | No | Yes (via N8N) |
-| Knowledge base | Built-in | Separate product | Built-in | Built-in | Built-in | Built-in + N8N RAG |
-| Theme integration | Limited | Limited | Limited | Limited | Limited | Native theme.json tokens |
-| Block editor | No | No | No | No | No | Admin uses React, widget uses Interactivity API |
-| Per-agent pricing | Yes | Yes | Yes | No | Yes (per seat) | No |
-| GDPR self-hosted | No (SaaS) | No (SaaS) | Yes (EU hosting) | No (SaaS) | No (SaaS) | Yes (fully self-hosted) |
-| Performance | External ~200-250KB | External ~350-385KB | External ~100KB | External ~300KB JS (~750KB total) | External ~300KB | < 14KB total (no external scripts) |
-
----
-
 ## Phase / Build Order
 
 **Phase:** Last plugin to build. Requires N8N infrastructure and at least one live client site with traffic.
 
 **Dependencies:**
-- N8N server operational (already running at 72.62.212.169)
+- N8N server operational (verify the live engine before relying on it; address and credentials: `.claude/dev-setup.md` and the secrets files)
 - At least one N8N workflow for AI responses (basic: forward to LLM, return response)
 - Knowledge base articles populated (can bulk ingest from existing site pages)
 
@@ -697,5 +690,3 @@ Admin settings under Settings → SGS Chatbot:
 9. Typing indicators + canned responses
 10. Hybrid mode (AI → human escalation)
 11. Analytics dashboard (response times, resolution rates)
-
-**Estimated blocks of work:** 11 increments. Phases 1-5 deliver a functional live chat. Phases 6-8 add AI capability. Phases 9-11 are polish.

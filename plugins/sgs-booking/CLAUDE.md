@@ -1,4 +1,4 @@
- # SGS Booking — Claude Code Instructions
+# SGS Booking — Claude Code Instructions
 
 Not built yet; this file and the spec describe the planned plugin.
 
@@ -167,6 +167,6 @@ Source in `src/` is TypeScript (`.tsx`/`.ts`). The `build/` directory is compile
 
 The plugin depends on the booking system's REST API. Full endpoint list and phase priorities: `.claude/specs/03-SGS-BOOKING.md` §Booking System API Requirements.
 
-Existing endpoints (per the spec): `GET /api/v1/health`, `GET /api/v1/book/{orgSlug}/{typeSlug}/availability`, `POST /api/v1/book/{orgSlug}/{typeSlug}/create`, `GET /api/v1/book/{orgSlug}/{typeSlug}/ics/{bookingId}` (needs a token-auth fix before this plugin can safely use it — see the spec's security-fixes list).
+Existing endpoints (checked against the booking-system repo; full table in the spec): `GET /api/v1/health`, `GET /api/v1/book/{orgSlug}/{typeSlug}/availability`, `POST /api/v1/book/{orgSlug}/{typeSlug}/create`, `GET /api/v1/book/{orgSlug}/{typeSlug}/ics/{bookingId}?token=`, `GET /api/v1/booking/lookup?token=&type=cancel|reschedule`, `POST /api/v1/booking/cancel`, `POST /api/v1/booking/reschedule` (token in the JSON body), `GET /api/v1/invoices/{id}/pdf?token=`, `GET /api/v1/invoices/{id}/public`.
 
-New endpoints the booking system still needs to build before this plugin can function: organisation info/branding, booking-types listing, single booking-type details, providers listing (Phase 2), payment-intent creation, booking status lookup, booking cancellation, booking reschedule (Phase 2), invoice PDF download.
+Still to build in the booking system: organisation info/branding, booking-types listing, single booking-type details, providers listing (Phase 2), payment-intent creation. There is no `GET /api/v1/bookings/{id}/status`; `lookup` returns the booking for a token. Open security fixes (rate limiting, bot protection, `customCss` stripping, API key authentication, token expiry) are in the spec's security-fixes list.

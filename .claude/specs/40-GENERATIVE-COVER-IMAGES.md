@@ -1,17 +1,11 @@
 ---
 doc_type: spec
 spec_id: 40
-spec_version: 0.1.0
+spec_version: 0.2.0
 title: Generative cover images — deterministic, brand-coloured, pre-generated artwork
 project: small-giants-wp
 status: draft
-authors: [Claude Code, Bean]
-session_date: 2026-08-27
-last_verified: 2026-08-27
-status_history:
-  - 2026-08-27 — v0.1.0. SCOPE ONLY. Owner decided the four placements and the generator
-    shape at a design gate; the visual target is deliberately unresolved pending a
-    reference image he has actually seen. Nothing may be built from this document yet.
+last_verified: 2026-10-09
 ---
 
 # Spec 40 — Generative cover images
@@ -25,7 +19,7 @@ status_history:
 | **What** | A **static image file**, generated ahead of time and cached | A **live animated background** rendered in the browser |
 | **Where** | An offline script; output is a `.webp`/`.png` on disk | `webgl/`, Tier W, running per page view |
 | **Called** | Generative cover images | "Generative background engine" — the POC rebuild |
-| **Owner** | This spec | The motion track (see `LEDGER.md` Motion Track §B) |
+| **Owner** | This spec | Spec 38 (Tier W) and the report `.claude/reports/2026-08-25-generative-background-engine-technique-spec.md` |
 | **Motion?** | **None.** No tier, no runtime, no reduced-motion contract | Spec 38, Tier W, all of the above |
 
 They share an adjective and nothing else. `.claude/reports/2026-08-25-generative-background-engine-technique-spec.md` belongs to the OTHER one. **If you arrived here looking for the animated background, you are in the wrong document.**
@@ -38,11 +32,9 @@ client's own colour palette, every cover looks like it belongs to that client's 
 ## 1. Why this is NOT in Spec 38
 
 Spec 38 governs **motion** — four tiers, each with a runtime cost, a reduced-motion contract and
-an editor-canvas story. A cached static image has none of those. It rode along in the motion
-track only because it surfaced in the same conversation as the wave-gradient work. Owner's call,
-2026-08-27, and correct: *"Feels like this doesn't really fit well in spec 38 tbh."*
+an editor-canvas story. A cached static image has none of those: no tier, no runtime cost, no reduced-motion contract and no editor-canvas story, so it is not in Spec 38 (Bean).
 
-## 2. Placements — all four owner-selected (2026-08-27)
+## 2. Placements (all four chosen by Bean)
 
 - **FR-40-1 Blog / article headers.** Artwork behind a post title when no featured image is set.
   Highest volume; the most obviously valuable.

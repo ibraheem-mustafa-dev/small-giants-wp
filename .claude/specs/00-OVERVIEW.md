@@ -1,8 +1,16 @@
+---
+doc_type: spec
+spec_id: 0
+spec_version: 1.1
+project: small-giants-wp
+title: SGS Framework Overview
+status: active
+last_verified: 2026-10-09
+---
+
 # Small Giants Studio — WordPress Framework
 
-## Current State (as at 2026-06-13)
-
-SGS is now a **complete, sellable WooCommerce shop framework** (D220, 2026-06-12). Spec 30 P2 closed: product pages, cart, filterable shop archive, product search, structured data, value-ladder pricing, reviews, and notify-me capture are all live on the canary. The cloning pipeline is the active development focus — converting any SGS-BEM draft into native SGS blocks faithful to the homepage design with zero manual CSS.
+Current status, fronts and parked work: `.claude/LEDGER.md`.
 
 ---
 
@@ -37,15 +45,17 @@ A custom WordPress development framework built and maintained by Claude Code for
 
 ## The Framework Components
 
-| # | Component | Replaces | Type |
-|---|---|---|---|
-| 1 | **SGS Theme** | Astra Pro | WordPress block theme |
-| 2 | **SGS Blocks** | Spectra Pro | WordPress plugin (custom Gutenberg blocks) |
-| 3 | **SGS Booking** | WP Amelia Premium | WordPress plugin (appointment/event booking) |
-| 4 | **SGS Forms** | Fluent Forms Pro / SureForms | Built into SGS Blocks (form block system) |
-| 5 | **SGS Client Notes** | Atarim / ProjectHuddle | WordPress plugin (visual annotation system) |
-| 6 | **SGS Pop-ups** | OptinMonster / Popup Maker | WordPress plugin (conversion pop-ups) |
-| 7 | **SGS Chatbot** | Tidio / LiveChat / Crisp | WordPress plugin (live chat + AI assistant) |
+| # | Component | Replaces | Type | Status |
+|---|---|---|---|---|
+| 1 | **SGS Theme** | Astra Pro | WordPress block theme | built |
+| 2 | **SGS Blocks** | Spectra Pro | WordPress plugin (custom Gutenberg blocks) | built |
+| 3 | **SGS Booking** | WP Amelia Premium | WordPress plugin (appointment/event booking) | deferred |
+| 4 | **SGS Forms** | Fluent Forms Pro / SureForms | Built into SGS Blocks (form block system) | built |
+| 5 | **SGS Client Notes** | Atarim / ProjectHuddle | WordPress plugin (visual annotation system) | see README |
+| 6 | **SGS Pop-ups** | OptinMonster / Popup Maker | WordPress plugin (conversion pop-ups) | deferred |
+| 7 | **SGS Chatbot** | Tidio / LiveChat / Crisp | WordPress plugin (live chat + AI assistant) | deferred |
+
+Statuses follow the roster in [README.md](./README.md).
 
 ### Kept as-is (not replaced)
 
@@ -53,7 +63,6 @@ A custom WordPress development framework built and maintained by Claude Code for
 |---|---|
 | **ACF Pro** (10 lifetime licences) | Still useful for non-block custom fields on custom post types. Usage decreases naturally as SGS Blocks handles more. Programmatic setup via `acf_add_local_field_group()`. |
 | **Rank Math Free** | Unlimited sites, excellent schema builder, content analysis. No reason to rebuild. |
-| **SureForms** | Bridge for existing sites while SGS Forms is built. Phase out over time. |
 
 ---
 
@@ -136,10 +145,8 @@ No "it works on desktop but breaks on mobile" — mobile is the starting point.
 - **Deployment:** **`python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`** — the ONE path for every target (ceremony/gates via `/wp-sgs-deploy`). It builds, gates on a dirty working tree, verifies fail-closed, and rotates a `.bak` for rollback. ⛔ **Not SFTP, and never a hand-rolled tar/`scp -r`/`ssh rm -rf`** — that recipe took two client sites down for ~2.5h on 2026-07-14 (D336).
 - **Per-client tokens:** `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` (Spec 33), never a framework deploy.
 - **Local testing:** WordPress Playground or Local by Flywheel
-- **Dev sites:** `build-deploy.py` targets are `sandybrown` (sandybrown-nightingale-600381.hostingersite.com, the canary) `indus-test` (lavender-dinosaur-183533.hostingersite.com, the Indus Foods test site) and `eye-care-test` (darkcyan-grouse-898606.hostingersite.com, the Eye Care Birmingham test site); the last two deploy only when named with `--target`
-- **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com — Mama's Munches canary. The native-block homepage is **page 2742** (`/`), posts page **2741** (`/blog/`). ⛔ Page 144 was hard-deleted; keep the number only as the provenance that locates the clone, and verify any post ID exists before pointing anything at it.
-- **WP version:** **7.1** (verified 2026-08-20 via `wp core version` over SSH — re-check, don't trust this line)
-- **Automation:** N8N workflows on VPS (72.62.212.169) for notifications, webhooks, scheduled tasks
+- **Targets, canary, page IDs, WP version:** `.claude/dev-setup.md` and `.claude/LEDGER.md` (query `wp core version` for the live value).
+- **Automation:** N8N workflows (see `.claude/dev-setup.md` §N8N) for notifications, webhooks, scheduled tasks
 - **Updates:** theme/plugin updates are code changes deployed via `build-deploy.py`, not WordPress auto-updates.
 
 ---
@@ -155,7 +162,7 @@ All framework components use the `sgs-` prefix (Small Giants Studio):
 - PHP namespace: `SGS\Theme`, `SGS\Blocks`, `SGS\Booking`, `SGS\ClientNotes`
 - Text domain: `sgs-theme`, `sgs-blocks`, `sgs-booking`, `sgs-client-notes`
 - CSS prefix: `.sgs-`
-- Block namespace: `sgs/block-name`
+- Block namespace: `sgs/<block-slug>`
 - Hook prefix: `sgs_`
 
 ---
@@ -169,4 +176,7 @@ Each component has its own spec document:
 3. [SGS Booking](./03-SGS-BOOKING.md) — Appointment and event booking system
 4. [SGS Forms](./04-SGS-FORMS.md) — Form system (integrated into SGS Blocks)
 5. [SGS Client Notes](./05-SGS-CLIENT-NOTES.md) — Visual annotation and feedback system
-6. [Build Order](./archive/06-BUILD-ORDER.md) — Dependencies, sequence, and phasing (ARCHIVED 2026-07-28 — historical; live sequencing = `.claude/LEDGER.md`)
+6. [SGS Pop-ups](./07-SGS-POPUPS.md) — Conversion pop-up plugin (deferred)
+7. [SGS Chatbot](./08-SGS-CHATBOT.md) — Live chat and AI assistant (deferred)
+
+The full roster is [README.md](./README.md); live sequencing is `.claude/LEDGER.md`.

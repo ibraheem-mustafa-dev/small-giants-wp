@@ -1,3 +1,13 @@
+---
+doc_type: spec
+spec_id: 3
+spec_version: 1.1
+project: small-giants-wp
+title: SGS Booking
+status: deferred
+last_verified: 2026-10-09
+---
+
 # SGS Booking — WordPress API Client Plugin
 
 ## Purpose
@@ -9,8 +19,8 @@ A thin WordPress plugin that connects to the Small Giants Booking System (a stan
 ### Why This Architecture
 
 The booking system is a separate Next.js application (`booking-system` repo) with:
-- PostgreSQL database (12 tables via Drizzle ORM)
-- Availability calculation engine (pure function, 23 tests)
+- PostgreSQL database via Drizzle ORM
+- Availability calculation engine (pure function)
 - Google Calendar + Outlook OAuth sync
 - BullMQ job queue for email reminders
 - Resend + React Email for transactional email
@@ -98,18 +108,13 @@ The booking system established a design system called "Dark Confidence" (2026-03
 - **Confirmation:** Teal circle + white tick with pop animation, copy says "You're booked in"
 - **Anti-patterns:** No serif fonts, no grey-on-white cards, no `ease-in-out` transitions, no uniform grids, no `innerHTML` for API data (XSS risk)
 
-**Product vision (future phases):**
-- Phase B: Onboarding wizards, guided tutorials, contextual tooltips
-- Phase C: AI chatbot for guidance/support/booking automation (N8N + RAG)
-- Phase D: Freemium model with paid extras (chatbot automation, advanced analytics)
-
 ---
 
 ## Conventions
 
 - **Monday is the first day of the week.** All calendar UIs (date pickers, schedule tables, working hours displays) show Monday first, Sunday last. This is the UK/ISO 8601 convention. The booking system internally uses `0 = Sunday` (JavaScript `Date.getDay()`), so the WP plugin must reorder when displaying. The mapping: Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6, Sun=0.
 - **UK English** in all user-facing text, code comments, and variable names (organisation, colour, cancelled).
-- **44px minimum touch targets** on all interactive elements (WCAG 2.2 AA).
+- **44px minimum touch targets** on all interactive elements (per the framework accessibility baseline: 44px targets and visible focus).
 - **Currency defaults to GBP**, displayed with `£` symbol.
 - **Timezone defaults to `Europe/London`.**
 
@@ -226,8 +231,9 @@ class SGS_API_Client {
 
     // Bookings
     public function create_booking( string $type_slug, array $data ): array|WP_Error;
-    public function get_booking_status( string $booking_id, string $token ): array|WP_Error;
-    public function cancel_booking( string $booking_id, string $token ): array|WP_Error;
+    public function lookup_booking( string $token, string $type ): array|WP_Error;   // type: cancel | reschedule
+    public function cancel_booking( string $token ): array|WP_Error;
+    public function reschedule_booking( string $token, string $start_at, string $timezone ): array|WP_Error;
 
     // Payment
     public function create_payment_intent( string $type_slug, array $data ): array|WP_Error;
@@ -584,18 +590,23 @@ The API URL field in admin settings is validated:
 
 ## Booking System API Requirements
 
-The WP plugin depends on these booking system REST API endpoints. Some exist, some need building.
+The WP plugin depends on these booking system REST API endpoints. Paths below are what the separate `booking-system` repo exposes today (checked against `src/app/api/v1/` there); re-check them against that repo before building the plugin, because it can move.
 
 ### Existing Endpoints (already built)
 
-| Method | Path | Status |
+| Method | Path | Notes |
 |---|---|---|
 | `GET` | `/api/v1/health` | Done |
-| `GET` | `/api/v1/book/{orgSlug}/{typeSlug}/availability?date=&timezone=` | Done |
+| `GET` | `/api/v1/book/{orgSlug}/{typeSlug}/availability?date=&timezone=` | Done; returns organisation `name` and `branding` |
 | `POST` | `/api/v1/book/{orgSlug}/{typeSlug}/create` | Done |
-| `GET` | `/api/v1/book/{orgSlug}/{typeSlug}/ics/{bookingId}` | Done (needs security fix — see below) |
+| `GET` | `/api/v1/book/{orgSlug}/{typeSlug}/ics/{bookingId}?token=` | Done; requires the cancellation token |
+| `GET` | `/api/v1/booking/lookup?token=&type=cancel\|reschedule` | Done; returns the booking for a token. The plugin must use this path |
+| `POST` | `/api/v1/booking/cancel` | Done; `token` in the JSON body. The plugin must use this path |
+| `POST` | `/api/v1/booking/reschedule` | Done; `token`, `startAt`, `timezone` in the JSON body. The plugin must use this path |
+| `GET` | `/api/v1/invoices/{id}/pdf?token={downloadToken}` | Done |
+| `GET` | `/api/v1/invoices/{id}/public` | Done; public invoice view with organisation branding |
 
-### New Endpoints Required
+### New Endpoints Required (not built)
 
 | Method | Path | Purpose | Priority |
 |---|---|---|---|
@@ -604,30 +615,24 @@ The WP plugin depends on these booking system REST API endpoints. Some exist, so
 | `GET` | `/api/v1/book/{orgSlug}/{typeSlug}` | Single booking type details | Phase 1 |
 | `GET` | `/api/v1/book/{orgSlug}/providers` | List providers (Phase 2 multi-provider) | Phase 2 |
 | `POST` | `/api/v1/book/{orgSlug}/{typeSlug}/payment-intent` | Create Stripe Payment Intent | Phase 1 (payment) |
-| `GET` | `/api/v1/bookings/{id}/status?token={cancellationToken}` | Booking status lookup | Phase 1 |
-| `POST` | `/api/v1/bookings/{id}/cancel?token={cancellationToken}` | Cancel booking via email token | Phase 1 |
-| `POST` | `/api/v1/bookings/{id}/reschedule?token={rescheduleToken}` | Reschedule booking via email token | Phase 2 |
-| `GET` | `/api/v1/invoices/{id}/pdf?token={downloadToken}` | Download invoice PDF via token (for customer portal / email links) | Phase 1 |
+
+There is no `GET /api/v1/bookings/{id}/status` endpoint; `GET /api/v1/booking/lookup` returns the booking for a token.
 
 ### Booking System Security Fixes Required Before WP Integration
 
-These are vulnerabilities in the booking system that must be fixed before the WP plugin can safely consume its API.
+These are open vulnerabilities in the booking system that must be fixed before the WP plugin can safely consume its API.
 
-1. **ICS endpoint must require a token** — currently uses the booking UUID as access control. Must require `?token={cancellationToken}` or a dedicated ICS token. Without this, anyone who discovers a booking UUID can access PII (organiser email, attendee email, time, location)
+1. **Rate limiting on public endpoints** — `/availability` and `/create` accept unlimited requests. Implement per-IP rate limiting (e.g., 60 requests/minute for reads, 5 bookings/minute for writes)
 
-2. **Rate limiting on public endpoints** — `/availability` and `/create` accept unlimited requests. Implement per-IP rate limiting (e.g., 60 requests/minute for reads, 5 bookings/minute for writes)
+2. **Bot protection on booking creation** — add a honeypot field and/or Cloudflare Turnstile verification to the create endpoint
 
-3. **Bot protection on booking creation** — add a honeypot field and/or Cloudflare Turnstile verification to the create endpoint
+3. **Add `customCss` to a denied-fields list** — the availability endpoint returns full `branding` including `customCss`. Either strip it from public responses or add a `publicBranding` projection that excludes it
 
-4. **Validate `clientTimezone`** — currently accepts any string up to 64 characters. Must validate against `Intl.supportedValuesOf('timeZone')` or a hardcoded IANA timezone list
+4. **API key authentication** — add an `api_key` (hashed) column to the `organisations` table. Validate `Authorization: Bearer {key}` on endpoints that return sensitive data (org details, booking lookup). Public read endpoints (availability, booking types) may remain unauthenticated
 
-5. **Remove `organisation.id` from public API responses** — the internal UUID is unnecessary for public consumers. Return only name, slug, and branding
+5. **Token expiry** — `cancellationToken` and `rescheduleToken` should expire (e.g., 90 days after booking creation, or 30 days after the booking date, whichever is later)
 
-6. **Add `customCss` to a denied-fields list** — the availability endpoint returns full branding including `customCss`. Either strip it from public responses or add a `publicBranding` projection that excludes it
-
-7. **API key authentication** — add an `api_key` (hashed) column to the `organisations` table. Validate `Authorization: Bearer {key}` on endpoints that return sensitive data (org details, booking status). Public read endpoints (availability, booking types) may remain unauthenticated
-
-8. **Token expiry** — `cancellationToken` and `rescheduleToken` should expire (e.g., 90 days after booking creation, or 30 days after the booking date, whichever is later)
+Built in the booking system: the ICS endpoint requires the cancellation token; `clientTimezone` is validated against `Intl.supportedValuesOf('timeZone')`; public responses no longer carry the internal `organisation.id`.
 
 ---
 

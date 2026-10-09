@@ -1,8 +1,18 @@
+---
+doc_type: spec
+spec_id: 7
+spec_version: 1.1
+project: small-giants-wp
+title: SGS Pop-ups
+status: deferred
+last_verified: 2026-10-09
+---
+
 # SGS Pop-ups — WordPress Conversion Pop-up Plugin
 
 ## Purpose
 
-A standalone WordPress plugin for creating, targeting, and measuring conversion pop-ups. Replaces OptinMonster ($7-49/month SaaS), Popup Maker (free + $99-249/yr Pro), Convert Pro ($99/yr or $399 lifetime), Elementor Pro's popup builder ($59-999/year), and Hustle Pro (requires WPMU DEV membership, $30+/year).
+A standalone WordPress plugin for creating, targeting, and measuring conversion pop-ups. Replaces OptinMonster, Popup Maker, Convert Pro, Elementor Pro's popup builder and Hustle Pro.
 
 **Core advantage over competitors:** Zero external SaaS dependency, zero per-site licensing, native block editor content, full Interactivity API integration, no performance penalty on pages without pop-ups, and deep integration with SGS Forms for lead capture.
 
@@ -601,11 +611,11 @@ const { state, actions, callbacks } = store( 'sgs/popups', {
 When an SGS Form block is placed inside a popup's block editor content:
 
 1. The form renders normally inside the popup
-2. On successful form submission, the popup's Interactivity API store detects the `sgs/forms:submitted` event
+2. On successful form submission, the popup's Interactivity API store detects an `sgs/forms:submitted` event
 3. The popup records a `conversion` event automatically
 4. The popup can be configured to close after form submission (with optional success message delay)
 
-**No special code needed in the form blocks** — the popup listens for the existing form submission event that SGS Forms already dispatches.
+This requires a `CustomEvent` (proposed name `sgs/forms:submitted`) that `plugins/sgs-blocks/src/blocks/form/view.js` does not yet dispatch; add it when this plugin is built.
 
 ---
 
@@ -701,27 +711,11 @@ CREATE TABLE {prefix}sgs_popup_events (
 
 | Component | Integration |
 |---|---|
-| **SGS Forms** | Form blocks inside popup content trigger popup conversion events on submission |
+| **SGS Forms** | Form blocks inside popup content trigger popup conversion events on submission (needs the new `sgs/forms:submitted` event in the form block's `view.js`) |
 | **SGS Theme** | Reads design tokens (colours, typography, spacing, shadows) from theme.json |
 | **SGS Blocks** | Any SGS block can be placed inside popup content |
 | **N8N** | Conversion events can trigger N8N webhooks for notifications/CRM updates |
 | **Cookie consent plugins** | Checks consent cookie before showing popups (GDPR mode) |
-
----
-
-## Competitive Edge Summary
-
-| Feature | OptinMonster | Popup Maker | Convert Pro | Elementor Pro | SGS Pop-ups |
-|---|---|---|---|---|---|
-| Pricing | $7-49/month SaaS | Free + $99-249/yr Pro | $99/yr or $399 lifetime | $59-999/year | Free (self-hosted) |
-| Block editor content | No (proprietary builder) | Limited | No | Elementor builder | Full WordPress block editor |
-| Exit intent | Yes (trademarked term) | Pro only | Yes | Yes | Yes |
-| A/B testing | Plus plan+ ($19/mo) | Pro only | Yes | No | Yes |
-| Analytics | Yes (SaaS dashboard) | Basic | Basic | Via JS events only | Built-in per-popup |
-| GDPR consent mode | Basic | Basic | Yes | No | Yes (auto-detects consent plugins) |
-| Performance impact | External JS on all pages | Plugin JS on all pages | Plugin JS on all pages | Elementor JS on all pages | Zero assets on pages without popups |
-| SGS Forms integration | No | No | No | No | Native |
-| Per-site licensing | Per-site SaaS fee | Annual Pro licence | Annual or lifetime | Per-licence annual | None |
 
 ---
 
@@ -740,5 +734,3 @@ CREATE TABLE {prefix}sgs_popup_events (
 8. A/B testing
 9. GDPR consent mode
 10. SGS Forms integration (conversion detection)
-
-**Estimated blocks of work:** 10 increments, each independently deployable and testable.

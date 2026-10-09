@@ -1,8 +1,8 @@
 ---
 doc_type: reference
 version: "1.0"
-spec_ref: specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md §FR-30-13
-created: 2026-06-12
+spec_ref: .claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md#fr-30-13
+last_verified: 2026-10-09
 purpose: Repeatable pre-launch gate run before any SGS client shop takes real money.
 scope: Run once per client, top-to-bottom. Every item must be ✅ or a recorded conscious N/A before the shop accepts live payments.
 ---
@@ -10,7 +10,7 @@ scope: Run once per client, top-to-bottom. Every item must be ✅ or a recorded 
 # SGS WooCommerce Shop — Go-Live Checklist
 
 **Version:** 1.0  
-**Spec source:** `specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md` §FR-30-13  
+**Spec source:** `.claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md` §FR-30-13  
 **Applies to:** every SGS client shop before first live payment is taken.
 
 ---
@@ -30,8 +30,8 @@ Example URL used in probes: `https://sandybrown-nightingale-600381.hostingersite
 | ID | What to verify | Named probe | Pass criteria | Status |
 |----|----------------|-------------|---------------|--------|
 | PL-1 | Payment gateway is in **LIVE mode** (not sandbox/test) | Gateway dashboard → confirm "Live" mode enabled. OR place a real low-value transaction (e.g. £0.01) via the actual checkout and refund it immediately. | A live (not sandbox) transaction succeeds and appears in the gateway's live transaction log. | ☐ |
-| PL-2 | WooCommerce coming-soon mode is **off** | `wp option get woocommerce_coming_soon` via SSH: `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73 "wp option get woocommerce_coming_soon --path=~/domains/<client-domain>/public_html"` | Returns `no`. WC 10+ defaults to `yes`, which silently hides all store pages. | ☐ |
-| PL-3 | VAT-registration state matches price labelling | `wp option get woocommerce_calc_taxes` (same SSH pattern). If `no`: `curl -s https://<client-domain>/shop/ \| grep -i "inc. vat"` — expect zero matches. If `yes`: confirm "inc. VAT" labels render on the PDP price display. | Labelling matches the client's actual VAT-registration status. UK threshold is ~£90k turnover — never assume a new shop is VAT-registered. (Memory: `inc-vat-not-default-gate-on-vat-registered`.) | ☐ |
+| PL-2 | WooCommerce coming-soon mode is **off** | `wp option get woocommerce_coming_soon` via SSH (alias `hd`): `ssh hd "wp option get woocommerce_coming_soon --path=~/domains/<client-domain>/public_html"` | Returns `no`. WC 10+ defaults to `yes`, which silently hides all store pages. | ☐ |
+| PL-3 | VAT-registration state matches price labelling | `wp option get woocommerce_calc_taxes` (same SSH pattern). If `no`: `curl -s https://<client-domain>/shop/ \| grep -i "inc. vat"` — expect zero matches. If `yes`: confirm "inc. VAT" labels render on the PDP price display. | Labelling matches the client's actual VAT-registration status. UK threshold is ~£90k turnover — never assume a new shop is VAT-registered. | ☐ |
 | PL-4 | Cookie-consent / PECR compliance in place if any capture or analytics is active | Manual: is the notify-me e-mail capture or any analytics pixel (GA4, Facebook Pixel, etc.) live on the site? If yes: is a consent mechanism present and operational before any tracking fires? | PECR-compliant (explicit opt-in before non-essential tracking fires) **or** no active capture/analytics — confirmed and recorded. | ☐ |
 | PL-5 | Privacy-policy page is published and assigned in WP | `wp option get wp_page_for_privacy_policy` (SSH). Then: `wp post get <returned-ID> --field=post_status` | Returns a non-zero page ID whose `post_status` is `publish`. Required for the notify-me consent link via `get_privacy_policy_url()`. | ☐ |
 
@@ -45,8 +45,8 @@ Example URL used in probes: `https://sandybrown-nightingale-600381.hostingersite
 | SE-2 | Organisation schema completeness | `curl -s https://<client-domain>/ \| grep -o '"@type":"Organization"[^<]*'` — then validate the full JSON-LD block via `python -c "import sys,json,re; body=sys.stdin.read(); blobs=[json.loads(m) for m in re.findall(r'<script[^>]*type=\"application/ld\+json\"[^>]*>(.*?)</script>', body, re.S)]; [print(b) for b in blobs if b.get('@type')=='Organization'" <<< "$(curl -s https://<client-domain>/)"` | `logo`, `url`, `address.streetAddress` (or a recorded reason they are blank — e.g. client refused to supply address). `sameAs` recommended if the client has social profiles. | ☐ |
 | SE-3 | Draft products **absent** from all schema | `curl -s https://<client-domain>/product/<any-draft-product-slug>/` (a product in draft status) | HTTP 404 or redirect (not 200), and zero JSON-LD in the response body. Draft products must never surface in schema. | ☐ |
 | SE-4 | Cart, checkout, and account pages are `noindex` | For each page: `curl -s https://<client-domain>/cart/ \| grep -o 'noindex'` ; repeat for `/checkout/` and `/my-account/` | Each returns `noindex` in the response (either in a `<meta name="robots">` tag or an `X-Robots-Tag` header). | ☐ |
-| SE-5 | `SearchAction` absent from sitewide schema | `curl -s https://<client-domain>/ \| grep -o '"SearchAction"'` | Zero matches. `SearchAction` was removed per FR-30-9; its presence would be a regression. | ☐ |
-| SE-6 | `FAQPage` schema **present and hardened** where FAQ/accordion content exists, with honest on-page framing | `curl -s https://<client-domain>/product/<slug-with-faq-or-accordion-content>/ \| grep -o '"@type":"FAQPage"'` — expect a match where FAQ content is present (absence is fine on pages with no FAQ/accordion content). Also confirm the emitted schema is HEX-encoded and inspect the visible FAQ copy. | `FAQPage` is emitted on every page that uses the `product-faq` / `accordion` blocks, is HEX-encoded (hardened), and no on-page copy claims a "Google rich result". Framing must reference AI-search (ChatGPT/Perplexity/AI Overviews) + Bing visibility only. Per D215 (2026-06-12): Google dropped the FAQ *rich result*, but `FAQPage` remains valid schema consumed by AI search + Bing, so the framework KEEPS it. | ☐ |
+| SE-5 | `SearchAction` absent from sitewide schema | `curl -s https://<client-domain>/ \| grep -o '"SearchAction"'` | Zero matches. `SearchAction` is not emitted (FR-30-9); its presence is a regression. | ☐ |
+| SE-6 | `FAQPage` schema **present and hardened** where FAQ/accordion content exists, with honest on-page framing | `curl -s https://<client-domain>/product/<slug-with-faq-or-accordion-content>/ \| grep -o '"@type":"FAQPage"'` — expect a match where FAQ content is present (absence is fine on pages with no FAQ/accordion content). Also confirm the emitted schema is HEX-encoded and inspect the visible FAQ copy. | `FAQPage` is emitted on every page that uses the `product-faq` / `accordion` blocks, is HEX-encoded (hardened), and no on-page copy claims a "Google rich result". Framing must reference AI-search (ChatGPT/Perplexity/AI Overviews) + Bing visibility only. Per D215: Google dropped the FAQ *rich result*, but `FAQPage` remains valid schema consumed by AI search + Bing, so the framework KEEPS it. | ☐ |
 
 ---
 
@@ -89,10 +89,10 @@ Example URL used in probes: `https://sandybrown-nightingale-600381.hostingersite
 
 | ID | What to verify | Named probe | Pass criteria | Status |
 |----|----------------|-------------|---------------|--------|
-| FL-1 | WooCommerce version is inside the tested band (FR-30-0; floor ≥9.9 for the variation-aware gallery — the version-check notice + dependency manifest that used to gate this, FR-30-0a/b, were withdrawn 2026-09-11, D1036, and no longer exist) | SSH: `wp plugin get woocommerce --field=version` | Version is ≥9.9. If outside the range this build was actually tested against, manually confirm compatibility with Bean before proceeding — there is no automated notice for this any more. | ☐ |
-| FL-2 | Payment gateway declares block support at its installed version (FR-30-0c) | WP Admin → WooCommerce → Status → Installed Plugins — locate the gateway plugin (e.g. WooCommerce Payments / Stripe). Confirm its version is listed in the FR-30-0 gateway matrix as block-supported. | Gateway matrix in FR-30-0c has a verified ✅ for this client's gateway plugin + version. If not recorded, run the pre-flight now and record the result. | ☐ |
-| FL-3 | OPcache flushed after final deploy | SSH: write a one-shot OPcache reset file, curl it, delete it immediately: `echo '<?php opcache_reset(); ?>' > ~/domains/<client-domain>/public_html/opcache-reset-$(date +%s).php; curl -s https://<client-domain>/opcache-reset-<timestamp>.php; rm ~/domains/<client-domain>/public_html/opcache-reset-<timestamp>.php` | Script returns without a 404. OPcache cleared so all deployed PHP is live. | ☐ |
-| FL-4 | Theme version bumped and CSS cache-busted | Check the deployed `theme/sgs-theme/style.css` `Version:` field is greater than the previously deployed version (any style.css change requires a bump — CDN caches on the `?ver` URL). | `wp theme get sgs-theme --field=version` (SSH) returns a version string greater than the previous deployment. Any un-bumped CSS deploy is a hard blocker (lesson: `theme-css-busts-off-theme-style-css-version`). | ☐ |
+| FL-1 | WooCommerce version is inside the tested band (FR-30-0 version floor: ≥9.9 for the variation-aware gallery; no runtime check exists) | SSH: `wp plugin get woocommerce --field=version` | Version is ≥9.9. If outside the range this build was actually tested against, manually confirm compatibility with Bean before proceeding — there is no automated notice. | ☐ |
+| FL-2 | Payment gateway declares block support at its installed version (FR-30-0 gateway pre-flight) | WP Admin → WooCommerce → Status → Installed Plugins — locate the gateway plugin (e.g. WooCommerce Payments / Stripe). Confirm the gateway declares Cart/Checkout block support at its installed version. | The gateway pre-flight (FR-30-0) passes for this client's gateway plugin + version and the result is recorded in the Per-Client Run Log. If not recorded, run the pre-flight now and record the result. | ☐ |
+| FL-3 | OPcache flushed after final deploy | Run `python plugins/sgs-blocks/scripts/build-deploy.py --target <target>`, which purges OPcache, the LiteSpeed page cache and the theme pattern cache. For a manual deploy, use the OPcache reset snippet in `.claude/dev-setup.md`. | OPcache cleared so all deployed PHP is live. | ☐ |
+| FL-4 | Theme version bumped and CSS cache-busted | Check the deployed `theme/sgs-theme/style.css` `Version:` field is greater than the previously deployed version (any style.css change requires a bump — CDN caches on the `?ver` URL). | `wp theme get sgs-theme --field=version` (SSH) returns a version string greater than the previous deployment. Any un-bumped CSS deploy is a hard blocker (Hostinger CDN caches block CSS 7 days on the `?ver` URL; a deploy without a version bump serves stale CSS silently). | ☐ |
 
 ---
 
@@ -100,19 +100,15 @@ Example URL used in probes: `https://sandybrown-nightingale-600381.hostingersite
 
 | Client | Live domain | Launch date | Run by | Result | Notes / blocked items |
 |--------|-------------|-------------|--------|--------|-----------------------|
-| Mama's Munches | _(to be confirmed)_ | ☐ TBC | ☐ TBC | ☐ PASS / BLOCKED | — |
+
+Add one row per client run.
 
 ---
 
 ## Notes
 
-- **Spec source:** `specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md` §FR-30-13 (v1.1, 2026-06-11).
-- **FR-30-11 audit script:** `scripts/wc-pages-responsive-audit.js` — committed and confirmed present in the repo. Run it against the live client domain (not the canary) for the RA-1 gate.
-- **Memory bindings (do not skip):**
-  - `inc-vat-not-default-gate-on-vat-registered` — never assume a new shop is VAT-registered; gate "(inc. VAT)" labels on `woocommerce_calc_taxes==='yes'`.
-  - `ship-gate-needs-human-eye-not-just-automated-gates` — green automated gates (axe/script) are necessary but not sufficient; Bean's visual sign-off (RA-2) is co-authoritative.
-  - `guard-on-one-path-is-not-a-guard` — IF-4 exists because a direct `/wc/store/v1` write path bypasses the proxy's IDOR/legal guards even when the main path is hardened.
-  - `theme-css-busts-off-theme-style-css-version` — FL-4 exists because Hostinger CDN caches block CSS 7 days on the `?ver` URL; a deploy without a version bump serves stale CSS silently.
-- **D215 (2026-06-12) — FAQPage retained:** SE-6 verifies `FAQPage` is PRESENT (not absent). Google dropped the FAQ rich result, but `FAQPage` remains valid schema consumed by AI search (ChatGPT/Perplexity/AI Overviews) + Bing, so the framework keeps it via the hardened HEX-flagged `product-faq` / `accordion` emitters. On-page copy must frame FAQs as AI-search/Bing visibility, never as a Google rich result. (Only the `SearchAction` removal — SE-5 — stands from the original FR-30-9 schema cull.)
+- **Spec source:** `.claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md` §FR-30-13.
+- **FR-30-11 audit script:** `scripts/wc-pages-responsive-audit.js` — run it against the live client domain (not the canary) for the RA-1 gate.
+- **SE-6:** `FAQPage` is expected where FAQ/accordion content exists; AI search (ChatGPT/Perplexity/AI Overviews) and Bing consume it (D215). On-page copy frames FAQs as AI-search/Bing visibility, never as a Google rich result.
 - **N/A policy:** an item may be recorded as N/A only with a written reason. Examples of valid N/A: IF-1 when notify-me is not active; PD-1/PD-2 for a handmade product without a barcode (state why). An N/A without a reason is treated as ☐ (incomplete).
 - **Blocked = not live:** a single ☐ that is not a recorded N/A means the shop does **not** take real money. No exceptions.

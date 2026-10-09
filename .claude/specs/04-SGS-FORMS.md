@@ -1,8 +1,18 @@
+---
+doc_type: spec
+spec_id: 4
+spec_version: 1.1
+project: small-giants-wp
+title: SGS Forms
+status: active
+last_verified: 2026-10-09
+---
+
 # SGS Forms — Custom Form System
 
 ## Purpose
 
-A form system built into the SGS Blocks plugin that replaces Fluent Forms Pro and SureForms for all Small Giants Studio client sites. Handles multi-step forms, conditional logic, file uploads, payment collection, and notifications — all rendering with the SGS design system and sending its emails through `wp_mail()` over the client's own SMTP mailbox.
+A form system built into the SGS Blocks plugin that replaces Fluent Forms Pro and SureForms for all Small Giants Studio client sites. Handles multi-step forms, conditional logic, file uploads and notifications (payment collection is specified but not built, see §Not built) — all rendering with the SGS design system and sending its emails through `wp_mail()` over the client's own SMTP mailbox.
 
 **Note:** This is not a standalone plugin — it lives within SGS Blocks as a set of form-related blocks and a shared form processing engine.
 
@@ -16,7 +26,7 @@ A form system built into the SGS Blocks plugin that replaces Fluent Forms Pro an
 | Multi-step forms | Plugin-specific page breaks | `sgs/form` + `sgs/form-step` inner blocks |
 | Conditional logic | Plugin-specific rules UI | Attributes on field blocks + `viewScriptModule` |
 | File uploads | Built-in with limits | `sgs/form-field-file` block + REST endpoint |
-| Payment integration | Plugin-specific Stripe addon | Shared Stripe handler (same as SGS Booking) |
+| Payment integration | Plugin-specific Stripe addon | Shared Stripe handler (same as SGS Booking) — **not built** |
 | Email notifications | Plugin-specific email builder | `wp_mail()` over the site's SMTP (FluentSMTP), one shared SGS template; optional N8N event for automations |
 | Submissions storage | Plugin database tables | Custom table `{prefix}sgs_form_submissions` |
 | GDPR compliance | Plugin checkbox + privacy settings | `sgs/form-field-consent` block + data export/erasure hooks |
@@ -59,7 +69,7 @@ The wrapper block that handles the entire form lifecycle.
 
 | Attribute | Type | Description |
 |---|---|---|
-| `formId` | string | Unique form identifier (auto-generated, used for submission storage) |
+| `formId` | string | Unique form identifier (auto-generated, used for submission storage). Form identity, the `sgs_form` CPT and the login requirement are specified in Spec 42; this row is the submission-storage key only. |
 | `formName` | string | Human-readable form name (for admin reference) |
 | `submitLabel` | string | Submit button text (default: "Submit") |
 | `submitStyle` | string | Button style: primary, success, accent |
@@ -75,9 +85,9 @@ The wrapper block that handles the entire form lifecycle.
 | `honeypot` | boolean | Enable honeypot spam field (default: true) |
 | `rateLimit` | integer | Max submissions per IP per hour (default: 5) |
 | `storeSubmissions` | boolean | Save to database (default: true) |
-| `paymentEnabled` | boolean | Collect payment on submission |
-| `paymentAmount` | string | Fixed amount or field reference (e.g., "{field:estimated_spend}") |
-| `paymentDescription` | string | Stripe payment description |
+| `paymentEnabled` | boolean | **Not built.** Collect payment on submission |
+| `paymentAmount` | string | **Not built.** Fixed amount or field reference (e.g., "{field:estimated_spend}") |
+| `paymentDescription` | string | **Not built.** Stripe payment description |
 
 ### Multi-Step Behaviour
 
@@ -134,7 +144,7 @@ The visual tile selector inspired by the Indus Foods V2 trade application mockup
 **Additional attributes:**
 - `allowedTypes` — array of MIME types (default: image/*, application/pdf)
 - `maxSize` — max file size in MB (default: 10)
-- `maxFiles` — max number of files (default: 1)
+- `maxFiles` — max number of files (default: 1) — **not built**
 - `uploadText` — drag-and-drop area label
 - `zoneStyle` — dashed (default) | panel: a 1px dashed panel holding the prompt, the help line and a Choose file cue, the size limit kept for screen readers
 - `buttonLabel` — the panel look's button text (empty reads "Choose file")
@@ -146,13 +156,13 @@ The visual tile selector inspired by the Indus Foods V2 trade application mockup
 **Additional attributes:** `min`, `max`, `step`, and for boxes laid out as a small table (a prescription's SPH / CYL /
 AXIS): `columnHeading` (a short heading above the box, set on the first row) and `rowHeading` (a short heading in a
 32px gutter to the left, set on the first box of each row). Both are visual only; the label stays the accessible name.
-Row-headed boxes sit 8px apart with no spinner arrows (`includes/forms/field-render-helpers.php::field_headings`).
+Row-headed boxes sit 8px apart with no spinner arrows (`plugins/sgs-blocks/includes/forms/field-render-helpers.php::field_headings`).
 
 ### Address with Postcode Lookup (`sgs/form-field-address`)
 
 **Additional attributes:**
 - `enableLookup` — boolean (enable postcode auto-complete)
-- `lookupProvider` — getaddress.io | ideal-postcodes (API key stored in settings)
+- `lookupProvider` — getaddress.io | ideal-postcodes (API key stored in settings) — **not built** (no address-lookup provider is wired in)
 - `fields` — which sub-fields to show (line1, line2, city, county, postcode, country)
 
 ### Consent (`sgs/form-field-consent`)
@@ -175,7 +185,7 @@ Row-headed boxes sit 8px apart with no spinner arrows (`includes/forms/field-ren
 4. Rate limit check (transient-based, per IP)
 5. Server-side validation (all fields)
 6. File upload processing (if any)
-7. Payment processing (if enabled) — Stripe Payment Intent
+7. Payment processing (if enabled) — Stripe Payment Intent (**not built**; this step is skipped)
 8. Store submission in database
 9. Email the owner notification and, when switched on, the submitter's confirmation (`Form_Mailer`), then fire the optional N8N event
 10. Return success response (message or redirect URL)
@@ -204,9 +214,9 @@ Row-headed boxes sit 8px apart with no spinner arrows (`includes/forms/field-ren
 | `form_id` | VARCHAR(100) | Form identifier (matches block attribute) |
 | `data` | JSON | All field values as key-value pairs |
 | `files` | JSON | Array of attachment IDs |
-| `payment_status` | VARCHAR(20) | none, pending, paid, refunded |
-| `payment_amount` | DECIMAL(10,2) | Amount charged |
-| `stripe_payment_id` | VARCHAR(255) | Stripe Payment Intent ID |
+| `payment_status` | VARCHAR(20) | none, pending, paid, refunded (columns exist; every row stores `none` until payment collection is built) |
+| `payment_amount` | DECIMAL(10,2) | Amount charged (not built) |
+| `stripe_payment_id` | VARCHAR(255) | Stripe Payment Intent ID (not built) |
 | `ip_address` | VARCHAR(45) | Submitter IP |
 | `user_agent` | VARCHAR(500) | Browser user agent |
 | `user_id` | BIGINT(20) | WordPress user ID (if logged in) |
@@ -224,14 +234,14 @@ Accessible at **SGS Forms > Submissions** in wp-admin.
 
 - List table with columns: Date, Form, Name/Email (from common fields), Status, Payment
 - Filter by form, date range, status
-- Bulk actions: mark read, archive, delete, export CSV
+- Bulk actions: mark read, archive, delete, export CSV (**not built**; the admin REST routes `submissions`, `submissions/{id}` and `export/{formId}` exist, and `plugins/sgs-blocks/includes/forms/class-form-admin.php` renders a basic recent-submissions table under Settings > SGS Forms)
 - Single submission view: all fields rendered in readable format, file download links, admin notes, status update
 
 ### GDPR Compliance
 
 - **Data export:** Hooks into WordPress personal data exporter (`wp_privacy_personal_data_exporters`). Exports all submissions matching a given email address.
 - **Data erasure:** Hooks into WordPress personal data eraser (`wp_privacy_personal_data_erasers`). Deletes or anonymises submissions matching a given email.
-- **Retention:** Configurable auto-delete after N days (default: off).
+- **Retention:** Configurable auto-delete after N days (default: off) — **not built**. `plugins/sgs-blocks/includes/forms/class-form-privacy.php` registers the exporter and the eraser only.
 
 ---
 
@@ -251,55 +261,43 @@ The choice-flow email terminal (Spec 43 FR-43-4) goes through the same path. PEC
 
 ```json
 {
-  "form_id": "indus-trade-application",
+  "form_id": "trade-application",
   "submission_id": 42,
   "submitted_at": "2026-02-12T14:30:00Z",
-  "site_url": "https://indusfoods.co.uk",
+  "site_url": "https://example.co.uk",
   "fields": { "name": "Priya Sharma", "email": "priya@bombaykitchen.co.uk", "business_type": "Restaurant" },
   "files": [ { "name": "fhrs-certificate.pdf" } ]
 }
 ```
 
-**Verified (2026-09-26):** `tests/php/run-form-mailer-standalone.php` (16, including a check that the real sanitiser blanks a line-break email and goes red without the guard); on sandybrown a visitor submission of the test page `/sgs-email-test-form/` (page 4473, tree `sites/mamas-munches/build/email-test-form.tree.json`) sent the owner notification and the confirmation, both logged `sent` in FluentSMTP.
+Regression check: `php plugins/sgs-blocks/tests/php/run-form-mailer-standalone.php` (includes a check that the real sanitiser blanks a line-break email and goes red without the guard).
 
 ---
 
-## Indus Foods Trade Application — Example Implementation
-
-The Indus Foods V2 trade application form maps directly to this system:
+## Example: a multi-step trade application
 
 ```
-sgs/form (formId: "indus-trade-application")
-├── sgs/form-step (label: "About You")
-│   ├── sgs/form-field-radio (fieldName: "account_for", options: ["I'm the account holder", "I'm requesting on behalf of someone"])
-│   ├── sgs/form-field-text (fieldName: "name", label: "Your Name", required: true)
-│   ├── sgs/form-field-text (fieldName: "role", label: "Your Role", placeholder: "e.g. Owner, Head Chef, Buyer")
-│   ├── sgs/form-field-email (fieldName: "email", required: true)
-│   ├── sgs/form-field-phone (fieldName: "phone", required: true)
-│   └── sgs/form-field-text (fieldName: "postcode", label: "Delivery Postcode", placeholder: "e.g. LE1 5PQ")
-│
-├── sgs/form-step (label: "Business Details")
-│   ├── sgs/form-field-text (fieldName: "business_name", required: true)
-│   ├── sgs/form-field-select (fieldName: "business_type", options: [Restaurant, Takeaway, Retail Shop, ...])
-│   ├── sgs/form-field-select (fieldName: "trading_duration", options: [Just starting up, Less than 1 year, ...])
-│   ├── sgs/form-field-text (fieldName: "vat_number", helpText: "No VAT number? No problem — leave blank.")
-│   ├── sgs/form-field-text (fieldName: "crn", helpText: "Limited companies only.")
-│   ├── sgs/form-field-address (fieldName: "delivery_address", enableLookup: true)
-│   └── sgs/form-field-textarea (fieldName: "access_notes", placeholder: "e.g. Rear entrance, ring bell")
-│
-├── sgs/form-step (label: "Account Preferences")
-│   ├── sgs/form-field-tiles (fieldName: "product_interests", multiSelect: true, columns: 4,
-│   │     tiles: [Spices, Rice & Grains, Lentils & Pulses, Oils & Ghee, Frozen, Tinned, Nuts & Dried Fruit, Cleaning])
-│   ├── sgs/form-field-select (fieldName: "monthly_spend", options: [Under £500, £500-£1000, ...])
-│   ├── sgs/form-field-select (fieldName: "delivery_days", options: [Mon-Wed, Thu-Fri, Any weekday, Specific day])
-│   ├── sgs/form-field-select (fieldName: "payment_terms", helpText: "First orders are proforma.")
-│   └── sgs/form-field-select (fieldName: "how_heard", options: [Google, Referral, Already know Indus Foods, ...])
-│
-├── sgs/form-review (label: "Review & Submit")
-│   ├── (auto-generated summary of all fields with edit buttons)
-│   ├── sgs/form-field-file (fieldName: "fhrs_certificate", allowedTypes: [image/*, application/pdf], maxSize: 10)
-│   ├── sgs/form-field-consent (consentType: "terms", consentText: "I agree to the Terms & Conditions")
-│   └── sgs/form-field-consent (consentType: "gdpr", consentText: "I consent to Indus Foods storing...")
+sgs/form (formId: "trade-application")
+├── sgs/form-step (title: "Your business")
+│   └── field blocks: name, email, business type (sgs/form-field-tiles)
+├── sgs/form-step (title: "Your needs")
+│   └── field blocks: products, volumes, delivery address
+├── sgs/form-step (title: "Review and consent")
+│   └── sgs/form-review, sgs/form-field-consent
 ```
 
-This produces the exact form designed in the V2 mockup — with proper multi-step flow, progress bar, visual tile selector, and review step — using standard Gutenberg blocks rather than SureForms.
+This gives a multi-step flow with a progress bar, a visual tile selector and a review step, using standard Gutenberg blocks.
+
+---
+
+## Not built
+
+These items are specified above and have no implementation yet. Each stays in the spec as a future feature; none is scheduled.
+
+| Item | Status |
+|---|---|
+| Payment collection (`paymentEnabled`, `paymentAmount`, `paymentDescription`, submission-flow step 7, Stripe Payment Intent) | Not built. The `payment_*` and `stripe_payment_id` columns exist and hold `none` / null. |
+| Address-lookup provider (`lookupProvider` on `sgs/form-field-address`) | Not built. |
+| Multi-file upload cap (`maxFiles` on `sgs/form-field-file`) | Not built. |
+| Retention auto-delete (GDPR) | Not built. Data export and erasure are built. |
+| Admin bulk actions | Not built. |

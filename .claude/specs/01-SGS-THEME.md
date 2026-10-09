@@ -1,10 +1,14 @@
-# SGS Theme — Custom WordPress Block Theme
-
-<!--
+---
+doc_type: spec
 spec_id: 1
-spec_version: 1.5.0
-last_verified: 2026-09-19
--->
+spec_version: 1.6.0
+project: small-giants-wp
+title: SGS Theme
+status: shipped
+last_verified: 2026-10-09
+---
+
+# SGS Theme — Custom WordPress Block Theme
 
 ## Purpose
 
@@ -31,126 +35,23 @@ A lightweight, performance-first WordPress block theme that replaces Astra Pro. 
 
 ## File Structure
 
-```
-sgs-theme/
-├── style.css                    # Theme metadata header (required by WP)
-├── theme.json                   # Design tokens, settings, styles, template registration
-├── functions.php                # Minimal — enqueue scripts, register patterns, theme support
-├── screenshot.png               # Theme thumbnail
-│
-├── assets/
-│   ├── css/
-│   │   ├── core-blocks.css          # Style overrides for WordPress core blocks
-│   │   ├── core-blocks-critical.css # Critical-path subset inlined above the fold
-│   │   ├── dark-mode.css            # Dark mode colour overrides
-│   │   ├── type-scale.css           # Per-device font-size ladder (media-query overrides of the preset custom properties)
-│   │   ├── utilities.css            # Utility classes (.sr-only, .container, etc.)
-│   │   └── woocommerce.css          # WooCommerce block theme styles — shop, PDP, cart, mini-cart (Spec 30)
-│   ├── js/
-│   │   ├── dark-mode.js             # Dark mode toggle + system preference
-│   │   ├── nav-accessibility.js     # Keyboard nav + ARIA management for menus
-│   │   ├── sgs-shop-filters.js      # Accessible mobile filter drawer for shop archive (Spec 30)
-│   │   ├── sgs-shop-filters-extras.js # One-switch filter toggle + live result count (Spec 30)
-│   │   ├── sgs-shop-filters-groups.js # Filter group looks set by a heading class (Spec 30 FR-30-3)
-│   │   ├── sgs-shop-filters-accordion.js # Filter groups as <details>, rebuilt after each filter re-render (Spec 30)
-│   │   ├── sgs-shop-filters-chosen.js # Chosen filters in a row under the title; Filter button count (Spec 30)
-│   │   ├── smooth-scroll.js         # Smooth anchor scrolling
-│   │   └── viewport-width.js        # Viewport-width helper for responsive JS
-│   ├── fonts/                       # Self-hosted font files (WOFF2)
-│   └── decorative-foods/            # Decorative food PNG assets (client-specific, Indus Foods)
-│
-├── templates/
-│   ├── index.html               # Default fallback template
-│   ├── front-page.html          # Static front page (show_on_front=page). NOT the blog listing
-│   ├── home.html                # Blog posts index — the page assigned as page_for_posts.
-│   │                            #   h1 is a LITERAL "Blogs" (sgs/heading), not core/query-title:
-│   │                            #   query-title type="archive" returns EMPTY on a posts index,
-│   │                            #   because core gates it on is_archive() and a posts page is
-│   │                            #   is_home().
-│   ├── page.html                # Standard page template
-│   ├── single.html              # Single post template
-│   ├── archive.html             # Archive/blog listing template
-│   ├── 404.html                 # Not found template
-│   ├── search.html              # Search results template (general + WooCommerce product search)
-│   ├── product-search-results.html  # WooCommerce product search results
-│   ├── archive-product.html     # WooCommerce shop archive — product grid + filter/search toolbar (Spec 30)
-│   ├── single-product.html      # WooCommerce PDP — composes sgs-pdp-* template parts (Spec 30)
-│   ├── taxonomy-product_attribute.html  # WooCommerce attribute archive
-│   ├── cart.html                # WooCommerce cart (composes sgs-cart-content)
-│   ├── checkout.html            # WooCommerce checkout (composes sgs-checkout-content)
-│   └── order-confirmation.html  # WooCommerce order confirmation (composes sgs-order-confirmation-content)
-│
-├── parts/
-│   ├── header.html                 # Consolidated site header — a one-line `wp:pattern` reference to `framework-header-default`, search-free. Hosts `sgs/site-header` (+ `sgs/nav-bar-menu`); see §Header/Footer/Nav Block System below; Spec 37 owns the block FRs
-│   ├── footer.html                 # Site footer (columns, copyright, socials). Hosts `sgs/site-footer`
-│   ├── sgs-archive-toolbar.html    # Shop archive: product-search bar + filter-search chips (Spec 30)
-│   ├── sgs-cart-content.html       # WooCommerce cart content
-│   ├── sgs-checkout-content.html   # WooCommerce checkout content
-│   ├── sgs-order-confirmation-content.html  # WooCommerce order confirmation content
-│   ├── sgs-pdp-buybox.html         # PDP: option pickers + add-to-cart (sgs/buybox, Spec 30)
-│   └── sgs-pdp-content.html        # PDP: description, tabs (ingredients/allergens/nutritional), collapsible SEO copy
-│
-├── patterns/                       # See §Patterns for category breakdown — count is DB/fs authoritative
-│   │
-│   │   # Content patterns
-│   ├── about-image-left.php
-│   ├── about-mission.php
-│   ├── about-stats.php
-│   ├── about-story.php
-│   ├── contact-form.php
-│   ├── contact-minimal.php
-│   ├── cta-banner.php
-│   ├── cta-centred.php
-│   ├── faq-section.php
-│   ├── heading-subheading-cluster.php
-│   ├── label-heading-subheading-cluster.php
-│   ├── hero-centred.php
-│   ├── hero-split.php
-│   ├── hero-video-background.php
-│   ├── pricing-columns.php
-│   ├── services-alternating.php
-│   ├── services-features.php
-│   ├── services-grid.php
-│   ├── stats-counter.php
-│   ├── team-section.php
-│   ├── testimonials-cards.php
-│   ├── testimonials-highlight.php
-│   ├── testimonials-large.php
-│   │
-│   │   # Footer patterns
-│   ├── footer-centred.php
-│   ├── footer-columns.php
-│   ├── footer-compact.php
-│   ├── footer-informational.php
-│   ├── footer-minimal.php
-│   ├── footer-scratch.php
-│   ├── footer-simple.php
-│   ├── framework-footer-default.php
-│   │
-│   │   # Header patterns (sgs-headers category)
-│   ├── header-centred.php
-│   ├── header-full.php
-│   ├── header-minimal.php
-│   ├── header-scratch.php
-│   ├── header-search-bar-above.php    # Search bar row ABOVE logo/nav; Block Types: core/template-part/header (Spec 30)
-│   ├── header-search-bar-below.php    # Search bar row BELOW logo/nav; Block Types: core/template-part/header (Spec 30)
-│   ├── header-search-icon.php         # Compact icon-only search trigger in nav; Block Types: core/template-part/header (Spec 30)
-│   ├── header-top-icons.php
-│   ├── framework-header-default.php
-│   │
-│   │   # Drawer patterns
-│   ├── drawer-scratch.php
-│   ├── framework-drawer-default.php
-│   │
-│   │   # Mega panel starter patterns (Post Types: sgs_mega_menu)
-│   ├── mega-brands-1.php
-│   ├── mega-general-1col.php
-│   ├── mega-general-2col-aside.php
-│   ├── mega-general-2col.php
-│   └── mega-media-cards-1.php
-│
-└── styles/                         # Empty by design — per-client snapshots live at sites/<client>/theme-snapshot.json (see §Per-site theme.json model)
-```
+Directory-level map of `theme/sgs-theme/` (the files themselves: `git ls-files theme/sgs-theme`).
+
+| Path | Purpose |
+|---|---|
+| `style.css` | Theme metadata header required by WordPress (`Requires at least`, `Requires PHP`, `Version:`) |
+| `theme.json` | Design tokens, settings, styles (the framework default; per-client values come from snapshots) |
+| `functions.php` | Minimal: enqueue assets, register patterns, theme support |
+| `inc/` | PHP includes (colour helpers, core block styles, font preloading, shop filter and toolbar settings) |
+| `assets/css/` | Stylesheets: core-block overrides, critical-path subset, dark mode, `type-scale.css` (per-device font-size ladder), utilities, `woocommerce.css` (Spec 30) |
+| `assets/js/` | Vanilla JS: dark-mode toggle, nav accessibility, smooth scroll, viewport width, shop filter scripts (Spec 30) |
+| `assets/fonts/` | Self-hosted font files (WOFF2) |
+| `templates/` | Block templates (index, front-page, home, page, single, archive, 404, search, and the WooCommerce templates of Spec 30) |
+| `parts/` | Template parts: `header.html` (a one-line `wp:pattern` reference to `framework-header-default`, search-free; hosts `sgs/site-header` and `sgs/nav-bar-menu`), `footer.html` (hosts `sgs/site-footer`), and the WooCommerce parts of Spec 30 |
+| `patterns/` | Block patterns by category: content, footers, headers (`sgs-headers`), drawers, mega panels. List: `git ls-files theme/sgs-theme/patterns` or the framework DB |
+| `styles/` | Empty by design: per-client snapshots live at `sites/<client>/theme-snapshot.json` (see §Per-site theme.json Model) |
+
+`templates/home.html` (the blog posts index, the page assigned as `page_for_posts`) carries a LITERAL "Blogs" `sgs/heading` as its h1, not `core/query-title`: `query-title type="archive"` returns empty on a posts index, because core gates it on `is_archive()` and a posts page is `is_home()`. Header and footer content is specified in §Header/Footer/Nav Block System below; Spec 37 owns the block FRs.
 
 ---
 
@@ -158,245 +59,34 @@ sgs-theme/
 
 ### Design Tokens (Settings)
 
-> **Note:** Defaults are SGS branding. There are no WP style variations: per-client palette/typography overrides live at `sites/<client>/theme-snapshot.json` and are pushed to each live site's `theme.json` via `push-theme-snapshot.py`. The framework `theme.json` below is the SGS default only. Requires **WordPress 7.0+** (native pseudo-element support in `styles.elements.button` + AI Connectors API).
+There are no WP style variations: per-client palette and typography overrides live at `sites/<client>/theme-snapshot.json` and are pushed to each live site's `theme.json` via `push-theme-snapshot.py`. The framework `theme.json` is the SGS default only. Requires **WordPress 7.0+** for native pseudo-element support in `styles.elements.button` and the AI Connectors API.
 
-```jsonc
-{
-  "$schema": "https://schemas.wp.org/trunk/theme.json",
-  "version": 3,
-  "settings": {
-    "color": {
-      "palette": [
-        { "slug": "primary",       "color": "#0F7E80", "name": "Primary" },
-        { "slug": "primary-dark",  "color": "#0A5B5D", "name": "Primary Dark" },
-        { "slug": "accent",        "color": "#F87A1F", "name": "Accent" },
-        { "slug": "accent-light",  "color": "#FEE8D4", "name": "Accent Light" },
-        { "slug": "success",       "color": "#2E7D4F", "name": "Success" },
-        { "slug": "whatsapp",      "color": "#25D366", "name": "WhatsApp" },
-        { "slug": "surface",       "color": "#FFFFFF", "name": "Surface" },
-        { "slug": "surface-alt",   "color": "#F5F7F7", "name": "Surface Alt" },
-        { "slug": "text",          "color": "#1E1E1E", "name": "Text" },
-        { "slug": "text-muted",    "color": "#555555", "name": "Text Muted" },
-        { "slug": "text-inverse",  "color": "#C0D5D6", "name": "Text Inverse" },
-        { "slug": "border-subtle", "color": "#0D5557", "name": "Border Subtle" },
-        { "slug": "footer-bg",    "color": "#0A5B5D", "name": "Footer Background" }
-      ],
-      "gradients": [],
-      "defaultPalette": false,
-      "defaultGradients": false,
-      "custom": false
-    },
-    "typography": {
-      "fontFamilies": [
-        {
-          "fontFamily": "Inter, system-ui, sans-serif",
-          "slug": "heading",
-          "name": "Heading",
-          "fontFace": [
-            {
-              "fontFamily": "Inter",
-              "fontWeight": "100 900",
-              "fontStyle": "normal",
-              "fontDisplay": "swap",
-              "src": ["file:./assets/fonts/inter-variable-latin.woff2"]
-            }
-          ]
-        },
-        {
-          "fontFamily": "Inter, system-ui, sans-serif",
-          "slug": "body",
-          "name": "Body",
-          "fontFace": [
-            {
-              "fontFamily": "Inter",
-              "fontWeight": "100 900",
-              "fontStyle": "normal",
-              "fontDisplay": "swap",
-              "src": ["file:./assets/fonts/inter-variable-latin.woff2"]
-            }
-          ]
-        },
-        {
-          "fontFamily": "'DM Serif Display', Georgia, serif",
-          "slug": "display",
-          "name": "Display",
-          "fontFace": [
-            {
-              "fontFamily": "DM Serif Display",
-              "fontWeight": "400",
-              "fontStyle": "normal",
-              "fontDisplay": "swap",
-              "src": ["file:./assets/fonts/dm-serif-display-v15-latin-regular.woff2"]
-            }
-          ]
-        },
-        {
-          "fontFamily": "'DM Sans', sans-serif",
-          "slug": "dm-sans",
-          "name": "DM Sans",
-          "fontFace": [
-            {
-              "fontFamily": "DM Sans",
-              "fontWeight": "400 700",
-              "fontStyle": "normal",
-              "fontDisplay": "swap",
-              "src": ["file:./assets/fonts/dm-sans-v15-latin-regular.woff2"]
-            }
-          ]
-        }
-      ],
-      "fontSizes": [ /* SEE THE TYPE-SCALE SECTION BELOW — the authoritative ladder lives there */ ],
-      "defaultFontSizes": false,
-      "fluid": { "minViewportWidth": "375px", "maxViewportWidth": "1200px" }
-    },
-    "spacing": {
-      "units": ["px", "rem", "%", "vw"],
-      "spacingSizes": [
-        { "slug": "10", "size": "0.25rem", "name": "XXS" },
-        { "slug": "20", "size": "0.5rem",  "name": "XS" },
-        { "slug": "30", "size": "1rem",    "name": "S" },
-        { "slug": "40", "size": "1.5rem",  "name": "M" },
-        { "slug": "50", "size": "2rem",    "name": "L" },
-        { "slug": "60", "size": "3rem",    "name": "XL" },
-        { "slug": "70", "size": "5rem",    "name": "XXL" },
-        { "slug": "80", "size": "8rem",    "name": "XXXL" }
-      ]
-    },
-    "layout": {
-      "contentSize": "1200px",
-      "wideSize": "1400px"
-    },
-    "shadow": {
-      "defaultPresets": false,
-      "presets": [
-        { "name": "Small",  "slug": "sm",   "shadow": "0 1px 3px rgba(0,0,0,0.08)" },
-        { "name": "Medium", "slug": "md",   "shadow": "0 4px 12px rgba(0,0,0,0.1)" },
-        { "name": "Large",  "slug": "lg",   "shadow": "0 8px 30px rgba(0,0,0,0.12)" },
-        { "name": "Glow",   "slug": "glow", "shadow": "0 0 20px rgba(248,122,31,0.3)" }
-      ]
-    },
-    "custom": {
-      "borderRadius": {
-        "small": "4px",
-        "medium": "8px",
-        "large": "16px",
-        "pill": "9999px"
-      },
-      "shadow": {
-        "small": "0 1px 3px rgba(0,0,0,0.08)",
-        "medium": "0 4px 12px rgba(0,0,0,0.1)",
-        "large": "0 8px 30px rgba(0,0,0,0.12)",
-        "glow": "0 0 20px rgba(212,168,67,0.3)"
-      },
-      "transition": {
-        "fast": "0.15s ease",
-        "medium": "0.3s ease",
-        "slow": "0.5s ease"
-      }
-    },
-    "appearanceTools": true,
-    "useRootPaddingAwareAlignments": true
-  }
-}
-```
+The authoritative token set is `theme/sgs-theme/theme.json` (read it; never cache a copy here). Shape rules that hold: `version` 3; `defaultPalette`, `defaultGradients` and `defaultFontSizes` false; `color.custom`, `customGradient`, `customDuotone` and `spacing.customSpacingSize` true so controls accept raw values; the numeric spacing slug ladder `10` to `80`; per-client values come from `sites/<client>/theme-snapshot.json`.
 
-### Type scale (partially built)
+### Type scale
 
-⚠ **The `fontSizes` array above is not reproduced** — a copy of a generated ladder rots. Read
-`theme/sgs-theme/theme.json`; do not restore a hardcoded listing here.
+The preset list is not reproduced here; a copy of a generated ladder rots. Presets and per-device sizes: `theme/sgs-theme/theme.json` `settings.typography.fontSizes` and `theme/sgs-theme/assets/css/type-scale.css`. Per-client display tiers: Spec 33.
 
-**Binding decision — no fluid typography.** Font sizes are explicit per device via the SGS
-tier system (`helpers-responsive.php`: base rule + `@media (max-width:1023px)` tablet +
-`@media (max-width:767px)` mobile), never WordPress's `clamp()` interpolation.
+**Binding decision: no fluid typography.** Font sizes are explicit per device via the SGS tier system (`plugins/sgs-blocks/includes/helpers-responsive.php`: base rule, `@media (max-width:1023px)` tablet, `@media (max-width:767px)` mobile), never WordPress's `clamp()` interpolation. `clamp()` on `vw` units can fail WCAG 1.4.4 (resize text to 200 %) because viewport units do not respond to browser zoom.
 
-Evidence (full research: `~/.claude/memory/research/2026-09-08-sgs-responsive-type-scale.md`):
-- **GOV.UK never adopted `clamp()`** — every scale point ships explicit desktop and mobile px.
-- **Designsystemet (Norway) shipped fluid typography and reversed it in production**, citing
-  browser-vs-Figma half-pixel rounding and broken component reuse.
-- **`clamp()` on `vw` units can fail WCAG 1.4.4** (resize text to 200 %), because viewport
-  units do not respond to browser zoom — flagged by Utopia's own author.
+**Ladder shape.** There is no `x-small` (12, zero uses), `medium` (18, too close to 16 to be a distinguishable choice) or `display` (120, a single use). One use is a reason to write an explicit value, not to carry a permanent row in every client's font-size picker, so `templates/404.html` carries `{"desktop":120,"tablet":80,"mobile":56}` on the block itself (the mechanism for one-off responsive values). Reading sizes never shrink across devices; only the top three presets compress, and the ratio widens with size.
 
-**The ladder — 6 presets.** There is no `x-small` (12, zero uses anywhere), `medium` (18, too
-close to 16 to be a distinguishable choice — the client-facing complaint that started this) or
-`display` (120, a single use). **Verified live at 375 / 900 / 1440:**
+A preset moved off fluid needs a media-query override in the same change, or it silently stops being responsive: a preset with `fluid: false` and no override renders flat at its desktop size at every width.
 
-| slug | desktop | tablet | mobile | role |
-|---|---|---|---|---|
-| `small` | 14 | 14 | 14 | captions, badges, uppercase micro-labels ONLY |
-| `regular` | 16 | 16 | 16 | all body text, the default |
-| `large` | 20 | 20 | 20 | lead paragraphs, small headings |
-| `x-large` | 24 | 22 | 21 | card + sub headings |
-| `xx-large` | 36 | 30 | 27 | section headings |
-| `hero` | 50 | 40 | 33 | page headline |
+**Mechanism: `theme/sgs-theme/assets/css/type-scale.css`.** A theme.json preset holds ONE value; WordPress has no per-breakpoint preset. The three display presets' generated custom properties are redefined inside `@media`. The selector is `:root:root` (0,2,0) so it wins on specificity, not enqueue order. It is loaded via `add_editor_style()` too, or the canvas would show desktop sizes at every width while the published page shrank them.
 
-⚠ **There is no `display` preset.** One use (`templates/404.html`) is a reason to write an
-explicit value, not to carry a permanent row in every client's font-size picker; the Spec 33
-extractor emits no per-client value for `display`, so holding it as a token would buy no
-per-client scaling. `templates/404.html` carries `{"desktop":120,"tablet":80,"mobile":56}` on
-the block itself — the mechanism for one-off responsive values.
+WordPress still lists three extra entries (`normal`, `huge`, a fluid `medium`) in the editor font-size picker even though `settings.typography.defaultFontSizes` is false; nothing in the framework references them and nothing renders wrong (Bean accepted this). Our own slugs mask the same-named core defaults, which is why only three show; naming the 16px rung `regular` rather than `medium` leaves one more visible than `medium` would have, a deliberate trade against the CSS-keyword risk below.
 
-⚠ **A preset moved off fluid needs a media-query override in the same change, or it silently
-stops being responsive** — a preset with `fluid: false` and no override renders flat at its
-desktop size at EVERY width.
+**Rationale for the reading floor:** 16px is both the WCAG-comfortable body size and the iOS Safari form-input auto-zoom threshold, and the framework ships form blocks.
 
-**Mechanism — `assets/css/type-scale.css`.** A theme.json preset holds ONE value; there is no
-per-breakpoint preset in WordPress. Rather than author a tier object on every pattern
-declarations (each baking a pixel value that should be per-client), the three display presets'
-generated custom properties are redefined inside `@media`. Selector is `:root:root` (0,2,0) so
-it wins on SPECIFICITY, not enqueue order — a rule that loses is indistinguishable from one
-that is absent. Loaded via `add_editor_style()` too, or the canvas would show desktop sizes at
-every width while the published page shrank them.
-
-⚠ **Three phantom presets leak in from WordPress and are NOT ours:** `normal` 16px, `huge` 42px,
-and a fluid `medium` (14→20px). `settings.typography.defaultFontSizes: false` is set in the
-framework theme.json, the client snapshot AND the live user layer; theme.json is v3 and WP is
-7.1; and it is still ignored. Four causes were disproven (user-layer `custom` origin, schema
-version, the theme's `wp_theme_json_data_user` filter, a classic `editor-font-sizes`
-registration) and none proven. Effect is confined to three extra entries in the editor's
-font-size picker — nothing in the framework references them and nothing renders wrong. Bean
-accepted this rather than spend more on WordPress archaeology.
-
-⚠ Our own slugs MASK the same-named core defaults, which is why only three show. That is also
-why naming the 16px rung `regular` rather than `medium` leaves one more phantom visible than
-`medium` would have — a deliberate trade against the CSS-keyword risk (see below).
-
-Reading sizes never shrink across devices; only the top three compress, and the ratio widens
-with size (GOV.UK's published curve: 1.14× → 1.33× → 1.51×). Mobile values reuse each
-preset's existing fluid `min`, so rendered output barely moves.
-
-**Rationale for the reading floor:** 16px is both the WCAG-comfortable body size and the
-iOS Safari form-input auto-zoom threshold, and the framework ships form blocks. GOV.UK cites
-British Dyslexia Association guidance (never below 12pt) for the same floor.
-
-The base body size is routed through a **non-fluid preset** rather than a px literal (verified
-live at 16px at 375px): WordPress rewrites a px literal into `clamp(14px, …, 16px)`, which
-violates FR-33-4 ("never recomputed via WP's fluid formula"). The framework `theme.json` uses the
-correct preset-reference shape.
+The base body size is routed through a **non-fluid preset** rather than a px literal: WordPress rewrites a px literal into `clamp(14px, …, 16px)`, which violates FR-33-4 ("never recomputed via WP's fluid formula").
 
 **Decisions in force:**
-1. **The 16px slug is `regular`** (Bean's pick). Chosen over `medium` because `medium`/`small`/
-   `large`/`x-large` are all real CSS font-size keywords that resolve to a browser keyword if a
-   slug leaks the length sanitiser — a live near-miss occurred in `helpers-typography.php`.
-2. **There is no `medium` preset.** Its declarations were rehomed by
-   `scripts/migrate-font-size-ladder.py` (survey / fix / check / self-test, with negative
-   controls). Not a find/replace: `sgs/heading` + `medium` → `large` (a sub-heading stays above
-   body size); `sgs/text` and `sgs/business-info` → `regular`. A dangling preset reference
-   (theme.json's own `styles.elements` h5 and button included) resolves to an undefined custom
-   property and the declaration is dropped SILENTLY.
-3. **Footer copy is body size.** `copyright` and `attribution` KEEP
-   `small`: fine print at 14px is convention, and Bean's objection was to readable footer
-   CONTENT being shrunk, not the legal line.
+1. **The 16px slug is `regular`** (Bean's pick). Chosen over `medium` because `medium`/`small`/`large`/`x-large` are all real CSS font-size keywords that resolve to a browser keyword if a slug leaks the length sanitiser; a live near-miss occurred in `plugins/sgs-blocks/includes/helpers-typography.php`.
+2. **There is no `medium` preset.** `sgs/heading` + `medium` maps to `large` (a sub-heading stays above body size); `sgs/text` and `sgs/business-info` map to `regular`. A dangling preset reference (theme.json's own `styles.elements` h5 and button included) resolves to an undefined custom property and the declaration is dropped SILENTLY.
+3. **Footer copy is body size.** `copyright` and `attribution` KEEP `small`: fine print at 14px is convention, and Bean's objection was to readable footer CONTENT being shrunk, not the legal line.
 
-**Still open (named, not assumed away):** the Spec 33 extractor does not yet emit per-client
-values for the three display tiers, so a client whose ladder differs materially inherits the
-framework curve. Low priority — the cloning pipeline writes measured raw numbers for cloned
-content and never touches presets (`converter/resolvers/typography.py`), so this affects
-hand-authored patterns only.
-
-⚠ **Slugs are the permanent interface; the pixel values are per-client and already swappable**
-via `sites/<client>/theme-snapshot.json`. Adding a slug is safe; renaming or removing one is a
-migration across every pattern declaration AND every shipped client's `post_content`. The
-framework is pre-production, which is the only reason removal is cheap right now.
+**Slugs are the permanent interface; the pixel values are per-client and already swappable** via `sites/<client>/theme-snapshot.json`. Adding a slug is safe; renaming or removing one is a migration across every pattern declaration AND every shipped client's `post_content`. The framework is pre-production, which is the only reason removal is cheap right now.
 
 ---
 
@@ -445,7 +135,7 @@ A block that *subsumes* the template-part/Site-Info/rules system remains forbidd
 
 Every element in `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-bar-menu`/`sgs/nav-drawer-menu` defaults from two theme-owned sources, so branding/contact data is entered once and stays consistent across header AND footer:
 
-1. **Global style tokens** — this file's `theme.json` settings (§Design Tokens above) and, for cloned sites, the Spec 33 draft-extracted `sites/<client>/theme-snapshot.json`. Colours, typography, and spacing flow to header/footer elements as defaults; per-instance overrides remain available in the block inspector.
+1. **Global style tokens** — the framework `theme/sgs-theme/theme.json` settings and, for cloned sites, the Spec 33 draft-extracted `sites/<client>/theme-snapshot.json`. Colours, typography, and spacing flow to header/footer elements as defaults; per-instance overrides remain available in the block inspector.
 2. **SGS Site Info store** (Spec 36, `sgs_site_info` `wp_options` via the `sgs/site-info` block-bindings source) — logo, phone, email, address, hours, socials, copyright, attribution link. Both header and footer bind to the same store.
 
 ### Responsive model (never-overflow) + the drawer a11y contract
@@ -512,17 +202,11 @@ The default `parts/header.html` remains **search-free**. Search patterns are opt
 
 ### Mega panel starter patterns (Post Types: `sgs_mega_menu`)
 
-Five starter patterns for the `sgs_mega_menu` CPT (Spec 36):
-
-- `mega-brands-1.php`
-- `mega-general-1col.php`
-- `mega-general-2col-aside.php`
-- `mega-general-2col.php`
-- `mega-media-cards-1.php`
+Starter patterns for the `sgs_mega_menu` CPT (Spec 36) are the `theme/sgs-theme/patterns/mega-*.php` files (`git ls-files theme/sgs-theme/patterns`).
 
 ### Typography helper (`plugins/sgs-blocks/includes/helpers-typography.php`)
 
-The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`) and the shared `TypographyControls` JS component (`src/components/TypographyControls.js`) define the canonical SGS typography control pattern: responsive RangeControl + unit dropdown for font size; weight/style dropdowns; line-height. Both are block-plugin concerns, but the token contract (font-size slugs, weight values) is defined by `theme.json` tokens documented in §Design Tokens above. Any new block **must** use `TypographyControls` rather than freeform controls (documented in `plugins/sgs-blocks/CLAUDE.md`).
+The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`) and the shared `TypographyControls` JS component (`src/components/TypographyControls.js`) define the canonical SGS typography control pattern: responsive RangeControl + unit dropdown for font size; weight/style dropdowns; line-height. Both are block-plugin concerns, but the token contract (font-size slugs, weight values) is defined by `theme.json` tokens set in `theme/sgs-theme/theme.json`. Any new block **must** use `TypographyControls` rather than freeform controls (documented in `plugins/sgs-blocks/CLAUDE.md`).
 
 ---
 
@@ -569,12 +253,9 @@ The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`
 
 ## WordPress Requirements
 
-- WordPress 7.0+ recommended (the canary runs WP 7.1); 6.7+ minimum (block theme features, theme.json v3)
-- PHP 8.0+
+- WordPress 6.7+ (theme.json v3) and PHP 8.0+, as declared in `theme/sgs-theme/style.css` (`Requires at least` / `Requires PHP`)
 - WooCommerce 9.9+ — **required** for shop/PDP templates (Spec 30). There is no runtime version-check or admin notice (see "Compatibility check" above). Verify the WC version manually (`wp plugin get woocommerce --field=version`) before a build touches shop/PDP templates. The theme still activates cleanly on non-WC installs — WC template parts simply go unused.
 - No page builder plugin dependency
-
-**theme.json v3 note:** Version 3 was introduced in WordPress 6.6 (August 2024) and should be supported on WP 6.9.1. Verify on the development site before committing. If the dev site runs an older WP version, use v2 instead (the schema is largely compatible, but v3 adds `defaultFontSizes` control and other refinements).
 
 ---
 
@@ -606,46 +287,24 @@ Each site has ONE `theme.json`. The local repo holds per-client snapshots in `si
 
 Per-client visual snapshots live at `sites/<client>/theme-snapshot.json` (per-site dir, stays in the local repo):
 
-- `sites/mamas-munches/theme-snapshot.json` — full `theme.json` copy for Mama's Munches
-- `sites/indus-foods/theme-snapshot.json` — full `theme.json` copy for Indus Foods
-- etc.
+- one full `theme.json` copy per client, e.g. `sites/<client>/theme-snapshot.json`
 
 Snapshot format: **full `theme.json` copy** (not a diff). File is ~5–20 KB; simplicity of a 1:1 overwrite outweighs bandwidth savings of a diff.
 
 ### Push-theme-snapshot CLI
 
-Python script:
-
-```bash
-python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
-  --client mamas-munches \
-  --target u945238940@141.136.39.73
-```
-
-Behaviour:
-1. Fetch server's current `wp-content/themes/sgs-theme/theme.json` via SSH
-2. Diff local snapshot against server file — display diff to operator
-3. Require `--yes` flag (or interactive y/N) to proceed
-4. Overwrite server `theme.json` with local snapshot
-
-**Safety note:** operator edits via Site Editor write to `wp_global_styles` (a separate post type), not `theme.json` directly; the pre-push diff surfaces any difference between the server file and the local snapshot before any overwrite (see the live-style precedence rule below).
-
-`/sgs-clone` Stage 10 invokes `push-theme-snapshot` automatically via the auto-derived `--client` flag.
+Spec 19 §7 documents `plugins/sgs-blocks/scripts/push-theme-snapshot.py`.
 
 ### Live-style precedence (see Spec 26 for the canonical mental model)
 
 > **Framing note:** [Spec 26](26-SGS-GLOBAL-STYLES-AND-THEMING.md) owns the conceptual model — a data-layer merge: `wp_global_styles` is where a site's live styles live and `theme.json` is the factory-default seed, not a thing being overridden. The operational facts below (the post wins wherever both define a property) are the day-to-day guidance.
 
-**Critical (caught live on sandybrown).** WordPress compiles the page's `global-styles-inline-css` by merging the `wp_global_styles` post (the Site-Editor USER layer) **on top of** `theme.json`. Wherever both define a property, **the post wins**. Consequence: a change written ONLY to `theme.json` on disk — including a `push-theme-snapshot.py` push — has **no live effect** for any property the post also defines. It is not a conflict, it is a deterministic override.
+WordPress compiles the page's `global-styles-inline-css` by merging the `wp_global_styles` post (the Site-Editor USER layer) **on top of** `theme.json`. Wherever both define a property, **the post wins**. Consequence: a change written ONLY to `theme.json` on disk, including a `push-theme-snapshot.py` push, has **no live effect** for any property the post also defines. It is not a conflict, it is a deterministic override.
 
 **To change live per-client styles, update BOTH:**
 1. `sites/<client>/theme-snapshot.json` (`styles.css` field) — the version-controlled source of truth, AND
 2. the live `wp_global_styles` post via REST: `POST /wp-json/wp/v2/global-styles/<id>` (app-password Basic auth).
 Then bump `theme/sgs-theme/style.css` `Version:` to bust WP's compiled-styles cache.
-
-**Known gap (PARTIAL):** `push-theme-snapshot.py` also POSTs to the live `wp_global_styles` REST endpoint, so a push updates both the disk file and the live post. Open (tracked at parking `P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES`, status PARTIAL): the pull round-trip (reading the live post back into the snapshot) and a pre-deploy guard to confirm the push landed.
-
-**Orphan:** `theme/sgs-theme/styles/mamas-munches.css` is NOT enqueued — never put overrides there.
 
 ### theme.json raw custom values + overridable defaults
 
@@ -653,9 +312,8 @@ Then bump `theme/sgs-theme/style.css` `Version:` to bust WP's compiled-styles ca
 
 ### Hide Browse-styles UI
 
-On single-stylesheet installs, the WP Browse-styles picker is hidden via PHP filter on `wp_theme_json_data_styles` so the now-useless picker doesn't confuse operators.
+The WP Browse-styles picker is hidden unless `apply_filters( 'sgs_show_browse_styles', false )` returns true (`theme/sgs-theme/functions.php`), so the picker does not confuse operators on single-stylesheet installs.
 
 ### WP 7.0 button preset alignment
 
-WP 7.0 adds native pseudo-element support for `core/button` at theme.json level: `styles.elements.button:hover`, `:focus`, `:focus-visible`, `:active`. The `wp_options.sgs_button_presets` + CSS custom property bridge is therefore redundant; see `specs/11-SGS-BUTTON-ARCHITECTURE.md` for the migration.
-
+WP 7.0 adds native pseudo-element support for `core/button` at theme.json level: `styles.elements.button:hover`, `:focus`, `:focus-visible`, `:active`. The Customiser panel `sgs_button_presets` (`plugins/sgs-blocks/includes/class-button-presets-customiser.php`) edits the three `sgs/button` presets' roles and stores them in the `wp_global_styles` user layer (`settings.custom.buttonPresets`). Spec 11 owns the button architecture.
