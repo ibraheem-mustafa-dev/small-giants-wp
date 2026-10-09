@@ -200,7 +200,11 @@ directly (inspector-scan rule `30-raw-box-control`). Its contract, matching core
   length and flips the select to Custom. Choosing `Custom…` from Default stays on Custom until a value is typed
   (per-row state, `customRows`).
 - **Untouched sides:** show the value inherited from a wider device tier as the placeholder, through `inherited`
-  (or the surrounding `ResponsiveOverride`); the stored attribute stays empty.
+  (or the surrounding `ResponsiveOverride`); the stored attribute stays empty. A side no wider tier sets shows the
+  block's declared default the same way: `block.json::supports.sgs.spacingDefaults` names a spacing preset per
+  attribute and side, the stylesheet paints it as `var(--wp--preset--spacing--N, <theme size>)`, and the mount passes
+  `defaults={ spacingDefaultsFor( name, attr ) }` (`src/utils/spacing-defaults.js`). Never store the preset in the
+  attribute default. Gate: `scripts/survey-spacing-defaults.py --check --strict`.
 - **Inspector spacing:** separate SGS controls stack 16px apart (`assets/css/inspector-controls.css`), because SGS
   controls pass `__nextHasNoMarginBottom` and a plain `PanelBody` adds no gap.
 Test: `tests/js/sgs-box-control.test.js`.
