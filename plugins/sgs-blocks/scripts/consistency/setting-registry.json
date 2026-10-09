@@ -1483,7 +1483,7 @@
 			},
 			"shared_component": "LinkUnderlineControl",
 			"spec_ref": "CR6 plan P2-n, 2026-10-08",
-			"current_state": "sgs/text, sgs/heading, sgs/business-info, sgs/icon-list, 2026-10-09 build",
+			"current_state": "sgs/text, sgs/heading, sgs/business-info, sgs/icon-list, sgs/label, 2026-10-09 build",
 			"divergence": "none — first rollout",
 			"divergence_severity": "low",
 			"notes": "Sibling to css:color-link: the same `{selector} a` scope. The line is in the link's own colour, so css:color-link colours it. Emitter: sgs_link_underline_css() (includes/helpers-link-underline.php); canvas twin src/utils/link-underline.js."
@@ -1505,7 +1505,7 @@
 			},
 			"shared_component": "LinkUnderlineControl",
 			"spec_ref": "CR6 plan P2-n, 2026-10-08",
-			"current_state": "sgs/text, sgs/heading, sgs/business-info, sgs/icon-list, 2026-10-09 build",
+			"current_state": "sgs/text, sgs/heading, sgs/business-info, sgs/icon-list, sgs/label, 2026-10-09 build",
 			"divergence": "none — first rollout",
 			"divergence_severity": "low",
 			"notes": "Thickness of the css:text-decoration-link line. Emitter: sgs_link_underline_css()."

@@ -48,6 +48,8 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:font-size": "fontSize",
+						"css:text-decoration-link": "linkUnderline",
+						"css:text-decoration-thickness-link": "linkUnderlineThickness",
 						"css:font-weight": "fontWeight",
 						"css:line-height": "lineHeight",
 						"css:letter-spacing": "letterSpacing",
@@ -93,6 +95,17 @@
 		"typography": ".wp-block-sgs-label"
 	},
 	"attributes": {
+		"linkUnderline": {
+			"type": "string",
+			"enum": [ "", "none", "always", "sweep" ],
+			"default": "",
+			"description": "How a link inside the label is underlined: '' the theme's underline, none, always, or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
+		},
+		"linkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the link underline for always and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
+		},
 		"text": {
 			"type": "string",
 			"default": "",

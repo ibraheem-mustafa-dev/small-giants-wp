@@ -200,6 +200,11 @@ $font_size_css = sgs_typography_css_rule( $attributes, '', $root_sel );
 if ( '' !== $font_size_css ) {
 	$scoped_css[] = $font_size_css;
 }
+// How a link inside the label is underlined.
+$link_underline_css = sgs_link_underline_css( $attributes, '', $root_sel );
+if ( '' !== $link_underline_css ) {
+	$scoped_css[] = $link_underline_css;
+}
 
 // --- Base margin (WP-native style.spacing.margin, skip-serialised) emitted
 // scoped via the stable core style engine. ---

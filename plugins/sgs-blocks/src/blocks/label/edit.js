@@ -9,7 +9,7 @@ import {
 	SelectControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, textRow, SgsLengthControl } from '../../components';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, textRow, SgsLengthControl, LinkUnderlineControl } from '../../components';
 import {
 	colourVar,
 	SGS_LENGTH_UNITS,
@@ -18,6 +18,7 @@ import {
 	sgsLengthPreview,
 	resolveTextColourPreviewStyle,
 	typographyPreviewStyle,
+	linkUnderlinePreviewCss,
 	usePreviewTier,
 	tierBoxLonghands,
 	
@@ -178,9 +179,11 @@ function buildStyle( attributes, tier ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		text,
+		linkUnderline,
+		linkUnderlineThickness,
 		backgroundColour,
 		backgroundColourGradient,
 		fontSize,
@@ -204,7 +207,13 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const previewTier = usePreviewTier();
 	const blockProps = useBlockProps( {
+		className: `sgs-lbl-ed-${ clientId }`,
 		style: buildStyle( attributes, previewTier ),
+	} );
+	// How a link inside the label is underlined: the same rules render.php prints (includes/helpers-link-underline.php).
+	const linkUnderlineCss = linkUnderlinePreviewCss( `.sgs-lbl-ed-${ clientId }`, {
+		mode: linkUnderline,
+		thickness: linkUnderlineThickness,
 	} );
 
 	return (
@@ -519,8 +528,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 				</PanelBody>
+				<PanelBody title={ __( 'Links', 'sgs-blocks' ) } initialOpen={ false }>
+					<LinkUnderlineControl
+						mode={ linkUnderline }
+						thickness={ linkUnderlineThickness }
+						onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
+						onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
+			{ linkUnderlineCss && <style>{ linkUnderlineCss }</style> }
 			<RichText
 				{ ...blockProps }
 				tagName="span"
@@ -530,7 +548,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					'Label text…',
 					'sgs-blocks'
 				) }
-				allowedFormats={ [] }
+				allowedFormats={ [ 'core/link' ] }
 			/>
 		</>
 	);
