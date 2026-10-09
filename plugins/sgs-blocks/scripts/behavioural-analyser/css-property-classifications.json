@@ -13891,6 +13891,22 @@
     },
     {
       "slug": "sgs/label",
+      "attr": "linkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "linkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
