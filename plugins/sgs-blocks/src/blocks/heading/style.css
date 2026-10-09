@@ -8,7 +8,7 @@
 /* ----- Base element spacing ----- */
 .wp-block-sgs-heading {
 	margin-top: 0;
-	margin-bottom: 8px;
+	margin-bottom: var(--wp--preset--spacing--20, 0.5rem);
 	/* Hover timing comes from the site's button-preset token, the same source
 	   sgs/button, sgs/buybox, sgs/option-picker, sgs/cta-section and
 	   sgs/whatsapp-cta read. An instance that sets its own transitionDuration

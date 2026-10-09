@@ -2,7 +2,7 @@
 
 .sgs-info-box {
 	position: relative;
-	padding: var(--wp--preset--spacing--40);
+	padding: var(--wp--preset--spacing--40, 1.5rem);
 	box-sizing: border-box;
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);

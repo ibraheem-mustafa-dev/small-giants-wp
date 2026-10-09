@@ -276,6 +276,14 @@
           "prefix": "noImageLabel",
           "_note": "The label on a fallback tile (noImageLabel, e.g. 'Photo to come') for a card with no image; the same element and setting names as sgs/product-card. Colour resolves by the default {prefix}Colour convention (noImageLabelColour)."
         }
+      },
+      "spacingDefaults": {
+        "cardPadding": {
+          "top": "var(--wp--preset--spacing--30)",
+          "right": "var(--wp--preset--spacing--30)",
+          "bottom": "var(--wp--preset--spacing--30)",
+          "left": "var(--wp--preset--spacing--30)"
+        }
       }
     }
   },

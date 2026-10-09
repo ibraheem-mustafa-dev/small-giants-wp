@@ -17,6 +17,7 @@ import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, SgsLengt
 import { colourVar, resolveShadowPreviewComposed, usePreviewTier, textPaintPreview, textIndentPreviewCss, sgsBorderPreview } from '../../utils';
 import { buildWrapperStyle } from './preview-style';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 // U-15 (`.claude/reports/2026-09-26-u15-notice-message-design.md` §3.2).
 const MESSAGE_MODE_OPTIONS = [
@@ -125,7 +126,7 @@ const NOTICE_BANNER_TEMPLATE = [
 	],
 ];
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const {
 		variant,
 		showIcon,
@@ -756,6 +757,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 									units={ BOX_UNITS }
 									presets
+									defaults={ spacingDefaultsFor( name, 'padding' ) }
 									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 								/>
 							) }

@@ -26,6 +26,7 @@ import {
 	textIndentPreviewCss,
 	sgsBorderPreview,
 } from '../../utils';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 /**
  * FR-22-6 migration: all card content (icon/media, heading, subtitle,
@@ -275,7 +276,7 @@ const INFO_BOX_TEMPLATE = [
 	],
 ];
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const {
 		cardStyle,
 		effectHover,
@@ -592,6 +593,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
 								presets
+								defaults={ spacingDefaultsFor( name, 'padding' ) }
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 							/>
 						) }

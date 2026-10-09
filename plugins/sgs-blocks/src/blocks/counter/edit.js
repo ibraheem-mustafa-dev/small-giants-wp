@@ -13,6 +13,7 @@ import {
 } from "@wordpress/components";
 import { IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, SgsColourPanel, textRow, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, boxPreview } from "../../utils";
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 
 function formatNumber(num, separator) {
@@ -22,7 +23,7 @@ function formatNumber(num, separator) {
   return String(num);
 }
 
-export default function Edit({ attributes, setAttributes }) {
+export default function Edit({ attributes, setAttributes, name }) {
   const {
     number,
     prefix,
@@ -186,6 +187,7 @@ export default function Edit({ attributes, setAttributes }) {
           			values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
           			units={ BOX_UNITS }
           			presets
+          			defaults={ spacingDefaultsFor( name, 'padding' ) }
           			onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
           		/>
           	) }

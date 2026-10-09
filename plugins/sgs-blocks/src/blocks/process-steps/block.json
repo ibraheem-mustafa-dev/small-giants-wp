@@ -239,6 +239,12 @@
 					},
 					"_note": "Per-step fields (number/title/description/icon) are plain repeater content from the `steps` array — styled block-wide via the icon/number/title/description elements above, no independent per-step override. Mirrors sgs/accordion's `item` and sgs/timeline's `entry`."
 				}
+			},
+			"spacingDefaults": {
+				"padding": {
+					"top": "var(--wp--preset--spacing--40)",
+					"bottom": "var(--wp--preset--spacing--40)"
+				}
 			}
 		}
 	},

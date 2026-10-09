@@ -6,7 +6,7 @@
 	justify-content: space-between;
 	align-items: flex-start;
 	gap: var(--wp--preset--spacing--30);
-	padding: var(--wp--preset--spacing--40) 0;
+	padding: var(--wp--preset--spacing--40, 1.5rem) 0;
 }
 
 @media (max-width: 599px) {

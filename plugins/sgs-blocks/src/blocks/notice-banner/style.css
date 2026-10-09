@@ -4,7 +4,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--wp--preset--spacing--20);
-	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
+	padding: var(--wp--preset--spacing--20, 0.5rem) var(--wp--preset--spacing--30, 1rem);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
 

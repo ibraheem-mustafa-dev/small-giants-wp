@@ -102,6 +102,14 @@
 					"clusters": [],
 					"_note": "The icon attribute is a bare slug with no colour/size control of its own — no Text/Fill/Layout member applies. accentStroke was adjudicated 2026-07-19 as a decoration toggle (an accent underline), not a paint/stroke style property, so it maps to no cluster member either."
 				}
+			},
+			"spacingDefaults": {
+				"padding": {
+					"top": "var(--wp--preset--spacing--30)",
+					"right": "var(--wp--preset--spacing--20)",
+					"bottom": "var(--wp--preset--spacing--30)",
+					"left": "var(--wp--preset--spacing--20)"
+				}
 			}
 		},
 		"align": false,

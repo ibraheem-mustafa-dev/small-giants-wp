@@ -9,6 +9,7 @@ import {
 } from '@wordpress/components';
 import { SgsColourPanel, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { textPaintPreview, backgroundPaintPreview, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -137,7 +138,7 @@ function buildPreviewStyle( attributes, colourPalette, previewTier = 'desktop' )
 	return preview;
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, name } ) {
 	const previewTier = usePreviewTier();
 	const {
 		targetDate,
@@ -472,6 +473,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
 								presets
+								defaults={ spacingDefaultsFor( name, 'padding' ) }
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 							/>
 						) }

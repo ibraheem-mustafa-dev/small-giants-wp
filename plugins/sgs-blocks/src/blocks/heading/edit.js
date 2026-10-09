@@ -16,6 +16,7 @@ import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderCont
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { fontFamilyCssValue } from '../../utils/typography-preview';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, linkUnderlinePreviewCss, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -239,7 +240,7 @@ function buildWrapperStyle( attributes, previewTier = 'desktop' ) {
 
 // ─── Main edit component ──────────────────────────────────────────────────────
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const previewTier = usePreviewTier();
 	const {
 		headingRole,
@@ -691,6 +692,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
 								presets
+								defaults={ spacingDefaultsFor( name, 'margin' ) }
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 							/>
 						) }

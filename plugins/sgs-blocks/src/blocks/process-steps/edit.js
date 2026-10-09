@@ -39,6 +39,7 @@ import {
 	usePreviewTier,
 	boxPreview,
 } from '../../utils';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 // Spec 35 Part B: 2 options, short labels → ToggleGroupControl (mirrors
 // sgs/icon-list's "List content" source toggle).
@@ -114,7 +115,7 @@ function StepEditor( { step, index, onChange, onRemove } ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		steps,
 		headingLevel,
@@ -836,6 +837,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
 								presets
+								defaults={ spacingDefaultsFor( name, 'padding' ) }
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 							/>
 						) }

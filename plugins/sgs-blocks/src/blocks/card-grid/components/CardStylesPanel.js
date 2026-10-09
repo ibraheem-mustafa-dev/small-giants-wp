@@ -7,8 +7,9 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 import { ShadowControl, shadowAttrKeys, ResponsiveBoxControl, SgsLengthControl, DesignTokenPicker, GradientCapableColourControl } from '../../../components';
 import { patchTier } from '../../../utils';
+import { spacingDefaultsFor } from '../../../utils/spacing-defaults';
 
-export default function CardStylesPanel( { attributes, setAttributes } ) {
+export default function CardStylesPanel( { name, attributes, setAttributes } ) {
 	const {
 		cardBackground,
 		cardBackgroundGradient,
@@ -148,6 +149,7 @@ export default function CardStylesPanel( { attributes, setAttributes } ) {
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						presets
+						defaults={ spacingDefaultsFor( name, 'cardPadding' ) }
 						values={ {
 							base: cardPadding?.desktop ?? {},
 							tablet: cardPadding?.tablet ?? {},

@@ -253,7 +253,7 @@
 
 /* Card variant — body below image */
 .sgs-card-grid__body {
-	padding: var(--wp--preset--spacing--30);
+	padding: var(--wp--preset--spacing--30, 1rem);
 	flex: 1;
 	display: flex;
 	flex-direction: column;

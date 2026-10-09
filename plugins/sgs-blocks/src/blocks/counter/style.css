@@ -28,7 +28,7 @@
 /* --- End scroll-driven reveal --- */
 
 .sgs-counter {
-	padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--20);
+	padding: var(--wp--preset--spacing--30, 1rem) var(--wp--preset--spacing--20, 0.5rem);
 }
 
 /* Default label text-align (0 specificity via :where()) — labelTextAlign attribute now drives this; must always lose to the attribute-driven scoped rule. */

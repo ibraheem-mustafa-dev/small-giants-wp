@@ -119,6 +119,14 @@
 					"clusters": [],
 					"_note": "Governed by its own mediaType/iconPosition selects — outside the Text/Fill/Layout style clusters. supports.sgs.imageControls removed 2026-08-11 (Spec 35 capability-routing doctrine): this block never renders an <img>/<video>/sgs_render_media() itself (media is InnerBlocks child content), so the declaration was fully dead."
 				}
+			},
+			"spacingDefaults": {
+				"padding": {
+					"top": "var(--wp--preset--spacing--40)",
+					"right": "var(--wp--preset--spacing--40)",
+					"bottom": "var(--wp--preset--spacing--40)",
+					"left": "var(--wp--preset--spacing--40)"
+				}
 			}
 		}
 	},

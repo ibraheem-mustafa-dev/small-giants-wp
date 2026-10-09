@@ -1,7 +1,7 @@
 /* ===== SGS Countdown Timer ===== */
 
 .sgs-countdown {
-	padding: var(--wp--preset--spacing--40);
+	padding: var(--wp--preset--spacing--40, 1.5rem);
 }
 
 /*

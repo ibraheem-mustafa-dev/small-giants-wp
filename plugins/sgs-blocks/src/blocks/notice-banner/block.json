@@ -175,6 +175,14 @@
 					},
 					"_note": "A second element sharing the `icon` prefix, scoped to ONLY iconSize -- the glyph size, distinct from iconCircleSize (the badge diameter, mapped on the sibling `icon` element above). Both elements declare `layout`'s css:width/css:height member with DIFFERENT target attrs; each resolves independently (check-element-manifest-conformance.js resolves attrMap per element, not per prefix), so both iconSize and iconCircleSize are claimed rather than orphaned. iconSize sizes the <svg> width/height for lucide/wp-icon, or the font-size for dashicon/emoji (includes/notice-banner-icon-badge.php) -- one glyph-size concept, two CSS mechanisms depending on icon source, same as the `icon` element's own css:stroke/css:color split."
 				}
+			},
+			"spacingDefaults": {
+				"padding": {
+					"top": "var(--wp--preset--spacing--20)",
+					"right": "var(--wp--preset--spacing--30)",
+					"bottom": "var(--wp--preset--spacing--20)",
+					"left": "var(--wp--preset--spacing--30)"
+				}
 			}
 		}
 	},

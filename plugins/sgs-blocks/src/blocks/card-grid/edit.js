@@ -33,7 +33,7 @@ import {
 } from '../../utils';
 import { cardGridPreview } from './preview-style';
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const {
 		variant,
 		headingLevel,
@@ -173,7 +173,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		<>
 			<ElementColourPanels attributes={ attributes } setAttributes={ setAttributes } cardBackgroundForContrast={ cardBackgroundForContrast } />
 
-			<CardStylesPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<CardStylesPanel name={ name } attributes={ attributes } setAttributes={ setAttributes } />
 
 			<InspectorControls>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />

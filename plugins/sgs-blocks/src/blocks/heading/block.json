@@ -121,6 +121,11 @@
 					},
 					"_note": "The block's own background paint, moved off the `heading` element onto a `::after` pseudo-element layer (render.php) so a text gradient on the SAME root node (`heading` element's `css:color-gradient`) cannot clip or overwrite it via `background-clip:text`."
 				}
+			},
+			"spacingDefaults": {
+				"margin": {
+					"bottom": "var(--wp--preset--spacing--20)"
+				}
 			}
 		}
 	},

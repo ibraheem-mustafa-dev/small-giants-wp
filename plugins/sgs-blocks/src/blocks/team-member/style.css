@@ -1,7 +1,7 @@
 /* ===== SGS Team Member ===== */
 
 .sgs-team-member {
-	padding: var(--wp--preset--spacing--40);
+	padding: var(--wp--preset--spacing--40, 1.5rem);
 	transition: var(--wp--custom--transition--medium, 0.3s ease);
 }
 
