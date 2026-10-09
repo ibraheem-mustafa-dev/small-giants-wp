@@ -102,4 +102,10 @@ final class SiteInfoCondensedHoursTest extends TestCase {
 		$this->site_info( array() );
 		$this->assertSame( array(), $this->business_info_rows() );
 	}
+
+	public function test_a_hidden_closed_day_breaks_a_run_so_it_never_reads_as_open(): void {
+		$this->site_info( array( 'mon' => '9-17', 'tue' => '9-17', 'wed' => '9-17', 'thu' => '', 'fri' => '9-17', 'sat' => '', 'sun' => '' ) );
+		$this->assertSame( array( 'Mon' . self::EN_DASH . 'Wed 9-17', 'Fri 9-17' ), $this->business_info_rows() );
+		$this->assertSame( 'Mon' . self::EN_DASH . 'Wed 9-17; Fri 9-17', $this->icon_list_hours_text() );
+	}
 }

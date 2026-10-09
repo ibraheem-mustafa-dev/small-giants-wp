@@ -47,14 +47,19 @@ if ( ! function_exists( 'sgs_site_info_hours_groups' ) ) {
 		}
 
 		$groups = array();
+		// A hidden closed day ends the run, so "Mon–Wed" and "Fri" never fold into "Mon–Fri" over a closed Thursday.
+		$gap = false;
 		foreach ( $short as $slug => $day ) {
 			$value = (string) \SGS\Blocks\Sgs_Site_Info::get( "opening_hours.{$slug}", '' );
 			if ( '' === $value && ! $show_closed ) {
+				$gap = true;
 				continue;
 			}
 			$display = '' === $value ? $closed_label : $value;
 			$last    = count( $groups ) - 1;
-			if ( $last >= 0 && $groups[ $last ]['value'] === $display ) {
+			$extends = ! $gap && $last >= 0 && $groups[ $last ]['value'] === $display;
+			$gap     = false;
+			if ( $extends ) {
 				$groups[ $last ]['end'] = $day;
 			} else {
 				$groups[] = array(
