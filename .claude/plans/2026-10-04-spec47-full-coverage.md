@@ -130,3 +130,345 @@ tree was restored from git and rebuilt; two of its causes are now fixed (the per
 Still open before it can run clean: the draft's select is not the inputs' 52px height, so `fieldMinHeight` (input and
 select) moved the textarea 6px; decide the select's own height (a `fieldSelectMinHeight`, or the select measured against
 the inputs) at the framework, then re-run Solve.
+
+## Spec 47 build log
+
+Results, run records and counts moved out of Spec 47 section 5. Spec 47 section 5 keeps the Success and Kill thresholds, the Bean rulings and the residual list; read counts fresh from `sites/eye-care-ward-end/build/qa/triage/*.json` and the fix register, never from this log.
+
+### Steps 1 to 5 as recorded
+
+1. **Foundations.** The resolver, normaliser, read-only database and ledger (FR-47-1, FR-47-5), plus walker items 6 and
+   7 (FR-47-6), with tests. **Done 2026-10-03:** 38 tests pass, the lint fails on a planted unlisted export, both walker
+   items turned red on planted faults (GAP-CHECKLIST §16), and the benchmark scores 5 of 5. **The "0 noise rows"
+   figure recorded here was superseded on 2026-10-06:** a full 10-run `--noise` benchmark on a quiet host read
+   **5 noise rows**, every one a phase artefact (a draft view-swap fade, the trust-bar marquee's scroll phase, and
+   one shadow read at t≈0.999), not host load and not walker flakiness. A run reading 0 was never evidence of
+   absence, because all three causes are phase-dependent, so a phase-dependent count cannot be compared across
+   runs without pinning the phase. Detail: `.claude/reports/2026-10-06-session-c2/BENCHMARK-NOISE-RESULT.md`.
+2. **Footer proof.** Solve (FR-47-3) on Eye Care's footer, with calibration (FR-47-2) of the blocks it uses. **Passed
+   2026-10-03 (run 3 below).**
+   - **Baseline:** `sites/eye-care-ward-end/build/footer.tree.json` at commit `b7c09adc1`, built to `sgs_footer` 182 on
+     eye-care-test and walked with `footer.mjs --headless --widths 375,768,1440,1920`. That `report.json` is the
+     "before".
+   - **Scored items** (setting values on blocks that already exist):
+     - register items 25, 26, 28 and 38;
+     - the spacing, size and tracking parts of 27 and 29: the top margins, the tagline margin, the social-row margin,
+       the brand column gap, 11.5px, 0.2em, weight 400, line height 1.5, the 4px bottom margin and the 10px column gap.
+
+     An item is closed when the rows for its elements read no open difference at all four widths. The block swaps in
+     27, 29 and 30 are outside the proof and must appear as Unresolved or Missing setting.
+   - **Success** (Bean, 2026-10-03: Solve's job is to close what existing settings can close and to name what they
+     cannot; a correctly named gap is a success, not a miss). All three hold:
+     - At least 90% of scored items are handled: closed, or left open and correctly identified as a framework gap
+       (classified Hardcode or Missing setting). Calling a fixable item a gap is a failure. Whether a gap is real is
+       judged outside the tool, by the register or by proof (calibration, code), never by Solve's own label.
+     - No row closed before is open after, and no open row moves further from the draft.
+     - At most 10% of writes are wrong.
+     Whether a gap gets the right type (Hardcode for a repair, Missing setting for a new control) is reported as a
+     further measure, not a condition.
+   - **Kill:** under 60% handled, over 10% of writes are wrong, or the third write round still writes. A round that
+     only reverts regressions (R-47-9) is not a write round.
+   - **Result, run 3 (2026-10-03): success on the handled line, with one 4px knock-on recorded.**
+     - After run 2 (below): the success line became Bean's (a correctly identified gap is a success), a revert-only
+       round stopped counting as a write round (R-47-9), calibration discovers what enum settings with no
+       `css_property` paint (§3.1), and `flex-direction` and `flex-wrap` are measured under `refPrefix`.
+     - 14 of 15 scored items handled (93%): 13 closed, including 29's 10px column gap (written as the container's
+       `layout: stack`, found by discovery, plus its `gap`); 38 identified as a framework gap. 25 stays open on the
+       footer height alone (all its padding rows closed), which follows from 30 and 34.
+     - 47 writes, 2 wrong (4%): the two `maxWidth` collapses (register N46), reverted by the guard in a revert-only
+       round. Write round 3 wrote nothing: converged.
+     - 0 new rows; style and box rows open 990 before, 642 after. One open row moved further from the draft: the
+       copyright line's width at 768, 4px narrower (512px draft; 348px to 344px), a knock-on of the bottom row's
+       correct 24px side padding on a line already 164px off. The guard saw it and found no write on that element
+       to revert. Strictly, criterion 2 misses by that one element at one width.
+     - Gap typing (reported, not a condition): 38 came out Missing setting where the evidence says Hardcode (the
+       day label's weight is hardcoded), so typing still needs work: calibration knows the setting paints the root,
+       not that a rule on the child overrides it.
+   - **Result, run 2 (2026-10-03): short of success, on the "round 3 still writes" kill clause only.**
+     - Run: 7 blocks calibrated on eye-care-test, then Solve with the full-CSS walker config (5 layout pairs added to
+       `footer.mjs`). The baseline tree (b7c09adc1) plus ref classes was round 1.
+     - 12 of 15 scored items closed (80%). Style and box rows open: 970 before, 687 after. 0 new rows.
+     - 38 writes, 2 wrong (5%): `maxWidth: 1440px` on both footer rows collapsed them to a 0px content width (auto
+       margins cancel the row's stretch; the header rows had the same fault, fixed in acc2a3b6d). The regression
+       guard (R-47-9, `solve.mjs::revertRegressions`) reverted exactly those two in round 2, pinned through the
+       setting's calibrated side effects (`|margin-left`, `|margin-right`, `|width`). They are classified Hardcode
+       (breaks-layout): a framework repair for `sgs/site-footer-row`.
+     - Round 3 wrote 2 settings (the tagline's side margins to 0, exposed once the revert landed): the kill clause.
+       The revert round used round 2.
+     - Survivors against the register: 25's padding rows all closed; its footer height (4px off at desktop, 16px at
+       375) follows from 29, 30 and 34. 29's 10px column gap needs the container's flex layout: a setting with no
+       `css_property` in the database, so Solve cannot find it yet, and it is wrongly classified Missing setting.
+       38's weight is hardcoded on `.sgs-business-hours__day` (600), which the block's weight setting does not
+       reach (calibration: it paints the root only). That is a framework repair, not the register's "tree".
+     - Calibration also flagged `sgs/site-footer-row` per-device `gap` and `contentWidth` reaching 375 and 1440
+       but not 768 (a one-width hardcode candidate), and dead settings per block (some are fixture artefacts, such
+       as a border style with no border width). Each is proved before it is fixed.
+3. **Solve on every built Eye Care surface.** It shrinks the current fix register. In progress (2026-10-04).
+   - **Built and in use:** walker state mapping (each `surfaces.json` entry maps walker states to setting states; rows
+     from an unmapped state are reported, never written), 17 surfaces with walker configs and score items
+     (`sites/eye-care-ward-end/build/qa/solve-score.mjs`, `qa/score-items/<surface>.json`), reference blocks
+     (`lib/references.mjs`; a linked placeholder is never written; `lint.mjs --surfaces` passes), the pinpointing guard
+     (`lib/guard.mjs`, R-47-9), box seeding of a border width's unset sides (`resolve.mjs::seedSides`), and the
+     divergence ledger (`sites/eye-care-ward-end/build/qa/divergences.json`; every entry cites its register items).
+     Contact's subtext keeps its 22px margin (Bean, 2026-10-05), so the 375px name-field drop stays open (register
+     CR15/N45b).
+   - **Calibration:** every SGS block but `theme-toggle` (CR12) has one library-wide cache file
+     (`scripts/computed-route/cache/<block>.json`, gitignored; its `site` names where it was measured: eye-care-test page
+     668, or sandybrown page 4750, which runs the `mamas-munches` snapshot). A border-style marker carries its companion
+     width (CR11); a minimum size marks above the 44px floor; an inherited setting records every element its value
+     reaches (`reaches`) and every element its tag (`_tag`); a per-device enum setting with no CSS property (an extension
+     setting such as `sgsChildSizing`) is discovered through its desktop tier. Calibration reads its three widths in
+     parallel (`calibrate.mjs::readAll`). Fixtures come from `scripts/computed-route/calibration-fixtures.json`, else each
+     block's first use in the trees or its block.json `example`, styling at defaults.
+   - **Results under the new guard** (scored items from the register; the whole-page line, distinct style, hover and
+     box issues from `solve-report.mjs::wholePage`, appears from the next runs):
+     - About: at 100% with full coverage (F2 below).
+     - Lenses: 67 distinct issues to 0, independent check 0 (2026-10-08); register N40 closed by measurement (plan, Lenses entry).
+     - Contact: 66 to 60 distinct issues on the 2026-10-08 Solve run (plan, Contact entry);
+       the contact form 94 to 46, 58 on the sweep.
+     - Help (old guard) and the footer: as recorded in the register. Home was stopped at walk 5 on 2026-10-04 and rebuilt
+       from its committed tree; it re-runs with full coverage.
+     - An independent Playwright check (its own finders, 375/768/1440) confirmed Lenses 9 of 9.
+   - **Council, 2026-10-04 (qc-council, three raters).** Solve's coverage was the gap between §0's promise and its
+     results: §3.3 walked a hand-written config naming only some elements, the walker never compared where an element
+     sits, and success was scored on register items, not the page. Fixes, each with a measured baseline:
+     - F1 flow position rows (CR19) and F4 identity transform (CR20): done, 4606ba598.
+     - F2 every block paired through matched words (`pairs.mjs`, `lib/pairs.mjs`, `lib/pairs-page.mjs`; plan
+       `.claude/plans/2026-10-04-spec47-full-coverage.md`): built, with a padded block paired to its padded draft
+       wrapper, repeated words placed by nearness, text-run, form-control and group pairs (walker finders
+       `{ textRun }`, `{ group }` in `scripts/parity/lib/paint.mjs`). The guard tries a regressed row's ancestors' writes,
+       nearest first (CR21). **About is at 100%** (2026-10-04): 50 distinct issues to 0 on a fresh rebuild, 0 wrong writes,
+       12 ledger entries citing register 104 / S1 / S4, confirmed by an independent check
+       (`sites/eye-care-ward-end/build/qa/independent-check.mjs`, 0 differences at 375/768/1440) and a planted-fault
+       negative control. Lenses (2026-10-08): 67 distinct issues to 0, independent check 0, register N40 closed; its wrong-write ratio is judged per setting (0.15.7) and the fresh run wrote nothing (plan, Lenses entry). Contact pairs 31 of 32 blocks (the map is register items 132 and 141) and its form 6 of 6; its distinct
+       issues went from 134 to 19 on 2026-10-04 and read 27 on the 2026-10-05 sweep.
+     - F3 calibration paths: measured, mostly not needed (Help's link rows are a block swap, register 120/121; Contact's
+       form rows belong to the contact-form surface); one fixture gap (CR17).
+     - F5 whole-page score in the solve report: built.
+     - Speed: lean walks, the draft cache and four widths at once (step 2 above).
+   - **Residual:**
+     - **CR6 — setting one side of a padding or margin box zeroed the other three. FIXED and verified live
+       2026-10-07** (plan `.claude/plans/archive/2026-10-07-cr6-box-longhand-migration.md`). Padding and margin now print
+       only the sides a client set (`includes/helpers-box.php::sgs_box_object_longhands`), across 41 blocks, in the
+       editor canvas too (`src/utils/spacing-preview.js::tierBoxLonghands`); a mobile tier that sets one side keeps
+       the tablet tier's other sides (Bean). Kept on purpose: `sgs_box_object_shorthand` stays byte-identical for
+       border WIDTH (where an unset side SHOULD be 0) and for the `var()` holdouts. The gate is
+       `plugins/sgs-blocks/scripts/migrate-box-longhands.py --check` (in `gates.json`, a baseline ratchet, now 0).
+       **The route's half:** `lib/resolve.mjs::seedSides` seeds unset sides only for a border width (the one box
+       that still prints 0 for an unset side); padding and margin boxes are written one side alone. Live proof: `plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs`
+       (18/18) and `check-box-longhands-blocks-live.mjs` (30/30), both of which read `40 0 0 0` on the old code.
+       **Phase 2** (plan table): P2-d done (`google-reviews` padding prints set sides; `sgs_border_box_decls` holds no
+       padding) and P2-f done (the behavioural analyser derives `sgs_box_object_longhands`' property from the call's
+       literal, so the five CR6 classification overrides are gone). **P2-a and P2-c done and verified live
+       2026-10-07:** corner radius prints only the corners a client set (`sgs_corner_object_longhands`), page and
+       editor, across every block that wires the shared border panel's radius, and the media atoms emit one property
+       per side or corner (`check-box-corners-blocks-live.mjs` 42/42). The route needs no change for corners:
+       `lib/resolve.mjs::radiusWrite` already writes all four corners per tier. No block reads WordPress's native
+       `style.border` any more (P2-g step 0). P2-b (the `var()` holdouts) and P2-h are done and live 2026-10-08: the route seeds only a border width's unset sides
+       (`lib/resolve.mjs::seedSides`). P2-g is done and live 2026-10-08: every client border builds through
+       `includes/helpers-border-style.php::sgs_border_element_decls`, and the route needs no change for it. P2-e (the Eye Care tier
+       boxes holding an explicit zero) is done 2026-10-08: 157 of 161 match the draft, the Help container's bottom padding is set to the draft's 90/90/60, one cart row is unmeasured.
+     - **Route (2026-10-07):** the four route defects are closed: canvas candidates mode (§3.8), CR4 (a large block
+       calibrates: each page load gets `lib/calibrate-chunk.mjs::EDITOR_TIMEOUT_MS`, and the run restarts itself with
+       the bigger heap; `sgs/nav-bar-menu` 90 settings, 46 dead after CR27 (mostly states the calibration page cannot show)),
+       CR14 (help walks every FAQ answer open) and CR25 (a template build retries the host's transient database
+       errors), CR27 (all eight dead nav-bar-menu settings were calibration gaps, fixed in fixtures, the reader and the
+       markers; a state instance is untested only when hidden at every width, so the detached chip's hover reads at
+       375) and CR28 (`emissionOf` reads a helper that carries its property in a variable).
+     - **CR12 — the dark-mode toggle renders nothing for any client. PARKED pending Bean, not open.** Neither a
+       rendering bug nor an unbuilt feature: `theme-toggle/render.php` correctly returns early when
+       `settings.custom.dark` is empty, and `scripts/derive-dark-palette.py` is already wired into
+       `push-theme-snapshot.py::prepare_deploy_snapshot`. It reads a top-level `_sgsDark` key that no client
+       snapshot carries, so nothing is ever derived. **Eye Care cannot be enabled as it stands:** the deriver
+       hard-refuses with `DarkPaletteContrastError` because `primary` #141414 is near-black, dark mode must lift
+       it to #7d7d7d to be visible on a dark surface, and `primary-text`/`text-inverse` #FAF8F5 on that is 3.88:1
+       against the 4.5:1 required; no `palette` or `roles` override passes both constraints. Left enabled it
+       would fail every Eye Care deploy. The three ways forward are design calls, recorded on the register row.
+     - First (plan `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`): Session 0 (2026-10-05) repaired what the route data
+       audit (`.claude/reports/2026-10-04-route-data-audit/README.md`) proved and recalibrated every block. Session A
+       (2026-10-05) measured every surface from `1ea514ae8` without writing: 2,373 distinct open issues across 17
+       surfaces (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`, per surface), and every fix-register item carries a sweep status (77 still
+       open, 63 not walker-measurable, 19 closed earlier, 15 partly measured, 27 clean on the walker; each still-open
+       verdict cites one exact element row and its values). Session B (2026-10-05) sorted every one of the 2,373 into
+       one class with proof, **audited**: W 1,710, F 163, T 447, U 28, D 17, deferred 8. The committed
+       `qa/triage/*.json` hold the **raw** classification those were audited from: W 1,562, F 338, T 445, U 28.
+       **Session C sitting i then passed Gate 1 (2026-10-05): raw F 338 to 177, total 2,373 to 2,414** (a new
+       `content` class of 41), so a triage re-run compares to 338 and never to the audited 163.
+       **The remaining work runs in two sessions.** The fix register (`plans/2026-10-02-eye-care-fix-register.md`)
+       is the source of truth: the 163 F rows are findings to assess, not a list of gaps to build, and many of them ignore how the
+       framework works (a CPT canvas composes blocks, and a setting can arrive from a parent by context), which is a route defect.
+       So **Session C repaired the route first** — every unbuilt and known-broken item in this spec, including the new FR-47-8 —
+       and recorded the new framework-gap count (`plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md`): **the route
+       result is raw F 338 to 176 on identical Solve reports, and the current measured state on a fresh sweep of all 17
+       surfaces at block code `7f375f765` is raw F 192**, in `qa/triage/*.json`. Session C is complete, with ten route
+       defects carried in the bullet below. **Session C2** then matches
+       each remaining row to a register item, fact-checks it, tests it live at four widths, and builds only what Bean approves
+       (`plans/archive/2026-10-05-eye-care-session-c2-finding-assessment.md`). A mechanism group is a filing label for review and never a unit of
+       work, and `SGS_Container_Wrapper` is never a blanket fix.
+     - Then (Session D) each surface to 100%, in the order the sweep ranks, Contact and its form first. Every surface has
+       its full config (2026-10-05; panel surfaces pair with their walker state open). Done per surface: on a fresh
+       rebuild of the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes
+       at most 10%, the independent check agreeing, the register marked. The open causes per surface are in the plan's
+       Contact and Contact form sections (Contact: the address width; the form: the select's height). The three measuring gaps found on 2026-10-05 are fixed: the open phone drawer's words
+       (`lib/pairs.mjs::rootFor`, `d605bb5ba`), per-width draft finders (`mergeWidthFinders`), and off-screen
+       screen-reader text in the independent check (`independent-check.mjs::srOnly`).
+     - Built on 2026-10-04: enclosing-block settings, extension settings in
+       the framework DB (`source='sgs-ext'`), calibration `reaches` and `_tag`, the per-round `conflict` rule, grid
+       tracks as proportions (CR16), aspect ratio (CR10, live proof on the first image-heavy surface).
+     - Calibration: every block was re-calibrated on 2026-10-05 (94 cache files, on the local WSL mirrors). CR17's
+       business-info `textBefore` element remains.
+     - Gap typing (a setting that paints a parent while a rule on a child overrides it comes out Missing setting):
+       the hours day weight closed through a dedicated label setting, and **calibration now records the overriding
+       child** (`lib/calibrate.mjs::overridingChildren`, built 2026-10-06, Session C lane L7) as
+       `settings[<attr>].overriddenBy`. It is derived from an absence rather than a new measurement: `reaches` holds
+       every descendant an inherited marker changed, so a descendant read for the property and absent from `reaches`
+       carries its own rule. Only the topmost element of each blocked subtree is named, because everything below it
+       inherits that element's rule; a descendant already at the marker's value and a pseudo-element layer are
+       excluded, since their absence proves nothing. Emitted for inherited properties only. **The 38 rows are not yet
+       re-typed:** that needs a calibration run per affected block and then a Solve run, so the mechanical bound is
+       that only a setting painting an inherited property can be re-typed at all.
+     - **Route defects found by Session C's Gate 3 council (2026-10-06), each with its owner.** None is a Session C2
+       finding; all are route work.
+       - **No `transition,*` row calibrates anywhere in the library.** `lib/calibrate-markers.mjs::markersFor`
+         dispatches on the first comma-segment of `css_property`, which is `transition`, and every branch misses it
+         (not colour, not `KEYWORDS`, not enum, not box, not `tier_object` — `LENGTH` fails — not weight, opacity,
+         transform, letter-spacing, number or count), so it falls through to `return []`. Confirmed on all six routed
+         blocks: `sgs/hero`, `sgs/brand-strip`, `sgs/card-grid`, `sgs/info-box`, `sgs/testimonial` and
+         `sgs/cta-section` all carry the pair in `noMarker` with no slot. A transition marker needs a new shape (set a
+         duration and an easing, read `transition-duration` and `transition-timing-function` off the root).
+       - **`settings[<attr>].overriddenBy` names non-rendering elements.** All ten of `sgs/hero`'s entries name
+         `.sgs-hero__video-bg > source`, a metadata element inside `<video>` that renders no box and no text and so
+         cannot override `font-size`, `color` or `line-height`. `lib/calibrate.mjs::overridingChildren` infers "has its
+         own rule" from the path's absence from `reaches` without checking the element renders. **Needs a rendered-box
+         guard.**
+       - **The content reads returned nothing on their one real-data run.** `cache/hero.json` was measured after the
+         reads landed (it carries `overriddenBy`) and `sgs/hero` has 17 content-role rows — 10 `boolean-visibility`,
+         6 `content`, 1 `text-content` — yet the file carries no `text`, `presence` or `link` key, and
+         `lib/calibrate-content.mjs::collectContent` omits a key only when empty. Whether that is legitimate (no
+         marker, nothing shown or hidden) or a silent failure is **undetermined**. Consequence: no cache anywhere
+         carries those keys, so `lib/solve-rows.mjs::resolveContent` has never fired on real data either.
+       - **`lib/solve-rows.mjs::resolveContent` belongs in `lib/resolve.mjs`** under R-47-3's one-resolver rule. It
+         sits in `solve-rows.mjs` only because the lane that wrote it could not edit `resolve.mjs`.
+       - **`lib/triage.mjs`'s CONTENT verdict ignores Solve's outcome**, returning `W`/`content` for every content row
+         whatever `contentClass` says.
+       - **20 presence rows and every `link-missing` row are unwritable.** A presence row for an element missing from
+         the live page has no live element, so no trace and no node: it needs a `ref` in the pair config and
+         `scripts/parity/lib/ref-trace.mjs::stampRefs` extended to stamp content rows. `link-missing` needs
+         `auto-collect.mjs` to store the href rather than `lk: true`.
+       - **`lib/resolve.mjs::resolveViaAncestor` should be deleted.** With `measuredSlots` supplied it was called
+         1,583 times over 2,414 issues and returned 0 writes; its inner `resolve` receives inputs identical to
+         `solve.mjs::writeRound`'s owners-retry; and `where: 'ancestor'` is written into evidence but never read for a
+         decision, with `lib/triage.mjs::canvasSettable` stamping that field itself. Deleting it changes no verdict.
+         One test assertion on its own citation goes with it.
+       - **The `scroll` row kind vanished** between the 2026-10-05 and 2026-10-06 sweeps: 24 to 0 on product, 2 to 0
+         on shop. Unexplained.
+       - **`benchmark.mjs --noise` — DONE 2026-10-06** (`8210af3a1`). 10 runs back to back on a quiet host:
+         **5 of 5 scored cases caught** (case a is unscorable — the draft shares the gap — though the walker
+         still emitted a row for it), and the noise figure is settled at 5 noise rows, every one a PHASE artefact (a draft view-swap fade already accepted at `qa/parity/shop.mjs`:286, the `sgs/trust-bar` marquee's scroll phase, and one `box-shadow` read at t≈0.999 — alpha, blur and spread each short by an identical 0.0950%). Not host load and not detector flakiness; a run reading 0 was never evidence of absence because every cause is phase-dependent. `reports/2026-10-06-session-c2/BENCHMARK-NOISE-RESULT.md`.
+         The earlier 13-on-shop and 9-on-lens reading is superseded.
+       - **A gate exists that would have caught an unwalkable surface, and it never ran.**
+         `scripts/parity/draft-live-walk.mjs` calls `lib/lint.mjs::lintConfig` (on the states the run walks, `--states`, since `ee9d6e31c`) and exits 1 before any browser opens,
+         but a whole sitting passed without re-walking, so a surface stayed unwalkable. **A route gate should run
+         `draft-live-walk.mjs --lint` over every surface's `walkerFull`** — no browser, no host.
+       - **The 338 to 176 decomposition is machine-local.** `.gitignore` ignores `sites/*/build/qa/solve/`, so it
+         re-derives only while the 2026-10-05 report folders survive on disk.
+     - **Route defects found by Session C2 (2026-10-06): ALL CLOSED 2026-10-06** by
+       `plans/archive/2026-10-06-spec47-route-cleanup.md`, which carries the file-ownership map, the wave order and the
+       per-fix briefs under `reports/2026-10-06-session-c2/briefs/`. Both write hazards (`entranceStart` writing
+       `sgsAnimationStart` from an armed pose, and `sgs_transition_vars` stripping a decimal so `"0.3"` emitted
+       3ms), the forced-hover false green, the three reader-scope defects, the missing icon abstraction, the
+       twin-containment pairing gate, the transition markers, `canvasSettable`'s emission selector, the
+       re-keying of rows by a cosmetic path change, a stale report served as current, and the walker's own
+       caveats reaching no reader. Commits `809d30f8d`, `1963180ac`, `d72c88afe`, `54c1a53f3`, `aa4c3b15a`,
+       `9970eb804`, `6a61f3678`, `4cc06dd12`. Route suite 523 to 589, all green.
+       - **Still open from that work, and each needs its own session:**
+         - **`solve.mjs::writeRound` sets `canvasSettable` from its hop citation with no emission check**, so
+           Solve's own report still flags gaps `lib/triage.mjs` no longer trusts. Applying
+           `triage.mjs::reachesElement` there would be INERT — `solve.mjs` builds no PHP helper index, so every
+           emission reads unknown and keeps its credit. **The durable fix is storing the emission selector in the
+           DB (`css_element` is NULL for every `bgHoverZoom*` row today)**, which touches `block.json` and the
+           seeder. Triage is the classifier of record meanwhile.
+         - **Emission is read by string search of PHP literals**, so a control emitting through a class method
+           rather than an `sgs_*` function reads as unknown and keeps its credit.
+         - **`scripts/parity/lib/chrome-compare.mjs::hoverEffects` does not apply P3c's `loops`.** Not fixed
+           because the cause is unproven: it produces descriptive labels from rest-and-hover snapshots rather
+           than property rows, and the marquee that motivated `loops` is page content, not header chrome. What
+           would prove it: a chrome surface carrying an infinite animation whose effect set differs between two
+           runs with no code change.
+         - **A live-side walker finding is never persisted.** `lib/sweep.mjs::readWalkerCaveats` reads
+           `draft-cache-*.json`, the only place the walker saves `states`, so `reveal-unfired` on the LIVE side
+           reaches no reader. Surfacing it needs the walker to save live states.
+     - **The divergence ledger cannot scope a decision to one element path** (found 2026-10-05, Session C C0.3).
+       `lib/ledger.mjs::match` matches on node, state, pseudo, property and width, with **no path discriminator**, so
+       a node holding several rows of the same property and state cannot have one of them accepted on its own. It
+       blocked the one `sgs/buybox` transform entry of Session C's W0a: `cr-ref-product-4` carries three F-class
+       hover `transform` rows on different paths and a single entry would have closed two genuine findings as well
+       as the decided one. Not fixed there: it changes the ledger schema, `lint.mjs` and every existing entry, and
+       the row it would close is already decided by register S1, so C2 closes that one by citation.
+     - **The seeder leaves 368 rows unrouted** (2026-10-07): 81 are ambiguous, about 30 are gradient siblings that need an
+       `attrMap`, and the rest have no evidence; `sgsHover*` and `sgsChildWidth` stay NULL on purpose. Session C's C3.1
+       routed 2 of the 32 NULL rows it took; the rest await a routing pass.
+     - **Calibration exhausts Node's 4 GB heap over a full run.** One `calibrate.mjs` run across 46 blocks runs out of
+       memory; `SGS_CAL_CHUNK` (`calibrate.mjs`) is a workaround. What the run holds between blocks is uninvestigated,
+       so the cause is unproven.
+     - Presence, text and link (Bean, 2026-10-05): calibration's `presence`, `text` and `link` reads (§3.2), Solve
+       writing presence, text and link rows and its `handover` list (§3.3), and Fill setting visibility and variant
+       settings: **all built 2026-10-06** (Session C lanes L7, L8 and L9). The framework database already marks the
+       settings (`role` `boolean-visibility` 600,
+       `presence-boolean` 3, `content` 84, `text-content` 235; counted 2026-10-05). §3.2 scopes the text read to
+       `role` `content` alone, which would miss the 235 `text-content` rows that hold most of this register's words
+       (`sgs/product-card::noReviewsText`, `::brandName`, `sgs/buybox::stockInStockLabel`, `sgs/whatsapp-cta::cardTitle`):
+       §6's question is **answered: read both roles** (Bean, 2026-10-05), and §3.2 carries it — scoped to the
+       SGS-owned rows the route calibrates, which is **258 text** and **14 link**, the 319 and 39 being all-source
+       totals. §3.3's `handover` owners are now **five**, `woocommerce-text` included, defined once in
+       `lib/issue-classes.mjs::HANDOVER_OWNERS` and shared by Solve and Fill. The sweep (`lib/sweep.mjs`) carries
+       text and presence rows as of sitting i, so they reach the register check.
+     - Residual from the measure-gap tags (Session B, 2026-10-05; the table is Appendix A of
+       `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`, the data `.claude/reports/2026-10-05-session-b/measure-gap-tags.json`).
+       Of the 78 register items the walker could not fully see: **8 `content-fixable`** (a setting holds the value and only
+       §3.2/§3.3's unbuilt presence, text and link reads block it: S7, 9, N16b, N27, N30, N31, N33B, 159), **17 `pairing`**
+       (the element sits on a measured surface but no pair reaches it), **28 `FR-47-6`** (a walker read that was unbuilt: focus and
+       active states, script-driven entrance motion and link coverage — **all three built in Session C sitting i**, so these
+       28 are now measurable and are re-judged on Wave 3's sweep; 13 of these have no setting at all and carry
+       "no setting exists; framework gap" in their reason, so they are Session C2's findings, not content's), **15 `behaviour`**
+       (FR-47-7 flows), **6 `handover`** (`site-info` 2, `content-page` 2, `product-data` 1, `woocommerce-text` 1), and one
+       each of `PA-1` (N7), `PA-3` (103, measured by the hand pair `choose-a-frame` and refused only by the A4 validator)
+       and `PA-5` (157). 37 of the 78 can be held by no block setting. One item (N24) belongs to the parallel
+       google-reviews session.
+     - **The functional flows (FR-47-7) and the walker's items 2, 4, 5 and the focus and active states of item 3
+       (FR-47-6): built 2026-10-05** by Session C lanes L3 and L2, each with its own GAP-CHECKLIST section (§20 to §26)
+       and a planted fault shown red then green. The flows live in `scripts/parity/flows/` and report apart from parity
+       rows, into `sites/<client>/build/qa/flows/<timestamp>/`; each fails with a named signal against the bug it was
+       written for, proven against a local mock shop (44 local tests). Two corrections the build established: register
+       **N11(b) is already fixed** at HEAD by `35e8b94d4`, so its flow must *pass* on a HEAD build and can only be shown
+       failing against the pre-fix code or the mock; and register **N38's "skip adds to bag" setting does not exist** in
+       `choice-flow/block.json`, so that flow fails on a live site until N38 lands, which the script says when it fails.
+       The walker's benchmark half (`benchmark.mjs --noise`) drives a live site and RAN 2026-10-06: 5 of 5 scored
+       cases caught, and the "no new noise rows" expectation was withdrawn — 5 noise rows, every one a phase
+       artefact, not host load (`reports/2026-10-06-session-c2/BENCHMARK-NOISE-RESULT.md`). Items 1 and 3's hover, plus items 10 to 13, were already built and proven (2026-10-05:
+       About measure-only on the local mirror, 1 open issue, real: S1's button timing; register S1).
+     - **The walker-state maps are complete** (Session C C0.7): `home`, `shop`, `product`, `lens`, `contact` and
+       `contact-form` now map every state their walker defines, so no row is left in an unmapped state. Contact and its
+       form had always *defined* `field-focused` and `form-submitted-empty`, but their `walkStates` was `["opening"]`, so
+       those states were never walked and they held **none** of the 323 unmapped-state rows (which are shop 163,
+       product 109, home 33, lens 18). Mapping them therefore adds rows rather than clearing any. Seven rows carry a
+       conflict the map cannot express, where one pair is measured in two walker states that now share one setting state
+       with different draft values; they are named in `scripts/parity/flows/state-map-reasons.json`, and the guard that
+       must refuse such a group belongs to `lib/solve-rows.mjs`.
+4. **Fill on an unbuilt surface,** compared with a hand-checked answer. All 17 Eye Care surfaces are built, so
+   **Session C lane L9 proved `fill.mjs`, `lib/draft.mjs` and twelve `lib/fill-*.mjs` modules (2026-10-06) against a
+   built surface with its committed tree withheld** as the hand-checked answer. On `about`: **217 of 319 style leaves
+   exact (68%), about 87% paint-equivalent**, 106 settings written, 38 UNMAPPED, 28 breakpoint steps logged, and
+   content 32 of 32 words and links identical. Entrance timing is exact on all seven animated nodes (500, 600, 700,
+   800, 850, 900 and 800ms, 18px distance) and found an eighth the committed tree lacks. The non-gap differences are
+   benign and named: 90 box seeds writing `0px` on unmeasured sides, 7 unit or token ties that paint identically, 13
+   explicit keys equal to Fill's own baseline, and 51 leaves where the key puts a margin on a child while Fill puts
+   one equal gap on the parent, which is §3.4 step 3 behaving as specified. **The 43 real gaps are all in the UNMAPPED
+   list**: `layout` (11, `display` is ambiguous across `sgsHideOnDesktop`/`Mobile`/`Tablet` so it is never written),
+   `variant` (20, unrecoverable until calibration's presence keys exist on real blocks) and border colour (12, no
+   `borderColour` setting is tied). Two findings: **no calibration `forms` list contains `clamp` anywhere in the
+   cache**, so every fluid size is written per tier and the clamp path is unreachable on real data; and
+   `lib/entrance.mjs` is not a sampler but Solve's `entranceStart`, so Fill has its own probe. The unbuilt-surface
+   demonstration carries forward to the first client that has one.
+5. **A second draft** from a different designer, to test generality. **Blocked: no second draft exists.** This is
+   the only item in this spec Session C does not build, and no route work unblocks it.
