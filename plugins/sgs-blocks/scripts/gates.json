@@ -1508,5 +1508,23 @@
     "added_commit": null,
     "budget_ms": 150,
     "order": 168
+  },
+  {
+    "id": "audit-typography-attr-declarations",
+    "cmd": "node scripts/audit-typography-attr-declarations.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1800,
+    "order": 169
+  },
+  {
+    "id": "audit-typography-attr-declarations-selftest",
+    "cmd": "node scripts/audit-typography-attr-declarations.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1800,
+    "order": 170
   }
 ]

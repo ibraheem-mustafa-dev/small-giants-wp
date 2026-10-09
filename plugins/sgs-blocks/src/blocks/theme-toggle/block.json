@@ -266,6 +266,14 @@
 		"labelFontFamily": {
 			"type": "string",
 			"default": ""
+		},
+		"labelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		}
 	},
 	"render": "file:./render.php",

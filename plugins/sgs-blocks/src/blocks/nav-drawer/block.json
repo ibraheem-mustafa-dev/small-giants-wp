@@ -60,8 +60,12 @@
 				"borderWidth": [
 					"borderWidth"
 				],
-				"chromeRowPadding": [ "chromeRowPadding" ],
-				"closePadding": [ "closePadding" ]
+				"chromeRowPadding": [
+					"chromeRowPadding"
+				],
+				"closePadding": [
+					"closePadding"
+				]
 			},
 			"hideExtensions": [
 				"clickEffects",
@@ -1053,6 +1057,15 @@
 			"type": "object",
 			"default": {},
 			"description": "Backdrop blur of the page behind the drawer per device, a CSS length. Unset emits no blur."
+		},
+		"closeFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",
