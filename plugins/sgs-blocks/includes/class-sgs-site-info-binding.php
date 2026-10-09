@@ -229,7 +229,7 @@ final class Sgs_Site_Info_Binding {
 				: '';
 		}
 		if ( 'address' === $key ) {
-			return self::maps_link( self::raw_value( 'maps_cid' ), self::raw_value( 'address' ) );
+			return self::maps_link( self::raw_value( 'maps_cid' ), self::raw_value( 'address' ), self::raw_value( 'maps_url' ) );
 		}
 		$raw = self::raw_value( $key );
 		return '' === $raw ? '' : self::prefix_url_for_key( $key, $raw );
@@ -258,13 +258,17 @@ final class Sgs_Site_Info_Binding {
 	}
 
 	/**
-	 * A Google Maps link: the place's CID when Site Info holds one, else a search for the address.
+	 * A Google Maps link: the Maps URL when Site Info holds one, else the place's CID, else a search for the address.
 	 *
 	 * @param  string $cid     Digits-only Maps CID ('' when unset).
 	 * @param  string $address Stored address (may hold `<br>` line breaks).
+	 * @param  string $url     Stored Maps link ('' when unset).
 	 * @return string          Unescaped URL, or '' when both are empty.
 	 */
-	private static function maps_link( string $cid, string $address ): string {
+	private static function maps_link( string $cid, string $address, string $url = '' ): string {
+		if ( '' !== $url ) {
+			return $url;
+		}
 		$cid = (string) \preg_replace( '/[^0-9]/', '', $cid );
 		if ( '' !== $cid ) {
 			return 'https://maps.google.com/?cid=' . $cid;

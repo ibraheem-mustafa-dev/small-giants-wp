@@ -46,6 +46,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 use SGS\Blocks\Sgs_Site_Info;
+use SGS\Blocks\Sgs_Site_Info_Binding;
 
 $display_type = $attributes['displayType'] ?? 'phone';
 $show_icon    = ! empty( $attributes['showIcon'] );
@@ -206,15 +207,11 @@ switch ( $display_type ) {
 			// A linked address wraps its text in an inline span: the link is a flex box, so the
 			// underline sweep is drawn on that span and follows every line of a wrapped address.
 			$inner = $icon_html( 'map-pin' ) . $label_html( ! empty( $attributes['addressLink'] ) ? '<span class="sgs-business-info__text">' . $address_text . '</span>' : $address_text );
-			// addressLink: the business on Google Maps, from the Maps CID, else the
-			// Google Business Profile link, else a Maps search for the address.
-			if ( ! empty( $attributes['addressLink'] ) ) {
-				$maps_cid  = (string) Sgs_Site_Info::get( 'maps_cid', '' );
-				$gbp_url   = (string) Sgs_Site_Info::get( 'socials.google', '' );
-				$maps_href = '' !== $maps_cid
-					? 'https://maps.google.com/?cid=' . rawurlencode( $maps_cid )
-					: ( '' !== $gbp_url ? $gbp_url : 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( wp_strip_all_tags( str_replace( array( '<br>', '<br />', '<br/>' ), ', ', $address_raw ) ) ) );
-				$inner     = sprintf( '<a href="%s" class="sgs-business-info__link" rel="noopener">%s</a>', esc_url( $maps_href ), $inner );
+			// addressLink: the same Google Maps link every address binding uses (Site Info
+			// Maps link, else the Maps CID, else a Maps search for the address).
+			$maps_href = ! empty( $attributes['addressLink'] ) ? Sgs_Site_Info_Binding::link_for_key( 'address' ) : '';
+			if ( '' !== $maps_href ) {
+				$inner = sprintf( '<a href="%s" class="sgs-business-info__link" rel="noopener">%s</a>', esc_url( $maps_href ), $inner );
 			}
 			$html = '<address class="sgs-business-info sgs-business-address">' . $inner . '</address>';
 		} else {

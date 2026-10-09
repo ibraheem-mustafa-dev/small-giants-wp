@@ -172,6 +172,7 @@ final class Sgs_Site_Info_Admin_Fields {
 			'vat_number',
 			'registered_office',
 			'maps_cid',
+			'maps_url',
 			'google_rating',
 			'google_review_count',
 			'logo',

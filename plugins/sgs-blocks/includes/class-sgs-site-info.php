@@ -53,7 +53,8 @@ final class Sgs_Site_Info {
 	 * opening_hours.fri, opening_hours.sat, opening_hours.sun,
 	 * socials.facebook, socials.instagram, socials.twitter, socials.linkedin,
 	 * socials.youtube, socials.tiktok, socials.whatsapp, socials.google,
-	 * copyright, tagline, vat_number, registered_office, maps_cid,
+	 * copyright, tagline, vat_number, registered_office, maps_cid, maps_url (the
+	 * Google Maps link a linked address goes to; a Business Profile or review link belongs in socials.google),
 	 * google_rating (0-5, one decimal), google_review_count (whole number): the
 	 * figures sgs/google-rating-badge shows when no live Google data is connected,
 	 * logo (media-library attachment ID of the site logo — read it with
@@ -89,6 +90,7 @@ final class Sgs_Site_Info {
 		'copyright'         => 'public',
 		'tagline'           => 'public',
 		'maps_cid'          => 'public',
+		'maps_url'          => 'public',
 		'google_rating'       => 'public',
 		'google_review_count' => 'public',
 		'logo'              => 'public',
@@ -147,6 +149,7 @@ final class Sgs_Site_Info {
 				'tagline'           => $text,
 				'vat_number'        => $text,
 				'maps_cid'          => array( __CLASS__, 'sanitise_maps_cid' ),
+				'maps_url'          => $url,
 				'google_rating'       => array( __CLASS__, 'sanitise_google_rating' ),
 				'google_review_count' => array( __CLASS__, 'sanitise_google_review_count' ),
 				'logo'              => array( __NAMESPACE__ . '\Sgs_Site_Info_Logo', 'sanitise' ),

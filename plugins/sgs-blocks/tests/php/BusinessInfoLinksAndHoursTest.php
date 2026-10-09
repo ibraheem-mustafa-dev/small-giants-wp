@@ -34,13 +34,16 @@ final class BusinessInfoLinksAndHoursTest extends TestCase {
 		$this->assertStringContainsString( 'Birmingham B8 2HQ', $html );
 	}
 
-	public function test_address_link_falls_back_to_the_profile_then_a_search(): void {
-		$this->site_info( array( 'address' => '644 Washwood Heath Rd<br>Birmingham', 'socials' => array( 'google' => 'https://g.page/eye-care' ) ) );
-		$this->assertStringContainsString( 'href="https://g.page/eye-care"', $this->render_block( 'sgs/business-info', array( 'displayType' => 'address', 'addressLink' => true ) )['html'] );
+	public function test_address_link_prefers_the_maps_link_field_and_never_uses_the_profile_or_review_link(): void {
+		$this->site_info( array( 'address' => '644 Washwood Heath Rd<br>Birmingham', 'maps_url' => 'https://maps.app.goo.gl/abc', 'maps_cid' => '1234567890', 'socials' => array( 'google' => 'https://g.page/r/review' ) ) );
+		$html = $this->render_block( 'sgs/business-info', array( 'displayType' => 'address', 'addressLink' => true ) )['html'];
+		$this->assertStringContainsString( 'href="https://maps.app.goo.gl/abc"', $html );
 
-		$this->site_info( array( 'address' => '644 Washwood Heath Rd<br>Birmingham' ) );
-		// The harness's esc_url stub leaves & as is; WordPress's prints &#038;.
-		$this->assertMatchesRegularExpression( '#href="https://www\.google\.com/maps/search/\?api=1(&|&\#038;)query=644%20Washwood%20Heath%20Rd%2C%20Birmingham"#', $this->render_block( 'sgs/business-info', array( 'displayType' => 'address', 'addressLink' => true ) )['html'] );
+		// Negative control: without a Maps link or CID the review link in socials.google is still not used.
+		$this->site_info( array( 'address' => '644 Washwood Heath Rd<br>Birmingham', 'socials' => array( 'google' => 'https://g.page/r/review' ) ) );
+		$html = $this->render_block( 'sgs/business-info', array( 'displayType' => 'address', 'addressLink' => true ) )['html'];
+		$this->assertStringNotContainsString( 'g.page/r/review', $html );
+		$this->assertMatchesRegularExpression( '#href="https://www\.google\.com/maps/search/\?api=1(&|&\#038;)query=644%20Washwood%20Heath%20Rd%2C%20Birmingham"#', $html );
 	}
 
 	public function test_address_without_the_toggle_is_not_a_link(): void {

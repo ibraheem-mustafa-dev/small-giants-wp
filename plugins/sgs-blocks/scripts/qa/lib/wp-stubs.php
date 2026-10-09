@@ -628,6 +628,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-schema.php';
 // faithful "no business info configured" state, not fabricated content.
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-site-info.php';
 
+// Real SGS logic (SGS\Blocks\Sgs_Site_Info_Binding): the one Maps link rule that sgs/business-info's linked
+// address and every address binding share; static-only, it reads Sgs_Site_Info above.
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-site-info-binding.php';
+
 if ( ! function_exists( 'is_search' ) ) {
 	function is_search(): bool {
 		// Same "no current WP_Query" reasoning as is_singular()/is_archive().

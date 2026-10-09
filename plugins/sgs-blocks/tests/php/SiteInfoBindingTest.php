@@ -98,6 +98,11 @@ final class SiteInfoBindingTest extends TestCase {
 		$this->assertSame( 'https://maps.google.com/?cid=1234567890', Binding::link_for_key( 'address' ) );
 	}
 
+	public function test_maps_url_wins_over_the_cid(): void {
+		$this->seed( array( 'maps_cid' => '1234567890', 'maps_url' => 'https://maps.app.goo.gl/abc' ) );
+		$this->assertSame( 'https://maps.app.goo.gl/abc', Binding::link_for_key( 'address' ) );
+	}
+
 	public function test_whatsapp_accepts_wa_me_and_api_links(): void {
 		$this->assertSame( 'https://wa.me/447700900123', Binding::prefix_url_for_key( 'socials.whatsapp', 'https://wa.me/+447700900123' ) );
 		$this->assertSame( 'https://wa.me/447700900123', Binding::prefix_url_for_key( 'socials.whatsapp', 'api.whatsapp.com/send?phone=447700900123' ) );

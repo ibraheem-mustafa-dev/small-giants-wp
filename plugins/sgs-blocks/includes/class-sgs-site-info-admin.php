@@ -164,6 +164,19 @@ final class Sgs_Site_Info_Admin {
 			)
 		);
 		\add_settings_field(
+			'sgs_site_info_maps_url',
+			\__( 'Google Maps link', 'sgs-blocks' ),
+			array( $fields, 'render_input_field' ),
+			self::PAGE_SLUG,
+			'sgs_site_info_contact',
+			array(
+				'label_for'   => 'sgs_site_info_maps_url',
+				'key'         => 'maps_url',
+				'type'        => 'url',
+				'description' => \__( 'Where a linked address goes: your listing on Google Maps. Leave empty to use the Maps CID, then a Maps search for the address. Do not use a write-a-review link.', 'sgs-blocks' ),
+			)
+		);
+		\add_settings_field(
 			'sgs_site_info_google_rating',
 			\__( 'Google rating (out of 5)', 'sgs-blocks' ),
 			array( $fields, 'render_input_field' ),
@@ -302,7 +315,7 @@ final class Sgs_Site_Info_Admin {
 		}
 
 		// 1. Flat well-known scalar keys.
-		foreach ( array( 'phone', 'email', 'support_email', 'address', 'copyright', 'tagline', 'vat_number', 'registered_office', 'maps_cid', 'google_rating', 'google_review_count', 'logo' ) as $key ) {
+		foreach ( array( 'phone', 'email', 'support_email', 'address', 'copyright', 'tagline', 'vat_number', 'registered_office', 'maps_cid', 'maps_url', 'google_rating', 'google_review_count', 'logo' ) as $key ) {
 			if ( \array_key_exists( $key, $raw ) ) {
 				Sgs_Site_Info::set( $key, $raw[ $key ] );
 			}
