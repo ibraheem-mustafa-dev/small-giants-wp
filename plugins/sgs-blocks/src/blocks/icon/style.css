@@ -13,6 +13,10 @@
  * --sgs-si-shape-h, --sgs-si-colour, --sgs-si-colour-hover, --sgs-si-bg, --sgs-si-bg-hover,
  * --sgs-si-border-colour, --sgs-si-border-colour-hover, and --sgs-si-border-width / --sgs-si-border-style, painted
  * only on an icon render.php marks .sgs-icon--group-border (inside a row with a group border, no border of its own).
+ * Hover motion and shadow (includes/helpers-icon-motion.php) follow the same order, own then row then default:
+ * --sgs-icon-hover-scale / -hover-x / -hover-y / -hover-rotate, --sgs-icon-move-duration / -paint-duration /
+ * -move-easing, --sgs-icon-shadow / -shadow-hover (the row's twins are --sgs-si-*). The hover transform is one list,
+ * scale then translate then rotate, so a translate is scaled with the shape.
  *
  * Outline shapes (.sgs-icon--outline: hexagon, diamond, octagon, star, blob) draw an inline svg.sgs-icon__outline behind the
  * glyph: its path's fill is the background chain and its stroke the border chain, the same custom properties a box
@@ -75,13 +79,19 @@
 	block-size: var(--sgs-icon-shape-h, var(--sgs-icon-shape-w, var(--sgs-si-shape-h, var(--sgs-si-shape-w, var(--sgs-icon-size-used)))));
 	color: var(--sgs-icon-colour, var(--sgs-si-colour, var(--sgs-icon-brand-glyph, var(--wp--preset--color--primary))));
 	border-color: var(--sgs-icon-border-colour, var(--sgs-si-border-colour, var(--sgs-icon-brand-border, var(--wp--preset--color--primary))));
-	transform: rotate(var(--sgs-icon-rotate, 0deg));
+	transform: scale(1) translate(0, 0) rotate(var(--sgs-icon-rotate, 0deg));
 	transition:
-		transform var(--wp--custom--transition--fast, 0.15s ease),
-		color var(--wp--custom--transition--fast, 0.15s ease),
-		background-color var(--wp--custom--transition--fast, 0.15s ease),
-		border-color var(--wp--custom--transition--fast, 0.15s ease),
-		box-shadow var(--wp--custom--transition--fast, 0.15s ease);
+		transform var(--sgs-icon-move-duration, var(--sgs-si-move-duration, var(--wp--custom--duration--fast, 150ms))) var(--sgs-icon-move-easing, var(--sgs-si-move-easing, ease)),
+		color var(--sgs-icon-paint-duration, var(--sgs-si-paint-duration, var(--wp--custom--duration--fast, 150ms))) ease,
+		background-color var(--sgs-icon-paint-duration, var(--sgs-si-paint-duration, var(--wp--custom--duration--fast, 150ms))) ease,
+		border-color var(--sgs-icon-paint-duration, var(--sgs-si-paint-duration, var(--wp--custom--duration--fast, 150ms))) ease,
+		box-shadow var(--sgs-icon-paint-duration, var(--sgs-si-paint-duration, var(--wp--custom--duration--fast, 150ms))) ease;
+}
+
+/* The shape's shadow: the icon's own (--sgs-icon-shadow), else its row's, else none. Outline shapes paint no box, so
+ * they take none. forced-colours mode (below) draws the boxed shape's outline in place of it. */
+.sgs-icon:not(.sgs-icon--outline) .sgs-icon__shape {
+	box-shadow: var(--sgs-icon-shadow, var(--sgs-si-shadow, none));
 }
 
 /* A shape with a background or border gets room around the glyph: the icon size plus spacing-20 each side. */
@@ -93,7 +103,8 @@
 .sgs-icon--has-bg .sgs-icon__shape {
 	background-color: var(--sgs-icon-bg, var(--sgs-si-bg, var(--sgs-icon-brand-ground, var(--wp--preset--color--surface-alt))));
 	/* A wrapper's group gradient; render.php sets --sgs-icon-bg-image:none for an icon with its own background. */
-	background-image: var(--sgs-icon-bg-image, var(--sgs-si-bg-gradient, none));
+	/* ... then the brand's gradient ground (Instagram), which an own or row background of any kind replaces. */
+	background-image: var(--sgs-icon-bg-image, var(--sgs-si-bg-gradient, var(--sgs-icon-brand-ground-image, none)));
 }
 
 .sgs-icon--shape-circle .sgs-icon__shape {
@@ -247,7 +258,7 @@
  * wrapper's, else the brand's swap, else the resting colour). */
 .sgs-icon__link:hover .sgs-icon__shape,
 .sgs-icon__link:focus-visible .sgs-icon__shape {
-	transform: rotate(var(--sgs-icon-rotate, 0deg)) scale(var(--sgs-icon-hover-scale, 1.1));
+	transform: scale(var(--sgs-icon-hover-scale, var(--sgs-si-hover-scale, 1.1))) translate(var(--sgs-icon-hover-x, var(--sgs-si-hover-x, 0px)), var(--sgs-icon-hover-y, var(--sgs-si-hover-y, 0px))) rotate(calc(var(--sgs-icon-rotate, 0deg) + var(--sgs-icon-hover-rotate, var(--sgs-si-hover-rotate, 0deg))));
 	color: var(--sgs-icon-colour-hover, var(--sgs-si-colour-hover, var(--sgs-icon-brand-glyph-hover, var(--sgs-icon-colour, var(--sgs-si-colour, var(--sgs-icon-brand-glyph, var(--wp--preset--color--primary)))))));
 	border-color: var(--sgs-icon-border-colour-hover, var(--sgs-si-border-colour-hover, var(--sgs-icon-bg-hover, var(--sgs-si-bg-hover, var(--sgs-icon-brand-border, var(--wp--preset--color--primary))))));
 }
@@ -257,7 +268,13 @@
 .sgs-icon--has-bg .sgs-icon__link:focus-visible .sgs-icon__shape {
 	color: var(--sgs-icon-colour-hover, var(--sgs-si-colour-hover, var(--sgs-icon-brand-glyph-hover, var(--wp--preset--color--surface))));
 	background-color: var(--sgs-icon-bg-hover, var(--sgs-si-bg-hover, var(--sgs-icon-brand-ground-hover, var(--wp--preset--color--primary))));
-	background-image: var(--sgs-icon-bg-hover-image, var(--sgs-si-bg-hover-gradient, var(--sgs-icon-bg-image, var(--sgs-si-bg-gradient, none))));
+	background-image: var(--sgs-icon-bg-hover-image, var(--sgs-si-bg-hover-gradient, var(--sgs-icon-bg-image, var(--sgs-si-bg-gradient, var(--sgs-icon-brand-ground-image-hover, none)))));
+}
+
+/* The hover shadow: the icon's own, else its row's, else the resting shadow unchanged. */
+.sgs-icon:not(.sgs-icon--outline) .sgs-icon__link:hover .sgs-icon__shape,
+.sgs-icon:not(.sgs-icon--outline) .sgs-icon__link:focus-visible .sgs-icon__shape {
+	box-shadow: var(--sgs-icon-shadow-hover, var(--sgs-si-shadow-hover, var(--sgs-icon-shadow, var(--sgs-si-shadow, none))));
 }
 
 /* Outline shapes take the same hover colours: the stroke the border's, the fill the background's. */
@@ -346,7 +363,7 @@
 
 	.sgs-icon__link:hover .sgs-icon__shape,
 	.sgs-icon__link:focus-visible .sgs-icon__shape {
-		transform: rotate(var(--sgs-icon-rotate, 0deg));
+		transform: scale(1) translate(0, 0) rotate(var(--sgs-icon-rotate, 0deg));
 	}
 }
 

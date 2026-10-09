@@ -50,6 +50,7 @@
 			"autoLabel": "Follow us on Instagram",
 			"colour": "#E4405F",
 			"logoGradient": "linear-gradient(45deg, #FEDA75 0%, #FA7E1E 25%, #D62976 50%, #962FBF 75%, #4F5BD5 100%)",
+			"groundGradient": "radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%)",
 			"glyph": { "lucide": "instagram" }
 		},
 		{

@@ -43,6 +43,7 @@ import { ShapeToggle } from '../icon/shape-options';
 import { shapeUsesWidthOnly } from '../../utils/icon-shapes';
 import { templateFromSiteInfo, checklistRows, toggleLink } from './links';
 import { SocialIconLabelsPanel, rowLabelPreviewCss } from './labels';
+import RowMotionPanels, { rowMotionCanvasStyle } from './group-motion';
 
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -175,6 +176,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const [ spacingSizes ] = useSettings( 'spacing.spacingSizes' );
 	const presetSlugs = flattenPresetSetting( spacingSizes ).map( ( s ) => s.slug );
 	const siteInfo = window.sgsBlocksData?.siteInfo;
+	const [ shadowHoverMap ] = useSettings( 'custom.shadowHover' );
 
 	const {
 		ariaLabel,
@@ -204,7 +206,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const labelCss = rowLabelPreviewCss( scope, attributes, tier );
 	const blockProps = useBlockProps( {
 		className: `sgs-social-icons ${ scope }`,
-		style: rowCanvasStyle( attributes, tier, palette, presetSlugs ),
+		style: { ...rowCanvasStyle( attributes, tier, palette, presetSlugs ), ...rowMotionCanvasStyle( attributes, shadowHoverMap || {} ) },
 	} );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		allowedBlocks: [ 'sgs/icon' ],
@@ -391,6 +393,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						] }
 					/>
 				</PanelBody>
+				<RowMotionPanels attributes={ attributes } setAttributes={ setAttributes } />
 				<SocialIconLabelsPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<PanelBody title={ __( 'Row', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveControl label={ __( 'Gap between icons', 'sgs-blocks' ) }>

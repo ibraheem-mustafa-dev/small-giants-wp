@@ -135,6 +135,10 @@
  *                                     sgs_icon_accessible_name,
  *                                     sgs_icon_is_editor_render (sgs/icon's
  *                                     length allowlist, link name, editor test)
+ *   helpers-icon-motion.php         — sgs_icon_motion_decls,
+ *                                     sgs_icon_shadow_vars (sgs/icon and
+ *                                     sgs/social-icons hover move, motion and
+ *                                     shadow custom properties)
  *   helpers-reviews-inline.php      — sgs_reviews_inline_normalise,
  *                                     sgs_reviews_inline_data (written reviews
  *                                     shaped like the Places API's, so
@@ -194,6 +198,7 @@ require_once __DIR__ . '/helpers-reviews-inline.php';
 require_once __DIR__ . '/helpers-site-info-binding.php';
 require_once __DIR__ . '/helpers-site-info-items.php';
 require_once __DIR__ . '/helpers-icon.php';
+require_once __DIR__ . '/helpers-icon-motion.php';
 require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';
 require_once __DIR__ . '/class-sgs-media-element.php';

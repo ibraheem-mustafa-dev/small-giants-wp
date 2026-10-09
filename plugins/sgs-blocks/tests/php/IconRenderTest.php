@@ -318,7 +318,7 @@ final class IconRenderTest extends TestCase {
 		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/icon/style.css' );
 		$this->assertMatchesRegularExpression( '/\.sgs-icon__link \{[^}]*min-inline-size: 44px;[^}]*min-block-size: 44px;/s', $css );
 		$this->assertMatchesRegularExpression( '/\.sgs-icon__link:focus-visible \{[^}]*outline: 2px solid/s', $css );
-		$this->assertMatchesRegularExpression( '/prefers-reduced-motion: reduce\)[^@]*transform: rotate\(var\(--sgs-icon-rotate, 0deg\)\);/s', $css );
+		$this->assertMatchesRegularExpression( '/prefers-reduced-motion: reduce\)[^@]*transform: scale\(1\) translate\(0, 0\) rotate\(var\(--sgs-icon-rotate, 0deg\)\);/s', $css );
 		$this->assertStringContainsString( '@media (forced-colors: active)', $css );
 	}
 

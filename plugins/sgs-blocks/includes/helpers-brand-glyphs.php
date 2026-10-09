@@ -24,7 +24,7 @@ if ( ! function_exists( 'sgs_brand_registry' ) ) {
 	 * Every registry entry, keyed by slug, in the registry's order. Entries with an unsafe slug or colour are
 	 * dropped, so a bad edit to the JSON can never reach a stylesheet or a class attribute.
 	 *
-	 * @return array<string,array{slug:string,label:string,siteInfoKey:string,autoLabel:string,colour:string,glyph:array,glyphBrand?:array,ground?:string,logoGradient?:string}>
+	 * @return array<string,array{slug:string,label:string,siteInfoKey:string,autoLabel:string,colour:string,glyph:array,glyphBrand?:array,ground?:string,logoGradient?:string,groundGradient?:string}>
 	 */
 	function sgs_brand_registry(): array {
 		static $brands = null;
@@ -41,6 +41,8 @@ if ( ! function_exists( 'sgs_brand_registry' ) ) {
 			$ground = is_string( $entry['ground'] ?? null ) ? $entry['ground'] : '';
 			// A brand whose logo is a gradient (Instagram): a linear-gradient of hex stops, else none.
 			$logo_gradient = is_string( $entry['logoGradient'] ?? null ) && 1 === preg_match( '/^linear-gradient\(\d{1,3}deg(, #[0-9A-Fa-f]{6}( \d{1,3}%)?)+\)$/', $entry['logoGradient'] ) ? $entry['logoGradient'] : '';
+			// A brand whose ground is a gradient (Instagram's app icon): a linear or radial gradient of hex stops, else none.
+			$ground_gradient = is_string( $entry['groundGradient'] ?? null ) && 1 === preg_match( '/^(?:linear|radial)-gradient\((?:\d{1,3}deg|circle at \d{1,3}% \d{1,3}%)(, #[0-9A-Fa-f]{6}( \d{1,3}%)?)+\)$/', $entry['groundGradient'] ) ? $entry['groundGradient'] : '';
 			if ( ! preg_match( '/^[a-z0-9-]+$/', $slug ) || ! preg_match( '/^(#[0-9A-Fa-f]{6})?$/', $colour ) || ! preg_match( '/^(#[0-9A-Fa-f]{6})?$/', $ground ) || ! is_array( $entry['glyph'] ?? null ) ) {
 				continue;
 			}
@@ -54,6 +56,7 @@ if ( ! function_exists( 'sgs_brand_registry' ) ) {
 				'glyphBrand'   => is_array( $entry['glyphBrand'] ?? null ) ? $entry['glyphBrand'] : array(),
 				'ground'       => $ground,
 				'logoGradient' => $logo_gradient,
+				'groundGradient' => $ground_gradient,
 			);
 		}
 		return $brands;
@@ -216,6 +219,20 @@ if ( ! function_exists( 'sgs_brand_paint' ) ) {
 				'glyph_hover'  => '' !== $glyph ? $colour : '',
 			)
 		);
+	}
+}
+
+if ( ! function_exists( 'sgs_brand_paint_hold' ) ) {
+	/**
+	 * A brand paint that keeps its ground and glyph on hover (`brandHover: hold`) instead of swapping them.
+	 *
+	 * @param array $paint A sgs_brand_paint() result.
+	 * @return array The same paint with the hover ground and glyph equal to the resting ones.
+	 */
+	function sgs_brand_paint_hold( array $paint ): array {
+		$paint['ground_hover'] = $paint['ground'];
+		$paint['glyph_hover']  = $paint['glyph'];
+		return $paint;
 	}
 }
 

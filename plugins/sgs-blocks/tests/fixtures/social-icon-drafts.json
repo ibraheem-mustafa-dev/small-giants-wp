@@ -1,0 +1,17 @@
+{
+	"$comment": "The two design drafts whose footer icons sgs/social-icons and sgs/icon are measured against (scripts/qa/social-icon-draft-compare.mjs). `url` is where the draft folder is served (python -m http.server <port> inside the folder); `footerLink` is the DOM selector of one icon in the draft's footer, `{name}` replaced by the icon name; `row` is the anchor of the SGS QA row that reproduces it.",
+	"drafts": {
+		"a": {
+			"label": "Basket draft (sites/mamas-munches)",
+			"url": "http://localhost:8801/Basket.dc.html",
+			"row": "qa-draft-a-footer",
+			"icons": [ "Instagram", "WhatsApp" ]
+		},
+		"b": {
+			"label": "Indus Foods draft (sites/indus-foods)",
+			"url": "http://localhost:8802/Indus%20Foods%20Website%20v2.dc.html",
+			"row": "qa-draft-b-footer",
+			"icons": [ "LinkedIn", "Facebook", "Google", "Instagram" ]
+		}
+	}
+}

@@ -205,7 +205,7 @@ if ( ! function_exists( 'sgs_icon_group_context' ) ) {
 	 * the attribute has a default, so core always passes it.
 	 *
 	 * @param mixed $context The icon's block context (`$block->context`).
-	 * @return array{in_group:bool, colour_mode:string, hidden:string[], shape:string, show_bg:bool, border:bool, border_width:array, border_style:string, show_label:bool, label_position:string}
+	 * @return array{in_group:bool, colour_mode:string, hidden:string[], shape:string, show_bg:bool, border:bool, border_width:array, border_style:string, show_label:bool, label_position:string, brand_hover:string}
 	 */
 	function sgs_icon_group_context( $context ): array {
 		$context   = is_array( $context ) ? $context : array();
@@ -215,6 +215,7 @@ if ( ! function_exists( 'sgs_icon_group_context' ) ) {
 		$shape     = (string) ( $context['sgs/socialIconsShape'] ?? '' );
 		$width     = is_array( $context['sgs/socialIconsBorderWidth'] ?? null ) ? $context['sgs/socialIconsBorderWidth'] : array();
 		$label_pos = (string) ( $context['sgs/socialIconsLabelPosition'] ?? '' );
+		$hover     = (string) ( $context['sgs/socialIconsBrandHover'] ?? '' );
 		return array(
 			'in_group'       => $in_group,
 			'colour_mode'    => in_array( $mode, array( 'inherit', 'theme', 'brand', 'brand-glyph' ), true ) ? $mode : 'inherit',
@@ -226,6 +227,7 @@ if ( ! function_exists( 'sgs_icon_group_context' ) ) {
 			'border_style'   => is_string( $context['sgs/socialIconsBorderStyle'] ?? null ) ? $context['sgs/socialIconsBorderStyle'] : '',
 			'show_label'     => ! empty( $context['sgs/socialIconsShowLabel'] ),
 			'label_position' => in_array( $label_pos, array( 'end', 'start', 'below', 'above' ), true ) ? $label_pos : '',
+			'brand_hover'    => 'hold' === $hover ? 'hold' : 'swap',
 		);
 	}
 }

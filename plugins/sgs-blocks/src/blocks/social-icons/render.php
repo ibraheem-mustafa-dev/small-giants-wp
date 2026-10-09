@@ -105,6 +105,42 @@ if ( '' !== sgs_css_gradient_value( (string) ( $attributes['childIconBackgroundG
 	$root_decls[] = '--sgs-si-bg-hover-gradient:none';
 }
 
+// A flat group background with no gradient of its own replaces a brand's gradient ground (Instagram) on every icon.
+if ( '' !== (string) ( $attributes['childIconBackground'] ?? '' ) && '' === sgs_css_gradient_value( (string) ( $attributes['childIconBackgroundGradient'] ?? '' ) ) ) {
+	$root_decls[] = '--sgs-si-bg-gradient:none';
+}
+
+// ── Group hover move, motion and shadow (includes/helpers-icon-motion.php; icon/style.css reads them after an icon's own) ─
+$group_scale = is_numeric( $attributes['childIconScaleHover'] ?? null ) ? (float) $attributes['childIconScaleHover'] : 0.0;
+if ( $group_scale >= 1.0 ) {
+	$root_decls[] = '--sgs-si-hover-scale:' . round( min( 1.5, $group_scale ), 3 );
+}
+$root_decls = array_merge(
+	$root_decls,
+	sgs_icon_motion_decls(
+		array(
+			'x'             => $attributes['childIconOffsetXHover'] ?? null,
+			'y'             => $attributes['childIconOffsetYHover'] ?? null,
+			'rotate'        => $attributes['childIconRotateHover'] ?? null,
+			'move_ms'       => $attributes['childIconTransitionDuration'] ?? null,
+			'paint_ms'      => $attributes['childIconPaintDuration'] ?? null,
+			'easing'        => $attributes['childIconTransitionEasing'] ?? '',
+			'easing_custom' => $attributes['childIconTransitionEasingCustom'] ?? '',
+		),
+		'--sgs-si'
+	),
+	sgs_icon_shadow_vars(
+		array_merge( $attributes, array( 'shadowLiftOnHover' => $attributes['childIconShadowLiftOnHover'] ?? true ) ),
+		array(
+			'base'         => 'childIconBoxShadow',
+			'colour'       => 'childIconBoxShadowColour',
+			'hover'        => 'childIconBoxShadowHover',
+			'hover_colour' => 'childIconBoxShadowColourHover',
+		),
+		'--sgs-si'
+	)
+);
+
 // ── Group border (width and style; icons with their own border keep theirs) ───
 $root_decls = array_merge( $root_decls, sgs_icon_group_border_decls( $attributes['childIconBorderWidth'] ?? array(), $attributes['childIconBorderStyle'] ?? '' ) );
 

@@ -37,6 +37,8 @@ import { isOutlineShape } from '../../utils/icon-shapes';
 import ShapePanels from './inspector-shape';
 import IconLabelPanel from './inspector-label';
 import { metadataWithoutLinkBinding } from './icon-state';
+import { ICON_MOTION_NAMES } from './icon-motion';
+import { BrandHoverControl, HoverMotionFields, IconShadowPanel } from './motion-panels';
 
 /**
  * An outline shape fills with a flat colour only (render.php prints no background gradient for it), so its background
@@ -222,6 +224,9 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ ( brand.brandOn || 'brand' === colourMode ) && ! brand.glyphOnly && (
+						<BrandHoverControl inherit value={ attributes.brandHover } onChange={ ( value ) => setAttributes( { brandHover: value } ) } />
+					) }
 				</PanelBody>
 				<PanelBody title={ __( 'Link', 'sgs-blocks' ) } initialOpen={ false }>
 					{ link.bound ? (
@@ -347,6 +352,7 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<HoverMotionFields attributes={ attributes } setAttributes={ setAttributes } names={ ICON_MOTION_NAMES } />
 					<RangeControl
 						label={ __( 'Hover opacity', 'sgs-blocks' ) }
 						help={ __( 'Fades the icon link on hover. 1 = no fade. 0 disables the fade entirely.', 'sgs-blocks' ) }
@@ -361,6 +367,12 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<IconShadowPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					names={ ICON_MOTION_NAMES }
+					help={ outlineShown ? __( 'The outline shapes draw no box, so they take no shadow. Use the square, circle or pill.', 'sgs-blocks' ) : undefined }
+				/>
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride value={ attributes.padding } onChange={ ( obj ) => setAttributes( { padding: obj } ) }>
 						{ ( { ownValue, setOwnValue } ) => (

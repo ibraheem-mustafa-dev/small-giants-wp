@@ -119,8 +119,13 @@ describe( 'sgs/icon group context twin', () => {
 			borderStyle: '',
 			showLabel: false,
 			labelPosition: '',
+			brandHover: 'swap',
 		} );
 		expect( attributesInGroup( { colourMode: 'inherit', shape: 'square' }, group ) ).toMatchObject( { colourMode: 'theme', shape: 'circle', showBackground: true } );
+		// Brand colours on hover: an icon on Inherit follows its row; its own choice wins.
+		expect( iconGroupContext( { 'sgs/socialIconsColourMode': 'brand', 'sgs/socialIconsBrandHover': 'hold' } ).brandHover ).toBe( 'hold' );
+		expect( attributesInGroup( { brandHover: 'inherit' }, iconGroupContext( { 'sgs/socialIconsColourMode': 'brand', 'sgs/socialIconsBrandHover': 'hold' } ) ).brandHover ).toBe( 'hold' );
+		expect( attributesInGroup( { brandHover: 'swap' }, iconGroupContext( { 'sgs/socialIconsColourMode': 'brand', 'sgs/socialIconsBrandHover': 'hold' } ) ).brandHover ).toBe( 'swap' );
 		expect( attributesInGroup( { colourMode: 'brand', shape: 'pill' }, group ) ).toMatchObject( { colourMode: 'brand', shape: 'pill' } );
 	} );
 	it( 'a border style of none is no group border', () => {

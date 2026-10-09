@@ -118,6 +118,15 @@ $brand_on    = 'theme' !== $colour_mode && null !== $colour_brand;
 $glyph_only  = $brand_on && 'brand-glyph' === $colour_mode;
 $draw_fixed  = $brand_on && 'brand' === $icon_source && null !== $glyph_brand && $glyph_brand['slug'] === $colour_brand['slug'] && ! empty( $glyph_brand['glyphBrand'] );
 $brand_paint = $brand_on ? sgs_brand_paint( $colour_brand, $draw_fixed, $glyph_only ? 'brand-glyph' : 'brand' ) : null;
+// Brand colours on hover: `swap` turns ground and glyph around (the default), `hold` keeps both. An icon on Inherit takes its row's choice.
+$brand_hover = (string) ( $attributes['brandHover'] ?? 'inherit' );
+$brand_hover = in_array( $brand_hover, array( 'swap', 'hold' ), true ) ? $brand_hover : ( $group['in_group'] ? $group['brand_hover'] : 'swap' );
+$brand_hold  = 'hold' === $brand_hover;
+if ( null !== $brand_paint && $brand_hold && ! $glyph_only ) {
+	$brand_paint = sgs_brand_paint_hold( $brand_paint );
+}
+// A brand whose ground is a gradient (Instagram) paints it over the flat brand colour, which stays as the fallback.
+$ground_gradient = null !== $brand_paint && ! $glyph_only && ! $draw_fixed ? sgs_css_gradient_value( (string) ( $colour_brand['groundGradient'] ?? '' ) ) : '';
 
 // ── Shape, background, border ────────────────────────────────────────────────
 $shape = is_string( $attributes['shape'] ?? null ) ? $attributes['shape'] : 'square';
@@ -348,6 +357,11 @@ if ( null !== $brand_paint ) {
 	}
 }
 
+if ( '' !== $ground_gradient ) {
+	$root_decls[] = '--sgs-icon-brand-ground-image:' . $ground_gradient;
+	$root_decls[] = '--sgs-icon-brand-ground-image-hover:' . ( $brand_hold ? $ground_gradient : 'none' );
+}
+
 $icon_rotate = is_numeric( $attributes['iconRotate'] ?? null ) ? max( -360.0, min( 360.0, (float) $attributes['iconRotate'] ) ) : 0.0;
 if ( abs( $icon_rotate ) > 0.001 ) {
 	$root_decls[] = '--sgs-icon-rotate:' . round( $icon_rotate, 2 ) . 'deg';
@@ -359,6 +373,38 @@ if ( abs( $hover_scale - 1.1 ) > 0.0001 ) {
 $hover_opacity = is_numeric( $attributes['opacityHover'] ?? null ) ? max( 0.0, min( 1.0, (float) $attributes['opacityHover'] ) ) : 0.0;
 if ( $hover_opacity > 0 ) {
 	$root_decls[] = '--sgs-icon-opacity-hover:' . number_format( $hover_opacity, 2 );
+}
+// Hover move, hover turn, motion and shadow (includes/helpers-icon-motion.php). An outline shape paints no box, so it takes no shadow.
+$root_decls = array_merge(
+	$root_decls,
+	sgs_icon_motion_decls(
+		array(
+			'x'             => $attributes['offsetXHover'] ?? null,
+			'y'             => $attributes['offsetYHover'] ?? null,
+			'rotate'        => $attributes['iconRotateHover'] ?? null,
+			'move_ms'       => $attributes['transitionDuration'] ?? null,
+			'paint_ms'      => $attributes['paintDuration'] ?? null,
+			'easing'        => $attributes['transitionEasing'] ?? '',
+			'easing_custom' => $attributes['transitionEasingCustom'] ?? '',
+		),
+		'--sgs-icon'
+	)
+);
+if ( ! $is_outline ) {
+	$root_decls = array_merge(
+		$root_decls,
+		sgs_icon_shadow_vars(
+			$attributes,
+			array(
+				'base'         => 'boxShadow',
+				'colour'       => 'boxShadowColour',
+				'hover'        => 'boxShadowHover',
+				'hover_colour' => 'boxShadowColourHover',
+			),
+			'--sgs-icon',
+			true
+		)
+	);
 }
 $text_align = $attributes['textAlign'] ?? '';
 if ( in_array( $text_align, array( 'left', 'center', 'right', 'justify' ), true ) ) {

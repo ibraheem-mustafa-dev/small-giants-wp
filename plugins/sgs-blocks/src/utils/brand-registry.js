@@ -15,6 +15,8 @@ export const BRAND_DARK_GLYPH = '#1E1E1E';
 const HEX = /^(#[0-9A-Fa-f]{6})?$/;
 /** A gradient logo's CSS gradient: linear, hex stops. Twin of the pattern in sgs_brand_registry(). */
 const LOGO_GRADIENT = /^linear-gradient\(\d{1,3}deg(, #[0-9A-Fa-f]{6}( \d{1,3}%)?)+\)$/;
+/** A gradient ground's CSS gradient: linear or radial, hex stops. Twin of the pattern in sgs_brand_registry(). */
+const GROUND_GRADIENT = /^(?:linear|radial)-gradient\((?:\d{1,3}deg|circle at \d{1,3}% \d{1,3}%)(, #[0-9A-Fa-f]{6}( \d{1,3}%)?)+\)$/;
 
 /**
  * Registry entries in order, with the same validation as `sgs_brand_registry()`.
@@ -40,6 +42,7 @@ export const BRANDS = ( Array.isArray( registry?.brands ) ? registry.brands : []
 		glyphBrand: b.glyphBrand && 'object' === typeof b.glyphBrand ? b.glyphBrand : null,
 		ground: b.ground ?? '',
 		logoGradient: LOGO_GRADIENT.test( b.logoGradient ?? '' ) ? b.logoGradient : '',
+		groundGradient: GROUND_GRADIENT.test( b.groundGradient ?? '' ) ? b.groundGradient : '',
 	} ) );
 
 /**
@@ -157,4 +160,14 @@ export function brandPaint( brand, fixedMark = false, mode = 'brand' ) {
 		groundHover: glyph,
 		glyphHover: glyph ? colour : '',
 	};
+}
+
+/**
+ * A brand paint that keeps its ground and glyph on hover (`brandHover: hold`). Twin: sgs_brand_paint_hold().
+ *
+ * @param {Object} paint A brandPaint() result.
+ * @return {Object} The paint with the hover ground and glyph equal to the resting ones.
+ */
+export function brandPaintHold( paint ) {
+	return paint ? { ...paint, groundHover: paint.ground, glyphHover: paint.glyph } : paint;
 }

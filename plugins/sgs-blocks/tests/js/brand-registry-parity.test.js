@@ -13,7 +13,7 @@ const fs = require( 'fs' );
 const os = require( 'os' );
 const path = require( 'path' );
 
-import { BRANDS, brandPaint, brandBySlug } from '../../src/utils/brand-registry';
+import { BRANDS, brandPaint, brandPaintHold, brandBySlug } from '../../src/utils/brand-registry';
 import { accessibleName, iconLengthValue } from '../../src/blocks/icon/icon-state';
 import { enabledIconSources } from '../../src/components/IconPicker/icon-data';
 
@@ -61,7 +61,7 @@ const jsPaint = ( brand, fixed, mode = 'brand' ) => {
 
 describe( 'brand registry parity', () => {
 	it( 'both sides read the same entries in the same order', () => {
-		expect( BRANDS.map( ( b ) => ( { slug: b.slug, label: b.label, siteInfoKey: b.siteInfoKey, autoLabel: b.autoLabel, colour: b.colour, logoGradient: b.logoGradient } ) ) ).toEqual( php.registry );
+		expect( BRANDS.map( ( b ) => ( { slug: b.slug, label: b.label, siteInfoKey: b.siteInfoKey, autoLabel: b.autoLabel, colour: b.colour, logoGradient: b.logoGradient, groundGradient: b.groundGradient } ) ) ).toEqual( php.registry );
 	} );
 
 	it( 'every brand paints the same (D5)', () => {
@@ -77,6 +77,16 @@ describe( 'brand registry parity', () => {
 			expect( jsPaint( brand, true, 'brand-glyph' ) ).toEqual( php.paint[ brand.slug ].glyphFixed );
 		} );
 		expect( jsPaint( brandBySlug( 'instagram' ), false, 'brand-glyph' ).gradient ).toMatch( /^linear-gradient\(/ );
+	} );
+
+	it( 'holding the brand colours on hover paints the same, and Instagram has its gradient ground', () => {
+		BRANDS.forEach( ( brand ) => {
+			const held = brandPaintHold( brandPaint( brand, false ) );
+			expect( { ground_hover: held.groundHover, glyph_hover: held.glyphHover } ).toEqual( { ground_hover: php.paint[ brand.slug ].hold.ground_hover, glyph_hover: php.paint[ brand.slug ].hold.glyph_hover } );
+			expect( held.groundHover ).toBe( held.ground );
+		} );
+		expect( brandBySlug( 'instagram' ).groundGradient ).toMatch( /^radial-gradient\(circle at 30% 107%, #FDF497 0%/ );
+		expect( brandBySlug( 'whatsapp' ).groundGradient ).toBe( '' );
 	} );
 
 	it( 'a planted divergence is caught', () => {

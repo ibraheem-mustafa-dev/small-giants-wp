@@ -47,12 +47,14 @@ foreach ( sgs_brand_registry() as $slug => $brand ) {
 		'autoLabel'   => $brand['autoLabel'],
 		'colour'      => $brand['colour'],
 		'logoGradient' => $brand['logoGradient'],
+		'groundGradient' => $brand['groundGradient'],
 	);
 	$out['paint'][ $slug ] = array(
 		'plain' => sgs_brand_paint( $brand, false ),
 		'fixed' => sgs_brand_paint( $brand, true ),
 		'glyph' => sgs_brand_paint( $brand, false, 'brand-glyph' ),
 		'glyphFixed' => sgs_brand_paint( $brand, true, 'brand-glyph' ),
+		'hold' => sgs_brand_paint_hold( sgs_brand_paint( $brand, false ) ),
 	);
 }
 foreach ( (array) ( $input['names'] ?? array() ) as $case ) {

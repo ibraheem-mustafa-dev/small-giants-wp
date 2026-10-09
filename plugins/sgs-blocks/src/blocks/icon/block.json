@@ -25,7 +25,8 @@
 		"sgs/socialIconsBorderWidth",
 		"sgs/socialIconsBorderStyle",
 		"sgs/socialIconsShowLabel",
-		"sgs/socialIconsLabelPosition"
+		"sgs/socialIconsLabelPosition",
+		"sgs/socialIconsBrandHover"
 	],
 	"supports": {
 		"align": [
@@ -92,7 +93,8 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius",
 						"css:width": "shapeSize",
-						"css:transform": "iconRotate"
+						"css:transform": "iconRotate",
+						"css:box-shadow": "boxShadow"
 					},
 					"states": {
 						"hover": {
@@ -103,7 +105,8 @@
 								"css:background-image": "backgroundColourHoverGradient",
 								"css:border-color": "borderColourHover",
 								"css:border-color-gradient": "borderColourHoverGradient",
-								"css:transform": "scaleHover"
+								"css:transform": "scaleHover",
+								"css:box-shadow": "boxShadowHover"
 							}
 						}
 					},
@@ -479,6 +482,76 @@
 			"type": "number",
 			"default": 1.1,
 			"description": "Grows the shape on hover and keyboard focus of a linked icon (1 = none). Reduced motion turns it off."
+		},
+		"offsetXHover": {
+			"type": "number",
+			"default": 0,
+			"description": "Moves the shape sideways by this many px on hover and keyboard focus of a linked icon (-40 to 40; negative = left, 0 = none). Combines with scaleHover and iconRotateHover in one transform. Reduced motion turns it off."
+		},
+		"offsetYHover": {
+			"type": "number",
+			"default": 0,
+			"description": "Moves the shape up or down by this many px on hover and keyboard focus of a linked icon (-40 to 40; negative = up, 0 = none). Combines with scaleHover and iconRotateHover in one transform. Reduced motion turns it off."
+		},
+		"iconRotateHover": {
+			"type": "number",
+			"default": 0,
+			"description": "Turns the shape by this many degrees on hover and keyboard focus of a linked icon (-180 to 180, added to iconRotate; 0 = none). Reduced motion turns it off."
+		},
+		"transitionDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "How long the hover move, scale and turn take, in ms (0 = the theme's fast transition)."
+		},
+		"paintDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "How long the hover shadow, colour and border changes take, in ms (0 = the theme's fast transition)."
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "",
+			"description": "Easing of the hover move: a shared motion easing name (sgs_motion_easing_css), or custom with transitionEasingCustom. Empty = the theme's fast transition easing."
+		},
+		"transitionEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A cubic-bezier(x1, y1, x2, y2) curve, read when transitionEasing is custom. An invalid curve is ignored."
+		},
+		"boxShadow": {
+			"type": "string",
+			"default": "",
+			"description": "The shape's resting shadow: a theme shadow preset slug, or layers (x y blur spread). Colour is boxShadowColour. Box shapes only."
+		},
+		"boxShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "The resting shadow's colour: site, a palette slug or hex, with an optional N% opacity."
+		},
+		"boxShadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "The shadow on hover and keyboard focus. Empty = the resting shadow's automatic lift (shadowLiftOnHover)."
+		},
+		"boxShadowColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "The hover shadow's colour. Empty = the resting shadow's colour."
+		},
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true,
+			"description": "Lifts the resting shadow on hover when no hover shadow is set. Off = the shadow stays as it is."
+		},
+		"brandHover": {
+			"type": "string",
+			"default": "inherit",
+			"enum": [
+				"inherit",
+				"swap",
+				"hold"
+			],
+			"description": "Brand colours on hover: swap turns the ground and glyph around, hold keeps both. Inherit takes the sgs/social-icons row's choice (swap outside a row). Applies to colour mode Brand colours."
 		},
 		"opacityHover": {
 			"type": "number",

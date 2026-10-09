@@ -12,6 +12,7 @@ import {
 	brandBySiteInfoKey,
 	brandByLucideName,
 	brandPaint,
+	brandPaintHold,
 } from '../../utils/brand-registry';
 import { borderBoxPreview, resolveBorderStyle } from '../../utils/border-style';
 import { SHAPE_SLUGS, isOutlineShape } from '../../utils/icon-shapes';
@@ -102,7 +103,7 @@ export function linkFallbackState( link, attributes ) {
  *
  * @param {Object} attributes Block attributes.
  * @param {string} key        Bound Site Info key, or ''.
- * @return {{glyphBrand:Object|null, colourBrand:Object|null, brandOn:boolean, glyphOnly:boolean, drawFixed:boolean, paint:Object|null}}
+ * @return {{glyphBrand:Object|null, colourBrand:Object|null, brandOn:boolean, glyphOnly:boolean, drawFixed:boolean, paint:Object|null, hold:boolean, groundGradient:string}}
  */
 export function resolveBrand( attributes, key ) {
 	const source = attributes?.iconSource || 'lucide';
@@ -124,7 +125,14 @@ export function resolveBrand( attributes, key ) {
 	const glyphOnly = brandOn && 'brand-glyph' === mode;
 	const drawFixed =
 		brandOn && 'brand' === source && !! glyphBrand && glyphBrand.slug === colourBrand.slug && !! glyphBrand.glyphBrand;
-	return { glyphBrand, colourBrand, brandOn, glyphOnly, drawFixed, paint: brandOn ? brandPaint( colourBrand, drawFixed, glyphOnly ? 'brand-glyph' : 'brand' ) : null };
+	// Brand colours on hover: hold keeps the ground and glyph; a gradient ground (Instagram) paints over the flat brand colour.
+	const hold = 'hold' === attributes?.brandHover;
+	let paint = brandOn ? brandPaint( colourBrand, drawFixed, glyphOnly ? 'brand-glyph' : 'brand' ) : null;
+	if ( paint && hold && ! glyphOnly ) {
+		paint = brandPaintHold( paint );
+	}
+	const groundGradient = brandOn && ! glyphOnly && ! drawFixed ? colourBrand.groundGradient || '' : '';
+	return { glyphBrand, colourBrand, brandOn, glyphOnly, drawFixed, paint, hold, groundGradient };
 }
 
 /**
@@ -244,7 +252,7 @@ export function iconLengthValue( raw, maxPx = 512, presetSlugs = [] ) {
  * sgs_icon_group_context() (includes/helpers-icon.php).
  *
  * @param {Object} context The block's `context` prop.
- * @return {{inGroup:boolean, colourMode:string, hidden:string[], shape:string, showBg:boolean, border:boolean, borderWidth:Object, borderStyle:string, showLabel:boolean, labelPosition:string}}
+ * @return {{inGroup:boolean, colourMode:string, hidden:string[], shape:string, showBg:boolean, border:boolean, borderWidth:Object, borderStyle:string, showLabel:boolean, labelPosition:string, brandHover:string}}
  */
 export function iconGroupContext( context ) {
 	context = context && 'object' === typeof context ? context : {};
@@ -263,6 +271,7 @@ export function iconGroupContext( context ) {
 		borderStyle: 'string' === typeof context[ 'sgs/socialIconsBorderStyle' ] ? context[ 'sgs/socialIconsBorderStyle' ] : '',
 		showLabel: !! context[ 'sgs/socialIconsShowLabel' ],
 		labelPosition: LABEL_POSITIONS.includes( context[ 'sgs/socialIconsLabelPosition' ] ) ? context[ 'sgs/socialIconsLabelPosition' ] : '',
+		brandHover: 'hold' === context[ 'sgs/socialIconsBrandHover' ] ? 'hold' : 'swap',
 	};
 }
 
@@ -289,6 +298,7 @@ export function attributesInGroup( attributes, group ) {
 	next.showBackground = !! attributes.showBackground || group.showBg;
 	next.showLabel = !! attributes.showLabel || group.showLabel;
 	next.labelPosition = labelPositionFor( attributes.labelPosition, group.labelPosition );
+	next.brandHover = [ 'swap', 'hold' ].includes( attributes.brandHover ) ? attributes.brandHover : group.brandHover;
 	return next;
 }
 

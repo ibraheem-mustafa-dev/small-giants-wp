@@ -1,0 +1,142 @@
+[
+	{
+		"name": "sgs/social-icons",
+		"attributes": {
+			"anchor": "qa-draft-a-footer",
+			"ariaLabel": "Draft A footer social icons",
+			"colourMode": "brand",
+			"childIconShape": "circle",
+			"childIconShowBackground": true,
+			"childIconShapeSize": {
+				"desktop": {
+					"width": "48px"
+				}
+			},
+			"childIconSize": {
+				"desktop": "20px"
+			},
+			"gap": {
+				"desktop": "10px"
+			},
+			"childIconBorderWidth": {
+				"top": "2px",
+				"right": "2px",
+				"bottom": "2px",
+				"left": "2px"
+			},
+			"childIconBorderStyle": "solid",
+			"childIconBorderColour": "#3A2A22",
+			"childIconBorderColourHover": "#3A2A22",
+			"childIconColour": "#FFFFFF",
+			"childIconColourHover": "#FFFFFF",
+			"childIconScaleHover": 1,
+			"childIconOffsetXHover": -2,
+			"childIconOffsetYHover": -2,
+			"childIconRotateHover": -8,
+			"childIconTransitionDuration": 200,
+			"childIconPaintDuration": 200,
+			"childIconBoxShadow": "3px 3px 0 0",
+			"childIconBoxShadowColour": "#3A2A22",
+			"childIconBoxShadowHover": "5px 5px 0 0",
+			"childIconBrandHover": "hold"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/icon",
+				"attributes": {
+					"iconSource": "lucide",
+					"iconName": "instagram",
+					"linkSource": "custom",
+					"linkUrl": "https://www.instagram.com/",
+					"ariaLabel": "Instagram"
+				}
+			},
+			{
+				"name": "sgs/icon",
+				"attributes": {
+					"iconSource": "brand",
+					"brandName": "whatsapp",
+					"linkSource": "custom",
+					"linkUrl": "https://wa.me/",
+					"ariaLabel": "WhatsApp"
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/social-icons",
+		"attributes": {
+			"anchor": "qa-draft-b-footer",
+			"ariaLabel": "Draft B footer social icons",
+			"colourMode": "brand",
+			"childIconShape": "circle",
+			"childIconShowBackground": true,
+			"childIconShapeSize": {
+				"desktop": {
+					"width": "44px"
+				}
+			},
+			"childIconSize": {
+				"desktop": "22px"
+			},
+			"gap": {
+				"desktop": "12px"
+			},
+			"childIconColour": "#FFFFFF",
+			"childIconColourHover": "#FFFFFF",
+			"childIconScaleHover": 1.15,
+			"childIconOffsetYHover": -3,
+			"childIconRotateHover": -8,
+			"childIconTransitionDuration": 350,
+			"childIconTransitionEasing": "spring",
+			"childIconPaintDuration": 250,
+			"childIconBoxShadowHover": "0 10px 20px -6px",
+			"childIconBoxShadowColour": "#000000 45%",
+			"childIconBrandHover": "hold"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/icon",
+				"attributes": {
+					"iconSource": "lucide",
+					"iconName": "linkedin",
+					"linkSource": "custom",
+					"linkUrl": "https://www.linkedin.com/",
+					"ariaLabel": "LinkedIn"
+				}
+			},
+			{
+				"name": "sgs/icon",
+				"attributes": {
+					"iconSource": "lucide",
+					"iconName": "facebook",
+					"linkSource": "custom",
+					"linkUrl": "https://www.facebook.com/",
+					"ariaLabel": "Facebook"
+				}
+			},
+			{
+				"name": "sgs/icon",
+				"attributes": {
+					"iconSource": "custom",
+					"iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"#FFFFFF\" aria-hidden=\"true\"><path d=\"M21.8 10.2H12v3.9h5.6c-.5 2.5-2.7 4.2-5.6 4.2a6.3 6.3 0 1 1 0-12.6c1.6 0 3 .6 4.1 1.6l2.9-2.9A10.3 10.3 0 0 0 12 1.7a10.3 10.3 0 1 0 0 20.6c5.9 0 10-4.2 10-10.1 0-.7-.1-1.3-.2-2z\"/></svg>",
+					"backgroundColour": "#EA4335",
+					"backgroundColourHover": "#EA4335",
+					"linkSource": "custom",
+					"linkUrl": "https://www.google.com/",
+					"ariaLabel": "Google"
+				}
+			},
+			{
+				"name": "sgs/icon",
+				"attributes": {
+					"iconSource": "lucide",
+					"iconName": "instagram",
+					"linkSource": "custom",
+					"linkUrl": "https://www.instagram.com/",
+					"ariaLabel": "Instagram"
+				}
+			}
+		]
+	}
+]

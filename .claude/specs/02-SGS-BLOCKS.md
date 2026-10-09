@@ -1065,6 +1065,14 @@ SGS-BEM: `.sgs-icon` root + `__link` / `__svg` / `__emoji` / `__dashicon` + `--s
 
 **Site Info link:** an icon whose `linkUrl` is bound to a Site Info key (`metadata.bindings.linkUrl`, source `sgs/site-info`) shows the Site Info link first and its own typed `linkUrl` as the fallback; it renders nothing for a visitor only when neither gives a link, and `linkSource: "custom"` makes the typed link win. The root carries `data-sgs-site-info-key` (`icon/render.php`, `includes/helpers-icon.php::sgs_icon_resolve_bound_link`). The clone route's rule is Spec 47 FR-47-9.
 
+**Draft-style hover, motion, shadow and brand ground (`sgs/icon`, with row defaults on `sgs/social-icons`):** every value reads own, then the wrapping row's, then the default, as `--sgs-icon-*` / `--sgs-si-*` custom properties (`includes/helpers-icon-motion.php`; editor twin `src/blocks/icon/icon-motion.js`, parity-tested by `tests/js/icon-motion-parity.test.js`).
+
+- Hover transform is one list, scale then translate then rotate: `scaleHover`, `offsetXHover` / `offsetYHover` (px, -40 to 40) and `iconRotateHover` (deg, added to `iconRotate`); a translate is scaled with the shape. Reduced motion drops all of it.
+- Motion: `transitionDuration` (the transform, ms), `paintDuration` (shadow, colour and border, ms), `transitionEasing` (+ `transitionEasingCustom`, the shared motion easing names, `spring` included). 0 / empty = the theme's fast transition.
+- Shadow: `boxShadow` + `boxShadowColour`, `boxShadowHover` + `boxShadowColourHover`, `shadowLiftOnHover`, through the shared `ShadowControl` and `sgs_shadow_decls()` (a preset slug, or layers with the site colour, a palette slug or a hex, with an optional `N%`). Box shapes only; an own resting shadow pins its own hover so a row's hover shadow cannot replace it.
+- Brand colours: the registry may carry `groundGradient` (Instagram's radial gradient), painted over the flat brand colour (the fallback) in colour mode Brand colours; a row or icon background of any kind replaces it. `brandHover` (`inherit` | `swap` | `hold`; row `childIconBrandHover`) chooses whether the ground and the logo trade colours on hover or hold.
+- Row defaults: `childIconScaleHover` (0 = each icon's own), `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconRotateHover`, `childIconTransitionDuration`, `childIconPaintDuration`, `childIconTransitionEasing(+Custom)`, `childIconBoxShadow(+Colour, +Hover, +ColourHover)`, `childIconShadowLiftOnHover`, `childIconBrandHover`.
+
 ### sgs/option-picker
 
 Atomic radio-group pill chooser. Category: `sgs-interactive`. Part of the variation-sets + option-picker system; usable as a standalone editor block and for any pill-group slot.
