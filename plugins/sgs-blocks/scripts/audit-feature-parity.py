@@ -224,9 +224,8 @@ def _db_missing_message() -> str:
     # different and worse problem: it means a clean clone can never build at
     # all. The fix is a LOUD, NAMED skip (this message, printed either way) with
     # exit 0 — never silent, so it is not the vacuous pass the old comment
-    # warned against, but also never build-breaking. See db-consistency/run.py,
-    # excluded-gate/run.py and ledger/coverage_check.py for the same pattern
-    # applied consistently across the build chain.
+    # warned against, but also never build-breaking. See db-consistency/run.py
+    # for the same pattern applied across the build chain.
     return (
         f"\n[feature-parity] SKIPPED — DB not found at {DB_PATH}.\n"
         "This audit is DB-first (R-31-1): the sgs-wp-engine DB is an out-of-repo, "

@@ -35,7 +35,7 @@ if git diff --cached --name-only | grep -Eq 'plugins/sgs-blocks/src/blocks/exten
 	fi
 fi
 
-PIPELINE_PATHS='^plugins/sgs-blocks/scripts/(converter|orchestrator|ledger)/|^plugins/sgs-blocks/scripts/sgs-clone-orchestrator\.py$'
+PIPELINE_PATHS='^plugins/sgs-blocks/scripts/(converter|orchestrator)/|^plugins/sgs-blocks/scripts/sgs-clone-orchestrator\.py$'
 if git diff --cached --name-only | grep -Eq "$PIPELINE_PATHS"; then
 	if command -v python.exe >/dev/null 2>&1; then PY=python.exe
 	elif command -v python >/dev/null 2>&1; then PY=python
@@ -47,8 +47,7 @@ if git diff --cached --name-only | grep -Eq "$PIPELINE_PATHS"; then
 		F5_DIR="plugins/sgs-blocks/scripts"
 		F5_FAIL=0
 		REPO_ROOT="$(git rev-parse --show-toplevel)"
-		for g in ledger/coverage_check.py ledger/content_gap_check.py \
-			converter/gates/no_slug_literal.py converter/gates/import_ban.py converter/gates/check_raw_sqlite.py; do
+		for g in converter/gates/no_slug_literal.py converter/gates/import_ban.py converter/gates/check_raw_sqlite.py; do
 			SKIPPED=0
 			for _skip_name in $(printf '%s' "${SGS_F5_SKIP:-}" | tr ',' ' '); do
 				if [ "$_skip_name" = "$g" ]; then

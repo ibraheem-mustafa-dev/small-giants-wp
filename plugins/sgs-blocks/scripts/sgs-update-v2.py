@@ -7357,10 +7357,6 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
       - lints/bem-lint.py, lints/draft-vocab-lint.py, lints/token-lint.py —
         lint a SPECIFIC HTML draft file (positional `path`, no directory-scan
         mode); these are /sgs-clone Stage 0/0.5 tools, not repo-wide audits.
-      - ledger/content_gap_check.py, ledger/coverage_check.py,
-        ledger/declare_input.py — F2/F5 CSS-accounting-ledger checks scoped
-        to a specific clone run's `fixtures/`/`pipeline-state/` directory;
-        nothing to check without an active clone run in flight.
       - audit-post-content-blocks.py — takes `<file-or-dir>` of exported
         WordPress `post_content` (e.g. a WXR export); no such export exists
         at reseed time (this stage reseeds the knowledge-base DB, not a

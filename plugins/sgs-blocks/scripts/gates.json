@@ -291,24 +291,6 @@
     "order": 30
   },
   {
-    "id": "ledger-coverage_check",
-    "cmd": "python scripts/ledger/coverage_check.py --check",
-    "tier": "fast",
-    "added_D": null,
-    "added_commit": "e7679b09",
-    "budget_ms": 1734,
-    "order": 32
-  },
-  {
-    "id": "ledger-declare_input",
-    "cmd": "python scripts/ledger/declare_input.py --check",
-    "tier": "fast",
-    "added_D": "D228",
-    "added_commit": "f8a746c7",
-    "budget_ms": 193,
-    "order": 34
-  },
-  {
     "id": "audit-inline-styling",
     "cmd": "node scripts/audit-inline-styling.js --check",
     "tier": "fast",

@@ -92,9 +92,8 @@ from converter.entry import convert_section  # noqa: E402
 # ---------------------------------------------------------------------------
 # Load tests/seed_conformance_goldens.py by FILE PATH, not package import.
 # Rationale: several sibling directories in this repo are named "tests"
-# (converter/tests, ledger/tests, and cheat-gate/tests — the latter under an
-# invalid, hyphenated parent package name). Under --import-mode=importlib a
-# combined multi-path pytest invocation can register the bare module name
+# (converter/tests and others under hyphenated parent directories). Under
+# --import-mode=importlib a combined multi-path pytest invocation can register the bare module name
 # "tests" against whichever of those directories collection reaches first,
 # so `from tests.seed_conformance_goldens import ...` is NOT reliable across
 # invocations. A direct file-path load (mirroring the
