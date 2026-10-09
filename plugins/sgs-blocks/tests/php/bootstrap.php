@@ -101,5 +101,35 @@ if ( ! function_exists( 'wp_strip_all_tags' ) ) {
 	}
 }
 
+// Stub: is_email() — core's rules (wp-includes/formatting.php): at least 6 characters, an @ that is not first, a
+// local part of the allowed characters only (no whitespace), a domain of two or more dot-separated labels made of
+// letters, digits and inner hyphens.
+if ( ! function_exists( 'is_email' ) ) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- WP stub.
+    function is_email( $email ) { // phpcs:ignore
+		$email = (string) $email;
+		if ( strlen( $email ) < 6 || strpos( $email, '@', 1 ) === false ) {
+			return false;
+		}
+		list( $local, $domain ) = explode( '@', $email, 2 );
+		if ( ! preg_match( "/^[a-zA-Z0-9!#\$%&'*+\\/=?^_`{|}~\\.-]+$/", $local ) ) {
+			return false;
+		}
+		if ( preg_match( '/\.{2,}/', $domain ) || trim( $domain, " ." ) !== $domain ) {
+			return false;
+		}
+		$subs = explode( '.', $domain );
+		if ( count( $subs ) < 2 ) {
+			return false;
+		}
+		foreach ( $subs as $sub ) {
+			if ( strlen( $sub ) > 63 || trim( $sub, " -" ) !== $sub || ! preg_match( '/^[a-z0-9-]+$/i', $sub ) ) {
+				return false;
+			}
+		}
+		return $email;
+	}
+}
+
 // ── WordPress function stubs for render.php inclusion tests ──────────────────
 require_once __DIR__ . '/stubs/wp-functions.php';

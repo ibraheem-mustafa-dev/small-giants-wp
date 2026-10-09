@@ -208,7 +208,18 @@ final class Sgs_Site_Info_Binding {
 			return self::is_operator_context() ? self::hint_for_key( $key ) : '';
 		}
 
-		return \esc_html( $raw );
+		return 'address' === self::root_key( $key ) ? self::escape_keeping_line_breaks( $raw ) : \esc_html( $raw );
+	}
+
+	/**
+	 * A text value escaped for HTML, except that `<br>` line breaks (the address is stored with them) stay real
+	 * line breaks. Every other tag, and a `<br>` carrying attributes, is escaped like any other text.
+	 *
+	 * @param  string $text Stored value.
+	 * @return string       Escaped HTML.
+	 */
+	private static function escape_keeping_line_breaks( string $text ): string {
+		return (string) \preg_replace( '#&lt;br\s*/?&gt;#i', '<br>', \esc_html( $text ) );
 	}
 
 	/**
@@ -260,7 +271,7 @@ final class Sgs_Site_Info_Binding {
 	/**
 	 * A Google Maps link: the Maps URL when Site Info holds one, else the place's CID, else a search for the address.
 	 *
-	 * @param  string $cid     Digits-only Maps CID ('' when unset).
+	 * @param  string $cid     Maps CID ('' when unset); used only when it is all digits, else the address search stands in.
 	 * @param  string $address Stored address (may hold `<br>` line breaks).
 	 * @param  string $url     Stored Maps link ('' when unset).
 	 * @return string          Unescaped URL, or '' when both are empty.
@@ -269,8 +280,8 @@ final class Sgs_Site_Info_Binding {
 		if ( '' !== $url ) {
 			return $url;
 		}
-		$cid = (string) \preg_replace( '/[^0-9]/', '', $cid );
-		if ( '' !== $cid ) {
+		$cid = \trim( $cid );
+		if ( 1 === \preg_match( '/^[0-9]+$/', $cid ) ) {
 			return 'https://maps.google.com/?cid=' . $cid;
 		}
 		// Line breaks become commas; tags go; runs of spaces and of commas collapse to one.
@@ -389,11 +400,13 @@ final class Sgs_Site_Info_Binding {
 	/**
 	 * The link form of a stored value, by key. Returns '' when the value makes no usable link.
 	 *
-	 *   - email / support_email → `mailto:` + the address ('' unless it contains an @).
-	 *   - phone                 → `tel:` + digits and a leading + ('' when no digits remain).
+	 *   - email / support_email → `mailto:` + the address ('' unless `is_email()` accepts it).
+	 *   - phone                 → `tel:` + digits and a leading + ('' when no digits remain); an international number
+ *                             (+ or 00) drops its "(0)" trunk group and writes 00 as +.
 	 *   - socials.whatsapp      → `https://wa.me/<digits>` from a number, a wa.me or api.whatsapp.com URL.
 	 *   - socials.instagram / tiktok / twitter → a bare handle (`@name` or `name`) becomes the profile URL.
-	 *   - other socials         → `https://` added when the value has no scheme.
+	 *   - other socials         → `https://` added when the value has no scheme; a scheme other than http or https
+ *                             gives ''.
 	 *   - any other key         → the value unchanged.
 	 *
 	 * The caller escapes the result with `esc_url()`, whose protocol allowlist drops `javascript:` and `data:`.
@@ -412,13 +425,19 @@ final class Sgs_Site_Info_Binding {
 		$root = self::root_key( $key );
 
 		if ( 'email' === $root || 'support_email' === $root ) {
-			$address = \preg_replace( '/^mailto:/i', '', $value );
-			return \str_contains( (string) $address, '@' ) ? 'mailto:' . $address : '';
+			$address = (string) \preg_replace( '/^mailto:/i', '', $value );
+			return false !== \is_email( $address ) ? 'mailto:' . $address : '';
 		}
 
 		if ( 'phone' === $root ) {
 			// The store keeps the display form ("0121 729 8233"); a tel: link takes digits and a leading + only.
-			$digits = (string) \preg_replace( '/[^0-9+]/', '', \preg_replace( '/^tel:/i', '', $value ) );
+			$number = \trim( (string) \preg_replace( '/^tel:/i', '', $value ) );
+			if ( 1 === \preg_match( '/^(\+|00)/', $number ) ) {
+				// International: the trunk "(0)" is not dialled from abroad, and 00 is the "+" prefix.
+				$number = (string) \preg_replace( '/\(\s*0\s*\)/', '', $number );
+				$number = (string) \preg_replace( '/^00/', '+', $number );
+			}
+			$digits = (string) \preg_replace( '/[^0-9+]/', '', $number );
 			return '' === \trim( $digits, '+' ) ? '' : 'tel:' . $digits;
 		}
 
@@ -433,15 +452,16 @@ final class Sgs_Site_Info_Binding {
 			if ( \preg_match( '#^(?:https?://)?(?:www\.)?(?:wa\.me/|api\.whatsapp\.com/send/?\?phone=)\+?([0-9]+)#i', $value, $m ) ) {
 				return 'https://wa.me/' . $m[1];
 			}
-			if ( self::has_scheme( $value ) ) {
-				return $value;
+			if ( '' !== self::scheme_of( $value ) ) {
+				return self::is_web_scheme( $value ) ? $value : '';
 			}
 			$digits = (string) \preg_replace( '/[^0-9]/', '', $value );
 			return '' === $digits ? '' : 'https://wa.me/' . $digits;
 		}
 
-		if ( self::has_scheme( $value ) ) {
-			return $value;
+		if ( '' !== self::scheme_of( $value ) ) {
+			// A social link is a web address: any other scheme (javascript:, data:, mailto: ...) makes no link.
+			return self::is_web_scheme( $value ) ? $value : '';
 		}
 
 		if ( isset( self::HANDLE_URLS[ $channel ] ) && \preg_match( '/^@?([A-Za-z0-9_.]+)$/', $value, $m ) ) {
@@ -495,14 +515,29 @@ final class Sgs_Site_Info_Binding {
 	}
 
 	/**
-	 * Returns true when a value already contains a URL scheme.
+	 * The lower-cased scheme a value starts with (`javascript` for `JaVaScRiPt:alert(1)`), or '' when it has none.
+	 * `host.tld:8080/x` is a host and port, not a scheme.
 	 *
 	 * @param  string $value  Value to inspect.
+	 * @return string
+	 */
+	private static function scheme_of( string $value ): string {
+		if ( 1 !== \preg_match( '/^([a-z][a-z0-9+.\-]*):/i', $value, $m ) ) {
+			return '';
+		}
+		if ( \str_contains( $m[1], '.' ) && 1 === \preg_match( '/^[^:]+:[0-9]+(?:[\/?#]|$)/', $value ) ) {
+			return '';
+		}
+		return \strtolower( $m[1] );
+	}
+
+	/**
+	 * True when a value's scheme is http or https.
+	 *
+	 * @param  string $value  Value with a scheme.
 	 * @return bool
 	 */
-	private static function has_scheme( string $value ): bool {
-		return str_contains( $value, '://' )
-			|| str_starts_with( $value, 'mailto:' )
-			|| str_starts_with( $value, 'tel:' );
+	private static function is_web_scheme( string $value ): bool {
+		return \in_array( self::scheme_of( $value ), array( 'http', 'https' ), true );
 	}
 }
