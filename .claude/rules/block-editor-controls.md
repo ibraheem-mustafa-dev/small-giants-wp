@@ -196,14 +196,14 @@ directly (inspector-scan rule `30-raw-box-control`). Its contract, matching core
   starting with its side icon from `@wordpress/icons`.
 - **Paired Vertical / Horizontal mode (opt-in):** a block declares `block.json::supports.sgs.spacingAxes: { "<attr>": true }`
   and the mount passes `splitOnAxis={ spacingAxesFor( name, '<attr>' ) }` (`src/utils/spacing-axes.js`). The link button
-  then cycles linked (one row), Vertical and Horizontal (two rows with the `sidesVertical` / `sidesHorizontal` icons;
-  Vertical writes top and bottom, Horizontal left and right), each side (four rows), then linked again; its label names
-  the next step ("Set vertical and horizontal separately", "Set each side separately", "Link sides") and its icon the
-  current state. It opens paired when top equals bottom and left equals right but not all four, linked when all four
-  are equal, per side otherwise. Entering paired collapses each axis to its first side (top, left); `Custom…` state
-  follows the rows through every move (`carryCustomRows`), and declared/inherited defaults show on the axis rows from
-  the axis's first side. Without the prop the control keeps exactly two states and never shows Vertical or Horizontal;
-  a radius (corners) never pairs.
+  then keeps core's two states (core's `BoxControl` `splitOnAxis`; the block editor's spacing control toggles
+  axial and each side): the linked state shows a Vertical and a Horizontal row (`sidesVertical` / `sidesHorizontal`
+  icons; Vertical writes top and bottom, Horizontal left and right) with no single all-sides row, and unlinked shows
+  each side. The button reads "Unlink sides" / "Link sides" with `link` / `linkOff`, as without the prop. It opens
+  linked when top equals bottom and left equals right (counting inherited and declared values), per side otherwise;
+  re-linking collapses each axis to its first side (top, left). `Custom…` state follows the rows through every move
+  (`carryCustomRows`), and declared/inherited defaults show on the axis rows from the axis's first side. Without the
+  prop the control is unchanged and never shows Vertical or Horizontal; a radius (corners) never pairs.
 - **Preset select + value box:** with `presets`, each row is a select listing the theme spacing presets by NAME only
   (no measurements, no slider) plus `Custom…`, and a 104px value box (`SgsBoxControl.js::VALUE_BOX_STYLE`) showing the
   picked preset's size. Picking a preset stores `var(--wp--preset--spacing--<slug>)`; typing in the box stores a

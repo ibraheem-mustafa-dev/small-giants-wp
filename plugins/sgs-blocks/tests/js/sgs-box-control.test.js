@@ -34,7 +34,6 @@ jest.mock( '@wordpress/icons', () => {
 		'sidesRight',
 		'sidesBottom',
 		'sidesLeft',
-		'sidesAxial',
 		'sidesVertical',
 		'sidesHorizontal',
 		'cornerAll',
@@ -357,7 +356,7 @@ describe( 'SgsBoxControl never shows a raw var()', () => {
 	} );
 } );
 
-describe( 'SgsBoxControl paired vertical / horizontal mode (splitOnAxis)', () => {
+describe( 'SgsBoxControl paired mode (splitOnAxis): linked shows Vertical and Horizontal, as core does', () => {
 	const linkButton = () => container.querySelector( '[data-testid="link-button"]' );
 	const toggle = () => act( () => linkButton().click() );
 	const rowIcons = () =>
@@ -368,24 +367,32 @@ describe( 'SgsBoxControl paired vertical / horizontal mode (splitOnAxis)', () =>
 	const pair = { top: '10px', right: '20px', bottom: '10px', left: '20px' };
 	const SIDES_LABELS = [ 'Top', 'Right', 'Bottom', 'Left' ];
 
-	test( 'cycles linked, then Vertical and Horizontal, then each side, then linked again', () => {
+	test( 'has two states: Vertical and Horizontal when linked, each side when unlinked, never one all-sides row', () => {
 		renderControlled( {}, { splitOnAxis: true } );
-		expect( rowLabels() ).toEqual( [ 'Padding' ] );
-		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Set vertical and horizontal separately' );
-		toggle();
 		expect( rowLabels() ).toEqual( [ 'Vertical', 'Horizontal' ] );
+		expect( rowLabels() ).not.toContain( 'Padding' );
 		expect( rowIcons() ).toEqual( [ 'sidesVertical', 'sidesHorizontal' ] );
-		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Set each side separately' );
+		expect( rowIcons() ).not.toContain( 'sidesAll' );
 		toggle();
 		expect( rowLabels() ).toEqual( SIDES_LABELS );
-		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Link sides' );
 		toggle();
-		expect( rowLabels() ).toEqual( [ 'Padding' ] );
+		expect( rowLabels() ).toEqual( [ 'Vertical', 'Horizontal' ] );
 	} );
 
-	test( 'negative control: without the prop it is two states and never shows Vertical or Horizontal', () => {
-		renderControlled( {} );
+	test( 'the button reads Unlink sides when linked and Link sides when unlinked, with link / linkOff icons', () => {
+		renderControlled( {}, { splitOnAxis: true } );
 		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Unlink sides' );
+		expect( linkButton().dataset.icon ).toBe( 'link' );
+		toggle();
+		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Link sides' );
+		expect( linkButton().dataset.icon ).toBe( 'linkOff' );
+	} );
+
+	test( 'negative control: without the prop it is the old two states and never shows Vertical or Horizontal', () => {
+		renderControlled( {} );
+		expect( rowLabels() ).toEqual( [ 'Padding' ] );
+		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Unlink sides' );
+		expect( linkButton().dataset.icon ).toBe( 'link' );
 		toggle();
 		expect( rowLabels() ).toEqual( SIDES_LABELS );
 		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Link sides' );
@@ -395,20 +402,20 @@ describe( 'SgsBoxControl paired vertical / horizontal mode (splitOnAxis)', () =>
 		expect( rowIcons() ).not.toContain( 'sidesVertical' );
 	} );
 
-	test( 'opens paired when top equals bottom and left equals right but not all four', () => {
+	test( 'opens linked (Vertical and Horizontal) when top equals bottom and left equals right', () => {
 		renderControlled( pair, { splitOnAxis: true } );
 		expect( rowLabels() ).toEqual( [ 'Vertical', 'Horizontal' ] );
 		expect( valueBoxes().map( ( b ) => b.value ) ).toEqual( [ '10px', '20px' ] );
-	} );
-
-	test( 'opens linked when all four are equal', () => {
+		act( () => root.unmount() );
+		root = createRoot( container );
 		renderControlled( { top: '5px', right: '5px', bottom: '5px', left: '5px' }, { splitOnAxis: true } );
-		expect( rowLabels() ).toEqual( [ 'Padding' ] );
+		expect( rowLabels() ).toEqual( [ 'Vertical', 'Horizontal' ] );
 	} );
 
-	test( 'opens per side when the sides do not pair up', () => {
+	test( 'opens per side when the axes do not pair up', () => {
 		renderControlled( { top: '1px', right: '2px', bottom: '3px', left: '4px' }, { splitOnAxis: true } );
 		expect( rowLabels() ).toEqual( SIDES_LABELS );
+		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Link sides' );
 	} );
 
 	test( 'without the prop a paired value still opens per side', () => {
@@ -430,63 +437,47 @@ describe( 'SgsBoxControl paired vertical / horizontal mode (splitOnAxis)', () =>
 		expect( writes.at( -1 ) ).toEqual( { top: preset( 40 ), right: '20px', bottom: preset( 40 ), left: '20px' } );
 	} );
 
-	test( 'moving from paired to each side writes nothing, so no value is invented', () => {
+	test( 'unlinking writes nothing, so no value is invented', () => {
 		const writes = renderControlled( pair, { splitOnAxis: true } );
 		toggle();
 		expect( writes ).toEqual( [] );
 		expect( valueBoxes().map( ( b ) => b.value ) ).toEqual( [ '10px', '20px', '10px', '20px' ] );
 	} );
 
-	test( 'from each side to linked collapses to the first side, and linked to paired needs no further write', () => {
+	test( 're-linking collapses each axis to its first side (top, left)', () => {
 		const writes = renderControlled( { top: '1px', right: '2px', bottom: '3px', left: '4px' }, { splitOnAxis: true } );
 		toggle();
-		expect( writes.at( -1 ) ).toEqual( { top: '1px', right: '1px', bottom: '1px', left: '1px' } );
-		const count = writes.length;
-		toggle();
+		expect( writes.at( -1 ) ).toEqual( { top: '1px', right: '4px', bottom: '1px', left: '4px' } );
 		expect( rowLabels() ).toEqual( [ 'Vertical', 'Horizontal' ] );
-		expect( writes ).toHaveLength( count );
 	} );
 
-	test( 'Custom on Vertical (a typed length) carries to top and bottom only, and back up through linked', () => {
+	test( 'Custom on Vertical (a typed length) carries to top and bottom only when unlinking', () => {
 		renderControlled( pair, { splitOnAxis: true } );
 		expect( selectValues() ).toEqual( [ '__custom__', '__custom__' ] );
 		change( selects()[ 1 ], '' ); // Horizontal back to Default
 		expect( selectValues() ).toEqual( [ '__custom__', '' ] );
-		toggle(); // each side
+		toggle();
 		expect( rowLabels() ).toEqual( SIDES_LABELS );
 		expect( selectValues() ).toEqual( [ '__custom__', '', '__custom__', '' ] );
 	} );
 
-	test( 'Custom picked with nothing typed on Vertical carries to top and bottom', () => {
+	test( 'Custom picked with nothing typed on Vertical carries to top and bottom, and back', () => {
 		renderControlled( {}, { splitOnAxis: true } );
-		toggle(); // paired, nothing stored
 		change( selects()[ 0 ], '__custom__' );
 		expect( selectValues() ).toEqual( [ '__custom__', '' ] );
-		toggle(); // each side
+		toggle();
 		expect( selectValues() ).toEqual( [ '__custom__', '', '__custom__', '' ] );
-		toggle(); // linked: a Custom side makes the linked row Custom
-		expect( selectValues() ).toEqual( [ '__custom__' ] );
-		toggle(); // paired again: the linked Custom reaches both axes
-		expect( selectValues() ).toEqual( [ '__custom__', '__custom__' ] );
+		toggle();
+		expect( selectValues() ).toEqual( [ '__custom__', '' ] ); // a Custom top or bottom makes Vertical Custom
 	} );
 
-	test( 'Custom on the linked row carries to Vertical and Horizontal and on to every side', () => {
+	test( 'negative control: nothing Custom stays Default through both transitions', () => {
 		renderControlled( {}, { splitOnAxis: true } );
-		change( selects()[ 0 ], '__custom__' );
-		toggle();
-		expect( selectValues() ).toEqual( [ '__custom__', '__custom__' ] );
-		toggle();
-		expect( selectValues() ).toEqual( [ '__custom__', '__custom__', '__custom__', '__custom__' ] );
-	} );
-
-	test( 'negative control: nothing Custom stays Default through every transition', () => {
-		renderControlled( {}, { splitOnAxis: true } );
-		toggle();
 		expect( selectValues() ).toEqual( [ '', '' ] );
 		toggle();
 		expect( selectValues() ).toEqual( [ '', '', '', '' ] );
 		toggle();
-		expect( selectValues() ).toEqual( [ '' ] );
+		expect( selectValues() ).toEqual( [ '', '' ] );
 	} );
 
 	test( 'declared defaults show on the axis rows, writing nothing', () => {

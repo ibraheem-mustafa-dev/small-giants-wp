@@ -41,11 +41,12 @@
  * the first side's value first (`toggleLinked`, unchanged).
  *
  * ── Paired Vertical / Horizontal mode (opt-in via `splitOnAxis`) ───────
- * With `splitOnAxis` the link button cycles three states: linked (one row), Vertical and Horizontal (two rows;
- * Vertical writes top and bottom, Horizontal writes left and right), then each side (four rows). Without the prop
- * the control keeps its two states. It opens paired when top equals bottom and left equals right but not all four,
- * linked when all four are equal, per side otherwise. A control not given all four sides (a radius) never pairs.
- * Custom state follows the rows through every move (`carryCustomRows`). Blocks opt in per attribute through
+ * Core's `BoxControl` `splitOnAxis`: the control keeps its two states, but the linked state shows Vertical and
+ * Horizontal rows (Vertical writes top and bottom, Horizontal writes left and right) instead of one all-sides row,
+ * and unlinking shows each side. There is no single all-sides row in this mode. It opens linked when top equals
+ * bottom and left equals right (counting inherited and declared values), per side otherwise; re-linking collapses
+ * each axis to its first side (top, left). Without the prop the control is unchanged. A control not given all four
+ * sides (a radius) never pairs. Custom state follows the rows through every move (`carryCustomRows`). Blocks opt in per attribute through
  * `block.json::supports.sgs.spacingAxes` (`utils/spacing-axes.js`).
  *
  * ── Spacing presets (C16, 2026-08-27, opt-in via `presets` prop) ────────
@@ -87,7 +88,6 @@ import {
 	sidesRight,
 	sidesBottom,
 	sidesLeft,
-	sidesAxial,
 	sidesVertical,
 	sidesHorizontal,
 	cornerAll,
@@ -303,18 +303,16 @@ export default function SgsBoxControl( {
 	// The paired mode needs the four sides of a box; a radius's corners never pair.
 	const canSplit = splitOnAxis && ALL_SIDES.every( ( s ) => sides.includes( s ) );
 
-	// 'linked' | 'axial' | 'sides'. Starts linked only when every side reads the same, counting what an unset side
-	// inherits; paired when each axis reads the same; otherwise per side.
+	// 'linked' (one row) | 'axial' (Vertical and Horizontal; the linked state when `splitOnAxis` is on) | 'sides'.
+	// Starts linked only when every side reads the same, counting what an unset side inherits; with the paired mode
+	// it starts linked when each axis reads the same.
 	const [ mode, setMode ] = useState( () => {
 		const shown = ( s ) => values[ s ] || unsetValue( s );
+		if ( canSplit ) {
+			return shown( 'top' ) === shown( 'bottom' ) && shown( 'left' ) === shown( 'right' ) ? 'axial' : 'sides';
+		}
 		const raw = sides.map( shown );
-		if ( raw.every( ( v ) => v === raw[ 0 ] ) ) {
-			return 'linked';
-		}
-		if ( canSplit && shown( 'top' ) === shown( 'bottom' ) && shown( 'left' ) === shown( 'right' ) ) {
-			return 'axial';
-		}
-		return 'sides';
+		return raw.every( ( v ) => v === raw[ 0 ] ) ? 'linked' : 'sides';
 	} );
 
 	const firstSide = sides[ 0 ];
@@ -377,37 +375,35 @@ export default function SgsBoxControl( {
 			return next;
 		} );
 
-	// linked -> paired (when offered, else each side) -> each side -> linked.
-	const nextMode = { linked: canSplit ? 'axial' : 'sides', axial: 'sides', sides: 'linked' }[ mode ];
+	// Two states, as core's spacing control has: the linked state (one row, or Vertical and Horizontal when the
+	// paired mode is on) and each side.
+	const linkedMode = canSplit ? 'axial' : 'linked';
+	const isLinked = 'sides' !== mode;
 
 	const toggleLinked = () => {
-		if ( 'linked' === nextMode ) {
-			// Re-linking collapses to the first side's value, mirroring core
-			// BoxControl's own re-link-collapses-to-one-value behaviour. A
-			// preset value collapses cleanly too — it's just another string.
-			setAllSides( values[ firstSide ] ?? '' );
-		} else if ( 'axial' === nextMode ) {
-			// Pairing collapses each axis to its first side's value (top, left); nothing is written when the
-			// axes already agree.
-			const top = values.top ?? '';
-			const left = values.left ?? '';
-			if ( ( values.bottom ?? '' ) !== top || ( values.right ?? '' ) !== left ) {
-				onChange( { ...values, bottom: top, right: left } );
+		if ( ! isLinked ) {
+			if ( canSplit ) {
+				// Re-linking collapses each axis to its first side's value (top, left); nothing is written when
+				// the axes already agree.
+				const top = values.top ?? '';
+				const left = values.left ?? '';
+				if ( ( values.bottom ?? '' ) !== top || ( values.right ?? '' ) !== left ) {
+					onChange( { ...values, bottom: top, right: left } );
+				}
+			} else {
+				// Re-linking collapses to the first side's value, mirroring core
+				// BoxControl's own re-link-collapses-to-one-value behaviour. A
+				// preset value collapses cleanly too — it's just another string.
+				setAllSides( values[ firstSide ] ?? '' );
 			}
 		}
+		const nextMode = isLinked ? 'sides' : linkedMode;
 		carryCustomRows( mode, nextMode );
 		setMode( nextMode );
 	};
 
-	// The label names what the button does next.
-	const linkLabel = {
-		linked: canSplit
-			? __( 'Set vertical and horizontal separately', 'sgs-blocks' )
-			: __( 'Unlink sides', 'sgs-blocks' ),
-		axial: __( 'Set each side separately', 'sgs-blocks' ),
-		sides: __( 'Link sides', 'sgs-blocks' ),
-	}[ mode ];
-	const linkButtonIcon = { linked: linkIcon, axial: sidesAxial, sides: linkOffIcon }[ mode ];
+	const linkLabel = isLinked ? __( 'Unlink sides', 'sgs-blocks' ) : __( 'Link sides', 'sgs-blocks' );
+	const linkButtonIcon = isLinked ? linkIcon : linkOffIcon;
 
 	const explicitRange = min !== undefined || max !== undefined;
 
