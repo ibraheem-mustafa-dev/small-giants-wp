@@ -219,6 +219,11 @@
 	transition: opacity var(--wp--custom--transition--fast, 0.15s ease);
 }
 
+/* A child sized by its row (fill or fixed) hands that width to the link, so a percentage shape width resolves against the cell, not the glyph. */
+.sgs-icon.sgs-child-sizing > .sgs-icon__link {
+	flex: 1 1 auto;
+}
+
 .sgs-icon--shape-circle:not(.sgs-icon--has-label) .sgs-icon__link {
 	border-radius: 50%;
 }
