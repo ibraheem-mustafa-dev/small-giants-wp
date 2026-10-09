@@ -182,9 +182,11 @@ retargeted (live social boxes are `sgs/icon` shapes found by their hidden link n
 ledger D-40 to D-47 (the phone's tap-area padding) removed on Bean's decision: the list item keeps its natural tap area.
 The header lost its four word-matched generated pairs: two were the proven mispairs (live outer header against the draft's
 inner row; the logo group against the words span), the other two are the wordmark now covered by hand.
-Open: the walker counts the icons' visually hidden link names as painted text (`text-extra` and label style rows), a
-"paints nothing" false alarm for the tool list; ledger D-105 to D-125 still name the removed `cr-ref-footer-24`, `-25`,
-`-26` (they match nothing; Bean to decide); the draft still has "Glasses — arriving soon" (N48), reported as missing text.
+Later the same day: the walker no longer reads visually hidden text (a screen-reader link name) as painted (`walker-sr-only.test.mjs`;
+footer walk 746 open rows to 599), the draft footer and drawer follow the live ones (Bean: live is the ideal), and ledger
+D-40 to D-47 and D-105 to D-108, D-113 to D-125 are removed on Bean's decision. A ref-traced footer walk at 1440/768/375
+after the draft changes decides no row with any remaining footer entry (D-60 to D-66, D-96, D-97, D-101 to D-104,
+D-109 to D-112): they await Bean's decision.
 
 ## Contact (page 190): state at the end of 2026-10-08
 

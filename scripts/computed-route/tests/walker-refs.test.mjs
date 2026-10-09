@@ -79,8 +79,8 @@ test( 'a gap that changes between two pairs is one row on the later pair; a matc
 } );
 
 // A pair placed after a pair nested with it measures an inset, not the flow (footer 2026-10-09: the generated pair on the
-// phone block's root, placed after the hand pair on the link inside it, read the link's 12px tap-area inset that D-122
-// already decides, as y-after-link-phone 1 -> 13). Its flow row is taken from the nearest earlier pair not nested with it.
+// phone block's root, placed after the hand pair on the link inside it, read the link's 12px tap-area inset as
+// y-after-link-phone 1 -> 13). Its flow row is taken from the nearest earlier pair not nested with it.
 const traced = ( y, ref, path ) => ( { box: { x: 222, y, w: 400, h: 20 }, trace: { ref, path, owners: [] } } );
 const nestedPairs = [ { name: 'about' }, { name: 'link-phone' }, { name: 'gen-block' } ];
 const nestedDraft = { about: traced( 100, 'r-a', '' ), 'link-phone': traced( 131, 'r-b', '.info > .info__link' ), 'gen-block': traced( 132, 'r-b', '' ) };

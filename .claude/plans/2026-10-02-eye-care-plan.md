@@ -164,7 +164,7 @@ Each section: what is built, and what is open.
   - `/privacy` and `/terms` return 404 on live (content, below).
   - Social icons: closed 2026-10-09 (the footer row is `sgs/social-icons` with Site Info-bound icons, P2-r closed; `plans/archive/2026-10-08-icon-unification-and-spacing-control.md`). The
     "Visit or call" column's link underline, Google-linked address and compact hours are live (2026-10-09) and their
-    divergence-ledger entries are logged (D-101 to D-125, register row 163). The one footer-walk row left open in that
+    the draft footer now shows the same (2026-10-09), so their ledger entries no longer decide any row (register row 163). The one footer-walk row left open in that
     column is the About link's position under the column heading (`plans/archive/2026-10-08-link-underline-helper.md`).
 
 ### Home (page 208, front page, `build/home.tree.json`)
