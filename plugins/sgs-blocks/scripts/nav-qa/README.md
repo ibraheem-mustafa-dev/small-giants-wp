@@ -631,6 +631,24 @@ ssh hd "cd $WP && wp sgs header set-active 4435 --user=Claude && wp litespeed-pu
 node scripts/nav-qa/u18-copy-probe.mjs https://sandybrown-nightingale-600381.hostingersite.com/qa-copy-lamalama/ --copy lamalama --out <dir>
 ```
 
+## 14. `late-css-ab.mjs` - late-CSS A/B
+
+**Covers:** FR-36-16's late-CSS A/B. Run A loads the page normally and opens the
+drawer; run B aborts every `stylesheet` request first, then opens the drawer. At 375,
+768 and 1440 it compares the `getBoundingClientRect()` of the open `dialog.sgs-nav-drawer`,
+its `.sgs-nav-drawer__close` and its first link (left, top, right, bottom, 1px
+tolerance), then presses Escape in run B and asserts the drawer closes and focus
+returns to the opener. Colour and typography differences are expected and ignored.
+
+```bash
+node scripts/nav-qa/late-css-ab.mjs --url <page-url> [--open ".sgs-nav-bar-menu__burger"] [--widths 375,768,1440] [--headed] [--json]
+```
+
+**Pass:** exit `0`. **Fail:** exit `1` (a rect outside tolerance, or Escape/focus-return
+failed). **Bad args:** `2`. **VACUOUS:** `3` (the opener was not visible at any width,
+so nothing was measured; a width where the opener is hidden is reported `UNMEASURED`).
+Against the canary pass `--headed` if its bot challenge blocks headless.
+
 ## Notes for the acceptance gate
 
 - Run all of them against **both** gate targets, Mama's (flat bar plus drawer) and
