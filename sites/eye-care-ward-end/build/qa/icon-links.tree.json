@@ -1,0 +1,13 @@
+[
+  { "name": "sgs/heading", "attributes": { "content": "Icon link QA", "level": "h1" } },
+  { "name": "sgs/heading", "attributes": { "content": "1. Site Info filled, own link set: Site Info wins", "level": "h2" } },
+  { "name": "sgs/icon", "attributes": { "className": "iql-1", "iconSource": "brand", "brandName": "instagram", "linkUrl": "https://typed.example.test/instagram", "metadata": { "bindings": { "linkUrl": { "source": "sgs/site-info", "args": { "key": "socials.instagram" } } } } } },
+  { "name": "sgs/heading", "attributes": { "content": "2. Site Info blank, own link set: own link is the fallback", "level": "h2" } },
+  { "name": "sgs/icon", "attributes": { "className": "iql-2", "iconSource": "brand", "brandName": "facebook", "linkUrl": "https://typed.example.test/facebook", "metadata": { "bindings": { "linkUrl": { "source": "sgs/site-info", "args": { "key": "socials.facebook" } } } } } },
+  { "name": "sgs/heading", "attributes": { "content": "3. Site Info blank, no own link: the icon is absent", "level": "h2" } },
+  { "name": "sgs/icon", "attributes": { "className": "iql-3", "iconSource": "brand", "brandName": "x", "metadata": { "bindings": { "linkUrl": { "source": "sgs/site-info", "args": { "key": "socials.twitter" } } } } } },
+  { "name": "sgs/heading", "attributes": { "content": "4. Site Info filled, switch set to own link: own link wins", "level": "h2" } },
+  { "name": "sgs/icon", "attributes": { "className": "iql-4", "iconSource": "brand", "brandName": "instagram", "linkSource": "custom", "linkUrl": "https://typed.example.test/own", "metadata": { "bindings": { "linkUrl": { "source": "sgs/site-info", "args": { "key": "socials.instagram" } } } } } },
+  { "name": "sgs/heading", "attributes": { "content": "5. Ordinary icon, no binding: unchanged", "level": "h2" } },
+  { "name": "sgs/icon", "attributes": { "className": "iql-5", "iconName": "truck", "linkUrl": "https://typed.example.test/delivery", "ariaLabel": "Delivery" } }
+]
