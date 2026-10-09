@@ -30,7 +30,7 @@ const rowOf = ( skeleton ) => cleanTree( expandSiteInfoRows( skeleton ) )[ 0 ];
 
 test( 'the footer row: eight listed brands expand to the committed footer tree children', () => {
 	const want = committed( 'footer.tree.json', 'cr-ref-footer-6' );
-	const row = rowOf( [ { name: 'sgs/social-icons', attributes: { gap: { desktop: '10px' } }, siteInfoRow: [ 'whatsapp', 'facebook', 'instagram', 'x', 'linkedin', 'youtube', 'tiktok', 'google' ] } ] );
+	const row = rowOf( [ { name: 'sgs/social-icons', attributes: { gap: { desktop: '10px' } }, siteInfoRow: [ 'instagram', 'google', 'whatsapp', 'facebook', 'x', 'linkedin', 'youtube', 'tiktok' ], childAttributes: { scaleHover: 1 } } ] );
 	assert.equal( row.innerBlocks.length, 8 );
 	assert.deepEqual( row.innerBlocks.map( withoutClass ), want.innerBlocks.map( withoutClass ) );
 	assert.deepEqual( row.attributes, { gap: { desktop: '10px' } }, 'the row own attributes are untouched' );
@@ -41,9 +41,8 @@ test( 'the drawer row: instagram, google and whatsapp with the shared and the pe
 	assert.equal( want.innerBlocks.length, 3 );
 	const shared = { sgsChildSizing: { desktop: 'fill' }, scaleHover: 1, linkTarget: '_blank', linkRel: 'noopener' };
 	const row = cleanTree( expandSiteInfoRows( [ { name: 'sgs/social-icons', attributes: {}, siteInfoRow: [ 'instagram', 'google', 'whatsapp' ], childAttributes: shared } ] ) )[ 0 ];
-	// The per-brand extras the committed drawer carries on top of the shared settings are set on the generated children by the author.
+	// The per-brand extra the committed drawer carries on top of the shared settings is set on the generated child by the author.
 	row.innerBlocks[ 1 ].attributes.ariaLabel = 'Google reviews';
-	Object.assign( row.innerBlocks[ 2 ].attributes, { iconColour: 'success', iconColourHover: 'success', backgroundColour: 'whatsapp-soft', backgroundColourHover: 'whatsapp-soft', borderColour: 'whatsapp-line', borderColourHover: 'whatsapp-line' } );
 	assert.deepEqual( row.innerBlocks.map( withoutClass ), want.innerBlocks.map( withoutClass ) );
 } );
 

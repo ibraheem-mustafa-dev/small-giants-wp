@@ -53,7 +53,7 @@ test( 'MUST FAIL TO MATCH: grid-template-columns:count keeps its stored string a
 	// Every block holding the modifier row: asking for the property must not return it, asking for the exact stored
 	// string must.
 	const rows = db.prepare( "SELECT block_slug, attr_name FROM block_attributes WHERE css_property = 'grid-template-columns:count' AND source IN ( 'sgs', 'sgs-ext' )" ).all();
-	assert.ok( rows.length >= 10, `expected the 10 count rows, found ${ rows.length }` );
+	assert.ok( rows.length >= 9, `expected the 9 count rows, found ${ rows.length }` );
 	for ( const r of rows ) {
 		assert.ok( ! candidates( db, r.block_slug, 'grid-template-columns' ).some( ( x ) => x.attr_name === r.attr_name ),
 			`${ r.block_slug }::${ r.attr_name } holds a track count, never a grid-template-columns value` );

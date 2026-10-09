@@ -68,7 +68,7 @@ export default {
 		{ name: 'brand-description', draft: { js: dpart( 0, 'd.querySelector("p")' ) }, live: { js: lpart( 0, 'c.children[1]' ) } },
 
 		// Social boxes: each box (look, hover, place) and its icon as its own pair. The draft lists
-		// Instagram, Google, WhatsApp; live lists Instagram, WhatsApp, Google (the structure check shows the order).
+		// Instagram, Google, WhatsApp, and so does live (the structure check shows the order).
 		{ name: 'social-row', draft: { js: dpart( 0, 'd.children[2]' ) }, live: { js: lpart( 0, 'c.querySelector(".sgs-social-icons")' ) }, text: false, box: [ 'h' ] },
 		{ name: 'social-instagram', draft: { js: dsocial( 'Instagram' ) }, live: { js: lsocial( 'Follow us on Instagram' ) }, hover: true, text: false, box: [ 'w', 'h' ], props: SOCIAL_PROPS },
 		{ name: 'social-instagram-icon', draft: { js: dicon( 'Instagram' ) }, live: { js: licon( 'Follow us on Instagram' ) }, text: false, box: [ 'w', 'h' ] },

@@ -1,6 +1,6 @@
 {
  "surface": "footer",
- "when": "2026-10-09T18:08:31.735Z",
+ "when": "2026-10-09T20:37:41.267Z",
  "width": 1440,
  "recheck": [
   375,
@@ -12,8 +12,8 @@
   ".sgs-site-footer",
   ".sgs-whatsapp-cta--floating"
  ],
- "blocks": 25,
- "kept": 5,
+ "blocks": 26,
+ "kept": 3,
  "coveredByHand": [
   "cr-ref-footer-0",
   "cr-ref-footer-1",
@@ -21,6 +21,9 @@
   "cr-ref-footer-14",
   "cr-ref-footer-21",
   "cr-ref-footer-5",
+  "cr-ref-footer-36",
+  "cr-ref-footer-41",
+  "cr-ref-footer-34",
   "cr-ref-footer-8",
   "cr-ref-footer-15",
   "cr-ref-footer-22",
@@ -57,7 +60,7 @@
   {
    "name": "footer-root",
    "ok": true,
-   "checked": 48,
+   "checked": 53,
    "split": [],
    "why": null
   },
@@ -257,7 +260,7 @@
   {
    "name": "bottom-bar",
    "ok": true,
-   "checked": 12,
+   "checked": 17,
    "split": [],
    "why": null
   },
@@ -289,6 +292,9 @@
   "col-shop": ".cr-ref-footer-7",
   "col-help": ".cr-ref-footer-14",
   "col-visit": ".cr-ref-footer-21",
+  "social-instagram": ".cr-ref-footer-36",
+  "social-google": ".cr-ref-footer-41",
+  "social-whatsapp": ".cr-ref-footer-34",
   "bottom-copyright": ".cr-ref-footer-28",
   "link-privacy": ".cr-ref-footer-30",
   "link-terms": ".cr-ref-footer-31"
@@ -335,68 +341,44 @@
   },
   {
    "ref": "cr-ref-footer-6",
-   "why": "no draft element around its media is near its size (307x44)"
+   "why": "its paired ancestor holds 3 svg live against 0 on the draft"
   }
  ],
  "keptPairs": [
+  {
+   "ref": "cr-ref-footer-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > p:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(designer|eyewear|from|an|independent|optician|in|birmingham\\.)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "designer",
+   "last": "birmingham."
+  },
   {
    "ref": "cr-ref-footer-29",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(2) > span:nth-child(2)",
    "textRun": {
     "direct": false,
-    "match": "(^|[^\\p{L}\\p{N}])(privacy|terms)($|[^\\p{L}\\p{N}])"
+    "match": "(^|[^\\p{L}\\p{N}])(privacy|terms|website|by|small|giants|studio)($|[^\\p{L}\\p{N}])"
    },
    "why": null,
-   "words": 2,
-   "matched": 2,
+   "words": 7,
+   "matched": 7,
    "first": "privacy",
-   "last": "terms"
+   "last": "studio"
   },
   {
-   "ref": "cr-ref-footer-2",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1)",
+   "ref": "cr-ref-footer-42",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(2) > span:nth-child(2) > a:nth-child(3)",
    "why": null,
-   "words": 8,
-   "matched": 8,
-   "first": null,
-   "last": null,
-   "group": {
-    "paths": [
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > img:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > p:nth-child(2)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3)"
-    ]
-   }
-  },
-  {
-   "ref": "cr-ref-footer-34",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > a:nth-child(1)",
-   "media": "svg",
-   "why": null,
-   "words": 0,
-   "matched": 0,
-   "first": null,
-   "last": null
-  },
-  {
-   "ref": "cr-ref-footer-36",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > a:nth-child(2)",
-   "media": "svg",
-   "why": null,
-   "words": 0,
-   "matched": 0,
-   "first": null,
-   "last": null
-  },
-  {
-   "ref": "cr-ref-footer-41",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > a:nth-child(3)",
-   "media": "svg",
-   "why": null,
-   "words": 0,
-   "matched": 0,
-   "first": null,
-   "last": null
+   "words": 5,
+   "matched": 5,
+   "first": "website",
+   "last": "studio"
   }
  ]
 }

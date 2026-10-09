@@ -21,7 +21,7 @@
 //   node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/header.mjs --widths 1440 --states closed,scrolled
 //
 // `scrolled` (the last state, so no earlier state runs on a scrolled page): the draft shrinks its header once
-// window.scrollY > 40 (middle-row padding 20px to 10px, logo 48px to 40px, wordmark 18px to 15px, each on a .35s
+// window.scrollY > 40 (middle-row padding 20px to 10px, logo 48px to 40px, wordmark image 110px to 91px wide, each on a .35s
 // transition); live shrinks its middle row past `data-sgs-header-scrolled-offset`.
 const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/?cb={cb}';
@@ -176,7 +176,7 @@ export default {
 			props: [ 'background-color', 'color', 'font-size', 'padding-top', 'padding-bottom' ] },
 
 		// The header at rest and scrolled: the draft's middle row, logo and wordmark shrink past 40px of scroll
-		// (padding 20px to 10px, logo 48px to 40px, wordmark 18px to 15px).
+		// (padding 20px to 10px, logo 48px to 40px, wordmark image 110px to 91px wide).
 		{ name: 'header-bar', states: [ 'closed', 'scrolled' ], draft: { js: '(r) => document.querySelector("header > div")' }, live: `${ LHEADER } .sgs-site-header-row--middle`,
 			text: false, box: [ 'h' ], props: [ 'padding-top', 'padding-bottom', 'padding-left', 'padding-right', 'background-color' ] },
 		{ name: 'header-logo', states: [ 'closed', 'scrolled' ], draft: `${ DHEADER } a[aria-label="Eye Care Birmingham home"] img`, live: `${ LHEADER } .sgs-responsive-logo__link img`,
@@ -250,7 +250,7 @@ export default {
 	accept: [],
 	review: {
 		'closed@1440': 'Ticker bar: four trust lines with icons on both sides, live text 14px against 12.5px. Header bar, logo, EYE CARE wordmark, About, phone and Bag button: draft is one row; live header row collapses to 56px wide so the nav items, phone and logo stack in a column over each other. Hero below pushed down 190px on live.',
-		'scrolled@1440': 'Window scrolled 400px: draft header shrinks to a 58px bar (logo 40px, wordmark 15px) and the hero scrolls under it. Live header is still the collapsed stacked column (225px tall), so logo and wordmark pairs read 0 wide and the shrink cannot be judged until the row width is fixed.',
+		'scrolled@1440': 'Window scrolled 400px: both headers shrink to a short bar (logo 40px, wordmark image 91px wide) and the hero scrolls under it; compare the bar height, the logo and wordmark boxes and the nav row.',
 		'mega-shop@1440': 'Sunglasses panel: draft opens By style and Shop by columns plus the Prescription sunglasses promo card under the header. Live never opens it because the collapsed nav puts the phone link over the Sunglasses trigger, so panel, columns and promo are missing in the live half.',
 		'mega-brands@1440': 'Brands panel: draft shows the Most asked for tile grid with frame counts and the All 40 brands list. Live panel does not open (collapsed header, trigger covered), so tiles and the brand list are absent on the live side.',
 		'mega-lenses@1440': 'Lenses panel: four lens cards (Single vision, Varifocal, Polarised, Light-reactive) with price and copy; live opens the same four cards with the same words. Panel sits lower on live because the header row is taller, and live card padding and ground differ from the draft.',
