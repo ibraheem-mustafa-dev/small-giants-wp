@@ -22,8 +22,8 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 225 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 624 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 228 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 610 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -1029,7 +1029,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 586 scripts
+#### `plugins/sgs-blocks/scripts/` — 568 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1040,6 +1040,7 @@ for the verb you happen to have in mind.
 | `audit-declared-vs-seeded-roles.py` | manifest+script-call | Audit: which `sgs/%` attributes LACK A MECHANISM that reaches them — the D497 gate. |
 | `audit-feature-parity.py` | manifest+script-call | Spec 35 UNIT A — feature-parity audit. ⚠ **header disputes this — it IS wired** |
 | `audit-inline-styling.js` | manifest+npm+script-call | WIRED INTO `prebuild` AS A REAL GATE — `node scripts/audit-inline-styling.js --check` runs on every `npm run build` and sets `process.exitCode = 1`… ⚠ **header disputes this — it IS wired** |
+| `audit-live-script-closure.py` | — | which scripts are TRANSITIVELY reachable from a live root. |
 | `audit-post-content-blocks.py` | manifest+npm+script-call | Audit stored post_content for SGS blocks that can no longer render their content. |
 | `audit-scoped-selector-live.js` | manifest+npm+script-call | "scoped selector whose class the element never carries" bug class (the multi-button regression, D303 / P-SCOPED-SELECTOR-MATCH-AUDIT-AND-GATE). |
 | `audit-script-reachability.py` | manifest+script-call | which scripts in this library actually RUN, and how. |
@@ -1146,10 +1147,8 @@ for the verb you happen to have in mind.
 | `codemods/add-box-families.js` | manifest+test-import | Declares the per-device box settings that were missing from `supports.sgs.boxFamilies`. Each one stores a `{desktop, tablet, mobile}` object whose… |
 | `colour-codemod/adopt.js` | manifest+script-call | `<SgsColourPanel rows={[...]}>`) into a call to the shared row helper it is semantically identical to: fillRow / textRow |
 | `colour-codemod/classify-end-shape.js` | manifest+npm+script-call | WHY THIS EXISTS (2026-09-06, colour-conformance). Adversarial-council pre-mortem (6/6 personas graded D) found survey.js's AUTOFIXABLE verdict is… |
-| `colour-codemod/classify-gradient-path-deferred.js` | manifest+script-call | Splits every `gradient-path-deferred` refusal that fix.js's dry run |
 | `colour-codemod/fix.js` | manifest+script-call+skill | Scope: TIER A ONLY — rows survey.js verdicts as `AUTOFIXABLE:helper-at-existing-selector`, AND (this file's own further narrowing, documented in… |
 | `colour-codemod/migrate-shadow-mounts.js` | manifest+npm | WHY. ShadowControl was parameterised by VALUES AND CALLBACKS: six props hand-wired at every mount, where GradientOverlayControl's callers pass one… |
-| `colour-codemod/scan-undeclared-setattributes.js` | manifest+script-call | the cross-tier-review fix (post-Task-1 critical defect: fix.js could emit a `setAttributes({ X: ... })` write for an attribute X that block.json… |
 | `colour-codemod/survey.js` | manifest+script-call | WHY THIS EXISTS. rule 31 already answers "which rows are wrong?" (388 findings across 61 blocks). It does NOT answer "which of those can a codemod… |
 | `colour-codemod/wire-border-contrast.js` | manifest+npm | (a WCAG 3:1 border-contrast warning, built and working on the component itself — see `src/components/SgsBorderControl.js`) into every block's… |
 | `consistency/audit-serverside-render-disabled.js` | manifest+npm | Finds every `<ServerSideRender` JSX usage across `src/blocks/*\/edit.js` and flags any that is NOT wrapped in `<Disabled>` (from… |
@@ -1169,7 +1168,6 @@ for the verb you happen to have in mind.
 | `content-role-detect/detector5_image_alt_companion.py` | manifest+script-call | Detector 5 -- derive the image<->alt COMPANION relationship from render.php. |
 | `content-role-detect/detector6_native_support_and_style_emission.py` | manifest+script-call | Detector 6 -- "WP-core native support" + "value painted inside a <style> element". |
 | `content-role-detect/detector7_css_paint_flow.php` | script-call | Detector 7 — CSS PAINT FLOW (forward variable tracking to a paint site). |
-| `content-role-detect/detector8_undeclared_enum.php` | — | Detector 8 — UNDECLARED ENUM (a schema gap, not a role gap). |
 | `content-role-detect/fingerprint_content_roles.py` | manifest+script-call | Deterministic content-role fingerprint (Track A / Spec 35, Step 2). |
 | `copy-built-styles.js` | manifest+npm+script-call | Postbuild: copy style-index.css to style.css per block. |
 | `db-consistency/__init__.py` | manifest+script-call | db-consistency — F6 DB-as-code consistency suite. |
@@ -1231,7 +1229,6 @@ for the verb you happen to have in mind.
 | `editor-render-parity/self-test-signals-12.js` | manifest+script-call | Self-test: SIGNAL 1 and SIGNAL 2 fixtures. |
 | `editor-render-parity/self-test-signals-345.js` | manifest+script-call | Self-test: SIGNAL 3, 5 and 4 fixtures. |
 | `editor-render-parity/self-test.js` | manifest+script-call | Self-test runner: positive and negative fixtures for both checks. |
-| `extract-button-presets.py` | manifest | Pipeline step: extract a draft mockup's `.sgs-button--{variant}` + `:hover` CSS |
 | `extract-comment-narrative.py` | manifest | Find comment blocks that NARRATE CHANGES rather than describe behaviour. |
 | `fanout-overlay-sibling-attrs.py` | manifest+npm+script-call | D6 (hover + responsive-tier siblings) and |
 | `fanout-shadow-lift-attr.py` | manifest | adds the `shadowLiftOnHover` block-level switch (boolean, |
@@ -1385,8 +1382,6 @@ for the verb you happen to have in mind.
 | `migrate-core-blocks/upgrade-button-presets.py` | manifest | One-shot: upgrade already-emitted sgs/button instances to use PRESETS. |
 | `migrate-length-sanitiser.py` | manifest+script-call | Move every LENGTH-valued call site from the crude sanitiser to the hardened one. |
 | `migrate-nav-gap-tier.php` | — | Fold a stored flat `gap` on sgs/nav-bar-menu and sgs/nav-drawer-menu into its tier object (Wave 3C U-3, 2026-09-25): "gap":"28px" ->… |
-| `migrate-off-native-spacing.py` | manifest+settings | move base padding/margin off WP-native |
-| `migrate-overlay-tier-axis.py` | manifest | Move the overlay's responsive tier axis OFF colour and ONTO opacity (D739). |
 | `migrate-product-card-image-id.py` | manifest | backfill `imageId` (a real WordPress |
 | `migrate-render-closures.py` | manifest+npm | Adopt the shared render helpers in place of per-file inline sanitiser closures. |
 | `migrate-shadow-presets.py` | manifest | Shadow preset migration (U-1 commit 4f-1 step 6): the four old theme shadows are replaced by |
@@ -1442,10 +1437,8 @@ for the verb you happen to have in mind.
 | `nav-qa/check-fixture-fidelity.py` | manifest | compare the nav-drawer POC content plan to the harvest. |
 | `nav-qa/crawl-assert.mjs` | manifest | bar+dropdown+mega link AND mega content must be present in the PRE-JS HTML (what a crawler / no-JS user gets), never injected client-side. |
 | `nav-qa/elementfrompoint-sweep.mjs` | manifest+script-call | occlusion sweep, carried verbatim from Spec 34 FR-S9-5 / FR-34-7. |
-| `nav-qa/extended-probe.mjs` | manifest | Extended open-drawer measurement probe (measurement-vs-eye rule). |
 | `nav-qa/gate3c/parity-indus.mjs` | manifest | Parity config: the wholesale-food client's mega-menu draft against its copy on sandybrown (page 4465, header 4461). |
 | `nav-qa/gate3c/parity-lamalama.mjs` | manifest | Parity config: the reference site's floating pill against its copy on sandybrown (page 4446, header 4435). |
-| `nav-qa/gate3c/probe-drawer-row.mjs` | manifest | Opens a page, taps the burger, and prints computed layout for the drawer's first sgs/button and every ancestor up to the drawer, plus the email/call… |
 | `nav-qa/late-css-ab.mjs` | — | WHAT IT ASSERTS |
 | `nav-qa/lib/elementfrompoint-sweep-selftest.mjs` | manifest+script-call | `elementFromPoint` occlusion sweep. |
 | `nav-qa/lib/openness-guard.mjs` | manifest+script-call | for every nav-qa script that measures or captures an interactive surface. |
@@ -1454,10 +1447,7 @@ for the verb you happen to have in mind.
 | `nav-qa/logical-props-lint.py` | manifest | RTL-readiness lint for the SGS nav blocks |
 | `nav-qa/m03-direction-probe.mjs` | manifest | U-13 M-03 live probe: direction-keyed restyle (fixture `direction-fade`, fantasy's cell). |
 | `nav-qa/palette-contrast-sweep.mjs` | manifest+script-call | drafts (mega-menu panels and any other self-contained SGS-BEM draft). |
-| `nav-qa/qa-close-fixture.php` | — | U-9+U-11 live-check fixture on sandybrown (wp eval-file qa-close-fixture.php <case>). Idempotent. |
-| `nav-qa/qa-geometry-fixture.php` | script-call | U-3 + U-8 live-check fixture on sandybrown (wp eval-file qa-geometry-fixture.php <case>). Idempotent. |
 | `nav-qa/qa-item-markup-fixture.php` | manifest+script-call | U-6 + U-7 live-check fixture on sandybrown (wp eval-file qa-item-markup-fixture.php <case>). Idempotent. |
-| `nav-qa/qa-motion-fixture.php` | script-call | U-5 live-check fixture on sandybrown (wp eval-file qa-motion-fixture.php <case>). Idempotent. |
 | `nav-qa/qa-u1-owed-fixture.php` | manifest+script-call | U-1 owed live checks on sandybrown (wp eval-file qa-u1-owed-fixture.php <case>). Idempotent. |
 | `nav-qa/shoot-drawer-pairs.mjs` | manifest+script-call | WHY |
 | `nav-qa/submenu-harness.php` | — | Stubbed harness for SGS_Nav_Menu_Bar_Renderer — walker AND render_items. |
@@ -1467,12 +1457,10 @@ for the verb you happen to have in mind.
 | `nav-qa/u16-editor-check.mjs` | manifest | U-16 editor check: the entrance panel's Distance and delay options through the real inspector. |
 | `nav-qa/u16-entrance-probe.mjs` | manifest | U-16 live probe: entrances as their own layer, on /qa-entrance/ (fixture case `entrance`). |
 | `nav-qa/u18-copy-probe.mjs` | manifest | U-18 copy-parity probe (Wave 3C Gate 3C item 4): measures a composed header copy while it is the ACTIVE header, and screenshots it closed and open at… |
-| `nav-qa/w2u-probe.mjs` | manifest | W2-u — mega-menu + drawer SAME-PAGE integration probe. |
 | `no-inline/check-no-inline.py` | manifest+npm+script-call | Anti-regression GATE for the framework-wide inline-zero win (Spec 32 FR-32-1 / |
 | `no-inline/check-stranded-guards.py` | manifest+npm | Anti-regression GATE for STRANDED inline-style guards (Spec 32). |
 | `no-inline/detect.py` | manifest+script-call+skill | No-inline detector — the worklist generator for the framework-wide inline-zero |
 | `no-inline-land-verify.js` | manifest+script-call+settings | For a manifest of blocks, it: |
-| `parity/draft-vs-live/side_by_side.py` | manifest | Put draft and live captures next to each other so they can be LOOKED at (method step 6, README.md). |
 | `parity/extract-css-diff.js` | manifest+script-call | THE STANDARD first step for matching a clone section to its reference |
 | `pattern-classify.py` | manifest+script-call+skill | SGS Pattern Classifier |
 | `pattern-fingerprint.py` | manifest+script-call+skill | Compute a deterministic fingerprint for an HTML pattern + CSS bundle. |
@@ -1491,13 +1479,7 @@ for the verb you happen to have in mind.
 | `prove-selftest-can-fail.py` | manifest+script-call | Prove a detector's --self-test is LOAD-BEARING, not decorative. |
 | `provision-site-mail.py` | manifest+script-call | : give a client site working SMTP email through FluentSMTP. |
 | `push-theme-snapshot.py` | manifest+script-call+skill+test-import | Deploy a per-client theme.json snapshot to a WP site. |
-| `qa/assert-css-effect.js` | manifest+script-call | BACKGROUND. fix.js's own 15-assertion self-test (--self-test) is entirely edit-correctness: was the row planned fixable, does DRY RUN write nothing… |
 | `qa/check-border-roundtrip.js` | manifest+script-call | Border round-trip probe — does the FRONTEND actually paint the border the block's `borderWidth` / `borderStyle` / `borderColour` attributes describe? |
-| `qa/check-box-corners-blocks-live.mjs` | manifest | CR6 P2-a live check across the corner-radius patterns: a radius set on every corner at desktop, then on ONE corner at tablet and ONE other corner at… |
-| `qa/check-box-longhands-blocks-live.mjs` | manifest | CR6 U8 live check across migrated blocks: a padding box that sets three sides on desktop and only the top on tablet keeps the desktop sides at tablet… |
-| `qa/check-box-longhands-live.mjs` | manifest | CR6 live check: padding set on one side, or a radius set on one corner, of one tier changes only that side or corner, on the front end AND in the… |
-| `qa/check-box-var-holdouts-live.mjs` | manifest | CR6 P2-b live check across the former var() holdouts: each box is set on every side or corner at desktop, then on ONE side or corner at tablet and… |
-| `qa/check-colour-editor-roundtrip.js` | manifest+script-call | QA Gate C — the EDITOR half. |
 | `qa/fr30-15-alerts-live-proof.php` | — | FR-30-15 live proof: saved-item alerts and the Notify me sender, on a real site (unified-email plan phase 3 — the emails now go through the… |
 | `qa/lib/google-reviews-settings-stub.php` | script-call | Thin stand-in for SGS\Blocks\Google_Reviews_Settings |
 | `qa/lib/live-colour-probe.php` | script-call | WP-CLI probe for check-custom-colour-survives.py --live: renders each job's block through the real render_block() on a live site and prints the… |
@@ -1620,7 +1602,7 @@ for the verb you happen to have in mind.
 | `wiring-fingerprint/wf_tokens.py` | manifest+script-call | Channel tokens: what one PHP statement emits. |
 | `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 108 scripts
+#### `scripts/` — 109 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1689,7 +1671,8 @@ for the verb you happen to have in mind.
 | `lib/wp-session.js` | script-call | wp-session — one logged-in Chrome shared by a run and every child script it starts. |
 | `lint-naming-conventions.py` | manifest+test-import | CI linter for the SGS WordPress Framework naming conventions. |
 | `lint-patterns-for-personal-data.py` | manifest+npm+test-import | Lint SGS pattern PHP files for hardcoded personal data. |
-| `local-wp/sync-build.sh` | — | Copies the repo's built plugins and theme into the local WSL mirror sites. |
+| `local-wp/refresh-from-remote.sh` | — | Refreshes a local WSL mirror's database and uploads from its Hostinger test site, so measurements run on the local copy see the same content… |
+| `local-wp/sync-build.sh` | script-call | Copies the repo's built plugins and theme into the local WSL mirror sites. |
 | `parity/benchmark/cases.mjs` | manifest+script-call | The walker's catch-rate benchmark: six optician-client gaps the walker passed and Bean found by eye |
 | `parity/benchmark/score.mjs` | manifest+script-call+skill | Scores a catch-rate benchmark run from its recorded walker reports (<out>/<config>-control and <out>/case-<id>): benchmark.mjs calls it after the… |
 | `parity/benchmark.mjs` | script-call+skill | The walker's catch-rate benchmark. For each page config it runs the walker once as a control |
