@@ -464,7 +464,7 @@
           {
             "name": "sgs/social-icons",
             "attributes": {
-              "colourMode": "theme",
+              "colourMode": "brand-glyph",
               "childIconSize": {
                 "desktop": "18px"
               },
@@ -486,9 +486,6 @@
                 "left": "1px"
               },
               "childIconBorderColour": "border",
-              "childIconBorderColourHover": "border",
-              "childIconColour": "text",
-              "childIconColourHover": "text",
               "gap": {
                 "desktop": "10px"
               },
@@ -564,12 +561,6 @@
                   },
                   "scaleHover": 1,
                   "className": "cr-ref-mobile-menu-19",
-                  "iconColour": "success",
-                  "iconColourHover": "success",
-                  "backgroundColour": "whatsapp-soft",
-                  "backgroundColourHover": "whatsapp-soft",
-                  "borderColour": "whatsapp-line",
-                  "borderColourHover": "whatsapp-line",
                   "linkTarget": "_blank",
                   "linkRel": "noopener"
                 }

@@ -135,7 +135,7 @@
               {
                 "name": "sgs/social-icons",
                 "attributes": {
-                  "colourMode": "theme",
+                  "colourMode": "brand-glyph",
                   "childIconSize": {
                     "desktop": "18px"
                   },
@@ -154,9 +154,6 @@
                     "left": "1px"
                   },
                   "childIconBorderColour": "border",
-                  "childIconBorderColourHover": "border",
-                  "childIconColour": "text",
-                  "childIconColourHover": "accent-text",
                   "gap": {
                     "desktop": "10px"
                   },
@@ -171,45 +168,10 @@
                     "desktop": {
                       "top": "20px"
                     }
-                  }
+                  },
+                  "childIconBorderStyle": "solid"
                 },
                 "innerBlocks": [
-                  {
-                    "name": "sgs/icon",
-                    "attributes": {
-                      "iconSource": "brand",
-                      "brandName": "whatsapp",
-                      "metadata": {
-                        "bindings": {
-                          "linkUrl": {
-                            "source": "sgs/site-info",
-                            "args": {
-                              "key": "socials.whatsapp"
-                            }
-                          }
-                        }
-                      },
-                      "className": "cr-ref-footer-34"
-                    }
-                  },
-                  {
-                    "name": "sgs/icon",
-                    "attributes": {
-                      "iconSource": "brand",
-                      "brandName": "facebook",
-                      "metadata": {
-                        "bindings": {
-                          "linkUrl": {
-                            "source": "sgs/site-info",
-                            "args": {
-                              "key": "socials.facebook"
-                            }
-                          }
-                        }
-                      },
-                      "className": "cr-ref-footer-35"
-                    }
-                  },
                   {
                     "name": "sgs/icon",
                     "attributes": {
@@ -225,79 +187,8 @@
                           }
                         }
                       },
-                      "className": "cr-ref-footer-36"
-                    }
-                  },
-                  {
-                    "name": "sgs/icon",
-                    "attributes": {
-                      "iconSource": "brand",
-                      "brandName": "x",
-                      "metadata": {
-                        "bindings": {
-                          "linkUrl": {
-                            "source": "sgs/site-info",
-                            "args": {
-                              "key": "socials.twitter"
-                            }
-                          }
-                        }
-                      },
-                      "className": "cr-ref-footer-37"
-                    }
-                  },
-                  {
-                    "name": "sgs/icon",
-                    "attributes": {
-                      "iconSource": "brand",
-                      "brandName": "linkedin",
-                      "metadata": {
-                        "bindings": {
-                          "linkUrl": {
-                            "source": "sgs/site-info",
-                            "args": {
-                              "key": "socials.linkedin"
-                            }
-                          }
-                        }
-                      },
-                      "className": "cr-ref-footer-38"
-                    }
-                  },
-                  {
-                    "name": "sgs/icon",
-                    "attributes": {
-                      "iconSource": "brand",
-                      "brandName": "youtube",
-                      "metadata": {
-                        "bindings": {
-                          "linkUrl": {
-                            "source": "sgs/site-info",
-                            "args": {
-                              "key": "socials.youtube"
-                            }
-                          }
-                        }
-                      },
-                      "className": "cr-ref-footer-39"
-                    }
-                  },
-                  {
-                    "name": "sgs/icon",
-                    "attributes": {
-                      "iconSource": "brand",
-                      "brandName": "tiktok",
-                      "metadata": {
-                        "bindings": {
-                          "linkUrl": {
-                            "source": "sgs/site-info",
-                            "args": {
-                              "key": "socials.tiktok"
-                            }
-                          }
-                        }
-                      },
-                      "className": "cr-ref-footer-40"
+                      "className": "cr-ref-footer-36",
+                      "scaleHover": 1
                     }
                   },
                   {
@@ -315,7 +206,122 @@
                           }
                         }
                       },
-                      "className": "cr-ref-footer-41"
+                      "className": "cr-ref-footer-41",
+                      "scaleHover": 1
+                    }
+                  },
+                  {
+                    "name": "sgs/icon",
+                    "attributes": {
+                      "iconSource": "brand",
+                      "brandName": "whatsapp",
+                      "metadata": {
+                        "bindings": {
+                          "linkUrl": {
+                            "source": "sgs/site-info",
+                            "args": {
+                              "key": "socials.whatsapp"
+                            }
+                          }
+                        }
+                      },
+                      "className": "cr-ref-footer-34",
+                      "scaleHover": 1
+                    }
+                  },
+                  {
+                    "name": "sgs/icon",
+                    "attributes": {
+                      "iconSource": "brand",
+                      "brandName": "facebook",
+                      "metadata": {
+                        "bindings": {
+                          "linkUrl": {
+                            "source": "sgs/site-info",
+                            "args": {
+                              "key": "socials.facebook"
+                            }
+                          }
+                        }
+                      },
+                      "className": "cr-ref-footer-35",
+                      "scaleHover": 1
+                    }
+                  },
+                  {
+                    "name": "sgs/icon",
+                    "attributes": {
+                      "iconSource": "brand",
+                      "brandName": "x",
+                      "metadata": {
+                        "bindings": {
+                          "linkUrl": {
+                            "source": "sgs/site-info",
+                            "args": {
+                              "key": "socials.twitter"
+                            }
+                          }
+                        }
+                      },
+                      "className": "cr-ref-footer-37",
+                      "scaleHover": 1
+                    }
+                  },
+                  {
+                    "name": "sgs/icon",
+                    "attributes": {
+                      "iconSource": "brand",
+                      "brandName": "linkedin",
+                      "metadata": {
+                        "bindings": {
+                          "linkUrl": {
+                            "source": "sgs/site-info",
+                            "args": {
+                              "key": "socials.linkedin"
+                            }
+                          }
+                        }
+                      },
+                      "className": "cr-ref-footer-38",
+                      "scaleHover": 1
+                    }
+                  },
+                  {
+                    "name": "sgs/icon",
+                    "attributes": {
+                      "iconSource": "brand",
+                      "brandName": "youtube",
+                      "metadata": {
+                        "bindings": {
+                          "linkUrl": {
+                            "source": "sgs/site-info",
+                            "args": {
+                              "key": "socials.youtube"
+                            }
+                          }
+                        }
+                      },
+                      "className": "cr-ref-footer-39",
+                      "scaleHover": 1
+                    }
+                  },
+                  {
+                    "name": "sgs/icon",
+                    "attributes": {
+                      "iconSource": "brand",
+                      "brandName": "tiktok",
+                      "metadata": {
+                        "bindings": {
+                          "linkUrl": {
+                            "source": "sgs/site-info",
+                            "args": {
+                              "key": "socials.tiktok"
+                            }
+                          }
+                        }
+                      },
+                      "className": "cr-ref-footer-40",
+                      "scaleHover": 1
                     }
                   }
                 ]
