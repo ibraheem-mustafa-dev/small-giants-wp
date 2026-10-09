@@ -110,14 +110,14 @@ export function currentIconName( attrs ) {
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Block setAttributes.
- * @param {Object}   props.state         { boundKey, link (siteInfoLinkState), brand (resolveBrand), name (accessibleName),
+ * @param {Object}   props.state         { boundKey, link (siteInfoLinkState), fallback (linkFallbackState), storedLinkUrl (the saved typed link), brand (resolveBrand), name (accessibleName),
  *                                       paintedShape (the shape the canvas paints), labelOn (a visible label shows),
  *                                       labelFromRow (the row switched it on), defaultLabel (a blank label's text) }.
  * @return {JSX.Element} Inspector panels.
  */
 export default function IconInspector( { attributes, setAttributes, state } ) {
 	const { iconSource, iconSvg, iconSize, iconFill, iconRotate, colourMode, showBackground, linkUrl, linkTarget, linkRel, ariaLabel, scaleHover, opacityHover, textAlign } = attributes;
-	const { boundKey, link, brand, name, paintedShape, labelOn, labelFromRow, defaultLabel } = state;
+	const { boundKey, link, fallback, storedLinkUrl, brand, name, paintedShape, labelOn, labelFromRow, defaultLabel } = state;
 	// The shape the canvas paints (a row's group shape replaces the square), which decides what the colours can do.
 	const outlineShown = isOutlineShape( paintedShape || attributes.shape );
 	let accessibleHelp = __( 'Describes the icon for screen readers. Leave blank for a decorative icon.', 'sgs-blocks' );
@@ -220,27 +220,52 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						__next40pxDefaultSize
 					/>
 					{ link.bound ? (
-						<BaseControl
-							id="sgs-icon-bound-link"
-							label={ __( 'Link', 'sgs-blocks' ) }
-							help={ __( 'The link follows Site Info; change it there. Unlink to type your own.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						>
-							<p className="sgs-icon-bound-link">
-								{ sprintf(
-									/* translators: %s: Site Info field, e.g. Phone. */
-									__( 'Linked to Site Info: %s', 'sgs-blocks' ),
-									link.label
-								) }
-							</p>
-							<Button
-								variant="secondary"
-								size="compact"
-								onClick={ () => setAttributes( { metadata: metadataWithoutLinkBinding( attributes.metadata ) } ) }
+						<>
+							<BaseControl
+								id="sgs-icon-bound-link"
+								label={ __( 'Link', 'sgs-blocks' ) }
+								help={
+									'custom' === fallback.source
+										? __( 'This icon uses the link below. Switch it off to follow Site Info again.', 'sgs-blocks' )
+										: __( 'The link follows Site Info; change it there. The fallback link below is used only when Site Info is empty. Unlink to drop Site Info altogether.', 'sgs-blocks' )
+								}
+								__nextHasNoMarginBottom
 							>
-								{ __( 'Unlink', 'sgs-blocks' ) }
-							</Button>
-						</BaseControl>
+								<p className="sgs-icon-bound-link">
+									{ sprintf(
+										/* translators: %s: Site Info field, e.g. Phone. */
+										__( 'Linked to Site Info: %s', 'sgs-blocks' ),
+										link.label
+									) }
+								</p>
+								<Button
+									variant="secondary"
+									size="compact"
+									onClick={ () => setAttributes( { metadata: metadataWithoutLinkBinding( attributes.metadata ) } ) }
+								>
+									{ __( 'Unlink', 'sgs-blocks' ) }
+								</Button>
+							</BaseControl>
+							<ToggleControl
+								label={ __( 'Use my own link instead of Site Info', 'sgs-blocks' ) }
+								checked={ 'custom' === fallback.source }
+								onChange={ ( value ) => setAttributes( { linkSource: value ? 'custom' : 'site-info' } ) }
+								__nextHasNoMarginBottom
+							/>
+							<LinkPopoverField
+								label={ __( 'Fallback link (used when Site Info is empty)', 'sgs-blocks' ) }
+								help={ __( 'Search your site or paste a URL. Leave blank to hide the icon when Site Info is empty.', 'sgs-blocks' ) }
+								value={ { url: storedLinkUrl, linkTarget, rel: linkRel } }
+								targetMode="boolean"
+								onChange={ ( next ) => {
+									const patch = {};
+									if ( undefined !== next.url ) patch.linkUrl = next.url;
+									if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
+									if ( undefined !== next.rel ) patch.linkRel = next.rel;
+									setAttributes( patch );
+								} }
+							/>
+						</>
 					) : (
 						<LinkPopoverField
 							label={ __( 'Link', 'sgs-blocks' ) }

@@ -335,6 +335,14 @@
 			"default": "",
 			"role": "content"
 		},
+		"linkSource": {
+			"type": "string",
+			"default": "site-info",
+			"enum": [
+				"site-info",
+				"custom"
+			]
+		},
 		"linkTarget": {
 			"type": "string",
 			"default": "_self",

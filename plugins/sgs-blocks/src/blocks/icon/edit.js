@@ -6,7 +6,8 @@
  */
 
 import { __, sprintf } from '@wordpress/i18n';
-import { useBlockProps, BlockControls, useSettings } from '@wordpress/block-editor';
+import { useBlockProps, BlockControls, useSettings, store as blockEditorStore } from '@wordpress/block-editor';
+import { useSelect } from '@wordpress/data';
 import { LogicalAlignToolbar } from '../../components';
 import {
 	colourVar,
@@ -24,6 +25,7 @@ import {
 	SITE_INFO_ADMIN_URL,
 	boundLinkKey,
 	siteInfoLinkState,
+	linkFallbackState,
 	resolveBrand,
 	accessibleName,
 	visibleLabel,
@@ -159,7 +161,7 @@ export function CanvasLabel( { text, attributes, tier } ) {
 	);
 }
 
-export default function Edit( { attributes: ownAttributes, setAttributes, context } ) {
+export default function Edit( { attributes: ownAttributes, setAttributes, context, clientId } ) {
 	const tier = usePreviewTier();
 	const [ palette ] = useSettings( 'color.palette' );
 	const [ spacingSizes ] = useSettings( 'spacing.spacingSizes' );
@@ -174,10 +176,16 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 	const boundKey = boundLinkKey( attributes );
 	const hiddenInRow = group.inGroup && !! boundKey && group.hidden.includes( boundKey );
 	const link = siteInfoLinkState( boundKey, window.sgsBlocksData?.siteInfo );
+	// The editor hands a bound attribute its binding's value, so the typed fallback link is read from the stored block.
+	const storedLinkUrl = useSelect( ( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.linkUrl ?? '', [ clientId ] );
+	const fallback = linkFallbackState( link, { linkUrl: storedLinkUrl, linkSource: attributes.linkSource } );
+	// The Site Info key names the link only while the link is the Site Info one; a typed link is named from itself.
+	const nameKey = link.bound && ! fallback.fromSite ? '' : boundKey;
+	const boundUrl = fallback.fromSite ? link.link : fallback.url || link.link;
 	const brand = resolveBrand( attributes, boundKey );
-	const name = accessibleName( { ariaLabel: attributes.ariaLabel, boundKey, glyphBrand: brand.glyphBrand, url: linkUrl } );
+	const name = accessibleName( { ariaLabel: attributes.ariaLabel, boundKey: nameKey, glyphBrand: brand.glyphBrand, url: boundUrl } );
 	// A bound link the editor cannot resolve still names the label from its key, as the page does once it resolves.
-	const labelNameArgs = { ariaLabel: attributes.ariaLabel, boundKey, glyphBrand: brand.glyphBrand, url: linkUrl || link.link };
+	const labelNameArgs = { ariaLabel: attributes.ariaLabel, boundKey: nameKey, glyphBrand: brand.glyphBrand, url: link.bound ? boundUrl : linkUrl };
 	const defaultLabel = visibleLabel( '', labelNameArgs );
 	const labelText = attributes.showLabel ? visibleLabel( attributes.labelText, labelNameArgs ) : '';
 	const labelPosition = labelPositionFor( attributes.labelPosition, '' );
@@ -218,7 +226,7 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 		( attributes.iconColour || attributes.iconColourGradient ) && 'sgs-icon--own-colour',
 		'brand' === iconSource && brand.glyphBrand?.glyph?.svg && 'sgs-icon--mark',
 		iconAlign && 'start' !== iconAlign && `sgs-icon--align-${ iconAlign }`,
-		( link.hidden || hiddenInRow ) && 'sgs-icon--hidden-empty',
+		( fallback.hidden || hiddenInRow ) && 'sgs-icon--hidden-empty',
 		labelText && 'sgs-icon--has-label',
 		labelText && 'end' !== labelPosition && `sgs-icon--label-${ labelPosition }`,
 		labelText && ( attributes.labelColour || attributes.labelColourGradient ) && 'sgs-icon--own-label-colour',
@@ -251,6 +259,8 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 				state={ {
 					boundKey,
 					link,
+					fallback,
+					storedLinkUrl,
 					brand,
 					name,
 					paintedShape: shape,
@@ -283,7 +293,7 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 						) }
 					</span>
 				) }
-				{ ! hiddenInRow && link.hidden && (
+				{ ! hiddenInRow && fallback.hidden && (
 					<span className="sgs-icon__notice" role="note">
 						{ sprintf(
 							/* translators: %s: Site Info field, e.g. WhatsApp. */

@@ -75,6 +75,29 @@ export function siteInfoLinkState( key, siteInfo ) {
 }
 
 /**
+ * Which link a Site Info bound icon uses, and whether the page hides it. Twin: sgs_icon_resolve_bound_link() and
+ * render.php. `custom` takes the icon's own typed link; `site-info` (the default, and what any other value means) takes
+ * the Site Info link when the key is filled, else the typed link as the fallback. A `javascript:`, `data:` or
+ * `vbscript:` typed link counts as no link.
+ *
+ * @param {{bound:boolean, hidden:boolean}} link       siteInfoLinkState() result.
+ * @param {Object}                          attributes `{ linkUrl (the STORED typed link), linkSource }`.
+ * @return {{source:string, url:string, fromSite:boolean, hidden:boolean}} `url` is the typed link kept ('' when none or
+ *         hostile); `fromSite` is true when the Site Info link is the one in use; `hidden` is true when no link results
+ *         (never for an unbound icon).
+ */
+export function linkFallbackState( link, attributes ) {
+	const source = 'custom' === attributes?.linkSource ? 'custom' : 'site-info';
+	const raw = 'string' === typeof attributes?.linkUrl ? attributes.linkUrl.trim() : '';
+	const url = /^(javascript|data|vbscript):/i.test( raw ) ? '' : raw;
+	if ( ! link?.bound ) {
+		return { source, url, fromSite: false, hidden: false };
+	}
+	const fromSite = 'site-info' === source && ! link.hidden;
+	return { source, url, fromSite, hidden: ! fromSite && '' === url };
+}
+
+/**
  * The brand an icon is coloured by. Twin: render.php's brand block.
  *
  * @param {Object} attributes Block attributes.

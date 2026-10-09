@@ -74,6 +74,36 @@ if ( ! function_exists( 'sgs_icon_link_scheme' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_icon_resolve_bound_link' ) ) {
+	/**
+	 * The link a Site Info bound icon uses, and where it came from.
+	 *
+	 * `custom` takes the icon's own typed link. `site-info` (the default, and what any other value means) takes the
+	 * Site Info link when it makes one, else the typed link as the fallback. The typed link passes `esc_url_raw()`, so a
+	 * `javascript:` or `data:` link counts as no link. An empty result hides the icon for a visitor.
+	 *
+	 * @param string $source     The icon's `linkSource` attribute.
+	 * @param string $site_value The link Site Info makes ('' when the key is blank).
+	 * @param string $typed      The icon's own saved `linkUrl`.
+	 * @return array{url:string,from:string} `from` is 'site-info', 'custom' or '' when no link results.
+	 */
+	function sgs_icon_resolve_bound_link( string $source, string $site_value, string $typed ): array {
+		$typed      = trim( $typed );
+		$typed      = '' !== $typed && '' !== esc_url_raw( $typed ) ? $typed : '';
+		$site_value = trim( $site_value );
+		if ( 'custom' !== $source && '' !== $site_value ) {
+			return array(
+				'url'  => $site_value,
+				'from' => 'site-info',
+			);
+		}
+		return array(
+			'url'  => $typed,
+			'from' => '' !== $typed ? 'custom' : '',
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_icon_accessible_name' ) ) {
 	/**
 	 * The name a linked icon announces, first match wins: the client's own label; the registry's label for the Site

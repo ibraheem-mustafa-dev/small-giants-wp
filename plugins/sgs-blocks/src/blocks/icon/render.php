@@ -19,7 +19,8 @@
  * Glyph sources: lucide, brand (the brand registry, includes/data/brand-registry.json), wp-icon, dashicon, emoji,
  * custom (a pasted SVG, re-sanitised here).
  *
- * A link bound to a Site Info key that holds nothing renders nothing for a visitor (step 8); the editor shows it
+ * A link bound to a Site Info key uses the Site Info link when it makes one, else the icon's own typed link (`linkSource`
+ * `custom` takes the typed link always). With neither the icon renders nothing for a visitor (step 8); the editor shows it
  * dimmed with a notice instead.
  *
  * Inside an `sgs/social-icons` row (block context, `sgs_icon_group_context()`): the root is a listitem; a key the row's
@@ -54,14 +55,28 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 
-// ── Hide when empty (step 8) ─────────────────────────────────────────────────
+// ── Link: Site Info first, the icon's own typed link as the fallback ─────────
+// Core resolves a bound `linkUrl` into $attributes before this runs, so a blank Site Info key leaves '' there and the
+// typed link is gone from $attributes; the saved attribute is still in the parsed block, so the fallback reads it there.
 $sgs_icon_block   = $block;
 $bound_link_key   = (string) sgs_bound_site_info_key( is_object( $sgs_icon_block ) || is_array( $sgs_icon_block ) ? $sgs_icon_block : array(), 'linkUrl' );
 $is_editor_render = sgs_icon_is_editor_render();
-$is_hidden_empty  = '' !== $bound_link_key && sgs_bound_site_info_is_empty( $sgs_icon_block, 'linkUrl' );
+$link_url         = trim( (string) ( $attributes['linkUrl'] ?? '' ) );
+$link_from_site   = false;
+if ( '' !== $bound_link_key ) {
+	$parsed_block   = $sgs_icon_block instanceof WP_Block ? $sgs_icon_block->parsed_block : $sgs_icon_block;
+	$typed_link     = is_array( $parsed_block ) && is_scalar( $parsed_block['attrs']['linkUrl'] ?? null ) ? (string) $parsed_block['attrs']['linkUrl'] : '';
+	$resolved_link  = sgs_icon_resolve_bound_link( (string) ( $attributes['linkSource'] ?? 'site-info' ), $link_url, $typed_link );
+	$link_url       = $resolved_link['url'];
+	$link_from_site = 'site-info' === $resolved_link['from'];
+}
+// A bound icon with no link from either source renders nothing for a visitor (the editor shows it dimmed with a notice).
+$is_hidden_empty = '' !== $bound_link_key && '' === $link_url;
 if ( $is_hidden_empty && ! $is_editor_render ) {
 	return;
 }
+// The Site Info key names the link only while the link is the Site Info one ("Call us"); a typed link is named from itself.
+$name_key = $link_from_site ? $bound_link_key : '';
 $group = sgs_icon_group_context( $block->context ?? array() );
 if ( $group['in_group'] && '' !== $bound_link_key && in_array( $bound_link_key, $group['hidden'], true ) ) {
 	return;
@@ -112,7 +127,6 @@ $is_outline = sgs_icon_is_outline_shape( $shape );
 $show_bg    = ! empty( $attributes['showBackground'] ) || $group['show_bg'] || $brand_on;
 
 // ── Link ─────────────────────────────────────────────────────────────────────
-$link_url    = trim( (string) ( $attributes['linkUrl'] ?? '' ) );
 $link_scheme = sgs_icon_link_scheme( $link_url );
 $link_target = '_blank' === ( $attributes['linkTarget'] ?? '_self' ) && ! in_array( $link_scheme, array( 'tel', 'mailto' ), true ) ? '_blank' : '_self';
 $link_rel    = trim( (string) ( $attributes['linkRel'] ?? '' ) );
@@ -124,7 +138,7 @@ $aria_label = trim( (string) ( $attributes['ariaLabel'] ?? '' ) );
 // ── Visible label ────────────────────────────────────────────────────────────
 $show_label     = ! empty( $attributes['showLabel'] ) || $group['show_label'];
 $label_position = sgs_icon_label_position( $attributes['labelPosition'] ?? 'end', $group['label_position'] );
-$label_text     = $show_label ? sgs_icon_visible_label( (string) ( $attributes['labelText'] ?? '' ), $aria_label, $bound_link_key, $glyph_brand, $link_url ) : '';
+$label_text     = $show_label ? sgs_icon_visible_label( (string) ( $attributes['labelText'] ?? '' ), $aria_label, $name_key, $glyph_brand, $link_url ) : '';
 $has_label      = '' !== $label_text;
 
 if ( 'dashicon' === $icon_source ) {
@@ -511,7 +525,7 @@ if ( '' !== $link_url ) {
 	$new_tab     = '_blank' === $link_target ? __( ' (opens in new tab)', 'sgs-blocks' ) : '';
 	$hidden_name = $new_tab;
 	if ( ! $has_label ) {
-		$accessible_name = sgs_icon_accessible_name( $aria_label, $bound_link_key, $glyph_brand, $link_url );
+		$accessible_name = sgs_icon_accessible_name( $aria_label, $name_key, $glyph_brand, $link_url );
 		$hidden_name     = '' !== $accessible_name ? $accessible_name . $new_tab : '';
 	}
 	$output = sprintf(
@@ -530,6 +544,10 @@ if ( '' !== $link_url ) {
 	// An unlinked icon with a label is an image with that name (inside a row, its shape is); without one it is decorative.
 	$wrapper_extra['role']       = 'img';
 	$wrapper_extra['aria-label'] = $aria_label;
+}
+// The parity link comparer reads this to know the address comes from Site Info, not the draft.
+if ( '' !== $bound_link_key ) {
+	$wrapper_extra['data-sgs-site-info-key'] = $bound_link_key;
 }
 if ( $group['in_group'] ) {
 	$wrapper_extra['role'] = 'listitem';
