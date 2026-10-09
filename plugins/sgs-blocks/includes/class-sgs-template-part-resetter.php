@@ -4,7 +4,7 @@
  *
  * Exposes an admin page under SGS → Reset Header/Footer that lets operators
  * manually re-seed their header and/or footer wp_template_part records from the
- * pattern declared by the currently active style variation.
+ * pattern declared by the currently active client snapshot.
  *
  * Single source of truth: all seeding logic delegates to the three PUBLIC helpers
  * on {@see Sgs_Template_Part_Seeder} — resolve_pattern_slugs(), get_pattern_content(),
@@ -104,7 +104,7 @@ final class Sgs_Template_Part_Resetter {
 		} elseif ( 'reset_err' === $flash ) {
 			echo '<div class="notice notice-error is-dismissible"><p>' . \esc_html__( 'Reset failed — check the error log for details.', 'sgs-blocks' ) . '</p></div>';
 		} elseif ( 'no_variation' === $flash ) {
-			echo '<div class="notice notice-error is-dismissible"><p>' . \esc_html__( 'No active style variation found. Activate a variation first.', 'sgs-blocks' ) . '</p></div>';
+			echo '<div class="notice notice-error is-dismissible"><p>' . \esc_html__( 'No active client snapshot found. Push a client theme snapshot first.', 'sgs-blocks' ) . '</p></div>';
 		}
 
 		/*
@@ -113,7 +113,7 @@ final class Sgs_Template_Part_Resetter {
 		 * pattern. Site Info data is safe. Continue?"
 		 */
 		$confirm_msg = sprintf(
-			/* translators: %s: style variation name */
+			/* translators: %s: client snapshot name */
 			\__(
 				'This will replace your current header and footer with the %s pattern. Site Info data is safe. Continue?',
 				'sgs-blocks'
@@ -123,7 +123,7 @@ final class Sgs_Template_Part_Resetter {
 
 		$action_url = \admin_url( 'admin-post.php' );
 
-		echo '<p>' . \esc_html__( 'Replace the header and/or footer template part with the pattern from the currently active style variation.', 'sgs-blocks' ) . '</p>';
+		echo '<p>' . \esc_html__( 'Replace the header and/or footer template part with the pattern from the currently active client snapshot.', 'sgs-blocks' ) . '</p>';
 
 		echo '<form method="post" action="' . \esc_url( $action_url ) . '">';
 		echo '<input type="hidden" name="action" value="' . \esc_attr( self::ACTION ) . '" />';
@@ -192,7 +192,7 @@ final class Sgs_Template_Part_Resetter {
 
 	/**
 	 * Public helper — seeds one or both template-part areas from the currently
-	 * active style variation. Called by handle_reset() and available for the
+	 * active client snapshot. Called by handle_reset() and available for the
 	 * future FR-S5-3 WP-CLI command.
 	 *
 	 * Does NOT perform a capability check internally — callers are expected to
@@ -341,7 +341,7 @@ final class Sgs_Template_Part_Resetter {
 	}
 
 	/**
-	 * Return a human-readable label for the active style variation.
+	 * Return a human-readable label for the active client snapshot.
 	 *
 	 * Used in the confirmation dialog. Falls back to 'default' when no
 	 * variation can be resolved.

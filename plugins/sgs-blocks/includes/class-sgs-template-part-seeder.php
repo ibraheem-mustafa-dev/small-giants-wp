@@ -2,7 +2,7 @@
 /**
  * SGS Template Part Seeder — FR-S2-1.
  *
- * Hooks save_post_wp_global_styles and, when a new style variation is activated,
+ * Hooks save_post_wp_global_styles and, when a new client snapshot is pushed,
  * seeds the header + footer wp_template_part records from the pattern slugs in
  * settings.custom.sgs.{headerPattern,footerPattern} (FR-S2-2).
  *
@@ -93,7 +93,7 @@ final class Sgs_Template_Part_Seeder {
 	}
 
 	/**
-	 * Resolve the active style variation slug.
+	 * Resolve the active client snapshot slug.
 	 *
 	 * Layer A: WP_Theme_JSON_Resolver::get_user_data_from_wp_global_styles (WP 6.5+).
 	 * Layer B: direct json_decode of the post_content (fallback for API changes).
@@ -134,7 +134,7 @@ final class Sgs_Template_Part_Seeder {
 	 *
 	 * Falls back to framework defaults + structured error_log on missing keys.
 	 *
-	 * @param string $variation_slug Style variation slug.
+	 * @param string $variation_slug Client snapshot slug.
 	 * @return array{header:string,footer:string}
 	 */
 	public static function resolve_pattern_slugs( string $variation_slug ): array {
@@ -164,7 +164,7 @@ final class Sgs_Template_Part_Seeder {
 	/**
 	 * Read a variation manifest from theme/sgs-theme/styles/.
 	 *
-	 * @param string $variation_slug Style variation slug.
+	 * @param string $variation_slug Client snapshot slug.
 	 * @return array<string,mixed>
 	 */
 	private static function load_variation_manifest( string $variation_slug ): array {

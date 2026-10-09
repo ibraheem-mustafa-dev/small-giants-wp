@@ -10,6 +10,8 @@ last_verified: 2026-10-09
 
 # SGS Forms — Custom Form System
 
+> **Parked, not started (none scheduled; full list in the "Not built" section):** payment collection (Stripe), address-lookup provider, `maxFiles` multi-file upload cap, GDPR retention auto-delete, admin bulk actions.
+
 ## Purpose
 
 A form system built into the SGS Blocks plugin that replaces Fluent Forms Pro and SureForms for all Small Giants Studio client sites. Handles multi-step forms, conditional logic, file uploads and notifications (payment collection is specified but not built, see §Not built) — all rendering with the SGS design system and sending its emails through `wp_mail()` over the client's own SMTP mailbox.

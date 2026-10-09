@@ -76,7 +76,3 @@ Old numbers still appear in code comments, reports and history. Read them as fol
 |---|---|---|
 | [common-wp-styling-errors.md](common-wp-styling-errors.md) | Recurring WP styling mistakes catalogue | active |
 | [go-live-checklist.md](go-live-checklist.md) | Pre-launch WooCommerce gate per Spec 27 Part 3 §FR-30-13 — run once per client before real payments | active |
-
-## Sub-directories
-
-- [design-brain/](design-brain/) — design-brain rubrics + optimisation-toolkit references

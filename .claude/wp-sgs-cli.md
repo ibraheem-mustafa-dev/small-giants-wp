@@ -45,11 +45,11 @@ The Site Info store is the `sgs_site_info` option (`plugins/sgs-blocks/includes/
 ### `wp sgs seed-template-parts [--variation=<slug>] [--force] --user=<id>`
 
 Needs `edit_theme_options` and an armed seeding guard (`seeding-arm`). Resolves the header and footer pattern slugs for a
-style variation (`Sgs_Template_Part_Seeder::resolve_pattern_slugs()`; the manifest's `settings.custom.sgs.headerPattern`
+client snapshot (`Sgs_Template_Part_Seeder::resolve_pattern_slugs()`; the manifest's `settings.custom.sgs.headerPattern`
 and `footerPattern`, falling back to `sgs/framework-header-default` and `sgs/framework-footer-default`) and reports each
 pattern it finds. With no `--variation` it resolves the active one from `wp_global_styles`. It writes no template-part
 post: to create a header or footer layout from a pattern use `wp sgs header|footer|drawer seed-starter`. Errors:
-`Seeding is not armed`, `No active style variation found`, `Pattern '...' not registered`.
+`Seeding is not armed`, `No active client snapshot found`, `Pattern '...' not registered`.
 
 ### `wp sgs reset-template-parts [--header] [--footer] --user=<id>`
 

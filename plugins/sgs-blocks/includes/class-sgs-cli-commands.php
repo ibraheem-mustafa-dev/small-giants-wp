@@ -102,7 +102,7 @@ final class Sgs_Cli_Commands {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Seed header and/or footer template parts from the active (or named) style variation.
+	 * Seed header and/or footer template parts from the active (or named) client snapshot.
 	 *
 	 * ## OPTIONS
 	 *
@@ -140,7 +140,7 @@ final class Sgs_Cli_Commands {
 		}
 
 		if ( '' === $variation_slug ) {
-			\WP_CLI::error( 'No active style variation found. Activate a variation first, or pass --variation=<slug>.' );
+			\WP_CLI::error( 'No active client snapshot found. Push a client theme snapshot first, or pass --variation=<slug>.' );
 		}
 
 		$patterns = Sgs_Template_Part_Seeder::resolve_pattern_slugs( $variation_slug );
@@ -165,7 +165,7 @@ final class Sgs_Cli_Commands {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Reset header and/or footer template parts from the active style variation.
+	 * Reset header and/or footer template parts from the active client snapshot.
 	 *
 	 * Mirrors the SGS admin Reset Header/Footer page (FR-S2-3).
 	 *
@@ -569,7 +569,7 @@ final class Sgs_Cli_Commands {
 	}
 
 	/**
-	 * Resolve the currently active style variation slug using the same resolver
+	 * Resolve the currently active client snapshot slug using the same resolver
 	 * path as Sgs_Template_Part_Resetter.
 	 *
 	 * @return string Variation slug, or '' when none found.
