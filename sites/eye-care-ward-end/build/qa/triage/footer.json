@@ -1,1624 +1,16 @@
 {
  "surface": "footer",
- "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-08T20-08-21/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-08T20-08-21/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T05-28-37/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T05-28-37/round-1/report.json",
  "date": "2026-10-09",
  "counts": {
-  "W": 92,
-  "F": 15,
-  "T": 3,
+  "W": 72,
+  "F": 2,
+  "T": 2,
   "U": 0,
   "L": 0
  },
  "verdicts": [
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|border-top-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-top-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(228, 64, 95)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-top-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(1)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|border-bottom-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-bottom-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(228, 64, 95)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-bottom-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(1)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|border-left-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-left-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(228, 64, 95)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-left-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(1)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|border-right-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-right-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(228, 64, 95)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-right-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(1)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|border-top-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-top-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(66, 133, 244)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-top-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(3)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|border-bottom-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-bottom-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(66, 133, 244)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-bottom-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(3)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|border-left-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-left-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(66, 133, 244)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-left-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(3)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|border-right-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-right-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(66, 133, 244)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-right-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(3)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|border-top-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-top-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(37, 211, 102)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-top-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(2)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderTopColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|border-bottom-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-bottom-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(37, 211, 102)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-bottom-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(2)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderBottomColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|border-left-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-left-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(37, 211, 102)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-left-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(2)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderLeftColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|border-right-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "border-right-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "hardcode",
-   "solveReason": "the tree already holds the draft value (sgs/social-icons iconBorderColour = \"border\"); the paint is \"rgb(37, 211, 102)\" where the draft is \"rgb(230, 225, 218)\"",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-right-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(2)\" (candidates: childIconBorderColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "childIconBorderColour",
-       "childIconBorderColourHover"
-      ],
-      "absent": [
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "childIconBorderColour",
-       "childIconBorderColourHover",
-       "colourMode",
-       "borderRightColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-border-style.php::sgs_border_element_decls",
-      "mentions": [],
-      "declares": [
-       "'' !== $flat ) { $out['base'][] = 'border-color:' . sgs_colour_value( $flat ); } elseif (",
-       "ult'] ?? '' ) ) { $out['base'][] = 'border-color:' . $options['colour_default']; } if (",
-       "$hover_flat ) { $out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
-      ]
-     }
-    ]
-   }
-  },
   {
    "key": "cr-ref-footer-0||style|max-width",
    "ref": "cr-ref-footer-0",
@@ -3510,13 +1902,13 @@
    }
   },
   {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|icon-stroke",
+   "key": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-family",
    "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
+   "pair": "social-row",
+   "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
    "block": "sgs/social-icons",
    "kind": "style",
-   "property": "icon-stroke",
+   "property": "font-family",
    "widths": [
     375,
     768,
@@ -3524,504 +1916,27 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for icon-stroke"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|painted-ground",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "painted-ground",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmeasured-side: the draft font-family was not read (the draft element carries no value for it)",
    "class": "W",
-   "decidedBy": "uncalibrated-fit",
+   "decidedBy": "unmeasured-side",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no background-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(1)\" (candidates: childIconBackground)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconShowBackground",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackground",
-     "css_property": "background-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1) > .sgs-social-icons__icon > svg|style|icon-stroke",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram-icon",
-   "path": ".sgs-social-icons__item:nth-of-type(1) > .sgs-social-icons__icon > svg",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "icon-stroke",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for icon-stroke"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|painted-ground",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "painted-ground",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no background-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(3)\" (candidates: childIconBackground)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconShowBackground",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackground",
-     "css_property": "background-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|icon-fill",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "icon-fill",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for icon-fill"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|painted-ground",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "painted-ground",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no background-color setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(2)\" (candidates: childIconBackground)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconShowBackground",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackground",
-     "css_property": "background-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2) > .sgs-social-icons__icon > .sgs-brand-icon|style|icon-fill",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp-icon",
-   "path": ".sgs-social-icons__item:nth-of-type(2) > .sgs-social-icons__icon > .sgs-brand-icon",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "icon-fill",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for icon-fill"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-footer-23||style|text-decoration-line",
-   "ref": "cr-ref-footer-23",
-   "pair": "link-about",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "style",
-   "property": "text-decoration-line",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textDecoration"
+     "check": "unmeasured-side",
+     "sides": [
+      "draft"
      ],
-     "on": {
-      "ref": "cr-ref-footer-23",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textDecoration",
-     "css_property": "text-decoration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkUnderline",
-     "css_property": "text-decoration-line",
-     "css_element": "text-link",
-     "css_state": null,
-     "source": "sgs"
+     "detail": "4 rows, the draft value was never read at any width: no paint is compared"
     }
    ]
   },
   {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|width",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
+   "key": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-size",
+   "ref": "cr-ref-footer-6",
+   "pair": "social-row",
+   "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
+   "block": "sgs/social-icons",
    "kind": "style",
-   "property": "width",
+   "property": "font-size",
    "widths": [
     375,
     768,
@@ -4029,29 +1944,212 @@
     1920
    ],
    "solveClass": "unresolved",
-   "solveReason": "not written",
+   "solveReason": "unmeasured-side: the draft font-size was not read (the draft element carries no value for it)",
    "class": "W",
-   "decidedBy": "used-value",
+   "decidedBy": "unmeasured-side",
    "evidence": [
     {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
+     "check": "unmeasured-side",
+     "sides": [
+      "draft"
+     ],
+     "detail": "4 rows, the draft value was never read at any width: no paint is compared"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-weight",
+   "ref": "cr-ref-footer-6",
+   "pair": "social-row",
+   "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
+   "block": "sgs/social-icons",
+   "kind": "style",
+   "property": "font-weight",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmeasured-side: the draft font-weight was not read (the draft element carries no value for it)",
+   "class": "W",
+   "decidedBy": "unmeasured-side",
+   "evidence": [
     {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
+     "check": "unmeasured-side",
+     "sides": [
+      "draft"
+     ],
+     "detail": "4 rows, the draft value was never read at any width: no paint is compared"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-style",
+   "ref": "cr-ref-footer-6",
+   "pair": "social-row",
+   "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
+   "block": "sgs/social-icons",
+   "kind": "style",
+   "property": "font-style",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmeasured-side: the draft font-style was not read (the draft element carries no value for it)",
+   "class": "W",
+   "decidedBy": "unmeasured-side",
+   "evidence": [
     {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconSize",
-     "css_property": "width",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
+     "check": "unmeasured-side",
+     "sides": [
+      "draft"
+     ],
+     "detail": "4 rows, the draft value was never read at any width: no paint is compared"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|line-height",
+   "ref": "cr-ref-footer-6",
+   "pair": "social-row",
+   "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
+   "block": "sgs/social-icons",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmeasured-side: the draft line-height was not read (the draft element carries no value for it)",
+   "class": "W",
+   "decidedBy": "unmeasured-side",
+   "evidence": [
+    {
+     "check": "unmeasured-side",
+     "sides": [
+      "draft"
+     ],
+     "detail": "4 rows, the draft value was never read at any width: no paint is compared"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|letter-spacing",
+   "ref": "cr-ref-footer-6",
+   "pair": "social-row",
+   "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
+   "block": "sgs/social-icons",
+   "kind": "style",
+   "property": "letter-spacing",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmeasured-side: the draft letter-spacing was not read (the draft element carries no value for it)",
+   "class": "W",
+   "decidedBy": "unmeasured-side",
+   "evidence": [
+    {
+     "check": "unmeasured-side",
+     "sides": [
+      "draft"
+     ],
+     "detail": "4 rows, the draft value was never read at any width: no paint is compared"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|text-transform",
+   "ref": "cr-ref-footer-6",
+   "pair": "social-row",
+   "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
+   "block": "sgs/social-icons",
+   "kind": "style",
+   "property": "text-transform",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmeasured-side: the draft text-transform was not read (the draft element carries no value for it)",
+   "class": "W",
+   "decidedBy": "unmeasured-side",
+   "evidence": [
+    {
+     "check": "unmeasured-side",
+     "sides": [
+      "draft"
+     ],
+     "detail": "4 rows, the draft value was never read at any width: no paint is compared"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|color",
+   "ref": "cr-ref-footer-6",
+   "pair": "social-row",
+   "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
+   "block": "sgs/social-icons",
+   "kind": "style",
+   "property": "color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmeasured-side: the draft color was not read (the draft element carries no value for it)",
+   "class": "W",
+   "decidedBy": "unmeasured-side",
+   "evidence": [
+    {
+     "check": "unmeasured-side",
+     "sides": [
+      "draft"
+     ],
+     "detail": "4 rows, the draft value was never read at any width: no paint is compared"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|text-shadow",
+   "ref": "cr-ref-footer-6",
+   "pair": "social-row",
+   "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
+   "block": "sgs/social-icons",
+   "kind": "style",
+   "property": "text-shadow",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "unmeasured-side: the draft text-shadow was not read (the draft element carries no value for it)",
+   "class": "W",
+   "decidedBy": "unmeasured-side",
+   "evidence": [
+    {
+     "check": "unmeasured-side",
+     "sides": [
+      "draft"
+     ],
+     "detail": "4 rows, the draft value was never read at any width: no paint is compared"
     }
    ]
   },
@@ -4231,1689 +2329,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|transition-duration",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for transition-duration"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|hover|border-top-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "uncalibrated",
-     "detail": "sgs/social-icons childIconBorderColourHover (hover) not calibrated"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|hover|box-shadow",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "box-shadow",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for box-shadow (hover)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
-      "mentions": [],
-      "declares": [
-       "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
-      "mentions": [],
-      "declares": [
-       "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|hover|transform",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "transform",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for transform (hover)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": null,
-     "block": "sgs/icon",
-     "setting": "scaleHover",
-     "property": "transform",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "transform"
-      ],
-      "absent": []
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
-       "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|hover|hover-effects",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "hover-effects",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for hover-effects (hover)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|transition-duration",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for transition-duration"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|hover|border-top-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "uncalibrated",
-     "detail": "sgs/social-icons childIconBorderColourHover (hover) not calibrated"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|hover|box-shadow",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "box-shadow",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for box-shadow (hover)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
-      "mentions": [],
-      "declares": [
-       "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
-      "mentions": [],
-      "declares": [
-       "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|hover|transform",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "transform",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for transform (hover)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": null,
-     "block": "sgs/icon",
-     "setting": "scaleHover",
-     "property": "transform",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "transform"
-      ],
-      "absent": []
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
-       "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|hover|hover-effects",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "hover-effects",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for hover-effects (hover)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|transition-duration",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for transition-duration"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|hover|color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "uncalibrated",
-     "detail": "sgs/social-icons childIconColourHover, childIconLabelColourHover (hover) not calibrated"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconColour",
-     "css_property": "color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconColourGradient",
-     "css_property": "stroke",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconColourHover",
-     "css_property": "color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconColourHoverGradient",
-     "css_property": "stroke",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconLabelColour",
-     "css_property": "color",
-     "css_element": "label",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconLabelColourGradient",
-     "css_property": "background-image",
-     "css_element": "label",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconLabelColourHover",
-     "css_property": "color",
-     "css_element": "label",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconLabelColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "label",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|hover|border-top-color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "uncalibrated",
-     "detail": "sgs/social-icons childIconBorderColourHover (hover) not calibrated"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColour",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconBorderColourHover",
-     "css_property": "border-color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "values": [
-      "brand"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|hover|box-shadow",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "box-shadow",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for box-shadow (hover)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
-      "mentions": [],
-      "declares": [
-       "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
-      "mentions": [],
-      "declares": [
-       "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|hover|transform",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "transform",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for transform (hover)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": null,
-     "block": "sgs/icon",
-     "setting": "scaleHover",
-     "property": "transform",
-     "via": "declared",
-     "where": "sibling",
-     "reachabilityVerified": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "transform"
-      ],
-      "absent": []
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "transform"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
-       "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|hover|hover-effects",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "hover-effects",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for hover-effects (hover)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "hoverEffects"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2) > .sgs-social-icons__icon > .sgs-brand-icon|hover|color",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp-icon",
-   "path": ".sgs-social-icons__item:nth-of-type(2) > .sgs-social-icons__icon > .sgs-brand-icon",
-   "block": "sgs/social-icons",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "uncalibrated",
-     "detail": "sgs/social-icons childIconColourHover, childIconLabelColourHover (hover) not calibrated"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "colourMode",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconColour",
-     "css_property": "color",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconColourGradient",
-     "css_property": "stroke",
-     "css_element": "shape",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconColourHover",
-     "css_property": "color",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconColourHoverGradient",
-     "css_property": "stroke",
-     "css_element": "shape",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconLabelColour",
-     "css_property": "color",
-     "css_element": "label",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconLabelColourGradient",
-     "css_property": "background-image",
-     "css_element": "label",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconLabelColourHover",
-     "css_property": "color",
-     "css_element": "label",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "childIconLabelColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "label",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-23|a|hover|color",
-   "ref": "cr-ref-footer-23",
-   "pair": "link-about",
-   "path": "a",
-   "block": "sgs/text",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "uncalibrated-fit",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no color setting on sgs/text paints \"a\" (candidates: textColourHover, firstLetterColourHover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColour",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourHover",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColour",
-     "css_property": "color",
-     "css_element": "text-link",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHover",
-     "css_property": "color-link",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHoverGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link > .sgs-business-info__label|hover|color",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__label",
-   "block": "sgs/business-info",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "ambiguous",
-     "detail": "textColourHover, labelColourHover all paint color on \".sgs-business-info > .sgs-business-info__link > .sgs-business-info__label\""
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconColour",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "labelColour",
-     "css_property": "color",
-     "css_element": "label",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconColourGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "textColourGradient",
-     "css_property": "background-image",
-     "css_element": "text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "labelColourGradient",
-     "css_property": "background-image",
-     "css_element": "label",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconColourHover",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconColourHoverGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "text",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "textColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "text",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "attributionHoverColour",
-     "css_property": "background-image",
-     "css_element": "link",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "attributionHoverColourFallback",
-     "css_property": "color",
-     "css_element": "link",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "labelColourHover",
-     "css_property": "color",
-     "css_element": "label",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "labelColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "label",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
     }
    ]
   },
@@ -6529,7 +2944,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -14,
+     "delta": -16,
      "widths": [
       375,
       768,
@@ -6597,11 +3012,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|box|h",
-     "ref": "cr-ref-footer-24",
-     "key": "h",
-     "relation": "descendant",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
      "delta": 22,
      "widths": [
@@ -6646,6 +3061,37 @@
       768,
       1440,
       1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-7||box|y-after-social-row",
+   "ref": "cr-ref-footer-7",
+   "pair": "col-shop",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-social-row",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-7|.sgs-container__inner > h5|style|line-height",
+     "ref": "cr-ref-footer-7",
+     "key": "line-height",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 375,
+     "delta": 4,
+     "widths": [
+      375
      ]
     }
    ]
@@ -6799,228 +3245,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|box|w",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "box",
-   "property": "w",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 4,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|box|h",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 4,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|box|w",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "box",
-   "property": "w",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 4,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|box|h",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 4,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|box|w",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "box",
-   "property": "w",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 4,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|box|h",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 4,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-23||box|y-after-col-visit-heading",
    "ref": "cr-ref-footer-23",
    "pair": "link-about",
@@ -7052,191 +3276,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|box|y-after-link-about",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "y-after-link-about",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": -12,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|box|w",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "w",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|width",
-     "ref": "cr-ref-footer-24",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -233,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|box|h",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 23,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|box|text-inset-x",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "text-inset-x",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 8,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|box|text-inset-y",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "text-inset-y",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 11,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-27||box|y-after-hours",
    "ref": "cr-ref-footer-27",
    "pair": "bottom-bar",
@@ -7263,7 +3302,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 9,
+     "delta": 8,
      "widths": [
       375,
       768,
@@ -7307,37 +3346,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-9||box|y-after-col-shop-heading",
-   "ref": "cr-ref-footer-9",
-   "pair": "gen-footer-9",
-   "path": "",
-   "block": "sgs/icon-list",
-   "kind": "box",
-   "property": "y-after-col-shop-heading",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-7|.sgs-container__inner > h5|style|font-size",
-     "ref": "cr-ref-footer-7",
-     "key": "font-size",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 3,
-     "widths": [
-      375
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-16||box|y-after-col-help-heading",
    "ref": "cr-ref-footer-16",
    "pair": "gen-footer-16",
@@ -7355,13 +3363,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-14|.sgs-container__inner > h5|style|font-size",
+     "parent": "cr-ref-footer-14|.sgs-container__inner > h5|style|line-height",
      "ref": "cr-ref-footer-14",
-     "key": "font-size",
+     "key": "line-height",
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 3,
+     "delta": 4,
      "widths": [
       375
      ]
@@ -7392,7 +3400,38 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -5,
+     "delta": -6,
+     "widths": [
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-14||box|y-after-social-row",
+   "ref": "cr-ref-footer-14",
+   "pair": "col-help",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-social-row",
+   "widths": [
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-14|.sgs-container__inner > h5|style|line-height",
+     "ref": "cr-ref-footer-14",
+     "key": "line-height",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 768,
+     "delta": 4,
      "widths": [
       768
      ]
@@ -7506,7 +3545,6 @@
    "property": "y-after-brand-tagline",
    "widths": [
     768,
-    1440,
     1920
    ],
    "solveClass": "derived",
@@ -7525,7 +3563,6 @@
      "delta": 3,
      "widths": [
       768,
-      1440,
       1920
      ]
     }
@@ -7587,7 +3624,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -6,
+     "delta": -5,
      "widths": [
       1440,
       1920
@@ -7620,7 +3657,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 9,
+     "delta": 8,
      "widths": [
       1440,
       1920
@@ -7658,6 +3695,223 @@
       1440,
       1920
      ]
+    }
+   ]
+  },
+  {
+   "key": "footer-root||text|text",
+   "ref": null,
+   "pair": "footer-root",
+   "path": null,
+   "block": null,
+   "kind": "text",
+   "property": "text",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "text"
+     ],
+     "keys": [
+      "text"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "social-instagram||presence|element",
+   "ref": null,
+   "pair": "social-instagram",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "social-instagram-icon||presence|element",
+   "ref": null,
+   "pair": "social-instagram-icon",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "social-google||presence|element",
+   "ref": null,
+   "pair": "social-google",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "social-google-icon||presence|element",
+   "ref": null,
+   "pair": "social-google-icon",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "social-whatsapp||presence|element",
+   "ref": null,
+   "pair": "social-whatsapp",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "social-whatsapp-icon||presence|element",
+   "ref": null,
+   "pair": "social-whatsapp-icon",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   },

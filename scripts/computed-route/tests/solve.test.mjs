@@ -219,6 +219,40 @@ test( 'a mapped scrolled row keys its group with that state and reads draft valu
 	assert.deepEqual( draftValues( stateReport(), 'head', 'font-size', false, [ 'opening' ] ).perWidth, { 1440: '18px' } );
 } );
 
+// A walker state mapped to a setting state (product's accordion-open -> open, 2026-10-08) asks for a state setting
+// only for what that state changes: the header's padding reads the same draft value open and closed, so the rest
+// setting paints it, and demanding an `open` setting called it a missing feature.
+const openState = { opening: null, 'accordion-open': 'open' };
+const openRow = { kind: 'style', key: 'font-size', draft: '15px', live: '20px', ref: 'cr-ref-h-1', path: '' };
+
+test( 'MUST FAIL: a group whose draft value is the same at rest and in the mapped state resolves at rest', () => {
+	const rep = { runs: [ pairRun( 'opening', '15px', [] ), pairRun( 'accordion-open', '15px', [ { ...openRow } ] ) ] };
+	const { groups, stateConflict } = writableGroups( rep, openState );
+	assert.equal( stateConflict.length, 0 );
+	assert.equal( groups.length, 1 );
+	assert.equal( groups[ 0 ].state, null );
+	assert.match( groups[ 0 ].key, /\|$/ );
+} );
+
+test( 'MUST FAIL: the same group is written through the rest setting', () => {
+	const rep = { runs: [ pairRun( 'opening', '15px', [] ), pairRun( 'accordion-open', '15px', [ { ...openRow } ] ) ] };
+	const r = writeRound( rep, headTree(), { db, snapshot, round: 1, log: [], stateMap: openState, calFor: headCal } );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.state ] ), [ [ 'fontSize', null ] ] );
+} );
+
+test( 'MUST FAIL: an element read only in the mapped state (an accordion answer) resolves at rest', () => {
+	const rep = { runs: [ { state: 'opening', width: 1440, pairs: {} }, pairRun( 'accordion-open', '15px', [ { ...openRow } ] ) ] };
+	assert.equal( writableGroups( rep, openState ).groups[ 0 ].state, null );
+} );
+
+test( 'negative control: an open row and a rest row of one element merge into one rest group, never two writes', () => {
+	const rep = { runs: [ pairRun( 'opening', '15px', [ { ...openRow } ] ), pairRun( 'accordion-open', '15px', [ { ...openRow } ] ) ] };
+	const { groups } = writableGroups( rep, openState );
+	assert.equal( groups.length, 1 );
+	assert.deepEqual( groups[ 0 ].walkerStates.sort(), [ 'accordion-open', 'opening' ] );
+	assert.equal( groups[ 0 ].rows.length, 2 );
+} );
+
 test( 'a hover row from a non-rest state is not writable', () => {
 	const rep = { runs: [ pairRun( 'scrolled', '15px', [ { kind: 'hover', key: 'color', draft: 'rgb(0, 0, 0)', live: 'rgb(1, 1, 1)', ref: 'cr-ref-h-1', path: '' } ] ) ] };
 	const out = writableGroups( rep, { scrolled: 'scrolled' } );

@@ -7,7 +7,7 @@
 // files, tree nodes, the resolver) is passed in, so the logic runs on in-memory fixtures.
 import { splitProperty, resolve, resolveViaAncestor } from './resolve.mjs';
 import { listedProperties, modifierOf } from './db.mjs';
-import { draftValues, plainLength, cssProp, settingState, openRows, writableGroups } from './solve-rows.mjs';
+import { draftValues, plainLength, cssProp, settingState, effectiveState, openRows, writableGroups } from './solve-rows.mjs';
 import { entranceStart, groupRects } from './entrance.mjs';
 import { referenceOf } from './references.mjs';
 import { sourcePass } from './triage-source.mjs';
@@ -241,16 +241,18 @@ export function resolveIssue( issue, ctx ) {
 	const { walk, stateMap, nodeFor, calFor, refs = {}, groups = [] } = ctx;
 	const resolver = ctx.resolver || ( ( input, cal ) => resolve( input, { db: ctx.db, snapshot: ctx.snapshot, calibration: cal, log: [] } ) );
 	const r = issue.rows[ 0 ];
-	const state = settingState( r, stateMap );
+	const mapped = settingState( r, stateMap );
 	const node = r.ref ? nodeFor( r.ref ) : null;
-	if ( ! node || undefined === state ) {
-		return undefined === state ? { gap: 'unmapped-state', detail: `walker state ${ r.state } is not mapped` } : { gap: 'unmapped', detail: r.ref ? `ref ${ r.ref } is not in any surface tree` : 'the row has no ref' };
+	if ( ! node || undefined === mapped ) {
+		return undefined === mapped ? { gap: 'unmapped-state', detail: `walker state ${ r.state } is not mapped` } : { gap: 'unmapped', detail: r.ref ? `ref ${ r.ref } is not in any surface tree` : 'the row has no ref' };
 	}
 	if ( 'linked' === referenceOf( node, refs )?.kind ) {
 		return { gap: 'linked', detail: `${ node.name } renders another post's block` };
 	}
 	const prop = cssProp( r.key );
 	const walkerStates = [ ...new Set( issue.rows.map( ( x ) => x.state ) ) ];
+	// The setting state Solve resolves the group in (lib/solve-rows.mjs::effectiveState, as writableGroups keys it).
+	const state = effectiveState( walk, { ref: r.ref, path: r.path, prop: r.key, state: mapped, pair: r.pair, pseudo: r.pseudo || null, walkerStates }, stateMap );
 	const g = { ref: r.ref, path: r.path, prop: r.key, state, pair: r.pair, pseudo: r.pseudo || null, rows: issue.rows, walkerStates };
 	const { perWidth, fontPx, declared } = draftValues( walk, r.pair, r.key, 'hover' === state, walkerStates, g.pseudo );
 	if ( USED_VALUES.includes( r.key ) ) {

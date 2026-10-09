@@ -146,6 +146,21 @@ export function stateDisagreement( report, g, stateMap ) {
 	return { width: Number( width ), values, detail: `${ g.prop } is read at ${ Object.entries( values ).map( ( [ ws, v ] ) => `${ v } in ${ ws }` ).join( ' and ' ) } at ${ width }px, and every one of those walker states maps to the setting state "${ g.state || 'rest' }": one setting cannot hold both draft values${ clashing.length > 1 ? ` (${ clashing.length } widths disagree)` : '' }` };
 }
 
+// The setting state a group resolves in. A walker state the surface maps to a setting state (an accordion's `open`, a
+// header's `scrolled`) asks for a state setting only for what that state changes: when every draft value the group reads
+// matches the draft's value in the rest walker states at that width, or the element is never read at rest (it shows only
+// in that state), the rest setting paints it, so the group resolves at rest. Hover and rest groups keep their state.
+export function effectiveState( report, g, stateMap ) {
+	const rest = Object.keys( stateMap || {} ).filter( ( ws ) => null === stateMap[ ws ] );
+	if ( ! g.state || 'hover' === g.state || ! rest.length ) {
+		return g.state;
+	}
+	const own = draftValues( report, g.pair, g.prop, false, g.walkerStates, g.pseudo ).perWidth;
+	const base = draftValues( report, g.pair, g.prop, false, rest, g.pseudo ).perWidth;
+	const squash = ( v ) => String( v ).replace( /\s+/g, '' );
+	return Object.entries( own ).every( ( [ w, v ] ) => undefined === base[ w ] || squash( base[ w ] ) === squash( v ) ) ? null : g.state;
+}
+
 // The candidate groups a round may write: style and hover rows with a ref from a mapped walker state, one group per
 // groupKey. Box rows, rows without a ref and rows from an unmapped state are returned apart (box rows are derived from
 // the spacing that moves them; unreffed rows are unmapped; unmapped-state rows are reported, never written). A group
@@ -200,6 +215,21 @@ export function writableGroups( report, stateMap ) {
 			if ( ! g.walkerStates.includes( r.state ) ) {
 				g.walkerStates.push( r.state );
 			}
+		}
+	}
+	// A group from a walker state mapped to a setting state resolves at rest when that state changes nothing it reads.
+	for ( const g of [ ...groups.values() ] ) {
+		if ( effectiveState( report, g, stateMap ) === g.state ) {
+			continue;
+		}
+		groups.delete( g.key );
+		const k = groupKey( g.rows[ 0 ], null );
+		const into = groups.get( k );
+		if ( into ) {
+			into.rows.push( ...g.rows );
+			g.walkerStates.forEach( ( ws ) => into.walkerStates.includes( ws ) || into.walkerStates.push( ws ) );
+		} else {
+			groups.set( k, { ...g, key: k, state: null } );
 		}
 	}
 	const writable = [];

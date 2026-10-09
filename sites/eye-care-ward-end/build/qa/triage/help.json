@@ -4,9 +4,9 @@
  "walk": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-08T20-12-06/round-1/report.json",
  "date": "2026-10-09",
  "counts": {
-  "W": 106,
-  "F": 25,
-  "T": 31,
+  "W": 104,
+  "F": 21,
+  "T": 37,
   "U": 6,
   "L": 0
  },
@@ -3680,7 +3680,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height (open)"
+     "detail": "sgs/accordion-item has no setting for line-height"
     }
    ]
   },
@@ -3700,72 +3700,22 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for padding-top (open)"
+     "wouldWrite": [
+      "headerPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__header"
+     },
+     "holds": false
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "paddingTop",
-       "padding"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "accordion/style.css",
-      "selector": ".sgs-accordion-item__header",
-      "declaration": "padding-top:var(--sgs-accordion-header-pad-top, var(--sgs-accordion-header-pad-base-y))"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "dding_top ) { $base_band_decls[] = 'padding-top:' . $band_padding_top; } if ( '' !== $b",
-       "let ) { $tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet; } if ( '' !=",
-       "ile ) { $mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile; } if ( '' !="
-      ]
-     },
-     {
-      "block": "accordion-item",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-help-19|.sgs-accordion-item__header|style|padding-bottom",
@@ -3783,72 +3733,22 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for padding-bottom (open)"
+     "wouldWrite": [
+      "headerPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__header"
+     },
+     "holds": false
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "paddingBottom",
-       "padding"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "accordion/style.css",
-      "selector": ".sgs-accordion-item__header",
-      "declaration": "padding-bottom:var(--sgs-accordion-header-pad-bottom, var(--sgs-accordion-header-pad-base-y))"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
-       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
-       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
-      ]
-     },
-     {
-      "block": "accordion-item",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-help-19|.sgs-accordion-item__header|style|column-gap",
@@ -3872,7 +3772,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for column-gap (open)"
+     "detail": "sgs/accordion-item has no setting for column-gap"
     }
    ],
    "source": {
@@ -3947,7 +3847,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for row-gap (open)"
+     "detail": "sgs/accordion-item has no setting for row-gap"
     }
    ],
    "source": {
@@ -4022,7 +3922,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for justify-content (open)"
+     "detail": "sgs/accordion-item has no setting for justify-content"
     }
    ],
    "source": {
@@ -4094,7 +3994,17 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for min-height (open)"
+     "detail": "sgs/accordion-item has no setting for min-height"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-help-16",
+     "block": "sgs/accordion",
+     "setting": "headerMinHeight",
+     "property": "min-height",
+     "via": "context",
+     "measuredDescendants": [],
+     "reachabilityVerified": false
     }
    ],
    "source": {
@@ -4164,7 +4074,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for gap (open)"
+     "detail": "sgs/accordion-item has no setting for gap"
     }
    ],
    "source": {
@@ -4234,7 +4144,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for background-color (open)"
+     "detail": "no background-color setting on sgs/accordion-item paints \".sgs-accordion-item__header\" (candidates: backgroundColour)"
     },
     {
      "check": "attribute",
@@ -4299,72 +4209,22 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for padding-bottom (open)"
+     "wouldWrite": [
+      "contentPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__content"
+     },
+     "holds": false
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "paddingBottom",
-       "padding"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "accordion/style.css",
-      "selector": ".sgs-accordion-item__content",
-      "declaration": "padding-bottom:var(--sgs-accordion-content-pad-bottom, var(--sgs-accordion-content-pad-base-bottom))"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
-       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
-       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
-      ]
-     },
-     {
-      "block": "accordion-item",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-help-19|.sgs-accordion-item__content|style|max-width",
@@ -4388,7 +4248,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for max-width (open)"
+     "detail": "no max-width setting on sgs/accordion-item paints \".sgs-accordion-item__content\" (candidates: maxWidth)"
     },
     {
      "check": "attribute",
@@ -4427,51 +4287,22 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for text-wrap (open)"
+     "wouldWrite": [
+      "textWrap"
+     ],
+     "on": {
+      "ref": "cr-ref-help-16",
+      "block": "sgs/accordion",
+      "path": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__content"
+     },
+     "holds": false
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "textWrap"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "textWrap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "textWrap"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "accordion",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "ed_wraps, true ) ) { $base_decls[] = 'text-wrap:' . $attributes[ $k_wrap ] . ';'; } // writin"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|transform",
@@ -4495,7 +4326,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for transform (open)"
+     "detail": "sgs/accordion-item has no setting for transform"
     }
    ],
    "source": {
@@ -4558,7 +4389,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for rotate (open)"
+     "detail": "sgs/accordion-item has no setting for rotate"
     }
    ],
    "source": {
@@ -4661,7 +4492,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for icon-colour (open)"
+     "detail": "sgs/accordion-item has no setting for icon-colour"
     }
    ],
    "source": {
@@ -4730,7 +4561,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height (open)"
+     "detail": "sgs/accordion-item has no setting for line-height"
     }
    ]
   },
@@ -4772,7 +4603,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height (open)"
+     "detail": "sgs/accordion-item has no setting for line-height"
     }
    ]
   },
@@ -4814,7 +4645,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height (open)"
+     "detail": "sgs/accordion-item has no setting for line-height"
     }
    ]
   },
@@ -4856,7 +4687,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height (open)"
+     "detail": "sgs/accordion-item has no setting for line-height"
     }
    ]
   },
@@ -4898,7 +4729,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height (open)"
+     "detail": "sgs/accordion-item has no setting for line-height"
     }
    ]
   },
@@ -4940,7 +4771,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height (open)"
+     "detail": "sgs/accordion-item has no setting for line-height"
     }
    ]
   },
@@ -4960,13 +4791,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for border-bottom-width (open)"
+     "wouldWrite": [
+      "borderWidth"
+     ],
+     "on": {
+      "ref": "cr-ref-help-31",
+      "block": "sgs/accordion-item",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -4996,13 +4834,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for border-bottom-color (open)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-help-31",
+      "block": "sgs/accordion-item",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
