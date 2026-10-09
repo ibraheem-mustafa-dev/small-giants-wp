@@ -6951,6 +6951,22 @@
 				"css_element": "shape"
 			},
 			"_why": "sgs/social-icons/render.php prints this group default as a --sgs-si-* custom property on the row; it is resolved to the real CSS property only inside sgs/icon's style.css (.sgs-icon__shape / .sgs-icon__svg read --sgs-si-* after the icon's own value), a cross-block custom-property hand-off the per-block classifier scan never crosses (the sgs/multi-button childBtn* precedent)."
+		},
+		{
+			"slug": "sgs/icon",
+			"attr": "showBackground",
+			"fields": {
+				"role": "boolean-visibility",
+				"_reason": "2026-10-09. A background ON/OFF switch: it paints nothing itself (the shape's colour comes from backgroundColour), so the seeder's colour role made check-element-manifest-conformance count it as an unclaimed style attribute (orphan style defect). Same shape as sgs/icon iconFill and shapeSizeLinked (boolean-visibility)."
+			}
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconShowBackground",
+			"fields": {
+				"role": "boolean-visibility",
+				"_reason": "2026-10-09. A background ON/OFF switch: it paints nothing itself (the shape's colour comes from childIconBackground), so the seeder's colour role made check-element-manifest-conformance count it as an unclaimed style attribute (orphan style defect). Same shape as sgs/icon iconFill and shapeSizeLinked (boolean-visibility)."
+			}
 		}
 	]
 }
