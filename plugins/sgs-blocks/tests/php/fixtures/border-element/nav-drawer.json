@@ -12,7 +12,15 @@
             "--sgs-nd-enter-dur:250ms",
             "--sgs-nd-exit-dur:200ms",
             "--sgs-nd-from-opacity:0",
-            "background-color:var(--wp--preset--color--surface,currentColor)"
+            "background-color:var(--wp--preset--color--surface,currentColor)",
+            "height:100dvh",
+            "inset:0",
+            "margin:0",
+            "max-height:100dvh",
+            "max-width:100vw",
+            "position:fixed",
+            "width:100vw",
+            "z-index:min(90,max(2,calc(var(--sgs-header-z,100) - 1)))"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
             "--sgs-drawer-align:flex-start",
@@ -42,7 +50,15 @@
             "background-color:var(--wp--preset--color--surface,currentColor)",
             "border-color:var(--wp--preset--color--primary,currentColor)",
             "border-style:solid",
-            "border-width:2px 2px 2px 2px"
+            "border-width:2px 2px 2px 2px",
+            "height:100dvh",
+            "inset:0",
+            "margin:0",
+            "max-height:100dvh",
+            "max-width:100vw",
+            "position:fixed",
+            "width:100vw",
+            "z-index:min(90,max(2,calc(var(--sgs-header-z,100) - 1)))"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
             "--sgs-drawer-align:flex-start",
@@ -72,7 +88,15 @@
             "background-color:var(--wp--preset--color--surface,currentColor)",
             "border-color:#ff0000",
             "border-style:dashed",
-            "border-width:1px 0 0 4px"
+            "border-width:1px 0 0 4px",
+            "height:100dvh",
+            "inset:0",
+            "margin:0",
+            "max-height:100dvh",
+            "max-width:100vw",
+            "position:fixed",
+            "width:100vw",
+            "z-index:min(90,max(2,calc(var(--sgs-header-z,100) - 1)))"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
             "--sgs-drawer-align:flex-start",
@@ -101,7 +125,15 @@
             "--sgs-nd-from-opacity:0",
             "background-color:var(--wp--preset--color--surface,currentColor)",
             "border-style:none",
-            "border-width:0"
+            "border-width:0",
+            "height:100dvh",
+            "inset:0",
+            "margin:0",
+            "max-height:100dvh",
+            "max-width:100vw",
+            "position:fixed",
+            "width:100vw",
+            "z-index:min(90,max(2,calc(var(--sgs-header-z,100) - 1)))"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
             "--sgs-drawer-align:flex-start",
@@ -130,7 +162,15 @@
             "--sgs-nd-from-opacity:0",
             "background-color:var(--wp--preset--color--surface,currentColor)",
             "border-style:solid",
-            "border-width:2px 2px 2px 2px"
+            "border-width:2px 2px 2px 2px",
+            "height:100dvh",
+            "inset:0",
+            "margin:0",
+            "max-height:100dvh",
+            "max-width:100vw",
+            "position:fixed",
+            "width:100vw",
+            "z-index:min(90,max(2,calc(var(--sgs-header-z,100) - 1)))"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
             "--sgs-drawer-align:flex-start",
@@ -158,7 +198,15 @@
             "--sgs-nd-exit-dur:200ms",
             "--sgs-nd-from-opacity:0",
             "background-color:var(--wp--preset--color--surface,currentColor)",
-            "border-color:var(--wp--preset--color--primary,currentColor)"
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "height:100dvh",
+            "inset:0",
+            "margin:0",
+            "max-height:100dvh",
+            "max-width:100vw",
+            "position:fixed",
+            "width:100vw",
+            "z-index:min(90,max(2,calc(var(--sgs-header-z,100) - 1)))"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
             "--sgs-drawer-align:flex-start",
@@ -190,7 +238,15 @@
             "border-color:transparent",
             "border-style:solid",
             "border-width:3px 3px 3px 3px",
-            "position:relative"
+            "height:100dvh",
+            "inset:0",
+            "margin:0",
+            "max-height:100dvh",
+            "max-width:100vw",
+            "position:fixed",
+            "position:relative",
+            "width:100vw",
+            "z-index:min(90,max(2,calc(var(--sgs-header-z,100) - 1)))"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
             "--sgs-drawer-align:flex-start",
@@ -231,7 +287,15 @@
             "--sgs-nd-exit-dur:200ms",
             "--sgs-nd-from-opacity:0",
             "background-color:var(--wp--preset--color--surface,currentColor)",
-            "border-radius:8px"
+            "border-radius:8px",
+            "height:100dvh",
+            "inset:0",
+            "margin:0",
+            "max-height:100dvh",
+            "max-width:100vw",
+            "position:fixed",
+            "width:100vw",
+            "z-index:min(90,max(2,calc(var(--sgs-header-z,100) - 1)))"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
             "--sgs-drawer-align:flex-start",
@@ -262,7 +326,15 @@
             "border-bottom-left-radius:4px",
             "border-bottom-right-radius:4px",
             "border-top-left-radius:12px",
-            "border-top-right-radius:12px"
+            "border-top-right-radius:12px",
+            "height:100dvh",
+            "inset:0",
+            "margin:0",
+            "max-height:100dvh",
+            "max-width:100vw",
+            "position:fixed",
+            "width:100vw",
+            "z-index:min(90,max(2,calc(var(--sgs-header-z,100) - 1)))"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
             "--sgs-drawer-align:flex-start",
