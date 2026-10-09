@@ -2,7 +2,7 @@
 title: One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
 project: small-giants-wp
 created: 2026-10-08
-status: Phases 1, A, B, D done and live; label option and contrasting ground live; Phase E rolled out in source (53 sides declared, not deployed), 12 variant-dependent sides wait for Bean; Phase C (drawer) waits for session 79
+status: Phases 1, A, B, D done and live; label option (end/start/below/above) and contrasting ground live; Phase E rolled out in source (53 sides declared; the sandybrown deploy of 02c64a229 was in flight at handoff, its live look is owed), 12 variant-dependent sides wait for Bean; a QC council on the shipped work was started at handoff (raters B, D, E) and must be rerun with its live rater A; Phase C (drawer) waits for session 79
 ---
 
 # One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
@@ -86,7 +86,7 @@ Order inside the phase: cheap fixes first, then the shared pieces, then the bloc
 2. Children on insert: a template of bound children built from `sgsBlocksData.siteInfo` in the registry order (phone, email, address, WhatsApp, Facebook, Instagram, X, LinkedIn, YouTube, TikTok, Google). Inspector "Links" checklist: unticking hides a child (kept, re-ticking restores it), ticking adds a missing key at the end, a filled key with no child is flagged; drag in List View reorders.
 3. Rewrite to the new attributes: 4 drawer patterns (`drawer-editorial-ghost-list.php`, `drawer-offset-column.php`, `drawer-solid-brand-light.php`, `drawer-split-zone-serif.php`); Eye Care footer `cr-ref-footer-6` (styled to the draft: boxed, 18px glyph, surface-alt/border/text, accent-text hover).
 4. Dependants: `class-sgs-blocks.php` (`social-icons-footer` block style re-checked), `sgs-header-ink-helpers.php` (`.sgs-social-icons__item` → child selectors), `site-footer-row/edit.js` slot, `tests/php/BorderElementParityTest.php` + `social-icons--wrapper.json`, `tests/playwright/blocks.spec.ts`, golden manifest, recogniser fingerprints, colour-audit CLI list, `scripts/consistency/*.json` (regenerated), inspector-scan rules 31/33, survey ceilings.
-5. Converter (its own step, own tests): `converter/resolvers/array_content.py` turns `core/social-links` into `sgs/social-icons` with bound `sgs/icon` children, matched to Site Info keys by platform (fixed URLs only for platforms Site Info lacks); `block-replacements.json`/`slots.json` checked; the converter's off-enum output check covers `shape` and `colourMode`.
+5. Converter: retired. The old cloning converter (`plugins/sgs-blocks/scripts/converter`) was deleted with its link-row rule (session 6f, 2026-10-09); the live cloning path, Spec 47's computed route, does not use it. A cloned social or contact row turning into `sgs/social-icons` with Site Info-bound `sgs/icon` children is deferred (see Deferred).
 6. Deploy order: on every `TARGETS` site, grep stored content for `sgs/social-icons`, `wp:sgs/icon` blocks with no `backgroundShape` key (they would turn into square-with-background), and `backgroundShape` `none|rounded|outline` plus `backgroundPadding`; rebuild those posts first, deploy, rebuild from the full trees. Read `get_option('sgs_block_defaults')` for `sgs/icon` on each target first.
 7. Specs: Spec 36 FR-36-21 (social/contact row = `sgs/social-icons`, a wrapper of bound `sgs/icon` children; bindings stay generic across clients), Spec 02/32/35A/38 mentions, `.claude/rules/colour-emission.md`; `.claude/rules/block-editor-controls.md` gains the Spacing control's contract.
 **Done when:** CR6 P2-r closes (footer item borders, grounds and glyphs paint the tree's group defaults, not the brand colours: the 12 Hardcode rows in `sites/eye-care-ward-end/build/qa/solve/footer/2026-10-08T20-08-21` re-measure clean); eye-care-test footer shows the bound icons (WhatsApp + Google + the networks Site Info fills), WhatsApp href `https://wa.me/…`, matches the draft at 375/768/1440 (`scripts/parity/draft-live-walk.mjs`), axe clean, 44px targets; whole-tree grep of each removed attribute name in social-icons contexts is 0.
@@ -115,8 +115,22 @@ The drawer's social row `cr-ref-mobile-menu-12..15` (three icon-only `sgs/button
 2. **Owed:** deploy, then a sandybrown editor and front-end look at 375/768/1440 on cart, heading, product-card, card-grid and nav-drawer showing the declared default preselected and nothing moved.
 **Done when:** census `--check --strict` exits 0 (met in source); the sandybrown spot-check in item 2 shows each declared default preselected and painted unchanged; item 1 has Bean's decision.
 
+## QC council on the shipped work (started 2026-10-09, open)
+Raters B (claims vs code) and D (executed edge cases) reported; E (lesson-note traps) and A (live, after the sandybrown deploy) are owed. B: 35 of 41 claims TRUE, none FALSE. Each finding below is a fix-shape HYPOTHESIS: measure its baseline before fixing (qc-council Stage 5).
+1. Site Info phone keeps a UK trunk `(0)`: `+44 (0)121 496 0123` → `tel:+4401214960123` (fails from abroad). `includes/class-sgs-site-info-binding.php::prefix_url_for_key` phone branch: drop `(0)` when the value starts with `+` or `00`.
+2. A social value with a non-web scheme (`javascript:alert(1)`) becomes `https://javascript:alert(1)`, a dead link that does not hide: `::has_scheme` knows only `://`, `mailto:`, `tel:`; return '' for any other `scheme:` prefix.
+3. Email with whitespace (`a b@x.com`) still makes a `mailto:`: require `is_email()`.
+4. Address bound to a TEXT attribute shows a literal `<br>` (`::get_value` text path `esc_html`): allow only `<br>` there (`wp_kses`).
+5. `maps_cid` with non-digits points at a wrong place (`::maps_link` strips non-digits; the saver already strips them, so low): use the cid only when all digits.
+6. `includes/data/icon-shapes.json` `$comment` still describes the old star (0.78 ratio, twice the icon): say 0.55, 3.2 times, centred on its circumcentre.
+7. `SgsBoxControl.js::toggleLinked`: a row set to Custom before typing snaps back to Default when sides are linked or unlinked (`customRows` keyed by row).
+8. `SgsBoxControl.js::presetRow` placeholder shows the raw `var(--wp--preset--spacing--N)` when the active scale lacks the slug: run it through the preset-size lookup / length parse.
+9. Wording: `src/blocks/icon/render.php` header claims every length passes `sgs_icon_length_value` (true for sizes and gaps; padding, margin, border use their own sanitisers).
+
 ## Deferred
-Nothing in Bean's list is deferred; every item maps to Phases 1, A-E (Phase E item 1, the variant-dependent sides, is open there). Bluesky/Threads (Site Info has no keys) is out of scope until Site Info gains them.
+- **Cloned social rows (owner: Spec 47 computed route, `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`):** when a draft holds a social or contact link row, the route should emit `sgs/social-icons` with `sgs/icon` children bound to Site Info keys by platform (registry `plugins/sgs-blocks/includes/data/brand-registry.json`, keys `Sgs_Site_Info_Binding::EDITOR_KEYS`), a fixed URL only for a platform the registry lacks. Today a clone gets whatever the route writes from the draft's markup.
+- `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` (generated from the framework DB) still describes the old `sgs/social-icons` and `sgs/icon` attributes: it regenerates with the next `/sgs-update` reseed (session 6f held reseeds at handoff while it finishes the converter removal).
+- Phase E item 1 (variant-dependent sides) is open in Phase E. Bluesky/Threads are out of scope until Site Info has keys for them.
 
 ## Gates and commits
 - Per phase: `npm run build` (PowerShell), `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check`, `check-border-preview-twin.js`, `check-border-width-without-style.py`, `python scripts/check-no-client-names.py --check`, full PHPUnit, inspector-scan, registry parity (JSON read by both PHP and JS: no twin lists).
