@@ -75,11 +75,13 @@ Open, each for a later batch:
   render (200, no PHP errors). `product-card`'s description link colour is likewise one call per description element now
   (`sgs_link_colour_css` and `linkColourPreviewCss` append ` a` to the last selector only, so the comma list had painted the
   first element's whole text); `testimonial/render.php` read `nameFontWeight` unguarded and warned on a render without block
-  defaults, also fixed. Open: (a) `sgs/testimonial`'s block-wide `linkColour` row (every anchor in the card, including the
-  summary) has no underline setting, which blocks "every text block with links offers the setting" for the summary; (b) the
-  `css_element` of the new override rows is the manifest element key (`body`, `attribution`, `quote-text`, `entry`, `desc`)
-  while the link-colour rows sit on the `-link` sub-element and batch 1 used `text-link` / `content-link`; the cloning
-  pipeline reads `css_element`, so one rule is needed before the next reseed of these blocks.
+  defaults, also fixed. `sgs/testimonial`'s block-wide `linkColour` row now has `linkUnderline` / `linkUnderlineThickness` too (code `1f4c8cb30`, on
+  the wrapper element `quote-box`; every link in the card, including the summary, takes it, and the quote's own setting
+  wins on the quote's links). The `css_element` on the link-underline override rows needs no alignment: nothing reads it for
+  these rows (the converter's typography list holds `text-decoration`, not `text-decoration-line` / `-thickness`; the
+  resolver and the F6 consistency checks key on `css_property` first), so the older rows' `-link` values and the bare element
+  keys do not conflict. Not yet live: the testimonial change is committed and unit-tested, the next eye-care-test deploy
+  carries it, and the DB rows for `sgs/testimonial.linkUnderline*` arrive with the next stage-1 reseed.
 - **Ledger:** the footer walk now reports the decided differences (the sweep's `background-image` on refs 23-25, the
   address colour and its link box's `gap`/`display` rows). They need divergence entries citing Bean's 2026-10-08
   decision (S2 covers the sweep; the address colour and link need a register row first).
