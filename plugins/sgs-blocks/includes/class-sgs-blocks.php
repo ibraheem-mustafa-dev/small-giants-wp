@@ -144,6 +144,10 @@ final class SGS_Blocks {
 		// products sharing the current product's terms in that taxonomy.
 		require_once SGS_BLOCKS_PATH . 'includes/product-collection-same-term.php';
 
+		// Attribute filter chips "Gap between chips" -- `woocommerce/product-filter-chips`
+		// only. Adds the per-device `sgsChipGap` length as a scoped <style> rule.
+		require_once SGS_BLOCKS_PATH . 'includes/product-filter-chips-gap.php';
+
 		// Product Collection empty-detection registry -- records whether a
 		// `woocommerce/product-collection` block's frontend query returned any
 		// products, keyed by its `queryId`. Feeds conditional-visibility.php's

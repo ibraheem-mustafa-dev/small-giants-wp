@@ -168,6 +168,14 @@
 			"attributes": {
 				"sgsSameTermAs": { "type": "string", "default": "", "role": "behaviour" }
 			}
+		},
+		{
+			"id": "chipGap",
+			"file": "product-filter-chips-gap.js",
+			"rule": { "mode": "named", "blocks": [ "woocommerce/product-filter-chips" ] },
+			"attributes": {
+				"sgsChipGap": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout" }
+			}
 		}
 	]
 }

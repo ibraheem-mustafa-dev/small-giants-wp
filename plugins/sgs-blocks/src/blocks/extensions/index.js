@@ -34,6 +34,9 @@
  *   taxonomy-picker panel to WooCommerce's `woocommerce/product-collection`
  *   block only — see product-collection-same-term.js. The frontend query
  *   change is server-side (includes/product-collection-same-term.php).
+ * - Filter chips "Gap between chips": adds a per-device `sgsChipGap` length control
+ *   to WooCommerce's `woocommerce/product-filter-chips` block only — see
+ *   product-filter-chips-gap.js (frontend rule: includes/product-filter-chips-gap.php).
  */
 import './responsive-device-toggle';
 import './animation';
@@ -48,6 +51,7 @@ import './responsive-visibility';
 import './media-elements';
 import './cpt-default-panel';
 import './product-collection-same-term';
+import './product-filter-chips-gap';
 
 // The two colour-picker fork stylesheets that carry genuinely NEW SGS
 // classnames (not core's own `.components-*` names, which `wp-components`
