@@ -118,11 +118,11 @@
 	block-size: var(--sgs-icon-shape-w, var(--sgs-si-shape-w, calc(var(--sgs-icon-size-used) + 2 * var(--wp--preset--spacing--20, 0.5rem))));
 }
 
-/* The star's inner pentagon holds a glyph half the shape's size (includes/data/icon-shapes.json), so its default size
- * is twice the icon. */
+/* The star (inner radius 0.55 of the outer, centred in the box: includes/data/icon-shapes.json) holds a centred glyph
+ * up to 31.5% of the shape inside its inner pentagon, so its default size is 3.2 times the icon. */
 .sgs-icon--boxed.sgs-icon--shape-star .sgs-icon__shape {
-	inline-size: var(--sgs-icon-shape-w, var(--sgs-si-shape-w, calc(2 * var(--sgs-icon-size-used))));
-	block-size: var(--sgs-icon-shape-w, var(--sgs-si-shape-w, calc(2 * var(--sgs-icon-size-used))));
+	inline-size: var(--sgs-icon-shape-w, var(--sgs-si-shape-w, calc(3.2 * var(--sgs-icon-size-used))));
+	block-size: var(--sgs-icon-shape-w, var(--sgs-si-shape-w, calc(3.2 * var(--sgs-icon-size-used))));
 }
 
 /* The box paints nothing for an outline, at rest or on hover: the SVG draws the fill and the stroke. */

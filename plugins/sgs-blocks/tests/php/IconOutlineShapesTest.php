@@ -320,7 +320,7 @@ final class IconOutlineShapesTest extends TestCase {
 		$this->assertStringContainsString( 'vector-effect: non-scaling-stroke;', $css );
 		$this->assertStringContainsString( 'stroke-width: calc(2 * var(--sgs-icon-outline-w, 0px));', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-icon--has-bg \.sgs-icon__outline-path \{\s*fill: var\(--sgs-icon-bg, var\(--sgs-si-bg,#', $css );
-		$this->assertMatchesRegularExpression( '#\.sgs-icon--boxed\.sgs-icon--shape-star \.sgs-icon__shape \{\s*inline-size: var\(--sgs-icon-shape-w, var\(--sgs-si-shape-w, calc\(2 \* var\(--sgs-icon-size-used\)\)\)\);#', $css, 'the star defaults to twice the icon' );
+		$this->assertMatchesRegularExpression( '#\.sgs-icon--boxed\.sgs-icon--shape-star \.sgs-icon__shape \{\s*inline-size: var\(--sgs-icon-shape-w, var\(--sgs-si-shape-w, calc\(3\.2 \* var\(--sgs-icon-size-used\)\)\)\);#', $css, 'the star defaults to 3.2 times the icon' );
 		$this->assertMatchesRegularExpression( '#@media \(forced-colors: active\) \{.*stroke: CanvasText;#s', $css );
 		$this->assertMatchesRegularExpression( '#@media \(prefers-reduced-motion: reduce\) \{\s*\.sgs-icon__shape,\s*\.sgs-icon__link,\s*\.sgs-icon__outline-path \{#', $css );
 	}
