@@ -131,7 +131,7 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 ```
 
-The back-to-top button click handler scrolls smoothly to top — `window.scrollTo({ top: 0, behavior: 'smooth' })` (web-platform identifier; UK-spelling exemption applies).
+The back-to-top button click handler scrolls to the top with `window.scrollTo({ top: 0, behavior })` (web-platform identifier; UK-spelling exemption applies). `behavior` is `'smooth'` unless `matchMedia('(prefers-reduced-motion: reduce)')` matches, when it is `'auto'` (instant).
 
 ### 3.4 CSS
 
@@ -146,7 +146,7 @@ All layout rules live in `plugins/sgs-blocks/assets/floating-ui/floating-ui.css`
 | Progress bar semantics | `role="progressbar"` + `aria-valuenow` updated on scroll |
 | Visible focus ring | `outline: 3px solid var(--btt-bg); outline-offset: 3px;` |
 | Hidden when off-screen | `hidden` attribute toggled via JS (respects display:none) |
-| Reduced motion | `floating-ui.css` disables the transitions under `prefers-reduced-motion: reduce` |
+| Reduced motion | `floating-ui.css` disables the transitions under `prefers-reduced-motion: reduce`; `floating-ui.js` scrolls instantly (`behavior: 'auto'`) under the same preference |
 
 The SVG chevron carries `aria-hidden="true"` and `focusable="false"` to avoid duplicate
 announcement.

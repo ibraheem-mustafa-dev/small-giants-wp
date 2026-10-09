@@ -75,7 +75,10 @@
 	// -- Back to top click handler -------------------------------------------
 	if ( bttBtn ) {
 		bttBtn.addEventListener( 'click', function () {
-			window.scrollTo( { top: 0, behavior: 'smooth' } );
+			window.scrollTo( {
+				top: 0,
+				behavior: window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ? 'auto' : 'smooth',
+			} );
 		} );
 	}
 }() );
