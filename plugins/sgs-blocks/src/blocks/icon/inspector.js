@@ -66,6 +66,7 @@ const ICON_SOURCES = [ 'lucide', 'brand', 'emoji', 'wp-icon', 'dashicon', 'custo
 const COLOUR_MODES = [
 	{ label: __( 'Automatic (brand colours for a brand)', 'sgs-blocks' ), value: 'inherit' },
 	{ label: __( 'Brand colours', 'sgs-blocks' ), value: 'brand' },
+	{ label: __( 'Brand colour: logo only', 'sgs-blocks' ), value: 'brand-glyph' },
 	{ label: __( 'Theme colours', 'sgs-blocks' ), value: 'theme' },
 ];
 
@@ -205,7 +206,9 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 					<SelectControl
 						label={ __( 'Colours', 'sgs-blocks' ) }
 						help={
-							brand.colourBrand
+							'brand-glyph' === colourMode
+								? __( 'Only the logo takes the brand colour (Google keeps its four colours, Instagram its gradient). The shape keeps its own background and border; on hover the border turns the brand colour with a thin ring. A colour you set above always wins.', 'sgs-blocks' )
+								: brand.colourBrand
 								? sprintf(
 										/* translators: %s: brand name, e.g. WhatsApp. */
 										__( 'This icon is %s. A colour you set above always wins.', 'sgs-blocks' ),

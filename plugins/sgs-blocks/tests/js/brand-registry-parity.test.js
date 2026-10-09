@@ -44,14 +44,24 @@ beforeAll( () => {
 	}
 } );
 
-const jsPaint = ( brand, fixed ) => {
-	const p = brandPaint( brand, fixed );
-	return { ground: p.ground, glyph: p.glyph, border: p.border, ground_hover: p.groundHover, glyph_hover: p.glyphHover, fixed: p.fixed };
+const jsPaint = ( brand, fixed, mode = 'brand' ) => {
+	const p = brandPaint( brand, fixed, mode );
+	return {
+		ground: p.ground,
+		glyph: p.glyph,
+		border: p.border,
+		ground_hover: p.groundHover,
+		glyph_hover: p.glyphHover,
+		fixed: p.fixed,
+		border_hover: p.borderHover,
+		ring: p.ring,
+		gradient: p.gradient,
+	};
 };
 
 describe( 'brand registry parity', () => {
 	it( 'both sides read the same entries in the same order', () => {
-		expect( BRANDS.map( ( b ) => ( { slug: b.slug, label: b.label, siteInfoKey: b.siteInfoKey, autoLabel: b.autoLabel, colour: b.colour } ) ) ).toEqual( php.registry );
+		expect( BRANDS.map( ( b ) => ( { slug: b.slug, label: b.label, siteInfoKey: b.siteInfoKey, autoLabel: b.autoLabel, colour: b.colour, logoGradient: b.logoGradient } ) ) ).toEqual( php.registry );
 	} );
 
 	it( 'every brand paints the same (D5)', () => {
@@ -59,6 +69,14 @@ describe( 'brand registry parity', () => {
 			expect( jsPaint( brand, false ) ).toEqual( php.paint[ brand.slug ].plain );
 			expect( jsPaint( brand, true ) ).toEqual( php.paint[ brand.slug ].fixed );
 		} );
+	} );
+
+	it( 'every brand paints the same in logo-only mode', () => {
+		BRANDS.forEach( ( brand ) => {
+			expect( jsPaint( brand, false, 'brand-glyph' ) ).toEqual( php.paint[ brand.slug ].glyph );
+			expect( jsPaint( brand, true, 'brand-glyph' ) ).toEqual( php.paint[ brand.slug ].glyphFixed );
+		} );
+		expect( jsPaint( brandBySlug( 'instagram' ), false, 'brand-glyph' ).gradient ).toMatch( /^linear-gradient\(/ );
 	} );
 
 	it( 'a planted divergence is caught', () => {

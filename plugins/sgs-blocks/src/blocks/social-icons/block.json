@@ -162,9 +162,10 @@
 			"enum": [
 				"inherit",
 				"theme",
-				"brand"
+				"brand",
+				"brand-glyph"
 			],
-			"description": "Colours for icons left on Automatic: inherit gives a brand icon its brand colours, theme never does, brand always does. An icon's own choice and any colour set here or on the icon win."
+			"description": "Colours for icons left on Automatic: inherit gives a brand icon its brand colours, theme never does, brand always does, brand-glyph paints only each logo in its brand colour on the row's own ground and border (hover: brand border and 1px ring). An icon's own choice and any colour set here or on the icon win."
 		},
 		"childIconSize": {
 			"type": "object",

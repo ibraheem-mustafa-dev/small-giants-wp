@@ -217,7 +217,7 @@ if ( ! function_exists( 'sgs_icon_group_context' ) ) {
 		$label_pos = (string) ( $context['sgs/socialIconsLabelPosition'] ?? '' );
 		return array(
 			'in_group'       => $in_group,
-			'colour_mode'    => in_array( $mode, array( 'inherit', 'theme', 'brand' ), true ) ? $mode : 'inherit',
+			'colour_mode'    => in_array( $mode, array( 'inherit', 'theme', 'brand', 'brand-glyph' ), true ) ? $mode : 'inherit',
 			'hidden'         => $hidden,
 			'shape'          => in_array( $shape, sgs_icon_shape_slugs(), true ) ? $shape : '',
 			'show_bg'        => ! empty( $context['sgs/socialIconsShowBackground'] ),

@@ -80,7 +80,8 @@
 		transform var(--wp--custom--transition--fast, 0.15s ease),
 		color var(--wp--custom--transition--fast, 0.15s ease),
 		background-color var(--wp--custom--transition--fast, 0.15s ease),
-		border-color var(--wp--custom--transition--fast, 0.15s ease);
+		border-color var(--wp--custom--transition--fast, 0.15s ease),
+		box-shadow var(--wp--custom--transition--fast, 0.15s ease);
 }
 
 /* A shape with a background or border gets room around the glyph: the icon size plus spacing-20 each side. */

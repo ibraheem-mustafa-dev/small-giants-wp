@@ -49,6 +49,7 @@
 			"siteInfoKey": "socials.instagram",
 			"autoLabel": "Follow us on Instagram",
 			"colour": "#E4405F",
+			"logoGradient": "linear-gradient(45deg, #FEDA75 0%, #FA7E1E 25%, #D62976 50%, #962FBF 75%, #4F5BD5 100%)",
 			"glyph": { "lucide": "instagram" }
 		},
 		{

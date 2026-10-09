@@ -46,10 +46,13 @@ foreach ( sgs_brand_registry() as $slug => $brand ) {
 		'siteInfoKey' => $brand['siteInfoKey'],
 		'autoLabel'   => $brand['autoLabel'],
 		'colour'      => $brand['colour'],
+		'logoGradient' => $brand['logoGradient'],
 	);
 	$out['paint'][ $slug ] = array(
 		'plain' => sgs_brand_paint( $brand, false ),
 		'fixed' => sgs_brand_paint( $brand, true ),
+		'glyph' => sgs_brand_paint( $brand, false, 'brand-glyph' ),
+		'glyphFixed' => sgs_brand_paint( $brand, true, 'brand-glyph' ),
 	);
 }
 foreach ( (array) ( $input['names'] ?? array() ) as $case ) {

@@ -13,6 +13,8 @@ import { calculateRelativeLuminance, calculateContrastRatio } from './wcag-contr
 export const BRAND_DARK_GLYPH = '#1E1E1E';
 
 const HEX = /^(#[0-9A-Fa-f]{6})?$/;
+/** A gradient logo's CSS gradient: linear, hex stops. Twin of the pattern in sgs_brand_registry(). */
+const LOGO_GRADIENT = /^linear-gradient\(\d{1,3}deg(, #[0-9A-Fa-f]{6}( \d{1,3}%)?)+\)$/;
 
 /**
  * Registry entries in order, with the same validation as `sgs_brand_registry()`.
@@ -37,6 +39,7 @@ export const BRANDS = ( Array.isArray( registry?.brands ) ? registry.brands : []
 		glyph: b.glyph,
 		glyphBrand: b.glyphBrand && 'object' === typeof b.glyphBrand ? b.glyphBrand : null,
 		ground: b.ground ?? '',
+		logoGradient: LOGO_GRADIENT.test( b.logoGradient ?? '' ) ? b.logoGradient : '',
 	} ) );
 
 /**
@@ -107,18 +110,34 @@ export function contrastRatio( a, b ) {
 }
 
 /**
- * The colours a brand paints an icon with (D5). Twin: sgs_brand_paint().
+ * The colours a brand paints an icon with. Twin: sgs_brand_paint().
+ *
+ * Mode 'brand' (D5): the brand colour as ground and border with a contrast glyph. Mode 'brand-glyph' ("Brand colour:
+ * logo only"): the glyph alone is the brand's (a fixed mark none), the ground and resting border stay the client's, and
+ * hover turns the border `borderHover` and draws a 1px `ring`; `gradient` is a gradient logo's own.
  *
  * @param {Object}  brand     Registry entry.
  * @param {boolean} fixedMark The icon draws the entry's `glyphBrand` mark.
- * @return {{ground:string, glyph:string, border:string, groundHover:string, glyphHover:string, fixed:boolean}} Hex
- *         colours, '' where the brand sets nothing.
+ * @param {string}  mode      'brand' (default) or 'brand-glyph'.
+ * @return {{ground:string, glyph:string, border:string, groundHover:string, glyphHover:string, fixed:boolean, borderHover:string, ring:string, gradient:string}}
+ *         Hex colours, '' where the brand sets nothing.
  */
-export function brandPaint( brand, fixedMark = false ) {
-	const none = { ground: '', glyph: '', border: '', groundHover: '', glyphHover: '', fixed: false };
+export function brandPaint( brand, fixedMark = false, mode = 'brand' ) {
+	const none = { ground: '', glyph: '', border: '', groundHover: '', glyphHover: '', fixed: false, borderHover: '', ring: '', gradient: '' };
 	const colour = brand?.colour || '';
 	if ( ! colour ) {
 		return none;
+	}
+	if ( 'brand-glyph' === mode ) {
+		const fixed = fixedMark && !! brand.glyphBrand;
+		return {
+			...none,
+			glyph: fixed ? '' : colour,
+			fixed,
+			borderHover: colour,
+			ring: colour,
+			gradient: fixed ? '' : brand.logoGradient || '',
+		};
 	}
 	if ( fixedMark && brand.glyphBrand ) {
 		const ground = brand.ground || colour;

@@ -40,9 +40,10 @@ export function glyphSource( attributes, glyphBrand, drawFixed ) {
  * @param {Object}      props.attributes Block attributes.
  * @param {Object|null} props.glyphBrand Registry entry the glyph draws.
  * @param {boolean}     props.drawFixed  Draw the brand's fixed-colour mark.
+ * @param {string}      props.logoGradient A gradient logo's own gradient (colour mode logo only), '' for none.
  * @return {JSX.Element} The glyph element.
  */
-export default function CanvasGlyph( { attributes, glyphBrand, drawFixed } ) {
+export default function CanvasGlyph( { attributes, glyphBrand, drawFixed, logoGradient = '' } ) {
 	const { iconSource, emojiChar, dashiconName, iconColourGradient } = attributes;
 	const source = glyphSource( attributes, glyphBrand, drawFixed );
 	const gradientId = useInstanceId( CanvasGlyph, 'sgs-icon-canvas-grad' );
@@ -77,7 +78,8 @@ export default function CanvasGlyph( { attributes, glyphBrand, drawFixed } ) {
 	}
 
 	const raw = source.svg ?? loaded;
-	const svg = iconColourGradient && source.stroke && raw ? withSvgStrokeGradient( raw, iconColourGradient, `${ gradientId }` ) : raw;
+	const paintGradient = iconColourGradient || logoGradient;
+	const svg = paintGradient && source.stroke && raw ? withSvgStrokeGradient( raw, paintGradient, `${ gradientId }` ) : raw;
 	return (
 		<span
 			className="sgs-icon__svg"

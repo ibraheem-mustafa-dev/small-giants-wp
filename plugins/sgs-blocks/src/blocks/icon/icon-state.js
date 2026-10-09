@@ -102,7 +102,7 @@ export function linkFallbackState( link, attributes ) {
  *
  * @param {Object} attributes Block attributes.
  * @param {string} key        Bound Site Info key, or ''.
- * @return {{glyphBrand:Object|null, colourBrand:Object|null, brandOn:boolean, drawFixed:boolean, paint:Object|null}}
+ * @return {{glyphBrand:Object|null, colourBrand:Object|null, brandOn:boolean, glyphOnly:boolean, drawFixed:boolean, paint:Object|null}}
  */
 export function resolveBrand( attributes, key ) {
 	const source = attributes?.iconSource || 'lucide';
@@ -119,11 +119,12 @@ export function resolveBrand( attributes, key ) {
 	} else if ( glyphBrand?.colour ) {
 		colourBrand = glyphBrand;
 	}
-	const mode = [ 'inherit', 'theme', 'brand' ].includes( attributes?.colourMode ) ? attributes.colourMode : 'inherit';
+	const mode = [ 'inherit', 'theme', 'brand', 'brand-glyph' ].includes( attributes?.colourMode ) ? attributes.colourMode : 'inherit';
 	const brandOn = 'theme' !== mode && null !== colourBrand;
+	const glyphOnly = brandOn && 'brand-glyph' === mode;
 	const drawFixed =
 		brandOn && 'brand' === source && !! glyphBrand && glyphBrand.slug === colourBrand.slug && !! glyphBrand.glyphBrand;
-	return { glyphBrand, colourBrand, brandOn, drawFixed, paint: brandOn ? brandPaint( colourBrand, drawFixed ) : null };
+	return { glyphBrand, colourBrand, brandOn, glyphOnly, drawFixed, paint: brandOn ? brandPaint( colourBrand, drawFixed, glyphOnly ? 'brand-glyph' : 'brand' ) : null };
 }
 
 /**
@@ -253,7 +254,7 @@ export function iconGroupContext( context ) {
 	const borderWidth = context[ 'sgs/socialIconsBorderWidth' ];
 	return {
 		inGroup: undefined !== mode && null !== mode,
-		colourMode: [ 'inherit', 'theme', 'brand' ].includes( mode ) ? mode : 'inherit',
+		colourMode: [ 'inherit', 'theme', 'brand', 'brand-glyph' ].includes( mode ) ? mode : 'inherit',
 		hidden: Array.isArray( hidden ) ? hidden.filter( ( k ) => 'string' === typeof k ) : [],
 		shape: SHAPE_SLUGS.includes( shape ) ? shape : '',
 		showBg: !! context[ 'sgs/socialIconsShowBackground' ],

@@ -189,7 +189,9 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 	const defaultLabel = visibleLabel( '', labelNameArgs );
 	const labelText = attributes.showLabel ? visibleLabel( attributes.labelText, labelNameArgs ) : '';
 	const labelPosition = labelPositionFor( attributes.labelPosition, '' );
-	const showBg = !! showBackground || brand.brandOn;
+	const showBg = !! showBackground || ( brand.brandOn && ! brand.glyphOnly );
+	// Logo only: a gradient logo (Instagram) paints the glyph unless the client set a glyph colour or gradient (render.php's twin).
+	const logoGradient = brand.glyphOnly && ! attributes.iconColour && ! attributes.iconColourGradient ? brand.paint?.gradient || '' : '';
 	// An outline shape draws its border as the SVG's stroke (render.php's twin): the box takes no border preview.
 	const outline = outlineCanvas( attributes, group, tier, presetSlugs );
 
@@ -222,6 +224,7 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 		outline.outline && 'sgs-icon--outline',
 		outline.stroke && 'solid' !== outline.dash && `sgs-icon--outline-${ outline.dash }`,
 		brand.brandOn && 'sgs-icon--brand',
+		brand.glyphOnly && 'sgs-icon--brand-glyph',
 		fillGlyph && 'sgs-icon--fill',
 		( attributes.iconColour || attributes.iconColourGradient ) && 'sgs-icon--own-colour',
 		'brand' === iconSource && brand.glyphBrand?.glyph?.svg && 'sgs-icon--mark',
@@ -240,7 +243,7 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 	const shapeEl = (
 		<span className="sgs-icon__shape" style={ shapeStyle }>
 			{ outline.outline && ( showBg || outline.stroke ) && <CanvasOutline shape={ shape } /> }
-			<CanvasGlyph attributes={ attributes } glyphBrand={ brand.glyphBrand } drawFixed={ brand.drawFixed } />
+			<CanvasGlyph attributes={ attributes } glyphBrand={ brand.glyphBrand } drawFixed={ brand.drawFixed } logoGradient={ logoGradient } />
 		</span>
 	);
 

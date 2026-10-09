@@ -252,9 +252,10 @@
 			"enum": [
 				"inherit",
 				"theme",
-				"brand"
+				"brand",
+				"brand-glyph"
 			],
-			"description": "inherit and brand use brand colours when the icon is bound to a brand's Site Info key or draws a brand glyph; theme never does. A colour the client sets always wins."
+			"description": "inherit and brand use brand colours when the icon is bound to a brand's Site Info key or draws a brand glyph; brand-glyph paints only the glyph in the brand colour (Google its four-colour mark, Instagram its gradient), keeps the shape's own ground and border, and on hover turns the border the brand colour with a 1px ring; theme never uses brand colours. A colour the client sets always wins."
 		},
 		"iconColour": {
 			"type": "string",

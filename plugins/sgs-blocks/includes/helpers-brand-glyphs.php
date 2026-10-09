@@ -24,7 +24,7 @@ if ( ! function_exists( 'sgs_brand_registry' ) ) {
 	 * Every registry entry, keyed by slug, in the registry's order. Entries with an unsafe slug or colour are
 	 * dropped, so a bad edit to the JSON can never reach a stylesheet or a class attribute.
 	 *
-	 * @return array<string,array{slug:string,label:string,siteInfoKey:string,autoLabel:string,colour:string,glyph:array,glyphBrand?:array,ground?:string}>
+	 * @return array<string,array{slug:string,label:string,siteInfoKey:string,autoLabel:string,colour:string,glyph:array,glyphBrand?:array,ground?:string,logoGradient?:string}>
 	 */
 	function sgs_brand_registry(): array {
 		static $brands = null;
@@ -39,18 +39,21 @@ if ( ! function_exists( 'sgs_brand_registry' ) ) {
 			$slug   = is_string( $entry['slug'] ?? null ) ? $entry['slug'] : '';
 			$colour = is_string( $entry['colour'] ?? null ) ? $entry['colour'] : '';
 			$ground = is_string( $entry['ground'] ?? null ) ? $entry['ground'] : '';
+			// A brand whose logo is a gradient (Instagram): a linear-gradient of hex stops, else none.
+			$logo_gradient = is_string( $entry['logoGradient'] ?? null ) && 1 === preg_match( '/^linear-gradient\(\d{1,3}deg(, #[0-9A-Fa-f]{6}( \d{1,3}%)?)+\)$/', $entry['logoGradient'] ) ? $entry['logoGradient'] : '';
 			if ( ! preg_match( '/^[a-z0-9-]+$/', $slug ) || ! preg_match( '/^(#[0-9A-Fa-f]{6})?$/', $colour ) || ! preg_match( '/^(#[0-9A-Fa-f]{6})?$/', $ground ) || ! is_array( $entry['glyph'] ?? null ) ) {
 				continue;
 			}
 			$brands[ $slug ] = array(
-				'slug'        => $slug,
-				'label'       => (string) ( $entry['label'] ?? $slug ),
-				'siteInfoKey' => (string) ( $entry['siteInfoKey'] ?? '' ),
-				'autoLabel'   => (string) ( $entry['autoLabel'] ?? '' ),
-				'colour'      => $colour,
-				'glyph'       => $entry['glyph'],
-				'glyphBrand'  => is_array( $entry['glyphBrand'] ?? null ) ? $entry['glyphBrand'] : array(),
-				'ground'      => $ground,
+				'slug'         => $slug,
+				'label'        => (string) ( $entry['label'] ?? $slug ),
+				'siteInfoKey'  => (string) ( $entry['siteInfoKey'] ?? '' ),
+				'autoLabel'    => (string) ( $entry['autoLabel'] ?? '' ),
+				'colour'       => $colour,
+				'glyph'        => $entry['glyph'],
+				'glyphBrand'   => is_array( $entry['glyphBrand'] ?? null ) ? $entry['glyphBrand'] : array(),
+				'ground'       => $ground,
+				'logoGradient' => $logo_gradient,
 			);
 		}
 		return $brands;
@@ -136,17 +139,27 @@ if ( ! function_exists( 'sgs_brand_glyph_svg' ) ) {
 
 if ( ! function_exists( 'sgs_brand_paint' ) ) {
 	/**
-	 * The colours a brand paints an icon with (Bean decision D5): the brand colour as the ground and border, a white
-	 * glyph when white reaches 3:1 on it, else a near-black glyph when that reaches 3:1, else no glyph colour (the
-	 * theme's own glyph colour shows). Hover swaps glyph and ground. When the icon draws the brand's fixed-colour
-	 * mark (`glyphBrand`), the mark sits on the brand's `ground` and keeps it on hover; it takes no glyph paint.
+	 * The colours a brand paints an icon with.
 	 *
-	 * @param array $brand      Registry entry.
-	 * @param bool  $fixed_mark The icon draws the entry's `glyphBrand` mark.
-	 * @return array{ground:string,glyph:string,border:string,ground_hover:string,glyph_hover:string,fixed:bool} Hex
-	 *         colours ('' = no brand value for that slot); empty slots throughout for an entry with no colour.
+	 * Mode `brand` (Bean decision D5): the brand colour as the ground and border, a white glyph when white reaches 3:1
+	 * on it, else a near-black glyph when that reaches 3:1, else no glyph colour (the theme's own glyph colour shows).
+	 * Hover swaps glyph and ground. When the icon draws the brand's fixed-colour mark (`glyphBrand`), the mark sits on
+	 * the brand's `ground` and keeps it on hover; it takes no glyph paint.
+	 *
+	 * Mode `brand-glyph` ("Brand colour: logo only"): only the glyph is the brand's. The glyph takes the brand colour
+	 * (a fixed mark keeps its own colours and takes none; `gradient` is a gradient logo's own, Instagram), the ground and
+	 * resting border stay the client's, and hover turns the border `border_hover` and draws a 1px `ring`, both the
+	 * brand colour; the glyph stays. The ring and border are a UI component that should reach 3:1 on the ground, but a
+	 * brand colour that cannot (WhatsApp green on white is about 1.9:1) keeps the brand colour: a brand-identity
+	 * exception, the same ruling as the Google Reviews block (its colours are the brand's, not the theme's).
+	 *
+	 * @param array  $brand      Registry entry.
+	 * @param bool   $fixed_mark The icon draws the entry's `glyphBrand` mark.
+	 * @param string $mode       'brand' (default) or 'brand-glyph'.
+	 * @return array{ground:string,glyph:string,border:string,ground_hover:string,glyph_hover:string,fixed:bool,border_hover:string,ring:string,gradient:string}
+	 *         Hex colours ('' = no brand value for that slot); empty slots throughout for an entry with no colour.
 	 */
-	function sgs_brand_paint( array $brand, bool $fixed_mark = false ): array {
+	function sgs_brand_paint( array $brand, bool $fixed_mark = false, string $mode = 'brand' ): array {
 		$none   = array(
 			'ground'       => '',
 			'glyph'        => '',
@@ -154,10 +167,26 @@ if ( ! function_exists( 'sgs_brand_paint' ) ) {
 			'ground_hover' => '',
 			'glyph_hover'  => '',
 			'fixed'        => false,
+			'border_hover' => '',
+			'ring'         => '',
+			'gradient'     => '',
 		);
 		$colour = (string) ( $brand['colour'] ?? '' );
 		if ( '' === $colour ) {
 			return $none;
+		}
+		if ( 'brand-glyph' === $mode ) {
+			$fixed = $fixed_mark && ! empty( $brand['glyphBrand'] );
+			return array_merge(
+				$none,
+				array(
+					'glyph'        => $fixed ? '' : $colour,
+					'fixed'        => $fixed,
+					'border_hover' => $colour,
+					'ring'         => $colour,
+					'gradient'     => $fixed ? '' : (string) ( $brand['logoGradient'] ?? '' ),
+				)
+			);
 		}
 		if ( $fixed_mark && ! empty( $brand['glyphBrand'] ) ) {
 			$ground = '' !== (string) ( $brand['ground'] ?? '' ) ? (string) $brand['ground'] : $colour;

@@ -109,13 +109,15 @@ $glyph_kind = 'brand' === $icon_source && null !== $glyph_brand && isset( $glyph
 $key_brand    = '' !== $bound_link_key ? sgs_brand_by_site_info_key( $bound_link_key ) : null;
 $colour_brand = null !== $key_brand && '' !== $key_brand['colour'] ? $key_brand : ( null !== $glyph_brand && '' !== $glyph_brand['colour'] ? $glyph_brand : null );
 $colour_mode  = (string) ( $attributes['colourMode'] ?? 'inherit' );
-$colour_mode  = in_array( $colour_mode, array( 'inherit', 'theme', 'brand' ), true ) ? $colour_mode : 'inherit';
+$colour_mode  = in_array( $colour_mode, array( 'inherit', 'theme', 'brand', 'brand-glyph' ), true ) ? $colour_mode : 'inherit';
 if ( 'inherit' === $colour_mode && $group['in_group'] ) {
 	$colour_mode = $group['colour_mode'];
 }
 $brand_on    = 'theme' !== $colour_mode && null !== $colour_brand;
+// "Brand colour: logo only": the glyph alone is the brand's; the ground and border stay the client's (sgs_brand_paint()).
+$glyph_only  = $brand_on && 'brand-glyph' === $colour_mode;
 $draw_fixed  = $brand_on && 'brand' === $icon_source && null !== $glyph_brand && $glyph_brand['slug'] === $colour_brand['slug'] && ! empty( $glyph_brand['glyphBrand'] );
-$brand_paint = $brand_on ? sgs_brand_paint( $colour_brand, $draw_fixed ) : null;
+$brand_paint = $brand_on ? sgs_brand_paint( $colour_brand, $draw_fixed, $glyph_only ? 'brand-glyph' : 'brand' ) : null;
 
 // ── Shape, background, border ────────────────────────────────────────────────
 $shape = is_string( $attributes['shape'] ?? null ) ? $attributes['shape'] : 'square';
@@ -124,7 +126,7 @@ if ( 'square' === $shape && '' !== $group['shape'] ) {
 	$shape = $group['shape'];
 }
 $is_outline = sgs_icon_is_outline_shape( $shape );
-$show_bg    = ! empty( $attributes['showBackground'] ) || $group['show_bg'] || $brand_on;
+$show_bg    = ! empty( $attributes['showBackground'] ) || $group['show_bg'] || ( $brand_on && ! $glyph_only );
 
 // ── Link ─────────────────────────────────────────────────────────────────────
 $link_scheme = sgs_icon_link_scheme( $link_url );
@@ -233,6 +235,9 @@ if ( $is_outline ) {
 }
 if ( $brand_on ) {
 	$classes[] = 'sgs-icon--brand';
+}
+if ( $glyph_only ) {
+	$classes[] = 'sgs-icon--brand-glyph';
 }
 // A wrapping row's group glyph gradient skips an icon with a colour of its own and a filled mark.
 if ( '' !== (string) ( $attributes['iconColour'] ?? '' ) || '' !== (string) ( $attributes['iconColourGradient'] ?? '' ) ) {
@@ -396,6 +401,37 @@ if ( '' !== $icon_grad_hover['fallback_rule'] ) {
 	$scoped_css[] = $icon_grad_hover['fallback_rule'];
 }
 
+// ── Logo only: a gradient logo (Instagram) and the hover/focus border and ring ───
+// The gradient is the glyph's resting stroke unless the client set a glyph colour or gradient: a flat colour (own or the
+// row's) is read first through the variable chain, an own gradient replaces it.
+$logo_grad = array(
+	'defs' => '',
+	'css'  => '',
+);
+if ( $glyph_only && 'lucide' === $gradient_source && '' === (string) ( $attributes['iconColourGradient'] ?? '' ) ) {
+	$logo_grad = sgs_icon_gradient_css( 'lucide', $brand_paint['gradient'], $uid . '-bg', $root_sel . $glyph_suffix );
+	$logo_stroke = preg_replace( '/^stroke:(url\(#[A-Za-z0-9-]+\))$/', 'stroke:var(--sgs-icon-colour,var(--sgs-si-colour,$1))', $logo_grad['css'] );
+	if ( is_string( $logo_stroke ) && '' !== $logo_stroke ) {
+		$scoped_css[] = $root_sel . $glyph_suffix . '{' . $logo_stroke . ';}';
+	}
+}
+// Hover and keyboard focus: the border turns the brand colour (an own border hover colour, or the row's, first) and a
+// 1px ring in it appears; the glyph and ground stay (the background flip below only undoes style.css's `has-bg`
+// swap); no scale, scaleHover is its own control. Touch-guarded through sgs_hover_state_rules().
+if ( $glyph_only && '' !== $brand_paint['ring'] && ! $is_outline ) {
+	$ring_decls = array();
+	if ( ! $border['hover'] ) {
+		$ring_decls[] = 'border-color:var(--sgs-si-border-colour-hover,' . sgs_colour_value( $brand_paint['border_hover'] ) . ')';
+	}
+	// sgs-shadow-fallback: a 1px state ring on the border, not a drop shadow: it takes no lift and carries its own forced-colours outline.
+	$ring_decls[] = 'box-shadow:0 0 0 1px ' . sgs_colour_value( $brand_paint['ring'] );
+	if ( $show_bg ) {
+		$ring_decls[] = 'background-color:var(--sgs-icon-bg-hover,var(--sgs-si-bg-hover,var(--sgs-icon-bg,var(--sgs-si-bg,var(--wp--preset--color--surface-alt)))))';
+		$ring_decls[] = 'color:var(--sgs-icon-colour-hover,var(--sgs-si-colour-hover,var(--sgs-icon-colour,var(--sgs-si-colour,var(--sgs-icon-brand-glyph,var(--wp--preset--color--primary))))))';
+	}
+	$scoped_css[] = sgs_hover_state_rules( $link_sel, implode( ';', $ring_decls ) . ';' . sgs_shadow_forced_colours_decl(), ':focus-visible', ' .sgs-icon__shape' );
+}
+
 // ── Label: gradient text (resting and hover) and typography ──────────────────
 if ( $has_label ) {
 	$label_grad       = sgs_css_gradient_value( (string) ( $attributes['labelColourGradient'] ?? '' ) );
@@ -509,6 +545,7 @@ if ( 'dashicon' === $icon_source ) {
 } else {
 	$glyph_svg  = sgs_svg_inject_defs( (string) $glyph_svg, $icon_grad['defs'] );
 	$glyph_svg  = sgs_svg_inject_defs( $glyph_svg, $icon_grad_hover['defs'] );
+	$glyph_svg  = sgs_svg_inject_defs( $glyph_svg, $logo_grad['defs'] );
 	$glyph_html = '<span class="sgs-icon__svg" aria-hidden="true">' . $glyph_svg . '</span>';
 }
 $image_attrs = '' === $link_url && '' !== $aria_label && $group['in_group'] && ! $has_label ? ' role="img" aria-label="' . esc_attr( $aria_label ) . '"' : '';

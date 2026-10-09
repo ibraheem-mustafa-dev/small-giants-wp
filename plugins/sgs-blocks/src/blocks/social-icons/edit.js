@@ -53,6 +53,7 @@ const LENGTH_UNITS = [
 const COLOUR_MODES = [
 	{ label: __( 'Automatic (brand colours for a brand)', 'sgs-blocks' ), value: 'inherit' },
 	{ label: __( 'Brand colours', 'sgs-blocks' ), value: 'brand' },
+	{ label: __( 'Brand colour: logo only', 'sgs-blocks' ), value: 'brand-glyph' },
 	{ label: __( 'Theme colours', 'sgs-blocks' ), value: 'theme' },
 ];
 
@@ -290,7 +291,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<PanelBody title={ __( 'Icons', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Colours', 'sgs-blocks' ) }
-						help={ __( 'For icons left on Automatic. A colour set here or on an icon always wins.', 'sgs-blocks' ) }
+						help={
+							'brand-glyph' === colourMode
+								? __( 'Each logo takes its brand colour on the row own background and border (Google keeps its four colours, Instagram its gradient). On hover the border turns the brand colour with a thin ring. A colour set here or on an icon always wins.', 'sgs-blocks' )
+								: __( 'For icons left on Automatic. A colour set here or on an icon always wins.', 'sgs-blocks' )
+						}
 						value={ colourMode || 'inherit' }
 						options={ COLOUR_MODES }
 						onChange={ ( value ) => setAttributes( { colourMode: value } ) }
