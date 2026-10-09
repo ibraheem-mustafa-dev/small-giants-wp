@@ -97,14 +97,12 @@ EXEMPT_PREFIXES: Tuple[str, ...] = (
     "plugins/sgs-blocks/scripts/nav-qa/",
     "plugins/sgs-blocks/scripts/parity/",
     "scripts/tests/",
-    "scripts/qc-correctness-regression-fixtures.json",
     ".gitignore",  # repo config: names the client folders it ignores
     "tools/qc-prevention/",
     ".claude/test/",
     # Generated output.
     "lighthouse-report.",
     "plugins/sgs-blocks/.phpunit.cache/",
-    "plugins/sgs-blocks/scripts/recogniser/classless-recognition-log.jsonl",
     ".claude/memory/",
     "memory/",
     "tests/golden/",
@@ -118,10 +116,6 @@ ALLOWLIST: Tuple[Tuple[str, str], ...] = (
     (
         "plugins/sgs-blocks/scripts/push-theme-snapshot.py",
         "SAFE_TARGETS and the target-to-secrets map name the production site as a deploy target",
-    ),
-    (
-        "scripts/qc_anti_cheat_checks.py",
-        "CLIENT_SLUGS is the list of names this QC check forbids in framework code",
     ),
     (
         "plugins/sgs-blocks/scripts/build-deploy.py",

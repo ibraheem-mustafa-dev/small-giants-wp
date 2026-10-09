@@ -35,7 +35,7 @@ if git diff --cached --name-only | grep -Eq 'plugins/sgs-blocks/src/blocks/exten
 	fi
 fi
 
-PIPELINE_PATHS='^plugins/sgs-blocks/scripts/(converter|orchestrator)/|^plugins/sgs-blocks/scripts/sgs-clone-orchestrator\.py$'
+PIPELINE_PATHS='^plugins/sgs-blocks/scripts/converter/'
 if git diff --cached --name-only | grep -Eq "$PIPELINE_PATHS"; then
 	if command -v python.exe >/dev/null 2>&1; then PY=python.exe
 	elif command -v python >/dev/null 2>&1; then PY=python

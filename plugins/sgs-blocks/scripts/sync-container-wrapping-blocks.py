@@ -596,8 +596,8 @@ def main() -> int:
             )
             print(
                 "These roster blocks have NO row in block_composition. "
-                "Run `python plugins/sgs-blocks/scripts/orchestrator/sgs-update.py` "
-                "(or the canonical /sgs-update) to reconcile block_composition rows first, "
+                "Run the canonical /sgs-update "
+                "to reconcile block_composition rows first, "
                 "then re-run --apply.",
                 file=sys.stderr,
             )

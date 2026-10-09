@@ -1,4 +1,4 @@
-"""Tests for sync-business-info.py (Spec 33 FR-33-14) and the upload_and_patch.py helpers around it.
+"""Tests for sync-business-info.py (Spec 33 FR-33-14) and its push helpers.
 
 Run: cd plugins/sgs-blocks/scripts && python -m pytest tests/test_sync_business_info.py -q
 
@@ -300,35 +300,6 @@ def test_vocabulary_is_module_level_data_and_code_carries_no_client_literals():
         assert literal not in code
 
 
-# --- upload_and_patch.py helpers -----------------------------------------------------
-
-def _load_upload():
-    try:
-        return _load("upload_and_patch_under_test", SCRIPTS / "orchestrator" / "upload_and_patch.py")
-    except (KeyError, OSError) as exc:  # the module reads .claude/secrets/<site>.env on import
-        pytest.skip(f"deploy secrets not available: {exc!r}")
-
-
-def test_default_snapshot_domain_follows_the_deploy_site():
-    up = _load_upload()
-    assert up.default_snapshot_domain(None, "https://ignored.example") == up.CANARY_DOMAIN
-    assert up.default_snapshot_domain("", "https://ignored.example") == up.CANARY_DOMAIN
-    assert up.default_snapshot_domain("eye-care-test", "https://darkcyan.example.test") == "darkcyan.example.test"
-    assert up.default_snapshot_domain("x", "darkcyan.example.test") == "darkcyan.example.test"
-
-
-def test_find_draft_order(tmp_path):
-    up = _load_upload()
-    explicit = tmp_path / "draft.dc.html"
-    explicit.write_text("<html></html>", encoding="utf-8")
-    assert up.find_draft("no-such-client-slug", explicit) == explicit
-    assert up.find_draft("no-such-client-slug", tmp_path / "missing.html") is None
-    assert up.find_draft("no-such-client-slug", None) is None
-    if MAMAS_DRAFT.is_file():
-        assert up.find_draft("mamas-munches", None) is not None
-        assert up.find_draft("mamas-munches", explicit) == explicit
-
-
 # --- structure: no module in the package grows past the file-length rule -------------
 
 MAX_MODULE_LINES = 300
@@ -507,7 +478,7 @@ class _Capture:
     def __init__(self):
         self.bodies: list[dict] = []
 
-    def __call__(self, req, timeout=None):
+    def __call__(self, req, timeout=None, context=None):
         self.bodies.append(json.loads(req.data.decode("utf-8")))
 
         class _Resp:
@@ -528,7 +499,7 @@ def test_the_pipeline_push_path_never_sends_overwrite_true(tmp_path, monkeypatch
     cap = _Capture()
     monkeypatch.setattr(bi_push.urllib.request, "urlopen", cap)
     monkeypatch.setattr(sbi, "resolve_credentials", lambda *a, **k: ("u", "p"))
-    # exactly the arguments upload_and_patch.py builds: --push, never --overwrite
+    # the default push: --push without --overwrite
     monkeypatch.setattr(sys, "argv", ["sync-business-info.py", "--draft", str(draft),
                                       "--target-domain", "x.example.test", "--push"])
     assert sbi.main() == 0
@@ -542,9 +513,3 @@ def test_push_sends_overwrite_only_when_asked(monkeypatch):
     bi_push.push("x.example.test", {"email": "a@b.example"}, False, ("u", "p"))
     bi_push.push("x.example.test", {"email": "a@b.example"}, True, ("u", "p"))
     assert [b["overwrite"] for b in cap.bodies] == [False, True]
-
-
-def test_upload_and_patch_never_builds_the_overwrite_flag():
-    src = (SCRIPTS / "orchestrator" / "upload_and_patch.py").read_text(encoding="utf-8")
-    code = "\n".join(line.split("#", 1)[0] for line in src.splitlines())
-    assert "--overwrite" not in code
