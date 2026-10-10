@@ -27,6 +27,7 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { DEFAULT_PROPS, PSEUDO_PROPS, resolveFinder, collectPair, collectRunning, hoverStyles } from './lib/collect.mjs';
 import { PAINT_SRC } from './lib/paint.mjs';
+import { neutralisePass } from './lib/neutralise.mjs';
 import { SCROLL_PROPS, scrollInPass, revealSweep, hoverPass, focusPasses, activePass, readInteractives, sampleLines, settledLines } from './lib/state-passes.mjs';
 import { collectLinks, probeLinks, unseenLabels } from './lib/links.mjs';
 import { sampleEntrances, sampleRegion } from './lib/entrances.mjs';
@@ -115,7 +116,8 @@ if ( autoOn ) {
 
 const pairsFor = ( state ) => cfg.pairs.filter( ( p ) => ! p.states || p.states.includes( state.name ) );
 
-async function walkSide( browser, side, width ) {
+// draftStates: the draft side's states at this width (live only), for the paint check (lib/neutralise.mjs).
+async function walkSide( browser, side, width, draftStates = null ) {
 	// A narrow width runs as a phone (touch, mobile user agent): a site can hide or swap
 	// header parts by device, not by width, and a 375px desktop window never shows it.
 	const phone = header && width < 500 ? devices[ 'iPhone 13' ] : {};
@@ -206,6 +208,8 @@ async function walkSide( browser, side, width ) {
 				snap[ p.name ].declared = await declaredValues( cdp, p[ side ], RESOLVE, DECLARED_PROPS );
 			}
 		}
+		// Layout rows proven inert on the live page in this state (GAP-CHECKLIST 8), before any scroll moves it.
+		const inert = 'live' === side && draftStates?.[ state.name ] ? await neutralisePass( page, pairs, draftStates[ state.name ].snap, snap, RESOLVE, PAINT_SRC ) : null;
 		// The page's own zero point for positions (the outermost <main>), so a pair's place on the page is compared
 		// without the header above it (ref-traced walks only: compare-state.mjs::flowOffsets). Read at the same scroll
 		// as the pair boxes above: a sticky header that shrinks on scroll moves <main> after any scroll pass.
@@ -259,7 +263,7 @@ async function walkSide( browser, side, width ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
 			await activePass( page, pairs, side, snap, RESOLVE, pressCdp, { all: !! cdp } );
 		}
-		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, region: h.region, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ), ...( findings.length ? { findings } : {} ) };
+		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, region: h.region, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ), ...( findings.length ? { findings } : {} ), ...( inert ? { inert } : {} ) };
 		if ( state.autoScrolled ) {
 			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
 		}
@@ -293,7 +297,7 @@ for ( const width of widths ) {
 		cached[ cacheKey( width ) ] = draft;
 		fs.writeFileSync( draftCache, JSON.stringify( cached ) );
 	}
-	const live = await walkSide( browser, 'live', width );
+	const live = await walkSide( browser, 'live', width, draft.states );
 	results.errors[ width ] = { draft: draft.errors, live: live.errors };
 	for ( const state of cfg.states.filter( ( s ) => draft.states[ s.name ] ) ) {
 		const d = draft.states[ state.name ];

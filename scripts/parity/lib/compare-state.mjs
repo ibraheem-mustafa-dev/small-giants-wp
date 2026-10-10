@@ -45,7 +45,7 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 	// The config's accepts first, then the divergence ledger.
 	const verdict = ( ctx, diff ) => isAccepted( accept, ctx, diff )?.reason || judgeDivergence( divergences, ctx, diff, tol.px, tol.box ) || null;
 	const judge = ( name, diffs ) => {
-		const ctx = { pair: name, state: state.name, width, boxMatches: false };
+		const ctx = { pair: name, state: state.name, width, boxMatches: false, inert: l.inert?.[ name ] || {} };
 		const boxes = diffs.filter( ( x ) => 'box' === x.kind );
 		for ( const diff of boxes ) {
 			diff.accepted = verdict( ctx, diff );

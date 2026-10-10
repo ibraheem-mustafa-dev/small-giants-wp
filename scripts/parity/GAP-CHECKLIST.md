@@ -137,13 +137,33 @@ Fixed in the walker; keep them in mind when a number looks wrong:
 - **Accept safely:** give the accept a reason naming why nothing paints, scope it by `pair`/`key` where
   possible, and set `notPainted: true` on blanket layout-property accepts: the accept then applies only
   while that pair's box matches, so the difference reopens when the box moves.
-- **Shared rule:** the blanket layout properties (`display`, `gap`, `column-gap`, `row-gap`, `align-items`,
-  `text-align`, `justify-content`) are accepted this way on every surface by
-  `lib/compare.mjs::INERT_LAYOUT`, after the config's own accepts. A client config never repeats them
-  (`scripts/computed-route/tests/walker-inert-layout.test.mjs` fails when one does); it adds only
-  pair-scoped accepts for other properties.
-- **Falsified by:** a `notPainted` accept on a pair that also has a box difference (the walker reopens it),
-  or the shot showing the element differently.
+- **Shared rule, measured:** for the layout properties `display`, `gap`, `column-gap`, `row-gap`, `align-items`,
+  `text-align` and `justify-content` (`lib/neutralise.mjs::NEUTRALISED`, re-exported as `compare.mjs::INERT_LAYOUT`),
+  the live walk proves each difference in the open page. In each state, `neutralisePass` sets the draft value on the
+  element the property was read from (a layout property on `paint.mjs::layoutElement`, the others on the pair
+  element), with transitions off. It reads every box and every line of text inside the pair and the siblings after
+  it, before and after, then restores the element exactly. The verdict per property:
+  - `inert`: nothing moved more than half a pixel;
+  - `breaks-box`: the pair element's own box moved;
+  - `moves`: only what is inside the pair or after it moved.
+
+  `compare.mjs::isAccepted` (after the config's own accepts) accepts `inert`, and `breaks-box` while the pair's box
+  rows all match. In that case writing the draft value would move a box that already matches the draft: the two sides
+  reach the same paint by different layout (home's process step is a grid with an empty second row where the draft's
+  flex has one row). A `moves` verdict stays open.
+
+  A matching pair box alone accepts nothing. The earlier box-match rule (`ba31e5157`) accepted any value, so children
+  moving inside a same-size box went unreported. Text-run and group pairs have no one element to set, so they are not tested. A client config never
+  repeats these properties (`scripts/computed-route/tests/walker-inert-layout.test.mjs` fails when one does).
+- **Proof:** `scripts/computed-route/tests/walker-neutralise.test.mjs` (headless Chromium):
+  - a 48px gap against 16px between three children moves them (MUST FAIL);
+  - a row gap on a grid with an empty second row breaks the box;
+  - a one-child link's gap is inert even under a transition, and the element's style attribute is restored byte for
+    byte;
+  - centring moves short text in a wide box and nothing in a box the text fills.
+- **Falsified by:** a `notPainted` accept on a pair that also has a box difference (the walker reopens it), a
+  neutralised row whose shot shows the element differently, or an accepted tested-layout row with no inert verdict
+  for its pair in that state and width.
 
 ## 9. Hover end states and motion
 

@@ -82,10 +82,17 @@ export function textCarrier( el ) {
 // paints through every in-flow descendant, so it comes from the nearest decorated element at or above the text. An
 // inline-block, a float or an out-of-flow box stops it reaching further up. Returns that element's computed style, or null.
 export function paintedDecoration( from ) {
+	const e = decoratedElement( from );
+	return e ? getComputedStyle( e ) : null;
+}
+
+// Self-contained. The element whose decoration paintedDecoration reads (ref-trace.mjs stamps underline rows with its path),
+// or null.
+export function decoratedElement( from ) {
 	for ( let a = from; a && a !== document.documentElement; a = a.parentElement ) {
 		const s = getComputedStyle( a );
 		if ( 'none' !== s.textDecorationLine ) {
-			return s;
+			return a;
 		}
 		if ( /^inline-/.test( s.display ) || 'none' !== s.cssFloat || /absolute|fixed/.test( s.position ) ) {
 			return null;
@@ -186,4 +193,4 @@ export function lineRows( el ) {
 }
 
 // The source collectPair and hoverStyles rebuild their paint helpers from.
-export const PAINT_SRC = [ textCarrier, paintedDecoration, layoutElement, textRun, groupBox, lineRows ].map( ( f ) => f.toString() ).join( ';\n' );
+export const PAINT_SRC = [ textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox, lineRows ].map( ( f ) => f.toString() ).join( ';\n' );

@@ -116,7 +116,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
 	// eslint-disable-next-line no-new-func
-	const { textCarrier, paintedDecoration, layoutElement, textRun, groupBox } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, layoutElement, textRun, groupBox };` )();
+	const { textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox };` )();
 	const el = resolve( finder );
 	if ( ! el ) {
 		return { missing: true };
@@ -261,7 +261,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	let trace;
 	if ( refPrefix ) {
 		// eslint-disable-next-line no-new-func
-		trace = new Function( `return (${ traceSrc });` )()( el, carrier, refPrefix, pathSrc, layoutEl, iconEl );
+		trace = new Function( `return (${ traceSrc });` )()( el, carrier, refPrefix, pathSrc, layoutEl, iconEl, finder.group ? null : decoratedElement( carrier || el ) );
 	}
 	// The words the element paints: innerText without visually hidden text (a screen-reader link name clipped to nothing,
 	// auto-collect.mjs::collectAuto's srOnly test). An element that paints no words is named by its aria-label, else

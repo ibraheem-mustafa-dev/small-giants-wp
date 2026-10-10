@@ -234,6 +234,19 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   is inert. It ships with the value-source field (`collectPair` returns `{value, src}`), which absorbs
   `walker-decoration.test.mjs.pending`. It replaces `compare.mjs::INERT_LAYOUT` (`ba31e5157`). A gap of 48 vs 16 in a
   fixed box stays open.
+  **Built 2026-10-10:**
+  - Verdicts: `inert` (nothing moved), `breaks-box` (the pair's own box moved) or `moves` (only content moved).
+  - `isAccepted` accepts `inert`, and `breaks-box` while the pair's box matches; `moves` stays open.
+  - First home walk, binary verdict: the process steps were found to be a grid with an empty second row, so the draft's
+    16px row gap would move a box that already matches. Hence the `breaks-box` verdict.
+  - Home walk (`qa/solve/home/2026-10-10T-neutralise-walk-2/`): of the tested layout rows, 141 inert and 96 reached
+    another way are accepted on measured evidence, 0 rows the old rule accepted are reopened, and 8 stay open as before.
+    Mega-lenses: 6 accepted, 0 reopened.
+  - The answer sheet has one row on these seven properties (FA-P1-01), so it cannot score this phase. Its other
+    "paints nothing" rows (scale, padding, width, line-height, colour) are R6 work.
+  - Underline rows are stamped with the decorated element's path (`decoPath`, `paint.mjs::decoratedElement`);
+    `walker-decoration.test.mjs` is live.
+  - The full `{ value, src }` row field is not built: it is only needed for properties R6 tries.
 - **R6. Try before write.** `scripts/computed-route/lib/trial.mjs` (from `evidence/trial.mjs`) renders the block twice
   through `/wp/v2/block-renderer`. The current render must reproduce the live uid and its CSS, otherwise the block is
   `needs-rebuild`; `wp_unique_id`/`microtime` and `usesContext` blocks always rebuild. It injects the CSS difference,
