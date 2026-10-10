@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "handoff-schema/surfaces.schema.json",
+  "title": "Surface and interactive-state inventory for a .dc.html handoff",
+  "type": "object",
+  "required": ["schema_version", "project", "runtime_sha256", "records", "counts", "unresolved"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "project": { "type": "string" },
+    "generated": { "type": "string", "format": "date" },
+    "runtime_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "records": { "type": "array", "items": { "$ref": "#/$defs/surface" } },
+    "counts": {
+      "type": "object", "required": ["routes", "toggling_sc_ifs"], "additionalProperties": false,
+      "properties": {
+        "routes": { "$ref": "#/$defs/count" },
+        "toggling_sc_ifs": { "$ref": "#/$defs/count" },
+        "other_sc_ifs": { "type": "object", "description": "sc-ifs that only switch content variants or breakpoints, listed so the total reconciles.", "additionalProperties": true }
+      }
+    },
+    "unresolved": { "type": "array", "items": { "type": "object", "required": ["item", "reason"], "properties": { "item": { "type": "string" }, "reason": { "type": "string" } } } }
+  },
+  "$defs": {
+    "count": {
+      "type": "object", "required": ["by_dc", "total", "covered_by"], "additionalProperties": false,
+      "properties": { "by_dc": { "type": "object", "additionalProperties": { "type": "integer" } }, "total": { "type": "integer" }, "covered_by": { "type": "object", "additionalProperties": { "type": "string" } }, "note": { "type": "string" } }
+    },
+    "state": {
+      "type": "object", "required": ["name", "state_keys", "how_to_reach"], "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "state_keys": { "type": "object", "description": "Logic state (or derived value) that defines this state.", "additionalProperties": true },
+        "sc_if_tpl_ids": { "type": "array", "items": { "type": "string" }, "description": "sc-if elements whose value flips for this state." },
+        "how_to_reach": { "type": "string", "description": "User action, plus the setState call that reaches it programmatically." },
+        "animation_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "surface": {
+      "type": "object",
+      "required": ["id", "kind", "name", "dc", "template_tpl_id", "route", "opened_by", "closed_by", "states", "time_dependent"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^S-[0-9]{2,3}$" },
+        "kind": { "enum": ["page", "global", "header", "footer", "menu", "drawer", "backdrop", "panel", "accordion", "modal", "form", "form-step", "result"] },
+        "name": { "type": "string" },
+        "dc": { "type": "string" },
+        "template_tpl_id": { "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }, { "type": "null" }] },
+        "route": { "type": ["string", "null"], "description": "Hash route, '*' for every route, null if not route-bound." },
+        "page_key": { "type": ["string", "null"] },
+        "blocks": { "type": "array", "items": { "type": "string" } },
+        "breakpoints": { "type": "array", "items": { "enum": ["mobile", "tablet", "desktop"] } },
+        "parent": { "type": ["string", "null"] },
+        "opened_by": { "type": "string" },
+        "closed_by": { "type": "string" },
+        "states": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/state" } },
+        "time_dependent": {
+          "type": "object", "required": ["value", "reason"], "additionalProperties": false,
+          "properties": { "value": { "type": "boolean" }, "reason": { "type": "string" } }
+        },
+        "source": { "type": "string", "description": "Function, getter or ref that drives the surface." },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

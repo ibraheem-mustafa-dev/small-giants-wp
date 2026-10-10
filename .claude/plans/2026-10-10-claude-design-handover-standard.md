@@ -24,7 +24,8 @@ can name a procedure file, but only advisorily. Research record:
 `~/.claude/memory/research/2026-10-10-claude-design-custom-skills-and-sunset.md`.
 
 **Bean's decisions (2026-10-10).**
-- A draft is exported with Claude Design's "Handoff to Claude Code" skill and its design-system skill in one prompt, never
+- A draft is exported with Claude Design's "Handoff to Claude Code" skill and its design-system skill in one standard
+  pasted prompt (A4), never
   the zip or standalone download (recorded in Spec 47 §2, `dev-setup.md` "Client drafts", `CLAUDE.md` Sites).
 - The machine-readable layer is built in Claude Code by an **intake** step (approach B): it reads the handoff README, the
   design-system `tokens/` and the draft's own code into one structured file Bean confirms once. Designed after Task B.
@@ -59,20 +60,25 @@ the zip; not in git).
 | `animations.json`, `surfaces.json` | Essential: written by Claude Design's `dc-handoff-inventory` skill from the code. Indus: 183 animation records, 60 surface records, 0 schema errors, every code count reconciled, and 43 of 43 traced home animations match a record (negative control 0 of 43; `.claude/reports/2026-10-10-handover-council/trace-check.mjs`). |
 | `MANIFEST.md` | Essential: date, runtime version (`support.js` SHA-256) and a hash per file; a copy is current only if its hash matches. |
 | `READING-DC-FILES.md` | Essential: how to read and run a draft (boot, template language, logic API, reaching the live logic instance to `setState` any menu, drawer or form step, every element-to-code marker, a determinism recipe for headless runs). |
-| `handoff-schema/` (two JSON Schemas, `METHOD.md`, `trace/trace-harness.html`) and `dc-handoff-inventory/` (the skill) | Essential: the fixed format and the method to reproduce the inventory. |
+| `handoff-schema/` (two JSON Schemas, `METHOD.md`, `trace/trace-harness.html`) | Essential: the fixed format and the method to reproduce the inventory (the optional trace harness is written for Indus). Claude Design's `dc-handoff-inventory/` skill wrapper adds nothing beyond `METHOD.md`; the A4 prompt replaces it. |
 | Design-system `tokens/colors.css`, `typography.css`, `spacing.css` | Essential: the only machine-readable tokens (34 colour properties, fonts with the Google Fonts URL, radii, shadows, gap scale, per-device gutters and section padding, four easings). The tokens are the brand palette; the draft's other 33 colours are one-offs by design and are written as hex, never added as palette tokens (`memory: one-off-colours-are-hex-not-presets`), so the colour picker shows only the real palette. The draft wins on conflict (body text #1E2A3C). |
 | Design-system `readme.md` | Useful for content tone and iconography only. |
 | `components/` (Button, Chip, card), `guidelines/*.html`, `styles.css`, `SKILL.md` | Not needed: variant names at most; values come from the draft. |
 | Everything else in the full zip (v1 page, mega-menu prototypes, `_feature.dc.html`, `screenshots/`, `uploads/`, root duplicates) | Not needed and hazardous: earlier explorations with different hooks. Never export the full zip for cloning. |
 
-**A4. Export recipe (per project, in Claude Design).**
-1. Upload into the project: `CLAUDE.md` at its root and the `dc-handoff-inventory/` folder at
-   `skills/dc-handoff-inventory/` (both ready in `.claude/Indus-Foods-Claude-Design-Files/design_handoff_indus_foods_website/`;
-   the folder includes `reference/READING-DC-FILES.md`). No slash command appears; the `CLAUDE.md` tells Claude Design to
-   read and follow the skill file on every handoff, and its output is a bonus that Claude Code re-derives and checks.
-2. One prompt runs "Handoff to Claude Code" and the design-system skill.
-3. Download only: the handoff folder (with `animations.json`, `surfaces.json`, `MANIFEST.md`, `READING-DC-FILES.md`),
-   the design-system `tokens/`, and `handoff-schema/`.
+**A4. Export recipe (per project, in Claude Design).** Everything lives in `.claude/claude-design-handoff/` (a copy sits
+in `Claude Design handoff` on Bean's desktop; the repo copy is the one that gets edited).
+1. Once per project, upload the `handoff-schema/` folder (`METHOD.md`, the two JSON Schemas and
+   `READING-DC-FILES.example.md`, the Indus reading guide used as a model).
+2. Paste `PROMPT.txt` into the chat. It runs "Handoff to Claude Code" and the design-system skill, corrects the README
+   against the code, writes the inventory by `METHOD.md`, writes the project's own `READING-DC-FILES.md`, flags the two
+   known runtime traps, copies `tokens/` and `handoff-schema/` into the handoff folder and writes `MANIFEST.md` last.
+3. Download only the handoff folder.
+
+A pasted prompt replaces the earlier uploaded `CLAUDE.md` plus `dc-handoff-inventory` skill: Claude Design never
+registers uploaded skills, a `CLAUDE.md` is only advisory, and a prompt is a direct instruction that also works in the
+artifact-based Claude Design. The skill wrapper held nothing beyond `METHOD.md` (its `reference/method.md` is
+byte-identical) and the prompt. Claude Design's inventory remains a cross-check; Claude Code re-derives it at intake.
 
 **Draft fixes Claude Design made (2026-10-10), relevant to every draft.** The runtime passes `componentDidUpdate` only
 `prevProps`; drafts written as `(pp, ps)` never ran their update behaviour (Indus: route-change entrance, mega-menu and
