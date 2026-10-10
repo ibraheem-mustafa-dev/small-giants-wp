@@ -51,6 +51,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --targe
 
 - Canary `sandybrown-nightingale-600381.hostingersite.com` runs WP 7.1 (`wp core version` over SSH). Homepage = **page 2742** (`/`), posts page = **2741** (`/blog/`). Post 66 is raw HTML (a mirror, not a clone) — never reuse it. Verify a post ID exists before pointing anything at it.
 - Clones go to PAGES (`page.html`), never posts (`single.html` caps `.entry-content` at 800px).
+- A client draft comes from Claude Design's "Handoff to Claude Code" skill (`design_handoff_<project>/` with its README), never the zip or standalone download (`.claude/dev-setup.md` "Client drafts").
 - Each client has its own test site because the active header/footer/drawer/snapshot pointers are single global options.
 - SSH: `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias `ssh hd`); WP admin user `Claude`.
 - Credentials (gitignored, always available — don't ask): `.claude/secrets/<site>.env` (`WP_USER_*`, `WP_PWD_*`, `WP_APP_PWD_*`, `WP_URL_*`).

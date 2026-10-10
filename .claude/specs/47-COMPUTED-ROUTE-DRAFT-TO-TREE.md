@@ -67,6 +67,10 @@ carries. The route reads the framework database, the parity walker and the page 
 
 - **Input:** one surface (a page, the header, the footer, a drawer, a modal) of a draft that renders in a browser,
   that site's `theme-snapshot.json` (Spec 32 §14, Part C), and the framework database.
+- **How a draft arrives:** Claude Design's built-in "Handoff to Claude Code" skill exports it, never the plain zip or
+  standalone download. The handoff writes the `design_handoff_<project>/` folder: a README (screens, animations, state,
+  breakpoints, tokens) beside the site's `.dc.html` files and assets. A zip or standalone export has no README, so the
+  extractor falls back to guessing the palette from usage.
 - **Surface manifest:** `sites/<client>/build/surfaces.json`, one entry per surface:
   `{ "<surface>": { "tree": "footer.tree.json", "envFile": ".claude/secrets/<site>.env", "envKey": "<KEY>", "target": { "postId": 182 } | { "templatePart": "<slug>" } | { "template": "<slug>" }, "walker": "qa/parity/footer.mjs", "draftUrl": "<url>" } }`.
   Solve and Fill take `--client <slug> --surface <name>` and read only this. An entry also names its walker states'

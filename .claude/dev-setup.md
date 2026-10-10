@@ -243,7 +243,9 @@ cannot hold different active layouts on one site: activating an Indus header on 
 replace the Mama's Munches header sitewide. Indus Foods therefore builds on its own site. Another
 client target is one `TARGETS` entry with `explicit_opt_in_required: True` (enforced in code).
 
-**Client drafts (the reference a build is compared with):** each Claude Design draft is a folder of `.dc.html` pages
+**Client drafts (the reference a build is compared with):** a draft comes out of Claude Design through its built-in
+"Handoff to Claude Code" skill (the `design_handoff_<project>/` folder with its README), never the zip or standalone
+download, which carry no README. Each Claude Design draft is a folder of `.dc.html` pages
 served locally by `scripts/computed-route/lib/draft.mjs::serveDraft`. `node scripts/computed-route/fill.mjs --serve
 <folder> --draft-index <entry>` serves it until Ctrl-C on a new port each run, and a surface on another page of the draft
 is `<served url>/<Page>.dc.html`. Fill takes the folder as `--draft-dir <folder> --draft-index <entry>` (or the served

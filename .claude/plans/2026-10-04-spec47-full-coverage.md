@@ -769,6 +769,9 @@ Results, run records and counts moved out of Spec 47 section 5. Spec 47 section 
    its v2 home page throws a React error at runtime and needs fixing in Claude Design first). Both drafts carry the
    `data-dc-tpl` stamps the skeleton writer uses. The redesign's `Theme Mapping.md` is a candidate answer key for the
    skeleton writer once reviewed (its core-block and plugin picks replaced through `blocks.replaces`).
+   **Stage 5 is replanned (Bean, 2026-10-10):** all three drafts (Indus, Mama's, Eye Care) are re-exported through
+   Claude Design's "Handoff to Claude Code" skill, the handover folder is standardised first, and setting up and
+   cloning the three drafts is replanned against it. The run below was on a zip export with no README and is not resumed.
    **First surface run 2026-10-10: Mama's footer (`SiteFooter.dc.html`), not yet at the done line.** Setup:
    `sites/mamas-munches-redesign/build/surfaces.json` (footer = `sgs_footer` post 19 on mamas-test, made the active
    footer through `sgs_active_footer_cpt_id` as Eye Care's 182 is, `canvas: true`); the draft served by
