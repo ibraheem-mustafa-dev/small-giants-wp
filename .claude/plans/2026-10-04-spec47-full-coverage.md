@@ -253,6 +253,23 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   re-measures every width, and keeps a write only if the page moves toward the draft. It replaces `guard.mjs`'s
   per-walk trials for trialled blocks. R-47-9 is amended: a wrong write is any write a post-write read shows moving away
   from the draft. Done: the home cards' doubled padding (WW-HM-01..03) is rejected before writing.
+  **Built 2026-10-10 (steps 1 and 2 of 3):**
+  - `lib/trial.mjs` and `lib/trial-page.mjs` hold the judgement and the page side. `trial.mjs` replays one round of a
+    Solve run.
+  - The self-check needs the attributes saved on the post: the uid hashes exactly those, and the editor normalises the
+    tree's attributes on save. Reading the committed tree failed the self-check on 24 of 24 home writes; reading the
+    post's raw content over REST (`savedBlock`) passed it on 21.
+  - Verdicts: `keep`, `reject`, `no-box-change` (a colour moves no box, so the rebuild judges it), `needs-rebuild`
+    (usesContext, per-request classes, a self-check miss or a markup change) and `no-css`.
+  - Home round-1 replay of `qa/solve/home/2026-10-09T09-03-14` on the local mirror: 24 writes, keep 2, reject 6, no box
+    change 12, needs a rebuild 3, same CSS 1.
+  - Wrong writes avoided on the answer sheet: 5/7 (was 0/7). The four card paddings and the brand-strip padding are
+    rejected before writing; WW-HM-06 (multi-button gap) and -07 (button transition) are per-request-class blocks,
+    which the trial cannot judge.
+  - One reject to check: `cr-ref-home-54` borderWidth (+3px, not on the answer sheet).
+  - **Step 3, next:** call the trial from `solve.mjs` after `writeRound` and before the rebuild (pre-round saved
+    attributes as A, undo and block a rejected write). Prove it with one home Solve run on the mirror; then amend
+    R-47-9 and record that the guard's per-walk trials remain only for blocks the trial cannot judge.
 Header and footer reshaped on 2026-10-09 (register N47-N49): the wordmark is an image on both sides and Visit or call is
 one icon-list (`cr-ref-footer-23`). Done the same day: mirror refreshed from eye-care-test (home cards back to 291px at 375;
 `refresh-from-remote.sh` now runs its WSL step with `--exec`, because `wsl --` expanded `$got` in an extra shell and the

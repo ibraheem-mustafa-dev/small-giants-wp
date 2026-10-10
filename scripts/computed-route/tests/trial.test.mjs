@@ -14,7 +14,7 @@ const blockX = at( { live: 0, draft: 0 } );
 
 test( 'MUST FAIL (home cards, 2026-10-09): a write that narrows the card content away from the draft is rejected', () => {
 	const v = judgeTrial( { before: at( { item: box( 291, 42 ) } ), after: at( { item: box( 247, 64 ) } ), draft: at( { item: box( 291, 42 ) } ), blockX } );
-	assert.equal( v.keep, false );
+	assert.equal( v.verdict, 'reject' );
 	assert.deepEqual( v.worse.map( ( x ) => [ x.width, x.pair ] ), [ [ 375, 'item' ] ] );
 } );
 
@@ -24,10 +24,11 @@ test( 'positive control: the same change in the other direction moves the page t
 	assert.ok( v.delta < 0 );
 } );
 
-test( 'a write that helps one pair and hurts another by more than a pixel is rejected; one that changes nothing is not kept', () => {
+test( 'a write that helps one pair and hurts another by more than a pixel is rejected; one that moves no box is left to the rebuild', () => {
 	const draft = at( { a: box( 100 ), b: box( 100 ) } );
 	assert.equal( judgeTrial( { before: at( { a: box( 80 ), b: box( 100 ) } ), after: at( { a: box( 100 ), b: box( 90 ) } ), draft, blockX } ).keep, false );
-	assert.equal( judgeTrial( { before: at( { a: box( 80 ) } ), after: at( { a: box( 80 ) } ), draft, blockX } ).keep, false );
+	const none = judgeTrial( { before: at( { a: box( 80 ) } ), after: at( { a: box( 80 ) } ), draft, blockX } );
+	assert.equal( none.verdict, 'no-box-change', 'a colour write moves no box: the rebuild judges it, it is not rejected' );
 } );
 
 test( 'uids map by prefix; rules diff as text; the self-check refuses a render whose uid or rules differ from live', () => {
@@ -51,4 +52,12 @@ test( 'the replay tries the last write of each setting on each block in the roun
 	const w = ( ref, attr, round, after ) => ( { ref, attr, round, after, group: `${ ref }||${ attr }|` } );
 	const c = candidatesOf( [ w( 'r1', 'padding', 1, 'a' ), w( 'r1', 'padding', 1, 'b' ), w( 'r1', 'gap', 1, 'g' ), w( 'r2', 'padding', 2, 'x' ) ], 1 );
 	assert.deepEqual( c.map( ( x ) => [ x.ref, x.attr, x.after ] ), [ [ 'r1', 'padding', 'b' ], [ 'r1', 'gap', 'g' ] ] );
+} );
+
+test( 'the saved attributes of a block are found by its ref in raw post content, nested objects and braces in strings included', async () => {
+	const { savedBlock } = await import( '../lib/trial.mjs' );
+	const raw = '<!-- wp:sgs/container {"className":"cr-ref-home-30","padding":{"desktop":{"top":"1px"}}} -->\n<!-- wp:sgs/text {"text":"a } brace","className":"x cr-ref-home-31"} /-->\n<!-- /wp:sgs/container -->';
+	assert.deepEqual( savedBlock( raw, 'cr-ref-home-31' ), { name: 'sgs/text', attributes: { text: 'a } brace', className: 'x cr-ref-home-31' } } );
+	assert.equal( savedBlock( raw, 'cr-ref-home-30' ).attributes.padding.desktop.top, '1px' );
+	assert.equal( savedBlock( raw, 'cr-ref-home-3' ), null );
 } );

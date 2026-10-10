@@ -73,8 +73,10 @@ export function pairDistance( live, draft, blockX ) {
 }
 
 // The verdict on one trial at all widths. before/after: { [width]: { [pair]: { box } } } measured live; draft: the same
-// for the draft; blockX: { [width]: { live, draft } }. Kept only when the summed distance falls and no pair moves more
-// than tol px further from the draft. Returns { keep, delta, worse: [ { width, pair, by } ] }.
+// for the draft; blockX: { [width]: { live, draft } }. `keep` when the summed distance falls and no pair moves more than
+// tol px further from the draft; `reject` when a pair moves further or the sum rises; `no-box-change` when no box moved
+// (a colour, a border colour: boxes cannot judge it, so the rebuild and walk do, as before). Returns { verdict, keep,
+// delta, worse: [ { width, pair, by } ] }.
 export function judgeTrial( { before, after, draft, blockX }, tol = 1 ) {
 	let delta = 0;
 	const worse = [];
@@ -89,5 +91,44 @@ export function judgeTrial( { before, after, draft, blockX }, tol = 1 ) {
 			a - b > tol && worse.push( { width: Number( w ), pair, by: +( a - b ).toFixed( 1 ) } );
 		}
 	}
-	return { keep: delta < -tol && ! worse.length, delta: +delta.toFixed( 1 ), worse };
+	const verdict = worse.length || delta > tol ? 'reject' : ( delta < -tol ? 'keep' : 'no-box-change' );
+	return { verdict, keep: 'keep' === verdict, delta: +delta.toFixed( 1 ), worse };
+}
+
+// The saved attributes of the block whose className carries ref, from a post's raw content: { name, attributes } or
+// null. The uid is a hash of exactly these (the editor normalises a tree's attributes on save), so a trial starts from
+// them, never from the tree. Block comments are scanned with balanced braces, strings honoured.
+export function savedBlock( raw, ref ) {
+	const open = /<!--\s+wp:([a-z0-9-]+(?:\/[a-z0-9-]+)?)\s+/g;
+	for ( let m = open.exec( raw ); m; m = open.exec( raw ) ) {
+		let i = open.lastIndex;
+		if ( '{' !== raw[ i ] ) {
+			continue;
+		}
+		const start = i;
+		let depth = 0;
+		let inStr = false;
+		for ( ; i < raw.length; i++ ) {
+			const ch = raw[ i ];
+			if ( inStr ) {
+				'\\' === ch ? i++ : '"' === ch && ( inStr = false );
+			} else if ( '"' === ch ) {
+				inStr = true;
+			} else if ( '{' === ch ) {
+				depth++;
+			} else if ( '}' === ch && 0 === --depth ) {
+				break;
+			}
+		}
+		let attributes;
+		try {
+			attributes = JSON.parse( raw.slice( start, i + 1 ) );
+		} catch {
+			continue;
+		}
+		if ( String( attributes.className || '' ).split( /\s+/ ).includes( ref ) ) {
+			return { name: m[ 1 ].includes( '/' ) ? m[ 1 ] : `core/${ m[ 1 ] }`, attributes };
+		}
+	}
+	return null;
 }

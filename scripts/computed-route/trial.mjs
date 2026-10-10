@@ -3,8 +3,8 @@
 //   node scripts/computed-route/trial.mjs --client <slug> --surface <s> --run <solve run dir> [--round 1]
 //     [--site <calibration target>] [--widths 375,768,1440] [--out <dir>]
 // Takes one round's writes from a Solve run's solve-report.json and tries each (one setting on one block) in the open
-// live page of --site (default the surface's own site) before anything is saved: the block rendered with its committed
-// tree attributes and with the write (core /wp/v2/block-renderer), the self-check (the current render reproduces the
+// live page of --site (default the surface's own site) before anything is saved: the block rendered with the
+// attributes saved on the surface's post (read over REST: the uid hashes exactly those) and with the write (core /wp/v2/block-renderer), the self-check (the current render reproduces the
 // live uid and its CSS), the CSS difference applied on the live uid, the pairs in and after the block measured at every
 // width against the run's draft cache, the change undone (lib/trial.mjs, lib/trial-page.mjs). Writes, into --out
 // (default <run>/trial-round-<n>): trial.json, trial.md and writes-kept.json ({ writes, wrong: [] }, the writes the
@@ -14,8 +14,7 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { resolveFinder } from '../parity/lib/collect.mjs';
 import { retargetLive } from '../parity/lib/helpers.mjs';
-import { walk, refOf } from './lib/tree.mjs';
-import { uidsIn, mapUids, ruleDiff, selfCheck, untriable, withWrite, judgeTrial } from './lib/trial.mjs';
+import { uidsIn, mapUids, ruleDiff, selfCheck, untriable, withWrite, judgeTrial, savedBlock } from './lib/trial.mjs';
 import { readEnv, adminSession, renderBlock, styleOf, rootClassOf, rulesInPage, parseInPage, cssOf, applyTrialInPage, undoTrialInPage, measureInPage, scopeInPage } from './lib/trial-page.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -44,6 +43,19 @@ function draftBoxes( runDir, widths ) {
 		out[ w ] = Object.fromEntries( Object.entries( entry.states[ state ].snap ).filter( ( [ , s ] ) => s?.box ).map( ( [ n, s ] ) => [ n, { box: s.box } ] ) );
 	}
 	return out;
+}
+
+// A post's raw content by id, whatever its type: pages, posts, then every other REST post type.
+async function savedContent( session, id ) {
+	const types = JSON.parse( ( await session.api( '/wp-json/wp/v2/types' ) ).body );
+	const bases = [ 'pages', 'posts', ...Object.values( types ).map( ( t ) => t.rest_base ).filter( ( b ) => b && ! [ 'pages', 'posts' ].includes( b ) ) ];
+	for ( const b of bases ) {
+		const r = await session.api( `/wp-json/wp/v2/${ b }/${ id }?context=edit&_fields=content` );
+		if ( 200 === r.status ) {
+			return JSON.parse( r.body ).content?.raw || '';
+		}
+	}
+	throw new Error( `post ${ id } is not readable through any REST post type` );
 }
 
 const minX = ( pairs, names ) => Math.min( ...names.map( ( n ) => pairs[ n ]?.box?.x ).filter( ( x ) => null != x ) );
@@ -98,7 +110,7 @@ async function tryOne( { cand, attrs, session, live, finders, widths, draft } ) 
 		blockX[ w ] = { live: minX( m0.pairs, scope ), draft: minX( draft[ w ] || {}, scope ) };
 	}
 	const v = judgeTrial( { before, after, draft, blockX } );
-	return { verdict: v.keep ? 'keep' : 'reject', delta: v.delta, worse: v.worse, scope: scope.length, added: added.length, removed: removed.length, restored };
+	return { verdict: v.verdict, delta: v.delta, worse: v.worse, scope: scope.length, added: added.length, removed: removed.length, restored };
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
@@ -117,12 +129,6 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const origin = env[ `WP_URL_${ target.envKey }` ].replace( /\/+$/, '' );
 	const cfg = retargetLive( ( await import( pathToFileURL( path.join( buildDir, s.walkerFull || s.walker ) ).href ) ).default, origin );
 	const finders = Object.fromEntries( cfg.pairs.filter( ( p ) => p?.name && p.live && 'function' !== typeof p.live ).map( ( p ) => [ p.name, p.live ] ) );
-	const tree = JSON.parse( fs.readFileSync( path.join( buildDir, s.tree ), 'utf8' ) );
-	const attrsOf = {};
-	walk( tree, ( n ) => {
-		const ref = refOf( n );
-		ref && ( attrsOf[ ref ] = n.attributes || {} );
-	} );
 	const report = JSON.parse( fs.readFileSync( path.join( runDir, 'solve-report.json' ), 'utf8' ) );
 	const cands = candidatesOf( report.writes || [], round );
 	const draft = draftBoxes( runDir, widths );
@@ -132,12 +138,14 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	try {
 		const ctx = await browser.newContext();
 		const session = await adminSession( ctx, env, target.envKey );
+		const raw = await savedContent( session, s.target.postId );
 		const live = await ( await browser.newContext() ).newPage( { viewport: { width: widths[ 0 ], height: 900 } } );
 		await live.goto( cfg.live.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } );
 		await live.addStyleTag( { content: '*,*::before,*::after{transition:none!important;animation:none!important}' } );
 		for ( const cand of cands ) {
 			const t0 = Date.now();
-			const r = attrsOf[ cand.ref ] ? await tryOne( { cand, attrs: attrsOf[ cand.ref ], session, live, finders, widths, draft } ).catch( ( e ) => ( { verdict: 'error', why: e.message } ) ) : { verdict: 'needs-rebuild', why: 'no tree node carries this ref' };
+			const saved = savedBlock( raw, cand.ref );
+			const r = saved ? await tryOne( { cand, attrs: saved.attributes, session, live, finders, widths, draft } ).catch( ( e ) => ( { verdict: 'error', why: e.message } ) ) : { verdict: 'needs-rebuild', why: 'no saved block on the post carries this ref' };
 			results.push( { ref: cand.ref, block: cand.block, attr: cand.attr, group: cand.group, ms: Date.now() - t0, ...r } );
 			console.log( `${ cand.ref } ${ cand.attr }: ${ r.verdict }${ r.why ? ` (${ r.why })` : '' }${ null != r.delta ? ` delta ${ r.delta }` : '' }` );
 		}
@@ -145,12 +153,13 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		await browser.close();
 	}
 	fs.mkdirSync( outDir, { recursive: true } );
-	const kept = new Set( results.filter( ( r ) => [ 'keep', 'needs-rebuild', 'error' ].includes( r.verdict ) ).map( ( r ) => `${ r.ref }|${ r.attr }` ) );
-	// A write the trial could not judge is kept: the rebuild and walk decide it, as before.
+	const kept = new Set( results.filter( ( r ) => [ 'keep', 'no-box-change', 'needs-rebuild', 'error' ].includes( r.verdict ) ).map( ( r ) => `${ r.ref }|${ r.attr }` ) );
+	// A write the trial could not judge (no box moved, a rebuild needed, an error) is kept: the rebuild and walk decide it,
+// as before. Only a reject is dropped.
 	const writesKept = ( report.writes || [] ).filter( ( w ) => w.round !== round || kept.has( `${ w.ref }|${ w.attr }` ) );
 	fs.writeFileSync( path.join( outDir, 'trial.json' ), JSON.stringify( { run: path.relative( REPO, runDir ), round, widths, results }, null, 1 ) );
 	fs.writeFileSync( path.join( outDir, 'writes-kept.json' ), JSON.stringify( { writes: writesKept, wrong: [] }, null, 1 ) );
 	const count = ( v ) => results.filter( ( r ) => r.verdict === v ).length;
-	fs.writeFileSync( path.join( outDir, 'trial.md' ), [ `# Trial: ${ surface } round ${ round }`, '', `${ results.length } writes: keep ${ count( 'keep' ) }, reject ${ count( 'reject' ) }, needs a rebuild ${ count( 'needs-rebuild' ) }, same CSS ${ count( 'no-css' ) }, error ${ count( 'error' ) }.`, '', '| Ref | Setting | Verdict | Delta px | Worse | Why |', '|---|---|---|---|---|---|', ...results.map( ( r ) => `| ${ r.ref } | ${ r.attr } | ${ r.verdict } | ${ r.delta ?? '' } | ${ ( r.worse || [] ).map( ( x ) => `${ x.pair }@${ x.width } +${ x.by }` ).join( ', ' ) } | ${ r.why || '' } |` ), '' ].join( '\n' ) );
-	console.log( `trial ${ surface }: keep ${ count( 'keep' ) }, reject ${ count( 'reject' ) }, rebuild ${ count( 'needs-rebuild' ) }, same CSS ${ count( 'no-css' ) }, error ${ count( 'error' ) }. ${ path.relative( REPO, outDir ) }` );
+	fs.writeFileSync( path.join( outDir, 'trial.md' ), [ `# Trial: ${ surface } round ${ round }`, '', `${ results.length } writes: keep ${ count( 'keep' ) }, reject ${ count( 'reject' ) }, no box change ${ count( 'no-box-change' ) }, needs a rebuild ${ count( 'needs-rebuild' ) }, same CSS ${ count( 'no-css' ) }, error ${ count( 'error' ) }.`, '', '| Ref | Setting | Verdict | Delta px | Worse | Why |', '|---|---|---|---|---|---|', ...results.map( ( r ) => `| ${ r.ref } | ${ r.attr } | ${ r.verdict } | ${ r.delta ?? '' } | ${ ( r.worse || [] ).map( ( x ) => `${ x.pair }@${ x.width } +${ x.by }` ).join( ', ' ) } | ${ r.why || '' } |` ), '' ].join( '\n' ) );
+	console.log( `trial ${ surface }: keep ${ count( 'keep' ) }, reject ${ count( 'reject' ) }, no box change ${ count( 'no-box-change' ) }, rebuild ${ count( 'needs-rebuild' ) }, same CSS ${ count( 'no-css' ) }, error ${ count( 'error' ) }. ${ path.relative( REPO, outDir ) }` );
 }
