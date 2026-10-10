@@ -169,8 +169,16 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   47 false alarms, 29 wrong writes, 24 real problems), `scripts/computed-route/lib/answer-sheet.mjs` (row keys matched on
   state, width, ref, path, kind and property; pair names renumber, so they are not matched), CLI
   `scripts/computed-route/answer-sheet.mjs`, test `tests/answer-sheet.test.mjs`. A real problem not kept fails (exit 1);
-  false alarms dropped and wrong writes avoided are printed per pattern. Done: footer and home baselines recorded here,
-  and a planted dropped real problem fails.
+  false alarms dropped and wrong writes avoided are printed per pattern. **Built 2026-10-10.** The gate is a ratchet
+  (`qa/answer-sheet-baseline.json`): a row that passed in the baseline and fails now exits 1. A row that never passed is
+  a known miss. A false alarm "absent" from a walk counts as dropped, so the printout shows each label's outcomes.
+  Baseline on each surface's newest stored run:
+  - false alarms dropped: 20 of 47 (footer 4/11, home 3/9, header 0/3, mega-lenses 4/9, mega-brands 7/8, shop 0/3,
+    product 1/3, mega-sunglasses 1/1);
+  - real problems kept: 22 of 24. RP-MB-01 is lost because triage labels it `mispaired`; RP-ML-01 is lost because it
+    exists only in round 1;
+  - wrong writes avoided: 0 of 29.
+  A planted walk with footer RP-FT-01 removed exits 1.
 - **R2. Skeleton writer.** CLI `scripts/computed-route/skeleton.mjs` (inventory, propose, review, finalise, decide) with
   `lib/skeleton-{inventory,propose,review}.mjs`, ported from the prototype in `evidence/`. Block knowledge only from the
   DB and saved decisions (`scripts/computed-route/data/skeleton-decisions.json`, client-free;

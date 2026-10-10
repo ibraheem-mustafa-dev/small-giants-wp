@@ -1,0 +1,106 @@
+{
+	"footer": {
+		"report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+		"triage": "sites/eye-care-ward-end/build/qa/triage/footer.json",
+		"solve": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T08-57-47/solve-report.json",
+		"pass": [
+			"FA-P1-01",
+			"FA-P6-01",
+			"FA-P6-02",
+			"FA-P6-03",
+			"RP-FT-01",
+			"RP-FT-02",
+			"RP-FT-03",
+			"RP-FT-04",
+			"RP-FT-05",
+			"RP-FT-06"
+		]
+	},
+	"home": {
+		"report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+		"triage": "sites/eye-care-ward-end/build/qa/triage/home.json",
+		"solve": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/solve-report.json",
+		"pass": [
+			"FA-P6-04",
+			"FA-P6-05",
+			"FA-P6-06",
+			"RP-HM-01",
+			"RP-HM-02",
+			"RP-HM-03"
+		]
+	},
+	"header": {
+		"report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-09T08-08-15/round-9/report.json",
+		"triage": "sites/eye-care-ward-end/build/qa/triage/header.json",
+		"solve": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-09T08-08-15/solve-report.json",
+		"pass": []
+	},
+	"mega-lenses": {
+		"report": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-4/report.json",
+		"triage": "sites/eye-care-ward-end/build/qa/triage/mega-lenses.json",
+		"solve": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-09T08-40-01/solve-report.json",
+		"pass": [
+			"FA-P4-01",
+			"FA-P4-02",
+			"FA-P4-03",
+			"FA-P4-04",
+			"RP-ML-02",
+			"RP-ML-03"
+		]
+	},
+	"mega-brands": {
+		"report": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-09T08-19-54/round-13/report.json",
+		"triage": "sites/eye-care-ward-end/build/qa/triage/mega-brands.json",
+		"solve": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-09T08-19-54/solve-report.json",
+		"pass": [
+			"FA-P2-09",
+			"FA-P2-10",
+			"FA-P2-11",
+			"FA-P4-06",
+			"FA-P4-07",
+			"FA-P4-08",
+			"FA-P6-07",
+			"RP-MB-02"
+		]
+	},
+	"shop": {
+		"report": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-09T10-11-46/round-13/report.json",
+		"triage": "sites/eye-care-ward-end/build/qa/triage/shop.json",
+		"solve": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-09T10-11-46/solve-report.json",
+		"pass": [
+			"RP-SH-01",
+			"RP-SH-02",
+			"RP-SH-03",
+			"RP-SH-04"
+		]
+	},
+	"product": {
+		"report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-09T09-50-16/round-13/report.json",
+		"triage": "sites/eye-care-ward-end/build/qa/triage/product.json",
+		"solve": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-09T09-50-16/solve-report.json",
+		"pass": [
+			"FA-P1-12",
+			"RP-PR-01",
+			"RP-PR-02",
+			"RP-PR-03",
+			"RP-PR-04",
+			"RP-PR-05"
+		]
+	},
+	"contact-form": {
+		"report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-09T09-50-16/round-6/report.json",
+		"triage": "sites/eye-care-ward-end/build/qa/triage/contact-form.json",
+		"solve": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-09T09-50-16/solve-report.json",
+		"pass": [
+			"RP-CF-01"
+		]
+	},
+	"mega-sunglasses": {
+		"report": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-09T08-17-24/round-2/report.json",
+		"triage": "sites/eye-care-ward-end/build/qa/triage/mega-sunglasses.json",
+		"solve": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-09T08-17-24/solve-report.json",
+		"pass": [
+			"FA-P2-12"
+		]
+	}
+}

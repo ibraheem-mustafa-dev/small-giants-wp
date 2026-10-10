@@ -1,0 +1,4665 @@
+[
+ {
+  "id": "FA-P1-01",
+  "surface": "footer",
+  "rowKey": "footer|opening|375|address|cr-ref-footer-25|.sgs-business-info|style|column-gap",
+  "property": "column-gap",
+  "width": 375,
+  "state": "opening",
+  "draftValue": "0px",
+  "liveValue": "7px",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "Flex column-gap 7px on the address link, which has a single child and no icon on either side, so the gap separates nothing.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 6 (live read: link has 1 child, svg/img/icon query returns 0; draft is text only); REPORT.md section 2 pattern 1; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table A #1",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-footer-25",
+  "path": ".sgs-business-info",
+  "pair": "address",
+  "draftTag": "a",
+  "liveTag": "address",
+  "source": "build/qa/solve/footer/2026-10-05T09-43-23/round-1/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": false,
+  "acceptedByWalker": null,
+  "note": "Row comes from the 2026-10-05T09-43-23 footer run, round-1 (it is not in today's footer rounds). Values 0px vs 7px at 375; A.md read 7px live and says the report quoted 8px."
+ },
+ {
+  "id": "FA-P1-02",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1440|lenses-panel|cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|scale",
+  "property": "scale",
+  "width": 1440,
+  "state": "mega-lenses",
+  "draftValue": "none",
+  "liveValue": "1",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "scale:1 is identical to scale:none.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row mega-lenses 1440 lenses-panel scale; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #7",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-header-4",
+  "path": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap",
+  "pair": "lenses-panel",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-4/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": false,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P1-03",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1920|lenses-panel|cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|scale",
+  "property": "scale",
+  "width": 1920,
+  "state": "mega-lenses",
+  "draftValue": "none",
+  "liveValue": "1",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "scale:1 is identical to scale:none.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row mega-lenses 1920 lenses-panel scale; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #7",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-header-4",
+  "path": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap",
+  "pair": "lenses-panel",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-4/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": false,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P1-04",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1440|lenses-panel|cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|padding-bottom",
+  "property": "padding-bottom",
+  "width": 1440,
+  "state": "mega-lenses",
+  "draftValue": "40px",
+  "liveValue": "0px",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "Box 244 vs 242 high and text y 64 vs 63: 40px padding vs 0 paints almost nothing different.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row mega-lenses 1440 lenses-panel padding-bottom; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #8",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-header-4",
+  "path": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap",
+  "pair": "lenses-panel",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-4/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": false,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P1-05",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1440|lenses-trigger|cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__link::after|style|content",
+  "property": "content",
+  "width": 1440,
+  "state": "mega-lenses",
+  "draftValue": "none",
+  "liveValue": "\"\"",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "::after content \"\" vs none: live read shows the ::after is 52x1px, transparent, no border, so it paints nothing at rest.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row lenses-trigger content plus the one live read in Method; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #9",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-header-4",
+  "path": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__link::after",
+  "pair": "lenses-trigger",
+  "draftTag": "a",
+  "liveTag": "button",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-4/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": false,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P1-06",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1920|lenses-card-single|cr-ref-mega-lenses-1||style|flex-grow",
+  "property": "flex-grow",
+  "width": 1920,
+  "state": "mega-lenses",
+  "draftValue": "0",
+  "liveValue": "1",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "Box 333x166 on both sides with a 1px x offset: flex-grow on an item that already fills its row.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row mega-lenses 1920 lenses-card-single flex-grow; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #10",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-mega-lenses-1",
+  "path": "",
+  "pair": "lenses-card-single",
+  "draftTag": "a",
+  "liveTag": "a",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-4/report.json",
+  "triageKey": "cr-ref-mega-lenses-1||style|flex-grow",
+  "triageClass": "F/no-setting",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P1-07",
+  "surface": "home",
+  "rowKey": "home|opening|1440|about-step-1|cr-ref-home-65|.sgs-process-steps__step:nth-of-type(1)|style|width",
+  "property": "width",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": "514.297px",
+  "liveValue": "515.25px",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "Sub-pixel width difference (0.95px), li vs div with the same text and height.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row home about-step-1 width; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #4",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-home-65",
+  "path": ".sgs-process-steps__step:nth-of-type(1)",
+  "pair": "about-step-1",
+  "draftTag": "li",
+  "liveTag": "div",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(1)|style|width",
+  "triageClass": "W/used-value",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "A value-equivalence or tolerance case (council code V)."
+ },
+ {
+  "id": "FA-P1-08",
+  "surface": "home",
+  "rowKey": "home|opening|1440|gen-home-65|cr-ref-home-65||style|width",
+  "property": "width",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": "514.297px",
+  "liveValue": "515.25px",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "Sub-pixel width difference (514.297 vs 515.25), ol vs div, same text and height.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row home gen-home-65 width; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #4",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-home-65",
+  "path": "",
+  "pair": "gen-home-65",
+  "draftTag": "ol",
+  "liveTag": "div",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-65||style|width",
+  "triageClass": "W/used-value",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P1-09",
+  "surface": "shop",
+  "rowKey": "shop|size-open|375|size-heading|cr-ref-shop-12|div > div > div > div > .sgs-shop-filters__group:nth-of-type(2) > .sgs-shop-filters__group-summary|style|padding-top",
+  "property": "padding-top",
+  "width": 375,
+  "state": "size-open",
+  "draftValue": "16px",
+  "liveValue": "0px",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "button vs summary, 335x52 vs 333x52 with text y 19 vs 18: same painted box.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row shop size-open size-heading padding-top; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #12",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-shop-12",
+  "path": "div > div > div > div > .sgs-shop-filters__group:nth-of-type(2) > .sgs-shop-filters__group-summary",
+  "pair": "size-heading",
+  "draftTag": "button",
+  "liveTag": "summary",
+  "source": "build/qa/solve/shop/2026-10-09T10-11-46/round-13/report.json",
+  "triageKey": "cr-ref-shop-12|div > div > div > div > .sgs-shop-filters__group:nth-of-type(2) > .sgs-shop-filters__group-summary|style|padding-top",
+  "triageClass": "F/no-setting",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P1-10",
+  "surface": "product",
+  "rowKey": "product|tab-details|1440|add-to-bag|cr-ref-product-4|.sgs-buybox__config-col > form > button > span:nth-of-type(1) > span|style|line-height",
+  "property": "line-height",
+  "width": 1440,
+  "state": "tab-details",
+  "draftValue": "16px",
+  "liveValue": "19.5px",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "Button height 56 on both sides and text y 20 vs 19: line-height paints nothing different (the real 44px width gap is a different row).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row product add-to-bag line-height; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #13",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-product-4",
+  "path": ".sgs-buybox__config-col > form > button > span:nth-of-type(1) > span",
+  "pair": "add-to-bag",
+  "draftTag": "button",
+  "liveTag": "button",
+  "source": "build/qa/solve/product/2026-10-09T09-50-16/round-final/report.json",
+  "triageKey": "cr-ref-product-4|.sgs-buybox__config-col > form > button > span:nth-of-type(1) > span|style|line-height",
+  "triageClass": "W/uncalibrated-fit",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P1-11",
+  "surface": "product",
+  "rowKey": "product|tab-details|1920|gen-product-12-tab-details|cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|line-height",
+  "property": "line-height",
+  "width": 1920,
+  "state": "tab-details",
+  "draftValue": "16px",
+  "liveValue": "17.5px",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "Pair is the tabs wrapper; text insets identical (18, 17).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row product gen-product-12 line-height; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #13",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-product-12",
+  "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)",
+  "pair": "gen-product-12-tab-details",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/product/2026-10-09T09-50-16/round-final/report.json",
+  "triageKey": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|line-height",
+  "triageClass": "W/canvas-settable",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P1-12",
+  "surface": "product",
+  "rowKey": "product|opening|1920|tabs-reveal|cr-ref-product-11|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|color",
+  "property": "color",
+  "width": 1920,
+  "state": "opening",
+  "draftValue": "rgb(20, 20, 20)",
+  "liveValue": "rgb(15, 15, 15)",
+  "label": "false-alarm",
+  "pattern": 1,
+  "cause": "Colour step of 5/255 (20 vs 15): visually identical.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row product tabs-reveal color; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #14",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-product-11",
+  "path": ".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)",
+  "pair": "tabs-reveal",
+  "draftTag": "section",
+  "liveTag": "section",
+  "source": "build/qa/solve/product/2026-10-09T09-50-16/round-final/report.json",
+  "triageKey": "cr-ref-product-11|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|color",
+  "triageClass": "W/same-element",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "Needs a perceptual tolerance (council code V)."
+ },
+ {
+  "id": "FA-P2-01",
+  "surface": "home",
+  "rowKey": "home|reviews-next|1440|brand-strip|cr-ref-home-8||style|padding-top",
+  "property": "padding-top",
+  "width": 1440,
+  "state": "reviews-next",
+  "draftValue": "0px",
+  "liveValue": "26px",
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Draft side is the whole section holding the brand names; live side is the empty __track div. Same y, 97px high.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample rows home brand-strip padding-top/bottom; REPORT.md section 5; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #6",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-home-8",
+  "path": "",
+  "pair": "brand-strip",
+  "draftTag": "section",
+  "liveTag": "div",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-8||style|padding-top",
+  "triageClass": "W/resolver-blocked",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P2-02",
+  "surface": "home",
+  "rowKey": "home|reviews-next|1440|brand-strip|cr-ref-home-8||style|padding-bottom",
+  "property": "padding-bottom",
+  "width": 1440,
+  "state": "reviews-next",
+  "draftValue": "0px",
+  "liveValue": "26px",
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Same mispair as padding-top: section with names vs empty __track div.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row home brand-strip padding-bottom; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #6",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-home-8",
+  "path": "",
+  "pair": "brand-strip",
+  "draftTag": "section",
+  "liveTag": "div",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-8||style|padding-bottom",
+  "triageClass": "W/resolver-blocked",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P2-03",
+  "surface": "home",
+  "rowKey": "home|opening|1440|brand-strip|cr-ref-home-8||style|font-size",
+  "property": "font-size",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": "15px",
+  "liveValue": null,
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Same mispair: the draft section carries the text (15px) while the live div has no text (blank).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md brand-strip pair (draft section vs live __track)",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-home-8",
+  "path": "",
+  "pair": "brand-strip",
+  "draftTag": "section",
+  "liveTag": "div",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-8||style|font-size",
+  "triageClass": "W/no-live-element",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "The brand-strip pair throws a block of text-style rows with the live side blank; all follow from the one mispair."
+ },
+ {
+  "id": "FA-P2-04",
+  "surface": "shop",
+  "rowKey": "shop|panel-after-click|375|gen-shop-5|cr-ref-shop-5||style|margin-bottom",
+  "property": "margin-bottom",
+  "width": 375,
+  "state": "panel-after-click",
+  "draftValue": "0px",
+  "liveValue": null,
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Draft \"SHAPE\" span paired with live \"SHOP\" p.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row shop gen-shop-5 margin-bottom; REPORT.md section 2 pattern 2; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #11",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-shop-5",
+  "path": "",
+  "pair": "gen-shop-5",
+  "draftTag": "span",
+  "liveTag": "p",
+  "source": "build/qa/solve/shop/2026-10-09T10-11-46/round-13/report.json",
+  "triageKey": "cr-ref-shop-5||style|margin-bottom",
+  "triageClass": "W/resolver-blocked",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P2-05",
+  "surface": "shop",
+  "rowKey": "shop|panel-after-click|375|gen-shop-5|cr-ref-shop-5||style|rotate",
+  "property": "rotate",
+  "width": 375,
+  "state": "panel-after-click",
+  "draftValue": "none",
+  "liveValue": null,
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Same mispair (SHAPE span vs SHOP p); live rotate is null.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row shop gen-shop-5 rotate; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #11",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-shop-5",
+  "path": "",
+  "pair": "gen-shop-5",
+  "draftTag": "span",
+  "liveTag": "p",
+  "source": "build/qa/solve/shop/2026-10-09T10-11-46/round-13/report.json",
+  "triageKey": "cr-ref-shop-5||style|rotate",
+  "triageClass": "W/no-live-element",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P2-06",
+  "surface": "header",
+  "rowKey": "header|closed|375|gen-header-1|cr-ref-header-1||style|padding-top",
+  "property": "padding-top",
+  "width": 375,
+  "state": "closed",
+  "draftValue": "12px",
+  "liveValue": "0px",
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Draft inner row (12px 16px) paired with the live outer header root (padding 0, padding on its inner row). Both sides are structurally identical.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 3 (live read: draft header padding 0 and first child DIV padding 12px 16px; live .cr-ref-header-1 padding 0 and .sgs-site-header-row 12px 16px); REPORT.md section 5; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #15",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-header-1",
+  "path": "",
+  "pair": "gen-header-1",
+  "draftTag": "div",
+  "liveTag": "header",
+  "source": "build/qa/solve/header/2026-10-09T08-08-15/round-1/report.json",
+  "triageKey": "cr-ref-header-1||style|padding-top",
+  "triageClass": "W/resolver-blocked",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P2-07",
+  "surface": "header",
+  "rowKey": "header|closed|375|gen-header-1|cr-ref-header-1||style|padding-left",
+  "property": "padding-left",
+  "width": 375,
+  "state": "closed",
+  "draftValue": "16px",
+  "liveValue": "0px",
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Same mispair: draft inner div (16px) vs live header root (0).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 3; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #15",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-header-1",
+  "path": "",
+  "pair": "gen-header-1",
+  "draftTag": "div",
+  "liveTag": "header",
+  "source": "build/qa/solve/header/2026-10-09T08-08-15/round-1/report.json",
+  "triageKey": "cr-ref-header-1||style|padding-left",
+  "triageClass": "W/resolver-blocked",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P2-08",
+  "surface": "header",
+  "rowKey": "header|closed|375|gen-header-1|cr-ref-header-1||style|border-bottom-width",
+  "property": "border-bottom-width",
+  "width": 375,
+  "state": "closed",
+  "draftValue": "0px",
+  "liveValue": "1px",
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Same mispair: the draft inner div has no border (0px) while the live header root carries the 1px bottom border (the draft header root carries the same 1px one level up).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 3; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #15",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-header-1",
+  "path": "",
+  "pair": "gen-header-1",
+  "draftTag": "div",
+  "liveTag": "header",
+  "source": "build/qa/solve/header/2026-10-09T08-08-15/round-1/report.json",
+  "triageKey": "cr-ref-header-1||style|border-bottom-width",
+  "triageClass": "W/resolver-blocked",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P2-09",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|mega-brands|1440|brands-top-first|cr-ref-mega-brands-8||box|w",
+  "property": "w",
+  "width": 1440,
+  "state": "mega-brands",
+  "draftValue": 266,
+  "liveValue": 54,
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Round-1 live width 54 is the label span measured against the 266px whole-card draft link: a label measure vs a card measure.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 4 (live: link 82x61 and label span 54x21; draft card 266x84); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #16",
+  "confidence": "proven",
+  "kind": "box",
+  "ref": "cr-ref-mega-brands-8",
+  "path": "",
+  "pair": "brands-top-first",
+  "draftTag": "a",
+  "liveTag": "a",
+  "source": "build/qa/solve/mega-brands/2026-10-09T08-19-54/round-1/report.json",
+  "triageKey": "cr-ref-mega-brands-8||box|w",
+  "triageClass": "W/mispaired",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "In the final round the pair reads 266 vs 82 (the link hugs its text), which is a real finding (see RP-MB-01) although the tool also tags it mispaired."
+ },
+ {
+  "id": "FA-P2-10",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|mega-brands|1440|brands-top-first|cr-ref-mega-brands-8||box|h",
+  "property": "h",
+  "width": 1440,
+  "state": "mega-brands",
+  "draftValue": 84,
+  "liveValue": 31,
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Round-1 live height 31 is the label span measured against the 84px draft card.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 4; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #16",
+  "confidence": "proven",
+  "kind": "box",
+  "ref": "cr-ref-mega-brands-8",
+  "path": "",
+  "pair": "brands-top-first",
+  "draftTag": "a",
+  "liveTag": "a",
+  "source": "build/qa/solve/mega-brands/2026-10-09T08-19-54/round-1/report.json",
+  "triageKey": "cr-ref-mega-brands-8||box|h",
+  "triageClass": "W/mispaired",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P2-11",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|mega-brands|1440|brands-top-first|cr-ref-mega-brands-8|.sgs-button__label|style|font-family",
+  "property": "font-family",
+  "width": 1440,
+  "state": "mega-brands",
+  "draftValue": "\"Playfair Display\", serif",
+  "liveValue": "Outfit, system-ui, sans-serif",
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Label typography (Outfit, a span) read against the card link (Playfair); the write that followed was reverted by the guard.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 4; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #16 and wrong-write W5",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-mega-brands-8",
+  "path": ".sgs-button__label",
+  "pair": "brands-top-first",
+  "draftTag": "a",
+  "liveTag": "a",
+  "source": "build/qa/solve/mega-brands/2026-10-09T08-19-54/round-1/report.json",
+  "triageKey": "cr-ref-mega-brands-8|.sgs-button__label|style|font-family",
+  "triageClass": "W/mispaired",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P2-12",
+  "surface": "mega-sunglasses",
+  "rowKey": "mega-sunglasses|mega-shop|1440|shop-link-mens|cr-ref-mega-sunglasses-26||box|w",
+  "property": "w",
+  "width": 1440,
+  "state": "mega-shop",
+  "draftValue": 378,
+  "liveValue": 36,
+  "label": "false-alarm",
+  "pattern": 2,
+  "cause": "Tool-labelled mispair (378x34 draft vs 36x34 live); not independently checked on the live page.",
+  "proof": "sites/eye-care-ward-end/build/qa/triage/mega-sunglasses.json verdict cr-ref-mega-sunglasses-26||box|w decidedBy mispaired",
+  "confidence": "assumed",
+  "kind": "box",
+  "ref": "cr-ref-mega-sunglasses-26",
+  "path": "",
+  "pair": "shop-link-mens",
+  "draftTag": "a",
+  "liveTag": "a",
+  "source": "build/qa/solve/mega-sunglasses/2026-10-09T08-17-24/round-1/report.json",
+  "triageKey": "cr-ref-mega-sunglasses-26||box|w",
+  "triageClass": "W/mispaired",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "Label comes from the triage mispaired check (size ratio over 2x and different words) only."
+ },
+ {
+  "id": "FA-P3-01",
+  "surface": "footer",
+  "rowKey": "footer|opening|1440|gen-footer-29|cr-ref-footer-29||style|text-decoration-line",
+  "property": "text-decoration-line",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": "none",
+  "liveValue": "underline",
+  "label": "false-alarm",
+  "pattern": 3,
+  "cause": "The underline is on the inner <a>; the row names the enclosing DIV/paragraph, whose own text-decoration-line is none.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 1 (live read: -29 DIV none, -30 P none, -31 P none; inner a underline); B.md claim a; REPORT.md section 2 pattern 3; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #2",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-footer-29",
+  "path": "",
+  "pair": "gen-footer-29",
+  "draftTag": "span",
+  "liveTag": "div",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-29||style|text-decoration-line",
+  "triageClass": "F/hardcode",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "The underline difference itself is real on the link (RP-FT-04); the false alarm is the attribution to this block."
+ },
+ {
+  "id": "FA-P3-02",
+  "surface": "footer",
+  "rowKey": "footer|opening|1440|link-privacy|cr-ref-footer-30||style|text-decoration-line",
+  "property": "text-decoration-line",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": "none",
+  "liveValue": "underline",
+  "label": "false-alarm",
+  "pattern": 3,
+  "cause": "Value read from the nested <a> (trace textPath \"a\") but the row is keyed to the paragraph ref cr-ref-footer-30 with path empty.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/B.md claim a: collect.mjs::collectPair reads paintedDecoration(carrier), ref-trace.mjs::TEXT_CARRIED has no text-decoration-* key; A.md row 1",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-footer-30",
+  "path": "",
+  "pair": "link-privacy",
+  "draftTag": "a",
+  "liveTag": "p",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-30||style|text-decoration-line",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "Same note as FA-P3-01: the difference is real, the owner is wrong."
+ },
+ {
+  "id": "FA-P3-03",
+  "surface": "footer",
+  "rowKey": "footer|opening|1440|link-terms|cr-ref-footer-31||style|text-decoration-line",
+  "property": "text-decoration-line",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": "none",
+  "liveValue": "underline",
+  "label": "false-alarm",
+  "pattern": 3,
+  "cause": "Same carrier mis-attribution for the Terms link (ref cr-ref-footer-31).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/B.md claim a; A.md row 1",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-footer-31",
+  "path": "",
+  "pair": "link-terms",
+  "draftTag": "a",
+  "liveTag": "p",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-31||style|text-decoration-line",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P4-01",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1440|lenses-panel|cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
+  "property": "line-height",
+  "width": 1440,
+  "state": "mega-lenses",
+  "draftValue": "17.25px",
+  "liveValue": "13.8px",
+  "label": "false-alarm",
+  "pattern": 4,
+  "cause": "The same SINGLE VISION span (line-height 17.25 vs 13.8) is reported again under this enclosing block; the pair's textPath ends at the same .sgs-container__inner > span.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-1/report.json pairs.lenses-panel live.trace.textPath; .claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 2 pattern 4; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #18",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-header-4",
+  "path": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span",
+  "pair": "lenses-panel",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-1/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": false,
+  "acceptedByWalker": null,
+  "note": "Five pairs (lenses-panel, lenses-card-single, lenses-title-single, gen-mega-lenses-0, gen-mega-lenses-2) carry the identical row for one span; the owner is lenses-title-single (RP-ML-01). All five rows are gone in round-4."
+ },
+ {
+  "id": "FA-P4-02",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1440|lenses-card-single|cr-ref-mega-lenses-1|.sgs-container > .sgs-container__inner > span|style|line-height",
+  "property": "line-height",
+  "width": 1440,
+  "state": "mega-lenses",
+  "draftValue": "17.25px",
+  "liveValue": "13.8px",
+  "label": "false-alarm",
+  "pattern": 4,
+  "cause": "The same SINGLE VISION span (line-height 17.25 vs 13.8) is reported again under this enclosing block; the pair's textPath ends at the same .sgs-container__inner > span.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-1/report.json pairs.lenses-card-single live.trace.textPath; .claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 2 pattern 4; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #18",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-mega-lenses-1",
+  "path": ".sgs-container > .sgs-container__inner > span",
+  "pair": "lenses-card-single",
+  "draftTag": "a",
+  "liveTag": "a",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-1/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": false,
+  "acceptedByWalker": null,
+  "note": "Five pairs (lenses-panel, lenses-card-single, lenses-title-single, gen-mega-lenses-0, gen-mega-lenses-2) carry the identical row for one span; the owner is lenses-title-single (RP-ML-01). All five rows are gone in round-4."
+ },
+ {
+  "id": "FA-P4-03",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1440|gen-mega-lenses-0|cr-ref-mega-lenses-0|.sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span|style|line-height",
+  "property": "line-height",
+  "width": 1440,
+  "state": "mega-lenses",
+  "draftValue": "17.25px",
+  "liveValue": "13.8px",
+  "label": "false-alarm",
+  "pattern": 4,
+  "cause": "The same SINGLE VISION span (line-height 17.25 vs 13.8) is reported again under this enclosing block; the pair's textPath ends at the same .sgs-container__inner > span.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-1/report.json pairs.gen-mega-lenses-0 live.trace.textPath; .claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 2 pattern 4; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #18",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-mega-lenses-0",
+  "path": ".sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1) > .sgs-container > .sgs-container__inner > span",
+  "pair": "gen-mega-lenses-0",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-1/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": false,
+  "acceptedByWalker": null,
+  "note": "Five pairs (lenses-panel, lenses-card-single, lenses-title-single, gen-mega-lenses-0, gen-mega-lenses-2) carry the identical row for one span; the owner is lenses-title-single (RP-ML-01). All five rows are gone in round-4."
+ },
+ {
+  "id": "FA-P4-04",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1440|gen-mega-lenses-2|cr-ref-mega-lenses-2|.sgs-container__inner > span|style|line-height",
+  "property": "line-height",
+  "width": 1440,
+  "state": "mega-lenses",
+  "draftValue": "17.25px",
+  "liveValue": "13.8px",
+  "label": "false-alarm",
+  "pattern": 4,
+  "cause": "The same SINGLE VISION span (line-height 17.25 vs 13.8) is reported again under this enclosing block; the pair's textPath ends at the same .sgs-container__inner > span.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-1/report.json pairs.gen-mega-lenses-2 live.trace.textPath; .claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 2 pattern 4; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #18",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-mega-lenses-2",
+  "path": ".sgs-container__inner > span",
+  "pair": "gen-mega-lenses-2",
+  "draftTag": "a",
+  "liveTag": "div",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-1/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": false,
+  "acceptedByWalker": null,
+  "note": "Five pairs (lenses-panel, lenses-card-single, lenses-title-single, gen-mega-lenses-0, gen-mega-lenses-2) carry the identical row for one span; the owner is lenses-title-single (RP-ML-01). All five rows are gone in round-4."
+ },
+ {
+  "id": "FA-P4-05",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|mega-brands|1440|brands-panel|cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+  "property": "line-height",
+  "width": 1440,
+  "state": "mega-brands",
+  "draftValue": "17.25px",
+  "liveValue": "11.5px",
+  "label": "false-alarm",
+  "pattern": 4,
+  "cause": "The MOST ASKED FOR heading (line-height 17.25 vs 11.5) is reported again under this enclosing block.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-09T08-19-54/round-1/report.json pairs.brands-panel; .claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 2 pattern 4; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #18",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-header-4",
+  "path": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)",
+  "pair": "brands-panel",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/mega-brands/2026-10-09T08-19-54/round-1/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": false,
+  "acceptedByWalker": null,
+  "note": "Owner is brands-heading-top (cr-ref-mega-brands-3); the enclosing pairs repeat its row."
+ },
+ {
+  "id": "FA-P4-06",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|mega-brands|1440|gen-mega-brands-0|cr-ref-mega-brands-0|.sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+  "property": "line-height",
+  "width": 1440,
+  "state": "mega-brands",
+  "draftValue": "17.25px",
+  "liveValue": "11.5px",
+  "label": "false-alarm",
+  "pattern": 4,
+  "cause": "The MOST ASKED FOR heading (line-height 17.25 vs 11.5) is reported again under this enclosing block.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-09T08-19-54/round-1/report.json pairs.gen-mega-brands-0; .claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 2 pattern 4; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #18",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-mega-brands-0",
+  "path": ".sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)",
+  "pair": "gen-mega-brands-0",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/mega-brands/2026-10-09T08-19-54/round-1/report.json",
+  "triageKey": "cr-ref-mega-brands-0|.sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+  "triageClass": "W/same-element",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "Owner is brands-heading-top (cr-ref-mega-brands-3); the enclosing pairs repeat its row."
+ },
+ {
+  "id": "FA-P4-07",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|mega-brands|1440|gen-mega-brands-1|cr-ref-mega-brands-1|.sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+  "property": "line-height",
+  "width": 1440,
+  "state": "mega-brands",
+  "draftValue": "17.25px",
+  "liveValue": "11.5px",
+  "label": "false-alarm",
+  "pattern": 4,
+  "cause": "The MOST ASKED FOR heading (line-height 17.25 vs 11.5) is reported again under this enclosing block.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-09T08-19-54/round-1/report.json pairs.gen-mega-brands-1; .claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 2 pattern 4; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #18",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-mega-brands-1",
+  "path": ".sgs-container > .sgs-container__inner > h3:nth-of-type(1)",
+  "pair": "gen-mega-brands-1",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/mega-brands/2026-10-09T08-19-54/round-1/report.json",
+  "triageKey": "cr-ref-mega-brands-1|.sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+  "triageClass": "W/same-element",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "Owner is brands-heading-top (cr-ref-mega-brands-3); the enclosing pairs repeat its row."
+ },
+ {
+  "id": "FA-P4-08",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|mega-brands|1440|gen-mega-brands-2|cr-ref-mega-brands-2|.sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+  "property": "line-height",
+  "width": 1440,
+  "state": "mega-brands",
+  "draftValue": "17.25px",
+  "liveValue": "11.5px",
+  "label": "false-alarm",
+  "pattern": 4,
+  "cause": "The MOST ASKED FOR heading (line-height 17.25 vs 11.5) is reported again under this enclosing block.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-09T08-19-54/round-1/report.json pairs.gen-mega-brands-2; .claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 2 pattern 4; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #18",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-mega-brands-2",
+  "path": ".sgs-container__inner > h3:nth-of-type(1)",
+  "pair": "gen-mega-brands-2",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/mega-brands/2026-10-09T08-19-54/round-1/report.json",
+  "triageKey": "cr-ref-mega-brands-2|.sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+  "triageClass": "W/same-element",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "Owner is brands-heading-top (cr-ref-mega-brands-3); the enclosing pairs repeat its row."
+ },
+ {
+  "id": "FA-P5-01",
+  "surface": "footer",
+  "rowKey": "footer|opening|1920|brand-wordmark|cr-ref-footer-3||box|y-in-main",
+  "property": "y-in-main",
+  "width": 1920,
+  "state": "opening",
+  "draftValue": 6056,
+  "liveValue": 6017,
+  "label": "false-alarm",
+  "pattern": 5,
+  "cause": "Footer root itself starts 35px lower on the draft (5951 vs 5916); the wordmark's 39px is 35px inherited plus 4px of its own. Tags also differ (div vs h4).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row footer brand-wordmark y-in-main; REPORT.md section 2 pattern 5; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #3; footer-root row in the same round-2/report.json",
+  "confidence": "proven",
+  "kind": "box",
+  "ref": "cr-ref-footer-3",
+  "path": "",
+  "pair": "brand-wordmark",
+  "draftTag": "div",
+  "liveTag": "h4",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-3||box|y-in-main",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P5-02",
+  "surface": "footer",
+  "rowKey": "footer|opening|1920|col-brand|cr-ref-footer-2||box|y-in-main",
+  "property": "y-in-main",
+  "width": 1920,
+  "state": "opening",
+  "draftValue": 6056,
+  "liveValue": 6017,
+  "label": "false-alarm",
+  "pattern": 5,
+  "cause": "Same inherited offset as the wordmark (6056 vs 6017) reported again on its parent column; no own shift.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json (col-brand and brand-wordmark rows identical, footer-root 35px apart)",
+  "confidence": "assumed",
+  "kind": "box",
+  "ref": "cr-ref-footer-2",
+  "path": "",
+  "pair": "col-brand",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-2||box|y-in-main",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P5-03",
+  "surface": "footer",
+  "rowKey": "footer|opening|375|columns-row|cr-ref-footer-1||box|y-in-main",
+  "property": "y-in-main",
+  "width": 375,
+  "state": "opening",
+  "draftValue": 7868,
+  "liveValue": 7852,
+  "label": "false-alarm",
+  "pattern": 5,
+  "cause": "Draft sits 16px lower than live, exactly the footer-root delta (7867 vs 7851): inherited from above, nothing of its own.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json (footer-root, columns-row, col-brand, brand-wordmark all 16px at 375)",
+  "confidence": "assumed",
+  "kind": "box",
+  "ref": "cr-ref-footer-1",
+  "path": "",
+  "pair": "columns-row",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-1||box|y-in-main",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P5-04",
+  "surface": "footer",
+  "rowKey": "footer|opening|375|brand-wordmark|cr-ref-footer-3||box|y-in-main",
+  "property": "y-in-main",
+  "width": 375,
+  "state": "opening",
+  "draftValue": 7924,
+  "liveValue": 7908,
+  "label": "false-alarm",
+  "pattern": 5,
+  "cause": "Same 16px inherited delta as the footer root; no own shift at 375.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "confidence": "assumed",
+  "kind": "box",
+  "ref": "cr-ref-footer-3",
+  "path": "",
+  "pair": "brand-wordmark",
+  "draftTag": "div",
+  "liveTag": "h4",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-3||box|y-in-main",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P5-05",
+  "surface": "home",
+  "rowKey": "home|reviews-next|1920|hero-image|cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|box|y-after-hero-subtext",
+  "property": "y-after-hero-subtext",
+  "width": 1920,
+  "state": "reviews-next",
+  "draftValue": 78,
+  "liveValue": 3106,
+  "label": "false-alarm",
+  "pattern": 5,
+  "cause": "Draft y 78 vs live y 3106: the two sides were captured at different scroll positions, so everything measured in this state is shifted.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row home hero-image (sides captured at different scroll positions); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #5 (needs code S)",
+  "confidence": "assumed",
+  "kind": "box",
+  "ref": "cr-ref-home-0",
+  "path": ".sgs-container__inner > .sgs-hero__bg-img",
+  "pair": "hero-image",
+  "draftTag": "img",
+  "liveTag": "img",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|box|y-after-hero-subtext",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "Council marks this row pattern 5/6; scroll-position mismatch is a capture-state fault more than a knock-on."
+ },
+ {
+  "id": "FA-P6-01",
+  "surface": "footer",
+  "rowKey": "footer|opening|1440|social-row|cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-family",
+  "property": "font-family",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": null,
+  "liveValue": "Outfit, system-ui, sans-serif",
+  "label": "false-alarm",
+  "pattern": 6,
+  "cause": "Draft value blank (the draft social-row has no text); live reports the hidden icon-label typography. No paint is compared.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 2 pattern 6; sites/eye-care-ward-end/build/qa/triage/footer.json verdict cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-family decidedBy unmeasured-side; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #17",
+  "confidence": "assumed",
+  "kind": "style",
+  "ref": "cr-ref-footer-6",
+  "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
+  "pair": "social-row",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-family",
+  "triageClass": "W/unmeasured-side",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "C.md rates the related box rows of this pair REAL (minor), so only the blank-draft style rows are false alarms."
+ },
+ {
+  "id": "FA-P6-02",
+  "surface": "footer",
+  "rowKey": "footer|opening|1440|social-row|cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-size",
+  "property": "font-size",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": null,
+  "liveValue": "16px",
+  "label": "false-alarm",
+  "pattern": 6,
+  "cause": "Draft value blank (the draft social-row has no text); live reports the hidden icon-label typography. No paint is compared.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 2 pattern 6; sites/eye-care-ward-end/build/qa/triage/footer.json verdict cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-size decidedBy unmeasured-side; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #17",
+  "confidence": "assumed",
+  "kind": "style",
+  "ref": "cr-ref-footer-6",
+  "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
+  "pair": "social-row",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-size",
+  "triageClass": "W/unmeasured-side",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "C.md rates the related box rows of this pair REAL (minor), so only the blank-draft style rows are false alarms."
+ },
+ {
+  "id": "FA-P6-03",
+  "surface": "footer",
+  "rowKey": "footer|opening|1440|social-row|cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-weight",
+  "property": "font-weight",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": null,
+  "liveValue": "400",
+  "label": "false-alarm",
+  "pattern": 6,
+  "cause": "Draft value blank (the draft social-row has no text); live reports the hidden icon-label typography. No paint is compared.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 2 pattern 6; sites/eye-care-ward-end/build/qa/triage/footer.json verdict cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-weight decidedBy unmeasured-side; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md table A #17",
+  "confidence": "assumed",
+  "kind": "style",
+  "ref": "cr-ref-footer-6",
+  "path": ".sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label",
+  "pair": "social-row",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-6|.sgs-icon:nth-of-type(1) > .sgs-icon__link > .sgs-icon__label|style|font-weight",
+  "triageClass": "W/unmeasured-side",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "C.md rates the related box rows of this pair REAL (minor), so only the blank-draft style rows are false alarms."
+ },
+ {
+  "id": "FA-P6-04",
+  "surface": "home",
+  "rowKey": "home|opening|1440|hero-image|cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|left",
+  "property": "left",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": null,
+  "liveValue": "0px",
+  "label": "false-alarm",
+  "pattern": 6,
+  "cause": "Draft left is blank (absent) against live 0px on an image: draft never read, and left on a non-positioned box paints nothing.",
+  "proof": "sites/eye-care-ward-end/build/qa/triage/home.json verdict cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|left decidedBy unmeasured-side; .claude/reports/2026-10-09-session-d-local-baseline/C.md sample row home hero-image top",
+  "confidence": "assumed",
+  "kind": "style",
+  "ref": "cr-ref-home-0",
+  "path": ".sgs-container__inner > .sgs-hero__bg-img",
+  "pair": "hero-image",
+  "draftTag": "img",
+  "liveTag": "img",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|left",
+  "triageClass": "W/unmeasured-side",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P6-05",
+  "surface": "home",
+  "rowKey": "home|opening|1440|hero-image|cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|top",
+  "property": "top",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": null,
+  "liveValue": "0px",
+  "label": "false-alarm",
+  "pattern": 6,
+  "cause": "Draft top is blank (absent) against live 0px; C.md's sample row (reviews-next 1920) is the same property.",
+  "proof": "sites/eye-care-ward-end/build/qa/triage/home.json verdict ...hero-bg-img|style|top decidedBy unmeasured-side; .claude/reports/2026-10-09-session-d-local-baseline/C.md sample row home hero-image top",
+  "confidence": "assumed",
+  "kind": "style",
+  "ref": "cr-ref-home-0",
+  "path": ".sgs-container__inner > .sgs-hero__bg-img",
+  "pair": "hero-image",
+  "draftTag": "img",
+  "liveTag": "img",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|top",
+  "triageClass": "W/unmeasured-side",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P6-06",
+  "surface": "home",
+  "rowKey": "home|reviews-next|1920|hero-image|cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|top",
+  "property": "top",
+  "width": 1920,
+  "state": "reviews-next",
+  "draftValue": null,
+  "liveValue": "0px",
+  "label": "false-alarm",
+  "pattern": 6,
+  "cause": "Exact row in the C.md sample: top blank vs 0px on a non-positioned image.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row home reviews-next 1920 hero-image top",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-home-0",
+  "path": ".sgs-container__inner > .sgs-hero__bg-img",
+  "pair": "hero-image",
+  "draftTag": "img",
+  "liveTag": "img",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|top",
+  "triageClass": "W/unmeasured-side",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "FA-P6-07",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|mega-brands|1440|gen-mega-brands-41|cr-ref-mega-brands-41||style|display",
+  "property": "display",
+  "width": 1440,
+  "state": "mega-brands",
+  "draftValue": null,
+  "liveValue": "flex",
+  "label": "false-alarm",
+  "pattern": 6,
+  "cause": "Draft value absent for display on this pair; tool label unmeasured-side (2 rows, draft never read at any width).",
+  "proof": "sites/eye-care-ward-end/build/qa/triage/mega-brands.json verdict cr-ref-mega-brands-41||style|display",
+  "confidence": "assumed",
+  "kind": "style",
+  "ref": "cr-ref-mega-brands-41",
+  "path": "",
+  "pair": "gen-mega-brands-41",
+  "draftTag": "span",
+  "liveTag": "a",
+  "source": "build/qa/solve/mega-brands/2026-10-09T08-19-54/round-final/report.json",
+  "triageKey": "cr-ref-mega-brands-41||style|display",
+  "triageClass": "W/unmeasured-side",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-FT-01",
+  "surface": "footer",
+  "rowKey": "footer|opening|768|col-visit|cr-ref-footer-21|.sgs-container__inner > h5|style|letter-spacing",
+  "property": "letter-spacing",
+  "width": 768,
+  "state": "opening",
+  "draftValue": "2.3px",
+  "liveValue": "0.81px",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: visit-column heading tracking differs (2.3px vs 0.81px); h5 vs span heading, column 165 vs 177px high.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row footer opening 768 col-visit letter-spacing = REAL; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #1",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-footer-21",
+  "path": ".sgs-container__inner > h5",
+  "pair": "col-visit",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-21|.sgs-container__inner > h5|style|letter-spacing",
+  "triageClass": "W/canvas-settable",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-FT-02",
+  "surface": "footer",
+  "rowKey": "footer|opening|375|col-visit|cr-ref-footer-21|.sgs-container__inner > h5|style|color",
+  "property": "color",
+  "width": 375,
+  "state": "opening",
+  "draftValue": "rgb(119, 113, 106)",
+  "liveValue": "rgb(20, 20, 20)",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: heading colour differs (grey 119 vs near-black 20).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row footer opening 375 col-visit color = REAL; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #1",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-footer-21",
+  "path": ".sgs-container__inner > h5",
+  "pair": "col-visit",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-21|.sgs-container__inner > h5|style|color",
+  "triageClass": "W/uncalibrated-fit",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-FT-03",
+  "surface": "footer",
+  "rowKey": "footer|opening|1440|col-visit|cr-ref-footer-21|.sgs-container__inner > h5|style|font-size",
+  "property": "font-size",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": "11.5px",
+  "liveValue": "13.5px",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: visible heading size differs (11.5px vs 13.5px).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row footer opening 1440 col-visit font-size = REAL; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #1",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-footer-21",
+  "path": ".sgs-container__inner > h5",
+  "pair": "col-visit",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-21|.sgs-container__inner > h5|style|font-size",
+  "triageClass": "W/canvas-settable",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-FT-04",
+  "surface": "footer",
+  "rowKey": "footer|opening|1920|link-terms|cr-ref-footer-31||style|text-decoration-line",
+  "property": "text-decoration-line",
+  "width": 1920,
+  "state": "opening",
+  "draftValue": "none",
+  "liveValue": "underline",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: the live Terms link is underlined and the draft link is not; the finding is real even though the row is mis-attributed (see FA-P3-01..03). Draft link also sits at x 1623 vs live x 1019.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row footer 1920 link-terms text-decoration = REAL; A.md row 1 CONFIRMED (inner a underline, draft links not underlined); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #2",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-footer-31",
+  "path": "",
+  "pair": "link-terms",
+  "draftTag": "a",
+  "liveTag": "p",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-31||style|text-decoration-line",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "Same row family as FA-P3-03 (1440). A new mechanism may re-attribute the row to the link but must not close it."
+ },
+ {
+  "id": "RP-FT-05",
+  "surface": "footer",
+  "rowKey": "footer|opening|1440|social-row|cr-ref-footer-6||box|y-after-text-glasses-soon",
+  "property": "y-after-text-glasses-soon",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": 1,
+  "liveValue": -2,
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: minor 3px shift (+1 vs -2); the row box is 40 vs 44px high.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row footer 1440 social-row y-after-text = REAL (minor); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #3",
+  "confidence": "proven",
+  "kind": "box",
+  "ref": "cr-ref-footer-6",
+  "path": "",
+  "pair": "social-row",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-6||box|y-after-text-glasses-soon",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-FT-06",
+  "surface": "footer",
+  "rowKey": "footer|opening|1440|social-row|cr-ref-footer-6||box|h",
+  "property": "h",
+  "width": 1440,
+  "state": "opening",
+  "draftValue": 40,
+  "liveValue": 44,
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: social row 40 vs 44px high (live carries the hidden icon labels).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row footer social-row (box 40 vs 44) = REAL (minor)",
+  "confidence": "proven",
+  "kind": "box",
+  "ref": "cr-ref-footer-6",
+  "path": "",
+  "pair": "social-row",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
+  "triageKey": "cr-ref-footer-6||box|h",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-HM-01",
+  "surface": "home",
+  "rowKey": "home|hero-scrolled|1920|whybuy-2-heading|cr-ref-home-37||style|width",
+  "property": "width",
+  "width": 1920,
+  "state": "hero-scrolled",
+  "draftValue": "299.25px",
+  "liveValue": "239.25px",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: heading is 60px narrower on live (299.25 vs 239.25), so the text starts at x 630 vs 660 (30px shift); text-align is start on both.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row home hero-scrolled 1920 whybuy-2-heading width = REAL; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #4",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-home-37",
+  "path": "",
+  "pair": "whybuy-2-heading",
+  "draftTag": "h3",
+  "liveTag": "h3",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-37||style|width",
+  "triageClass": "W/used-value",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-HM-02",
+  "surface": "home",
+  "rowKey": "home|opening|375|whybuy-1-number|cr-ref-home-32||style|width",
+  "property": "width",
+  "width": 375,
+  "state": "opening",
+  "draftValue": "291px",
+  "liveValue": "247px",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: card content is 247px on live vs 291px on the draft because Solve doubled the 22px card padding (a real rendered defect caused by wrong write W1; the row must stay open until the write is removed).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 2 (live: -31 SECTION padding 28px 22px plus inner 28px 22px, items 247px vs draft 291px); REPORT.md section 5 first finding; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #5",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-home-32",
+  "path": "",
+  "pair": "whybuy-1-number",
+  "draftTag": "div",
+  "liveTag": "p",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-32||style|width",
+  "triageClass": "W/used-value",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "Present in round-13 because the home run wrote and never undid the card padding."
+ },
+ {
+  "id": "RP-HM-03",
+  "surface": "home",
+  "rowKey": "home|opening|375|whybuy-2-number|cr-ref-home-36||style|width",
+  "property": "width",
+  "width": 375,
+  "state": "opening",
+  "draftValue": "291px",
+  "liveValue": "247px",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: same doubled card padding on the second card (247 vs 291).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 2; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #5",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-home-36",
+  "path": "",
+  "pair": "whybuy-2-number",
+  "draftTag": "div",
+  "liveTag": "p",
+  "source": "build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+  "triageKey": "cr-ref-home-36||style|width",
+  "triageClass": "W/used-value",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-SH-01",
+  "surface": "shop",
+  "rowKey": "shop|scrolled|1920|gen-shop-48|cr-ref-shop-48||box|h",
+  "property": "h",
+  "width": 1920,
+  "state": "scrolled",
+  "draftValue": 2861,
+  "liveValue": 2762,
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: draft product cards carry a brand label and star rating the live cards lack: 99px taller on the draft.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row shop scrolled 1920 gen-shop-48 h = REAL; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #6",
+  "confidence": "proven",
+  "kind": "box",
+  "ref": "cr-ref-shop-48",
+  "path": "",
+  "pair": "gen-shop-48",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/shop/2026-10-09T10-11-46/round-13/report.json",
+  "triageKey": "cr-ref-shop-48||box|h",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-SH-02",
+  "surface": "shop",
+  "rowKey": "shop|brand-ray-ban|1920|sort|cr-ref-shop-9|form > select|box|w",
+  "property": "w",
+  "width": 1920,
+  "state": "brand-ray-ban",
+  "draftValue": 152,
+  "liveValue": 107,
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: sort select is 152px on the draft and 107px on live.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row shop brand-ray-ban 1920 sort max-width = REAL (select 152 vs 107px wide); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #6",
+  "confidence": "proven",
+  "kind": "box",
+  "ref": "cr-ref-shop-9",
+  "path": "form > select",
+  "pair": "sort",
+  "draftTag": "select",
+  "liveTag": "select",
+  "source": "build/qa/solve/shop/2026-10-09T10-11-46/round-13/report.json",
+  "triageKey": "cr-ref-shop-9|form > select|box|w",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "C.md names the max-width row; the box width row is the painted evidence for the same difference."
+ },
+ {
+  "id": "RP-SH-03",
+  "surface": "shop",
+  "rowKey": "shop|brand-ray-ban|1920|sort|cr-ref-shop-9|form > select|style|max-width",
+  "property": "max-width",
+  "width": 1920,
+  "state": "brand-ray-ban",
+  "draftValue": "100%",
+  "liveValue": "none",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: the max-width 100% vs none row of the same select pair.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row shop brand-ray-ban 1920 sort max-width = REAL; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #6",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-shop-9",
+  "path": "form > select",
+  "pair": "sort",
+  "draftTag": "select",
+  "liveTag": "select",
+  "source": "build/qa/solve/shop/2026-10-09T10-11-46/round-13/report.json",
+  "triageKey": "cr-ref-shop-9|form > select|style|max-width",
+  "triageClass": "W/canvas-settable",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-SH-04",
+  "surface": "shop",
+  "rowKey": "shop|scrolled|1920|gen-shop-10|cr-ref-shop-10||style|padding-top",
+  "property": "padding-top",
+  "width": 1920,
+  "state": "scrolled",
+  "draftValue": "28px",
+  "liveValue": "0px",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: the filter and grid block starts about 31px apart and its content differs (live has Filter and Colour labels); the padding row is a symptom, not the cause, but the difference is real.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row shop scrolled 1920 gen-shop-10 padding-top = REAL (mis-described); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #6",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-shop-10",
+  "path": "",
+  "pair": "gen-shop-10",
+  "draftTag": "div",
+  "liveTag": "div",
+  "source": "build/qa/solve/shop/2026-10-09T10-11-46/round-13/report.json",
+  "triageKey": "cr-ref-shop-10||style|padding-top",
+  "triageClass": "W/resolver-blocked",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "The tool also labels gen-shop-10 mispaired (335x50 vs 335x1862 style sizes). C.md and the tool disagree; this fixture follows C.md."
+ },
+ {
+  "id": "RP-PR-01",
+  "surface": "product",
+  "rowKey": "product|opening|375|gen-product-10-opening|cr-ref-product-10||style|width",
+  "property": "width",
+  "width": 375,
+  "state": "opening",
+  "draftValue": "335px",
+  "liveValue": "295px",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: draft is a div with tick glyphs (335px) and live a ul indented 20px (295px); 252 vs 223 high.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row product opening 375 gen-product-10 width = REAL; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #7",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-product-10",
+  "path": "",
+  "pair": "gen-product-10-opening",
+  "draftTag": "div",
+  "liveTag": "ul",
+  "source": "build/qa/solve/product/2026-10-09T09-50-16/round-final/report.json",
+  "triageKey": "cr-ref-product-10||style|width",
+  "triageClass": "W/used-value",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-PR-02",
+  "surface": "product",
+  "rowKey": "product|opening|375|gen-product-3-opening|cr-ref-product-3||style|width",
+  "property": "width",
+  "width": 375,
+  "state": "opening",
+  "draftValue": "335px",
+  "liveValue": "295px",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: breadcrumb nav is 295px on live vs 335px: a second SECTION repeats MAIN's own 20px padding (the 40px, and the vertical 28px/60px twice).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 5 CONFIRMED (live .cr-ref-product-1 MAIN padding 28px 20px 60px, inner SECTION same padding, NAV width 295; draft NAV 335); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #7",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-product-3",
+  "path": "",
+  "pair": "gen-product-3-opening",
+  "draftTag": "nav",
+  "liveTag": "nav",
+  "source": "build/qa/solve/product/2026-10-09T09-50-16/round-final/report.json",
+  "triageKey": "cr-ref-product-3||style|width",
+  "triageClass": "W/used-value",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "The tool labels this pair mispaired (335x19 vs 295x48) although both sides are the breadcrumb nav; A.md contradicts the label."
+ },
+ {
+  "id": "RP-PR-03",
+  "surface": "product",
+  "rowKey": "product|tab-details|1440|gen-product-56-tab-details|cr-ref-product-56||box|h",
+  "property": "h",
+  "width": 1440,
+  "state": "tab-details",
+  "draftValue": 107,
+  "liveValue": 83,
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: spec cell is 171x107 on the draft and 215x83 on live.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row product tab-details 1440 gen-product-56 h = REAL; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #7",
+  "confidence": "proven",
+  "kind": "box",
+  "ref": "cr-ref-product-56",
+  "path": "",
+  "pair": "gen-product-56-tab-details",
+  "draftTag": "div",
+  "liveTag": "section",
+  "source": "build/qa/solve/product/2026-10-09T09-50-16/round-final/report.json",
+  "triageKey": "cr-ref-product-56||box|h",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-PR-04",
+  "surface": "product",
+  "rowKey": "product|tab-sizing|1920|gen-product-113-tab-sizing|cr-ref-product-113||box|h",
+  "property": "h",
+  "width": 1920,
+  "state": "tab-sizing",
+  "draftValue": 234,
+  "liveValue": 238,
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: related-product card is 163 vs 197 wide and the draft shows a brand and rating the live card lacks.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row product tab-sizing 1920 gen-product-113 h = REAL; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #7",
+  "confidence": "proven",
+  "kind": "box",
+  "ref": "cr-ref-product-113",
+  "path": "",
+  "pair": "gen-product-113-tab-sizing",
+  "draftTag": "div",
+  "liveTag": "ul",
+  "source": "build/qa/solve/product/2026-10-09T09-50-16/round-final/report.json",
+  "triageKey": "cr-ref-product-113||box|h",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-PR-05",
+  "surface": "product",
+  "rowKey": "product|tab-details|1440|add-to-bag|cr-ref-product-4|.sgs-buybox__config-col > form > button|box|w",
+  "property": "w",
+  "width": 1440,
+  "state": "tab-details",
+  "draftValue": 542,
+  "liveValue": 498,
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: the add-to-bag button is 44px wider on the draft (542 vs 498); a different row from the line-height false alarm FA-P1-10.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md sample row product add-to-bag (button 44px wider on the draft is real); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #7",
+  "confidence": "proven",
+  "kind": "box",
+  "ref": "cr-ref-product-4",
+  "path": ".sgs-buybox__config-col > form > button",
+  "pair": "add-to-bag",
+  "draftTag": "button",
+  "liveTag": "button",
+  "source": "build/qa/solve/product/2026-10-09T09-50-16/round-final/report.json",
+  "triageKey": "cr-ref-product-4|.sgs-buybox__config-col > form > button|box|w",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-MB-01",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|mega-brands|1440|brands-top-first|cr-ref-mega-brands-8||box|w",
+  "property": "w",
+  "width": 1440,
+  "state": "mega-brands",
+  "draftValue": 266,
+  "liveValue": 82,
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: the live Ray-Ban link hugs its text (82px) instead of filling the 266px grid cell the draft card fills.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 4 PARTLY (live link 82x61, draft card 266x84, no stretch); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #8",
+  "confidence": "proven",
+  "kind": "box",
+  "ref": "cr-ref-mega-brands-8",
+  "path": "",
+  "pair": "brands-top-first",
+  "draftTag": "a",
+  "liveTag": "a",
+  "source": "build/qa/solve/mega-brands/2026-10-09T08-19-54/round-final/report.json",
+  "triageKey": "cr-ref-mega-brands-8||box|w",
+  "triageClass": "W/mispaired",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null,
+  "note": "The tool labels this pair mispaired; A.md shows the pair is the same logical item with different structure, so the size gap is real."
+ },
+ {
+  "id": "RP-MB-02",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|mega-brands|1440|brands-top-first|None||text|text",
+  "property": "text",
+  "width": 1440,
+  "state": "mega-brands",
+  "draftValue": "RAY-BAN 48 frames",
+  "liveValue": "Ray-Ban",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: the draft card has a second line \"48 frames\"; the live panel text contains no frames count.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 4 (panel text contains no \"frames\"); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #8",
+  "confidence": "proven",
+  "kind": "text",
+  "ref": null,
+  "path": "",
+  "pair": "brands-top-first",
+  "draftTag": "a",
+  "liveTag": "a",
+  "source": "build/qa/solve/mega-brands/2026-10-09T08-19-54/round-final/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-ML-01",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1440|lenses-title-single|cr-ref-mega-lenses-3||style|line-height",
+  "property": "line-height",
+  "width": 1440,
+  "state": "mega-lenses",
+  "draftValue": "17.25px",
+  "liveValue": "13.8px",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: the one genuine line-height row (17.25 vs 13.8) on the SINGLE VISION span; the four enclosing-pair duplicates are FA-P4-01..04. Exactly one row for this span must survive de-duplication.",
+  "proof": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-1/report.json pairs.lenses-title-single (owner: textPath empty)",
+  "confidence": "assumed",
+  "kind": "style",
+  "ref": "cr-ref-mega-lenses-3",
+  "path": "",
+  "pair": "lenses-title-single",
+  "draftTag": "span",
+  "liveTag": "span",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-1/report.json",
+  "triageKey": null,
+  "triageClass": null,
+  "openInFinalSweep": false,
+  "acceptedByWalker": null,
+  "note": "Solve closed this row in round-1 by writing it; kept as the owner-row control for pattern 4."
+ },
+ {
+  "id": "RP-ML-02",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1440|lenses-card-single|cr-ref-mega-lenses-1||style|padding-top",
+  "property": "padding-top",
+  "width": 1440,
+  "state": "mega-lenses",
+  "draftValue": "26px",
+  "liveValue": "0px",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: mega-group tile padding (26px vs 0) is a real difference blocked by Spec 47 section 3.8 (a parent setting reaching several identical children is never written).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/B.md claim d (resolveViaAncestor writes only when exactly one descendant is reached); REPORT.md section 5 parent-settings finding; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #9",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-mega-lenses-1",
+  "path": "",
+  "pair": "lenses-card-single",
+  "draftTag": "a",
+  "liveTag": "a",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-4/report.json",
+  "triageKey": "cr-ref-mega-lenses-1||style|padding-top",
+  "triageClass": "W/enclosing",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-ML-03",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|mega-lenses|1440|lenses-card-single|cr-ref-mega-lenses-1||style|padding-left",
+  "property": "padding-left",
+  "width": 1440,
+  "state": "mega-lenses",
+  "draftValue": "24px",
+  "liveValue": "0px",
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: mega-group tile padding (24px vs 0), same blocked cause as RP-ML-02.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/B.md claim d; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #9",
+  "confidence": "proven",
+  "kind": "style",
+  "ref": "cr-ref-mega-lenses-1",
+  "path": "",
+  "pair": "lenses-card-single",
+  "draftTag": "a",
+  "liveTag": "a",
+  "source": "build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-4/report.json",
+  "triageKey": "cr-ref-mega-lenses-1||style|padding-left",
+  "triageClass": "W/enclosing",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "RP-CF-01",
+  "surface": "contact-form",
+  "rowKey": "contact-form|opening|375|field-topic|cr-ref-contact-form-4|.sgs-form-field__input|box|h",
+  "property": "h",
+  "width": 375,
+  "state": "opening",
+  "draftValue": 52,
+  "liveValue": 46,
+  "label": "real-problem",
+  "pattern": null,
+  "cause": "Must stay open: the topic dropdown is a different height from the inputs (draft 52 vs live 46 for the select; inputs 52 vs 47); needs Bean's call.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/REPORT.md section 4 contact-form row (the dropdown is a different height from the inputs) and .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #9",
+  "confidence": "assumed",
+  "kind": "box",
+  "ref": "cr-ref-contact-form-4",
+  "path": ".sgs-form-field__input",
+  "pair": "field-topic",
+  "draftTag": "select",
+  "liveTag": "select",
+  "source": "build/qa/solve/contact-form/2026-10-09T09-50-16/round-6/report.json",
+  "triageKey": "cr-ref-contact-form-4|.sgs-form-field__input|box|h",
+  "triageClass": "W/consequence",
+  "openInFinalSweep": true,
+  "acceptedByWalker": null
+ },
+ {
+  "id": "WW-HM-01",
+  "surface": "home",
+  "rowKey": "home|solve-report|cr-ref-home-31||padding-top|",
+  "property": "padding-top, padding-right, padding-bottom, padding-left",
+  "width": 375,
+  "state": null,
+  "draftValue": "28px",
+  "liveValue": "0px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Level mismatch: padding written on the card section although its .sgs-container__inner already carries the same 28px 22px, so padding doubles and the content narrows from 291px to 247px.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 2 (live: section padding 28px 22px, inner padding 28px 22px, items 247px vs draft 291px; draft has one padding level); REPORT.md section 5 first finding; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W1; baseline-tree-writes.diff (padding written to cr-ref-home-31/35/39)",
+  "confidence": "proven",
+  "ref": "cr-ref-home-31",
+  "path": "",
+  "block": "sgs/container",
+  "groups": [
+   "cr-ref-home-31||padding-top|",
+   "cr-ref-home-31||padding-right|",
+   "cr-ref-home-31||padding-bottom|",
+   "cr-ref-home-31||padding-left|"
+  ],
+  "writtenValues": {
+   "padding-top": {
+    "mobile": {
+     "top": "28px"
+    },
+    "tablet": {
+     "top": "34px"
+    },
+    "desktop": {
+     "top": "34px"
+    }
+   },
+   "padding-right": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px"
+    }
+   },
+   "padding-bottom": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px",
+     "bottom": "28px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px"
+    }
+   },
+   "padding-left": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px",
+     "bottom": "28px",
+     "left": "22px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px",
+     "left": "30px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px",
+     "left": "30px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": null,
+  "revertReason": null,
+  "rows": [
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 1440,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 1440,
+    "draft": "34px",
+    "live": "0px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/solve-report.json writes[]",
+  "note": "Not in wrong[] because the guard never reverted it; the council audit counts these as unreverted wrong writes (home wrong rate at least 15 of 41)."
+ },
+ {
+  "id": "WW-HM-02",
+  "surface": "home",
+  "rowKey": "home|solve-report|cr-ref-home-35||padding-top|",
+  "property": "padding-top, padding-right, padding-bottom, padding-left",
+  "width": 375,
+  "state": null,
+  "draftValue": "28px",
+  "liveValue": "0px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Level mismatch: padding written on the card section although its .sgs-container__inner already carries the same 28px 22px, so padding doubles and the content narrows from 291px to 247px.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 2 (live: section padding 28px 22px, inner padding 28px 22px, items 247px vs draft 291px; draft has one padding level); REPORT.md section 5 first finding; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W1; baseline-tree-writes.diff (padding written to cr-ref-home-31/35/39)",
+  "confidence": "proven",
+  "ref": "cr-ref-home-35",
+  "path": "",
+  "block": "sgs/container",
+  "groups": [
+   "cr-ref-home-35||padding-top|",
+   "cr-ref-home-35||padding-right|",
+   "cr-ref-home-35||padding-bottom|",
+   "cr-ref-home-35||padding-left|"
+  ],
+  "writtenValues": {
+   "padding-top": {
+    "mobile": {
+     "top": "28px"
+    },
+    "tablet": {
+     "top": "34px"
+    },
+    "desktop": {
+     "top": "34px"
+    }
+   },
+   "padding-right": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px"
+    }
+   },
+   "padding-bottom": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px",
+     "bottom": "28px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px"
+    }
+   },
+   "padding-left": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px",
+     "bottom": "28px",
+     "left": "22px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px",
+     "left": "30px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px",
+     "left": "30px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": null,
+  "revertReason": null,
+  "rows": [
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 1440,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 1440,
+    "draft": "34px",
+    "live": "0px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/solve-report.json writes[]",
+  "note": "Not in wrong[] because the guard never reverted it; the council audit counts these as unreverted wrong writes (home wrong rate at least 15 of 41)."
+ },
+ {
+  "id": "WW-HM-03",
+  "surface": "home",
+  "rowKey": "home|solve-report|cr-ref-home-39||padding-top|",
+  "property": "padding-top, padding-right, padding-bottom, padding-left",
+  "width": 375,
+  "state": null,
+  "draftValue": "28px",
+  "liveValue": "0px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Level mismatch: padding written on the card section although its .sgs-container__inner already carries the same 28px 22px, so padding doubles and the content narrows from 291px to 247px.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 2 (live: section padding 28px 22px, inner padding 28px 22px, items 247px vs draft 291px; draft has one padding level); REPORT.md section 5 first finding; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W1; baseline-tree-writes.diff (padding written to cr-ref-home-31/35/39)",
+  "confidence": "proven",
+  "ref": "cr-ref-home-39",
+  "path": "",
+  "block": "sgs/container",
+  "groups": [
+   "cr-ref-home-39||padding-top|",
+   "cr-ref-home-39||padding-right|",
+   "cr-ref-home-39||padding-bottom|",
+   "cr-ref-home-39||padding-left|"
+  ],
+  "writtenValues": {
+   "padding-top": {
+    "mobile": {
+     "top": "28px"
+    },
+    "tablet": {
+     "top": "34px"
+    },
+    "desktop": {
+     "top": "34px"
+    }
+   },
+   "padding-right": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px"
+    }
+   },
+   "padding-bottom": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px",
+     "bottom": "28px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px"
+    }
+   },
+   "padding-left": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px",
+     "bottom": "28px",
+     "left": "22px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px",
+     "left": "30px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px",
+     "left": "30px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": null,
+  "revertReason": null,
+  "rows": [
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 1440,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 1440,
+    "draft": "34px",
+    "live": "0px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/solve-report.json writes[]",
+  "note": "Not in wrong[] because the guard never reverted it; the council audit counts these as unreverted wrong writes (home wrong rate at least 15 of 41)."
+ },
+ {
+  "id": "WW-HM-04",
+  "surface": "home",
+  "rowKey": "home|solve-report|cr-ref-home-43||padding-top|",
+  "property": "padding-top, padding-right, padding-bottom, padding-left",
+  "width": 375,
+  "state": null,
+  "draftValue": "28px",
+  "liveValue": "0px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Same padding write as the other three cards. A.md reads card -43 as the correct shape (section padding 0, inner 28px 22px) and REPORT.md calls it correct, but the tree diff shows the padding written to it and walker round-2 shows its item (whybuy-4-number, cr-ref-home-44) at 247 vs 291.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/baseline-tree-writes.diff (cr-ref-home-43 gets padding); sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/round-2/report.json (whybuy-4-number width 291px vs 247px); .claude/reports/2026-10-09-session-d-local-baseline/A.md row 2 (REFUTED for -43)",
+  "confidence": "assumed",
+  "ref": "cr-ref-home-43",
+  "path": "",
+  "block": "sgs/container",
+  "groups": [
+   "cr-ref-home-43||padding-top|",
+   "cr-ref-home-43||padding-right|",
+   "cr-ref-home-43||padding-bottom|",
+   "cr-ref-home-43||padding-left|"
+  ],
+  "writtenValues": {
+   "padding-top": {
+    "mobile": {
+     "top": "28px"
+    },
+    "tablet": {
+     "top": "34px"
+    },
+    "desktop": {
+     "top": "34px"
+    }
+   },
+   "padding-right": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px"
+    }
+   },
+   "padding-bottom": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px",
+     "bottom": "28px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px"
+    }
+   },
+   "padding-left": {
+    "mobile": {
+     "top": "28px",
+     "right": "22px",
+     "bottom": "28px",
+     "left": "22px"
+    },
+    "tablet": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px",
+     "left": "30px"
+    },
+    "desktop": {
+     "top": "34px",
+     "right": "30px",
+     "bottom": "34px",
+     "left": "30px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": null,
+  "revertReason": null,
+  "rows": [
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "28px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 1440,
+    "draft": "34px",
+    "live": "0px"
+   },
+   {
+    "width": 1440,
+    "draft": "34px",
+    "live": "0px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/solve-report.json writes[]",
+  "note": "Contradiction recorded in fixtures-summary.md; do not use as a clean control until re-read."
+ },
+ {
+  "id": "WW-HM-05",
+  "surface": "home",
+  "rowKey": "home|solve-report|cr-ref-home-8||padding-top|",
+  "property": "padding-top, padding-bottom",
+  "width": 375,
+  "state": null,
+  "draftValue": "0px",
+  "liveValue": "26px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Written from the brand-strip mispair (draft section vs empty live __track div); the guard proved undoing it cleared 4 regressions.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md brand-strip rows; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W2; solve-report.json wrong[] (revertReason: proven: undoing it alone cleared the regression)",
+  "confidence": "proven",
+  "ref": "cr-ref-home-8",
+  "path": "",
+  "block": "sgs/brand-strip",
+  "groups": [
+   "cr-ref-home-8||padding-top|",
+   "cr-ref-home-8||padding-bottom|"
+  ],
+  "writtenValues": {
+   "padding-top": {
+    "desktop": {
+     "bottom": "26px",
+     "left": "0",
+     "right": "0",
+     "top": "0px"
+    },
+    "mobile": {
+     "top": "0px"
+    },
+    "tablet": {
+     "top": "0px"
+    }
+   },
+   "padding-bottom": {
+    "desktop": {
+     "bottom": "0px",
+     "left": "0",
+     "right": "0",
+     "top": "0px"
+    },
+    "mobile": {
+     "top": "0px",
+     "bottom": "0px"
+    },
+    "tablet": {
+     "top": "0px",
+     "bottom": "0px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "4 rows on its node regressed, e.g. y-after-hero-btn-prescription@375 122→96; y-after-hero-btn-prescription@768 150→124; y-after-hero-btn-prescription@1440 150→124 (proven: undoing it alone cleared the regression)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "26px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "26px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "26px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "26px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "26px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "26px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": "26px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": "26px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-HM-06",
+  "surface": "home",
+  "rowKey": "home|solve-report|cr-ref-home-4||column-gap|",
+  "property": "column-gap, row-gap, gap",
+  "width": 375,
+  "state": null,
+  "draftValue": "12px",
+  "liveValue": "8px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Multi-button gap 12px written; reverted because 2 rows regressed (align-items 768 normal to center, y-after-hero-subtext 113 to 108). Cause of the original row is unproven.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W3 (gap cause unproven); solve-report.json wrong[]",
+  "confidence": "assumed",
+  "ref": "cr-ref-home-4",
+  "path": "",
+  "block": "sgs/multi-button",
+  "groups": [
+   "cr-ref-home-4||column-gap|",
+   "cr-ref-home-4||row-gap|",
+   "cr-ref-home-4||gap|"
+  ],
+  "writtenValues": {
+   "column-gap": {
+    "desktop": "12px",
+    "mobile": "12px",
+    "tablet": "12px"
+   },
+   "row-gap": {
+    "desktop": "12px",
+    "mobile": "12px",
+    "tablet": "12px"
+   },
+   "gap": {
+    "desktop": "12px",
+    "mobile": "12px",
+    "tablet": "12px"
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "2 rows on its node regressed, e.g. align-items@768 normal→center; y-after-hero-subtext@768 113→108 (proven: undoing it alone cleared the regression)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "12px",
+    "live": "8px"
+   },
+   {
+    "width": 375,
+    "draft": "12px",
+    "live": "8px"
+   },
+   {
+    "width": 375,
+    "draft": "12px",
+    "live": "8px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-HM-07",
+  "surface": "home",
+  "rowKey": "home|solve-report|cr-ref-home-14||transition-duration|",
+  "property": "transition-duration",
+  "width": 768,
+  "state": null,
+  "draftValue": "0s",
+  "liveValue": "0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Button transition-duration 0 written from settling the draft animations; 11 rows regressed and the guard reverted it. The same write on cr-ref-home-52 was not reverted.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W3 (ASSUMED: transition comes from settling the draft animations); solve-report.json wrong[]",
+  "confidence": "assumed",
+  "ref": "cr-ref-home-14",
+  "path": "",
+  "block": "sgs/button",
+  "groups": [
+   "cr-ref-home-14||transition-duration|"
+  ],
+  "writtenValues": {
+   "transition-duration": 0
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "11 rows on its node regressed, e.g. y-after-brand-link@375 127→101; y-after-brand-strip@375 153→101; y-after-brand-strip@375 153→101 (proven: undoing it alone cleared the regression)",
+  "rows": [
+   {
+    "width": 768,
+    "draft": "0s",
+    "live": "0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s"
+   },
+   {
+    "width": 768,
+    "draft": "0s",
+    "live": "0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s"
+   },
+   {
+    "width": 768,
+    "draft": "0s",
+    "live": "0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s"
+   },
+   {
+    "width": 1440,
+    "draft": "0s",
+    "live": "0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s"
+   },
+   {
+    "width": 1440,
+    "draft": "0s",
+    "live": "0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s"
+   },
+   {
+    "width": 1440,
+    "draft": "0s",
+    "live": "0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s"
+   },
+   {
+    "width": 1920,
+    "draft": "0s",
+    "live": "0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s"
+   },
+   {
+    "width": 1920,
+    "draft": "0s",
+    "live": "0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s, 0.25s"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-HD-01",
+  "surface": "header",
+  "rowKey": "header|solve-report|cr-ref-header-1||border-bottom-width|",
+  "property": "border-bottom-width",
+  "width": 375,
+  "state": null,
+  "draftValue": "0px",
+  "liveValue": "1px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Written from the mispair gen-header-1 (draft inner div vs live header root): removes the live 1px border; reverted (grid-template-columns regressed).",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 3; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W4; solve-report.json wrong[]",
+  "confidence": "proven",
+  "ref": "cr-ref-header-1",
+  "path": "",
+  "block": "sgs/site-header",
+  "groups": [
+   "cr-ref-header-1||border-bottom-width|"
+  ],
+  "writtenValues": {
+   "border-bottom-width": {
+    "bottom": "0px"
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "1 rows on its node regressed, e.g. grid-template-columns@1920 593.859px 164.281px 593.859px→594.641px 163.094px 594.641px (proven: undoing it alone cleared the regression)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "1px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "1px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": "1px"
+   },
+   {
+    "width": 1920,
+    "draft": "0px",
+    "live": "1px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "1px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "1px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": "1px"
+   },
+   {
+    "width": 1920,
+    "draft": "0px",
+    "live": "1px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-09T08-08-15/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-HD-02",
+  "surface": "header",
+  "rowKey": "header|solve-report|cr-ref-header-1||padding-top|",
+  "property": "padding-top, padding-right, padding-bottom, padding-left",
+  "width": 375,
+  "state": null,
+  "draftValue": "12px",
+  "liveValue": "0px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Written from the same mispair: padding 12/16 (20/28 at wider widths) copied from the draft inner row onto the live header root; 10 rows regressed, reverted.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 3; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W4; solve-report.json wrong[]",
+  "confidence": "proven",
+  "ref": "cr-ref-header-1",
+  "path": "",
+  "block": "sgs/site-header",
+  "groups": [
+   "cr-ref-header-1||padding-top|",
+   "cr-ref-header-1||padding-right|",
+   "cr-ref-header-1||padding-bottom|",
+   "cr-ref-header-1||padding-left|"
+  ],
+  "writtenValues": {
+   "padding-top": {
+    "mobile": {
+     "top": "12px"
+    },
+    "tablet": {
+     "top": "20px"
+    },
+    "desktop": {
+     "top": "20px"
+    }
+   },
+   "padding-right": {
+    "mobile": {
+     "top": "12px",
+     "right": "16px"
+    },
+    "tablet": {
+     "top": "20px",
+     "right": "28px"
+    },
+    "desktop": {
+     "top": "20px",
+     "right": "28px"
+    }
+   },
+   "padding-bottom": {
+    "mobile": {
+     "top": "12px",
+     "right": "16px",
+     "bottom": "12px"
+    },
+    "tablet": {
+     "top": "20px",
+     "right": "28px",
+     "bottom": "20px"
+    },
+    "desktop": {
+     "top": "20px",
+     "right": "28px",
+     "bottom": "20px"
+    }
+   },
+   "padding-left": {
+    "mobile": {
+     "top": "12px",
+     "right": "16px",
+     "bottom": "12px",
+     "left": "16px"
+    },
+    "tablet": {
+     "top": "20px",
+     "right": "28px",
+     "bottom": "20px",
+     "left": "28px"
+    },
+    "desktop": {
+     "top": "20px",
+     "right": "28px",
+     "bottom": "20px",
+     "left": "28px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "10 rows on its node regressed, e.g. grid-template-columns@768 257.859px 164.281px 257.859px→229.859px 164.281px 229.859px; grid-template-columns@768 272.812px 142.359px 272.828px→229.859px 164.281px 229.859px; grid-template-columns@1440 593.859px 164.281px 593.859px→565.859px 164.281px 565.859px (proven: undoing it alone cleared the regression)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "12px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "20px",
+    "live": "0px"
+   },
+   {
+    "width": 1440,
+    "draft": "20px",
+    "live": "0px"
+   },
+   {
+    "width": 1920,
+    "draft": "20px",
+    "live": "0px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-09T08-08-15/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-HD-03",
+  "surface": "header",
+  "rowKey": "header|solve-report|cr-ref-header-1||max-width|",
+  "property": "max-width",
+  "width": 375,
+  "state": null,
+  "draftValue": "1440px",
+  "liveValue": "100%",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Draft max-width 1440 written onto the root (its centred-wrapper intent belongs on a different level); 4 rows regressed (margins 240px to 0), reverted.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 3; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W4 and the cross-surface repeat note",
+  "confidence": "proven",
+  "ref": "cr-ref-header-1",
+  "path": "",
+  "block": "sgs/site-header",
+  "groups": [
+   "cr-ref-header-1||max-width|"
+  ],
+  "writtenValues": {
+   "max-width": {
+    "mobile": "1440px",
+    "tablet": "1440px",
+    "desktop": "1440px"
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "4 rows on its node regressed, e.g. margin-right@1920 240px→0px; margin-left@1920 240px→0px; margin-right@1920 240px→0px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "1440px",
+    "live": "100%"
+   },
+   {
+    "width": 768,
+    "draft": "1440px",
+    "live": "100%"
+   },
+   {
+    "width": 1440,
+    "draft": "1440px",
+    "live": "100%"
+   },
+   {
+    "width": 1920,
+    "draft": "1440px",
+    "live": "100%"
+   },
+   {
+    "width": 375,
+    "draft": "1440px",
+    "live": "100%"
+   },
+   {
+    "width": 768,
+    "draft": "1440px",
+    "live": "100%"
+   },
+   {
+    "width": 1440,
+    "draft": "1440px",
+    "live": "100%"
+   },
+   {
+    "width": 1920,
+    "draft": "1440px",
+    "live": "100%"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-09T08-08-15/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-MB-01",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|solve-report|cr-ref-mega-brands-8|.sgs-button__label|font-family|",
+  "property": "font-family, font-weight, letter-spacing, text-transform, color",
+  "width": 1440,
+  "state": null,
+  "draftValue": "\"Playfair Display\", serif",
+  "liveValue": "Outfit, system-ui, sans-serif",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Card typography copied onto .sgs-button__label from the pair that compares the label span with the whole card; 12 rows regressed, all reverted.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/A.md row 4; REPORT.md section 4 (5 of the 6 wrong settings came from comparing two different elements); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W5",
+  "confidence": "proven",
+  "ref": "cr-ref-mega-brands-8",
+  "path": ".sgs-button__label",
+  "block": "sgs/button",
+  "groups": [
+   "cr-ref-mega-brands-8|.sgs-button__label|font-family|",
+   "cr-ref-mega-brands-8|.sgs-button__label|font-weight|",
+   "cr-ref-mega-brands-8|.sgs-button__label|letter-spacing|",
+   "cr-ref-mega-brands-8|.sgs-button__label|text-transform|",
+   "cr-ref-mega-brands-8|.sgs-button__label|color|"
+  ],
+  "writtenValues": {
+   "font-family": "heading",
+   "font-weight": "500",
+   "letter-spacing": {
+    "desktop": 2.8
+   },
+   "text-transform": "uppercase",
+   "color": "primary"
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "12 rows on its node regressed, e.g. font-family@1440 Outfit, system-ui, sans-serif→\"Playfair Display\", serif; font-weight@1440 400→500; letter-spacing@1440 normal→2.8px (calibration names it)",
+  "rows": [
+   {
+    "width": 1440,
+    "draft": "\"Playfair Display\", serif",
+    "live": "Outfit, system-ui, sans-serif"
+   },
+   {
+    "width": 1920,
+    "draft": "\"Playfair Display\", serif",
+    "live": "Outfit, system-ui, sans-serif"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-09T08-19-54/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-MB-02",
+  "surface": "mega-brands",
+  "rowKey": "mega-brands|solve-report|cr-ref-mega-brands-3||line-height|",
+  "property": "line-height",
+  "width": 1440,
+  "state": null,
+  "draftValue": "17.25px",
+  "liveValue": "11.5px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Heading line-height write moved the panel contents (y-after-brands-trigger 92 to 134) and was reverted; the tool grouped it with the label mispair.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W5 (heading -3 line-height)",
+  "confidence": "assumed",
+  "ref": "cr-ref-mega-brands-3",
+  "path": "",
+  "block": "sgs/heading",
+  "groups": [
+   "cr-ref-mega-brands-3||line-height|"
+  ],
+  "writtenValues": {
+   "line-height": {
+    "desktop": 1.5
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "2 rows on its node regressed, e.g. y-after-brands-trigger@1440 92→134; y-after-brands-trigger@1920 92→126 (proven: undoing it alone cleared the regression)",
+  "rows": [
+   {
+    "width": 1440,
+    "draft": "17.25px",
+    "live": "11.5px"
+   },
+   {
+    "width": 1920,
+    "draft": "17.25px",
+    "live": "11.5px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-09T08-19-54/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-SH-01",
+  "surface": "shop",
+  "rowKey": "shop|solve-report|cr-ref-shop-5||margin-bottom|",
+  "property": "margin-bottom, margin-top, margin-right, margin-left",
+  "width": 375,
+  "state": null,
+  "draftValue": "8px",
+  "liveValue": "10px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Margins copied from the draft SHAPE span onto the live SHOP paragraph (mispair gen-shop-5); the write zeroed the centring margins (240px to 0), reverted.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md gen-shop-5 rows; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W6; solve-report.json wrong[]",
+  "confidence": "proven",
+  "ref": "cr-ref-shop-5",
+  "path": "",
+  "block": "sgs/text",
+  "groups": [
+   "cr-ref-shop-5||margin-bottom|",
+   "cr-ref-shop-5||margin-top|",
+   "cr-ref-shop-5||margin-right|",
+   "cr-ref-shop-5||margin-left|"
+  ],
+  "writtenValues": {
+   "margin-bottom": {
+    "desktop": {
+     "bottom": "8px"
+    },
+    "mobile": {
+     "bottom": "8px"
+    },
+    "tablet": {
+     "bottom": "8px"
+    }
+   },
+   "margin-top": {
+    "desktop": {
+     "bottom": "8px",
+     "top": "0px"
+    },
+    "mobile": {
+     "bottom": "8px",
+     "top": "0px"
+    },
+    "tablet": {
+     "bottom": "8px",
+     "top": "0px"
+    }
+   },
+   "margin-right": {
+    "desktop": {
+     "bottom": "8px",
+     "top": "0px",
+     "right": "0px"
+    },
+    "mobile": {
+     "bottom": "8px",
+     "top": "0px",
+     "right": "0px"
+    },
+    "tablet": {
+     "bottom": "8px",
+     "top": "0px",
+     "right": "0px"
+    }
+   },
+   "margin-left": {
+    "desktop": {
+     "bottom": "8px",
+     "top": "0px",
+     "right": "0px",
+     "left": "0px"
+    },
+    "mobile": {
+     "bottom": "8px",
+     "top": "0px",
+     "right": "0px",
+     "left": "0px"
+    },
+    "tablet": {
+     "bottom": "8px",
+     "top": "0px",
+     "right": "0px",
+     "left": "0px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "4 rows on its node regressed, e.g. margin-right@1920 240px→0px; margin-left@1920 240px→0px; width@1920 1440px→1336px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "8px",
+    "live": "10px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": null
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": null
+   },
+   {
+    "width": 768,
+    "draft": "8px",
+    "live": "10px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": null
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": null
+   },
+   {
+    "width": 1440,
+    "draft": "8px",
+    "live": "10px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": null
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-09T10-11-46/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-SH-02",
+  "surface": "shop",
+  "rowKey": "shop|solve-report|cr-ref-shop-50||max-width|",
+  "property": "max-width",
+  "width": 375,
+  "state": null,
+  "draftValue": "none",
+  "liveValue": "380px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Product-card max-width written at the card; 4 rows regressed (margins 240px to 0), reverted. Cause not individually proven; the shop run was untrusted (crash then resume).",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W6; .claude/reports/2026-10-09-session-d-local-baseline/baseline-table.json and REPORT.md section 4; shop run untrusted",
+  "confidence": "assumed",
+  "ref": "cr-ref-shop-50",
+  "path": "",
+  "block": "sgs/product-card",
+  "groups": [
+   "cr-ref-shop-50||max-width|"
+  ],
+  "writtenValues": {
+   "max-width": "none"
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "4 rows on its node regressed, e.g. margin-right@1920 240px→0px; margin-left@1920 240px→0px; width@1920 1440px→1336px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 375,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 375,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 375,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 768,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 768,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 768,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 768,
+    "draft": "none",
+    "live": "380px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-09T10-11-46/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-SH-03",
+  "surface": "shop",
+  "rowKey": "shop|solve-report|cr-ref-shop-50|div:nth-of-type(1) > .sgs-product-card__saving-badge|font-family|",
+  "property": "font-family, font-size, font-weight",
+  "width": 375,
+  "state": null,
+  "draftValue": "Outfit, system-ui, sans-serif",
+  "liveValue": "\"Playfair Display\", serif",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Saving-badge typography written; 83 rows regressed and the guard reverted it. Cause not individually proven; run untrusted.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W6; solve-report.json wrong[]",
+  "confidence": "assumed",
+  "ref": "cr-ref-shop-50",
+  "path": "div:nth-of-type(1) > .sgs-product-card__saving-badge",
+  "block": "sgs/product-card",
+  "groups": [
+   "cr-ref-shop-50|div:nth-of-type(1) > .sgs-product-card__saving-badge|font-family|",
+   "cr-ref-shop-50|div:nth-of-type(1) > .sgs-product-card__saving-badge|font-size|",
+   "cr-ref-shop-50|div:nth-of-type(1) > .sgs-product-card__saving-badge|font-weight|"
+  ],
+  "writtenValues": {
+   "font-family": "body",
+   "font-size": {
+    "mobile": 11,
+    "tablet": 11,
+    "desktop": 11
+   },
+   "font-weight": "400"
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "83 rows on its node regressed, e.g. font-family@375 \"Playfair Display\", serif→Outfit, system-ui, sans-serif; font-size@375 12.5px→11px; font-weight@375 500→400 (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "Outfit, system-ui, sans-serif",
+    "live": "\"Playfair Display\", serif"
+   },
+   {
+    "width": 375,
+    "draft": "\"Playfair Display\", serif",
+    "live": "Outfit, system-ui, sans-serif"
+   },
+   {
+    "width": 768,
+    "draft": "Outfit, system-ui, sans-serif",
+    "live": "\"Playfair Display\", serif"
+   },
+   {
+    "width": 768,
+    "draft": "\"Playfair Display\", serif",
+    "live": "Outfit, system-ui, sans-serif"
+   },
+   {
+    "width": 1440,
+    "draft": "Outfit, system-ui, sans-serif",
+    "live": "\"Playfair Display\", serif"
+   },
+   {
+    "width": 1440,
+    "draft": "\"Playfair Display\", serif",
+    "live": "Outfit, system-ui, sans-serif"
+   },
+   {
+    "width": 1920,
+    "draft": "Outfit, system-ui, sans-serif",
+    "live": "\"Playfair Display\", serif"
+   },
+   {
+    "width": 1920,
+    "draft": "\"Playfair Display\", serif",
+    "live": "Outfit, system-ui, sans-serif"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-09T10-11-46/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-SH-04",
+  "surface": "shop",
+  "rowKey": "shop|solve-report|cr-ref-shop-1||max-width|",
+  "property": "max-width",
+  "width": 375,
+  "state": null,
+  "draftValue": "1440px",
+  "liveValue": "none",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Root container max-width written (draft 1440 vs live none/100%): the cross-surface repeat where the draft centred-wrapper intent lands on the wrong level; reverted.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W6 and Cross-surface repeat (ASSUMED)",
+  "confidence": "assumed",
+  "ref": "cr-ref-shop-1",
+  "path": "",
+  "block": "sgs/container",
+  "groups": [
+   "cr-ref-shop-1||max-width|"
+  ],
+  "writtenValues": {
+   "max-width": {
+    "mobile": "1440px",
+    "tablet": "1440px",
+    "desktop": "1440px"
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "4 rows on its node regressed, e.g. margin-right@1920 240px→0px; margin-left@1920 240px→0px; width@1920 1440px→1336px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "1440px",
+    "live": "none"
+   },
+   {
+    "width": 375,
+    "draft": "1440px",
+    "live": "none"
+   },
+   {
+    "width": 375,
+    "draft": "1440px",
+    "live": "none"
+   },
+   {
+    "width": 375,
+    "draft": "1440px",
+    "live": "none"
+   },
+   {
+    "width": 375,
+    "draft": "1440px",
+    "live": "none"
+   },
+   {
+    "width": 375,
+    "draft": "1440px",
+    "live": "none"
+   },
+   {
+    "width": 375,
+    "draft": "1440px",
+    "live": "none"
+   },
+   {
+    "width": 375,
+    "draft": "1440px",
+    "live": "none"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-09T10-11-46/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-SH-05",
+  "surface": "shop",
+  "rowKey": "shop|solve-report|cr-ref-shop-10||margin-top|",
+  "property": "margin-top",
+  "width": 375,
+  "state": null,
+  "draftValue": "0px",
+  "liveValue": "28px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Written from gen-shop-10, a symptom of different filter content (C.md); 2 rows regressed (y-after-count 85 to 57), reverted.",
+  "proof": ".claude/reports/2026-10-09-session-d-local-baseline/C.md gen-shop-10 (symptom row); .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W6",
+  "confidence": "assumed",
+  "ref": "cr-ref-shop-10",
+  "path": "",
+  "block": "sgs/container",
+  "groups": [
+   "cr-ref-shop-10||margin-top|"
+  ],
+  "writtenValues": {
+   "margin-top": {
+    "desktop": {
+     "top": "0px"
+    },
+    "mobile": {
+     "top": "0px"
+    },
+    "tablet": {
+     "top": "0px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "2 rows on its node regressed, e.g. y-after-count@1440 85→57; y-after-count@1920 85→57 (proven: undoing it alone cleared the regression)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "28px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "28px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "28px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "28px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "28px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "28px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "28px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "28px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-09T10-11-46/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-SH-06",
+  "surface": "shop",
+  "rowKey": "shop|solve-report|cr-ref-shop-11||padding-right|",
+  "property": "padding-right, padding-top, padding-bottom",
+  "width": 375,
+  "state": null,
+  "draftValue": "0px",
+  "liveValue": "20px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Padding written on the filter container; the council reads -10/-11 as a symptom of different filter content, and the tool labels gen-shop-11 mispaired (375x77 vs 375x812); 2 rows regressed, reverted.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W6; sites/eye-care-ward-end/build/qa/triage/shop.json cr-ref-shop-11 decidedBy mispaired",
+  "confidence": "assumed",
+  "ref": "cr-ref-shop-11",
+  "path": "",
+  "block": "sgs/container",
+  "groups": [
+   "cr-ref-shop-11||padding-right|",
+   "cr-ref-shop-11||padding-top|",
+   "cr-ref-shop-11||padding-bottom|"
+  ],
+  "writtenValues": {
+   "padding-right": {
+    "mobile": {
+     "right": "0px"
+    },
+    "tablet": {
+     "right": "0px"
+    },
+    "desktop": {
+     "right": "0px"
+    }
+   },
+   "padding-top": {
+    "mobile": {
+     "right": "0px",
+     "top": "16px"
+    },
+    "tablet": {
+     "right": "0px",
+     "top": "16px"
+    },
+    "desktop": {
+     "right": "0px",
+     "top": "0px"
+    }
+   },
+   "padding-bottom": {
+    "mobile": {
+     "right": "0px",
+     "top": "16px",
+     "bottom": "16px"
+    },
+    "tablet": {
+     "right": "0px",
+     "top": "16px",
+     "bottom": "16px"
+    },
+    "desktop": {
+     "right": "0px",
+     "top": "0px",
+     "bottom": "0px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "2 rows on its node regressed, e.g. y-after-count@1440 85→57; y-after-count@1920 85→57 (proven: undoing it alone cleared the regression)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "20px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "20px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "20px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "20px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-09T10-11-46/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-PR-01",
+  "surface": "product",
+  "rowKey": "product|solve-report|cr-ref-product-6||margin-top|",
+  "property": "margin-top, margin-bottom",
+  "width": 375,
+  "state": null,
+  "draftValue": "14px",
+  "liveValue": "0px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Heading margins written; 12 rows regressed (widths 375 to 335, 768 to 664) and the guard reverted them. Cause not proven.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W7 (cause NOT proven); solve-report.json wrong[]",
+  "confidence": "assumed",
+  "ref": "cr-ref-product-6",
+  "path": "",
+  "block": "sgs/heading",
+  "groups": [
+   "cr-ref-product-6||margin-top|",
+   "cr-ref-product-6||margin-bottom|"
+  ],
+  "writtenValues": {
+   "margin-top": {
+    "mobile": {
+     "top": "14px"
+    },
+    "tablet": {
+     "top": "14px"
+    },
+    "desktop": {
+     "top": "14px"
+    }
+   },
+   "margin-bottom": {
+    "mobile": {
+     "top": "14px",
+     "bottom": "0px"
+    },
+    "tablet": {
+     "top": "14px",
+     "bottom": "0px"
+    },
+    "desktop": {
+     "top": "14px",
+     "bottom": "0px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "12 rows on its node regressed, e.g. width@375 375px→335px; width@768 768px→664px; width@1440 1440px→1336px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "14px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "14px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "14px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "14px",
+    "live": "0px"
+   },
+   {
+    "width": 375,
+    "draft": "14px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "14px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "14px",
+    "live": "0px"
+   },
+   {
+    "width": 768,
+    "draft": "14px",
+    "live": "0px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-09T09-50-16/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-PR-02",
+  "surface": "product",
+  "rowKey": "product|solve-report|cr-ref-product-8||padding-right|",
+  "property": "padding-right, padding-left",
+  "width": 375,
+  "state": null,
+  "draftValue": "22px",
+  "liveValue": "28px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Button padding written; 12 rows regressed, reverted. Cause not proven.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W7",
+  "confidence": "assumed",
+  "ref": "cr-ref-product-8",
+  "path": "",
+  "block": "sgs/button",
+  "groups": [
+   "cr-ref-product-8||padding-right|",
+   "cr-ref-product-8||padding-left|"
+  ],
+  "writtenValues": {
+   "padding-right": {
+    "mobile": {
+     "right": "22px"
+    },
+    "tablet": {
+     "right": "22px"
+    },
+    "desktop": {
+     "right": "22px"
+    }
+   },
+   "padding-left": {
+    "mobile": {
+     "right": "22px",
+     "left": "22px"
+    },
+    "tablet": {
+     "right": "22px",
+     "left": "22px"
+    },
+    "desktop": {
+     "right": "22px",
+     "left": "22px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "12 rows on its node regressed, e.g. width@375 375px→335px; width@768 768px→664px; width@1440 1440px→1336px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "22px",
+    "live": "28px"
+   },
+   {
+    "width": 375,
+    "draft": "22px",
+    "live": "28px"
+   },
+   {
+    "width": 375,
+    "draft": "22px",
+    "live": "28px"
+   },
+   {
+    "width": 375,
+    "draft": "22px",
+    "live": "28px"
+   },
+   {
+    "width": 375,
+    "draft": "22px",
+    "live": "28px"
+   },
+   {
+    "width": 768,
+    "draft": "22px",
+    "live": "28px"
+   },
+   {
+    "width": 768,
+    "draft": "22px",
+    "live": "28px"
+   },
+   {
+    "width": 768,
+    "draft": "22px",
+    "live": "28px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-09T09-50-16/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-PR-03",
+  "surface": "product",
+  "rowKey": "product|solve-report|cr-ref-product-114||max-width|",
+  "property": "max-width",
+  "width": 375,
+  "state": null,
+  "draftValue": "none",
+  "liveValue": "380px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Product-card max-width written; 12 rows regressed, reverted. Cause not proven.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W7",
+  "confidence": "assumed",
+  "ref": "cr-ref-product-114",
+  "path": "",
+  "block": "sgs/product-card",
+  "groups": [
+   "cr-ref-product-114||max-width|"
+  ],
+  "writtenValues": {
+   "max-width": "none"
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "12 rows on its node regressed, e.g. width@375 375px→335px; width@768 768px→664px; width@1440 1440px→1336px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 375,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 375,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 768,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 768,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 768,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 1440,
+    "draft": "none",
+    "live": "380px"
+   },
+   {
+    "width": 1440,
+    "draft": "none",
+    "live": "380px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-09T09-50-16/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-PR-04",
+  "surface": "product",
+  "rowKey": "product|solve-report|cr-ref-product-1||max-width|",
+  "property": "max-width",
+  "width": 375,
+  "state": null,
+  "draftValue": "1440px",
+  "liveValue": "none",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Root container max-width 1440 written (cross-surface repeat of the wrong-level centred-wrapper intent); reverted.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W7 and Cross-surface repeat (ASSUMED)",
+  "confidence": "assumed",
+  "ref": "cr-ref-product-1",
+  "path": "",
+  "block": "sgs/container",
+  "groups": [
+   "cr-ref-product-1||max-width|"
+  ],
+  "writtenValues": {
+   "max-width": {
+    "mobile": "1440px",
+    "tablet": "1440px",
+    "desktop": "1440px"
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "12 rows on its node regressed, e.g. width@375 375px→335px; width@768 768px→664px; width@1440 1440px→1336px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "1440px",
+    "live": "none"
+   },
+   {
+    "width": 768,
+    "draft": "1440px",
+    "live": "none"
+   },
+   {
+    "width": 1440,
+    "draft": "1440px",
+    "live": "none"
+   },
+   {
+    "width": 1920,
+    "draft": "1440px",
+    "live": "none"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-09T09-50-16/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-PR-05",
+  "surface": "product",
+  "rowKey": "product|solve-report|cr-ref-product-88||margin-top|",
+  "property": "margin-top",
+  "width": 375,
+  "state": null,
+  "draftValue": "0px",
+  "liveValue": "16px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Text margin written; 12 rows regressed, reverted. Cause not proven.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W7",
+  "confidence": "assumed",
+  "ref": "cr-ref-product-88",
+  "path": "",
+  "block": "sgs/text",
+  "groups": [
+   "cr-ref-product-88||margin-top|"
+  ],
+  "writtenValues": {
+   "margin-top": {
+    "desktop": {
+     "top": "0px"
+    },
+    "mobile": {
+     "top": "0px"
+    },
+    "tablet": {
+     "top": "0px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "12 rows on its node regressed, e.g. width@375 375px→335px; width@768 768px→664px; width@1440 1440px→1336px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "16px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "16px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": "16px"
+   },
+   {
+    "width": 1920,
+    "draft": "0px",
+    "live": "16px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-09T09-50-16/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-CF-01",
+  "surface": "contact-form",
+  "rowKey": "contact-form|solve-report|cr-ref-contact-form-1|.sgs-form-field__input|padding-top|",
+  "property": "padding-top, padding-right, padding-bottom, padding-left, min-height",
+  "width": 375,
+  "state": null,
+  "draftValue": "0px",
+  "liveValue": "12px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Field 2: per-field padding/min-height written onto the field input (14px vs 0, min-height 52); 32 rows regressed and the guard reverted it. Assumed level mismatch (the draft padding sits on the input, not the field wrapper).",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W8 (ASSUMED level mismatch); .claude/reports/2026-10-09-session-d-local-baseline/baseline-table.json and REPORT.md section 4; contact-form 2/4 wrong",
+  "confidence": "assumed",
+  "ref": "cr-ref-contact-form-0",
+  "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input",
+  "block": "sgs/form",
+  "groups": [
+   "cr-ref-contact-form-1|.sgs-form-field__input|padding-top|",
+   "cr-ref-contact-form-1|.sgs-form-field__input|padding-right|",
+   "cr-ref-contact-form-1|.sgs-form-field__input|padding-bottom|",
+   "cr-ref-contact-form-1|.sgs-form-field__input|padding-left|",
+   "cr-ref-contact-form-1|.sgs-form-field__input|min-height|"
+  ],
+  "writtenValues": {
+   "padding-top": {
+    "mobile": {
+     "top": "0px"
+    },
+    "tablet": {
+     "top": "0px"
+    },
+    "desktop": {
+     "top": "0px"
+    }
+   },
+   "padding-right": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px"
+    }
+   },
+   "padding-bottom": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px"
+    }
+   },
+   "padding-left": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "min-height": {
+    "mobile": "52px",
+    "tablet": "52px",
+    "desktop": "52px"
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "32 rows on its node regressed, e.g. padding-top@375 14px→0px; padding-bottom@375 14px→0px; padding-top@375 14px→0px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-09T09-50-16/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-CF-02",
+  "surface": "contact-form",
+  "rowKey": "contact-form|solve-report|cr-ref-contact-form-2|.sgs-form-field__input|padding-top|",
+  "property": "padding-top, padding-right, padding-bottom, padding-left, min-height",
+  "width": 375,
+  "state": null,
+  "draftValue": "0px",
+  "liveValue": "12px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Field 3: per-field padding/min-height written onto the field input (14px vs 0, min-height 52); 32 rows regressed and the guard reverted it. Assumed level mismatch (the draft padding sits on the input, not the field wrapper).",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W8 (ASSUMED level mismatch); .claude/reports/2026-10-09-session-d-local-baseline/baseline-table.json and REPORT.md section 4; contact-form 2/4 wrong",
+  "confidence": "assumed",
+  "ref": "cr-ref-contact-form-0",
+  "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input",
+  "block": "sgs/form",
+  "groups": [
+   "cr-ref-contact-form-2|.sgs-form-field__input|padding-top|",
+   "cr-ref-contact-form-2|.sgs-form-field__input|padding-right|",
+   "cr-ref-contact-form-2|.sgs-form-field__input|padding-bottom|",
+   "cr-ref-contact-form-2|.sgs-form-field__input|padding-left|",
+   "cr-ref-contact-form-2|.sgs-form-field__input|min-height|"
+  ],
+  "writtenValues": {
+   "padding-top": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "padding-right": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "padding-bottom": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "padding-left": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "min-height": {
+    "mobile": "52px",
+    "tablet": "52px",
+    "desktop": "52px"
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "32 rows on its node regressed, e.g. padding-top@375 14px→0px; padding-bottom@375 14px→0px; padding-top@375 14px→0px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": "12px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-09T09-50-16/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-CF-03",
+  "surface": "contact-form",
+  "rowKey": "contact-form|solve-report|cr-ref-contact-form-3|.sgs-form-field__input|padding-top|",
+  "property": "padding-top, padding-right, padding-bottom, padding-left, min-height",
+  "width": 375,
+  "state": null,
+  "draftValue": "0px",
+  "liveValue": "12px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Field 4: per-field padding/min-height written onto the field input (14px vs 0, min-height 52); 32 rows regressed and the guard reverted it. Assumed level mismatch (the draft padding sits on the input, not the field wrapper).",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W8 (ASSUMED level mismatch); .claude/reports/2026-10-09-session-d-local-baseline/baseline-table.json and REPORT.md section 4; contact-form 2/4 wrong",
+  "confidence": "assumed",
+  "ref": "cr-ref-contact-form-0",
+  "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input",
+  "block": "sgs/form",
+  "groups": [
+   "cr-ref-contact-form-3|.sgs-form-field__input|padding-top|",
+   "cr-ref-contact-form-3|.sgs-form-field__input|padding-right|",
+   "cr-ref-contact-form-3|.sgs-form-field__input|padding-bottom|",
+   "cr-ref-contact-form-3|.sgs-form-field__input|padding-left|",
+   "cr-ref-contact-form-3|.sgs-form-field__input|min-height|"
+  ],
+  "writtenValues": {
+   "padding-top": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "padding-right": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "padding-bottom": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "padding-left": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "min-height": {
+    "mobile": "52px",
+    "tablet": "52px",
+    "desktop": "52px"
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "32 rows on its node regressed, e.g. padding-top@375 14px→0px; padding-bottom@375 14px→0px; padding-top@375 14px→0px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": "12px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-09T09-50-16/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-CF-04",
+  "surface": "contact-form",
+  "rowKey": "contact-form|solve-report|cr-ref-contact-form-4|.sgs-form-field__input|padding-top|",
+  "property": "padding-top, padding-right, padding-bottom, padding-left, min-height",
+  "width": 375,
+  "state": null,
+  "draftValue": "0px",
+  "liveValue": "12px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Field 5: per-field padding/min-height written onto the field input (14px vs 0, min-height 52); 32 rows regressed and the guard reverted it. Assumed level mismatch (the draft padding sits on the input, not the field wrapper).",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W8 (ASSUMED level mismatch); .claude/reports/2026-10-09-session-d-local-baseline/baseline-table.json and REPORT.md section 4; contact-form 2/4 wrong",
+  "confidence": "assumed",
+  "ref": "cr-ref-contact-form-0",
+  "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input",
+  "block": "sgs/form",
+  "groups": [
+   "cr-ref-contact-form-4|.sgs-form-field__input|padding-top|",
+   "cr-ref-contact-form-4|.sgs-form-field__input|padding-right|",
+   "cr-ref-contact-form-4|.sgs-form-field__input|padding-bottom|",
+   "cr-ref-contact-form-4|.sgs-form-field__input|padding-left|",
+   "cr-ref-contact-form-4|.sgs-form-field__input|min-height|"
+  ],
+  "writtenValues": {
+   "padding-top": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "padding-right": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "padding-bottom": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "padding-left": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "min-height": {
+    "mobile": "52px",
+    "tablet": "52px",
+    "desktop": "52px"
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "32 rows on its node regressed, e.g. padding-top@375 14px→0px; padding-bottom@375 14px→0px; padding-top@375 14px→0px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 375,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 768,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": "12px"
+   },
+   {
+    "width": 1440,
+    "draft": "0px",
+    "live": "12px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-09T09-50-16/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-CF-05",
+  "surface": "contact-form",
+  "rowKey": "contact-form|solve-report|cr-ref-contact-form-5|.sgs-form-field__input|padding-right|",
+  "property": "padding-right, padding-left",
+  "width": 375,
+  "state": null,
+  "draftValue": "14px",
+  "liveValue": "16px",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Field 6: per-field padding/min-height written onto the field input (14px vs 0, min-height 52); 32 rows regressed and the guard reverted it. Assumed level mismatch (the draft padding sits on the input, not the field wrapper).",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W8 (ASSUMED level mismatch); .claude/reports/2026-10-09-session-d-local-baseline/baseline-table.json and REPORT.md section 4; contact-form 2/4 wrong",
+  "confidence": "assumed",
+  "ref": "cr-ref-contact-form-0",
+  "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input",
+  "block": "sgs/form",
+  "groups": [
+   "cr-ref-contact-form-5|.sgs-form-field__input|padding-right|",
+   "cr-ref-contact-form-5|.sgs-form-field__input|padding-left|"
+  ],
+  "writtenValues": {
+   "padding-right": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   },
+   "padding-left": {
+    "mobile": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "tablet": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    },
+    "desktop": {
+     "top": "0px",
+     "right": "14px",
+     "bottom": "0px",
+     "left": "14px"
+    }
+   }
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "32 rows on its node regressed, e.g. padding-top@375 14px→0px; padding-bottom@375 14px→0px; padding-top@375 14px→0px (calibration names it)",
+  "rows": [
+   {
+    "width": 375,
+    "draft": "14px",
+    "live": "16px"
+   },
+   {
+    "width": 375,
+    "draft": "14px",
+    "live": "16px"
+   },
+   {
+    "width": 375,
+    "draft": "14px",
+    "live": "40px"
+   },
+   {
+    "width": 768,
+    "draft": "14px",
+    "live": "16px"
+   },
+   {
+    "width": 768,
+    "draft": "14px",
+    "live": "16px"
+   },
+   {
+    "width": 768,
+    "draft": "14px",
+    "live": "40px"
+   },
+   {
+    "width": 1440,
+    "draft": "14px",
+    "live": "16px"
+   },
+   {
+    "width": 1440,
+    "draft": "14px",
+    "live": "16px"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-09T09-50-16/solve-report.json wrong[]"
+ },
+ {
+  "id": "WW-ML-01",
+  "surface": "mega-lenses",
+  "rowKey": "mega-lenses|solve-report|cr-ref-mega-lenses-2||border-top-style|",
+  "property": "border-top-style",
+  "width": 1440,
+  "state": null,
+  "draftValue": "none",
+  "liveValue": "solid",
+  "label": "wrong-write",
+  "pattern": null,
+  "cause": "Container border-top-style none written; 1 row regressed (y-after-lenses-trigger 93 to 90), reverted. Cause unproven.",
+  "proof": ".claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md evidence auditor table B W9 (unproven)",
+  "confidence": "assumed",
+  "ref": "cr-ref-mega-lenses-2",
+  "path": "",
+  "block": "sgs/container",
+  "groups": [
+   "cr-ref-mega-lenses-2||border-top-style|"
+  ],
+  "writtenValues": {
+   "border-top-style": "none"
+  },
+  "round": 1,
+  "reverted": true,
+  "revertReason": "1 rows on its node regressed, e.g. y-after-lenses-trigger@1920 93→90 (proven: undoing it alone cleared the regression)",
+  "rows": [
+   {
+    "width": 1440,
+    "draft": "none",
+    "live": "solid"
+   },
+   {
+    "width": 1920,
+    "draft": "none",
+    "live": "solid"
+   }
+  ],
+  "source": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-09T08-40-01/solve-report.json wrong[]"
+ }
+]

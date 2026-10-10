@@ -31,6 +31,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`) and `image`, a media object on that site written into background-image markers and overlay preconditions. |
 | `calibration-fixtures.json` | Minimum content, inner blocks, parent chain, optional variants, optional `preconditions` (`{ <setting>: { <attr>: <value> } }`: attributes a setting paints only under, put on that setting's instance) and optional `before` blocks (placed ahead of the instance, for a block that reads the page, such as a table of contents) per calibrated block. |
 | `ledger.mjs` | Divergence ledger command: `accept <report.json> <row id>` adds an entry dated today; `stale <report.json>` exits 1 while any entry is stale. |
+| `answer-sheet.mjs` | Answer-sheet scorer (route-accuracy R1): `--client <slug> --surface <s>[,<s>...] [--report f] [--triage f] [--solve f] [--sheet f] [--baseline f] [--write-baseline] [--detail]`; scores the frozen hand-labelled rows of `<build>/qa/answer-sheet.json` against each surface's newest triage and the walk and Solve report it names, prints the pass counts per label (false alarms per pattern) with the outcomes behind them, and exits 1 when a row that passed in `<build>/qa/answer-sheet-baseline.json` fails now. |
 | `lib/db.mjs` | Read-only `block_attributes` queries. |
 | `lib/normalise.mjs` | Value parsing and token snapping from `theme-snapshot.json`, with the snap log. |
 | `lib/resolve.mjs` | The one property-to-setting engine. |
@@ -76,6 +77,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/triage-source.mjs` | Triage's source pass (string search): a block's `render.php` mentions, its `style.css` rules for the element, and the PHP helpers its `render.php` reaches two hops deep (`sgs_*` functions, classes, required `includes/` files) that read the row's setting or emit the property, cited as `file::symbol`. |
 | `lib/guard.mjs` | The regression guard: reverts a write calibration names, else tries one suspect at a time and lets the next walk decide. |
 | `lib/ledger.mjs` | Ledger library: rules, matching, stale entries, accept migration, entries from report rows. |
+| `lib/answer-sheet.mjs` | Answer-sheet library: row match keys (no pair name), walk and triage outcomes, wrong-write groups, per-surface scores and the baseline ratchet. |
 | `tests/db.test.mjs` | R-47-2: read-only database. |
 | `tests/normalise.test.mjs` | R-47-7: tokens before literals. |
 | `tests/resolve.test.mjs` | FR-47-1: storage shapes and gaps; border-radius written as corners, never sides. |
@@ -84,6 +86,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/calibrate-classes.test.mjs` | FR-47-2: each dead or markerless class of the 2026-10-04 audit gets its marker, precondition or read (extension rows from the DB, gradients, keywords, media objects, transforms, wider lengths, non-length tiers, colour by role, box shapes, two weights, unit shapes, the silent drop, preconditions, layout modes, state targets, container-query tiers). |
 | `tests/calibrate-read.test.mjs` | FR-47-2 reader, in a local headless Chromium: elements past the 81st, `::after` and `::placeholder` layers, and an `aria-controls` panel outside the instance are read. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept; the independent check matches entries on `node` and leaves a drifted value entry open (A5). |
+| `tests/answer-sheet.test.mjs` | Route-accuracy R1: the frozen 100 rows; matching ignores the pair name; artefact labels drop a false alarm and `consequence` never drops a real problem; wrong-write groups; a real problem kept in the baseline and missing now is a regression (MUST FAIL) and an unchanged walk is not. |
 | `tests/references.test.mjs` | Reference blocks: the detector, the linked-placeholder rule in Solve, the surfaces lint. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint; B4: a ledger entry citing an item the register lacks, or none, fails; a house-rule entry needs none; a ledger with entries and no register fails; without `--register` the register comes from `qa/ledger.config.json`, and a named register that does not exist fails. |
 | `tests/solve-held.test.mjs` | A setting already holding the draft value is held, not written (a value another group wrote earlier in the same round is a write, not a hold, with a negative control), and its row is a Hardcode that names what the tree holds and the widths that differ; the winning-rule ranking, with negative controls. |
@@ -207,6 +210,20 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `writableTargets(manifests)` → `{ posts, templates }` from calibration-targets.json and surfaces.json.
 - `assertWritable(target, manifests)`: throws on a forbidden or unlisted target (R-47-11).
 - `assertQuiet(sshArgs?)`: throws while a deploy or reseed runs (host process list, local process list).
+
+### `lib/answer-sheet.mjs`
+- `ARTEFACT_LABELS`: triage `decidedBy` labels meaning a measuring artefact (`mispaired`, `unmeasured-side`, `same-element`, `ledger-consequence`); `consequence` is not one, because real problems carry it.
+- `matchKey(row)` → `state|width|element|path|kind|property`, the element being the ref, else `pair:<pair>` for a block-less row.
+- `reportRows(report)` → every diff of a walk report with its run's state and width and its pair name.
+- `writtenGroups(solve)` → the setting groups a Solve run wrote, kept (`writes`) or reverted (`wrong`).
+- `outcomeOf(sheetRow, { report, triage, solve })` → `open`, `accepted`, `absent` or `artefact` for a false alarm or real problem; `written` or `avoided` for a wrong write; `not-scored` without the input.
+- `passes(label, outcome)` → a false alarm passes when not open, a real problem when open, a wrong write when avoided; null when not scored.
+- `scoreSurface(sheet, surface, run)` → `{ surface, rows, tally }`: per-row outcomes and per-label counts with their outcomes.
+- `baselineOf(score)` → `{ pass }`, the ids that pass.
+- `regressions(score, baseline)` → rows that passed in the baseline and fail now.
+
+### `answer-sheet.mjs`
+- (no exports) CLI only.
 
 ### `lib/ledger.mjs`
 - `RULES`: rule names with their meaning.
