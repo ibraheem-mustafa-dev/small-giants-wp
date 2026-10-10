@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  ::selection { background: var(--accent); color: #fff; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { opacity: .75; }
+  button { font-family: inherit; }
+</style>
+</helmet>
+<div style="--accent:{{ pal.accent }};--soft:{{ pal.soft }};background:#FFFFFF;color:#1E2A3C;min-height:100vh;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:16px;line-height:1.5;position:relative;overflow-x:hidden;-webkit-font-smoothing:antialiased;">
+
+  <header onMouseLeave="{{ scheduleClose }}" onMouseEnter="{{ cancelClose }}" style="position:sticky;top:0;z-index:200;">
+    <div style="background:#FFFFFF;border-bottom:3px solid var(--accent);">
+      <div style="max-width:1240px;margin:0 auto;padding:0 28px;height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative;">
+
+        <a href="#" onClick="{{ closeAll }}" style="display:flex;align-items:center;gap:10px;color:#1E2A3C;flex-shrink:0;">
+          <span style="width:24px;height:24px;border-radius:7px;background:var(--accent);display:inline-block;transform:rotate(45deg);"></span>
+          <span style="font-weight:700;font-size:19px;letter-spacing:-.01em;">Indus Foods</span>
+        </a>
+
+        <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ toggleMobile }}" aria-label="Menu" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(30,42,60,.15);background:transparent;color:#1E2A3C;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;">
+            <span style="width:18px;height:1.5px;background:currentColor;display:block;"></span>
+            <span style="width:18px;height:1.5px;background:currentColor;display:block;"></span>
+          </button>
+        </sc-if>
+
+        <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+          <nav style="display:flex;align-items:center;gap:2px;height:76px;">
+            <sc-for list="{{ items }}" as="item" hint-placeholder-count="7">
+              <button onMouseEnter="{{ item.onEnter }}" onMouseMove="{{ item.onMove }}" onMouseLeave="{{ item.onLeaveLabel }}" onFocus="{{ item.onEnter }}" style="background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 15px;height:42px;display:flex;align-items:center;gap:6px;color:{{ item.activeColor }};font-size:15px;font-weight:600;letter-spacing:-.01em;transition:background .22s,color .22s;">
+                <span data-label style="display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;">
+                  {{ item.label }}
+                  <sc-if value="{{ item.hasPanel }}" hint-placeholder-val="{{ true }}">
+                    <span style="opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;">{{ caretIcon }}</span>
+                  </sc-if>
+                </span>
+              </button>
+            </sc-for>
+          </nav>
+
+          <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+            <a href="#" style="color:#fff;background:#0A7EA8;font-size:15px;font-weight:700;padding:11px 20px;border-radius:10px;display:inline-flex;align-items:center;gap:7px;transition:transform .2s,box-shadow .3s;box-shadow:0 4px 14px -6px rgba(10,126,168,.5);" onMouseEnter="{{ btnEnter }}" onMouseLeave="{{ btnLeave }}">
+              Request Catalogue
+            </a>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;top:100%;left:0;right:0;display:flex;justify-content:center;padding:0 28px;pointer-events:none;">
+        <div ref="{{ setPanelEl }}" style="pointer-events:auto;width:100%;max-width:{{ activePanel.width }}px;margin-top:12px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);border-radius:12px;box-shadow:0 30px 80px -30px rgba(20,25,35,.28),0 2px 8px -2px rgba(0,0,0,.08);overflow:hidden;">
+
+          <!-- SIMPLE (About / Trade / More) -->
+          <sc-if value="{{ isSimple }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;">
+              <div style="flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;">
+                <sc-for list="{{ activePanel.links }}" as="link" hint-placeholder-count="4">
+                  <a data-anim href="#" style="display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;" style-hover="padding-left:12px">
+                    <span style="flex-shrink:0;font-weight:700;font-size:12px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;">{{ link.num }}</span>
+                    <span style="min-width:0;">
+                      <span style="display:block;font-weight:700;font-size:15px;letter-spacing:-.01em;">{{ link.label }}</span>
+                      <span style="display:block;font-size:13px;color:#68727C;line-height:1.4;margin-top:2px;">{{ link.desc }}</span>
+                    </span>
+                  </a>
+                </sc-for>
+              </div>
+              <sc-if value="{{ activePanel.hasFeature }}" hint-placeholder-val="{{ false }}">
+                <div style="width:300px;flex-shrink:0;padding:24px;background:{{ activePanel.feature.bg }};">
+                  <div style="overflow:hidden;height:130px;border:1px solid rgba(255,255,255,.25);">
+                    <image-slot id="{{ activePanel.feature.imgId }}" shape="rect" placeholder="{{ activePanel.feature.imgLabel }}"></image-slot>
+                  </div>
+                  <div style="margin-top:18px;">
+                    <span style="display:inline-block;background:var(--accent);color:#1E2A3C;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;">{{ activePanel.feature.tag }}</span>
+                    <div style="font-weight:700;font-size:19px;letter-spacing:-.02em;line-height:1.2;color:#fff;">{{ activePanel.feature.title }}</div>
+                    <div style="font-size:13.5px;color:rgba(255,255,255,.8);line-height:1.45;margin-top:8px;">{{ activePanel.feature.desc }}</div>
+                    <a href="#" style="display:inline-flex;align-items:center;gap:7px;margin-top:18px;color:#fff;font-weight:700;font-size:14px;border-bottom:2px solid var(--accent);padding-bottom:3px;">{{ activePanel.feature.cta }} {{ arrowIcon }}</a>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- SECTORS: CARDS -->
+          <sc-if value="{{ isSectorsCards }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:28px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+              <sc-for list="{{ activePanel.cards }}" as="card" hint-placeholder-count="4">
+                <a data-anim href="#" style="border-radius:18px;padding:18px;background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;" style-hover="transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(0,0,0,.4)">
+                  <div style="border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};">
+                    <image-slot id="{{ card.imgId }}" shape="rect" placeholder="{{ card.imgLabel }}"></image-slot>
+                  </div>
+                  <div style="margin-top:16px;flex:1;display:flex;flex-direction:column;">
+                    <div style="font-weight:700;font-size:17px;letter-spacing:-.01em;">{{ card.label }}</div>
+                    <div style="font-size:13px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;">{{ card.desc }}</div>
+                    <div style="display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:13.5px;">{{ card.cta }} {{ arrowIcon }}</div>
+                  </div>
+                </a>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- SECTORS: LIST -->
+          <sc-if value="{{ isSectorsList }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:26px;display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;">
+              <sc-for list="{{ activePanel.cards }}" as="card" hint-placeholder-count="4">
+                <a data-anim href="#" style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 14px;border-radius:14px;color:#1E2A3C;" style-hover="background:rgba(30,42,60,.045)">
+                  <span>
+                    <span style="display:block;font-weight:700;font-size:16px;letter-spacing:-.01em;">{{ card.label }}</span>
+                    <span style="display:block;font-size:13px;color:#68727C;">{{ card.desc }}</span>
+                  </span>
+                  <span style="color:var(--accent);opacity:.7;flex-shrink:0;">{{ arrowIcon }}</span>
+                </a>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- BRANDS -->
+          <sc-if value="{{ isBrands }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;">
+              <div style="flex:1;min-width:0;padding:26px;">
+                <div style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#68727C;margin-bottom:14px;">Our Brands</div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+                  <sc-for list="{{ activePanel.logos }}" as="logo" hint-placeholder-count="10">
+                    <div data-anim style="height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;">
+                      <image-slot id="{{ logo.id }}" shape="rect" placeholder="{{ logo.name }}"></image-slot>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="width:300px;flex-shrink:0;padding:26px;background:rgba(10,126,168,.06);border-left:3px solid #0A7EA8;display:flex;flex-direction:column;justify-content:center;">
+                <span style="display:inline-block;background:var(--accent);color:#1E2A3C;font-size:11px;font-weight:700;letter-spacing:.02em;padding:4px 10px;border-radius:20px;margin-bottom:12px;width:fit-content;">Own Brands</span>
+                <div style="font-size:14px;color:#4b5561;line-height:1.5;">{{ activePanel.ownDesc }}</div>
+                <a href="#" style="display:inline-flex;align-items:center;gap:8px;margin-top:18px;color:#fff;background:#0A7EA8;font-weight:700;font-size:14px;padding:12px 18px;border-radius:9px;">{{ activePanel.cta }} {{ arrowIcon }}</a>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+    </sc-if>
+  </header>
+
+  <div onClick="{{ closeAll }}" style="position:fixed;inset:0;z-index:150;background:rgba(20,25,35,.25);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);opacity:{{ backdropO }};pointer-events:{{ backdropPE }};transition:opacity .3s ease;"></div>
+
+  <!-- MOBILE OVERLAY -->
+  <sc-if value="{{ mobileVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:300;background:#0A7EA8;display:flex;flex-direction:column;">
+      <div style="height:64px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <span style="width:20px;height:20px;border-radius:5px;background:var(--accent);transform:rotate(45deg);"></span>
+          <span style="font-weight:700;font-size:17px;color:#fff;">Indus Foods</span>
+        </span>
+        <button onClick="{{ toggleMobile }}" aria-label="Close" style="width:38px;height:38px;border-radius:8px;border:1.5px solid rgba(255,255,255,.6);background:transparent;color:#fff;font-size:20px;cursor:pointer;line-height:1;">&times;</button>
+      </div>
+      <div style="padding:6px 20px 22px;display:flex;align-items:center;gap:10px;">
+        <a href="#" style="flex:1;min-width:0;background:var(--accent);color:#1E2A3C;font-weight:700;font-size:15px;padding:14px 18px;border-radius:26px;display:flex;align-items:center;justify-content:center;gap:8px;">Become A Trade Customer {{ arrowIcon }}</a>
+        <a href="#" aria-label="Email" style="flex-shrink:0;width:46px;height:46px;border-radius:50%;background:var(--accent);color:#1E2A3C;display:flex;align-items:center;justify-content:center;">{{ mailIcon }}</a>
+        <a href="#" aria-label="Call" style="flex-shrink:0;width:46px;height:46px;border-radius:50%;background:var(--accent);color:#1E2A3C;display:flex;align-items:center;justify-content:center;">{{ phoneIcon }}</a>
+      </div>
+      <div ref="{{ setMobEl }}" style="flex:1;overflow-y:auto;padding:0 20px 32px;">
+        <sc-for list="{{ items }}" as="item" hint-placeholder-count="7">
+          <div data-manim style="border-bottom:1px solid var(--accent);">
+            <button onClick="{{ item.onAcc }}" style="width:100%;background:transparent;border:0;cursor:pointer;padding:17px 4px;display:flex;align-items:center;justify-content:space-between;color:{{ item.mobColor }};font-size:20px;font-weight:700;letter-spacing:-.01em;transition:color .25s;">
+              {{ item.label }}
+              <sc-if value="{{ item.hasPanel }}" hint-placeholder-val="{{ true }}">
+                <span style="opacity:.85;transform:rotate({{ item.accCaret }}deg);transition:transform .3s,color .25s;display:inline-flex;">{{ caretIcon }}</span>
+              </sc-if>
+            </button>
+            <sc-if value="{{ item.accOpen }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <sc-if value="{{ item.isSimple }}" hint-placeholder-val="{{ false }}">
+                  <sc-if value="{{ item.hasMobileFeature }}" hint-placeholder-val="{{ false }}">
+                    <div style="margin:0 0 14px;background:{{ item.mobileFeature.bg }};border:1px solid rgba(255,255,255,.3);padding:16px;display:flex;gap:14px;align-items:center;">
+                      <div style="width:64px;height:64px;flex-shrink:0;overflow:hidden;border:1px solid rgba(255,255,255,.25);">
+                        <image-slot id="{{ item.mobileFeature.imgId }}" shape="rect" placeholder="{{ item.mobileFeature.imgLabel }}"></image-slot>
+                      </div>
+                      <div style="min-width:0;">
+                        <span style="display:inline-block;background:var(--accent);color:#1E2A3C;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:3px;margin-bottom:6px;">{{ item.mobileFeature.tag }}</span>
+                        <div style="font-weight:700;font-size:15px;color:#fff;">{{ item.mobileFeature.title }}</div>
+                        <a href="#" style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;color:#fff;font-weight:700;font-size:12.5px;border-bottom:1.5px solid var(--accent);padding-bottom:2px;">{{ item.mobileFeature.cta }} {{ arrowIcon }}</a>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <div style="padding:0 0 16px;display:flex;flex-direction:column;">
+                    <sc-for list="{{ item.mobileLinks }}" as="link" hint-placeholder-count="4">
+                      <a href="#" style="display:flex;align-items:baseline;gap:14px;padding:13px 6px;border-bottom:1px solid rgba(255,255,255,.15);color:#fff;">
+                        <span style="flex-shrink:0;font-weight:700;font-size:12px;color:var(--accent);width:16px;">{{ link.num }}</span>
+                        <span>
+                          <span style="display:block;font-weight:700;font-size:15px;">{{ link.label }}</span>
+                          <span style="display:block;font-size:12.5px;color:rgba(255,255,255,.7);margin-top:2px;">{{ link.desc }}</span>
+                        </span>
+                      </a>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ item.isCards }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:0 0 16px;display:flex;flex-direction:column;gap:10px;">
+                    <sc-for list="{{ item.mobileCards }}" as="card" hint-placeholder-count="4">
+                      <a href="#" style="border-radius:14px;padding:14px;background:{{ card.bg }};color:{{ card.textColor }};border:1px solid rgba(255,255,255,.3);display:flex;gap:14px;align-items:center;">
+                        <div style="width:60px;height:60px;flex-shrink:0;border-radius:10px;overflow:hidden;background:{{ card.imgBg }};">
+                          <image-slot id="{{ card.imgId }}" shape="rect" placeholder="{{ card.imgLabel }}"></image-slot>
+                        </div>
+                        <div style="min-width:0;">
+                          <div style="font-weight:700;font-size:16px;">{{ card.label }}</div>
+                          <div style="font-size:12.5px;color:{{ card.descColor }};margin-top:2px;">{{ card.desc }}</div>
+                        </div>
+                      </a>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ item.isBrands }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:0 0 18px;">
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                      <sc-for list="{{ item.mobileLogos }}" as="logo" hint-placeholder-count="9">
+                        <div style="height:52px;border-radius:10px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;">
+                          <image-slot id="{{ logo.id }}" shape="rect" placeholder="{{ logo.name }}"></image-slot>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="margin-top:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);border-left:3px solid var(--accent);padding:16px;">
+                      <span style="display:inline-block;background:var(--accent);color:#1E2A3C;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:3px;margin-bottom:8px;">Own Brands</span>
+                      <div style="font-size:13.5px;color:rgba(255,255,255,.85);line-height:1.5;">{{ item.ownDesc }}</div>
+                      <a href="#" style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;color:#1E2A3C;background:var(--accent);font-weight:700;font-size:14px;padding:11px 16px;border-radius:9px;">{{ item.ownCta }} {{ arrowIcon }}</a>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <div style="display:flex;justify-content:center;gap:12px;margin-top:26px;">
+          <span style="width:38px;height:38px;border-radius:50%;background:#0A66C2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">in</span>
+          <span style="width:38px;height:38px;border-radius:50%;background:#1877F2;color:#fff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;">f</span>
+          <span style="width:38px;height:38px;border-radius:50%;background:#EA4335;color:#fff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;">G</span>
+          <span style="width:38px;height:38px;border-radius:50%;background:#E1306C;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">IG</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- SAMPLE PAGE -->
+  <main style="max-width:1240px;margin:0 auto;padding:clamp(50px,8vw,100px) 28px 80px;">
+    <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center;">
+      <div>
+        <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">UK's Trusted Ethnic Food Wholesaler</div>
+        <h1 style="font-weight:700;font-size:clamp(36px,5.5vw,58px);line-height:1.05;letter-spacing:-.02em;margin:0;text-wrap:balance;">Authentic ingredients, delivered nationwide.</h1>
+        <p style="font-size:17px;color:#68727C;max-width:480px;margin:22px 0 0;text-wrap:pretty;">From food service to retail, we supply trusted ethnic brands to businesses across the UK — reliable stock, fast delivery, real heritage.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;">
+          <a href="#" style="color:#fff;background:#0A7EA8;font-weight:700;padding:14px 24px;border-radius:12px;font-size:16px;">Apply for Trade Account</a>
+          <a href="#" style="color:#1E2A3C;border:1px solid rgba(30,42,60,.15);font-weight:600;padding:14px 24px;border-radius:12px;font-size:16px;">Explore Sectors</a>
+        </div>
+      </div>
+      <div style="border-radius:22px;overflow:hidden;height:380px;border:1px solid rgba(30,42,60,.1);">
+        <image-slot id="hero-photo" shape="rect" placeholder="hero photo"></image-slot>
+      </div>
+    </div>
+    <p style="font-family:'Geist Mono',monospace;font-size:12px;color:#68727C;margin-top:50px;letter-spacing:.04em;">↑ Hover About, Sectors, Brands or Trade to preview the mega menu. Try the Sectors layout and accent presets in Tweaks.</p>
+  </main>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:760},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:[&quot;#D8CA50&quot;,&quot;#0A7EA8&quot;,&quot;#075E80&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Style&quot;},&quot;sectorsStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Cards&quot;,&quot;List&quot;],&quot;default&quot;:&quot;Cards&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Style&quot;}}">
+class Component extends DCLogic {
+  state = { active: null, isMobile: false, mobileOpen: false, acc: null };
+
+  componentDidMount() {
+    this._resize = () => this.setState({ isMobile: window.innerWidth < 960 });
+    this._resize();
+    window.addEventListener('resize', this._resize);
+    this._key = (e) => { if (e.key === 'Escape') this.closeAll(); };
+    window.addEventListener('keydown', this._key);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._resize);
+    window.removeEventListener('keydown', this._key);
+    clearTimeout(this._t);
+  }
+  componentDidUpdate(pp, ps) {
+    if (!ps) return;
+    if (ps.active !== this.state.active && this.state.active != null) requestAnimationFrame(() => this.animatePanel());
+    if (!ps.mobileOpen && this.state.mobileOpen) requestAnimationFrame(() => this.animateMobile());
+  }
+
+  animatePanel() {
+    if (!this._panelEl) return;
+    const els = this._panelEl.querySelectorAll('[data-anim]');
+    els.forEach((el, i) => el.animate(
+      [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'translateY(0)' }],
+      { duration: 460, delay: Math.min(i * 26, 320), easing: 'cubic-bezier(.16,.84,.32,1)', fill: 'backwards' }));
+    this._panelEl.animate(
+      [{ opacity: 0, transform: 'translateY(-8px) scale(.99)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }],
+      { duration: 340, easing: 'cubic-bezier(.16,.84,.32,1)' });
+  }
+  animateMobile() {
+    if (!this._mobEl) return;
+    this._mobEl.querySelectorAll('[data-manim]').forEach((el, i) => el.animate(
+      [{ opacity: 0, transform: 'translateX(24px)' }, { opacity: 1, transform: 'translateX(0)' }],
+      { duration: 420, delay: i * 55, easing: 'cubic-bezier(.16,.84,.32,1)', fill: 'backwards' }));
+  }
+
+  setPanelEl = (el) => { this._panelEl = el; };
+  setMobEl = (el) => { this._mobEl = el; };
+
+  cancelClose = () => clearTimeout(this._t);
+  scheduleClose = () => { this._t = setTimeout(() => this.setState({ active: null }), 170); };
+  closeAll = (e) => { if (e && e.preventDefault) e.preventDefault(); clearTimeout(this._t); this.setState({ active: null }); };
+
+  openItem(i) { clearTimeout(this._t); this.setState({ active: this._menus[i].kind ? i : null }); }
+  magnet(e) {
+    const lab = e.currentTarget.querySelector('[data-label]');
+    if (!lab) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    lab.style.transform = 'translateX(' + ((e.clientX - (r.left + r.width / 2)) * 0.14) + 'px)';
+  }
+  resetLabel(e) { const lab = e.currentTarget.querySelector('[data-label]'); if (lab) lab.style.transform = ''; }
+  toggleMobile = () => this.setState({ mobileOpen: !this.state.mobileOpen, acc: null });
+  toggleAcc(i) { this.setState({ acc: this.state.acc === i ? null : i }); }
+  btnEnter = (e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 9px 22px -6px rgba(10,126,168,.55)'; };
+  btnLeave = (e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 4px 14px -6px rgba(10,126,168,.5)'; };
+
+  get _menus() {
+    return [
+      { label: 'Home', kind: null },
+      { label: 'About', kind: 'simple',
+        links: [
+          { label: 'Our Story', desc: 'Three decades of heritage', icon: 'ring' },
+          { label: 'Certifications', desc: 'Quality & safety standards', icon: 'square' },
+          { label: 'Community & Charity', desc: 'Giving back locally', icon: 'dot' },
+          { label: 'Sustainability', desc: 'Responsible sourcing', icon: 'diamond' },
+          { label: 'Careers', desc: 'Join our growing team', icon: 'bars' } ],
+        feature: { tag: 'Since 1994', title: 'Three decades of heritage', desc: "From a single stall to the UK's trusted ethnic food wholesaler.", cta: 'Read our story', imgId: 'about-feature', imgLabel: 'heritage photo', bg: '#075E80' } },
+      { label: 'Sectors', kind: 'cards',
+        cards: [
+          { label: 'Food Service', desc: 'Quality ingredients for venues, caterers & events across the UK.', cta: 'Explore Food Service', bg: '#D8CA50', textColor: '#1E2A3C', descColor: 'rgba(30,42,60,.72)', imgBg: 'rgba(30,42,60,.08)', imgId: 'sector-foodservice', imgLabel: 'food service' },
+          { label: 'Manufacturing', desc: 'High-quality, healthy & delicious food products at scale.', cta: 'Explore Manufacturing', bg: '#0A7EA8', textColor: '#fff', descColor: 'rgba(255,255,255,.82)', imgBg: 'rgba(255,255,255,.14)', imgId: 'sector-manufacturing', imgLabel: 'manufacturing' },
+          { label: 'Retail', desc: 'Retail-ready packaging for independent & national retailers.', cta: 'Explore Retail', bg: '#075E80', textColor: '#fff', descColor: 'rgba(255,255,255,.82)', imgBg: 'rgba(255,255,255,.14)', imgId: 'sector-retail', imgLabel: 'retail' },
+          { label: 'Wholesale', desc: 'Reliable stock levels & fast delivery across the whole of the UK.', cta: 'Explore Wholesale', bg: '#EAF4F7', textColor: '#075E80', descColor: 'rgba(7,94,128,.68)', imgBg: 'rgba(10,126,168,.08)', imgId: 'sector-wholesale', imgLabel: 'wholesale' } ] },
+      { label: 'Brands', kind: 'brands',
+        logos: [
+          { id: 'brand-sanam', name: 'Sanam' }, { id: 'brand-lemontree', name: 'The Lemon Tree' },
+          { id: 'brand-greenleaf', name: 'Green Leaf' }, { id: 'brand-shan', name: 'Shan' },
+          { id: 'brand-indus', name: 'Indus Foods' }, { id: 'brand-own-1', name: 'logo ipsum' },
+          { id: 'brand-own-2', name: 'logo ipsum' }, { id: 'brand-own-3', name: 'logo ipsum' },
+          { id: 'brand-own-4', name: 'logo ipsum' }, { id: 'brand-own-5', name: 'logo ipsum' } ],
+        ownDesc: 'We develop and market our own range of quality food products alongside our distribution brands.',
+        cta: 'View All Brands' },
+      { label: 'Trade', kind: 'simple',
+        links: [
+          { label: 'Apply for Trade Account', desc: 'Get wholesale pricing', icon: 'square' },
+          { label: 'Request Catalogue', desc: 'Our full product range', icon: 'bars' },
+          { label: 'Delivery & Logistics', desc: 'UK-wide, next-day available', icon: 'diamond' },
+          { label: 'Terms & Conditions', desc: 'Trade account terms', icon: 'ring' } ],
+        feature: { tag: 'Trade partners', title: 'Trade with Indus Foods', desc: 'Reliable stock, fast delivery, dedicated account support.', cta: 'Apply now', imgId: 'trade-feature', imgLabel: 'trade photo', bg: '#0A7EA8' } },
+      { label: 'Blog', kind: null },
+      { label: 'More', kind: 'simple',
+        links: [
+          { label: 'Contact Us', desc: 'Get in touch with the team', icon: 'dot' },
+          { label: 'FAQs', desc: 'Common questions answered', icon: 'ring' } ],
+        feature: null }
+    ];
+  }
+
+  icon(name) {
+    const c = React.createElement, s = { stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' };
+    const wrap = (ch) => c('svg', { width: 16, height: 16, viewBox: '0 0 16 16', fill: 'none', style: { display: 'block' } }, ch);
+    const m = {
+      ring: [c('circle', { key: 1, cx: 8, cy: 8, r: 5, ...s })],
+      dot: [c('circle', { key: 1, cx: 8, cy: 8, r: 4, fill: 'currentColor' })],
+      square: [c('rect', { key: 1, x: 3, y: 3, width: 10, height: 10, rx: 2.5, ...s })],
+      diamond: [c('rect', { key: 1, x: 4.3, y: 4.3, width: 7.4, height: 7.4, rx: 1.5, ...s, transform: 'rotate(45 8 8)' })],
+      bars: [c('line', { key: 1, x1: 3, y1: 5, x2: 13, y2: 5, ...s }), c('line', { key: 2, x1: 3, y1: 8, x2: 13, y2: 8, ...s }), c('line', { key: 3, x1: 3, y1: 11, x2: 10, y2: 11, ...s })],
+      mail: [c('rect', { key: 1, x: 2.5, y: 4, width: 11, height: 7.5, rx: 1.5, ...s }), c('polyline', { key: 2, points: '3,5 8,8.6 13,5', ...s, fill: 'none' })],
+      phone: [c('rect', { key: 1, x: 5.2, y: 2.5, width: 6.5, height: 11, rx: 2, transform: 'rotate(18 8 8)', ...s })]
+    };
+    return wrap(m[name] || m.dot);
+  }
+  arrow(color) {
+    const c = React.createElement, s = { stroke: color || 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round', fill: 'none' };
+    return c('svg', { width: 15, height: 15, viewBox: '0 0 16 16', style: { display: 'block' } },
+      c('line', { x1: 3, y1: 8, x2: 12, y2: 8, ...s }), c('polyline', { points: '8.5,4.5 12,8 8.5,11.5', ...s }));
+  }
+  caret() {
+    const c = React.createElement;
+    return c('svg', { width: 11, height: 11, viewBox: '0 0 16 16', style: { display: 'block' } },
+      c('polyline', { points: '4,6 8,10 12,6', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', fill: 'none' }));
+  }
+  hexToRgba(hex, a) {
+    const h = hex.replace('#', '');
+    const n = parseInt(h.length === 3 ? h.split('').map(x => x + x).join('') : h, 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+  }
+
+  renderVals() {
+    let accent = this.props.accent ?? '#D8CA50';
+    if (Array.isArray(accent)) accent = accent[0];
+    if (typeof accent !== 'string') accent = '#D8CA50';
+    const sectorsStyle = this.props.sectorsStyle ?? 'Cards';
+    const pal = { accent, soft: this.hexToRgba(accent, 0.14) };
+
+    const active = this.state.active;
+    const menus = this._menus;
+    const items = menus.map((m, i) => {
+      const hasPanel = !!m.kind;
+      const isActive = active === i;
+      const accOpen = this.state.acc === i;
+      const mobileLinks = m.kind === 'simple' ? m.links.map((l, idx) => ({ ...l, num: String(idx + 1).padStart(2, '0') })) : [];
+      return {
+        label: m.label, hasPanel, mobileLinks,
+        kind: m.kind || null,
+        isSimple: m.kind === 'simple', isCards: m.kind === 'cards', isBrands: m.kind === 'brands',
+        hasMobileFeature: m.kind === 'simple' && !!m.feature,
+        mobileFeature: m.feature || null,
+        mobileCards: m.kind === 'cards' ? m.cards : [],
+        mobileLogos: m.kind === 'brands' ? m.logos : [],
+        ownDesc: m.ownDesc, ownCta: m.cta,
+        caret: isActive ? 180 : 0,
+        activeBg: isActive ? 'rgba(10,126,168,.12)' : 'transparent',
+        activeColor: isActive ? '#0A7EA8' : '#1E2A3C',
+        accOpen, accCaret: accOpen ? 45 : 0,
+        mobColor: accOpen ? 'var(--accent)' : '#fff',
+        onEnter: () => this.openItem(i),
+        onMove: (e) => this.magnet(e),
+        onLeaveLabel: (e) => this.resetLabel(e),
+        onAcc: () => this.toggleAcc(i)
+      };
+    });
+
+    let activePanel = null;
+    if (active != null && menus[active].kind) {
+      const m = menus[active];
+      if (m.kind === 'simple') {
+        activePanel = {
+          width: m.feature ? 620 : 300,
+          links: m.links.map((l, idx) => ({ ...l, num: String(idx + 1).padStart(2, '0') })),
+          hasFeature: !!m.feature,
+          feature: m.feature
+        };
+      } else if (m.kind === 'cards') {
+        activePanel = { width: 1080, cards: m.cards };
+      } else if (m.kind === 'brands') {
+        activePanel = { width: 1080, logos: m.logos, ownDesc: m.ownDesc, cta: m.cta };
+      }
+    }
+
+    return {
+      pal, items,
+      isMobile: this.state.isMobile,
+      isDesktop: !this.state.isMobile,
+      mobileVisible: this.state.isMobile && this.state.mobileOpen,
+      mobileOpen: this.state.mobileOpen,
+      toggleMobile: this.toggleMobile,
+      open: active != null && !!menus[active].kind && !this.state.isMobile,
+      activePanel,
+      isSimple: !!activePanel && menus[active] && menus[active].kind === 'simple',
+      isSectorsCards: !!activePanel && menus[active] && menus[active].kind === 'cards' && sectorsStyle === 'Cards',
+      isSectorsList: !!activePanel && menus[active] && menus[active].kind === 'cards' && sectorsStyle === 'List',
+      isBrands: !!activePanel && menus[active] && menus[active].kind === 'brands',
+      scheduleClose: this.scheduleClose, cancelClose: this.cancelClose, closeAll: this.closeAll,
+      setPanelEl: this.setPanelEl, setMobEl: this.setMobEl,
+      arrowIcon: this.arrow(), caretIcon: this.caret(),
+      mailIcon: this.icon('mail'), phoneIcon: this.icon('phone'),
+      btnEnter: this.btnEnter, btnLeave: this.btnLeave,
+      backdropO: active != null && !!menus[active].kind && !this.state.isMobile ? 1 : 0,
+      backdropPE: active != null && !!menus[active].kind && !this.state.isMobile ? 'auto' : 'none'
+    };
+  }
+}
+</script>
+</body>
+</html>

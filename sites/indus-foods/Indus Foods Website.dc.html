@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #FFFFFF; }
+  ::selection { background: #D8CA50; color: #1E2A3C; }
+  a { color: #0A7EA8; text-decoration: none; }
+  a:hover { color: #075E80; }
+  button, input, select, textarea { font-family: inherit; }
+</style>
+</helmet>
+<div style="background:#FFFFFF;color:#1E2A3C;min-height:100vh;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:16px;line-height:1.5;position:relative;overflow-x:clip;-webkit-font-smoothing:antialiased;">
+
+  {{ foodLayer }}
+
+  <sc-if value="{{ showUtility }}" hint-placeholder-val="{{ true }}">
+    <div style="position:relative;z-index:201;background:#075E80;color:#FFFFFF;font-size:13px;">
+      <div style="max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:38px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+        <span style="display:flex;align-items:center;gap:10px;font-weight:500;"><span style="width:7px;height:7px;background:#D8CA50;display:inline-block;"></span>Family-run since 1962 · Supplying the UK &amp; Europe</span>
+        <span style="display:flex;align-items:center;gap:22px;">
+          <a href="tel:01217714330" style="color:#FFFFFF;display:inline-flex;align-items:center;gap:7px;font-weight:600;" style-hover="color:#D8CA50">{{ phoneIcon }} 0121 771 4330</a>
+          <a href="mailto:info@indusfoodsltd.com" style="color:#FFFFFF;display:inline-flex;align-items:center;gap:7px;font-weight:600;" style-hover="color:#D8CA50">{{ mailIcon }} info@indusfoodsltd.com</a>
+        </span>
+      </div>
+    </div>
+  </sc-if>
+
+  <header ref="{{ setHeaderEl }}" onMouseLeave="{{ scheduleClose }}" onMouseEnter="{{ cancelClose }}" style="position:sticky;top:0;z-index:200;transition:box-shadow .3s;">
+    <div style="background:#FFFFFF;border-bottom:3px solid #D8CA50;">
+      <div style="max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;">
+        <a href="#/" onClick="{{ closeAll }}" aria-label="Indus Foods home" style="display:flex;align-items:center;flex-shrink:0;">
+          <img src="./assets/logo-horizontal.svg" alt="Indus Foods Ltd" style="height:clamp(38px,3.6vw,48px);width:auto;display:block;">
+        </a>
+
+        <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+          <nav style="display:flex;align-items:center;gap:2px;height:100%;">
+            <sc-for list="{{ items }}" as="item" hint-placeholder-count="7">
+              <button onClick="{{ item.onClick }}" onMouseEnter="{{ item.onEnter }}" onMouseMove="{{ item.onMove }}" onMouseLeave="{{ item.onLeaveLabel }}" onFocus="{{ item.onEnter }}" style="position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;color:{{ item.activeColor }};font-size:15px;font-weight:600;letter-spacing:-.01em;transition:background .22s,color .22s;">
+                <span data-label style="display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;">
+                  {{ item.label }}
+                  <sc-if value="{{ item.hasPanel }}" hint-placeholder-val="{{ true }}">
+                    <span style="opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;">{{ caretIcon }}</span>
+                  </sc-if>
+                </span>
+                <sc-if value="{{ item.current }}" hint-placeholder-val="{{ false }}">
+                  <span style="position:absolute;left:{{ R.navPad }};right:{{ R.navPad }};bottom:3px;height:2px;background:#D8CA50;"></span>
+                </sc-if>
+              </button>
+            </sc-for>
+          </nav>
+          <sc-if value="{{ showHeaderCta }}" hint-placeholder-val="{{ true }}">
+            <a href="#/catalogue" onMouseEnter="{{ btnEnter }}" onMouseLeave="{{ btnLeave }}" style="flex-shrink:0;color:#FFFFFF;background:#0A7EA8;font-size:15px;font-weight:700;padding:12px 20px;border-radius:10px;display:inline-flex;align-items:center;gap:8px;transition:transform .2s,box-shadow .3s,background .2s;box-shadow:0 4px 14px -6px rgba(10,126,168,.5);">Request Catalogue {{ arrowIcon }}</a>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ isCompact }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <sc-if value="{{ isTablet }}" hint-placeholder-val="{{ false }}">
+              <a href="#/catalogue" style="color:#FFFFFF;background:#0A7EA8;font-size:14px;font-weight:700;padding:11px 16px;border-radius:10px;display:inline-flex;align-items:center;gap:7px;" style-hover="background:#075E80;color:#FFFFFF">Request Catalogue</a>
+            </sc-if>
+            <button onClick="{{ toggleMobile }}" aria-label="Open menu" style="width:46px;height:46px;border-radius:12px;border:1px solid rgba(30,42,60,.15);background:#FFFFFF;color:#1E2A3C;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;" style-hover="border-color:#0A7EA8;color:#0A7EA8">
+              <span style="width:20px;height:2px;background:currentColor;display:block;"></span>
+              <span style="width:20px;height:2px;background:currentColor;display:block;"></span>
+              <span style="width:13px;height:2px;background:currentColor;display:block;margin-left:7px;"></span>
+            </button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;top:100%;left:0;right:0;display:flex;justify-content:center;padding:0 28px;pointer-events:none;">
+        <div ref="{{ setPanelEl }}" style="pointer-events:auto;width:100%;max-width:{{ activePanel.width }}px;margin-top:12px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);border-radius:12px;box-shadow:0 30px 80px -30px rgba(20,25,35,.28),0 2px 8px -2px rgba(0,0,0,.08);overflow:hidden;">
+
+          <sc-if value="{{ isSimple }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;">
+              <div style="flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;">
+                <sc-for list="{{ activePanel.links }}" as="link" hint-placeholder-count="4">
+                  <a data-anim href="{{ link.href }}" style="display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;" style-hover="padding-left:12px;color:#1E2A3C">
+                    <span style="flex-shrink:0;font-weight:700;font-size:12px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;">{{ link.num }}</span>
+                    <span style="min-width:0;">
+                      <span style="display:block;font-weight:700;font-size:15px;letter-spacing:-.01em;">{{ link.label }}</span>
+                      <span style="display:block;font-size:13px;color:#68727C;line-height:1.4;margin-top:2px;">{{ link.desc }}</span>
+                    </span>
+                  </a>
+                </sc-for>
+              </div>
+              <sc-if value="{{ activePanel.hasFeature }}" hint-placeholder-val="{{ false }}">
+                <div style="width:300px;flex-shrink:0;padding:24px;background:{{ activePanel.feature.bg }};">
+                  <div style="overflow:hidden;height:130px;border:1px solid rgba(255,255,255,.25);">
+                    <image-slot id="{{ activePanel.feature.imgId }}" shape="rect" placeholder="{{ activePanel.feature.imgLabel }}"></image-slot>
+                  </div>
+                  <div style="margin-top:18px;">
+                    <span style="display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;">{{ activePanel.feature.tag }}</span>
+                    <div style="font-weight:700;font-size:19px;letter-spacing:-.02em;line-height:1.2;color:#FFFFFF;">{{ activePanel.feature.title }}</div>
+                    <div style="font-size:13.5px;color:#E3EFF4;line-height:1.45;margin-top:8px;">{{ activePanel.feature.desc }}</div>
+                    <a href="{{ activePanel.feature.href }}" style="display:inline-flex;align-items:center;gap:7px;margin-top:18px;color:#FFFFFF;font-weight:700;font-size:14px;border-bottom:2px solid #D8CA50;padding-bottom:3px;" style-hover="color:#D8CA50">{{ activePanel.feature.cta }} {{ arrowIcon }}</a>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isSectorsCards }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:28px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+              <sc-for list="{{ activePanel.cards }}" as="card" hint-placeholder-count="4">
+                <a data-anim href="{{ card.href }}" style="border-radius:18px;padding:18px;background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;" style-hover="transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(0,0,0,.4);color:{{ card.textColor }}">
+                  <div style="border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};">
+                    <image-slot id="{{ card.imgId }}" shape="rect" placeholder="{{ card.imgLabel }}"></image-slot>
+                  </div>
+                  <div style="margin-top:16px;flex:1;display:flex;flex-direction:column;">
+                    <div style="font-weight:700;font-size:17px;letter-spacing:-.01em;">{{ card.label }}</div>
+                    <div style="font-size:13px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;">{{ card.desc }}</div>
+                    <div style="display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:13.5px;">{{ card.cta }} {{ arrowIcon }}</div>
+                  </div>
+                </a>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isSectorsList }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:26px;display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;">
+              <sc-for list="{{ activePanel.cards }}" as="card" hint-placeholder-count="4">
+                <a data-anim href="{{ card.href }}" style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 14px;border-radius:14px;color:#1E2A3C;" style-hover="background:rgba(30,42,60,.045);color:#1E2A3C">
+                  <span>
+                    <span style="display:block;font-weight:700;font-size:16px;letter-spacing:-.01em;">{{ card.label }}</span>
+                    <span style="display:block;font-size:13px;color:#68727C;">{{ card.desc }}</span>
+                  </span>
+                  <span style="color:#0A7EA8;flex-shrink:0;">{{ arrowIcon }}</span>
+                </a>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isBrands }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;">
+              <div style="flex:1;min-width:0;padding:26px;">
+                <div style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#68727C;margin-bottom:14px;">Our Brands</div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+                  <sc-for list="{{ activePanel.logos }}" as="logo" hint-placeholder-count="10">
+                    <div data-anim style="height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;">
+                      <image-slot id="{{ logo.id }}" shape="rect" placeholder="{{ logo.name }}"></image-slot>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="width:300px;flex-shrink:0;padding:26px;background:rgba(10,126,168,.06);border-left:3px solid #0A7EA8;display:flex;flex-direction:column;justify-content:center;">
+                <span style="display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;width:fit-content;">Own Brands</span>
+                <div style="font-size:14px;color:#4A5563;line-height:1.5;">{{ activePanel.ownDesc }}</div>
+                <a href="#/brands" style="display:inline-flex;align-items:center;gap:8px;margin-top:18px;color:#FFFFFF;background:#0A7EA8;font-weight:700;font-size:14px;padding:12px 18px;border-radius:9px;width:fit-content;" style-hover="background:#075E80;color:#FFFFFF">{{ activePanel.cta }} {{ arrowIcon }}</a>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+  </header>
+
+  <div onClick="{{ closeBackdrop }}" style="position:fixed;inset:0;z-index:150;background:rgba(20,25,35,.28);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);opacity:{{ backdropO }};pointer-events:{{ backdropPE }};transition:opacity .3s ease;"></div>
+
+  <sc-if value="{{ mobileVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;top:0;right:0;bottom:0;width:{{ R.drawerW }};z-index:300;background:#0A7EA8;display:flex;flex-direction:column;box-shadow:-30px 0 60px -30px rgba(0,0,0,.4);">
+      <div style="height:72px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <a href="#/" style="background:#FFFFFF;border-radius:10px;padding:6px 10px;display:inline-flex;"><img src="./assets/logo-horizontal.svg" alt="Indus Foods Ltd" style="height:32px;width:auto;display:block;"></a>
+        <button onClick="{{ toggleMobile }}" aria-label="Close menu" style="width:42px;height:42px;border-radius:10px;border:1.5px solid rgba(255,255,255,.6);background:transparent;color:#FFFFFF;font-size:22px;cursor:pointer;line-height:1;" style-hover="border-color:#D8CA50;color:#D8CA50">&times;</button>
+      </div>
+      <div style="padding:6px 20px 22px;display:flex;align-items:center;gap:10px;">
+        <a href="#/apply" style="flex:1;min-width:0;background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:15px;padding:14px 18px;border-radius:26px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 16px -8px rgba(0,0,0,.4);" style-hover="background:#E4D86A;color:#1E2A3C">Become A Trade Customer {{ arrowIcon }}</a>
+        <a href="mailto:info@indusfoodsltd.com" aria-label="Email" style="flex-shrink:0;width:46px;height:46px;border-radius:50%;background:#D8CA50;color:#1E2A3C;display:flex;align-items:center;justify-content:center;">{{ mailIcon }}</a>
+        <a href="tel:01217714330" aria-label="Call" style="flex-shrink:0;width:46px;height:46px;border-radius:50%;background:#D8CA50;color:#1E2A3C;display:flex;align-items:center;justify-content:center;">{{ phoneIcon }}</a>
+      </div>
+      <div ref="{{ setMobEl }}" style="flex:1;overflow-y:auto;padding:0 20px 32px;">
+        <sc-for list="{{ items }}" as="item" hint-placeholder-count="7">
+          <div data-manim style="border-bottom:1px solid #D8CA50;">
+            <button onClick="{{ item.onAcc }}" style="width:100%;background:transparent;border:0;cursor:pointer;padding:17px 4px;display:flex;align-items:center;justify-content:space-between;color:{{ item.mobColor }};font-size:20px;font-weight:700;letter-spacing:-.01em;transition:color .25s;">
+              {{ item.label }}
+              <sc-if value="{{ item.hasPanel }}" hint-placeholder-val="{{ true }}">
+                <span style="transform:rotate({{ item.accCaret }}deg);transition:transform .3s;display:inline-flex;">{{ caretIcon }}</span>
+              </sc-if>
+            </button>
+            <sc-if value="{{ item.accOpen }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <sc-if value="{{ item.isSimple }}" hint-placeholder-val="{{ false }}">
+                  <sc-if value="{{ item.hasMobileFeature }}" hint-placeholder-val="{{ false }}">
+                    <div style="margin:0 0 14px;background:{{ item.mobileFeature.bg }};border:1px solid rgba(255,255,255,.3);padding:16px;display:flex;gap:14px;align-items:center;">
+                      <div style="width:64px;height:64px;flex-shrink:0;overflow:hidden;border:1px solid rgba(255,255,255,.25);">
+                        <image-slot id="{{ item.mobileFeature.imgId }}" shape="rect" placeholder="{{ item.mobileFeature.imgLabel }}"></image-slot>
+                      </div>
+                      <div style="min-width:0;">
+                        <span style="display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:3px;margin-bottom:6px;">{{ item.mobileFeature.tag }}</span>
+                        <div style="font-weight:700;font-size:15px;color:#FFFFFF;">{{ item.mobileFeature.title }}</div>
+                        <a href="{{ item.mobileFeature.href }}" style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;color:#FFFFFF;font-weight:700;font-size:12.5px;border-bottom:1.5px solid #D8CA50;padding-bottom:2px;">{{ item.mobileFeature.cta }} {{ arrowIcon }}</a>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <div style="padding:0 0 16px;display:flex;flex-direction:column;">
+                    <sc-for list="{{ item.mobileLinks }}" as="link" hint-placeholder-count="4">
+                      <a href="{{ link.href }}" style="display:flex;align-items:baseline;gap:14px;padding:13px 6px;border-bottom:1px solid rgba(255,255,255,.15);color:#FFFFFF;" style-hover="color:#D8CA50">
+                        <span style="flex-shrink:0;font-weight:700;font-size:12px;color:#D8CA50;width:16px;">{{ link.num }}</span>
+                        <span>
+                          <span style="display:block;font-weight:700;font-size:15px;">{{ link.label }}</span>
+                          <span style="display:block;font-size:12.5px;color:#DCEBF1;margin-top:2px;">{{ link.desc }}</span>
+                        </span>
+                      </a>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ item.isCards }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:0 0 16px;display:grid;grid-template-columns:{{ R.drawerCardCols }};gap:10px;">
+                    <sc-for list="{{ item.mobileCards }}" as="card" hint-placeholder-count="4">
+                      <a href="{{ card.href }}" style="border-radius:14px;padding:14px;background:{{ card.bg }};color:{{ card.textColor }};border:1px solid rgba(255,255,255,.3);display:flex;gap:14px;align-items:center;">
+                        <div style="width:60px;height:60px;flex-shrink:0;border-radius:10px;overflow:hidden;background:{{ card.imgBg }};">
+                          <image-slot id="{{ card.imgId }}" shape="rect" placeholder="{{ card.imgLabel }}"></image-slot>
+                        </div>
+                        <div style="min-width:0;">
+                          <div style="font-weight:700;font-size:16px;">{{ card.label }}</div>
+                          <div style="font-size:12.5px;color:{{ card.descColor }};margin-top:2px;">{{ card.desc }}</div>
+                        </div>
+                      </a>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ item.isBrands }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:0 0 18px;">
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                      <sc-for list="{{ item.mobileLogos }}" as="logo" hint-placeholder-count="9">
+                        <div style="height:52px;border-radius:10px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;">
+                          <image-slot id="{{ logo.id }}" shape="rect" placeholder="{{ logo.name }}"></image-slot>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="margin-top:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);border-left:3px solid #D8CA50;padding:16px;">
+                      <span style="display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:3px;margin-bottom:8px;">Own Brands</span>
+                      <div style="font-size:13.5px;color:#E3EFF4;line-height:1.5;">{{ item.ownDesc }}</div>
+                      <a href="#/brands" style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;color:#1E2A3C;background:#D8CA50;font-weight:700;font-size:14px;padding:11px 16px;border-radius:9px;">{{ item.ownCta }} {{ arrowIcon }}</a>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <div style="display:flex;justify-content:center;gap:12px;margin-top:26px;">
+          <span style="width:38px;height:38px;border-radius:50%;background:#0A66C2;color:#FFFFFF;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">in</span>
+          <span style="width:38px;height:38px;border-radius:50%;background:#1877F2;color:#FFFFFF;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;">f</span>
+          <span style="width:38px;height:38px;border-radius:50%;background:#EA4335;color:#FFFFFF;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;">G</span>
+          <span style="width:38px;height:38px;border-radius:50%;background:#E1306C;color:#FFFFFF;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">IG</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <main ref="{{ setMainEl }}" style="position:relative;z-index:1;">
+
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <section data-screen-label="Home hero" style="position:relative;padding:{{ R.heroPadT }} {{ R.px }} {{ R.heroPadB }};">
+        <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ R.heroCols }};gap:{{ R.splitGap }};align-items:center;">
+          <div style="min-width:0;">
+            <div style="display:flex;align-items:center;gap:12px;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;font-weight:500;"><span style="width:28px;height:2px;background:#D8CA50;display:inline-block;"></span>Family-run since 1962 · Birmingham</div>
+            <h1 style="font-weight:800;font-size:clamp(40px,6vw,76px);line-height:1.02;letter-spacing:-.035em;margin:22px 0 0;text-wrap:balance;">The UK's leading <span style="background:linear-gradient(transparent 64%,rgba(216,202,80,.6) 64%,rgba(216,202,80,.6) 90%,transparent 90%);">Indian food &amp; drink</span> wholesaler.</h1>
+            <p style="font-size:clamp(17px,1.5vw,19px);color:#4A5563;line-height:1.6;max-width:540px;margin:24px 0 0;text-wrap:pretty;">Three generations of the same family, supplying restaurants, manufacturers, retailers and wholesalers across the UK and Europe with over 6,000 ambient, chilled and frozen lines.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:34px;">
+              <a href="#/apply" onMouseEnter="{{ btnEnter }}" onMouseLeave="{{ btnLeave }}" style="color:#FFFFFF;background:#0A7EA8;font-weight:700;padding:16px 26px;border-radius:12px;font-size:16px;display:inline-flex;align-items:center;gap:10px;transition:transform .2s,box-shadow .3s;box-shadow:0 4px 14px -6px rgba(10,126,168,.5);">Become a Trade Customer {{ arrowIcon }}</a>
+              <a href="#/catalogue" style="color:#1E2A3C;background:#FFFFFF;border:1.5px solid rgba(30,42,60,.18);font-weight:700;padding:15px 24px;border-radius:12px;font-size:16px;transition:border-color .2s,color .2s;" style-hover="border-color:#0A7EA8;color:#0A7EA8">Request Catalogue</a>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:34px;">
+              <sc-for list="{{ trustChips }}" as="chip" hint-placeholder-count="3">
+                <span style="display:inline-flex;align-items:center;gap:8px;font-family:'Geist Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;padding:8px 12px;border:1px solid rgba(30,42,60,.14);border-radius:3px;background:#FFFFFF;color:#1E2A3C;"><span style="width:6px;height:6px;background:#D8CA50;"></span>{{ chip }}</span>
+              </sc-for>
+            </div>
+          </div>
+          <div style="position:relative;min-width:0;">
+            <div style="position:absolute;top:16px;left:16px;right:-16px;bottom:-16px;border:2px solid #D8CA50;border-radius:22px;"></div>
+            <div style="position:relative;aspect-ratio:{{ R.heroRatio }};border-radius:22px;overflow:hidden;background:#EAF4F7;">
+              <image-slot id="home-hero" shape="rect" placeholder="Hero photo — warehouse, team or signature dishes"></image-slot>
+            </div>
+            <div style="position:absolute;left:{{ R.badgeLeft }};bottom:28px;background:#FFFFFF;border-radius:14px;padding:16px 18px;box-shadow:0 20px 40px -18px rgba(7,60,80,.4);max-width:250px;">
+              <div style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#0A7EA8;">Since 1962</div>
+              <div style="font-weight:700;font-size:15px;line-height:1.35;margin-top:6px;">From a Sparkbrook corner shop to a national supplier.</div>
+            </div>
+            <div style="position:absolute;right:{{ R.sealRight }};top:-22px;width:112px;height:112px;border-radius:50%;background:#D8CA50;color:#1E2A3C;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 16px 30px -14px rgba(120,100,0,.55);">
+              <span style="font-weight:800;font-size:24px;letter-spacing:-.03em;line-height:1;">6,000+</span>
+              <span style="font-size:11px;font-weight:700;margin-top:4px;line-height:1.2;">product<br>lines</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isInner }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="{{ hero.crumb }}" style="position:relative;overflow:hidden;background:{{ hero.bg }};color:{{ hero.fg }};padding:{{ R.ihPadT }} {{ R.px }} {{ R.ihPadB }};">
+        <sc-if value="{{ hero.isGrad }}" hint-placeholder-val="{{ false }}">
+          <span style="position:absolute;inset:0;background:radial-gradient(90% 90% at 100% 0%,rgba(255,255,255,.26),rgba(255,255,255,0) 55%);pointer-events:none;"></span>
+          <span style="position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;"></span>
+        </sc-if>
+        <div style="position:relative;max-width:1240px;margin:0 auto;">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.06em;color:{{ hero.sub }};">
+            <a href="#/" style="color:{{ hero.sub }};" style-hover="color:{{ hero.fg }}">Home</a><span>/</span><span>{{ hero.section }}</span><span>/</span><span style="color:{{ hero.fg }};font-weight:500;">{{ hero.crumb }}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:{{ hero.cols }};gap:{{ R.splitGap }};align-items:center;margin-top:{{ R.crumbGap }};">
+            <div style="min-width:0;">
+              <div style="display:flex;align-items:center;gap:12px;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:{{ hero.eyebrow }};font-weight:500;"><span style="width:28px;height:2px;background:{{ hero.line }};display:inline-block;"></span>{{ hero.eyebrowText }}</div>
+              <h1 style="font-weight:800;font-size:clamp(36px,5vw,64px);line-height:1.04;letter-spacing:-.035em;margin:20px 0 0;text-wrap:balance;max-width:880px;">{{ hero.title }}</h1>
+              <p style="font-size:clamp(16.5px,1.4vw,19px);color:{{ hero.sub }};line-height:1.6;max-width:620px;margin:22px 0 0;text-wrap:pretty;">{{ hero.intro }}</p>
+              <sc-if value="{{ hero.hasCtas }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;">
+                  <sc-for list="{{ hero.ctas }}" as="c" hint-placeholder-count="2">
+                    <a href="{{ c.href }}" style="font-weight:700;padding:15px 24px;border-radius:12px;font-size:16px;display:inline-flex;align-items:center;gap:10px;background:{{ c.bg }};color:{{ c.fg }};border:1.5px solid {{ c.border }};transition:transform .2s,box-shadow .3s;" style-hover="transform:translateY(-2px);box-shadow:0 12px 24px -12px rgba(0,0,0,.35);color:{{ c.fg }}">{{ c.label }} {{ arrowIcon }}</a>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+            <sc-if value="{{ hero.hasImg }}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative;min-width:0;">
+                <div style="position:absolute;top:14px;left:14px;right:-14px;bottom:-14px;border:2px solid {{ hero.frame }};border-radius:20px;"></div>
+                <div style="position:relative;aspect-ratio:4 / 3;border-radius:20px;overflow:hidden;background:{{ hero.imgBg }};">
+                  <image-slot id="{{ hero.img }}" shape="rect" placeholder="{{ hero.imgLabel }}"></image-slot>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="4">
+      <section data-reveal style="position:relative;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};">
+        <div style="max-width:1240px;margin:0 auto;">
+
+          <sc-if value="{{ b.hasHead }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};">
+              <div style="max-width:720px;min-width:0;">
+                <sc-if value="{{ b.hasEyebrow }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;align-items:center;gap:12px;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;font-weight:500;margin-bottom:16px;"><span style="width:28px;height:2px;background:#D8CA50;display:inline-block;"></span>{{ b.eyebrow }}</div>
+                </sc-if>
+                <h2 style="font-weight:800;font-size:clamp(30px,3.6vw,46px);line-height:1.08;letter-spacing:-.03em;margin:0;text-wrap:balance;">{{ b.title }}</h2>
+                <sc-if value="{{ b.hasIntro }}" hint-placeholder-val="{{ false }}">
+                  <p style="font-size:17px;color:#4A5563;line-height:1.6;margin:16px 0 0;text-wrap:pretty;">{{ b.intro }}</p>
+                </sc-if>
+              </div>
+              <sc-if value="{{ b.hasHeadLink }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ b.headLink.href }}" style="display:inline-flex;align-items:center;gap:8px;color:#1E2A3C;font-weight:700;font-size:15px;border-bottom:2px solid #D8CA50;padding-bottom:4px;transition:color .2s,gap .2s;" style-hover="color:#0A7EA8;gap:12px">{{ b.headLink.label }} {{ arrowIcon }}</a>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isStats }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:{{ R.statCols }};gap:28px 24px;">
+              <sc-for list="{{ b.items }}" as="s" hint-placeholder-count="4">
+                <div style="padding-top:22px;border-top:1px solid rgba(30,42,60,.14);position:relative;">
+                  <span style="position:absolute;top:-2px;left:0;width:44px;height:3px;background:#D8CA50;"></span>
+                  <div style="font-weight:800;font-size:clamp(38px,4.6vw,62px);letter-spacing:-.04em;line-height:1;color:#075E80;">{{ s.n }}</div>
+                  <div style="font-size:14.5px;color:#4A5563;margin-top:12px;font-weight:500;">{{ s.l }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isGradients }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:{{ b.cols }};gap:18px;">
+              <sc-for list="{{ b.items }}" as="c" hint-placeholder-count="4">
+                <a href="{{ c.href }}" style="position:relative;overflow:hidden;border-radius:20px;background:{{ c.bg }};color:{{ c.fg }};display:flex;flex-direction:column;min-height:{{ R.sectorMinH }};padding:20px;transition:transform .4s cubic-bezier(.16,.84,.32,1),box-shadow .4s;box-shadow:0 1px 0 rgba(0,0,0,.04);" style-hover="transform:translateY(-8px);box-shadow:0 30px 50px -26px rgba(7,50,70,.6);color:{{ c.fg }}">
+                  <span style="position:absolute;inset:0;background:radial-gradient(120% 70% at 100% 0%,rgba(255,255,255,.3),rgba(255,255,255,0) 55%);pointer-events:none;"></span>
+                  <span style="position:absolute;left:-70px;bottom:-90px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(0,0,0,.16),rgba(0,0,0,0) 70%);pointer-events:none;"></span>
+                  <span style="position:absolute;right:-50px;bottom:-50px;width:170px;height:170px;border-radius:50%;border:1.5px solid rgba(255,255,255,.28);pointer-events:none;"></span>
+                  <div style="position:relative;height:160px;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.14);">
+                    <image-slot id="{{ c.img }}" shape="rect" placeholder="{{ c.imgLabel }}"></image-slot>
+                  </div>
+                  <div style="position:relative;flex:1;display:flex;flex-direction:column;margin-top:22px;">
+                    <span style="font-family:'Geist Mono',monospace;font-size:11.5px;letter-spacing:.12em;">{{ c.num }}</span>
+                    <div style="font-weight:800;font-size:24px;letter-spacing:-.02em;margin-top:6px;">{{ c.label }}</div>
+                    <div style="font-size:14.5px;color:{{ c.sub }};line-height:1.55;margin-top:8px;flex:1;">{{ c.desc }}</div>
+                    <span style="display:inline-flex;align-items:center;gap:8px;margin-top:20px;font-weight:700;font-size:14.5px;border-bottom:2px solid {{ c.line }};padding-bottom:3px;width:fit-content;">{{ c.cta }} {{ arrowIcon }}</span>
+                  </div>
+                </a>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isSplit }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:{{ R.splitCols }};gap:{{ R.splitGap }};align-items:center;">
+              <div style="order:{{ b.textOrder }};min-width:0;">
+                <sc-if value="{{ b.hasEyebrow }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;align-items:center;gap:12px;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;font-weight:500;margin-bottom:16px;"><span style="width:28px;height:2px;background:#D8CA50;display:inline-block;"></span>{{ b.eyebrow }}</div>
+                </sc-if>
+                <h2 style="font-weight:800;font-size:clamp(30px,3.6vw,46px);line-height:1.08;letter-spacing:-.03em;margin:0;text-wrap:balance;">{{ b.title }}</h2>
+                <sc-for list="{{ b.body }}" as="p" hint-placeholder-count="2">
+                  <p style="font-size:17px;color:#4A5563;line-height:1.65;margin:18px 0 0;text-wrap:pretty;">{{ p }}</p>
+                </sc-for>
+                <sc-if value="{{ b.hasPoints }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:26px;display:grid;grid-template-columns:{{ R.pointCols }};gap:0 24px;">
+                    <sc-for list="{{ b.points }}" as="pt" hint-placeholder-count="4">
+                      <div style="display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid rgba(30,42,60,.12);font-size:15.5px;font-weight:600;"><span style="width:8px;height:8px;background:#D8CA50;flex-shrink:0;transform:translateY(-1px);"></span>{{ pt }}</div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ b.hasLink }}" hint-placeholder-val="{{ false }}">
+                  <a href="{{ b.link.href }}" style="display:inline-flex;align-items:center;gap:8px;margin-top:30px;color:#1E2A3C;font-weight:700;font-size:15px;border-bottom:2px solid #D8CA50;padding-bottom:4px;transition:color .2s,gap .2s;" style-hover="color:#0A7EA8;gap:12px">{{ b.link.label }} {{ arrowIcon }}</a>
+                </sc-if>
+              </div>
+              <div style="order:{{ b.imgOrder }};position:relative;min-width:0;">
+                <div style="position:absolute;top:14px;left:14px;right:-14px;bottom:-14px;border:2px solid #D8CA50;border-radius:20px;"></div>
+                <div style="position:relative;aspect-ratio:{{ b.ratio }};border-radius:20px;overflow:hidden;background:#EAF4F7;">
+                  <image-slot id="{{ b.img }}" shape="rect" placeholder="{{ b.imgLabel }}"></image-slot>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isRows }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:{{ R.rowsCols }};gap:{{ R.splitGap }};align-items:start;">
+              <div style="position:{{ R.sticky }};top:120px;min-width:0;">
+                <sc-if value="{{ b.hasEyebrow }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;align-items:center;gap:12px;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;font-weight:500;margin-bottom:16px;"><span style="width:28px;height:2px;background:#D8CA50;display:inline-block;"></span>{{ b.eyebrow }}</div>
+                </sc-if>
+                <h2 style="font-weight:800;font-size:clamp(30px,3.6vw,46px);line-height:1.08;letter-spacing:-.03em;margin:0;text-wrap:balance;">{{ b.title }}</h2>
+                <sc-if value="{{ b.hasIntro }}" hint-placeholder-val="{{ false }}">
+                  <p style="font-size:17px;color:#4A5563;line-height:1.6;margin:16px 0 0;text-wrap:pretty;">{{ b.intro }}</p>
+                </sc-if>
+                <sc-if value="{{ b.hasHeadLink }}" hint-placeholder-val="{{ false }}">
+                  <a href="{{ b.headLink.href }}" style="display:inline-flex;align-items:center;gap:8px;margin-top:26px;color:#1E2A3C;font-weight:700;font-size:15px;border-bottom:2px solid #D8CA50;padding-bottom:4px;transition:color .2s,gap .2s;" style-hover="color:#0A7EA8;gap:12px">{{ b.headLink.label }} {{ arrowIcon }}</a>
+                </sc-if>
+              </div>
+              <div style="border-top:1px solid rgba(30,42,60,.16);min-width:0;">
+                <sc-for list="{{ b.items }}" as="r" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;padding:24px 6px;border-bottom:1px solid rgba(30,42,60,.1);transition:padding-left .25s ease-out,background .25s;" style-hover="padding-left:16px;background:rgba(10,126,168,.045)">
+                    <span style="font-weight:700;font-size:13px;color:#0A7EA8;padding-top:5px;font-variant-numeric:tabular-nums;">{{ r.num }}</span>
+                    <div style="min-width:0;">
+                      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;">
+                        <div style="font-weight:700;font-size:19px;letter-spacing:-.015em;">{{ r.title }}</div>
+                        <sc-if value="{{ r.hasMeta }}" hint-placeholder-val="{{ false }}">
+                          <span style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:5px 10px;border-radius:3px;">{{ r.meta }}</span>
+                        </sc-if>
+                      </div>
+                      <div style="font-size:15.5px;color:#4A5563;line-height:1.6;margin-top:6px;text-wrap:pretty;">{{ r.desc }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isTimeline }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;">
+              <sc-for list="{{ b.items }}" as="t" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:{{ R.tlCols }};gap:{{ R.tlGap }};padding:30px 0;border-top:1px solid rgba(30,42,60,.14);transition:background .25s;" style-hover="background:rgba(216,202,80,.08)">
+                  <div style="font-weight:800;font-size:clamp(32px,3.8vw,50px);letter-spacing:-.04em;line-height:1;color:#075E80;"><span style="box-shadow:inset 0 -6px 0 rgba(216,202,80,.7);">{{ t.year }}</span></div>
+                  <div style="min-width:0;">
+                    <div style="font-weight:700;font-size:20px;letter-spacing:-.015em;">{{ t.title }}</div>
+                    <div style="font-size:16px;color:#4A5563;line-height:1.65;margin-top:8px;max-width:680px;text-wrap:pretty;">{{ t.desc }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isCards }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax({{ b.min }},1fr));gap:16px;">
+              <sc-for list="{{ b.items }}" as="c" hint-placeholder-count="4">
+                <div style="background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s,border-color .35s;" style-hover="transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);border-color:rgba(10,126,168,.4)">
+                  <sc-if value="{{ c.hasImg }}" hint-placeholder-val="{{ false }}">
+                    <div style="height:{{ b.imgH }};background:#EAF4F7;border-bottom:1px solid rgba(30,42,60,.08);">
+                      <image-slot id="{{ c.img }}" shape="rect" placeholder="{{ c.imgLabel }}"></image-slot>
+                    </div>
+                  </sc-if>
+                  <div style="padding:24px;display:flex;flex-direction:column;gap:10px;flex:1;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                      <span style="font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;">{{ c.num }}</span>
+                      <sc-if value="{{ c.hasTag }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;">{{ c.tag }}</span>
+                      </sc-if>
+                    </div>
+                    <div style="font-weight:700;font-size:19px;letter-spacing:-.015em;line-height:1.25;">{{ c.title }}</div>
+                    <div style="font-size:15px;color:#4A5563;line-height:1.6;text-wrap:pretty;">{{ c.desc }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isLogos }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax({{ R.logoMin }},1fr));gap:14px;">
+              <sc-for list="{{ b.items }}" as="l" hint-placeholder-count="8">
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="height:118px;border:1px solid rgba(30,42,60,.11);border-radius:16px;background:#FFFFFF;overflow:hidden;transition:transform .3s cubic-bezier(.16,.84,.32,1),box-shadow .3s,border-color .3s;" style-hover="transform:translateY(-4px);box-shadow:0 18px 34px -22px rgba(7,60,80,.5);border-color:#D8CA50">
+                    <image-slot id="{{ l.id }}" shape="rect" fit="contain" placeholder="{{ l.name }} logo"></image-slot>
+                  </div>
+                  <div>
+                    <div style="font-weight:700;font-size:15px;">{{ l.name }}</div>
+                    <div style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5E6873;margin-top:3px;">{{ l.note }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isQuotes }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;">
+              <sc-for list="{{ b.items }}" as="q" hint-placeholder-count="4">
+                <figure style="margin:0;background:{{ q.bg }};color:{{ q.fg }};border:1px solid {{ q.border }};border-radius:18px;padding:28px;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s;" style-hover="transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5)">
+                  <span style="font-weight:800;font-size:64px;line-height:.7;color:#D8CA50;height:34px;">&ldquo;</span>
+                  <blockquote style="margin:10px 0 0;font-size:16.5px;line-height:1.6;flex:1;text-wrap:pretty;">{{ q.text }}</blockquote>
+                  <figcaption style="margin-top:22px;padding-top:16px;border-top:1px solid {{ q.border }};font-family:'Geist Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:{{ q.sub }};">{{ q.role }}</figcaption>
+                </figure>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isCta }}" hint-placeholder-val="{{ false }}">
+            <div style="position:relative;overflow:hidden;border-radius:26px;background:linear-gradient(135deg,#0E8BB8 0%,#0A7EA8 45%,#075E80 100%);color:#FFFFFF;padding:{{ R.ctaPad }};display:grid;grid-template-columns:{{ R.ctaCols }};gap:30px;align-items:center;">
+              <span style="position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;"></span>
+              <span style="position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;"></span>
+              <span style="position:absolute;inset:0;background:radial-gradient(70% 90% at 0% 100%,rgba(255,255,255,.12),rgba(255,255,255,0) 60%);pointer-events:none;"></span>
+              <div style="position:relative;min-width:0;">
+                <div style="display:flex;align-items:center;gap:12px;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;font-weight:500;margin-bottom:16px;"><span style="width:28px;height:2px;background:#D8CA50;display:inline-block;"></span>{{ b.eyebrowText }}</div>
+                <h2 style="font-weight:800;font-size:clamp(30px,3.8vw,48px);line-height:1.06;letter-spacing:-.03em;margin:0;text-wrap:balance;">{{ b.title }}</h2>
+                <p style="font-size:17px;color:#E3EFF4;line-height:1.6;margin:16px 0 0;max-width:560px;text-wrap:pretty;">{{ b.body }}</p>
+              </div>
+              <div style="position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;justify-content:{{ R.ctaJustify }};">
+                <a href="{{ b.primary.href }}" style="background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:12px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transition:transform .2s,background .2s,box-shadow .3s;" style-hover="transform:translateY(-2px);background:#E6DA70;color:#1E2A3C;box-shadow:0 16px 30px -12px rgba(0,0,0,.5)">{{ b.primary.label }} {{ arrowIcon }}</a>
+                <a href="{{ b.secondary.href }}" style="color:#FFFFFF;font-weight:700;font-size:15.5px;border-bottom:2px solid #D8CA50;padding-bottom:4px;" style-hover="color:#D8CA50">{{ b.secondary.label }}</a>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isContact }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:{{ R.splitCols }};gap:20px;align-items:stretch;">
+              <div style="display:flex;flex-direction:column;gap:12px;min-width:0;">
+                <sc-for list="{{ b.details }}" as="d" hint-placeholder-count="3">
+                  <a href="{{ d.href }}" style="display:flex;gap:18px;align-items:flex-start;padding:22px;border:1px solid rgba(30,42,60,.11);border-radius:18px;background:#FFFFFF;color:#1E2A3C;transition:transform .3s cubic-bezier(.16,.84,.32,1),border-color .3s,box-shadow .3s;" style-hover="transform:translateY(-3px);border-color:#0A7EA8;box-shadow:0 18px 34px -24px rgba(7,60,80,.5);color:#1E2A3C">
+                    <span style="width:46px;height:46px;flex-shrink:0;border-radius:12px;background:#EAF4F7;color:#0A7EA8;display:flex;align-items:center;justify-content:center;">{{ d.icon }}</span>
+                    <span style="min-width:0;">
+                      <span style="display:block;font-family:'Geist Mono',monospace;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#0A7EA8;">{{ d.label }}</span>
+                      <span style="display:block;font-weight:700;font-size:18px;letter-spacing:-.01em;margin-top:4px;overflow-wrap:anywhere;">{{ d.value }}</span>
+                      <span style="display:block;font-size:14px;color:#5E6873;margin-top:4px;">{{ d.note }}</span>
+                    </span>
+                  </a>
+                </sc-for>
+              </div>
+              <div style="position:relative;min-height:340px;border-radius:18px;overflow:hidden;background:#EAF4F7;border:1px solid rgba(30,42,60,.11);">
+                <image-slot id="contact-map" shape="rect" placeholder="Map or site photo — 55–58 Stratford Street North"></image-slot>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isForm }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:{{ R.formLayout }};gap:20px;align-items:start;">
+              <div style="background:#FFFFFF;border:1px solid rgba(30,42,60,.12);border-radius:22px;padding:{{ R.formPad }};box-shadow:0 30px 60px -44px rgba(7,60,80,.4);min-width:0;">
+                <sc-if value="{{ b.done }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:30px 0;text-align:left;">
+                    <span style="width:54px;height:54px;background:#D8CA50;color:#1E2A3C;display:flex;align-items:center;justify-content:center;border-radius:4px;">{{ checkIcon }}</span>
+                    <h3 style="font-weight:800;font-size:28px;letter-spacing:-.025em;margin:22px 0 0;">{{ b.doneTitle }}</h3>
+                    <p style="font-size:16.5px;color:#4A5563;line-height:1.6;margin:10px 0 0;max-width:480px;">{{ b.doneText }}</p>
+                    <button onClick="{{ b.reset }}" style="margin-top:24px;background:none;border:0;border-bottom:2px solid #D8CA50;padding:0 0 4px;font-weight:700;font-size:15px;color:#1E2A3C;cursor:pointer;" style-hover="color:#0A7EA8">Send another</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ b.notDone }}" hint-placeholder-val="{{ true }}">
+                  <form onSubmit="{{ b.onSubmit }}">
+                    <h3 style="font-weight:800;font-size:clamp(24px,2.4vw,30px);letter-spacing:-.025em;margin:0;">{{ b.formTitle }}</h3>
+                    <p style="font-size:16px;color:#4A5563;line-height:1.6;margin:8px 0 0;">{{ b.formIntro }}</p>
+                    <div style="display:grid;grid-template-columns:{{ R.formCols }};gap:18px;margin-top:28px;">
+                      <sc-for list="{{ b.fields }}" as="f" hint-placeholder-count="6">
+                        <label style="display:flex;flex-direction:column;gap:8px;grid-column:{{ f.span }};min-width:0;">
+                          <span style="font-size:13.5px;font-weight:700;">{{ f.label }}<sc-if value="{{ f.req }}" hint-placeholder-val="{{ false }}"><span style="color:#0A7EA8;"> *</span></sc-if></span>
+                          <sc-if value="{{ f.isInput }}" hint-placeholder-val="{{ true }}">
+                            <input type="{{ f.type }}" required="{{ f.req }}" placeholder="{{ f.ph }}" style="width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;" style-focus="border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF">
+                          </sc-if>
+                          <sc-if value="{{ f.isSelect }}" hint-placeholder-val="{{ false }}">
+                            <select required="{{ f.req }}" style="width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s;" style-focus="border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14)">
+                              <sc-for list="{{ f.options }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+                            </select>
+                          </sc-if>
+                          <sc-if value="{{ f.isArea }}" hint-placeholder-val="{{ false }}">
+                            <textarea rows="5" required="{{ f.req }}" placeholder="{{ f.ph }}" style="width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;resize:vertical;transition:border-color .2s,box-shadow .2s;" style-focus="border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF"></textarea>
+                          </sc-if>
+                          <sc-if value="{{ f.isFile }}" hint-placeholder-val="{{ false }}">
+                            <input type="file" style="width:100%;font-size:14px;padding:14px;border:1.5px dashed rgba(10,126,168,.4);border-radius:10px;background:#F4F9FB;color:#1E2A3C;">
+                          </sc-if>
+                        </label>
+                      </sc-for>
+                    </div>
+                    <label style="display:flex;gap:12px;align-items:flex-start;margin-top:22px;font-size:14px;color:#4A5563;line-height:1.5;cursor:pointer;">
+                      <input type="checkbox" required="{{ true }}" style="width:18px;height:18px;margin:1px 0 0;accent-color:#0A7EA8;flex-shrink:0;">
+                      I agree to Indus Foods contacting me about this enquiry.
+                    </label>
+                    <button type="submit" onMouseEnter="{{ btnEnter }}" onMouseLeave="{{ btnLeave }}" style="margin-top:26px;color:#FFFFFF;background:#0A7EA8;font-weight:700;padding:16px 26px;border-radius:12px;font-size:16px;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;transition:transform .2s,box-shadow .3s;box-shadow:0 4px 14px -6px rgba(10,126,168,.5);">{{ b.submit }} {{ arrowIcon }}</button>
+                  </form>
+                </sc-if>
+              </div>
+              <aside style="position:{{ R.sticky }};top:120px;background:#075E80;color:#FFFFFF;border-radius:22px;padding:32px;overflow:hidden;min-width:0;">
+                <span style="position:absolute;right:-70px;bottom:-70px;width:200px;height:200px;border-radius:50%;border:2px solid rgba(216,202,80,.5);pointer-events:none;"></span>
+                <div style="position:relative;">
+                  <div style="display:flex;align-items:center;gap:12px;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;"><span style="width:28px;height:2px;background:#D8CA50;display:inline-block;"></span>{{ b.aside.eyebrow }}</div>
+                  <h3 style="font-weight:800;font-size:24px;letter-spacing:-.02em;line-height:1.2;margin:16px 0 0;">{{ b.aside.title }}</h3>
+                  <div style="margin-top:20px;display:flex;flex-direction:column;">
+                    <sc-for list="{{ b.aside.points }}" as="pt" hint-placeholder-count="3">
+                      <div style="display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid rgba(255,255,255,.18);font-size:15px;font-weight:600;line-height:1.45;"><span style="width:8px;height:8px;background:#D8CA50;flex-shrink:0;transform:translateY(-1px);"></span>{{ pt }}</div>
+                    </sc-for>
+                  </div>
+                  <div style="margin-top:22px;display:flex;flex-direction:column;gap:10px;">
+                    <a href="tel:01217714330" style="color:#FFFFFF;font-weight:700;display:inline-flex;align-items:center;gap:10px;" style-hover="color:#D8CA50">{{ phoneIcon }} 0121 771 4330</a>
+                    <a href="mailto:info@indusfoodsltd.com" style="color:#FFFFFF;font-weight:700;display:inline-flex;align-items:center;gap:10px;overflow-wrap:anywhere;" style-hover="color:#D8CA50">{{ mailIcon }} info@indusfoodsltd.com</a>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isFaq }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:{{ R.faqGap }};">
+              <sc-for list="{{ b.groups }}" as="g" hint-placeholder-count="2">
+                <div style="display:grid;grid-template-columns:{{ R.rowsCols }};gap:16px {{ R.splitGap }};align-items:start;">
+                  <div style="position:{{ R.sticky }};top:120px;">
+                    <span style="font-weight:700;font-size:13px;color:#0A7EA8;">{{ g.num }}</span>
+                    <h3 style="font-weight:800;font-size:clamp(22px,2.4vw,28px);letter-spacing:-.02em;margin:6px 0 0;">{{ g.title }}</h3>
+                  </div>
+                  <div style="border-top:1px solid rgba(30,42,60,.16);min-width:0;">
+                    <sc-for list="{{ g.items }}" as="q" hint-placeholder-count="3">
+                      <div style="border-bottom:1px solid rgba(30,42,60,.12);">
+                        <button onClick="{{ q.toggle }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0;background:none;border:0;cursor:pointer;text-align:left;font-size:17.5px;font-weight:700;letter-spacing:-.01em;color:{{ q.color }};transition:color .2s;" style-hover="color:#0A7EA8">
+                          {{ q.q }}
+                          <span style="flex-shrink:0;width:32px;height:32px;border-radius:50%;border:1.5px solid {{ q.ring }};background:{{ q.ringBg }};display:flex;align-items:center;justify-content:center;transform:rotate({{ q.rot }}deg);transition:transform .3s,background .3s,border-color .3s;">{{ plusIcon }}</span>
+                        </button>
+                        <sc-if value="{{ q.open }}" hint-placeholder-val="{{ false }}">
+                          <div style="padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;">{{ q.a }}</div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isPosts }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:34px;">
+              <sc-for list="{{ b.chips }}" as="ch" hint-placeholder-count="5">
+                <button onClick="{{ ch.onClick }}" style="padding:10px 16px;border-radius:4px;border:1.5px solid {{ ch.border }};background:{{ ch.bg }};color:{{ ch.fg }};font-weight:700;font-size:14px;cursor:pointer;transition:background .2s,border-color .2s,color .2s;" style-hover="border-color:#0A7EA8">{{ ch.label }}</button>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px;">
+              <sc-for list="{{ b.posts }}" as="p" hint-placeholder-count="6">
+                <a href="#/blog" style="display:flex;flex-direction:column;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:18px;overflow:hidden;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s;" style-hover="transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);color:#1E2A3C">
+                  <div style="height:210px;background:#EAF4F7;">
+                    <image-slot id="{{ p.img }}" shape="rect" placeholder="{{ p.title }}"></image-slot>
+                  </div>
+                  <div style="padding:22px 22px 24px;display:flex;flex-direction:column;flex:1;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                      <span style="font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;">{{ p.cat }}</span>
+                      <span style="font-family:'Geist Mono',monospace;font-size:11.5px;color:#5E6873;letter-spacing:.06em;">{{ p.date }}</span>
+                    </div>
+                    <div style="font-weight:700;font-size:20px;letter-spacing:-.02em;line-height:1.25;margin-top:16px;">{{ p.title }}</div>
+                    <div style="font-size:15px;color:#4A5563;line-height:1.6;margin-top:8px;flex:1;">{{ p.excerpt }}</div>
+                    <span style="display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-weight:700;font-size:14.5px;color:#0A7EA8;">Read article {{ arrowIcon }}</span>
+                  </div>
+                </a>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.isProse }}" hint-placeholder-val="{{ false }}">
+            <div style="background:rgba(216,202,80,.16);border:1px solid rgba(190,170,40,.5);border-radius:10px;padding:14px 18px;font-size:14.5px;color:#3A4250;margin-bottom:36px;">{{ b.note }}</div>
+            <div style="display:grid;grid-template-columns:{{ R.rowsCols }};gap:{{ R.splitGap }};align-items:start;">
+              <div style="position:{{ R.sticky }};top:120px;display:flex;flex-direction:column;border-left:2px solid rgba(30,42,60,.12);">
+                <sc-for list="{{ b.sections }}" as="s" hint-placeholder-count="6">
+                  <div style="padding:8px 0 8px 16px;font-size:14.5px;color:#4A5563;font-weight:600;"><span style="color:#0A7EA8;margin-right:10px;">{{ s.num }}</span>{{ s.h }}</div>
+                </sc-for>
+              </div>
+              <div style="min-width:0;">
+                <sc-for list="{{ b.sections }}" as="s" hint-placeholder-count="6">
+                  <div style="padding:26px 0;border-top:1px solid rgba(30,42,60,.12);">
+                    <h3 style="font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;"><span style="color:#0A7EA8;font-size:14px;margin-right:12px;">{{ s.num }}</span>{{ s.h }}</h3>
+                    <p style="font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 0;text-wrap:pretty;">{{ s.p }}</p>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+      </section>
+    </sc-for>
+  </main>
+
+  <footer style="position:relative;z-index:1;background:#075E80;color:#FFFFFF;border-top:4px solid #D8CA50;overflow:hidden;">
+    <span style="position:absolute;right:-160px;top:-160px;width:480px;height:480px;border-radius:50%;border:2px solid rgba(216,202,80,.25);pointer-events:none;"></span>
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:{{ R.footPad }} {{ R.px }} 40px;">
+      <div style="display:grid;grid-template-columns:{{ R.footCols }};gap:40px 28px;">
+        <div style="grid-column:{{ R.footBrandSpan }};min-width:0;">
+          <a href="#/" style="display:inline-flex;background:#FFFFFF;border-radius:14px;padding:12px 16px;"><img src="./assets/logo-horizontal.svg" alt="Indus Foods Ltd" style="height:44px;width:auto;display:block;"></a>
+          <p style="font-size:15px;color:#DCEBF1;line-height:1.6;margin:20px 0 0;max-width:340px;">Family-run Indian food and drink wholesaler, supplying foodservice, manufacturing, retail and wholesale customers across the UK and Europe since 1962.</p>
+          <div style="margin-top:22px;display:flex;flex-direction:column;gap:8px;font-size:15px;">
+            <span style="color:#DCEBF1;">55–58 Stratford Street North, Sparkbrook, Birmingham B11 1BU</span>
+            <a href="tel:01217714330" style="color:#FFFFFF;font-weight:700;" style-hover="color:#D8CA50">0121 771 4330</a>
+            <a href="mailto:info@indusfoodsltd.com" style="color:#FFFFFF;font-weight:700;" style-hover="color:#D8CA50">info@indusfoodsltd.com</a>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:22px;">
+            <a href="#/" aria-label="LinkedIn" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);color:#FFFFFF;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s;" style-hover="background:#D8CA50;color:#1E2A3C">in</a>
+            <a href="#/" aria-label="Facebook" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);color:#FFFFFF;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s;" style-hover="background:#D8CA50;color:#1E2A3C">f</a>
+            <a href="#/" aria-label="Google" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);color:#FFFFFF;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s;" style-hover="background:#D8CA50;color:#1E2A3C">G</a>
+            <a href="#/" aria-label="Instagram" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);color:#FFFFFF;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s;" style-hover="background:#D8CA50;color:#1E2A3C">IG</a>
+          </div>
+        </div>
+        <sc-for list="{{ footerGroups }}" as="g" hint-placeholder-count="4">
+          <div style="min-width:0;">
+            <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;font-weight:500;">{{ g.title }}</div>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:18px;">
+              <sc-for list="{{ g.links }}" as="l" hint-placeholder-count="4">
+                <a href="{{ l.href }}" style="color:#FFFFFF;font-size:15px;font-weight:500;transition:color .2s,padding-left .2s;" style-hover="color:#D8CA50;padding-left:4px">{{ l.label }}</a>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:48px;padding-top:28px;border-top:1px solid rgba(255,255,255,.16);">
+        <span style="font-family:'Geist Mono',monospace;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#DCEBF1;margin-right:8px;">Accredited &amp; trusted</span>
+        <sc-for list="{{ accreds }}" as="a" hint-placeholder-count="4">
+          <div style="width:136px;height:68px;border-radius:10px;background:#FFFFFF;overflow:hidden;">
+            <image-slot id="{{ a.id }}" shape="rect" fit="contain" placeholder="{{ a.name }}"></image-slot>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="position:relative;border-top:1px solid rgba(255,255,255,.16);">
+      <div style="max-width:1240px;margin:0 auto;padding:20px {{ R.px }};display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;font-size:13px;color:#DCEBF1;">
+        <span>© 2026 Indus Foods Ltd. Registered in England No. 02430421.</span>
+        <span style="display:flex;gap:20px;">
+          <a href="#/terms" style="color:#DCEBF1;" style-hover="color:#D8CA50">Terms</a>
+          <a href="#/contact" style="color:#DCEBF1;" style-hover="color:#D8CA50">Privacy</a>
+          <a href="#/contact" style="color:#DCEBF1;" style-hover="color:#D8CA50">Cookies</a>
+        </span>
+      </div>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;foodScatter&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Off&quot;,&quot;Light&quot;,&quot;Rich&quot;],&quot;default&quot;:&quot;Rich&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Food background&quot;},&quot;foodMotion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Parallax&quot;,&quot;Fixed&quot;,&quot;Scroll with page&quot;],&quot;default&quot;:&quot;Parallax&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Food background&quot;},&quot;sectorsStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Cards&quot;,&quot;List&quot;],&quot;default&quot;:&quot;Cards&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Mega menu&quot;}}">
+class Component extends DCLogic {
+  state = { page: 'home', w: (typeof window !== 'undefined' ? window.innerWidth : 1280), active: null, mobileOpen: false, acc: null, faqOpen: {}, sent: {}, blogCat: 'All' };
+
+  componentDidMount() {
+    this._resize = () => this.setState({ w: window.innerWidth });
+    window.addEventListener('resize', this._resize);
+    this._key = (e) => { if (e.key === 'Escape') this.setState({ active: null, mobileOpen: false }); };
+    window.addEventListener('keydown', this._key);
+    this._hash = () => this.setState({ page: this.parseHash(), active: null, mobileOpen: false, acc: null });
+    window.addEventListener('hashchange', this._hash);
+    this._scroll = () => {
+      if (this._raf) return;
+      this._raf = requestAnimationFrame(() => { this._raf = null; this.updateFood(); this.updateHeader(); });
+    };
+    window.addEventListener('scroll', this._scroll, { passive: true });
+    const p = this.parseHash();
+    if (p !== this.state.page) this.setState({ page: p });
+    requestAnimationFrame(() => { this.updateFood(); this.setupReveal(); });
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._resize);
+    window.removeEventListener('keydown', this._key);
+    window.removeEventListener('hashchange', this._hash);
+    window.removeEventListener('scroll', this._scroll);
+    if (this._io) this._io.disconnect();
+    clearTimeout(this._t);
+    document.body.style.overflow = '';
+  }
+  componentDidUpdate(pp, ps) {
+    if (!ps) return;
+    if (ps.page !== this.state.page) {
+      try { window.scrollTo({ top: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); }
+      requestAnimationFrame(() => { this.animatePage(); this.setupReveal(); this.updateFood(); });
+    } else {
+      requestAnimationFrame(() => this.updateFood());
+    }
+    if (ps.active !== this.state.active && this.state.active != null) requestAnimationFrame(() => this.animatePanel());
+    if (!ps.mobileOpen && this.state.mobileOpen) requestAnimationFrame(() => this.animateMobile());
+    if (ps.mobileOpen !== this.state.mobileOpen) document.body.style.overflow = this.state.mobileOpen ? 'hidden' : '';
+  }
+
+  parseHash() {
+    const h = (window.location.hash || '').replace(/^#\/?/, '');
+    return this.pages[h] ? h : 'home';
+  }
+
+  updateHeader() {
+    if (!this._headerEl) return;
+    this._headerEl.style.boxShadow = window.scrollY > 8 ? '0 10px 30px -18px rgba(20,40,60,.35)' : 'none';
+  }
+  updateFood() {
+    const el = this._foodEl;
+    if (!el) return;
+    const H = window.innerHeight + 220, sy = window.scrollY;
+    for (const s of el.children) {
+      const fy = +s.dataset.fy, depth = +s.dataset.depth, rot = +s.dataset.rot;
+      const y = (((fy * H - sy * depth) % H) + H) % H - 110;
+      s.style.transform = 'translate3d(0,' + y.toFixed(1) + 'px,0) rotate(' + (rot + sy * 0.035 * depth).toFixed(1) + 'deg)';
+    }
+  }
+  setupReveal() {
+    if (!this._mainEl || typeof IntersectionObserver === 'undefined') return;
+    if (this._io) this._io.disconnect();
+    this._io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        this._io.unobserve(en.target);
+        en.target.animate([{ opacity: 0, transform: 'translateY(34px)' }, { opacity: 1, transform: 'none' }], { duration: 800, easing: 'cubic-bezier(.16,.84,.32,1)' });
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -6% 0px' });
+    this._mainEl.querySelectorAll('[data-reveal]').forEach((s) => this._io.observe(s));
+  }
+  animatePage() {
+    if (this._mainEl) this._mainEl.animate([{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 520, easing: 'cubic-bezier(.16,.84,.32,1)' });
+    if (this._foodEl) this._foodEl.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 900, easing: 'ease-out' });
+  }
+  animatePanel() {
+    if (!this._panelEl) return;
+    this._panelEl.querySelectorAll('[data-anim]').forEach((el, i) => el.animate(
+      [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'translateY(0)' }],
+      { duration: 460, delay: Math.min(i * 26, 320), easing: 'cubic-bezier(.16,.84,.32,1)', fill: 'backwards' }));
+    this._panelEl.animate([{ opacity: 0, transform: 'translateY(-8px) scale(.99)' }, { opacity: 1, transform: 'none' }], { duration: 340, easing: 'cubic-bezier(.16,.84,.32,1)' });
+  }
+  animateMobile() {
+    if (!this._mobEl) return;
+    this._mobEl.querySelectorAll('[data-manim]').forEach((el, i) => el.animate(
+      [{ opacity: 0, transform: 'translateX(24px)' }, { opacity: 1, transform: 'translateX(0)' }],
+      { duration: 420, delay: i * 55, easing: 'cubic-bezier(.16,.84,.32,1)', fill: 'backwards' }));
+  }
+
+  setPanelEl = (el) => { this._panelEl = el; };
+  setMobEl = (el) => { this._mobEl = el; };
+  setMainEl = (el) => { this._mainEl = el; };
+  setHeaderEl = (el) => { this._headerEl = el; };
+  setFoodEl = (el) => { this._foodEl = el; if (el) requestAnimationFrame(() => this.updateFood()); };
+
+  cancelClose = () => clearTimeout(this._t);
+  scheduleClose = () => { this._t = setTimeout(() => this.setState({ active: null }), 170); };
+  closeAll = () => { clearTimeout(this._t); this.setState({ active: null }); };
+  closeBackdrop = () => { clearTimeout(this._t); this.setState({ active: null, mobileOpen: false }); };
+  go(href) { if (href) window.location.hash = href.replace(/^#/, ''); }
+  openItem(i) { clearTimeout(this._t); this.setState({ active: this._menus[i].kind ? i : null }); }
+  magnet(e) {
+    const lab = e.currentTarget.querySelector('[data-label]');
+    if (!lab) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    lab.style.transform = 'translateX(' + ((e.clientX - (r.left + r.width / 2)) * 0.14) + 'px)';
+  }
+  resetLabel(e) { const lab = e.currentTarget.querySelector('[data-label]'); if (lab) lab.style.transform = ''; }
+  toggleMobile = () => this.setState({ mobileOpen: !this.state.mobileOpen, acc: null, active: null });
+  toggleAcc(i) {
+    const m = this._menus[i];
+    if (!m.kind) { this.go(m.href); this.setState({ mobileOpen: false }); return; }
+    this.setState({ acc: this.state.acc === i ? null : i });
+  }
+  btnEnter = (e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 26px -8px rgba(10,126,168,.6)'; };
+  btnLeave = (e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 4px 14px -6px rgba(10,126,168,.5)'; };
+
+  get sectors() {
+    return [
+      { key: 'food-service', num: '01', label: 'Food Service', desc: 'Restaurants, takeaways, caterers and events, stocked with the essentials at trade prices.', bg: 'linear-gradient(158deg,#E3CF55 0%,#CDAE30 50%,#AA891A 100%)', fg: '#1E2A3C', sub: '#2A3340', line: '#1E2A3C', img: 'sector-foodservice-photo', imgLabel: 'Food service photo' },
+      { key: 'manufacturing', num: '02', label: 'Manufacturing', desc: 'Bulk spices, pulses, nuts and flours supplied consistently to specification.', bg: 'linear-gradient(158deg,#3E8C86 0%,#2B6D68 50%,#1B504C 100%)', fg: '#FFFFFF', sub: '#E0EFED', line: '#D8CA50', img: 'sector-manufacturing-photo', imgLabel: 'Manufacturing photo' },
+      { key: 'retail', num: '03', label: 'Retail', desc: 'Retail-ready packs and white label options for independents and national retailers.', bg: 'linear-gradient(158deg,#1896C0 0%,#0A7EA8 50%,#065777 100%)', fg: '#FFFFFF', sub: '#E3F1F7', line: '#D8CA50', img: 'sector-retail-photo', imgLabel: 'Retail photo' },
+      { key: 'wholesale', num: '04', label: 'Wholesale', desc: 'Pallet volumes and reliable stock for wholesalers and cash & carries nationwide.', bg: 'linear-gradient(158deg,#83923A 0%,#687626 50%,#4C5717 100%)', fg: '#FFFFFF', sub: '#EEF2DC', line: '#D8CA50', img: 'sector-wholesale-photo', imgLabel: 'Wholesale photo' }
+    ];
+  }
+
+  get _menus() {
+    return [
+      { label: 'Home', kind: null, href: '#/', section: 'Home' },
+      { label: 'About', kind: 'simple', href: '#/our-story', section: 'About',
+        links: [
+          { label: 'Our Story', desc: 'Six decades of family heritage', href: '#/our-story' },
+          { label: 'Certifications', desc: 'BRC & Halal certified', href: '#/certifications' },
+          { label: 'Community & Charity', desc: 'Giving back in Birmingham', href: '#/community' },
+          { label: 'Sustainability', desc: 'Responsible sourcing', href: '#/sustainability' },
+          { label: 'Careers', desc: 'Join our growing team', href: '#/careers' } ],
+        feature: { tag: 'Since 1962', title: 'Six decades of heritage', desc: 'From a Sparkbrook corner shop to one of the UK\u2019s leading Indian food wholesalers.', cta: 'Read our story', href: '#/our-story', imgId: 'about-feature', imgLabel: 'heritage photo', bg: '#075E80' } },
+      { label: 'Sectors', kind: 'cards', href: '#/food-service', section: 'Sectors',
+        cards: [
+          { label: 'Food Service', desc: 'Quality ingredients for venues, caterers & events across the UK.', cta: 'Explore Food Service', href: '#/food-service', bg: '#D8CA50', textColor: '#1E2A3C', descColor: 'rgba(30,42,60,.78)', imgBg: 'rgba(30,42,60,.08)', imgId: 'sector-foodservice', imgLabel: 'food service' },
+          { label: 'Manufacturing', desc: 'High-quality, healthy & delicious food products at scale.', cta: 'Explore Manufacturing', href: '#/manufacturing', bg: '#0A7EA8', textColor: '#FFFFFF', descColor: 'rgba(255,255,255,.86)', imgBg: 'rgba(255,255,255,.14)', imgId: 'sector-manufacturing', imgLabel: 'manufacturing' },
+          { label: 'Retail', desc: 'Retail-ready packaging for independent & national retailers.', cta: 'Explore Retail', href: '#/retail', bg: '#075E80', textColor: '#FFFFFF', descColor: 'rgba(255,255,255,.86)', imgBg: 'rgba(255,255,255,.14)', imgId: 'sector-retail', imgLabel: 'retail' },
+          { label: 'Wholesale', desc: 'Reliable stock levels & fast delivery across the whole of the UK.', cta: 'Explore Wholesale', href: '#/wholesale', bg: '#EAF4F7', textColor: '#075E80', descColor: 'rgba(7,94,128,.78)', imgBg: 'rgba(10,126,168,.08)', imgId: 'sector-wholesale', imgLabel: 'wholesale' } ] },
+      { label: 'Brands', kind: 'brands', href: '#/brands', section: 'Brands',
+        logos: this.brandLogos.slice(0, 10),
+        ownDesc: 'We develop and market our own Sanam and Shaan ranges alongside the brands we distribute.',
+        cta: 'View All Brands' },
+      { label: 'Trade', kind: 'simple', href: '#/apply', section: 'Trade',
+        links: [
+          { label: 'Apply for Trade Account', desc: 'Get wholesale pricing', href: '#/apply' },
+          { label: 'Request Catalogue', desc: 'Our full product range', href: '#/catalogue' },
+          { label: 'Delivery & Logistics', desc: 'UK & Europe from Birmingham', href: '#/delivery' },
+          { label: 'Terms & Conditions', desc: 'Trade account terms', href: '#/terms' } ],
+        feature: { tag: 'Trade partners', title: 'Trade with Indus Foods', desc: 'Reliable stock, a named account manager and nationwide delivery.', cta: 'Apply now', href: '#/apply', imgId: 'trade-feature', imgLabel: 'trade photo', bg: '#0A7EA8' } },
+      { label: 'Blog', kind: null, href: '#/blog', section: 'Blog' },
+      { label: 'More', kind: 'simple', href: '#/contact', section: 'More',
+        links: [
+          { label: 'Contact Us', desc: 'Get in touch with the team', href: '#/contact' },
+          { label: 'FAQs', desc: 'Common questions answered', href: '#/faqs' } ],
+        feature: null }
+    ];
+  }
+
+  get brandLogos() {
+    return [
+      { id: 'brand-sanam', name: 'Sanam', note: 'Own brand' },
+      { id: 'brand-shan', name: 'Shaan', note: 'Own brand' },
+      { id: 'brand-lemontree', name: 'The Lemon Tree', note: 'Non-food' },
+      { id: 'brand-greenleaf', name: 'Green Leaf', note: 'Non-food' },
+      { id: 'brand-indus', name: 'Indus Foods', note: 'Own label' },
+      { id: 'brand-falak', name: 'Falak', note: 'Exclusive UK distribution' },
+      { id: 'brand-own-1', name: 'Partner brand', note: 'Distributed' },
+      { id: 'brand-own-2', name: 'Partner brand', note: 'Distributed' },
+      { id: 'brand-own-3', name: 'Partner brand', note: 'Distributed' },
+      { id: 'brand-own-4', name: 'Partner brand', note: 'Distributed' }
+    ];
+  }
+
+  get pages() {
+    if (this._pages) return this._pages;
+    const cta = (o) => Object.assign({ type: 'cta', eyebrowText: 'Trade accounts', title: 'Open a trade account today.', body: 'Wholesale pricing, a named account manager and delivery across the UK and Europe.', primary: { label: 'Become a Trade Customer', href: '#/apply' }, secondary: { label: 'Call 0121 771 4330', href: 'tel:01217714330' }, tight: true }, o || {});
+    const stats = (o) => Object.assign({ type: 'stats', items: [
+      { n: '1962', l: 'Family-run since' }, { n: '6,000+', l: 'Product lines in stock' },
+      { n: '5,000+', l: 'Trade customers' }, { n: '150+', l: 'Countries we source from' } ] }, o || {});
+    const others = (key) => ({ type: 'gradients', eyebrow: 'Other sectors', title: 'We supply every part of the trade.', exclude: key, tint: true });
+    const sectorPage = (key, o) => ({ section: 'Sectors', crumb: this.sectors.find(s => s.key === key).label, sector: key, hero: o.hero,
+      blocks: [...o.blocks, others(key), cta()] });
+
+    this._pages = {
+      home: { section: 'Home', crumb: 'Home', blocks: [
+        stats({ tight: true }),
+        { type: 'gradients', eyebrow: 'We serve', title: 'Four sectors, one trusted supplier.', intro: 'Whether you run a takeaway kitchen or a production line, we carry the stock and the know-how to keep you trading.', headLink: { label: 'Apply for a trade account', href: '#/apply' } },
+        { type: 'split', eyebrow: 'Our own brands', title: 'Sanam & Shaan, packed in Birmingham.', body: ['Our own-label ranges are processed and packed on our own production line in Birmingham, which we have run since the 1970s.', 'Sanam covers spices, lentils, rice, dried fruit and nuts. Shaan covers tinned goods, frozen food, and rice, nuts and fruit in bulk.'], points: ['Spices & seasonings', 'Lentils & pulses', 'Rice & grains', 'Dried fruit & nuts'], link: { label: 'Explore our brands', href: '#/brands' }, img: 'home-brands', imgLabel: 'Own-brand products photo', tint: true },
+        { type: 'rows', eyebrow: 'Why Indus Foods', title: 'A family business that treats yours like its own.', intro: 'We\u2019ve been supplying the trade for over 60 years. These are the reasons customers stay with us.', headLink: { label: 'Read our story', href: '#/our-story' }, items: [
+          { title: 'Family-run for three generations', desc: 'Three generations of the same family, committed to personal relationships with every customer.' },
+          { title: 'Everything under one roof', desc: 'From ambient to chilled to frozen, we stock everything an ethnic food business needs.' },
+          { title: 'Named account managers', desc: 'Named account managers who know your business and respond within hours, not days.' },
+          { title: 'White label packaging', desc: 'Custom packaging and branding for retail and food service customers. Your brand, our quality.' } ] },
+        { type: 'timeline', eyebrow: 'Our heritage', title: 'From Ladypool Road to the UK and Europe.', headLink: { label: 'The full story', href: '#/our-story' }, tint: true, items: [
+          { year: '1962', title: 'A shop in the Balti Triangle', desc: 'Our founders open one of the UK\u2019s first halal butchers and greengrocers on Ladypool Road, Sparkbrook.' },
+          { year: '1972', title: 'Indus Foods is formed', desc: 'Growing demand from caterers and shops leads the family to set up a dedicated wholesale business.' },
+          { year: '1975', title: 'Importing and packing on site', desc: 'We begin importing direct and install our own processing and packaging line, which still runs today.' },
+          { year: 'Today', title: 'Supplying the UK and Europe', desc: 'More than 5,000 customers and over 6,000 lines, sourced from more than 150 countries.' } ] },
+        { type: 'quotes', eyebrow: 'What our customers say', title: 'Trusted by the trade.', items: [
+          { text: 'Since starting with Indus Foods back in the early 2000s, they have consistently supplied us with the best of the UK. We highly recommend.', role: 'Foodservice customer' },
+          { text: 'Their delivery is always on time and the product range is unmatched. We switched from our previous supplier 3 years ago and have not looked back.', role: 'Retail customer' },
+          { text: 'The white labelling service has been fantastic for our brand. Quality products with our own packaging \u2014 exactly what we needed.', role: 'White label customer' },
+          { text: 'Brilliant customer service. Our account manager knows our order patterns and always keeps us informed about new products.', role: 'Wholesale customer' } ] },
+        cta()
+      ] },
+
+      'our-story': { section: 'About', crumb: 'Our Story',
+        hero: { eyebrow: 'About · Our Story', title: 'Three generations, one family, since 1962.', intro: 'Indus Foods began as one of the UK\u2019s first halal butchers and greengrocers, on Ladypool Road in Sparkbrook, Birmingham. Six decades later we supply more than 5,000 businesses across the UK and Europe.', img: 'story-hero', imgLabel: 'Archive or family photo' },
+        blocks: [
+          { type: 'timeline', eyebrow: 'Our heritage', title: 'How a corner shop became a national supplier.', items: [
+            { year: '1962', title: 'A shop in the Balti Triangle', desc: 'Our founders open one of the UK\u2019s first halal butchers and greengrocers on Ladypool Road, serving Birmingham\u2019s South Asian community as Britain develops a taste for spicy food.' },
+            { year: '1972', title: 'Indus Foods is formed', desc: 'Demand from caterers and shops leads the family to set up Indus Foods as a dedicated wholesale business.' },
+            { year: '1975', title: 'Importing and packing on site', desc: 'We begin importing direct from South Asia and install our own processing and packaging line in Birmingham. It still runs today.' },
+            { year: '2019', title: 'Investing in production', desc: 'A \u00a31.5m investment extends our warehousing and creates a manufacturing and production hub for our own-brand whole spices.' },
+            { year: 'Today', title: 'Supplying the UK and Europe', desc: 'More than 6,000 product lines, sourced from over 150 countries, for foodservice, manufacturing, retail and wholesale customers.' } ] },
+          { type: 'split', eyebrow: 'Still family-run', title: 'The third generation at the helm.', body: ['The grandchildren of our founders now run the business day to day. The approach hasn\u2019t changed: know every customer, keep the shelves full and price fairly.', 'As an independent wholesaler we champion smaller operators. Many of our customers are independent caterers and shops who have traded with us for decades.'], img: 'story-family', imgLabel: 'Family / leadership photo', flip: true, tint: true },
+          stats(),
+          { type: 'split', eyebrow: 'Part of the trade', title: 'Trusted across the industry.', body: ['We have been a member of Today\u2019s Group, one of the largest buying groups in the UK, for close to 35 years, and we sit on the council of members of the Federation of Wholesale Distributors.'], points: ['Today\u2019s Group member', 'FWD council member', 'BRC certified', 'Halal certified'], link: { label: 'See our certifications', href: '#/certifications' }, img: 'story-trade', imgLabel: 'Warehouse photo', tint: true },
+          cta()
+        ] },
+
+      certifications: { section: 'About', crumb: 'Certifications',
+        hero: { eyebrow: 'About · Certifications', title: 'Quality and safety, independently checked.', intro: 'Our Birmingham site is BRC and Halal certified, and every product we pack goes through the same controls, from supplier approval to the moment it leaves our warehouse.', img: 'cert-hero', imgLabel: 'Production line photo' },
+        blocks: [
+          { type: 'cards', eyebrow: 'Accreditations', title: 'Our certifications and memberships.', min: '250px', imgH: '150px', items: [
+            { title: 'BRC Global Standard', desc: 'Our processing and packing operation is audited against the BRCGS food safety standard.', tag: 'Food safety', img: 'cert-brc', imgLabel: 'BRC badge' },
+            { title: 'Halal certified', desc: 'Halal certification covers our site and the handling of certified products.', tag: 'Halal', img: 'cert-halal', imgLabel: 'Halal badge' },
+            { title: 'Today\u2019s Group', desc: 'A member of one of the UK\u2019s largest buying groups for close to 35 years.', tag: 'Membership', img: 'cert-todays', imgLabel: 'Today\u2019s Group logo' },
+            { title: 'Federation of Wholesale Distributors', desc: 'We sit on the FWD council of members, representing wholesale at a national level.', tag: 'Membership', img: 'cert-fwd', imgLabel: 'FWD logo' } ] },
+          { type: 'rows', eyebrow: 'How we protect quality', title: 'Controls at every step.', intro: 'Certification is only as good as the process behind it.', tint: true, items: [
+            { title: 'Supplier approval', desc: 'We vet the producers we import from before their products join our range.' },
+            { title: 'Controlled storage', desc: 'Ambient, chilled and frozen stock is stored and handled in dedicated areas.' },
+            { title: 'On-site packing', desc: 'Our own-brand products are processed and packed on our own production line in Birmingham.' },
+            { title: 'Traceability', desc: 'Batch records let us trace products back to source quickly if a question is raised.' } ] },
+          cta({ eyebrowText: 'Documents', title: 'Need a certificate or spec sheet?', body: 'Our team can send current certificates and product specifications for your own audits.', primary: { label: 'Contact the team', href: '#/contact' } })
+        ] },
+
+      community: { section: 'About', crumb: 'Community & Charity',
+        hero: { eyebrow: 'About · Community & Charity', title: 'Rooted in Sparkbrook for over 60 years.', intro: 'We started by serving Birmingham\u2019s South Asian community, and we\u2019re still based a few streets from where it began. Giving back is part of how we work.', img: 'community-hero', imgLabel: 'Community photo' },
+        blocks: [
+          { type: 'cards', eyebrow: 'Where we help', title: 'Our community commitments.', min: '250px', imgH: '170px', items: [
+            { title: 'Local food support', desc: 'Donating stock to food banks and community kitchens across Birmingham.', img: 'community-1', imgLabel: 'Food bank photo' },
+            { title: 'Ramadan & Eid', desc: 'Supporting mosques, community iftars and charity drives through the busiest season of the year.', img: 'community-2', imgLabel: 'Ramadan photo' },
+            { title: 'Local jobs', desc: 'Creating jobs in Sparkbrook as our warehouse and production hub grow.', img: 'community-3', imgLabel: 'Team photo' },
+            { title: 'Independent businesses', desc: 'Backing the small caterers and shops that make up much of our customer base.', img: 'community-4', imgLabel: 'Local shop photo' } ] },
+          { type: 'split', eyebrow: 'Our home', title: 'Part of the Balti Triangle story.', body: ['Sparkbrook\u2019s Ladypool Road helped introduce Britain to South Asian food. Our family has been part of that story since 1962, and our warehouse and head office are still in B11.'], img: 'community-home', imgLabel: 'Ladypool Road photo', flip: true, tint: true },
+          cta({ eyebrowText: 'Partnerships', title: 'Partner with us on a community project.', body: 'If you run a charity or community initiative in the Midlands, we\u2019d like to hear from you.', primary: { label: 'Get in touch', href: '#/contact' } })
+        ] },
+
+      sustainability: { section: 'About', crumb: 'Sustainability',
+        hero: { eyebrow: 'About · Sustainability', title: 'Sourcing responsibly from over 150 countries.', intro: 'Buying close to origin, packing on our own site and planning efficient routes lets us cut waste and keep quality high.', img: 'sust-hero', imgLabel: 'Sourcing / origin photo' },
+        blocks: [
+          { type: 'rows', eyebrow: 'Our approach', title: 'Four areas we focus on.', items: [
+            { title: 'Direct sourcing', desc: 'We buy close to origin, such as sultanas from Iran and almonds from California, and build long-term relationships with producers.' },
+            { title: 'Packing in Birmingham', desc: 'Processing and packing on our own site reduces handling and gives us control over packaging choices.' },
+            { title: 'Efficient delivery', desc: 'Planned routes and consolidated drops from our Birmingham hub mean fewer part-empty vehicles.' },
+            { title: 'Less food waste', desc: 'Stock rotation and close demand planning keep short-dated waste to a minimum.' } ] },
+          { type: 'split', eyebrow: 'Packaging', title: 'Better packaging, step by step.', body: ['As we refresh our own-brand ranges we review materials and pack sizes, and we offer bulk formats that cut packaging for high-volume kitchens.'], points: ['Bulk formats for foodservice', 'Recyclable outer cases', 'Own-brand pack reviews'], img: 'sust-pack', imgLabel: 'Packaging photo', tint: true },
+          cta()
+        ] },
+
+      careers: { section: 'About', crumb: 'Careers',
+        hero: { eyebrow: 'About · Careers', title: 'Grow with a family business.', intro: 'We\u2019re a Birmingham employer with more than 60 years of history and plans to keep growing. Whether you\u2019re starting out or bringing years of experience, there\u2019s room to build a career here.', img: 'careers-hero', imgLabel: 'Team photo' },
+        blocks: [
+          { type: 'cards', eyebrow: 'Working here', title: 'What you can expect.', min: '240px', items: [
+            { title: 'Family culture', desc: 'Work directly with the family who run the business, not layers of management.' },
+            { title: 'Training', desc: 'On-the-job training and support for qualifications, from forklift licences to food safety.' },
+            { title: 'Progression', desc: 'Many of our team have grown into senior roles over years with us.' },
+            { title: 'A growing site', desc: 'Investment in our warehouse and production hub is creating new roles.' } ] },
+          { type: 'rows', eyebrow: 'Teams', title: 'Where you could work.', intro: 'We recruit across four teams. Register your interest below and we\u2019ll contact you when a role opens.', tint: true, items: [
+            { title: 'Warehouse & logistics', desc: 'Picking, packing, loading and driving across our Birmingham hub.', meta: 'Register interest' },
+            { title: 'Production & packing', desc: 'Running our processing and packing line for own-brand products.', meta: 'Register interest' },
+            { title: 'Sales & account management', desc: 'Looking after trade customers and growing our accounts.', meta: 'Register interest' },
+            { title: 'Office & finance', desc: 'Purchasing, accounts, customer service and administration.', meta: 'Register interest' } ] },
+          { type: 'form', formTitle: 'Register your interest', formIntro: 'Tell us about yourself and we\u2019ll be in touch when a suitable role opens.', submit: 'Send application', doneTitle: 'Thanks for your interest.', doneText: 'We\u2019ve received your details and will contact you when a suitable role opens.',
+            fields: [
+              { label: 'Full name', req: true }, { label: 'Email', type: 'email', req: true },
+              { label: 'Phone', type: 'tel' }, { label: 'Team', type: 'select', req: true, options: ['Warehouse & logistics', 'Production & packing', 'Sales & account management', 'Office & finance', 'Not sure yet'] },
+              { label: 'CV', type: 'file', full: true }, { label: 'About you', type: 'textarea', full: true, ph: 'Experience, availability, anything we should know' } ],
+            aside: { eyebrow: 'Talk to us', title: 'Prefer to talk first?', points: ['Call our office during working hours', 'Email your CV to our team', 'Visit us at 55\u201358 Stratford Street North, B11 1BU'] } }
+        ] },
+
+      'food-service': sectorPage('food-service', {
+        hero: { title: 'Food service supply for kitchens that never stop.', intro: 'Restaurants, takeaways, caterers and fast food operators rely on us for consistent quality at trade prices, from basmati and ghee to frozen fish and packaging.', img: 'fs-hero', imgLabel: 'Kitchen photo', ctas: [{ label: 'Open a trade account', href: '#/apply', primary: true }, { label: 'Request catalogue', href: '#/catalogue' }] },
+        blocks: [
+          { type: 'split', eyebrow: 'Who we supply', title: 'Built around busy kitchens.', body: ['From curry houses in the Balti Triangle to event caterers feeding thousands, our food service customers need the same thing: the right stock, on time, every time.'], points: ['Restaurants & curry houses', 'Takeaways & fast food', 'Contract & event caterers', 'Hotels, caf\u00e9s & dessert parlours'], img: 'fs-who', imgLabel: 'Restaurant photo' },
+          { type: 'cards', eyebrow: 'What we supply', title: 'The full kitchen range.', min: '220px', tint: true, items: [
+            { title: 'Rice & grains', desc: 'Basmati, sella and long grain in catering sacks.' },
+            { title: 'Spices & seasonings', desc: 'Whole and ground spices, blends and masalas.' },
+            { title: 'Oils & ghee', desc: 'Cooking oils, vegetable ghee and pure ghee.' },
+            { title: 'Flour & atta', desc: 'Chapati flour, gram flour and more.' },
+            { title: 'Frozen', desc: 'Fish, vegetables, breads and ready-to-cook lines.' },
+            { title: 'Packaging & housewares', desc: 'Fast food packaging and kitchen essentials.' } ] },
+          { type: 'rows', eyebrow: 'How we support you', title: 'More than a delivery.', items: [
+            { title: 'A named account manager', desc: 'One person who knows your menu, your volumes and your delivery days.' },
+            { title: 'Consistent quality', desc: 'The same spec, pack after pack, so your dishes taste the same every service.' },
+            { title: 'Ramadan & seasonal planning', desc: 'We plan stock ahead of the busiest trading periods so you don\u2019t run short.' } ] }
+        ] }),
+
+      manufacturing: sectorPage('manufacturing', {
+        hero: { title: 'Bulk ingredients for food manufacturers.', intro: 'We supply manufacturers with whole and ground spices, pulses, nuts, dried fruit, flours and oils in bulk, with the documentation and consistency production lines depend on.', img: 'mf-hero', imgLabel: 'Production photo', ctas: [{ label: 'Talk to our team', href: '#/contact', primary: true }, { label: 'Request catalogue', href: '#/catalogue' }] },
+        blocks: [
+          { type: 'split', eyebrow: 'Why manufacturers choose us', title: 'Consistency at scale.', body: ['We\u2019ve run our own processing and packing line since the 1970s, and our 2019 production hub was built to prepare whole spices at volume.'], points: ['Bulk and industrial pack sizes', 'Specification sheets on request', 'BRC certified site', 'Sourcing from 150+ countries'], img: 'mf-who', imgLabel: 'Spice processing photo' },
+          { type: 'cards', eyebrow: 'Ingredients', title: 'What we supply to manufacturers.', min: '220px', tint: true, items: [
+            { title: 'Whole & ground spices', desc: 'Prepared on our own site under strict controls.' },
+            { title: 'Pulses & lentils', desc: 'Chana, masoor, moong, urad and more.' },
+            { title: 'Nuts & dried fruit', desc: 'Cashews, almonds, sultanas and mixes.' },
+            { title: 'Flours', desc: 'Gram, rice and wheat flours in bulk.' },
+            { title: 'Oils & ghee', desc: 'Bulk oils and ghee for production.' } ] },
+          { type: 'rows', eyebrow: 'Working together', title: 'How supply works.', items: [
+            { title: 'Agree your specification', desc: 'Tell us the grade, origin and pack format you need.' },
+            { title: 'Sampling & approval', desc: 'We provide samples and documentation for your QA team.' },
+            { title: 'Scheduled deliveries', desc: 'Regular deliveries planned around your production calendar.' } ] }
+        ] }),
+
+      retail: sectorPage('retail', {
+        hero: { title: 'Retail-ready ranges your customers look for.', intro: 'Independent grocers, convenience stores and national retailers stock our Sanam and Shaan ranges alongside leading distributed brands, with white label options for retailers building their own.', img: 'rt-hero', imgLabel: 'Shop shelf photo', ctas: [{ label: 'Open a trade account', href: '#/apply', primary: true }, { label: 'View our brands', href: '#/brands' }] },
+        blocks: [
+          { type: 'split', eyebrow: 'For retailers', title: 'Shelves that sell.', body: ['Our retail packs are designed to be recognised and trusted by shoppers who cook South Asian food at home, and our account managers help you pick the right lines for your store.'], points: ['Sanam & Shaan retail packs', 'Leading distributed brands', 'Ambient, chilled & frozen', 'Seasonal ranges for Ramadan & Eid'], img: 'rt-who', imgLabel: 'Retail pack photo' },
+          { type: 'split', eyebrow: 'White label', title: 'Your brand, our quality.', body: ['We offer custom packaging and branding for retail customers. Choose the products, and we\u2019ll pack them under your label on our Birmingham line.'], link: { label: 'Talk to us about white label', href: '#/contact' }, img: 'rt-white', imgLabel: 'White label pack photo', flip: true, tint: true },
+          { type: 'rows', eyebrow: 'Support', title: 'Helping your store grow.', items: [
+            { title: 'Range advice', desc: 'Recommendations based on what sells in stores like yours.' },
+            { title: 'New product updates', desc: 'Your account manager keeps you informed about new lines.' },
+            { title: 'Reliable replenishment', desc: 'Regular deliveries to keep best-sellers on the shelf.' } ] }
+        ] }),
+
+      wholesale: sectorPage('wholesale', {
+        hero: { title: 'Pallet volumes for wholesalers and cash & carries.', intro: 'We supply wholesalers across the UK and Europe with reliable stock of Indian and South Asian ranges, including brands we distribute exclusively in the UK.', img: 'ws-hero', imgLabel: 'Warehouse photo', ctas: [{ label: 'Open a trade account', href: '#/apply', primary: true }, { label: 'Delivery & logistics', href: '#/delivery' }] },
+        blocks: [
+          { type: 'split', eyebrow: 'For wholesalers', title: 'Depth of stock you can rely on.', body: ['With more than 6,000 lines and direct imports from over 150 countries, we give wholesalers a single source for ethnic ranges.', 'We also hold exclusive UK distribution for brands such as Falak rice.'], points: ['Full and mixed pallets', 'Exclusive distributed brands', 'Own-brand Sanam & Shaan', 'UK & European delivery'], img: 'ws-who', imgLabel: 'Pallet photo' },
+          { type: 'rows', eyebrow: 'Why wholesalers work with us', title: 'Built for volume.', tint: true, items: [
+            { title: 'Buying power', desc: 'Close to 35 years as a member of Today\u2019s Group, one of the UK\u2019s largest buying groups.' },
+            { title: 'Brand agencies', desc: 'We bring overseas brands into the UK and manage their distribution.' },
+            { title: 'Dedicated account management', desc: 'A named contact for pricing, availability and delivery planning.' } ] }
+        ] }),
+
+      brands: { section: 'Brands', crumb: 'All Brands',
+        hero: { eyebrow: 'Brands', title: 'Our own brands, and the brands we distribute.', intro: 'Alongside our own-label Sanam and Shaan ranges, we distribute trusted brands from across South Asia and beyond, including exclusive UK agencies.' },
+        blocks: [
+          { type: 'split', eyebrow: 'Own brand', title: 'Sanam', body: ['Our flagship own-label range, and a big part of why we\u2019re known as one of the UK\u2019s leading ethnic wholesalers.', 'Sanam covers the essentials of South Asian cooking: whole and ground spices, lentils, rice, dried fruit and nuts.'], points: ['Spices', 'Lentils & pulses', 'Rice', 'Dried fruit & nuts'], img: 'brands-sanam-photo', imgLabel: 'Sanam range photo' },
+          { type: 'split', eyebrow: 'Own brand', title: 'Shaan', body: ['Built for kitchens that cook at volume, Shaan covers tinned products, frozen food, and rice, nuts and fruit in bulk.', 'Shaan cashew nuts and our frozen pangasius fish are among our best-selling lines.'], points: ['Tinned goods', 'Frozen food', 'Bulk rice', 'Bulk nuts & fruit'], img: 'brands-shaan-photo', imgLabel: 'Shaan range photo', flip: true, tint: true },
+          { type: 'logos', eyebrow: 'Our portfolio', title: 'Brands we supply.', intro: 'Drop each brand\u2019s logo into its tile.', items: this.brandLogos },
+          cta({ eyebrowText: 'White label', title: 'Want your own brand?', body: 'We offer custom packaging and branding for retail and food service customers. Your brand, our quality.', primary: { label: 'Talk to us', href: '#/contact' }, secondary: { label: 'Request catalogue', href: '#/catalogue' } })
+        ] },
+
+      apply: { section: 'Trade', crumb: 'Apply for Trade Account',
+        hero: { eyebrow: 'Trade · Apply', title: 'Apply for a trade account.', intro: 'Open an account for wholesale pricing, a named account manager and delivery across the UK and Europe.' },
+        blocks: [
+          { type: 'cards', min: '240px', tight: true, items: [
+            { title: 'Apply online', desc: 'Tell us about your business using the form below.' },
+            { title: 'Account review', desc: 'Our team checks your details and may call to learn more about what you need.' },
+            { title: 'Start ordering', desc: 'Your account manager sets up your pricing and first delivery.' } ] },
+          { type: 'form', tight: true, formTitle: 'Your business details', formIntro: 'Fields marked * are required.', submit: 'Submit application', doneTitle: 'Application received.', doneText: 'Thank you. Our trade team will review your details and contact you shortly.',
+            fields: [
+              { label: 'Business name', req: true }, { label: 'Contact name', req: true },
+              { label: 'Email', type: 'email', req: true }, { label: 'Phone', type: 'tel', req: true },
+              { label: 'Business type', type: 'select', req: true, options: ['Restaurant or takeaway', 'Caterer', 'Food manufacturer', 'Retailer', 'Wholesaler or cash & carry', 'Other'] },
+              { label: 'Postcode', req: true },
+              { label: 'Company number', ph: 'Optional' },
+              { label: 'Expected monthly spend', type: 'select', options: ['Under \u00a31,000', '\u00a31,000\u2013\u00a35,000', '\u00a35,000\u2013\u00a320,000', 'Over \u00a320,000'] },
+              { label: 'Products you\u2019re interested in', type: 'textarea', full: true, ph: 'e.g. basmati rice, ghee, spices, frozen fish' } ],
+            aside: { eyebrow: 'Trade benefits', title: 'With a trade account', points: ['Wholesale pricing on 6,000+ lines', 'A named account manager', 'Delivery across the UK & Europe', 'Own-brand and white label options'] } }
+        ] },
+
+      catalogue: { section: 'Trade', crumb: 'Request Catalogue',
+        hero: { eyebrow: 'Trade · Catalogue', title: 'Request our product catalogue.', intro: 'Browse our range of ambient, chilled and frozen products, own brands and distributed brands. Choose a digital copy or ask for a printed edition.' },
+        blocks: [
+          { type: 'cards', eyebrow: 'Inside the catalogue', title: 'Ten categories, 6,000+ lines.', min: '210px', tight: true, items: [
+            { title: 'Rice & grains', desc: 'Basmati, sella, long grain.' }, { title: 'Spices & seasonings', desc: 'Whole, ground and blends.' },
+            { title: 'Lentils & pulses', desc: 'Dals, beans and chickpeas.' }, { title: 'Flour & atta', desc: 'Chapati, gram and rice flour.' },
+            { title: 'Oils & ghee', desc: 'Cooking oils and ghee.' }, { title: 'Dried fruit & nuts', desc: 'Cashews, almonds, sultanas.' },
+            { title: 'Tinned & jarred', desc: 'Pastes, pickles, tinned veg.' }, { title: 'Frozen', desc: 'Fish, veg, breads, snacks.' },
+            { title: 'Snacks & drinks', desc: 'Namkeen, sweets and drinks.' }, { title: 'Non-food & packaging', desc: 'Cleaning, housewares, packaging.' } ] },
+          { type: 'form', formTitle: 'Where should we send it?', formIntro: 'We\u2019ll send the latest edition to you.', submit: 'Request catalogue', doneTitle: 'Catalogue on its way.', doneText: 'Thanks. We\u2019ll send the latest catalogue to the details you provided.', tint: true,
+            fields: [
+              { label: 'Name', req: true }, { label: 'Business name', req: true },
+              { label: 'Email', type: 'email', req: true }, { label: 'Phone', type: 'tel' },
+              { label: 'Sector', type: 'select', req: true, options: ['Food Service', 'Manufacturing', 'Retail', 'Wholesale', 'Other'] },
+              { label: 'Format', type: 'select', req: true, options: ['Digital (PDF)', 'Printed copy'] },
+              { label: 'Postal address (printed copies)', type: 'textarea', full: true } ],
+            aside: { eyebrow: 'Existing customers', title: 'Already trading with us?', points: ['Your account manager can send category price lists', 'Ask about new lines and seasonal offers'] } }
+        ] },
+
+      delivery: { section: 'Trade', crumb: 'Delivery & Logistics',
+        hero: { eyebrow: 'Trade · Delivery & Logistics', title: 'Delivered from our Birmingham hub.', intro: 'We deliver ambient, chilled and frozen stock to trade customers across the UK and supply customers in Europe, all from our site in Sparkbrook.', img: 'delivery-hero', imgLabel: 'Delivery vehicle photo' },
+        blocks: [
+          { type: 'rows', eyebrow: 'Coverage', title: 'How delivery works.', items: [
+            { title: 'UK-wide delivery', desc: 'Regular routes from Birmingham to customers across the UK. Your account manager confirms your delivery days.' },
+            { title: 'Europe', desc: 'We supply customers across Europe. Contact us to discuss volumes, documentation and lead times.' },
+            { title: 'Temperature control', desc: 'Ambient, chilled and frozen goods are stored and transported at the right temperature.' },
+            { title: 'Collection', desc: 'Prefer to collect? Orders can be picked up from our Birmingham site by arrangement.' } ] },
+          { type: 'split', eyebrow: 'Ordering', title: 'Order the way that suits you.', body: ['Place orders with your account manager by phone or email. We confirm stock and delivery before your order ships.'], points: ['Order by phone', 'Order by email', 'Full & mixed pallets', 'Case quantities'], img: 'delivery-order', imgLabel: 'Warehouse picking photo', flip: true, tint: true },
+          { type: 'faq', eyebrow: 'Delivery questions', title: 'Good to know.', groups: [{ title: 'Delivery', items: [
+            { q: 'Is there a minimum order?', a: 'Minimum order values depend on your location and account. Your account manager will confirm yours when your account is opened.' },
+            { q: 'Which days do you deliver?', a: 'Delivery days depend on your route. We\u2019ll agree a regular schedule with you.' },
+            { q: 'What if something is missing or damaged?', a: 'Check your delivery on arrival and tell us about any shortages or damage as soon as possible so we can put it right.' } ] }] },
+          cta()
+        ] },
+
+      terms: { section: 'Trade', crumb: 'Terms & Conditions',
+        hero: { eyebrow: 'Trade · Terms & Conditions', title: 'Trade terms and conditions.', intro: 'The terms that apply to trade accounts and orders placed with Indus Foods Ltd.' },
+        blocks: [
+          { type: 'prose', tight: true, note: 'Layout draft: these summaries are placeholders. Replace them with Indus Foods\u2019 approved trade terms before launch.', sections: [
+            { h: 'Trade accounts', p: 'Trade accounts are available to registered businesses. We may request company details or references before an account is opened.' },
+            { h: 'Orders', p: 'Orders are accepted subject to stock availability. Where possible we confirm substitutions or shortages before delivery.' },
+            { h: 'Pricing', p: 'Prices are quoted exclusive of VAT and may change in line with market conditions. Your account manager will tell you about price changes.' },
+            { h: 'Delivery', p: 'Delivery days and minimum order values are agreed when your account is opened.' },
+            { h: 'Shortages, damage & returns', p: 'Please check deliveries on arrival and report any shortages or damage promptly. Returns are accepted by agreement.' },
+            { h: 'Payment', p: 'Payment terms are set out in your account agreement.' },
+            { h: 'Contact', p: 'Questions about these terms can be sent to info@indusfoodsltd.com.' } ] }
+        ] },
+
+      blog: { section: 'Blog', crumb: 'Blog',
+        hero: { eyebrow: 'Blog', title: 'News and insight from the trade.', intro: 'Product news, seasonal ordering guides and stories from over 60 years in Indian food wholesale.' },
+        blocks: [
+          { type: 'posts', tight: true, cats: ['All', 'Company news', 'Products', 'Seasonal', 'Industry'], posts: [
+            { title: 'Supporting the trade through Ramadan', cat: 'Seasonal', date: 'Feb 2026', excerpt: 'How we plan stock across rice, flour, oils and spices for one of the busiest times of the trading year.', img: 'post-1' },
+            { title: 'Falak rice: exclusive UK distribution', cat: 'Products', date: 'Jan 2026', excerpt: 'Why the popular Pakistani rice brand chose Indus Foods as its UK distribution partner.', img: 'post-2' },
+            { title: 'Inside our Birmingham packing line', cat: 'Company news', date: 'Dec 2025', excerpt: 'The processing and packaging line we set up in the 1970s still packs our own-brand ranges today.', img: 'post-3' },
+            { title: 'Sixty years in the Balti Triangle', cat: 'Company news', date: 'Nov 2025', excerpt: 'From a halal butcher on Ladypool Road to a national wholesaler: a short history of Indus Foods.', img: 'post-4' },
+            { title: 'Ordering ahead for Eid', cat: 'Seasonal', date: 'Oct 2025', excerpt: 'Lead times and best-selling lines to stock before the Eid rush.', img: 'post-5' },
+            { title: 'Why independents still matter', cat: 'Industry', date: 'Sep 2025', excerpt: 'Small caterers and shops remain at the heart of the ethnic food trade. Here\u2019s how we support them.', img: 'post-6' } ] },
+          cta()
+        ] },
+
+      contact: { section: 'More', crumb: 'Contact Us',
+        hero: { eyebrow: 'Contact', title: 'Talk to our team.', intro: 'Whether you\u2019re a current customer or looking for a new supplier, we\u2019ll put you in touch with the right person.' },
+        blocks: [
+          { type: 'contact', tight: true },
+          { type: 'form', formTitle: 'Send us a message', formIntro: 'We\u2019ll route your message to the right team.', submit: 'Send message', doneTitle: 'Message sent.', doneText: 'Thanks for getting in touch. A member of our team will reply soon.', tint: true,
+            fields: [
+              { label: 'Name', req: true }, { label: 'Business name' },
+              { label: 'Email', type: 'email', req: true }, { label: 'Phone', type: 'tel' },
+              { label: 'Enquiry type', type: 'select', req: true, full: true, options: ['New trade account', 'Existing order', 'Product enquiry', 'White label', 'Careers', 'Other'] },
+              { label: 'Message', type: 'textarea', req: true, full: true } ],
+            aside: { eyebrow: 'Quick links', title: 'Looking for something specific?', points: ['Opening an account? Apply online under Trade', 'Need a spec sheet? Our team can help', 'Check our FAQs for quick answers'] } }
+        ] },
+
+      faqs: { section: 'More', crumb: 'FAQs',
+        hero: { eyebrow: 'Help · FAQs', title: 'Frequently asked questions.', intro: 'Quick answers about trade accounts, ordering, delivery and our products. Can\u2019t find what you need? Contact the team.' },
+        blocks: [
+          { type: 'faq', tight: true, groups: [
+            { title: 'Trade accounts', items: [
+              { q: 'Who can open a trade account?', a: 'Any registered business buying for foodservice, manufacturing, retail or wholesale. Apply online and our team will review your details.' },
+              { q: 'How do I see prices?', a: 'Once your account is open, your account manager will share pricing for the ranges you buy.' },
+              { q: 'Can I use my own branding?', a: 'Yes. We offer custom packaging and white label options for retail and food service customers.' } ] },
+            { title: 'Ordering & delivery', items: [
+              { q: 'Where do you deliver?', a: 'We deliver across the UK from our Birmingham hub and supply customers in Europe.' },
+              { q: 'Is there a minimum order?', a: 'Minimum order values depend on your location and account. We\u2019ll confirm yours when your account is opened.' },
+              { q: 'Can I collect my order?', a: 'Yes. Collection from our Birmingham site can be arranged with your account manager.' } ] },
+            { title: 'Products & quality', items: [
+              { q: 'How many products do you stock?', a: 'Over 6,000 lines across ambient, chilled and frozen.' },
+              { q: 'Are you BRC and Halal certified?', a: 'Yes. Contact us for copies of our current certificates.' },
+              { q: 'What are your own brands?', a: 'Sanam (spices, lentils, rice, dried fruit and nuts) and Shaan (tinned, frozen, and bulk rice, nuts and fruit).' } ] } ] },
+          cta({ eyebrowText: 'Still stuck?', title: 'Talk to a real person.', body: 'Our team is based in Birmingham and happy to help.', primary: { label: 'Contact us', href: '#/contact' } })
+        ] }
+    };
+    Object.keys(this._pages).forEach((k) => {
+      const p = this._pages[k];
+      if (p.sector && p.hero) p.hero.eyebrow = 'Sectors · ' + this.sectors.find(s => s.key === p.sector).num;
+    });
+    return this._pages;
+  }
+
+  seeded(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return () => { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  glyph(kind) {
+    const c = React.createElement;
+    const P = (d, k) => c('path', { key: k, d });
+    const E = (cx, cy, rx, ry, rot, k) => c('ellipse', { key: k, cx, cy, rx, ry, transform: 'rotate(' + rot + ' ' + cx + ' ' + cy + ')' });
+    const C = (cx, cy, r, k, fill) => c('circle', { key: k, cx, cy, r, fill: fill ? 'currentColor' : 'none' });
+    const g = {
+      chilli: [P('M9 39c9-1 21-8 27-22 1-3 4-4 5-1-1 13-13 24-29 27-3 .5-5-3-3-4z', 1), P('M37 15c0-4 2-7 6-8', 2), P('M34 18c2-.5 5 .5 6 3', 3)],
+      anise: [...Array.from({ length: 8 }, (_, i) => { const a = i * 45, r = a * Math.PI / 180; return E(24 + 11 * Math.cos(r), 24 + 11 * Math.sin(r), 8.5, 4, a, 'p' + i); }), C(24, 24, 2.6, 'c')],
+      cardamom: [P('M24 6c8 6 10 26 0 36-10-10-8-30 0-36z', 1), P('M24 9v30', 2), P('M19 17c3 1 7 1 10 0', 3), P('M18 25c4 1 8 1 12 0', 4), P('M19.5 33c3 1 6 1 9 0', 5)],
+      leaf: [P('M7 41C10 22 24 9 42 6c-2 18-15 32-35 35z', 1), P('M7 41 34 14', 2), P('M16 32l-1-7M16 32l7 1M23 25l-1-7M23 25l7 1', 3)],
+      cinnamon: [P('M8 31 33 9a5 5 0 0 1 7 7L15 38a5 5 0 0 1-7-7z', 1), P('M12 34 36 12', 2), P('M36 9.5c2 1 3 3 3 5', 3)],
+      garlic: [P('M24 8c-1 6-12 10-12 21 0 8 6 12 12 12s12-4 12-12C36 18 25 14 24 8z', 1), P('M24 8V4', 2), P('M20 20c-2 5-2 13 1 20M28 20c2 5 2 13-1 20', 3)],
+      cashew: [P('M15 10C6 18 7 35 21 40c10 3 19-4 15-10-3-4-10 0-14-4-4-4 0-12-3-15-1-1-3-1-4-1z', 1), P('M18 17c-3 5-3 12 1 16', 2)],
+      almond: [P('M24 5c11 10 13 25 0 38C11 30 13 15 24 5z', 1), P('M24 12c4 8 4 17 0 25', 2)],
+      rice: [E(15, 22, 3, 8.5, -25, 1), E(26, 17, 3, 8.5, 18, 2), E(31, 32, 3, 8.5, -62, 3), E(18, 36, 3, 8, 40, 4)],
+      lentils: [C(16, 19, 5.5, 1), C(29, 16, 5.5, 2), C(23, 30, 5.5, 3), C(35, 30, 5, 4), P('M13 19h6M26 16h6M20 30h6', 5)],
+      pepper: [C(17, 20, 4.5, 1), C(30, 22, 4.5, 2), C(23, 32, 4.5, 3), C(17, 20, 1, 4, true), C(30, 22, 1, 5, true), C(23, 32, 1, 6, true)],
+      clove: [P('M24 44V20', 1), C(24, 14, 5, 2), P('M19.5 10.5 15 6M28.5 10.5 33 6M24 9V3', 3), P('M21 26l3 3 3-3', 4)],
+      onion: [P('M24 11c-10 4-16 12-14 21 2 8 8 11 14 11s12-3 14-11c2-9-4-17-14-21z', 1), P('M24 11c-2-3-1-6 1-8', 2), P('M24 11c-5 7-6 22 0 32M24 11c5 7 6 22 0 32', 3)],
+      samosa: [P('M24 7 41 38H7z', 1), P('M11 33h26', 2), P('M14 36.5l1.5-3M19 36.5l1.5-3M24 36.5l1.5-3M29 36.5l1.5-3M34 36.5l1.5-3', 3), P('M24 15v10', 4)]
+    };
+    return c('svg', { viewBox: '0 0 48 48', width: '100%', height: '100%', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round', style: { display: 'block' } }, g[kind] || g.chilli);
+  }
+  buildFood(pageKey, density, motion, mobile) {
+    const sig = [pageKey, density, motion, mobile].join('|');
+    if (this._foodSig === sig) return this._foodItems;
+    const rnd = this.seeded(pageKey + density);
+    const kinds = ['chilli', 'anise', 'cardamom', 'leaf', 'cinnamon', 'garlic', 'cashew', 'almond', 'rice', 'lentils', 'pepper', 'clove', 'onion', 'samosa'];
+    for (let i = kinds.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [kinds[i], kinds[j]] = [kinds[j], kinds[i]]; }
+    let n = density === 'Rich' ? 30 : density === 'Light' ? 16 : 0;
+    if (mobile) n = Math.round(n * 0.55);
+    const items = [];
+    for (let i = 0; i < n; i++) {
+      const gold = rnd() < 0.45;
+      const edge = rnd() < 0.62;
+      const x = edge ? (rnd() < 0.5 ? rnd() * 16 : 84 + rnd() * 16) : 16 + rnd() * 68;
+      items.push({
+        kind: kinds[i % kinds.length], x,
+        fy: (i + rnd() * 0.8) / n,
+        size: Math.round((mobile ? 30 : 38) + rnd() * (mobile ? 18 : 36)),
+        rot: Math.round(rnd() * 360),
+        depth: motion === 'Fixed' ? 0 : motion === 'Scroll with page' ? 1 : +(0.18 + rnd() * 0.5).toFixed(2),
+        color: gold ? '#B89F22' : '#0A7EA8',
+        op: gold ? (edge ? 0.55 : 0.32) : (edge ? 0.3 : 0.16)
+      });
+    }
+    this._foodSig = sig; this._foodItems = items;
+    return items;
+  }
+
+  arrow() {
+    const c = React.createElement, s = { stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', fill: 'none' };
+    return c('svg', { width: 15, height: 15, viewBox: '0 0 16 16', style: { display: 'block' } },
+      c('line', { x1: 3, y1: 8, x2: 12, y2: 8, ...s }), c('polyline', { points: '8.5,4.5 12,8 8.5,11.5', ...s }));
+  }
+  caret() {
+    const c = React.createElement;
+    return c('svg', { width: 11, height: 11, viewBox: '0 0 16 16', style: { display: 'block' } },
+      c('polyline', { points: '4,6 8,10 12,6', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', fill: 'none' }));
+  }
+  icon(name, size) {
+    const c = React.createElement, s = { stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round', fill: 'none' };
+    const z = size || 16;
+    const m = {
+      mail: [c('rect', { key: 1, x: 2.5, y: 4, width: 15, height: 12, rx: 2, ...s }), c('polyline', { key: 2, points: '3.5,5.5 10,10.5 16.5,5.5', ...s })],
+      phone: [c('path', { key: 1, d: 'M5 3h2.6l1.3 3.6-1.8 1.2a9 9 0 0 0 5 5l1.2-1.8 3.7 1.3V15a2 2 0 0 1-2 2A13.5 13.5 0 0 1 3 5a2 2 0 0 1 2-2z', ...s })],
+      pin: [c('path', { key: 1, d: 'M10 18s6-5.2 6-10a6 6 0 0 0-12 0c0 4.8 6 10 6 10z', ...s }), c('circle', { key: 2, cx: 10, cy: 8, r: 2.2, ...s })],
+      check: [c('polyline', { key: 1, points: '4,10.5 8.5,15 16,5.5', ...s, strokeWidth: 2.4 })],
+      plus: [c('line', { key: 1, x1: 10, y1: 5, x2: 10, y2: 15, ...s }), c('line', { key: 2, x1: 5, y1: 10, x2: 15, y2: 10, ...s })]
+    };
+    return c('svg', { width: z, height: z, viewBox: '0 0 20 20', style: { display: 'block' } }, m[name]);
+  }
+
+  renderVals() {
+    const w = this.state.w;
+    const bp = w < 768 ? 'm' : w < 1024 ? 't' : 'd';
+    const m = bp === 'm', t = bp === 't', d = bp === 'd';
+    const R = {
+      px: m ? '20px' : t ? '32px' : '40px',
+      headH: d ? '84px' : '72px',
+      navPad: w < 1200 ? '10px' : '15px',
+      secPad: m ? '64px' : t ? '88px' : '108px',
+      secPadTight: m ? '40px' : t ? '52px' : '64px',
+      headGap: m ? '32px' : '48px',
+      heroCols: d ? 'minmax(0,1.05fr) minmax(0,.95fr)' : 'minmax(0,1fr)',
+      heroPadT: m ? '44px' : t ? '64px' : '80px', heroPadB: m ? '64px' : '96px',
+      heroRatio: d ? '4 / 4.6' : t ? '16 / 10' : '4 / 3.4',
+      badgeLeft: d ? '-28px' : '14px', sealRight: d ? '-18px' : '12px',
+      ihPadT: m ? '32px' : '44px', ihPadB: m ? '52px' : t ? '72px' : '88px', crumbGap: m ? '28px' : '40px',
+      splitCols: m ? 'minmax(0,1fr)' : 'minmax(0,1fr) minmax(0,1fr)',
+      splitGap: m ? '36px' : t ? '44px' : '72px',
+      pointCols: m ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))',
+      rowsCols: d ? 'minmax(0,.85fr) minmax(0,1.15fr)' : 'minmax(0,1fr)',
+      sticky: d ? 'sticky' : 'static',
+      sectorMinH: m ? '360px' : '440px',
+      sectorCols: d ? 'repeat(4,minmax(0,1fr))' : t ? 'repeat(2,minmax(0,1fr))' : 'minmax(0,1fr)',
+      statCols: d ? 'repeat(4,minmax(0,1fr))' : 'repeat(2,minmax(0,1fr))',
+      tlCols: m ? 'minmax(0,1fr)' : '170px minmax(0,1fr)', tlGap: m ? '12px' : '40px',
+      ctaCols: d ? 'minmax(0,1.4fr) minmax(0,1fr)' : 'minmax(0,1fr)', ctaPad: m ? '40px 24px' : t ? '52px 44px' : '68px 64px', ctaJustify: d ? 'flex-end' : 'flex-start',
+      formLayout: d ? 'minmax(0,1.5fr) minmax(0,.8fr)' : 'minmax(0,1fr)', formCols: m ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))', formPad: m ? '24px' : '40px',
+      faqGap: m ? '40px' : '64px',
+      footPad: m ? '56px' : '80px',
+      footCols: d ? 'minmax(0,1.6fr) repeat(4,minmax(0,1fr))' : t ? 'repeat(4,minmax(0,1fr))' : 'repeat(2,minmax(0,1fr))',
+      footBrandSpan: d ? 'auto' : '1 / -1',
+      logoMin: m ? '140px' : '170px',
+      drawerW: t ? '440px' : '100%',
+      drawerCardCols: 'minmax(0,1fr)'
+    };
+
+    const sectorsStyle = this.props.sectorsStyle ?? 'Cards';
+    const density = this.props.foodScatter ?? 'Rich';
+    const motion = this.props.foodMotion ?? 'Parallax';
+
+    const pages = this.pages;
+    const pageKey = pages[this.state.page] ? this.state.page : 'home';
+    const page = pages[pageKey];
+    const S = this.sectors;
+    const menus = this._menus;
+    const active = this.state.active;
+    const isCompact = !d;
+
+    const items = menus.map((mn, i) => {
+      const isActive = active === i;
+      const accOpen = this.state.acc === i;
+      const current = mn.section === page.section;
+      return {
+        label: mn.label, hasPanel: !!mn.kind, current,
+        isSimple: mn.kind === 'simple', isCards: mn.kind === 'cards', isBrands: mn.kind === 'brands',
+        mobileLinks: mn.kind === 'simple' ? mn.links.map((l, idx) => ({ ...l, num: String(idx + 1).padStart(2, '0') })) : [],
+        hasMobileFeature: mn.kind === 'simple' && !!mn.feature, mobileFeature: mn.feature || null,
+        mobileCards: mn.kind === 'cards' ? mn.cards : [], mobileLogos: mn.kind === 'brands' ? mn.logos.slice(0, 9) : [],
+        ownDesc: mn.ownDesc, ownCta: mn.cta,
+        caret: isActive ? 180 : 0,
+        activeBg: isActive ? 'rgba(10,126,168,.12)' : 'transparent',
+        activeColor: isActive || current ? '#0A7EA8' : '#1E2A3C',
+        accOpen, accCaret: accOpen ? 180 : 0,
+        mobColor: accOpen || current ? '#D8CA50' : '#FFFFFF',
+        onClick: () => { this.go(mn.href); this.setState({ active: null }); },
+        onEnter: () => this.openItem(i),
+        onMove: (e) => this.magnet(e),
+        onLeaveLabel: (e) => this.resetLabel(e),
+        onAcc: () => this.toggleAcc(i)
+      };
+    });
+
+    let activePanel = null, kind = null;
+    if (active != null && menus[active].kind && d) {
+      const mn = menus[active]; kind = mn.kind;
+      if (kind === 'simple') activePanel = { width: mn.feature ? 620 : 320, links: mn.links.map((l, idx) => ({ ...l, num: String(idx + 1).padStart(2, '0') })), hasFeature: !!mn.feature, feature: mn.feature };
+      else if (kind === 'cards') activePanel = { width: 1080, cards: mn.cards };
+      else activePanel = { width: 1080, logos: mn.logos, ownDesc: mn.ownDesc, cta: mn.cta };
+    }
+
+    const sec = page.sector ? S.find(s => s.key === page.sector) : null;
+    const h = page.hero || {};
+    const hero = {
+      eyebrowText: h.eyebrow || '', title: h.title || '', intro: h.intro || '',
+      section: page.section === 'More' ? 'Support' : page.section, crumb: page.crumb,
+      hasImg: !!h.img, img: h.img, imgLabel: h.imgLabel,
+      isGrad: !!sec,
+      bg: sec ? sec.bg : 'linear-gradient(180deg,rgba(234,244,247,.95) 0%,rgba(234,244,247,.5) 70%,rgba(234,244,247,0) 100%)',
+      fg: sec ? sec.fg : '#1E2A3C', sub: sec ? sec.sub : '#4A5563',
+      eyebrow: sec ? sec.fg : '#0A7EA8', line: sec ? sec.line : '#D8CA50',
+      frame: sec ? 'rgba(255,255,255,.55)' : '#D8CA50', imgBg: sec ? 'rgba(255,255,255,.16)' : '#EAF4F7',
+      cols: h.img ? R.heroCols : 'minmax(0,1fr)',
+      hasCtas: !!(h.ctas && h.ctas.length),
+      ctas: (h.ctas || []).map((c) => {
+        const onGrad = !!sec;
+        if (c.primary) return { ...c, bg: onGrad ? (sec.fg === '#FFFFFF' ? '#D8CA50' : '#1E2A3C') : '#0A7EA8', fg: onGrad ? (sec.fg === '#FFFFFF' ? '#1E2A3C' : '#FFFFFF') : '#FFFFFF', border: 'transparent' };
+        return { ...c, bg: 'transparent', fg: onGrad ? sec.fg : '#1E2A3C', border: onGrad ? (sec.fg === '#FFFFFF' ? 'rgba(255,255,255,.7)' : 'rgba(30,42,60,.5)') : 'rgba(30,42,60,.2)' };
+      })
+    };
+
+    const pad2 = (i) => String(i + 1).padStart(2, '0');
+    const blocks = page.blocks.map((b, bi) => {
+      const key = pageKey + '-' + bi;
+      const v = {
+        ...b, key,
+        isStats: b.type === 'stats', isGradients: b.type === 'gradients', isSplit: b.type === 'split', isRows: b.type === 'rows',
+        isTimeline: b.type === 'timeline', isCards: b.type === 'cards', isLogos: b.type === 'logos', isQuotes: b.type === 'quotes',
+        isCta: b.type === 'cta', isForm: b.type === 'form', isFaq: b.type === 'faq', isPosts: b.type === 'posts', isProse: b.type === 'prose', isContact: b.type === 'contact',
+        hasHead: !!b.title && !['split', 'rows', 'cta'].includes(b.type),
+        hasEyebrow: !!b.eyebrow, hasIntro: !!b.intro, hasHeadLink: !!b.headLink,
+        bg: b.tint ? 'rgba(234,244,247,.62)' : 'transparent',
+        padT: b.tight ? R.secPadTight : R.secPad, padB: b.tight ? R.secPadTight : R.secPad
+      };
+      if (b.type === 'split') {
+        const flip = b.flip && !m;
+        Object.assign(v, { textOrder: flip ? 2 : 1, imgOrder: flip ? 1 : 2, ratio: b.ratio || '4 / 3.2', hasPoints: !!(b.points && b.points.length), hasLink: !!b.link, body: b.body || [], points: b.points || [] });
+      }
+      if (b.type === 'rows') v.items = b.items.map((r, i) => ({ ...r, num: pad2(i), hasMeta: !!r.meta }));
+      if (b.type === 'cards') Object.assign(v, { min: b.min || '250px', imgH: b.imgH || '170px', items: b.items.map((c, i) => ({ ...c, num: pad2(i), hasImg: !!c.img, hasTag: !!c.tag })) });
+      if (b.type === 'gradients') {
+        const list = b.exclude ? S.filter(s => s.key !== b.exclude) : S;
+        v.items = list.map((s) => ({ ...s, href: '#/' + s.key, cta: 'Explore ' + s.label }));
+        v.cols = b.exclude ? (d ? 'repeat(3,minmax(0,1fr))' : t ? 'repeat(3,minmax(0,1fr))' : 'minmax(0,1fr)') : R.sectorCols;
+      }
+      if (b.type === 'quotes') v.items = b.items.map((q, i) => {
+        const dark = i % 2 === 1;
+        return { ...q, bg: dark ? '#075E80' : '#FFFFFF', fg: dark ? '#FFFFFF' : '#1E2A3C', sub: dark ? '#DCEBF1' : '#5E6873', border: dark ? 'rgba(255,255,255,.18)' : 'rgba(30,42,60,.11)' };
+      });
+      if (b.type === 'form') {
+        const done = !!this.state.sent[key];
+        Object.assign(v, {
+          done, notDone: !done,
+          onSubmit: (e) => { e.preventDefault(); this.setState({ sent: { ...this.state.sent, [key]: true } }); },
+          reset: () => this.setState({ sent: { ...this.state.sent, [key]: false } }),
+          fields: b.fields.map((f) => {
+            const type = f.type || 'text';
+            return { ...f, type, req: !!f.req, ph: f.ph || '', span: f.full ? '1 / -1' : 'auto',
+              isInput: ['text', 'email', 'tel', 'number'].includes(type), isSelect: type === 'select', isArea: type === 'textarea', isFile: type === 'file',
+              options: type === 'select' ? [{ v: '', l: 'Please select' }, ...f.options.map((o) => ({ v: o, l: o }))] : [] };
+          })
+        });
+      }
+      if (b.type === 'faq') v.groups = b.groups.map((g, gi) => ({ ...g, num: pad2(gi), items: g.items.map((q, qi) => {
+        const k = key + '-' + gi + '-' + qi, open = !!this.state.faqOpen[k];
+        return { ...q, open, rot: open ? 45 : 0, color: open ? '#0A7EA8' : '#1E2A3C', ring: open ? '#0A7EA8' : 'rgba(30,42,60,.2)', ringBg: open ? 'rgba(10,126,168,.08)' : 'transparent',
+          toggle: () => this.setState({ faqOpen: { ...this.state.faqOpen, [k]: !open } }) };
+      }) }));
+      if (b.type === 'posts') {
+        const cat = this.state.blogCat;
+        v.chips = b.cats.map((c) => ({ label: c, bg: c === cat ? '#0A7EA8' : '#FFFFFF', fg: c === cat ? '#FFFFFF' : '#1E2A3C', border: c === cat ? '#0A7EA8' : 'rgba(30,42,60,.16)', onClick: () => this.setState({ blogCat: c }) }));
+        v.posts = b.posts.filter((p) => cat === 'All' || p.cat === cat);
+      }
+      if (b.type === 'prose') v.sections = b.sections.map((s, i) => ({ ...s, num: pad2(i) }));
+      if (b.type === 'contact') v.details = [
+        { label: 'Visit', value: '55\u201358 Stratford Street North', note: 'Sparkbrook, Birmingham B11 1BU', href: '#/contact', icon: this.icon('pin', 20) },
+        { label: 'Call', value: '0121 771 4330', note: 'Sales, orders and accounts', href: 'tel:01217714330', icon: this.icon('phone', 20) },
+        { label: 'Email', value: 'info@indusfoodsltd.com', note: 'We\u2019ll route your message to the right team', href: 'mailto:info@indusfoodsltd.com', icon: this.icon('mail', 20) } ];
+      return v;
+    });
+
+    const food = this.buildFood(pageKey, density, motion, m);
+    const c = React.createElement;
+    const foodLayer = c('div', { ref: this.setFoodEl, 'aria-hidden': true, style: { position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' } },
+      food.map((it, i) => c('span', { key: pageKey + density + motion + i, 'data-fy': it.fy, 'data-depth': it.depth, 'data-rot': it.rot,
+        style: { position: 'absolute', top: 0, left: it.x + '%', width: it.size, height: it.size, marginLeft: -it.size / 2, color: it.color, opacity: it.op, willChange: 'transform' } }, this.glyph(it.kind))));
+
+    const panelOpen = active != null && !!menus[active].kind && d;
+    const backdrop = panelOpen || (this.state.mobileOpen && t);
+
+    return {
+      R, items, hero, blocks, foodLayer,
+      isHome: pageKey === 'home', isInner: pageKey !== 'home',
+      isDesktop: d, isCompact, isTablet: t,
+      showUtility: !m, showHeaderCta: w >= 1180,
+      mobileVisible: isCompact && this.state.mobileOpen,
+      toggleMobile: this.toggleMobile,
+      open: panelOpen, activePanel,
+      isSimple: panelOpen && kind === 'simple',
+      isSectorsCards: panelOpen && kind === 'cards' && sectorsStyle === 'Cards',
+      isSectorsList: panelOpen && kind === 'cards' && sectorsStyle === 'List',
+      isBrands: panelOpen && kind === 'brands',
+      scheduleClose: this.scheduleClose, cancelClose: this.cancelClose, closeAll: this.closeAll, closeBackdrop: this.closeBackdrop,
+      setPanelEl: this.setPanelEl, setMobEl: this.setMobEl, setMainEl: this.setMainEl, setHeaderEl: this.setHeaderEl,
+      arrowIcon: this.arrow(), caretIcon: this.caret(),
+      mailIcon: this.icon('mail', 15), phoneIcon: this.icon('phone', 15), checkIcon: this.icon('check', 26), plusIcon: this.icon('plus', 16),
+      btnEnter: this.btnEnter, btnLeave: this.btnLeave,
+      backdropO: backdrop ? 1 : 0, backdropPE: backdrop ? 'auto' : 'none',
+      trustChips: ['BRC certified', 'Halal certified', 'Today\u2019s Group member'],
+      footerGroups: [
+        { title: 'About', links: menus[1].links },
+        { title: 'Sectors', links: S.map((s) => ({ label: s.label, href: '#/' + s.key })) },
+        { title: 'Trade', links: menus[4].links },
+        { title: 'Company', links: [{ label: 'Brands', href: '#/brands' }, { label: 'Blog', href: '#/blog' }, { label: 'Contact Us', href: '#/contact' }, { label: 'FAQs', href: '#/faqs' }] }
+      ],
+      accreds: [{ id: 'acc-brc', name: 'BRC' }, { id: 'acc-halal', name: 'Halal' }, { id: 'acc-todays', name: 'Today\u2019s Group' }, { id: 'acc-fwd', name: 'FWD' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

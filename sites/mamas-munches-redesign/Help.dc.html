@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Help &amp; FAQs · Mama's Munches</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="store.js"></script>
+<style>body{margin:0;background:#FBF3DC;color:#3A2A22;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#3A2A22}button,input{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:3px solid #3A2A22;outline-offset:3px}@keyframes mmMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}</style>
+</helmet>
+<div data-screen-label="Help" style="background:#FBF3DC;min-height:100vh">
+<dc-import name="SiteHeader" current="help" hint-size="100%,96px" style="position:sticky;top:-32px;z-index:50;display:block"></dc-import>
+<main>
+<section style="background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }}">
+  <div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:14px;align-items:{{ L.align }};text-align:{{ L.talign }}">
+    <div style="font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1">ask us anything</div>
+    <h1 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.025em">Help &amp; FAQs</h1>
+    <label style="width:100%;max-width:640px;position:relative;display:block;margin-top:6px">
+      <span style="position:absolute;left:20px;top:50%;transform:translateY(-50%)"><svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:#3A2A22;stroke-width:2.2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg></span>
+      <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Search, e.g. fenugreek, delivery, gift" aria-label="Search FAQs" style="width:100%;height:62px;border:2px solid #3A2A22;border-radius:999px;padding:0 20px 0 52px;font-size:17px;background:#FFFAF0;box-shadow:4px 4px 0 #3A2A22">
+    </label>
+  </div>
+  <div style="max-width:900px;margin:18px auto 0;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;justify-content:{{ L.chipJust }};padding:2px 2px 6px">
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="0"><button onClick="{{ c.pick }}" aria-pressed="{{ c.on }}" style="flex:none;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ c.bg }};font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:{{ c.shadow }};transform:{{ c.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)">{{ c.name }}</button></sc-for>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:12px">
+    <div style="font-size:15px;font-weight:700;margin-bottom:4px">{{ countText }}</div>
+    <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="0">
+      <div style="border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s">
+        <button onClick="{{ f.toggle }}" aria-expanded="{{ f.open }}" style="width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444">{{ f.cat }}</span><span style="font-family:'Young Serif',serif;font-size:19px">{{ f.q }}</span></span><span aria-hidden="true" style="flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)">+</span></button>
+        <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 20px 20px;font-size:16px;line-height:1.6;max-width:700px">{{ f.a }}</p></sc-if>
+      </div>
+    </sc-for>
+    <sc-if value="{{ none }}" hint-placeholder-val="{{ false }}"><div style="border:2px dashed #3A2A22;border-radius:22px;padding:24px;text-align:center;font-size:17px">No answers for that yet. <a href="Contact.dc.html" style="font-weight:700;color:#3A2A22">Ask Zainab</a></div></sc-if>
+  </div>
+</section>
+
+<section id="delivery" style="padding:{{ L.secPadTop0 }};scroll-margin-top:80px">
+  <div style="max-width:900px;margin:0 auto;background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.boxPad }}">
+    <div style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">getting it to you</div>
+    <h2 style="margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Delivery</h2>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6">Every order is baked fresh when it comes in, then posted with Royal Mail Tracked. Most orders are with you in 3–5 days.</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:12px;padding:14px 16px;border:2px solid #3A2A22;border-radius:16px;background:#FCEBBE"><span><b>Royal Mail Tracked 48</b><br><span style="font-size:14px">2–3 days after baking</span></span><b style="text-align:right">£3.95<br><span style="font-size:13px;font-weight:600">Free over £35</span></b></div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:12px;padding:14px 16px;border:2px solid #3A2A22;border-radius:16px;background:#FFFAF0"><span><b>Royal Mail Tracked 24</b><br><span style="font-size:14px">The day after baking</span></span><b>£5.45</b></div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:12px;padding:14px 16px;border:2px solid #3A2A22;border-radius:16px;background:#FFFAF0"><span><b>Taster Trio &amp; gift cards</b><br><span style="font-size:14px">Letterbox-sized</span></span><b>Included</b></div>
+    </div>
+    <div style="font-size:13px;margin-top:12px;color:#5E4A3D">Prices and timings to be confirmed by Zainab.</div>
+  </div>
+</section>
+
+<section id="allergens" style="padding:{{ L.secPadTop0 }};scroll-margin-top:80px">
+  <div style="max-width:900px;margin:0 auto;background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.boxPad }};box-shadow:8px 8px 0 #3A2A22">
+    <div style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">please read carefully</div>
+    <h2 style="margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Ingredients &amp; allergens</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700">Oats (gluten)</span><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700">Eggs</span><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700">Milk</span><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700">Fenugreek (legume)</span></div>
+    <p style="margin:0 0 10px;font-size:16px;line-height:1.6">Fenugreek may cross-react with peanut and soy allergies in sensitive people. Made in a kitchen that also handles tree nuts, so not suitable for anyone with a tree nut allergy.</p>
+    <p style="margin:0;font-size:16px;line-height:1.6"><b>Vegan base:</b> no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page.</p>
+  </div>
+</section>
+
+<section id="legal" style="padding:{{ L.secPadTop0 }};scroll-margin-top:80px">
+  <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:{{ L.two }};gap:16px">
+    <div style="border:2px dashed #3A2A22;border-radius:22px;padding:20px"><b style="font-family:'Young Serif',serif;font-weight:400;font-size:20px">Privacy policy</b><p style="margin:6px 0 0;font-size:15px;line-height:1.55">Policy text to be supplied.</p></div>
+    <div style="border:2px dashed #3A2A22;border-radius:22px;padding:20px"><b style="font-family:'Young Serif',serif;font-weight:400;font-size:20px">Terms &amp; conditions</b><p style="margin:6px 0 0;font-size:15px;line-height:1.55">Terms text to be supplied.</p></div>
+  </div>
+  <a href="Contact.dc.html" style="max-width:900px;margin:24px auto 0;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:#FCEBBE;border:2px solid #3A2A22;border-radius:26px;padding:22px 24px;text-decoration:none;color:#3A2A22;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22">
+    <span><span style="font-family:'Caveat',cursive;font-size:26px;color:#7A5A12;display:block;line-height:1">still stuck?</span><span style="font-family:'Young Serif',serif;font-size:24px">Message Zainab</span></span>
+    <span aria-hidden="true" style="width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:20px">→</span>
+  </a>
+</section>
+</main>
+<dc-import name="SiteFooter" hint-size="100%,1100px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { bp: this.bpOf(), q: '', cat: 'all', open: 0 };
+  bpOf() { const w = window.innerWidth; return w < 768 ? 'm' : w < 1024 ? 't' : 'd'; }
+  componentDidMount() {
+    this.onR = () => { const b = this.bpOf(); if (b !== this.state.bp) this.setState({ bp: b }); };
+    window.addEventListener('resize', this.onR);
+    if (location.hash) setTimeout(() => { const el = document.querySelector(location.hash); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 80 }); }, 400);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); }
+  renderVals() {
+    const S = this.state, m = S.bp === 'm', t = S.bp === 't';
+    const v = (a, b, c) => (m ? a : t ? b : c);
+    const pill = on => ({ on, bg: on ? '#F9CF6E' : '#FFFAF0', shadow: on ? '3px 3px 0 #3A2A22' : '0 0 0 #3A2A22', tf: on ? 'translate(-2px,-2px)' : 'none' });
+    const C = { order: 'Ordering & delivery', ing: 'Ingredients & allergens', feed: 'Breastfeeding', gift: 'Gifting', sub: 'Subscriptions' };
+    const all = [
+      ['order', 'When will my order arrive?', 'Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days.'],
+      ['order', 'Do you deliver across the UK?', 'Yes, anywhere in the UK. Delivery is free on orders over £35.'],
+      ['order', 'Can I choose my own flavours?', 'Yes. Build your box with a base, your chips and up to three of Zainab’s 11 flavours, and we split the box evenly between them.'],
+      ['ing', 'What allergens do they contain?', 'Oats (gluten), eggs, milk and fenugreek, a legume that may cross-react with peanut or soy allergies. Made in a kitchen that also handles tree nuts. The vegan base has no eggs or dairy.'],
+      ['ing', 'Do you use preservatives?', 'No. Everything is made with natural, wholesome ingredients and baked to order.'],
+      ['feed', 'Are they OK to eat while breastfeeding?', 'They’re made from everyday food ingredients. Fenugreek isn’t right for everyone, so if you or your baby are sensitive to it, or you have a health condition, check with your midwife or GP first.'],
+      ['feed', 'Will they increase my milk supply?', 'We make nourishing food, not medicine, so we can’t promise that. If you’re worried about your supply, your midwife, health visitor or a lactation consultant (IBCLC) is the right person to talk to.'],
+      ['gift', 'Can I send them straight to a new mum?', 'Yes. Choose “It’s a gift” at checkout, add her address and your note, and we’ll leave the prices off the packing slip.'],
+      ['gift', 'How do the baby shower gift cards work?', 'You get a printed card in an envelope to give at the shower. She redeems it online once baby arrives and builds her own box, so every cookie is fresh.'],
+      ['gift', 'Can you do bulk orders for events?', 'Yes, for baby showers, markets and events. Tell us numbers and dates through the contact page.'],
+      ['sub', 'How does Subscribe & save work?', 'Build your box and choose every 2 or 4 weeks. You get 10% off every box, free delivery on 20 and 40 packs and a guaranteed slot in every bake.'],
+      ['sub', 'Can I pause or cancel?', 'Any time, online. You can also skip a box or swap flavours before it’s baked.']
+    ];
+    const q = S.q.trim().toLowerCase();
+    const list = all.filter(([c, qq, a]) => (S.cat === 'all' || c === S.cat) && (!q || (qq + ' ' + a).toLowerCase().includes(q)));
+    return {
+      L: { heroPad: v('32px 20px 22px', '48px 32px 26px', '64px 40px 30px'), align: v('flex-start', 'center', 'center'), talign: v('left', 'center', 'center'), chipJust: v('flex-start', 'center', 'center'), h1: v('46px', '58px', '76px'), secPad: v('32px 20px 48px', '44px 32px 56px', '56px 40px 64px'), secPadTop0: v('0 20px 48px', '0 32px 56px', '0 40px 64px'), boxPad: v('22px 18px', '30px', '36px 40px'), h2: v('30px', '36px', '42px'), two: v('1fr', '1fr 1fr', '1fr 1fr') },
+      q: S.q, onQ: e => this.setState({ q: e.target.value, open: -1 }),
+      cats: [['all', 'All'], ...Object.entries(C)].map(([id, name]) => ({ name, ...pill(S.cat === id), pick: () => this.setState({ cat: id, open: -1 }) })),
+      countText: list.length + (list.length === 1 ? ' answer' : ' answers'),
+      none: list.length === 0,
+      faqs: list.map(([c, qq, a], i) => { const open = S.open === i; return { cat: C[c], q: qq, a, open, rot: open ? '45deg' : '0deg', bg: open ? '#FCEBBE' : '#FFFAF0', shadow: open ? '4px 4px 0 #3A2A22' : '0 0 0 #3A2A22', toggle: () => this.setState({ open: open ? -1 : i }) }; })
+    };
+  }
+}
+</script>
+</body>
+</html>

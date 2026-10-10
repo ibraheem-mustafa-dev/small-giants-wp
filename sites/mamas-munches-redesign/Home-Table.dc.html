@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Mama's Munches · Handmade lactation cookies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<script src="store.js"></script>
+<style>body{margin:0;background:#FBF3DC;color:#3A2A22;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#3A2A22}button,input,select,textarea{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:2px solid #3A2A22;outline-offset:3px}</style>
+</helmet>
+<div data-screen-label="Home 1a Kitchen table" style="background:#FBF3DC;min-height:100vh">
+<dc-import name="SiteHeader" current="home" hint-size="100%,96px" style="position:sticky;top:-32px;z-index:50;display:block"></dc-import>
+<main>
+
+<section style="padding:{{ L.heroPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.heroCols }};gap:{{ L.heroGap }};align-items:center">
+    <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+      <a href="#reviews" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:#FFFAF0;border:1px solid #EADBC0;font-size:14px;font-weight:700;color:#3A2A22;text-decoration:none"><span style="color:#D9981C;letter-spacing:1px">★★★★★</span><span>4.3 on Trustpilot · 8 reviews</span></a>
+      <h1 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1.04;letter-spacing:-0.015em;text-wrap:balance">Made for the mum who needs it most</h1>
+      <p style="margin:0;font-size:{{ L.lead }};line-height:1.5;color:#5E4A3D;max-width:520px;text-wrap:pretty">Handmade lactation cookies with oats, brewer’s yeast, flaxseed and fenugreek. Baked to order in Birmingham and posted the same day.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:440px">
+        <a href="Shop.dc.html" style="height:56px;border-radius:999px;background:#EE8088;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;text-decoration:none;padding:0 18px" style-hover="background:#3A2A22;color:#FFFAF0">Shop Zookies</a>
+        <a href="Gifts.dc.html" style="height:56px;border-radius:999px;border:1.5px solid #3A2A22;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;text-decoration:none;padding:0 18px" style-hover="background:#3A2A22;color:#FFFAF0">Send a gift</a>
+      </div>
+      <a href="Product.dc.html?id=trial" style="font-size:16px;font-weight:700;color:#A8404F">New here? Try 3 for £5, postage included →</a>
+    </div>
+    <div style="position:relative;min-width:0">
+      <img src="assets/photo-hero-mug.jpg" alt="Mama's Munches cookies in a gift bag beside a mug of coffee and a plate of Zookies" style="width:100%;aspect-ratio:{{ L.heroRatio }};object-fit:cover;border-radius:28px">
+      <sc-if value="{{ notM }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;right:-12px;top:-24px;width:34%;background:#FFFAF0;padding:8px 8px 34px;border-radius:6px;box-shadow:0 16px 36px rgba(58,42,34,.22);transform:rotate(4deg)">
+          <img src="assets/photo-gift-heart.jpg" alt="A gift box of Zookies" style="width:100%;aspect-ratio:3 / 4;object-fit:cover;border-radius:3px">
+          <div style="position:absolute;left:0;right:0;bottom:4px;text-align:center;font-family:'Caveat',cursive;font-size:22px;color:#3A2A22">for a new mum</div>
+        </div>
+      </sc-if>
+      <div style="position:absolute;left:{{ L.ribbonL }};bottom:{{ L.ribbonB }};background:#F9CF6E;border-radius:16px;padding:12px 18px;outline:1.5px dashed rgba(58,42,34,.4);outline-offset:-6px;box-shadow:0 10px 26px rgba(58,42,34,.16)">
+        <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">Next bake</div>
+        <div style="font-family:'Young Serif',serif;font-size:21px;line-height:1.2">{{ bake.date }}</div>
+        <div style="font-size:14px">Order by {{ bake.orderBy }}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section aria-label="Why Mama's Munches" style="background:#FFFAF0;border-top:1.5px dashed #E6D4B4;border-bottom:1.5px dashed #E6D4B4;padding:{{ L.trustPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.trustCols }};gap:14px 20px">
+    <div style="display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700"><span style="flex:none;width:28px;height:28px;border-radius:999px;background:#F9D5D3;display:flex;align-items:center;justify-content:center;font-size:14px">✓</span>Baked to order, every week</div>
+    <div style="display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700"><span style="flex:none;width:28px;height:28px;border-radius:999px;background:#F9D5D3;display:flex;align-items:center;justify-content:center;font-size:14px">✓</span>Posted the same day</div>
+    <div style="display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700"><span style="flex:none;width:28px;height:28px;border-radius:999px;background:#F9D5D3;display:flex;align-items:center;justify-content:center;font-size:14px">✓</span>Registered food business</div>
+    <div style="display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700"><span style="flex:none;width:28px;height:28px;border-radius:999px;background:#F9D5D3;display:flex;align-items:center;justify-content:center;font-size:14px">✓</span>Handmade in Birmingham</div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto">
+    <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1;letter-spacing:-0.01em">Who are you shopping for?</h2>
+    <div style="display:grid;grid-template-columns:{{ L.split }};gap:16px;margin-top:24px">
+      <a href="Shop.dc.html" style="display:grid;grid-template-columns:{{ L.splitInner }};background:#F9D5D3;border-radius:24px;overflow:hidden;text-decoration:none;color:#3A2A22" style-hover="box-shadow:0 12px 30px rgba(58,42,34,.12)">
+        <img src="assets/photo-bags-pink.jpg" alt="Zookies in their bags" style="width:100%;height:100%;min-height:{{ L.splitImgH }};object-fit:cover">
+        <div style="padding:{{ L.splitPad }};display:flex;flex-direction:column;gap:8px;justify-content:center">
+          <span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8E3444">For me</span>
+          <span style="font-family:'Young Serif',serif;font-size:{{ L.h3 }};line-height:1.15">I’m feeding a little one</span>
+          <span style="font-size:16px;line-height:1.5;color:#4E3C31">Giant, filling cookies you can eat one-handed, day or night.</span>
+          <span style="font-weight:700;font-size:16px;margin-top:4px">Shop Zookies →</span>
+        </div>
+      </a>
+      <a href="Gifts.dc.html" style="display:grid;grid-template-columns:{{ L.splitInner }};background:#FCEBBE;border-radius:24px;overflow:hidden;text-decoration:none;color:#3A2A22" style-hover="box-shadow:0 12px 30px rgba(58,42,34,.12)">
+        <img src="assets/photo-gift-heart.jpg" alt="A gift box of Zookies with a heart" style="width:100%;height:100%;min-height:{{ L.splitImgH }};object-fit:cover">
+        <div style="padding:{{ L.splitPad }};display:flex;flex-direction:column;gap:8px;justify-content:center">
+          <span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7A5A12">For her</span>
+          <span style="font-family:'Young Serif',serif;font-size:{{ L.h3 }};line-height:1.15">I’m buying for a new mum</span>
+          <span style="font-size:16px;line-height:1.5;color:#4E3C31">Gift boxes, gift cards and a message she’ll keep.</span>
+          <span style="font-weight:700;font-size:16px;margin-top:4px">Shop gifts →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPadTop0 }}">
+  <div style="max-width:1240px;margin:0 auto">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
+      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1;letter-spacing:-0.01em">Start here</h2>
+      <a href="Shop.dc.html" style="font-weight:700;font-size:16px;color:#3A2A22;padding:10px 0;white-space:nowrap">Shop all →</a>
+    </div>
+    <div style="display:grid;grid-auto-flow:{{ L.flow }};grid-auto-columns:{{ L.autoCols }};grid-template-columns:{{ L.prodCols }};gap:16px;overflow-x:{{ L.ovx }};scroll-snap-type:x mandatory;scrollbar-width:none;margin:{{ L.bleedM }};padding:{{ L.bleedP }};scroll-padding:0 20px">
+      <sc-for list="{{ featured }}" as="p" hint-placeholder-count="0">
+        <div style="scroll-snap-align:start;min-width:0"><dc-import name="ProductCard" product="{{ p }}" size="md" hint-size="100%,460px"></dc-import></div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section style="background:#FFFAF0;padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto">
+    <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1;letter-spacing:-0.01em;max-width:640px;text-wrap:balance">Baked fresh every week, posted the same day</h2>
+    <div style="position:relative;display:grid;grid-template-columns:{{ L.stepCols }};gap:{{ L.stepGap }};margin-top:36px">
+      <sc-if value="{{ notM }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:28px;right:16%;top:27px;border-top:2px dashed #E3AFAF"></div></sc-if>
+      <div style="position:relative;display:flex;flex-direction:{{ L.stepDir }};gap:16px">
+        <span style="flex:none;width:56px;height:56px;border-radius:999px;background:#EE8088;display:flex;align-items:center;justify-content:center;font-family:'Young Serif',serif;font-size:24px">1</span>
+        <div><div style="font-family:'Young Serif',serif;font-size:22px;margin-bottom:6px">Order by Sunday, 8pm</div><p style="margin:0;font-size:16px;line-height:1.55;color:#5E4A3D">We only bake what’s been ordered, so nothing sits on a shelf.</p></div>
+      </div>
+      <div style="position:relative;display:flex;flex-direction:{{ L.stepDir }};gap:16px">
+        <span style="flex:none;width:56px;height:56px;border-radius:999px;background:#F9CF6E;display:flex;align-items:center;justify-content:center;font-family:'Young Serif',serif;font-size:24px">2</span>
+        <div><div style="font-family:'Young Serif',serif;font-size:22px;margin-bottom:6px">We bake on Monday</div><p style="margin:0;font-size:16px;line-height:1.55;color:#5E4A3D">Fresh from our Birmingham kitchen and posted the same day.</p></div>
+      </div>
+      <div style="position:relative;display:flex;flex-direction:{{ L.stepDir }};gap:16px">
+        <span style="flex:none;width:56px;height:56px;border-radius:999px;background:#E5B78C;display:flex;align-items:center;justify-content:center;font-family:'Young Serif',serif;font-size:24px">3</span>
+        <div><div style="font-family:'Young Serif',serif;font-size:22px;margin-bottom:6px">It arrives soft and fresh</div><p style="margin:0;font-size:16px;line-height:1.55;color:#5E4A3D">Royal Mail Tracked, free over £35. Ready for one-handed snacking at the 3am feed.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.ingCols }};gap:{{ L.heroGap }};align-items:center">
+    <img src="assets/photo-pair-love.jpg" alt="Two Zookies in a paper case with a Baked With Love tag" style="width:100%;aspect-ratio:{{ L.ingRatio }};object-fit:cover;border-radius:28px">
+    <div>
+      <h2 style="margin:0 0 12px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1;letter-spacing:-0.01em">What’s inside every Zookie</h2>
+      <p style="margin:0 0 24px;font-size:17px;line-height:1.55;color:#5E4A3D;max-width:540px">Four ingredients that have gone into postpartum food for generations, from Pakistan to West Africa.</p>
+      <div style="display:grid;grid-template-columns:{{ L.ingList }};gap:12px">
+        <div style="background:#FFFAF0;border:1px solid #EADBC0;border-radius:18px;padding:18px"><div style="font-size:13px;font-weight:700;color:#A8404F;margin-bottom:4px">01</div><div style="font-family:'Young Serif',serif;font-size:21px;margin-bottom:4px">Oats</div><div style="font-size:15px;line-height:1.5;color:#5E4A3D">Rich in iron. Used in postpartum foods across cultures for centuries.</div></div>
+        <div style="background:#FFFAF0;border:1px solid #EADBC0;border-radius:18px;padding:18px"><div style="font-size:13px;font-weight:700;color:#A8404F;margin-bottom:4px">02</div><div style="font-family:'Young Serif',serif;font-size:21px;margin-bottom:4px">Brewer’s yeast</div><div style="font-size:15px;line-height:1.5;color:#5E4A3D">B-vitamins and chromium. A traditional galactagogue used worldwide.</div></div>
+        <div style="background:#FFFAF0;border:1px solid #EADBC0;border-radius:18px;padding:18px"><div style="font-size:13px;font-weight:700;color:#A8404F;margin-bottom:4px">03</div><div style="font-family:'Young Serif',serif;font-size:21px;margin-bottom:4px">Flaxseed</div><div style="font-size:15px;line-height:1.5;color:#5E4A3D">Omega-3 fatty acids. Good for mum and baby.</div></div>
+        <div style="background:#FFFAF0;border:1px solid #EADBC0;border-radius:18px;padding:18px"><div style="font-size:13px;font-weight:700;color:#A8404F;margin-bottom:4px">04</div><div style="font-family:'Young Serif',serif;font-size:21px;margin-bottom:4px">Fenugreek</div><div style="font-size:15px;line-height:1.5;color:#5E4A3D">A traditional postpartum herb. If your baby has a sensitive tummy, ask your midwife first.</div></div>
+      </div>
+      <div style="margin-top:16px;border-radius:18px;border:1.5px dashed #D9B98E;padding:16px 18px;font-size:15px;line-height:1.55;color:#4E3C31">We make nourishing food, not medicine. If you’re worried about your supply, your midwife, health visitor or a lactation consultant (IBCLC) is the right person to talk to. <a href="Help.dc.html#allergens" style="font-weight:700">Ingredients &amp; allergens</a></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:#F9D5D3;padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.giftCols }};gap:{{ L.heroGap }};align-items:center">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8E3444">Gifts for new mums</span>
+      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1;letter-spacing:-0.01em">A gift she’ll actually use</h2>
+      <p style="margin:0;font-size:17px;line-height:1.55;color:#4E3C31;max-width:520px">For baby showers, new arrivals and the mums who deserve a treat. We add your message and leave the prices off.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <sc-for list="{{ occ }}" as="o" hint-placeholder-count="5">
+          <a href="{{ o.href }}" style="min-height:44px;padding:0 16px;border-radius:999px;background:#FFFAF0;border:1px solid #E3AFAF;display:flex;align-items:center;font-size:15px;font-weight:700;color:#3A2A22;text-decoration:none" style-hover="background:#3A2A22;color:#FFFAF0">{{ o.name }}</a>
+        </sc-for>
+      </div>
+      <a href="Gifts.dc.html" style="align-self:flex-start;height:56px;border-radius:999px;background:#3A2A22;color:#FFFAF0;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;text-decoration:none;padding:0 30px;margin-top:6px" style-hover="background:#5A4336;color:#FFFAF0">Shop gifts</a>
+    </div>
+    <div style="position:relative;padding:{{ L.giftArtPad }}">
+      <img src="assets/photo-gift-heart.jpg" alt="Zookies in a gift box" style="width:62%;aspect-ratio:3 / 4;object-fit:cover;border-radius:20px;transform:rotate(-4deg);box-shadow:0 18px 40px rgba(58,42,34,.18)">
+      <div style="position:absolute;right:0;bottom:0;width:62%;background:#FFFAF0;border-radius:18px;padding:22px 22px 20px;outline:1.5px dashed #E3AFAF;outline-offset:-8px;transform:rotate(3deg);box-shadow:0 18px 40px rgba(58,42,34,.18)">
+        <div style="position:absolute;top:-12px;left:22px;background:#F9CF6E;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700">Your message</div>
+        <div style="font-family:'Caveat',cursive;font-size:{{ L.card1 }};line-height:1.15">To Aisha,</div>
+        <div style="font-family:'Caveat',cursive;font-size:{{ L.card2 }};line-height:1.2;margin-top:6px">Congratulations, mama! One for the 3am feed. So proud of you.</div>
+        <div style="font-family:'Caveat',cursive;font-size:{{ L.card2 }};line-height:1.2;margin-top:10px;text-align:right">Love, Sara x</div>
+      </div>
+    </div>
+  </div>
+  <div style="max-width:1240px;margin:{{ L.wardM }};background:#FFFAF0;border-radius:20px;padding:18px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+    <div style="font-size:16px;line-height:1.5"><b>Baby shower coming up?</b> Give a gift card. She redeems it once baby arrives, so every cookie is fresh.</div>
+    <a href="Product.dc.html?id=giftcard" style="font-weight:700;font-size:16px;color:#3A2A22;min-height:44px;display:flex;align-items:center">Gift cards →</a>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.storyCols }};gap:{{ L.heroGap }};align-items:center">
+    <img src="assets/photo-tray-love.jpg" alt="A tray of Zookies with a Baked With Love tag" style="width:100%;aspect-ratio:{{ L.storyRatio }};object-fit:cover;border-radius:28px">
+    <div style="display:flex;flex-direction:column;gap:16px;max-width:600px">
+      <span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#A8404F">Our story</span>
+      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1;letter-spacing:-0.01em">A story that started with a friend</h2>
+      <p style="margin:0;font-family:'Young Serif',serif;font-size:{{ L.storyLead }};line-height:1.4">My story with lactation cookies started when my friend started struggling with breastfeeding her newborn.</p>
+      <p style="margin:0;font-size:17px;line-height:1.65;color:#4E3C31">At the time, we had no choice but to start making lactation cookies ourselves, praying that it would work for the sake of her baby and amazingly, it did! These cookies helped her milk supply almost immediately and I was so grateful to have been able to make her early motherhood days just a bit easier.</p>
+      <p style="margin:0;font-size:17px;line-height:1.65;color:#4E3C31">Now I hope that I can do the same thing for you. Using natural, wholesome ingredients, everything is made with care and intention for breastfeeding mums and their new beautiful babies.</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:4px">
+        <div><div style="font-family:'Caveat',cursive;font-size:34px;line-height:1">Zainab</div><div style="font-size:14px;color:#6B5646">Founder, Mama’s Munches</div></div>
+        <a href="Story.dc.html" style="font-weight:700;font-size:16px;color:#3A2A22;min-height:44px;display:flex;align-items:center">Read our story →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" style="background:#FFFAF0;padding:{{ L.secPad }};scroll-margin-top:72px">
+  <div style="max-width:1240px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px">
+      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1;letter-spacing:-0.01em;max-width:620px;text-wrap:balance">Loved by mums, and the people who love them</h2>
+      <a href="https://uk.trustpilot.com/review/mamasmunches.com" style="display:flex;align-items:center;gap:14px;text-decoration:none;color:#3A2A22">
+        <span style="font-family:'Young Serif',serif;font-size:44px;line-height:1">4.3</span>
+        <span style="display:flex;flex-direction:column"><span style="color:#D9981C;letter-spacing:2px;font-size:18px">★★★★★</span><span style="font-size:14px;font-weight:700">8 reviews on Trustpilot ↗</span></span>
+      </a>
+    </div>
+    <div style="display:grid;grid-auto-flow:{{ L.flow }};grid-auto-columns:{{ L.revAuto }};grid-template-columns:{{ L.revCols }};gap:16px;overflow-x:{{ L.ovx }};scroll-snap-type:x mandatory;scrollbar-width:none;margin:{{ L.bleedM }};padding:{{ L.bleedP }};scroll-padding:0 20px;margin-top:28px">
+      <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="3">
+        <article style="scroll-snap-align:start;background:#FBF3DC;border:1px solid #EADBC0;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:10px;min-width:0">
+          <div style="color:#D9981C;letter-spacing:2px;font-size:17px">★★★★★</div>
+          <h3 style="margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:20px;line-height:1.2">{{ r.title }}</h3>
+          <p style="margin:0;font-size:16px;line-height:1.55;color:#4E3C31">“{{ r.text }}”</p>
+          <div style="margin-top:auto;padding-top:12px;border-top:1.5px dashed #E2CFAE;display:flex;justify-content:space-between;gap:8px;font-size:14px"><b>{{ r.name }}</b><span style="color:#6B5646">{{ r.date }}</span></div>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.faqCols }};gap:{{ L.heroGap }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1;letter-spacing:-0.01em">Questions mums ask</h2>
+      <p style="margin:0;font-size:17px;line-height:1.55;color:#5E4A3D">Can’t see yours? Message us on WhatsApp, or read the full <a href="Help.dc.html" style="font-weight:700">Help &amp; FAQs</a>.</p>
+    </div>
+    <div style="border-top:1px solid #EADBC0">
+      <div style="border-bottom:1px solid #EADBC0">
+        <button onClick="{{ ft.a }}" style="width:100%;min-height:64px;padding:16px 0;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer;font-family:'Young Serif',serif;font-size:20px;color:#3A2A22">When will my order arrive?<span style="font-family:Karla;font-size:26px;flex:none;width:36px;height:36px;border-radius:999px;background:#F9D5D3;display:flex;align-items:center;justify-content:center">{{ fs.a }}</span></button>
+        <sc-if value="{{ fo.a }}" hint-placeholder-val="{{ true }}"><p style="margin:0 0 20px;font-size:16px;line-height:1.6;color:#4E3C31;max-width:640px">We bake every Monday and post the same day with Royal Mail Tracked, so most orders arrive midweek. Order by Sunday 8pm to make the next bake: that’s {{ bake.date }}.</p></sc-if>
+      </div>
+      <div style="border-bottom:1px solid #EADBC0">
+        <button onClick="{{ ft.b }}" style="width:100%;min-height:64px;padding:16px 0;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer;font-family:'Young Serif',serif;font-size:20px;color:#3A2A22">Are they OK to eat while breastfeeding?<span style="font-family:Karla;font-size:26px;flex:none;width:36px;height:36px;border-radius:999px;background:#F9D5D3;display:flex;align-items:center;justify-content:center">{{ fs.b }}</span></button>
+        <sc-if value="{{ fo.b }}" hint-placeholder-val="{{ false }}"><p style="margin:0 0 20px;font-size:16px;line-height:1.6;color:#4E3C31;max-width:640px">They’re made from everyday food ingredients. Fenugreek isn’t right for everyone, so if you or your baby are sensitive to it, or you have a health condition, check with your midwife or GP first.</p></sc-if>
+      </div>
+      <div style="border-bottom:1px solid #EADBC0">
+        <button onClick="{{ ft.c }}" style="width:100%;min-height:64px;padding:16px 0;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer;font-family:'Young Serif',serif;font-size:20px;color:#3A2A22">Can you send them straight to a new mum?<span style="font-family:Karla;font-size:26px;flex:none;width:36px;height:36px;border-radius:999px;background:#F9D5D3;display:flex;align-items:center;justify-content:center">{{ fs.c }}</span></button>
+        <sc-if value="{{ fo.c }}" hint-placeholder-val="{{ false }}"><p style="margin:0 0 20px;font-size:16px;line-height:1.6;color:#4E3C31;max-width:640px">Yes. Choose “It’s a gift” at checkout, add her address and your message, and we’ll leave the prices off the packing slip.</p></sc-if>
+      </div>
+      <div style="border-bottom:1px solid #EADBC0">
+        <button onClick="{{ ft.d }}" style="width:100%;min-height:64px;padding:16px 0;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer;font-family:'Young Serif',serif;font-size:20px;color:#3A2A22">What allergens do they contain?<span style="font-family:Karla;font-size:26px;flex:none;width:36px;height:36px;border-radius:999px;background:#F9D5D3;display:flex;align-items:center;justify-content:center">{{ fs.d }}</span></button>
+        <sc-if value="{{ fo.d }}" hint-placeholder-val="{{ false }}"><p style="margin:0 0 20px;font-size:16px;line-height:1.6;color:#4E3C31;max-width:640px">Oats (gluten), eggs, milk and fenugreek, a legume that may cross-react with peanut or soy allergies. Made in a kitchen that also handles tree nuts. Vegan Zookies have no eggs or dairy.</p></sc-if>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPadTop0 }}">
+  <div style="max-width:1240px;margin:0 auto;background:#FCEBBE;border-radius:28px;overflow:hidden;display:grid;grid-template-columns:{{ L.endCols }};align-items:center">
+    <div style="padding:{{ L.endPad }};display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1;letter-spacing:-0.01em">Not sure yet? Try 3 for £5</h2>
+      <p style="margin:0;font-size:17px;line-height:1.55;color:#4E3C31;max-width:440px">Three Classic Zookies, postage included. Small enough for the letterbox.</p>
+      <button onClick="{{ addTrial }}" style="height:56px;padding:0 30px;border-radius:999px;border:0;background:#EE8088;color:#3A2A22;font-weight:700;font-size:17px;cursor:pointer" style-hover="background:#3A2A22;color:#FFFAF0">{{ trialLabel }}</button>
+    </div>
+    <img src="assets/photo-bun-case.jpg" alt="Zookies in paper cases" style="width:100%;height:100%;min-height:240px;object-fit:cover">
+  </div>
+</section>
+
+</main>
+<div style="height:{{ L.endGap }}"></div>
+<dc-import name="SiteFooter" hint-size="100%,640px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { bp: this.bpOf(), faq: 0, tick: 0, trialAdded: false };
+  bpOf() { const w = window.innerWidth; return w < 768 ? 'm' : w < 1024 ? 't' : 'd'; }
+  componentDidMount() {
+    this.onR = () => { const b = this.bpOf(); if (b !== this.state.bp) this.setState({ bp: b }); };
+    window.addEventListener('resize', this.onR);
+    const go = () => this.setState(s => ({ tick: s.tick + 1 }));
+    if (window.MM) go(); else window.addEventListener('mm:ready', go, { once: true });
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); }
+  renderVals() {
+    const { bp, faq } = this.state, m = bp === 'm', t = bp === 't', d = bp === 'd', M = window.MM;
+    const v = (a, b, c) => (m ? a : t ? b : c);
+    const L = {
+      heroPad: v('24px 20px 44px', '40px 32px 64px', '56px 40px 96px'),
+      heroCols: v('1fr', '1fr 1fr', '1fr 1.05fr'),
+      heroGap: v('28px', '40px', '72px'),
+      h1: v('40px', '50px', '70px'),
+      lead: v('17px', '18px', '20px'),
+      heroRatio: v('4 / 3', '4 / 5', '1 / 1'),
+      ribbonL: v('12px', '-12px', '-24px'),
+      ribbonB: v('12px', '24px', '40px'),
+      trustPad: v('18px 20px', '18px 32px', '20px 40px'),
+      trustCols: v('1fr 1fr', 'repeat(4, auto)', 'repeat(4, auto)'),
+      secPad: v('56px 20px', '72px 32px', '96px 40px'),
+      secPadTop0: v('0 20px 56px', '0 32px 72px', '0 40px 96px'),
+      h2: v('30px', '38px', '46px'),
+      h3: v('24px', '26px', '30px'),
+      split: v('1fr', '1fr 1fr', '1fr 1fr'),
+      splitInner: v('120px 1fr', '1fr', '0.85fr 1fr'),
+      splitImgH: v('100%', '200px', '280px'),
+      splitPad: v('18px 18px 20px', '22px 24px 26px', '32px'),
+      flow: v('column', 'row', 'row'),
+      autoCols: v('78%', 'auto', 'auto'),
+      prodCols: v('none', 'repeat(2, minmax(0, 1fr))', 'repeat(4, minmax(0, 1fr))'),
+      revAuto: v('86%', 'auto', 'auto'),
+      revCols: v('none', 'repeat(2, minmax(0, 1fr))', 'repeat(3, minmax(0, 1fr))'),
+      ovx: v('auto', 'visible', 'visible'),
+      bleedM: v('24px -20px 0', '24px 0 0', '28px 0 0'),
+      bleedP: v('4px 20px 12px', '0', '0'),
+      stepCols: v('1fr', 'repeat(3, 1fr)', 'repeat(3, 1fr)'),
+      stepGap: v('24px', '28px', '48px'),
+      stepDir: v('row', 'column', 'column'),
+      ingCols: v('1fr', '1fr', '0.9fr 1.1fr'),
+      ingRatio: v('4 / 3', '16 / 9', '4 / 5'),
+      ingList: v('1fr', '1fr 1fr', '1fr 1fr'),
+      giftCols: v('1fr', '1fr 1fr', '1fr 1fr'),
+      giftArtPad: v('0 0 40px', '0 0 40px', '0 20px 40px 40px'),
+      card1: v('30px', '32px', '38px'),
+      card2: v('22px', '23px', '27px'),
+      wardM: v('32px auto 0', '40px auto 0', '56px auto 0'),
+      storyCols: v('1fr', '1fr 1fr', '1fr 1.1fr'),
+      storyRatio: v('4 / 3', '4 / 5', '1 / 1'),
+      storyLead: v('21px', '22px', '25px'),
+      faqCols: v('1fr', '1fr', '0.8fr 1.2fr'),
+      endCols: v('1fr', '1.2fr 1fr', '1.2fr 1fr'),
+      endPad: v('32px 24px', '40px', '56px'),
+      endGap: '0'
+    };
+    const P = M ? M.products : [];
+    const featured = ['trial', 'zookies', 'giftbox', 'care40'].map(id => P.find(p => p.id === id)).filter(Boolean);
+    const tog = i => () => this.setState({ faq: faq === i ? -1 : i });
+    const k = ['a', 'b', 'c', 'd'];
+    const fo = {}, fs = {}, ft = {};
+    k.forEach((x, i) => { fo[x] = faq === i; fs[x] = faq === i ? '−' : '+'; ft[x] = tog(i); });
+    return {
+      L, featured, fo, fs, ft,
+      reviews: M ? [M.reviews[0], M.reviews[1], M.reviews[2]] : [],
+      bake: M ? M.bakes(1)[0] : { date: 'Monday', orderBy: 'Sunday, 8pm' },
+      occ: (M ? M.occasions : []).map(o => ({ ...o, href: 'Gifts.dc.html?occasion=' + o.id })),
+      notM: !m,
+      trialLabel: this.state.trialAdded ? 'Added to your basket ✓' : 'Add a Trial Pack · £5',
+      addTrial: () => {
+        if (!M) return;
+        M.cart.add({ key: 'trial', id: 'trial', name: 'Trial Pack', variant: '3 Classic Zookies', price: 5, img: 'assets/photo-bun-case.jpg' });
+        this.setState({ trialAdded: true }); M.openBasket();
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,102 +1,66 @@
-# Indus Foods — Site-Specific Instructions
+# Indus Foods: client design context
 
-## Client Overview
+**Indus Foods Ltd** is a Birmingham ethnic food wholesaler (est. 1962, £15.3M turnover, 5,000+ trade customers). Small
+Giants Studio is rebuilding its website on the SGS framework from a Claude Design draft. Framework rules live in the
+root `CLAUDE.md`; this file holds only what is true about this client.
 
-**Indus Foods Ltd** — Birmingham-based ethnic food wholesaler, est. 1962, £15.3M turnover, 5,000+ customers. Website built by Small Giants Studio using the SGS WordPress framework.
+## The draft (the reference)
 
-## Sites
-
-- **Reference site (client's current draft site, non-SGS stack):** https://lightsalmon-tarsier-683012.hostingersite.com/ — DO NOT modify or deploy to; client-facing, read-only reference only.
-- **Indus Foods build/test site:** https://lavender-dinosaur-183533.hostingersite.com/ — an Indus-only SGS install (sgs-theme + sgs-blocks active, no WooCommerce). Deploy target `indus-test`. This is the PRIMARY render target for all Indus header/footer/nav/homepage work.
-- **Shared canary (sandybrown):** the canary can hold only one client's active header/footer/drawer/theme-snapshot at a time — `sgs_active_header_cpt_id` etc. are single global `wp_options` — so it is for isolated block QA only.
-
-## Design Reference
-
-All design decisions are documented in `notes/Indus-Foods-Website-Research-Updated-V2V3.md` — this is the single source of truth.
-
-### Design Tokens
-
-These values live in `sites/indus-foods/theme-snapshot.json`:
-
-```
---primary: #0A7EA8 (teal)          --accent: #D8CA50 (gold)
---primary-dark: #075E80            --accent-light: #E7D768
---success: #2E7D4F (green)         --whatsapp: #25D366
---surface: #FFFFFF                 --surface-alt: #F8F7F4
---text: #2C3E50                    --text-muted: #5A6070
---text-inverse: #FFFFFF            --border: #2EADE2
---footer-bg: #2C3E50
-```
-
-**Fonts:** Montserrat (headings) + Source Sans 3 (body) — self-hosted variable WOFF2.
-
-### Page Architecture
-
-One service page template serves all four audiences. Only these elements change per page:
-
-1. Hero headline and sub-headline
-2. Benefit cards (pain points/solutions)
-3. Featured product categories
-4. Testimonial
-
-Shared sections (trust bar, heritage strip, process, delivery, brands, certifications, final CTA) are identical across all four.
-
-### Trade Application Form (4 Steps)
-
-1. **About You** — personal info, low-friction (5 fields max)
-2. **Business Details** — VAT/CRN optional, sole-trader-friendly
-3. **Account Preferences** — visual product tiles, delivery/payment
-4. **Review & Submit** — summary with edit buttons, file upload, T&Cs/GDPR
-
-## Files in This Directory
-
-| Directory | Contents |
-|---|---|
-| `mockups/` | HTML design references — Food Service V3 (template for all service pages) and Trade Application V2/V3 |
-| `content/` | Image status notes, test site URL, asset requirements |
-| `notes/` | Research document (V2V3) — full company intel, competitive analysis, design rationale |
-
-## Deploy
-
-Deploy to the Indus test site via `build-deploy.py`:
+The draft is the folder itself: Claude Design `.dc.html` pages that render through `support.js` (the runtime stamps
+`data-dc-tpl` on every element and sets `window.__dcAnnotatedTemplate`). It is served locally, never hosted:
 
 ```bash
-cd /c/Users/Bean/Projects/small-giants-wp
-python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test
+node scripts/computed-route/fill.mjs --serve sites/indus-foods --draft-index "Indus Foods Website v2.dc.html"
 ```
 
-Push the Indus Foods tokens (name the domain explicitly — `--target-domain` defaults to the canary):
+Fill and the walker take the same folder through `--draft-dir sites/indus-foods --draft-index "Indus Foods Website v2.dc.html"`.
+
+| File | What it is |
+|---|---|
+| `Indus Foods Website v2.dc.html` | **The home page (the entry).** Imports `EnquiryForm` and `TradeApplication`. |
+| `Indus Foods Website.dc.html` | The earlier home page, kept for reference |
+| `Indus Foods Mega Menu.dc.html`, `Mega Menu.dc.html` | The mega menu panels |
+| `EnquiryForm.dc.html`, `TradeApplication.dc.html`, `_feature.dc.html` | Imported parts |
+| `support.js`, `image-slot.js`, `indus-logo.js` | The draft runtime and its helpers |
+| `assets/` | Logos (static and animated SVG), hero SVGs, decorative food images, `notes/` (the research document) and `theme-overrides/` (the designer's mega-menu parts) |
+| `uploads/` | The designer's source files: animated logos, hero animations, pasted references |
+
+**Known draft defect (2026-10-10):** the v2 home page fails at runtime in a browser served from this folder: React
+`removeChild` "not a child of this node" in `<Root>`, so it renders a 900px error frame with 7 stamps. The earlier
+`Indus Foods Website.dc.html` renders fully (336 stamps, 6,340px at 1440). The other six pages render. Fix the v2 file
+in Claude Design (or re-export it) before measuring the home page.
+
+**Design research:** `assets/notes/Indus-Foods-Website-Research-Updated-V2V3.md` (company intel, competitors,
+design rationale).
+
+## Theme snapshot
+
+`theme-snapshot.json` is generated by the Spec 33 extractor from the draft, never hand-edited:
+
+```bash
+python plugins/sgs-blocks/scripts/theme-extractor/extract.py --client indus-foods --draft "sites/indus-foods/Indus Foods Website v2.dc.html"
+```
+
+Measured: primary teal `#0a7ea8`, text `#1A202C`, Montserrat (headings) and Source Sans 3 (body). The accent was not
+measured and holds the framework fallback `#F59E0B`; the draft's gold is `#D8CA50`.
+
+## Test site
+
+`https://lavender-dinosaur-183533.hostingersite.com`: a fresh WordPress 7.1.3 (reset 2026-10-10, media kept), deploy
+target `indus-test` (opt-in: `python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test`). Logins:
+`.claude/secrets/indus-test.env`. Push tokens with the domain named, since `--target-domain` defaults to the canary:
 
 ```bash
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73 \
   --target-domain lavender-dinosaur-183533.hostingersite.com
 ```
 
-## Site Build State (indus-test)
+## Content facts
 
-Header/footer/nav-drawer objects:
-
-| Object | ID | Contents |
-|---|---|---|
-| `sgs_header` | 28 | Top strip (business-info phone/email + site-info social icons); main row with responsive logo (`logoId` 5) + `sgs/nav-bar-menu` (`ref` 2, `drawerRef` 27) |
-| `sgs_footer` | 29 | 4-column grid (Brand / Quick Links / Contact + Opening Hours / Address), 2 columns tablet, 1 mobile; bottom copyright row |
-| `sgs_drawer` | 27 | `sgs/nav-drawer-menu` (`ref` 2) + "Register for a Trade Account" CTA |
-| `sgs_mega_menu` | 6 | "Indus - Brands Mega Menu": `sgs/mega-panel` variant `brands` + `sgs/card-grid` (4 columns) |
-| nav menu term | 2 | "Indus Foods Primary" — 7 top-level items; About / Sectors / Trade are dropdowns; Brands is a `post_type` item targeting `sgs_mega_menu` post 6 |
-| Home page | 30 | Static front page |
-
-Active pointers: `sgs_active_header_cpt_id`=28, `sgs_active_footer_cpt_id`=29, `sgs_active_drawer_cpt_id`=27. Phone, email, address, opening hours and socials live in the `sgs_site_info` option (set via `Sgs_Site_Info::set_internal()`), read by `sgs/business-info` and `sgs/social-icons source="site-info"`. The Brands mega-menu cards use brand logos (Sanam, Shan Foods, Green Leaf, Lemontree) held as media attachments 32-35, wired into `sgs/card-grid` `items[].media`.
-
-Durable content rules:
-- **A 4-column footer needs an explicit `gridTemplateColumns` override.** The count-based `columns:{"desktop":4}` attribute drives the wrapper's auto-fit sizing, whose per-column minimum can collapse 4 real columns to 3 tracks at this row's container width. Post 29 sets `"gridTemplateColumns":{"desktop":"1.4fr 1fr 1fr 1fr"}` on its columns row.
-- **A parent-only dropdown menu item must have an EMPTY `_menu_item_url`.** A literal `#` makes `nav-bar-menu/render.php::from_link()`'s `has_url` check treat it as a real link and render `<a href="#">` instead of the non-link disclosure button. About / Sectors / Trade are stored with an empty URL.
-- The Brands drawer plain-link degrade points at an internal `?sgs_mega_menu=` query URL (the CPT is `public=>false`, no permalink) — expected per FR-36-5.
-
-Page state: `.claude/LEDGER.md`; IDs come from the live site (`wp post list`).
-
-## Placeholder Items Awaiting Client
-
-- Real customer testimonials (mockups have placeholders)
-- Certification logos: BRC, Halal, SALSA, Unitas, FWD
-- Brand logos: Falak Rice (Sanam, Shan Foods, Green Leaf and Lemon Tree are in the media library as attachments 32-35 as JPGs; swap in the client's official versions if supplied)
-- Professional photography (placeholder images flagged in mockups)
+- One service-page template serves all four audiences; only the hero, benefit cards, featured categories and
+  testimonial change per page. Trust bar, heritage strip, process, delivery, brands, certifications and final CTA are
+  shared.
+- The trade application has four steps: About you (5 fields at most), Business details (VAT and company number
+  optional, sole-trader friendly), Account preferences (product tiles, delivery, payment), Review and submit.
+- Awaiting the client: real testimonials; BRC, Halal, SALSA, Unitas and FWD certification logos; the Falak Rice logo;
+  professional photography.

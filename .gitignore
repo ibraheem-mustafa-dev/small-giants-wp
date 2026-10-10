@@ -81,9 +81,6 @@ sites/snooza-chair/assets/meshroom-masked/
 sites/snooza-chair/assets/video-scout/
 sites/snooza-chair/assets/product-images/
 
-# Extraction screenshots (regenerable via Playwright)
-sites/indus-foods/extraction/screenshots/
-
 # Session screenshot artefacts (stray directories)
 UsersBeanProjectssmall-giants-wp/
 
@@ -101,8 +98,9 @@ studio/
 !theme/sgs-theme/**/*.png
 !theme/sgs-theme/**/*.jpg
 !theme/sgs-theme/**/*.webp
-!sites/indus-foods/mockups/**/*.png
-!sites/indus-foods/mockups/**/*.jpg
+# Images a client draft renders (sites/<client>/assets) travel with the draft.
+!sites/mamas-munches-redesign/assets/*.png
+!sites/mamas-munches-redesign/assets/*.jpg
 !sites/indus-foods/assets/decorative-foods/**/*.png
 !sites/indus-foods/assets/decorative-foods/**/*.webp
 sites/snooza-chair/assets/Snooza Video.mp4

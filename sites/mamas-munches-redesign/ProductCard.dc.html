@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="height:100%;display:flex;flex-direction:column;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;overflow:hidden;font-family:'Karla',system-ui,sans-serif;color:#3A2A22;transform:rotate({{ rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s" style-hover="transform:rotate(0deg) translate(-4px,-6px);box-shadow:8px 8px 0 #3A2A22">
+  <a href="{{ href }}" style="position:relative;display:block;aspect-ratio:1 / 1;background-color:{{ imgBg }};background-image:{{ bgImg }};background-size:{{ bgSize }};background-position:center;background-repeat:no-repeat;border-bottom:2px solid #3A2A22" aria-label="{{ name }}">
+    <sc-if value="{{ hasBadge }}" hint-placeholder-val="{{ false }}">
+      <span style="position:absolute;top:10px;left:10px;background:#F9CF6E;border:2px solid #3A2A22;color:#3A2A22;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px">{{ badge }}</span>
+    </sc-if>
+  </a>
+  <div style="padding:{{ pad }};display:flex;flex-direction:column;gap:6px;flex:1">
+    <a href="{{ href }}" style="font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none">{{ name }}</a>
+    <sc-if value="{{ showShort }}" hint-placeholder-val="{{ true }}">
+      <p style="margin:0;font-size:15px;line-height:1.45;color:#5E4A3D">{{ short }}</p>
+    </sc-if>
+    <div style="margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+      <span style="font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}">{{ priceLabel }}</span>
+      <span style="font-size:13px;color:#5E4A3D">{{ unit }}</span>
+    </div>
+    <button onClick="{{ act }}" style="margin-top:8px;height:{{ btnH }};border-radius:999px;border:2px solid #3A2A22;background:{{ btnBg }};color:#3A2A22;font-weight:700;font-size:{{ btnFont }};cursor:pointer;width:100%;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#FFFAF0;transform:translate(-2px,-2px);box-shadow:5px 5px 0 #3A2A22" style-active="transform:translate(2px,2px);box-shadow:0 0 0 #3A2A22">{{ btnLabel }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;300px&quot;,&quot;height&quot;:&quot;500px&quot;},&quot;product&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;sm&quot;,&quot;md&quot;],&quot;default&quot;:&quot;md&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { added: false };
+  renderVals() {
+    const p = this.props.product || {};
+    const sm = this.props.size === 'sm', simple = p.kind === 'simple';
+    const rots = { zookies: '-1deg', trial: '1deg', giftbox: '-.6deg', care40: '1.2deg', giftcard: '-1.2deg' };
+    return {
+      name: p.name, short: p.short, unit: p.unit, priceLabel: p.priceLabel, badge: p.badge,
+      href: 'Product.dc.html?id=' + (p.id || ''),
+      imgBg: p.imgBg || '#F3E6CC', bgImg: p.img ? 'url(' + p.img + ')' : 'none', bgSize: p.fit === 'contain' ? '66%' : 'cover',
+      rot: rots[p.id] || '0deg',
+      hasBadge: !!p.badge, showShort: !sm,
+      pad: sm ? '12px 12px 14px' : '16px 18px 18px',
+      nameSize: sm ? '18px' : '22px', priceSize: sm ? '18px' : '21px',
+      btnH: sm ? '44px' : '50px', btnFont: sm ? '14px' : '15px',
+      btnLabel: this.state.added ? 'Added ✓' : (sm && !simple ? 'Build yours' : (p.id === 'zookies' ? 'Build your box' : p.cta)),
+      btnBg: simple ? '#F9CF6E' : '#FFFAF0',
+      act: () => {
+        if (!simple) { location.href = 'Product.dc.html?id=' + p.id; return; }
+        if (window.MM) MM.cart.add({ key: p.id, id: p.id, name: p.name, variant: p.unit, price: p.from, img: p.img });
+        this.setState({ added: true }); setTimeout(() => this.setState({ added: false }), 1600);
+        if (window.MM) MM.openBasket();
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

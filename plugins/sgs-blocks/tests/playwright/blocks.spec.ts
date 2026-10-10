@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-const SITE = 'https://lightsalmon-tarsier-683012.hostingersite.com';
+// The framework canary, unless WP_TEST_BASE_URL names another SGS site.
+const SITE = process.env.WP_TEST_BASE_URL || 'https://sandybrown-nightingale-600381.hostingersite.com';
 const REST = `${SITE}/wp-json`;
 
 // Auth header for WP REST API — use env var, never hardcode credentials

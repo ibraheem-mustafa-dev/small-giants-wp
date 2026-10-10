@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Gifts for new mums · Mama's Munches</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="store.js"></script>
+<style>body{margin:0;background:#FBF3DC;color:#3A2A22;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#3A2A22}button,input,select,textarea{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:3px solid #3A2A22;outline-offset:3px}@keyframes mmMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}</style>
+</helmet>
+<div ref="{{ rootRef }}" data-screen-label="Gifts" style="background:#FBF3DC;min-height:100vh">
+<dc-import name="SiteHeader" current="gifts" hint-size="100%,96px" style="position:sticky;top:-32px;z-index:50;display:block"></dc-import>
+<main>
+<section style="background:#F5C2C8;border-bottom:2px solid #3A2A22;overflow:hidden">
+  <div style="max-width:1240px;margin:0 auto;padding:{{ L.heroPad }};display:grid;grid-template-columns:{{ L.heroCols }};gap:{{ L.gap }};align-items:center">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div data-reveal="" style="font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1;transform:rotate(-2deg);transform-origin:left">for the mum-to-be &amp; the brand new mum ♥</div>
+      <h1 data-reveal="" style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.025em;text-wrap:balance">Gifts she’ll actually eat</h1>
+      <p data-reveal="" style="margin:0;font-size:{{ L.lead }};line-height:1.55;color:#4E3C31;max-width:520px">Baked fresh when you order and sent with your note. We always leave the prices off.</p>
+      <div data-reveal="" style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:26px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:6px 6px 0 #3A2A22;max-width:580px">
+        <div style="font-family:'Young Serif',serif;font-size:21px">What’s the moment?</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ occ }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)">{{ o.name }}</button></sc-for></div>
+        <div style="font-family:'Young Serif',serif;font-size:21px">Budget</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ budgets }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)">{{ o.name }}</button></sc-for></div>
+        <a href="#results" style="height:56px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#F9D5D3;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22">{{ findLabel }}</a>
+      </div>
+    </div>
+    <div data-reveal="" style="position:relative;height:{{ L.artH }}">
+      <div style="position:absolute;left:4%;top:0;width:62%;background:#FFFAF0;padding:10px 10px 40px;border:2px solid #3A2A22;border-radius:8px;transform:rotate(-5deg);box-shadow:8px 8px 0 #3A2A22;transition:transform .45s cubic-bezier(.3,1.4,.5,1)" style-hover="transform:rotate(-1deg) translateY(-10px)"><div style="aspect-ratio:3 / 4;background:url(assets/photo-gift-heart.jpg) center / cover;border-radius:4px"></div><div style="position:absolute;left:0;right:0;bottom:6px;text-align:center;font-family:'Caveat',cursive;font-size:24px">wrapped with love</div></div>
+      <div style="position:absolute;right:0;bottom:0;width:56%;background:#FFFAF0;border:2px solid #3A2A22;border-radius:6px;padding:24px 20px 18px;transform:rotate(4deg);box-shadow:6px 6px 0 #3A2A22">
+        <span aria-hidden="true" style="position:absolute;top:-12px;left:50%;width:84px;height:24px;background:rgba(249,207,110,.85);transform:translateX(-50%) rotate(-3deg)"></span>
+        <div style="font-family:'Caveat',cursive;font-size:{{ L.card1 }};line-height:1.1">Dear Aisha,</div>
+        <div style="font-family:'Caveat',cursive;font-size:{{ L.card2 }};line-height:1.2;margin-top:6px">For the 3am feeds. You’re doing brilliantly.</div>
+        <div style="font-family:'Caveat',cursive;font-size:{{ L.card2 }};text-align:right;margin-top:8px">Sara x</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="results" style="padding:{{ L.secPad }};scroll-margin-top:72px">
+  <div style="max-width:1240px;margin:0 auto">
+    <h2 style="margin:0 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">{{ resultTitle }}</h2>
+    <div style="display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.cardGap }}">
+      <sc-for list="{{ results }}" as="p" hint-placeholder-count="0">
+        <div style="min-width:0"><dc-import name="ProductCard" product="{{ p }}" size="{{ cardSize }}" hint-size="100%,440px"></dc-import></div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ none }}" hint-placeholder-val="{{ false }}"><div style="border:2px dashed #3A2A22;border-radius:24px;padding:28px;text-align:center;font-size:17px">Nothing in that budget for this moment yet. <button onClick="{{ clearBudget }}" style="border:0;background:none;font-weight:700;text-decoration:underline;cursor:pointer;font-size:17px">Show every budget</button></div></sc-if>
+  </div>
+</section>
+
+<section style="background:#F9D5D3;border-top:2px solid #3A2A22;border-bottom:2px solid #3A2A22;padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto">
+    <div data-reveal="" style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">easy as that</div>
+    <h2 data-reveal="" style="margin:4px 0 28px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">How gifting works</h2>
+    <div style="display:grid;grid-template-columns:{{ L.steps }};gap:20px">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="0">
+        <div data-reveal="" style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;padding:24px;transform:rotate({{ s.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s" style-hover="transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22">
+          <div style="width:52px;height:52px;border-radius:999px;background:#F9CF6E;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-family:'Young Serif',serif;font-size:24px">{{ s.n }}</div>
+          <div style="font-family:'Young Serif',serif;font-size:22px;margin:14px 0 6px">{{ s.t }}</div>
+          <div style="font-size:16px;line-height:1.55;color:#4E3C31">{{ s.d }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.two }};gap:{{ L.gap }};align-items:center">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div data-reveal="" style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">go on, have a go</div>
+      <h2 data-reveal="" style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Write her a note</h2>
+      <p data-reveal="" style="margin:0 0 6px;font-size:17px;line-height:1.55;color:#4E3C31">See how it’ll look in the box. You can finish it at checkout.</p>
+      <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">To<input value="{{ to }}" onChange="{{ onTo }}" style="height:52px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Your message<textarea value="{{ note }}" onChange="{{ onNote }}" rows="3" style="border:2px solid #3A2A22;border-radius:14px;padding:12px 16px;font-size:16px;background:#FFFAF0;resize:vertical"></textarea></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">From<input value="{{ from }}" onChange="{{ onFrom }}" style="height:52px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0"></label>
+    </div>
+    <div data-reveal="" style="position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:8px;padding:{{ L.notePad }};transform:rotate(-2deg);box-shadow:10px 10px 0 #3A2A22;background-image:repeating-linear-gradient(#FFFAF0 0 43px, #F1DFCF 43px 44px);min-height:{{ L.noteH }}">
+      <span aria-hidden="true" style="position:absolute;top:-14px;left:30px;width:110px;height:28px;background:rgba(238,128,136,.75);transform:rotate(-6deg)"></span>
+      <img src="assets/logo-round.png" alt="" style="position:absolute;right:18px;top:18px;width:{{ L.noteLogo }};opacity:.95;transform:rotate(10deg)">
+      <div style="font-family:'Caveat',cursive;font-size:{{ L.noteBig }};line-height:44px;padding-right:{{ L.noteLogoPad }}">{{ toLine }}</div>
+      <div style="font-family:'Caveat',cursive;font-size:{{ L.noteText }};line-height:44px;white-space:pre-wrap;padding-right:{{ L.notePadR }}">{{ note }}</div>
+      <div style="font-family:'Caveat',cursive;font-size:{{ L.noteText }};line-height:44px;text-align:right">{{ fromLine }}</div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPadTop0 }}">
+  <a data-reveal="" href="Product.dc.html?id=giftcard" style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.cardCols }};gap:28px;align-items:center;background:#FCEBBE;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.bandPad }};text-decoration:none;color:#3A2A22;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22">
+    <img src="assets/logo-round.png" alt="" style="width:{{ L.bandLogo }};transform:rotate(-8deg);justify-self:center">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-family:'Caveat',cursive;font-size:28px;color:#7A5A12;line-height:1">baby shower coming up?</div>
+      <div style="font-family:'Young Serif',serif;font-size:{{ L.h2 }};line-height:1.05">Give it now, she bakes it later</div>
+      <div style="font-size:17px;line-height:1.55;color:#4E3C31;max-width:560px">Cookies are best fresh and babies keep their own schedule. A gift card in a printed envelope lets her order once baby arrives.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700">£15</span><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700">£25</span><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700">£40</span></div>
+    </div>
+  </a>
+</section>
+</main>
+<dc-import name="SiteFooter" hint-size="100%,1100px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { bp: this.bpOf(), tick: 0, occ: 'born', budget: 'any', to: 'Aisha', note: 'Congratulations, mama! One for the 3am feed. So proud of you.', from: 'Sara' };
+  rootRef = React.createRef();
+  bpOf() { const w = window.innerWidth; return w < 768 ? 'm' : w < 1024 ? 't' : 'd'; }
+  componentDidMount() {
+    this.onR = () => { const b = this.bpOf(); if (b !== this.state.bp) this.setState({ bp: b }); };
+    window.addEventListener('resize', this.onR);
+    const o = new URLSearchParams(location.search).get('occasion'); if (o) this.setState({ occ: o });
+    const go = () => this.setState(s => ({ tick: s.tick + 1 }), () => setTimeout(() => this.motion(), 60));
+    if (window.MM) go(); else window.addEventListener('mm:ready', go, { once: true });
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); this.io && this.io.disconnect(); }
+  motion() {
+    const r = this.rootRef.current; if (!r || this.io || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    this.io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; this.io.unobserve(e.target); e.target.animate([{ opacity: 0, translate: '0 28px' }, { opacity: 1, translate: '0 0' }], { duration: 750, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' }); }), { threshold: 0.1 });
+    r.querySelectorAll('[data-reveal]').forEach(el => this.io.observe(el));
+  }
+  renderVals() {
+    const S = this.state, m = S.bp === 'm', t = S.bp === 't', M = window.MM;
+    const v = (a, b, c) => (m ? a : t ? b : c);
+    const pill = on => ({ on, bg: on ? '#F9CF6E' : '#FFFAF0', shadow: on ? '3px 3px 0 #3A2A22' : '0 0 0 #3A2A22', tf: on ? 'translate(-2px,-2px)' : 'none' });
+    const O = M ? M.occasions : [];
+    const bud = { any: () => true, u20: p => p.from < 20, o20: p => p.from >= 20 };
+    const results = (M ? M.products : []).filter(p => p.occ.includes(S.occ) && bud[S.budget](p));
+    const cur = O.find(o => o.id === S.occ);
+    return {
+      rootRef: this.rootRef,
+      L: {
+        heroPad: v('28px 20px 48px', '44px 32px 60px', '64px 40px 88px'), heroCols: v('1fr', '1.1fr 1fr', '1.1fr 1fr'), gap: v('32px', '40px', '64px'),
+        h1: v('46px', '56px', '80px'), lead: v('17px', '18px', '20px'), artH: v('380px', '460px', '540px'), card1: v('28px', '30px', '34px'), card2: v('21px', '22px', '25px'),
+        secPad: v('56px 20px', '72px 32px', '104px 40px'), secPadTop0: v('0 20px 64px', '0 32px 80px', '0 40px 104px'), h2: v('32px', '42px', '54px'),
+        cols: v('repeat(2, minmax(0, 1fr))', 'repeat(3, minmax(0, 1fr))', 'repeat(4, minmax(0, 1fr))'), cardGap: v('14px', '22px', '26px'),
+        steps: v('1fr', 'repeat(3, 1fr)', 'repeat(3, 1fr)'), two: v('1fr', '1fr 1fr', '1fr 1fr'),
+        notePad: v('36px 22px 26px', '44px 30px 30px', '52px 44px 36px'), notePadR: v('0', '40px', '60px'), noteH: v('320px', '380px', '420px'), noteLogo: v('64px', '84px', '110px'), noteLogoPad: v('72px', '96px', '124px'),
+        noteBig: v('36px', '40px', '46px'), noteText: v('27px', '29px', '33px'),
+        cardCols: v('1fr', 'auto 1fr', 'auto 1fr'), bandPad: v('28px 22px', '36px', '48px 56px'), bandLogo: v('120px', '150px', '190px')
+      },
+      occ: O.map(o => ({ ...o, ...pill(S.occ === o.id), pick: () => this.setState({ occ: o.id }) })),
+      budgets: [['any', 'Any'], ['u20', 'Under £20'], ['o20', '£20 and up']].map(([id, name]) => ({ name, ...pill(S.budget === id), pick: () => this.setState({ budget: id }) })),
+      findLabel: 'Show ' + results.length + (results.length === 1 ? ' gift' : ' gifts') + ' ↓',
+      resultTitle: cur ? 'Gifts for “' + cur.name.toLowerCase() + '”' : 'Gifts',
+      results, none: M ? results.length === 0 : false, clearBudget: () => this.setState({ budget: 'any' }),
+      cardSize: m ? 'sm' : 'md',
+      steps: [
+        { n: '1', t: 'Pick a gift', d: 'A gift box, the 40-day bundle, a Taster Trio or a gift card.', rot: '-1deg' },
+        { n: '2', t: 'Write your note', d: 'Add her address and your message at checkout.', rot: '1deg' },
+        { n: '3', t: 'We bake and post', d: 'Baked fresh for her and with her in 3–5 days, no prices inside.', rot: '-.6deg' }
+      ],
+      to: S.to, note: S.note, from: S.from,
+      onTo: e => this.setState({ to: e.target.value.slice(0, 30) }), onNote: e => this.setState({ note: e.target.value.slice(0, 200) }), onFrom: e => this.setState({ from: e.target.value.slice(0, 30) }),
+      toLine: (S.to ? 'Dear ' + S.to : 'Dear you') + ',', fromLine: S.from ? S.from + ' x' : ''
+    };
+  }
+}
+</script>
+</body>
+</html>

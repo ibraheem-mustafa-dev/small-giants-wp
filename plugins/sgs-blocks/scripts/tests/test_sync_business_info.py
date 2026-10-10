@@ -325,7 +325,7 @@ def test_repo_root_resolves_to_the_repository():
 
 from business_info import push as bi_push  # noqa: E402
 
-INDUS_FORM = REPO / "sites/indus-foods/mockups/Indus-Foods-Trade-Application-V2.html"
+INDUS_FORM = Path(__file__).resolve().parent / "fixtures/business-info/wholesale-trade-application.html"
 
 
 # --- 4. one bad secrets file must not break resolution for every target --------------

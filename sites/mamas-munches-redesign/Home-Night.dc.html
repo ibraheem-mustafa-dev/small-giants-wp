@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Mama's Munches · For the 3am feed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<script src="store.js"></script>
+<style>body{margin:0;background:#2B201B;color:#FBF3DC;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}a{color:#F9D5D3}a:hover{color:#FFFAF0}button,input,select,textarea{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:2px solid #F9CF6E;outline-offset:3px}</style>
+</helmet>
+<div data-screen-label="Home 1c Night feed" style="background:#2B201B;color:#FBF3DC;min-height:100vh">
+<dc-import name="SiteHeader" current="home" hint-size="100%,96px" style="position:sticky;top:-32px;z-index:50;display:block"></dc-import>
+<main>
+<section style="padding:{{ L.heroPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.heroCols }};gap:{{ L.gap }};align-items:end">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <span style="font-size:14px;font-weight:700;color:#F9CF6E">It’s late. You’re feeding. You’re starving.</span>
+      <h1 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:.98;letter-spacing:-0.025em;text-wrap:balance">A proper cookie for the 3am feed.</h1>
+      <p style="margin:0;font-size:{{ L.lead }};line-height:1.55;color:#E6D9C6;max-width:540px">Giant, soft and filling, with oats, brewer’s yeast, flaxseed and fenugreek. Built the way you like it, baked to order in Birmingham.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="#build" style="height:60px;padding:0 32px;border-radius:999px;background:#EE8088;color:#2B201B;font-weight:700;font-size:18px;display:flex;align-items:center;text-decoration:none" style-hover="background:#F9D5D3;color:#2B201B">Build your box</a>
+        <a href="Product.dc.html?id=trial" style="height:60px;padding:0 26px;border-radius:999px;border:1.5px solid #FBF3DC;color:#FBF3DC;font-weight:700;font-size:18px;display:flex;align-items:center;text-decoration:none" style-hover="background:#FBF3DC;color:#2B201B">Try 3 for £5</a>
+      </div>
+    </div>
+    <div style="position:relative">
+      <img src="assets/photo-hero-mug.jpg" alt="Zookies beside a mug of coffee" style="width:100%;aspect-ratio:{{ L.heroRatio }};object-fit:cover;border-radius:28px;filter:brightness(.88) saturate(.95)">
+      <div style="position:absolute;left:{{ L.badgeL }};bottom:{{ L.badgeB }};background:#3A2A22;border:1.5px dashed rgba(249,207,110,.6);border-radius:20px;padding:16px 20px;display:flex;gap:16px;align-items:center">
+        <div style="font-family:'Young Serif',serif;font-size:44px;line-height:1;color:#F9CF6E">{{ bake.day }}</div>
+        <div><div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#F9CF6E">Next bake · {{ bake.dow }} {{ bake.mon }}</div><div style="font-size:15px">Order by {{ bake.orderBy }}</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="build" style="padding:{{ L.secPad }};scroll-margin-top:72px">
+  <div style="max-width:1240px;margin:0 auto;background:#3A2A22;border-radius:32px;padding:{{ L.boxPad }};display:grid;grid-template-columns:{{ L.buildCols }};gap:{{ L.gap }}">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Build your cookie</h2>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#F9CF6E;margin-bottom:10px">1 · Base</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ bases }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.pick }}" style="min-height:48px;padding:0 18px;border-radius:999px;border:1.5px solid {{ o.border }};background:{{ o.bg }};color:{{ o.color }};font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:99px;background:{{ o.dot }}"></span>{{ o.name }}</button></sc-for></div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#F9CF6E;margin-bottom:10px">2 · Chips</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ chips }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.pick }}" style="min-height:48px;padding:0 18px;border-radius:999px;border:1.5px solid {{ o.border }};background:{{ o.bg }};color:{{ o.color }};font-size:16px;font-weight:700;cursor:pointer">{{ o.name }}</button></sc-for></div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#F9CF6E;margin-bottom:10px">3 · Fruit or extra</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ fruit }}" as="o" hint-placeholder-count="6"><button onClick="{{ o.pick }}" style="min-height:48px;padding:0 18px;border-radius:999px;border:1.5px solid {{ o.border }};background:{{ o.bg }};color:{{ o.color }};font-size:16px;font-weight:700;cursor:pointer">{{ o.name }}</button></sc-for></div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#F9CF6E;margin-bottom:10px">4 · How many</div>
+        <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:8px"><sc-for list="{{ sizes }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.pick }}" style="min-height:72px;padding:10px;border-radius:18px;border:1.5px solid {{ o.border }};background:{{ o.bg }};color:{{ o.color }};cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="font-family:'Young Serif',serif;font-size:20px">{{ o.n }}</span><span style="font-size:13px;font-weight:700">{{ o.each }}</span></button></sc-for></div>
+      </div>
+    </div>
+    <div style="background:#FBF3DC;color:#3A2A22;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;align-self:start">
+      <div style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#A8404F">Your Zookie</div>
+      <div style="font-family:'Young Serif',serif;font-size:26px;line-height:1.15">{{ summary }}</div>
+      <div style="display:grid;gap:8px">
+        <button onClick="{{ pickOnce }}" style="min-height:64px;border-radius:18px;border:1.5px solid {{ once.border }};background:{{ once.bg }};padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left"><span style="font-weight:700">One-off box</span><span style="font-family:'Young Serif',serif;font-size:20px">{{ onceTxt }}</span></button>
+        <button onClick="{{ pickSub }}" style="min-height:64px;border-radius:18px;border:1.5px solid {{ subOpt.border }};background:{{ subOpt.bg }};padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left"><span style="display:flex;flex-direction:column"><span style="font-weight:700">Subscribe &amp; save 10%</span><span style="font-size:13px;color:#6B5646">Every 2 or 4 weeks · skip any time</span></span><span style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-family:'Young Serif',serif;font-size:20px">{{ subTxt }}</span><span style="font-size:13px;color:#6B5646;text-decoration:line-through">{{ onceTxt }}</span></span></button>
+      </div>
+      <button onClick="{{ add }}" style="height:60px;border-radius:999px;border:0;background:#EE8088;color:#3A2A22;font-weight:700;font-size:18px;cursor:pointer" style-hover="background:#3A2A22;color:#FFFAF0">{{ addLabel }}</button>
+      <div style="font-size:14px;color:#6B5646;text-align:center">Baked {{ bake.date }} · arrives around {{ bake.arrive }}</div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPadTop0 }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.perkCols }};gap:16px">
+    <sc-for list="{{ perks }}" as="p" hint-placeholder-count="4">
+      <div style="border:1.5px dashed rgba(251,243,220,.25);border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-family:'Young Serif',serif;font-size:34px;color:#EE8088;line-height:1">{{ p.n }}</span><span style="font-size:17px;line-height:1.45">{{ p.text }}</span></div>
+    </sc-for>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:1000px;margin:0 auto;text-align:center;display:flex;flex-direction:column;gap:20px;align-items:center">
+    <p style="margin:0;font-family:'Young Serif',serif;font-size:{{ L.quote }};line-height:1.25;text-wrap:balance">“Sweet, soft oat cookies that are seriously addictive—and perfect for a lactating mum who’s constantly hungry.”</p>
+    <div style="font-size:15px;color:#E6D9C6"><span style="color:#F9CF6E;letter-spacing:2px">★★★★★</span> mariahzaini · <a href="https://uk.trustpilot.com/review/mamasmunches.com">4.3 on Trustpilot, 8 reviews</a></div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPadTop0 }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.storyCols }};gap:{{ L.gap }};align-items:center">
+    <img src="assets/photo-tray-love.jpg" alt="Zookies with a Baked With Love tag" style="width:100%;aspect-ratio:1 / 1;object-fit:cover;border-radius:28px;filter:brightness(.9)">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">It started with a friend</h2>
+      <p style="margin:0;font-size:18px;line-height:1.65;color:#E6D9C6">My story with lactation cookies started when my friend started struggling with breastfeeding her newborn. At the time, we had no choice but to start making lactation cookies ourselves, praying that it would work for the sake of her baby and amazingly, it did!</p>
+      <div style="font-family:'Caveat',cursive;font-size:34px;color:#F9CF6E">Zainab</div>
+      <a href="Story.dc.html" style="font-weight:700">Read the whole story →</a>
+    </div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPadTop0 }}">
+  <div style="max-width:1240px;margin:0 auto;border-radius:28px;background:#F9D5D3;color:#3A2A22;padding:{{ L.boxPad }};display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:20px">
+    <div><h2 style="margin:0 0 6px;font-family:'Young Serif',serif;font-weight:400;font-size:{{ L.h3 }}">Buying for a new mum?</h2><p style="margin:0;font-size:17px;color:#4E3C31">Gift boxes, a 40-day bundle and baby shower gift cards.</p></div>
+    <a href="Gifts.dc.html" style="height:56px;padding:0 30px;border-radius:999px;background:#3A2A22;color:#FFFAF0;font-weight:700;font-size:17px;display:flex;align-items:center;text-decoration:none">Shop gifts</a>
+  </div>
+</section>
+</main>
+<dc-import name="SiteFooter" hint-size="100%,640px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { bp: this.bpOf(), base: 'oat', chip: 'milk', fruit: 'strawberry', size: 20, sub: true, added: false, tick: 0 };
+  bpOf() { const w = window.innerWidth; return w < 768 ? 'm' : w < 1024 ? 't' : 'd'; }
+  componentDidMount() {
+    this.onR = () => { const b = this.bpOf(); if (b !== this.state.bp) this.setState({ bp: b }); };
+    window.addEventListener('resize', this.onR);
+    const go = () => this.setState(s => ({ tick: s.tick + 1 }));
+    if (window.MM) go(); else window.addEventListener('mm:ready', go, { once: true });
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); }
+  renderVals() {
+    const S = this.state, m = S.bp === 'm', t = S.bp === 't', M = window.MM;
+    const v = (a, b, c) => (m ? a : t ? b : c);
+    const B = M ? M.builder : { bases: [], chips: [], fruit: [] };
+    const opt = (list, key) => list.map(o => { const on = S[key] === o.id; return { ...o, pick: () => this.setState({ [key]: o.id, added: false }), bg: on ? '#FBF3DC' : 'transparent', color: on ? '#2B201B' : '#FBF3DC', border: on ? '#FBF3DC' : 'rgba(251,243,220,.3)' }; });
+    const sz = (M ? M.sizes : []).find(x => x.n === S.size) || { price: 21.5 };
+    const money = n => '£' + n.toFixed(2);
+    const nm = (list, id) => (list.find(x => x.id === id) || {}).name || '';
+    const parts = [nm(B.bases, S.base), S.chip === 'none' ? '' : nm(B.chips, S.chip) + ' chips', S.fruit === 'none' ? '' : nm(B.fruit, S.fruit)].filter(Boolean);
+    const selStyle = on => ({ bg: on ? '#FFFAF0' : 'transparent', border: on ? '#3A2A22' : '#D9C7A6' });
+    const price = S.sub ? sz.price * 0.9 : sz.price;
+    return {
+      L: {
+        heroPad: v('28px 20px 48px', '48px 32px 64px', '72px 40px 96px'),
+        heroCols: v('1fr', '1.1fr 1fr', '1.2fr 1fr'),
+        gap: v('28px', '36px', '64px'),
+        h1: v('46px', '58px', '88px'),
+        lead: v('17px', '18px', '20px'),
+        heroRatio: v('4 / 3', '4 / 5', '4 / 5'),
+        badgeL: v('12px', '-16px', '-32px'), badgeB: v('12px', '24px', '40px'),
+        secPad: v('48px 20px', '64px 32px', '88px 40px'),
+        secPadTop0: v('0 20px 48px', '0 32px 64px', '0 40px 88px'),
+        boxPad: v('24px 18px', '36px', '48px'),
+        buildCols: v('1fr', '1fr', '1.3fr 1fr'),
+        h2: v('32px', '40px', '52px'), h3: v('26px', '30px', '34px'),
+        perkCols: v('1fr 1fr', 'repeat(4, 1fr)', 'repeat(4, 1fr)'),
+        quote: v('26px', '34px', '44px'),
+        storyCols: v('1fr', '0.8fr 1fr', '0.8fr 1fr')
+      },
+      bake: M ? M.bakes(1)[0] : { day: '', dow: 'Mon', mon: '', date: 'Monday', orderBy: 'Sunday, 8pm', arrive: '' },
+      bases: opt(B.bases, 'base'), chips: opt(B.chips, 'chip'), fruit: opt(B.fruit, 'fruit'),
+      sizes: (M ? M.sizes : []).map(o => { const on = S.size === o.n; return { ...o, pick: () => this.setState({ size: o.n, added: false }), bg: on ? '#FBF3DC' : 'transparent', color: on ? '#2B201B' : '#FBF3DC', border: on ? '#FBF3DC' : 'rgba(251,243,220,.3)' }; }),
+      summary: S.size + ' × ' + parts.join(', '),
+      once: selStyle(!S.sub), subOpt: selStyle(S.sub),
+      pickOnce: () => this.setState({ sub: false, added: false }), pickSub: () => this.setState({ sub: true, added: false }),
+      onceTxt: money(sz.price), subTxt: money(sz.price * 0.9),
+      addLabel: S.added ? 'Added to your basket ✓' : (S.sub ? 'Subscribe · ' : 'Add to basket · ') + money(price),
+      add: () => {
+        if (!M) return;
+        M.cart.add({ key: ['zookies', S.size, S.base, S.chip, S.fruit, S.sub ? 'sub' : ''].join('-'), id: 'zookies', name: 'Zookies · ' + S.size + ' pack' + (S.sub ? ' · subscription' : ''), variant: parts.join(' · '), price: +price.toFixed(2), img: 'assets/photo-pair-love.jpg' });
+        this.setState({ added: true }); M.openBasket();
+      },
+      perks: (M ? M.subscribe.perks : []).map((text, i) => ({ n: '0' + (i + 1), text }))
+    };
+  }
+}
+</script>
+</body>
+</html>

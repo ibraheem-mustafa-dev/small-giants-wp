@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;700&display=swap" rel="stylesheet"><style>body{margin:0;background:#EFE9DD;font-family:'Karla',system-ui,sans-serif;color:#1a1a1a}a{color:#1a1a1a}a:hover{color:#A8404F}</style></helmet>
+<section id="t2" style="padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08)">
+  <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 8px"><a href="#t2" style="font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none">2</a><span style="font-weight:700;font-size:14px">Merged homepage, from your feedback on <a href="#1a">1a</a>, <a href="#1b">1b</a> and <a href="#1c">1c</a></span></div>
+  <p style="margin:0 0 24px;font-size:13px;line-height:1.5;color:rgba(0,0,0,.6);max-width:900px">Pink hero; one-line trust bar that scrolls on mobile and tablet and pauses on hover; baked-on-demand copy throughout; Taster Trio; build-your-cookie with Subscribe &amp; save from 1c; gifts by moment from 1b; no brown backgrounds; Instagram gallery replaces the mailing list; simpler pink footer with “Website by Small Giants Studio”.</p>
+  <div id="2a" style="display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px">
+    <div style="display:flex;align-items:baseline;gap:10px"><a href="#2a" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none">2a</a><span style="font-family:'Young Serif',serif;font-size:20px">Merged</span><a href="Home.dc.html" target="_blank" style="font-size:13px;font-weight:700">Open full page ↗</a></div>
+    <div style="display:flex;gap:24px;align-items:flex-start">
+      <div style="width:864px;height:1200px;overflow:hidden;border-radius:10px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.06)"><iframe src="Home.dc.html" title="Merged desktop" style="width:1440px;height:2000px;border:0;transform:scale(.6);transform-origin:0 0"></iframe></div>
+      <div style="width:312px;height:675px;overflow:hidden;border-radius:26px;background:#fff;box-shadow:0 0 0 8px #1a1a1a"><iframe src="Home.dc.html" title="Merged mobile" style="width:390px;height:844px;border:0;transform:scale(.8);transform-origin:0 0"></iframe></div>
+      <div style="width:374px;height:500px;overflow:hidden;border-radius:18px;background:#fff;box-shadow:0 0 0 8px #1a1a1a"><iframe src="Home.dc.html" title="Merged tablet" style="width:820px;height:1100px;border:0;transform:scale(.456);transform-origin:0 0"></iframe></div>
+    </div>
+  </div>
+  <p style="margin:24px 0 0;font-size:12px;color:rgba(0,0,0,.5)">Try next: “approve <a href="#2a">2a</a> and build the rest of the pages” · “move gifts above the cookie builder”</p>
+</section>
+<section id="t1" style="padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08)">
+  <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 8px"><a href="#t1" style="font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none">1</a><span style="font-weight:700;font-size:14px">Homepage directions: desktop 1440 + mobile 390, live and clickable</span></div>
+  <p style="margin:0 0 24px;font-size:13px;line-height:1.5;color:rgba(0,0,0,.6);max-width:860px">Shared system across all three: Young Serif + Karla, logo pink #EE8088 with cocoa text, cream #FBF3DC, butter yellow #F9CF6E ribbons with a dashed “stitched” edge, 767 / 1023 / 1024+ breakpoints. They differ on audience emphasis and visual treatment. Prices use 8 £9.50 · 20 £21.50 · 40 £38.</p>
+  <div style="display:flex;flex-direction:column;gap:48px">
+    <sc-for list="{{ opts }}" as="o" hint-placeholder-count="3">
+      <div id="{{ o.id }}" style="display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px">
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <a href="{{ o.anchor }}" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none">{{ o.id }}</a>
+          <span style="font-family:'Young Serif',serif;font-size:20px">{{ o.name }}</span>
+          <span style="font-size:13px;color:rgba(0,0,0,.6);max-width:760px">{{ o.desc }}</span>
+          <a href="{{ o.file }}" target="_blank" style="font-size:13px;font-weight:700">Open full page ↗</a>
+        </div>
+        <div style="display:flex;gap:24px;align-items:flex-start">
+          <div style="width:864px;height:1200px;overflow:hidden;border-radius:10px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.06)"><iframe src="{{ o.file }}" title="{{ o.name }} desktop" style="width:1440px;height:2000px;border:0;transform:scale(.6);transform-origin:0 0"></iframe></div>
+          <div style="width:312px;height:675px;overflow:hidden;border-radius:26px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08),0 0 0 8px #1a1a1a"><iframe src="{{ o.file }}" title="{{ o.name }} mobile" style="width:390px;height:844px;border:0;transform:scale(.8);transform-origin:0 0"></iframe></div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:rgba(0,0,0,.5)">Try next: “go with <a href="#1a">1a</a> but use the build-your-cookie section from <a href="#1c">1c</a>” · “<a href="#1b">1b</a>’s gift finder on <a href="#1a">1a</a>” · “night mode from <a href="#1c">1c</a> as an automatic after-9pm theme”</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const o = [
+      { id: '1a', name: 'Kitchen table', file: 'Home-Table.dc.html', desc: 'Balanced, mum-first. Splits the audience early with “For me / For her”, then trust, bake schedule, ingredients, gifting, story, real reviews and FAQs.' },
+      { id: '1b', name: 'The gift shop', file: 'Home-Gift.dc.html', desc: 'Gift-first. Pink hero with an inline gift finder, gifts by moment, a two-minute gifting flow, and a baby-shower gift card she redeems once baby arrives. Mums get one band lower down.' },
+      { id: '1c', name: 'Night feed', file: 'Home-Night.dc.html', desc: 'Mum-first for late-evening phone browsing. Dim cocoa theme, type-led, with the build-your-cookie picker and Subscribe & save (10% off, skip any time) right on the homepage.' }
+    ];
+    return { opts: o.map(x => ({ ...x, anchor: '#' + x.id })) };
+  }
+}
+</script>
+</body>
+</html>

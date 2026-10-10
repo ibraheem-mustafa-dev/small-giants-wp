@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Order confirmed · Mama's Munches</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="store.js"></script>
+<style>body{margin:0;background:#FBF3DC;color:#3A2A22;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#3A2A22}button{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:3px solid #3A2A22;outline-offset:3px}@keyframes mmMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}</style>
+</helmet>
+<div data-screen-label="Order confirmed" style="background:#FBF3DC;min-height:100vh">
+<dc-import name="SiteHeader" current="" hint-size="100%,96px" style="position:sticky;top:-32px;z-index:50;display:block"></dc-import>
+<main>
+<section style="background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }};overflow:hidden">
+  <div style="max-width:900px;margin:0 auto;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px">
+    <div ref="{{ badgeRef }}" style="width:110px;height:110px;border-radius:999px;background:#F9CF6E;border:2px solid #3A2A22;box-shadow:5px 5px 0 #3A2A22;display:flex;align-items:center;justify-content:center;font-size:52px;transform:rotate(-8deg)">✓</div>
+    <div style="font-family:'Caveat',cursive;font-size:32px;color:#8E3444;line-height:1">thank you, lovely</div>
+    <h1 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em;text-wrap:balance">Your order’s in. Zainab’s warming the oven.</h1>
+    <p style="margin:0;font-size:18px;line-height:1.55;color:#4E3C31;max-width:560px">Order <b style="color:#3A2A22">{{ no }}</b>. We’ve emailed your receipt, and you’ll get a tracking link as soon as it’s posted.</p>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:{{ L.gap }}">
+    <div style="display:grid;grid-template-columns:{{ L.steps }};gap:14px">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="0">
+        <div style="background:{{ s.bg }};border:2px solid #3A2A22;border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:8px;box-shadow:{{ s.shadow }}">
+          <span style="width:40px;height:40px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-weight:700">{{ s.icon }}</span>
+          <b style="font-family:'Young Serif',serif;font-weight:400;font-size:20px">{{ s.t }}</b>
+          <span style="font-size:14px;line-height:1.45">{{ s.d }}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:grid;grid-template-columns:{{ L.two }};gap:20px;align-items:start">
+      <div style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:26px;padding:22px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Young Serif',serif;font-size:22px">What’s coming</div>
+        <sc-for list="{{ items }}" as="it" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center"><div style="width:56px;height:56px;border-radius:12px;border:2px solid #3A2A22;background-image:{{ it.bg }};background-size:cover;background-position:center"></div><div style="min-width:0"><div style="font-weight:700;font-size:15px">{{ it.qty }} × {{ it.name }}</div><div style="font-size:13px;color:#5E4A3D">{{ it.variant }}</div></div><b>{{ it.total }}</b></div></sc-for>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;border-top:2px dashed rgba(58,42,34,.3)"><b>Paid</b><span style="font-family:'Young Serif',serif;font-size:26px">{{ totalText }}</span></div>
+      </div>
+      <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}">
+        <div style="position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:6px;padding:30px 24px 22px;transform:rotate(2deg);box-shadow:6px 6px 0 #3A2A22">
+          <span aria-hidden="true" style="position:absolute;top:-12px;left:50%;width:90px;height:24px;background:rgba(249,207,110,.85);transform:translateX(-50%) rotate(-3deg)"></span>
+          <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Your note, going in the box</div>
+          <div style="font-family:'Caveat',cursive;font-size:28px;line-height:1.2">{{ note }}</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noNote }}" hint-placeholder-val="{{ true }}">
+        <a href="Product.dc.html?id=trial" style="background:#FCEBBE;border:2px solid #3A2A22;border-radius:26px;padding:22px;text-decoration:none;color:#3A2A22;display:flex;flex-direction:column;gap:8px;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22">
+          <span style="font-family:'Caveat',cursive;font-size:26px;color:#7A5A12;line-height:1">know another new mum?</span>
+          <span style="font-family:'Young Serif',serif;font-size:24px">Send her a Taster Trio</span>
+          <span style="font-size:15px;line-height:1.5">3 Zookies through her letterbox for £5, postage included.</span>
+          <span style="font-weight:700;margin-top:4px">Send one →</span>
+        </a>
+      </sc-if>
+    </div>
+
+    <div style="display:grid;grid-template-columns:{{ L.two }};gap:20px">
+      <a href="https://www.instagram.com/mamasmunches/" style="background:#F9D5D3;border:2px solid #3A2A22;border-radius:26px;padding:22px;text-decoration:none;color:#3A2A22;display:flex;align-items:center;gap:16px;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22">
+        <span style="flex:none;width:56px;height:56px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);display:flex;align-items:center;justify-content:center;color:#FFFFFF"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1.2" style="fill:currentColor;stroke:none"></circle></svg></span>
+        <span><b style="font-family:'Young Serif',serif;font-weight:400;font-size:21px;display:block">Watch it being baked</b><span style="font-size:15px">Follow @mamasmunches</span></span>
+      </a>
+      <a href="Home.dc.html" style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:26px;padding:22px;text-decoration:none;color:#3A2A22;display:flex;align-items:center;gap:16px;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22">
+        <span style="flex:none;width:56px;height:56px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;display:flex;align-items:center;justify-content:center;font-size:22px">←</span>
+        <span><b style="font-family:'Young Serif',serif;font-weight:400;font-size:21px;display:block">Back to the kitchen</b><span style="font-size:15px">Keep browsing</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+</main>
+<dc-import name="SiteFooter" hint-size="100%,1100px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { bp: this.bpOf(), tick: 0 };
+  badgeRef = React.createRef();
+  bpOf() { const w = window.innerWidth; return w < 768 ? 'm' : w < 1024 ? 't' : 'd'; }
+  componentDidMount() {
+    this.onR = () => { const b = this.bpOf(); if (b !== this.state.bp) this.setState({ bp: b }); };
+    window.addEventListener('resize', this.onR);
+    const go = () => this.setState(s => ({ tick: s.tick + 1 }));
+    if (window.MM) go(); else window.addEventListener('mm:ready', go, { once: true });
+    const b = this.badgeRef.current;
+    if (b && b.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) b.animate([{ transform: 'scale(0) rotate(-40deg)' }, { transform: 'scale(1.15) rotate(4deg)' }, { transform: 'scale(1) rotate(-8deg)' }], { duration: 800, easing: 'cubic-bezier(.3,1.6,.5,1)' });
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); }
+  renderVals() {
+    const S = this.state, m = S.bp === 'm', t = S.bp === 't', M = window.MM;
+    const v = (a, b, c) => (m ? a : t ? b : c);
+    const money = n => '£' + n.toFixed(2);
+    const o = (M && M.order()) || { no: 'MM-1042', items: [{ key: 'z', name: 'Zookies · 20 pack', variant: 'Classic oat · milk choc chips · strawberry', qty: 1, price: 21.5, img: 'assets/photo-pair-love.jpg' }], total: 21.5, gift: { on: false } };
+    const note = o.gift && o.gift.on && o.gift.message;
+    return {
+      badgeRef: this.badgeRef,
+      L: { heroPad: v('40px 20px 48px', '56px 32px 64px', '72px 40px 80px'), h1: v('38px', '48px', '60px'), secPad: v('40px 20px 64px', '56px 32px 80px', '72px 40px 104px'), gap: v('20px', '24px', '28px'), steps: v('1fr 1fr', 'repeat(4, 1fr)', 'repeat(4, 1fr)'), two: v('1fr', '1fr 1fr', '1fr 1fr') },
+      no: o.no,
+      steps: [
+        { icon: '✓', t: 'Order placed', d: 'Just now', bg: '#F9CF6E', shadow: '4px 4px 0 #3A2A22' },
+        { icon: '✦', t: 'Baking', d: 'Zainab bakes it fresh for you', bg: '#FFFAF0', shadow: 'none' },
+        { icon: '→', t: 'Posted', d: 'Royal Mail Tracked, link by email', bg: '#FFFAF0', shadow: 'none' },
+        { icon: '♥', t: 'With you', d: 'Usually in 3–5 days', bg: '#FFFAF0', shadow: 'none' }
+      ],
+      items: (o.items || []).map(it => ({ ...it, bg: 'url(' + it.img + ')', total: money(it.price * it.qty) })),
+      totalText: money(o.total || 0),
+      hasNote: !!note, noNote: !note, note: note || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

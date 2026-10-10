@@ -1629,7 +1629,7 @@ utility pieces (§4) + cross-cutting FRs are phased INTO this plan so a solo bui
 
   | Step | Action |
   |---|---|
-  | 1 | Derive **N** — the count of mega-shaped nav regions — from the draft at `sites/indus-foods/mockups/Indus Foods Ltd Homepage.html`, at gate time. |
+  | 1 | Derive **N** — the count of mega-shaped nav regions — from the draft at `sites/indus-foods/Indus Foods Website v2.dc.html` (its mega menus: `Indus Foods Mega Menu.dc.html`, `Mega Menu.dc.html`), at gate time. |
   | 2 | Record **N, the deriving command, and the per-region list** in the gate report. ⛔ Never in this spec — a number written here drifts the moment the draft changes. |
   | 3 | Build one mega for each of the N regions. |
 

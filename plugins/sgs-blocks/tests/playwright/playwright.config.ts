@@ -17,7 +17,7 @@ export default defineConfig({
   timeout: 30000,
   retries: 1,
   use: {
-    baseURL: process.env.WP_TEST_BASE_URL || 'https://lightsalmon-tarsier-683012.hostingersite.com',
+    baseURL: process.env.WP_TEST_BASE_URL || 'https://sandybrown-nightingale-600381.hostingersite.com',
     httpCredentials: {
       username: wpUser,
       password: wpPassword,

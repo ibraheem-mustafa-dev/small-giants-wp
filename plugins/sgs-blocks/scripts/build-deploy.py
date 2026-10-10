@@ -28,7 +28,7 @@ Guards (per spec):
       because a deploy of an unfinished edit that reports [DONE] is how a PHP
       fatal reaches live sites unnoticed.
     - The default target is sandybrown; the other TARGETS entries
-      (indus-test, eye-care-test) are flagged explicit_opt_in_required and must
+      (indus-test, eye-care-test, mamas-test) are flagged explicit_opt_in_required and must
       be named with --target before they will deploy
     - Refuses to deploy if plugins/sgs-blocks/build/ is missing after build step
     - Never hand-roll tar/scp: the remote step swaps directories with a .bak
@@ -100,6 +100,15 @@ TARGETS = {
         "wp_content": "domains/darkcyan-grouse-898606.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": True,
         "client": "eye-care-ward-end",
+    },
+    # Dedicated Mama's Munches redesign test site: a fresh WordPress for the redesign draft
+    # (sites/mamas-munches-redesign/), independent of sandybrown, which keeps the live catalogue.
+    # Credentials: .claude/secrets/mamas-test.env (gitignored).
+    "mamas-test": {
+        "host": "lightsalmon-tarsier-683012.hostingersite.com",
+        "wp_content": "domains/lightsalmon-tarsier-683012.hostingersite.com/public_html/wp-content",
+        "explicit_opt_in_required": True,
+        "client": "mamas-munches-redesign",
     },
 }
 

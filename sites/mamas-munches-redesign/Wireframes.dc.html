@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#EDEAE4;color:#2B2B2B;font-family:'Karla',system-ui,sans-serif}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#8E3444}</style>
+</helmet>
+<div data-screen-label="Wireframes" style="padding:48px;display:flex;flex-direction:column;gap:72px;width:max-content">
+<header style="max-width:900px">
+  <div style="font-family:'Caveat',cursive;font-size:30px;color:#8E3444">Mama's Munches</div>
+  <h1 style="margin:0 0 8px;font-size:40px;font-weight:700">Wireframes, all pages and surfaces</h1>
+  <p style="margin:0;font-size:17px;line-height:1.5;color:#555">Desktop (1024px+) beside mobile (375px). Tags show the SGS block each section maps to. Hatched boxes are images, dark pills are buttons.</p>
+</header>
+<sc-for list="{{ pages }}" as="p" hint-placeholder-count="2">
+<section id="{{ p.id }}" style="display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;align-items:baseline;gap:14px;border-bottom:2px solid #2B2B2B;padding-bottom:8px">
+    <span style="font-size:14px;font-weight:700;background:#2B2B2B;color:#fff;padding:2px 10px;border-radius:99px">{{ p.num }}</span>
+    <h2 style="margin:0;font-size:28px">{{ p.title }}</h2>
+    <span style="color:#555;font-size:15px">{{ p.desc }}</span>
+  </div>
+  <div style="display:flex;gap:40px;align-items:flex-start">
+    <div style="width:960px;background:#fff;border:2px solid #2B2B2B;display:flex;flex-direction:column;gap:10px;padding:14px">
+      <sc-for list="{{ p.blocks }}" as="b" hint-placeholder-count="3">
+      <div style="border:1.5px dashed #999;padding:20px 10px 10px;position:relative;background:#FAFAF8">
+        <span style="position:absolute;top:2px;left:6px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#777">{{ b.n }} <span style="font-weight:400;text-transform:none;color:#A8404F">{{ b.s }}</span></span>
+        <div style="display:grid;grid-template-columns:{{ b.dcols }};gap:8px">
+          <sc-for list="{{ b.cells }}" as="c" hint-placeholder-count="2"><div style="{{ c.css }}">{{ c.t }}</div></sc-for>
+        </div>
+      </div>
+      </sc-for>
+    </div>
+    <div style="width:375px;flex:none;background:#fff;border:2px solid #2B2B2B;border-radius:22px;display:flex;flex-direction:column;gap:10px;padding:14px">
+      <sc-for list="{{ p.blocks }}" as="b" hint-placeholder-count="3">
+      <div style="border:1.5px dashed #999;padding:20px 8px 8px;position:relative;background:#FAFAF8">
+        <span style="position:absolute;top:2px;left:6px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#777">{{ b.n }}</span>
+        <div style="display:grid;grid-template-columns:{{ b.mcols }};gap:6px">
+          <sc-for list="{{ b.cells }}" as="c" hint-placeholder-count="2"><div style="{{ c.css }}">{{ c.t }}</div></sc-for>
+        </div>
+      </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const base='border:1.5px solid #2B2B2B;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;padding:6px;min-width:0;';
+    const mk=s=>{const k=s[0];const t=(k==='#'||k==='!')?s.slice(1):s;
+      if(k==='#')return{t:t+' ▨',css:base+'min-height:96px;background:repeating-linear-gradient(135deg,#fff 0 7px,#E4E1DA 7px 8px);color:#666'};
+      if(k==='!')return{t,css:base+'min-height:36px;background:#2B2B2B;color:#fff;border-radius:99px;font-weight:700'};
+      if(k==='>')return{t:s.slice(1),css:base+'min-height:96px;background:#fff;justify-content:flex-start;align-items:flex-start'};
+      return{t,css:base+'min-height:30px;background:#fff'}};
+    const B=(n,s,dc,mc,...c)=>({n,s,dcols:`repeat(${dc},minmax(0,1fr))`,mcols:`repeat(${mc},minmax(0,1fr))`,cells:c.map(mk)});
+    const hdr=[B('Announcement strip','sgs/notice-banner',1,1,'Free delivery on 20+ packs · baked to order, 3–5 days'),B('Header','sgs/site-header',5,3,'Logo','Shop','Gifts','Contact','!Basket (2)')];
+    const ftr=[B('Footer','sgs/site-footer',1,1,'Scrolling tagline marquee ✦'),B('Footer links','sgs/site-footer',4,2,'Round logo + handwritten line','Shop links','Help links','Social: Instagram · WhatsApp'),B('Legal','sgs/site-footer',1,1,'Privacy · Terms (centred) · credit')];
+    const P=(id,title,desc,blocks)=>({id,title,desc,blocks});
+    const pages=[
+    P('global','Global surfaces','Header, nav drawer, basket drawer, footer',[
+      ...hdr,
+      B('Nav drawer (mobile / tablet)','sgs/nav-drawer-menu',2,1,'#For me tile','#For her tile','Shop','Gifts','Contact','Help','!Basket'),
+      B('Basket drawer','sgs/cart',1,1,'Free-delivery progress bar','Line items (qty stepper, remove)','Gift toggle + note','Taster Trio upsell','!Checkout  ·  Subtotal'),
+      ...ftr]),
+    P('home','Homepage','Hero, builder, gifts, story, reviews',[
+      ...hdr,
+      B('Hero','sgs/hero',2,1,'Greeting (time-aware) · H1 · lead · !Build your box · Gifts · Trustpilot 4.3','#Polaroid stack ×3 + "Baked to order" sticker'),
+      B('Trust bar (marquee on mobile)','sgs/trust-bar',4,2,'Baked to order','3–5 day delivery','Subscribe & save 10%','4.3 Trustpilot'),
+      B('Who are we baking for?','sgs/card-grid',2,1,'#For me · I’m feeding a little one','#For her · I’m spoiling a new mum'),
+      B('Build your Zookie','sgs/option-picker (new)',2,1,'1 Base · 2 Chips · 3 Up to 3 flavours (11) · split note','>Live cookie preview · pack size · price · !Add to basket'),
+      B('Gifts by moment (carousel)','sgs/card-grid',4,2,'#Moment','#Moment','#Moment','#Moment'),
+      B('Recipe-card ingredients','sgs/info-box',3,1,'Oats','Brewer’s yeast','Flaxseed'),
+      B('Story','sgs/media + text',2,1,'#Polaroid of Zainab','Handwritten heading · story text'),
+      B('Reviews slider','sgs/testimonial-slider',3,1,'Review','Review','Review'),
+      B('FAQ','sgs/accordion',1,1,'Question ＋','Question ＋','Question ＋'),
+      B('Instagram gallery','Smash Balloon',6,3,'#','#','#','#','#','#'),
+      ...ftr]),
+    P('shop','Shop','Archive with filters and product cards',[
+      ...hdr,
+      B('Page heading','core/heading',1,1,'Handwritten note · H1 · intro'),
+      B('Toolbar','sgs-archive-toolbar',2,1,'Filter pills (All · Build · Gifts · Subscribe)','Sort dropdown'),
+      B('Product grid','sgs/product-card',3,2,'#Build your own','#Taster Trio','#Gift box','#40-day bundle','#Gift card','#Subscribe box'),
+      B('Subscribe banner','sgs/cta-section',2,1,'Subscribe & save 10% · every 2 or 4 weeks','!Start a subscription'),
+      ...ftr]),
+    P('product','Product','Pack sizes, builder, subscribe, gift note',[
+      ...hdr,
+      B('Breadcrumb','core/breadcrumbs',1,1,'Shop › Build your own'),
+      B('Gallery + buy box','sgs/buybox',2,1,'#Main image · thumbnails','Title · price · ★ rating · pack cards (8 £9.50 · 20 £21.50 · 40 £38) · base · chips · up to 3 flavours · one-off / subscribe + frequency · send as gift + note preview · !Add to basket'),
+      B('Assurance row','sgs/icon-list',4,2,'Baked to order','Free delivery 20+','Pause any time','Allergen info'),
+      B('Fold-outs','sgs/accordion',1,1,'Allergens ＋','Delivery ＋','Storage ＋'),
+      B('Reviews','sgs/testimonial-slider',3,1,'Review','Review','Review'),
+      B('You might also like','sgs/product-card',4,2,'#','#','#','#'),
+      B('Sticky bar (mobile only)','new',1,1,'Price · !Add to basket'),
+      ...ftr]),
+    P('gifts','Gifts','Gift finder, boxes, cards, note preview',[
+      ...hdr,
+      B('Hero','sgs/hero',2,1,'H1 · lead · handwritten note','#Gift box with heart'),
+      B('Gift finder','sgs/choice-flow',3,1,'1 Moment (new baby · birthday · thank you…)','2 Budget','>Live results'),
+      B('Gift boxes','sgs/product-card',3,1,'#Taster Trio £5','#Gift Box £15','#40-Day Bundle £42'),
+      B('Gift cards','sgs/product-card (plugin)',3,3,'£15','£25','£40'),
+      B('Gift note preview','new',2,1,'Message field + occasion','>Note card preview, prices left off'),
+      ...ftr]),
+    P('basket','Basket','Line items, free-delivery bar, upsell',[
+      ...hdr,
+      B('Basket','cart template',2,1,'Free-delivery bar · line items (image, name, options, qty, price, remove) · gift toggle + note · Taster Trio upsell','Order summary · subtotal · delivery · total · !Checkout · express pay'),
+      ...ftr]),
+    P('checkout','Checkout','Express pay, gift fork, delivery, payment',[
+      B('Header (minimal)','header-minimal',2,2,'Logo','Secure checkout'),
+      B('Checkout','checkout template',2,1,'Express pay (Apple/Google Pay · PayPal) · Contact · Who’s it for? (me / gift → recipient fields) · Delivery method (Royal Mail) · Payment (Stripe) · Allergen note · !Place order','Order summary · items · promo code · totals'),
+      B('Footer (minimal)','footer-minimal',1,1,'Privacy · Terms · Help')]),
+    P('confirmation','Order confirmation','Timeline and gift note echo',[
+      ...hdr,
+      B('Thank you','order-confirmation',1,1,'Handwritten thanks · order number · email sent'),
+      B('Baking timeline','sgs/process-steps',4,1,'Baking','Packed','On its way','Delivered (3–5 days)'),
+      B('Order + gift note','order-confirmation',2,1,'Items · totals · address','Gift note echo'),
+      B('Next','sgs/cta-section',2,1,'!Continue shopping','Follow on Instagram'),
+      ...ftr]),
+    P('contact','Contact','Channel cards and topic-aware form',[
+      ...hdr,
+      B('Heading','core/heading',1,1,'Handwritten note · H1 · reply time'),
+      B('Channels','sgs/card-grid',3,1,'WhatsApp (number TBC)','Instagram DM','Help centre'),
+      B('Form','sgs/form',2,1,'Topic select → conditional fields · name · email · order no. · message · !Send','>Hours · delivery note · handwritten sign-off'),
+      ...ftr]),
+    P('help','Help','Search, categories, accordion',[
+      ...hdr,
+      B('Search','sgs/filter-search',1,1,'Search help'),
+      B('Category chips','sgs/filter-search',5,2,'Orders','Delivery','Subscriptions','Gifts','Ingredients'),
+      B('Answers','sgs/accordion',1,1,'Question ＋','Question ＋','Question ＋','Question ＋'),
+      B('Still stuck?','sgs/cta-section',2,1,'Reach us on WhatsApp or the form','!Contact us'),
+      ...ftr])
+    ];
+    pages.forEach((p,i)=>p.num=String(i+1).padStart(2,'0'));
+    return {pages};
+  }
+}
+</script>
+</body>
+</html>

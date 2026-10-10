@@ -1,0 +1,356 @@
+[
+  {
+    "kind": "derive",
+    "slug": "primary",
+    "_source": "derived",
+    "role": "link-colour",
+    "confidence": 0.8,
+    "relative_share": 1.0,
+    "value": "#a8404f",
+    "reason": "Pass B: derived link-colour by usage-context (share 1.0 within role)"
+  },
+  {
+    "kind": "derive",
+    "slug": "surface",
+    "_source": "derived",
+    "role": "surface",
+    "confidence": 0.95,
+    "relative_share": 1.0,
+    "value": "#fbf3dc",
+    "reason": "Pass B: derived surface by usage-context (share 1.0 within role)"
+  },
+  {
+    "kind": "derive",
+    "slug": "text",
+    "_source": "derived",
+    "role": "text",
+    "confidence": 0.95,
+    "relative_share": 1.0,
+    "value": "#3a2a22",
+    "reason": "Pass B: derived text by usage-context (share 1.0 within role)"
+  },
+  {
+    "kind": "merge",
+    "reason": "Pass B palette OVERLAID on the framework baseline (baseline slugs kept, never replaced)",
+    "overlaid": 3,
+    "appended": 0
+  },
+  {
+    "kind": "base",
+    "what": "styles.typography",
+    "_source": "declared",
+    "reason": "computed on representative <p> 'At the time, we had no choice bu'",
+    "fontSize": "17px",
+    "lineHeight": "1.65",
+    "root_px": 16.0
+  },
+  {
+    "kind": "base",
+    "what": "settings.typography.fontSizes[base]",
+    "_source": "declared",
+    "reason": "base body size routed through a non-fluid preset so WP's fluid engine cannot recompute the draft's authored value (FR-33-4)",
+    "size": "17px",
+    "fluid": false
+  },
+  {
+    "kind": "base",
+    "what": "styles.color.background",
+    "_source": "declared",
+    "reason": "widest content-containing ancestor 'html>body>div>div>div' (area 10719360)",
+    "value": "rgb(251, 243, 220)"
+  },
+  {
+    "kind": "base",
+    "what": "styles.elements.heading",
+    "_source": "declared",
+    "reason": "mode line-height ratio 1.02 across non-chrome headings (ratios=[1.02, 1.05, 1.2]); hero outlier excluded",
+    "lineHeight": "1.02",
+    "letterSpacing": "-2.05px"
+  },
+  {
+    "kind": "base",
+    "what": "styles.elements.h1..h6.typography.fontSize",
+    "_source": "declared",
+    "reason": "literal computed fontSize per non-chrome heading tag (overrides the shared preset var for that tag only, no unrelated element touched)",
+    "sizes": {
+      "h1": "82px",
+      "h2": "58px",
+      "h3": "22px"
+    }
+  },
+  {
+    "kind": "base",
+    "what": "styles.elements.h1..h6",
+    "reason": "no non-chrome measurement for these levels — framework baseline PRESERVED untouched (blind spot, not measured-absent; deleting it would strip the level from the live site)",
+    "baseline_preserved": "h4,h5,h6"
+  },
+  {
+    "kind": "font-loading",
+    "what": "font-face:Karla",
+    "reason": "self-hosted a font not already bundled in the framework",
+    "saved_to": "file:./assets/fonts/karla/karla-variable-latin.woff2",
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Karla:wght@400..700&display=swap"
+  },
+  {
+    "kind": "font-loading",
+    "what": "font-face:Young Serif",
+    "reason": "self-hosted a font not already bundled in the framework",
+    "saved_to": "file:./assets/fonts/young-serif/young-serif-variable-latin.woff2",
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap",
+    "weight_source": "static"
+  },
+  {
+    "kind": "font-loading",
+    "what": "font-face:Young Serif",
+    "reason": "self-hosted a font not already bundled in the framework",
+    "saved_to": "file:./assets/fonts/young-serif/young-serif-variable-latin.woff2",
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap",
+    "weight_source": "static"
+  },
+  {
+    "kind": "font-family",
+    "what": "fontFamilies:young-serif",
+    "reason": "loaded by the draft and rendered on 47 element(s) — FR-33-18",
+    "fontFamily": "\"Young Serif\", serif",
+    "weights": "400",
+    "google": true
+  },
+  {
+    "kind": "font-family",
+    "what": "fontFamilies:karla",
+    "reason": "loaded by the draft and rendered on 141 element(s) — FR-33-18",
+    "fontFamily": "Karla, system-ui, sans-serif",
+    "weights": "400,600,700",
+    "google": true
+  },
+  {
+    "kind": "font-loading",
+    "what": "font-face:Caveat",
+    "reason": "self-hosted a font not already bundled in the framework",
+    "saved_to": "file:./assets/fonts/caveat/caveat-variable-latin.woff2",
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Caveat:wght@500..700&display=swap"
+  },
+  {
+    "kind": "font-family",
+    "what": "fontFamilies:caveat",
+    "reason": "loaded by the draft and rendered on 17 element(s) — FR-33-18",
+    "fontFamily": "Caveat, cursive",
+    "weights": "400",
+    "google": true
+  },
+  {
+    "kind": "preset",
+    "slot": "buttonPresets.primary",
+    "_source": "derived",
+    "reason": "slot inferred from an unclassed style signature (sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700), 15 occurrence(s), on the PAINTING element <a:nth-of-type(2)>",
+    "variant_from": "unclassed style signature",
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,padding,hover-background,hover-transform"
+  },
+  {
+    "kind": "preset",
+    "slot": "buttonPresets.secondary",
+    "_source": "derived",
+    "reason": "slot inferred from an unclassed style signature (sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700), 7 occurrence(s), on the PAINTING element <a>",
+    "variant_from": "unclassed style signature",
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,padding,hover-background,hover-transform"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets.primary",
+    "reason": "derived keys overlaid onto the framework baseline preset; baseline keys the extractor cannot derive are preserved",
+    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-transform,padding,text",
+    "preserved_from_baseline": "hover-border,hover-text,min-height"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets.secondary",
+    "reason": "derived keys overlaid onto the framework baseline preset; baseline keys the extractor cannot derive are preserved",
+    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-transform,padding,text",
+    "preserved_from_baseline": "hover-border,hover-text,min-height"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets",
+    "reason": "baseline preset slots the draft does not define are preserved whole (a wholesale replace would delete them from the live site)",
+    "preserved_slots": "outline"
+  },
+  {
+    "kind": "layout",
+    "what": "layout.contentSize",
+    "_source": "rendered",
+    "value": "1240px",
+    "wideSize": "1400px",
+    "reason": "most common content box of the top-level bands at the widest census viewport; one width only; wideSize 1400px kept",
+    "tally": {
+      "1124": 1,
+      "1160": 1,
+      "1240": 6
+    },
+    "superseded": {
+      "contentSize": "1200px",
+      "wideSize": "1400px"
+    },
+    "evidence": [
+      {
+        "band": "div.sc-host",
+        "text": "",
+        "reason": "no rendered text"
+      },
+      {
+        "band": "section",
+        "text": "✦ up for a night feed? we see you, mama ",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1240px",
+        "boxSizing": "border-box",
+        "padding": "40/40",
+        "contentWidth": 1160,
+        "at1440": {
+          "x": 140,
+          "width": 1160
+        },
+        "at1920": {
+          "x": 380,
+          "width": 1160
+        }
+      },
+      {
+        "band": "section",
+        "text": "Who are we baking for today? for me ✦ I’",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1240px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1240,
+        "at1440": {
+          "x": 100,
+          "width": 1240
+        },
+        "at1920": {
+          "x": 340,
+          "width": 1240
+        }
+      },
+      {
+        "band": "section",
+        "text": "your cookie, your way Build your Zookie ",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1240px",
+        "boxSizing": "border-box",
+        "padding": "56/56",
+        "contentWidth": 1124,
+        "at1440": {
+          "x": 158,
+          "width": 1124
+        },
+        "at1920": {
+          "x": 398,
+          "width": 1124
+        }
+      },
+      {
+        "band": "section",
+        "text": "gifts for new mums A gift she’ll actuall",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1240px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1240,
+        "at1440": {
+          "x": 100,
+          "width": 1240
+        },
+        "at1920": {
+          "x": 340,
+          "width": 1240
+        }
+      },
+      {
+        "band": "section",
+        "text": "Zainab’s Zookie recipe The four that go ",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1240px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1240,
+        "at1440": {
+          "x": 100,
+          "width": 1240
+        },
+        "at1920": {
+          "x": 340,
+          "width": 1240
+        }
+      },
+      {
+        "band": "section",
+        "text": "where it all started our story “My story",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1240px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1240,
+        "at1440": {
+          "x": 100,
+          "width": 1240
+        },
+        "at1920": {
+          "x": 340,
+          "width": 1240
+        }
+      },
+      {
+        "band": "section",
+        "text": "real mums, real words Loved by mums, and",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1240px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1240,
+        "at1440": {
+          "x": 100,
+          "width": 1240
+        },
+        "at1920": {
+          "x": 340,
+          "width": 1240
+        }
+      },
+      {
+        "band": "section",
+        "text": "ask away Questions mums ask Can’t see yo",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1240px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1240,
+        "at1440": {
+          "x": 100,
+          "width": 1240
+        },
+        "at1920": {
+          "x": 340,
+          "width": 1240
+        }
+      },
+      {
+        "band": "div.sc-host",
+        "text": "",
+        "reason": "no rendered text"
+      }
+    ]
+  },
+  {
+    "kind": "base",
+    "what": "styles.elements.heading.color.text",
+    "reason": "equal to styles.color.text, so headings inherit their section's colour as the draft's do (an element rule would override a coloured section)",
+    "dropped": "var:preset|color|text"
+  }
+]

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Mama's Munches · Gifts for new mums</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<script src="store.js"></script>
+<style>body{margin:0;background:#FBF3DC;color:#3A2A22;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#3A2A22}button,input,select,textarea{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:2px solid #3A2A22;outline-offset:3px}</style>
+</helmet>
+<div data-screen-label="Home 1b Gift-first" style="background:#FBF3DC;min-height:100vh">
+<dc-import name="SiteHeader" current="gifts" hint-size="100%,96px" style="position:sticky;top:-32px;z-index:50;display:block"></dc-import>
+<main>
+<section style="background:#F9D5D3;padding:{{ L.heroPad }};overflow:hidden">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.heroCols }};gap:{{ L.gap }};align-items:center">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <span style="align-self:flex-start;background:#F9CF6E;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;outline:1.5px dashed rgba(58,42,34,.4);outline-offset:-5px">Gifts for new &amp; expecting mums</span>
+      <h1 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1.02;letter-spacing:-0.02em;text-wrap:balance">Send her something she’ll actually eat</h1>
+      <p style="margin:0;font-size:{{ L.lead }};line-height:1.5;color:#4E3C31;max-width:500px">Handmade lactation cookies, baked to order in Birmingham and sent with your message. We leave the prices off.</p>
+      <div style="background:#FFFAF0;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:14px;max-width:560px;box-shadow:0 14px 34px rgba(58,42,34,.1)">
+        <div style="font-size:14px;font-weight:700">What’s the moment?</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ occ }}" as="o" hint-placeholder-count="4">
+            <button onClick="{{ o.pick }}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid {{ o.border }};background:{{ o.bg }};color:{{ o.color }};font-size:15px;font-weight:700;cursor:pointer">{{ o.name }}</button>
+          </sc-for>
+        </div>
+        <a href="{{ findHref }}" style="height:56px;border-radius:999px;background:#EE8088;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;text-decoration:none" style-hover="background:#3A2A22;color:#FFFAF0">{{ findLabel }}</a>
+      </div>
+    </div>
+    <div style="position:relative;padding:{{ L.artPad }}">
+      <img src="assets/photo-gift-heart.jpg" alt="Zookies in a gift box with a heart" style="width:{{ L.artW }};aspect-ratio:3 / 4;object-fit:cover;border-radius:24px;transform:rotate(-3deg);box-shadow:0 20px 44px rgba(58,42,34,.2)">
+      <div style="position:absolute;right:0;bottom:0;width:58%;background:#FFFAF0;border-radius:18px;padding:22px 20px 18px;outline:1.5px dashed #E3AFAF;outline-offset:-8px;transform:rotate(3deg);box-shadow:0 20px 44px rgba(58,42,34,.2)">
+        <div style="font-family:'Caveat',cursive;font-size:{{ L.card1 }};line-height:1.1">Dear Aisha,</div>
+        <div style="font-family:'Caveat',cursive;font-size:{{ L.card2 }};line-height:1.2;margin-top:6px">For the 3am feeds. You’re doing brilliantly.</div>
+        <div style="font-family:'Caveat',cursive;font-size:{{ L.card2 }};line-height:1.2;margin-top:8px;text-align:right">Sara x</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto">
+    <h2 style="margin:0 0 22px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1">Gifts by moment</h2>
+    <div style="display:grid;grid-template-columns:{{ L.tileCols }};gap:16px">
+      <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="0">
+        <a href="{{ t.href }}" style="display:flex;flex-direction:column;background:#FFFAF0;border:1px solid #EADBC0;border-radius:22px;overflow:hidden;text-decoration:none;color:#3A2A22" style-hover="border-color:#3A2A22">
+          <div style="aspect-ratio:4 / 3;background:{{ t.bg }};overflow:hidden"><img src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:{{ t.fit }};padding:{{ t.pad }}"></div>
+          <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:4px">
+            <span style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#A8404F">{{ t.moment }}</span>
+            <span style="font-family:'Young Serif',serif;font-size:21px;line-height:1.15">{{ t.name }}</span>
+            <span style="font-size:15px;color:#5E4A3D;line-height:1.45">{{ t.line }}</span>
+            <span style="font-family:'Young Serif',serif;font-size:19px;margin-top:6px">{{ t.price }}</span>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section style="background:#3A2A22;color:#FFFAF0;padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto">
+    <h2 style="margin:0 0 28px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1">Sending a gift takes two minutes</h2>
+    <div style="display:grid;grid-template-columns:{{ L.stepCols }};gap:20px">
+      <div style="border:1.5px dashed rgba(255,250,240,.3);border-radius:22px;padding:22px"><div style="font-family:'Young Serif',serif;font-size:40px;color:#F9CF6E;line-height:1">1</div><div style="font-family:'Young Serif',serif;font-size:21px;margin:10px 0 6px">Pick a gift</div><div style="font-size:16px;line-height:1.55;color:#E9DECF">Gift box, 40-day bundle, a letterbox trial pack or a gift card.</div></div>
+      <div style="border:1.5px dashed rgba(255,250,240,.3);border-radius:22px;padding:22px"><div style="font-family:'Young Serif',serif;font-size:40px;color:#F9CF6E;line-height:1">2</div><div style="font-family:'Young Serif',serif;font-size:21px;margin:10px 0 6px">Write your message, pick a bake</div><div style="font-size:16px;line-height:1.55;color:#E9DECF">Choose which Monday we bake it, so it lands when she’s home.</div></div>
+      <div style="border:1.5px dashed rgba(255,250,240,.3);border-radius:22px;padding:22px"><div style="font-family:'Young Serif',serif;font-size:40px;color:#F9CF6E;line-height:1">3</div><div style="font-family:'Young Serif',serif;font-size:21px;margin:10px 0 6px">We bake, pack and post</div><div style="font-size:16px;line-height:1.55;color:#E9DECF">Your note goes in the box. The prices stay out.</div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.twoCols }};gap:{{ L.gap }};align-items:center">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#A8404F">Baby shower?</span>
+      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1">Give it now. She bakes it later.</h2>
+      <p style="margin:0;font-size:17px;line-height:1.6;color:#4E3C31;max-width:520px">Cookies are best fresh, and babies keep their own schedule. A Mama’s Munches gift card comes in a printed envelope for the shower. She redeems it once baby arrives and chooses her own flavours.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><span style="min-height:44px;padding:0 18px;border-radius:999px;background:#FFFAF0;border:1px solid #EADBC0;display:flex;align-items:center;font-weight:700">£15</span><span style="min-height:44px;padding:0 18px;border-radius:999px;background:#FFFAF0;border:1px solid #EADBC0;display:flex;align-items:center;font-weight:700">£25</span><span style="min-height:44px;padding:0 18px;border-radius:999px;background:#FFFAF0;border:1px solid #EADBC0;display:flex;align-items:center;font-weight:700">£40</span></div>
+      <a href="Product.dc.html?id=giftcard" style="align-self:flex-start;height:56px;padding:0 30px;border-radius:999px;background:#EE8088;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;text-decoration:none" style-hover="background:#3A2A22;color:#FFFAF0">Choose a gift card</a>
+    </div>
+    <div style="aspect-ratio:16 / 11;border-radius:28px;background:#F9D5D3;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+      <div style="width:64%;aspect-ratio:1.6 / 1;background:#FFFAF0;border-radius:18px;box-shadow:0 20px 44px rgba(58,42,34,.18);transform:rotate(-4deg);display:grid;grid-template-columns:40% 1fr;align-items:center;padding:16px;gap:12px;outline:1.5px dashed #E3AFAF;outline-offset:-8px">
+        <img src="assets/logo-round.png" alt="" style="width:100%">
+        <div><div style="font-family:'Young Serif',serif;font-size:{{ L.cardAmt }}">£25</div><div style="font-size:13px;font-weight:700;color:#6B5646">Redeem when baby arrives</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:#FCEBBE;padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.twoCols }};gap:{{ L.gap }};align-items:center">
+    <img src="assets/photo-pair-love.jpg" alt="Two Zookies with a Baked With Love tag" style="width:100%;aspect-ratio:4 / 3;object-fit:cover;border-radius:28px">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7A5A12">Already a mama?</span>
+      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1">Build your own box</h2>
+      <p style="margin:0;font-size:17px;line-height:1.6;color:#4E3C31">Pick your base, your chips and a fruit. Packs of 8, 20 or 40, or subscribe and save 10% on every box.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="Product.dc.html?id=zookies" style="height:56px;padding:0 28px;border-radius:999px;background:#3A2A22;color:#FFFAF0;font-weight:700;font-size:17px;display:flex;align-items:center;text-decoration:none">Build your box</a>
+        <a href="Product.dc.html?id=trial" style="height:56px;padding:0 24px;border-radius:999px;border:1.5px solid #3A2A22;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;text-decoration:none">Try 3 for £5</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px 24px;margin-bottom:24px">
+      <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.1">From the people who sent them</h2>
+      <a href="https://uk.trustpilot.com/review/mamasmunches.com" style="font-weight:700;color:#3A2A22;text-decoration:none"><span style="color:#D9981C;letter-spacing:2px">★★★★★</span> 4.3 · 8 reviews on Trustpilot ↗</a>
+    </div>
+    <div style="display:grid;grid-template-columns:{{ L.revCols }};gap:16px">
+      <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="2">
+        <article style="background:#FFFAF0;border:1px solid #EADBC0;border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:10px">
+          <div style="color:#D9981C;letter-spacing:2px">★★★★★</div>
+          <p style="margin:0;font-family:'Young Serif',serif;font-size:{{ L.quote }};line-height:1.4">“{{ r.text }}”</p>
+          <div style="font-size:14px;margin-top:auto"><b>{{ r.name }}</b> · <span style="color:#6B5646">{{ r.date }}</span></div>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+</main>
+<dc-import name="SiteFooter" hint-size="100%,640px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { bp: this.bpOf(), occ: 'born', tick: 0 };
+  bpOf() { const w = window.innerWidth; return w < 768 ? 'm' : w < 1024 ? 't' : 'd'; }
+  componentDidMount() {
+    this.onR = () => { const b = this.bpOf(); if (b !== this.state.bp) this.setState({ bp: b }); };
+    window.addEventListener('resize', this.onR);
+    const go = () => this.setState(s => ({ tick: s.tick + 1 }));
+    if (window.MM) go(); else window.addEventListener('mm:ready', go, { once: true });
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); }
+  renderVals() {
+    const { bp, occ } = this.state, m = bp === 'm', t = bp === 't', M = window.MM;
+    const v = (a, b, c) => (m ? a : t ? b : c);
+    const O = M ? M.occasions : [];
+    const cur = O.find(o => o.id === occ);
+    const n = M ? M.products.filter(p => p.occ.includes(occ)).length : 0;
+    return {
+      L: {
+        heroPad: v('32px 20px 48px', '48px 32px 64px', '72px 40px 96px'),
+        heroCols: v('1fr', '1.1fr 1fr', '1.1fr 1fr'),
+        gap: v('32px', '40px', '72px'),
+        h1: v('42px', '52px', '76px'),
+        lead: v('17px', '18px', '20px'),
+        artPad: v('0 0 48px', '0 0 48px', '0 0 56px 40px'),
+        artW: v('70%', '74%', '66%'),
+        card1: v('28px', '30px', '36px'), card2: v('21px', '22px', '26px'),
+        secPad: v('56px 20px', '72px 32px', '96px 40px'),
+        h2: v('30px', '38px', '46px'),
+        tileCols: v('1fr 1fr', 'repeat(2, minmax(0, 1fr))', 'repeat(4, minmax(0, 1fr))'),
+        stepCols: v('1fr', 'repeat(3, 1fr)', 'repeat(3, 1fr)'),
+        twoCols: v('1fr', '1fr 1fr', '1fr 1fr'),
+        cardAmt: v('30px', '38px', '48px'),
+        revCols: v('1fr', '1fr 1fr', '1fr 1fr'),
+        quote: v('19px', '20px', '23px')
+      },
+      occ: O.map(o => { const on = o.id === occ; return { ...o, pick: () => this.setState({ occ: o.id }), bg: on ? '#3A2A22' : '#FFFAF0', color: on ? '#FFFAF0' : '#3A2A22', border: on ? '#3A2A22' : '#D9C7A6' }; }),
+      findHref: 'Gifts.dc.html?occasion=' + occ,
+      findLabel: cur ? `Show ${n} gifts for “${cur.name.toLowerCase()}”` : 'Show gifts',
+      tiles: [
+        { moment: 'Just had a baby', name: 'New Baby Gift Box', line: 'A mix of Zookies, gift-boxed with your message.', price: '£15', img: 'assets/photo-gift-heart.jpg', href: 'Product.dc.html?id=giftbox' },
+        { moment: 'The first 40 days', name: '40-Day Care Bundle', line: 'Six weekly deliveries through the postnatal weeks.', price: '£42', img: 'assets/photo-hero-mug.jpg', href: 'Product.dc.html?id=care40' },
+        { moment: 'Baby shower', name: 'Gift card', line: 'She redeems it once baby arrives.', price: 'from £15', img: 'assets/logo-round.png', fit: 'contain', pad: '12%', bg: '#F9D5D3', href: 'Product.dc.html?id=giftcard' },
+        { moment: 'Thinking of you', name: 'Letterbox Trial Pack', line: '3 Zookies through the door, no one needs to be in.', price: '£5', img: 'assets/photo-bun-case.jpg', href: 'Product.dc.html?id=trial' }
+      ].map(x => ({ fit: 'cover', pad: '0', bg: '#F3E6CC', ...x })),
+      reviews: M ? [M.reviews[0], M.reviews[2]] : []
+    };
+  }
+}
+</script>
+</body>
+</html>

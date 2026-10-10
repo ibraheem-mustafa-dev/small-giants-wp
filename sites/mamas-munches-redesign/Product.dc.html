@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Mama's Munches · Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="store.js"></script>
+<style>body{margin:0;background:#FBF3DC;color:#3A2A22;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#3A2A22}button,input,select,textarea{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:3px solid #3A2A22;outline-offset:3px}@keyframes mmMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}</style>
+</helmet>
+<div ref="{{ rootRef }}" data-screen-label="Product" style="background:#FBF3DC;min-height:100vh">
+<dc-import name="SiteHeader" current="{{ navKey }}" hint-size="100%,96px" style="position:sticky;top:-32px;z-index:50;display:block"></dc-import>
+<main style="padding:{{ L.pad }}">
+  <div style="max-width:1240px;margin:0 auto">
+    <nav aria-label="Breadcrumb" style="font-size:14px;font-weight:600;margin-bottom:18px;display:flex;gap:8px;flex-wrap:wrap"><a href="Home.dc.html" style="color:#5E4A3D">Home</a><span aria-hidden="true">/</span><a href="Shop.dc.html" style="color:#5E4A3D">Shop</a><span aria-hidden="true">/</span><span>{{ p.name }}</span></nav>
+    <div style="display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start">
+
+      <div style="position:{{ L.galPos }};top:{{ L.galTop }};display:flex;flex-direction:column;gap:14px;min-width:0">
+        <div style="position:relative;aspect-ratio:1 / 1;border:2px solid #3A2A22;border-radius:28px;overflow:hidden;background-color:{{ imgBg }};background-image:{{ mainImg }};background-size:{{ imgSize }};background-position:center;background-repeat:no-repeat;box-shadow:8px 8px 0 #3A2A22">
+          <sc-if value="{{ hasBadge }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:14px;left:14px;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700">{{ p.badge }}</span></sc-if>
+          <div style="position:absolute;right:14px;bottom:14px;background:#EE8088;border:2px solid #3A2A22;padding:6px 20px 6px 12px;clip-path:polygon(0 0,100% 0,88% 50%,100% 100%,0 100%);font-family:'Caveat',cursive;font-size:22px;transform:rotate(-4deg)">baked with love</div>
+        </div>
+        <div style="display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:4px 2px 6px">
+          <sc-for list="{{ thumbs }}" as="g" hint-placeholder-count="0">
+            <button onClick="{{ g.pick }}" aria-label="{{ g.label }}" style="flex:none;width:{{ L.thumb }};height:{{ L.thumb }};border-radius:16px;border:2px solid #3A2A22;background-color:#F3E6CC;background-image:{{ g.img }};background-size:{{ imgSize }};background-position:center;background-repeat:no-repeat;cursor:pointer;box-shadow:{{ g.shadow }};transform:{{ g.tf }};transition:transform .2s, box-shadow .2s" style-hover="transform:translate(-2px,-2px)"></button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:22px;min-width:0">
+        <div>
+          <div style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">{{ eyebrow }}</div>
+          <h1 style="margin:6px 0 10px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em">{{ p.name }}</h1>
+          <a href="#reviews" style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#3A2A22;text-decoration:none"><span style="letter-spacing:1px">★★★★★</span> 4.3 · 8 Trustpilot reviews</a>
+          <p style="margin:14px 0 0;font-size:17px;line-height:1.6;color:#4E3C31">{{ p.short }}</p>
+        </div>
+
+        <sc-if value="{{ isZ }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:20px;background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.boxPad }}">
+            <div><div style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">1 · How many</div>
+              <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px;padding-top:8px"><sc-for list="{{ sizes }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="position:relative;min-height:82px;padding:12px 6px;border-radius:20px;border:2px solid #3A2A22;background:{{ o.bg }};cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)"><span style="font-family:'Young Serif',serif;font-size:26px;line-height:1">{{ o.n }}</span><span style="font-size:13px;font-weight:700">{{ o.priceTxt }}</span><span style="font-size:12px">{{ o.each }}</span><sc-if value="{{ o.tag }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-12px;background:#EE8088;border:2px solid #3A2A22;border-radius:999px;padding:1px 9px;font-size:11px;font-weight:700;white-space:nowrap">{{ o.tag }}</span></sc-if></button></sc-for></div></div>
+            <div><div style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">2 · Base</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ bases }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:46px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)"><span style="width:20px;height:20px;border-radius:99px;background:{{ o.dot }};border:2px solid #3A2A22"></span>{{ o.name }}</button></sc-for></div></div>
+            <div><div style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">3 · Chips</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ chips }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:46px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)">{{ o.name }}</button></sc-for></div></div>
+            <div><div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:10px"><span style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">4 · Flavours</span><span style="font-size:14px;color:#5E4A3D">Up to 3, split evenly</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ flavs }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:46px;padding:0 14px 0 8px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)"><span style="width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}">✓</span>{{ o.name }}</button></sc-for></div>
+              <div style="margin-top:10px;font-size:14px;font-weight:700">{{ split }}</div></div>
+          </div>
+          <div id="subscribe" style="display:grid;gap:10px;scroll-margin-top:100px">
+            <button onClick="{{ pickSub }}" aria-pressed="{{ isSub }}" style="min-height:72px;border-radius:20px;border:2px solid #3A2A22;background:{{ subOpt.bg }};box-shadow:{{ subOpt.shadow }};padding:10px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;text-align:left;transition:box-shadow .2s, background .2s"><span style="display:flex;flex-direction:column"><span style="font-weight:700;font-size:16px">Subscribe &amp; save 10%</span><span style="font-size:13px;color:#5E4A3D">Skip, swap flavours or cancel any time</span></span><span style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-family:'Young Serif',serif;font-size:22px">{{ subTxt }}</span><span style="font-size:13px;color:#6B5646;text-decoration:line-through">{{ onceTxt }}</span></span></button>
+            <sc-if value="{{ isSub }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><sc-for list="{{ freqs }}" as="f" hint-placeholder-count="0"><button onClick="{{ f.pick }}" style="min-height:44px;border-radius:999px;border:2px solid #3A2A22;background:{{ f.bg }};font-size:14px;font-weight:700;cursor:pointer">{{ f.label }}</button></sc-for></div>
+            </sc-if>
+            <button onClick="{{ pickOnce }}" aria-pressed="{{ isOnce }}" style="min-height:60px;border-radius:20px;border:2px solid #3A2A22;background:{{ once.bg }};box-shadow:{{ once.shadow }};padding:10px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left;transition:box-shadow .2s, background .2s"><span style="font-weight:700;font-size:16px">One-off box</span><span style="font-family:'Young Serif',serif;font-size:22px">{{ onceTxt }}</span></button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isCard }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:16px;background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.boxPad }}">
+            <div style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Amount</div>
+            <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px"><sc-for list="{{ amounts }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.pick }}" style="min-height:72px;border-radius:20px;border:2px solid #3A2A22;background:{{ o.bg }};font-family:'Young Serif',serif;font-size:26px;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s, box-shadow .2s, background .2s">{{ o.label }}</button></sc-for></div>
+            <div style="font-size:15px;line-height:1.5;color:#4E3C31">Comes as a printed card in an envelope, ready for the shower. She redeems it online once baby arrives and builds her own box.</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isSimple }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;padding:20px 22px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">What’s inside</div>
+            <div style="display:flex;flex-direction:column;gap:8px"><sc-for list="{{ inside }}" as="x" hint-placeholder-count="0"><div style="display:flex;gap:10px;font-size:16px;line-height:1.45"><span style="flex:none;width:22px;height:22px;border-radius:999px;background:#F9CF6E;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">✓</span>{{ x }}</div></sc-for></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ giftable }}" hint-placeholder-val="{{ false }}">
+          <div style="position:relative;background:#FFFAF0;border:2px dashed #3A2A22;border-radius:22px;padding:12px 18px">
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;min-height:52px">
+              <input type="checkbox" checked="{{ giftOn }}" onChange="{{ toggleGift }}" style="width:24px;height:24px;accent-color:#EE8088;flex:none">
+              <span style="display:flex;flex-direction:column"><span style="font-weight:700;font-size:16px">Send it as a gift</span><span style="font-size:14px;color:#5E4A3D">Add a note. We’ll leave the prices off.</span></span>
+            </label>
+            <sc-if value="{{ giftOn }}" hint-placeholder-val="{{ false }}">
+              <textarea value="{{ msg }}" onChange="{{ onMsg }}" rows="3" placeholder="Congratulations, mama!" style="width:100%;margin:6px 0 4px;border:2px solid #3A2A22;border-radius:14px;padding:12px 14px;background:#FFFFFF;resize:vertical;font-family:'Caveat',cursive;font-size:24px;line-height:1.2"></textarea>
+              <div style="font-size:13px;color:#5E4A3D;text-align:right;padding-bottom:6px">{{ msgLeft }} characters left</div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;gap:12px;align-items:stretch">
+          <sc-if value="{{ showQty }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;border:2px solid #3A2A22;border-radius:999px;background:#FFFAF0;height:64px">
+              <button onClick="{{ dec }}" aria-label="One fewer" style="width:52px;height:60px;border:0;background:transparent;font-size:22px;cursor:pointer;border-radius:999px">−</button>
+              <span style="min-width:24px;text-align:center;font-weight:700;font-size:18px">{{ qty }}</span>
+              <button onClick="{{ inc }}" aria-label="One more" style="width:52px;height:60px;border:0;background:transparent;font-size:22px;cursor:pointer;border-radius:999px">+</button>
+            </div>
+          </sc-if>
+          <button ref="{{ addRef }}" onClick="{{ add }}" style="flex:1;height:64px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:18px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22" style-active="transform:translate(3px,3px);box-shadow:0 0 0 #3A2A22">{{ addLabel }}</button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:{{ L.assure }};gap:10px">
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700"><span style="flex:none;width:36px;height:36px;border-radius:999px;background:#F9D5D3;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center">✦</span>Baked fresh when you order</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700"><span style="flex:none;width:36px;height:36px;border-radius:999px;background:#FCEBBE;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center">→</span>With you in 3–5 days</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700"><span style="flex:none;width:36px;height:36px;border-radius:999px;background:#FFFAF0;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center">£</span>Free UK delivery over £35</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ acc }}" as="a" hint-placeholder-count="0">
+            <div style="border:2px solid #3A2A22;border-radius:20px;background:{{ a.bg }};transition:background .25s">
+              <button onClick="{{ a.toggle }}" aria-expanded="{{ a.open }}" style="width:100%;min-height:60px;padding:14px 18px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:14px;text-align:left;cursor:pointer;font-family:'Young Serif',serif;font-size:18px">{{ a.t }}<span aria-hidden="true" style="flex:none;width:32px;height:32px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:20px;transform:rotate({{ a.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)">+</span></button>
+              <sc-if value="{{ a.open }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 18px 18px;font-size:15px;line-height:1.6">{{ a.body }}</p></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <section id="reviews" style="margin-top:{{ L.secGap }};scroll-margin-top:100px">
+      <div data-reveal="" style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">real mums, real words</div>
+      <h2 data-reveal="" style="margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">What people are saying</h2>
+      <div style="display:grid;grid-auto-flow:{{ L.flow }};grid-auto-columns:{{ L.autoCols }};grid-template-columns:{{ L.revCols }};gap:20px;overflow-x:{{ L.ovx }};scroll-snap-type:x mandatory;scrollbar-width:none;margin:{{ L.bleedM }};padding:{{ L.bleedP }}">
+        <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="0">
+          <article data-reveal="" style="scroll-snap-align:start;background:{{ r.bg }};border:2px solid #3A2A22;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:10px;transform:rotate({{ r.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s" style-hover="transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22">
+            <span style="letter-spacing:2px">★★★★★</span>
+            <h3 style="margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:20px">{{ r.title }}</h3>
+            <p style="margin:0;font-size:16px;line-height:1.6">{{ r.text }}</p>
+            <div style="margin-top:auto;padding-top:12px;border-top:2px dashed rgba(58,42,34,.3);font-size:14px"><b>{{ r.name }}</b> · {{ r.date }}</div>
+          </article>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="margin-top:{{ L.secGap }}">
+      <h2 data-reveal="" style="margin:0 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">You might also like</h2>
+      <div style="display:grid;grid-template-columns:{{ L.relCols }};gap:{{ L.relGap }}">
+        <sc-for list="{{ related }}" as="rp" hint-placeholder-count="0">
+          <div style="min-width:0"><dc-import name="ProductCard" product="{{ rp }}" size="{{ cardSize }}" hint-size="100%,440px"></dc-import></div>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+</main>
+<sc-if value="{{ showBar }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:0;right:0;bottom:0;z-index:40;background:#FFFAF0;border-top:2px solid #3A2A22;padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;transform:{{ barY }};transition:transform .3s cubic-bezier(.2,.8,.2,1)">
+    <div style="flex:1;min-width:0"><div style="font-family:'Young Serif',serif;font-size:20px">{{ priceTxt }}</div><div style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ barSub }}</div></div>
+    <button onClick="{{ add }}" style="height:52px;padding:0 22px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:16px;cursor:pointer;box-shadow:3px 3px 0 #3A2A22">{{ barLabel }}</button>
+  </div>
+</sc-if>
+<dc-import name="SiteFooter" hint-size="100%,1100px"></dc-import>
+<sc-if value="{{ showBar }}" hint-placeholder-val="{{ false }}"><div style="height:84px;background:#F5C2C8"></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { bp: this.bpOf(), tick: 0, img: 0, base: 'oat', chip: 'milk', flav: ['strawberry'], size: 20, sub: false, freq: 4, qty: 1, amount: 25, giftOn: false, msg: '', added: false, acc: 0, barOn: false };
+  rootRef = React.createRef(); addRef = React.createRef();
+  bpOf() { const w = window.innerWidth; return w < 768 ? 'm' : w < 1024 ? 't' : 'd'; }
+  componentDidMount() {
+    this.onR = () => { const b = this.bpOf(); if (b !== this.state.bp) this.setState({ bp: b }); };
+    window.addEventListener('resize', this.onR);
+    const q = new URLSearchParams(location.search);
+    const init = {}; if (q.get('sub')) init.sub = true; if (q.get('flavour')) init.flav = [q.get('flavour')];
+    this.setState(init);
+    const go = () => this.setState(s => ({ tick: s.tick + 1 }), () => setTimeout(() => this.motion(), 60));
+    if (window.MM) go(); else window.addEventListener('mm:ready', go, { once: true });
+    this.bio = new IntersectionObserver(([e]) => this.setState({ barOn: !e.isIntersecting }), { threshold: 0 });
+    setTimeout(() => this.addRef.current && this.bio.observe(this.addRef.current), 200);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); this.io && this.io.disconnect(); this.bio && this.bio.disconnect(); }
+  motion() {
+    const r = this.rootRef.current; if (!r || this.io || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    this.io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; this.io.unobserve(e.target); e.target.animate([{ opacity: 0, translate: '0 28px' }, { opacity: 1, translate: '0 0' }], { duration: 750, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' }); }), { threshold: 0.1 });
+    r.querySelectorAll('[data-reveal]').forEach(el => this.io.observe(el));
+  }
+  renderVals() {
+    const S = this.state, m = S.bp === 'm', t = S.bp === 't', M = window.MM;
+    const v = (a, b, c) => (m ? a : t ? b : c);
+    const id = new URLSearchParams(location.search).get('id') || 'zookies';
+    const p = M ? M.product(id) : { name: '', short: '', gallery: [], kind: 'zookies' };
+    const isZ = p.kind === 'zookies', isCard = p.kind === 'card', isSimple = p.kind === 'simple';
+    const money = n => '£' + n.toFixed(2);
+    const pill = on => ({ on, bg: on ? '#F9CF6E' : '#FFFAF0', shadow: on ? '3px 3px 0 #3A2A22' : '0 0 0 #3A2A22', tf: on ? 'translate(-2px,-2px)' : 'none' });
+    const B = M ? M.builder : { bases: [], chips: [], flavours: [] };
+    const opt = (list, key) => list.map(o => ({ ...o, ...pill(S[key] === o.id), pick: () => this.setState({ [key]: o.id, added: false }) }));
+    const sz = (M ? M.sizes : []).find(x => x.n === S.size) || { price: 21.5 };
+    const fl = S.flav.map(f => B.flavours.find(x => x.id === f)).filter(Boolean);
+    const each = fl.map((x, i) => Math.floor(S.size / fl.length) + (i < S.size % fl.length ? 1 : 0));
+    const split = fl.length > 1 ? 'Your ' + S.size + ': ' + fl.map((x, i) => each[i] + ' ' + x.name.toLowerCase()).join(' · ') : 'All ' + S.size + ' ' + (fl[0] ? fl[0].name.toLowerCase() : '');
+    const togFlav = f => { let a = S.flav.slice(); if (a.includes(f)) { if (a.length > 1) a = a.filter(x => x !== f); } else { a.push(f); if (a.length > 3) a.shift(); } this.setState({ flav: a, added: false }); };
+    const nm = (list, k) => (list.find(x => x.id === k) || {}).name || '';
+    const variantZ = [nm(B.bases, S.base), S.chip === 'none' ? 'no chips' : nm(B.chips, S.chip).toLowerCase() + ' chips', fl.map(x => x.name.toLowerCase()).join(' & ')].join(' · ');
+    const unit = isZ ? (S.sub ? sz.price * 0.9 : sz.price) : isCard ? S.amount : p.from || 0;
+    const total = unit * (isZ || isCard ? 1 : S.qty);
+    const card = on => ({ bg: on ? '#FFFAF0' : 'rgba(255,250,240,.45)', shadow: on ? '4px 4px 0 #3A2A22' : '0 0 0 #3A2A22' });
+    const gal = p.gallery || [];
+    const inside = { trial: ['3 Classic Zookies (oat, milk choc chips)', 'Letterbox-sized, so no one needs to be in', 'Postage included'], giftbox: ['A mix of Zookies, gift-boxed with a ribbon', 'Your handwritten-style note card', 'No prices on the packing slip'], care40: ['Six weekly boxes of Zookies across the 40 days', 'Flavours change week to week', 'A note from you in the first box'] }[p.id] || [];
+    const R = M ? M.reviews.slice(0, 3) : [];
+    const accData = [
+      ['Ingredients & allergens', 'Every Zookie contains oats (gluten), brewer’s yeast, flaxseed and fenugreek, plus eggs and milk unless you choose the vegan base. Fenugreek is a legume and may cross-react with peanut or soy allergies. Made in a kitchen that also handles tree nuts.'],
+      ['Delivery', 'Baked fresh when you order and posted with Royal Mail Tracked, usually with you in 3–5 days. Free UK delivery on orders over £35.'],
+      ['Keeping them fresh', 'Keep in the bag or an airtight tin at room temperature. Storage times to be confirmed by Zainab.'],
+      ['A gentle note', 'We make nourishing food, not medicine. If you’re worried about your supply, speak to your midwife, health visitor or a lactation consultant (IBCLC).']
+    ];
+    const related = (M ? M.products : []).filter(x => x.id !== p.id).slice(0, m ? 2 : 3);
+    const eyebrow = isZ ? 'build your own box' : isCard ? 'for the baby shower' : p.id === 'trial' ? 'new here? start small' : 'a gift she’ll actually eat';
+    const addLabel = S.added ? 'In your basket ✓' : (isZ && S.sub ? 'Subscribe · ' : 'Add to basket · ') + money(total);
+    return {
+      rootRef: this.rootRef, addRef: this.addRef,
+      navKey: isZ ? 'shop' : 'gifts',
+      L: {
+        pad: v('18px 20px 110px', '28px 32px 88px', '36px 40px 112px'),
+        cols: v('1fr', '1fr 1fr', '1.05fr 1fr'), gap: v('24px', '36px', '64px'), galPos: v('relative', 'sticky', 'sticky'), galTop: v('0', '108px', '108px'), thumb: v('64px', '76px', '88px'),
+        h1: v('42px', '48px', '60px'), h2: v('32px', '40px', '48px'), boxPad: v('20px 16px', '24px', '28px'),
+        assure: v('1fr', '1fr', '1fr 1fr 1fr'), secGap: v('64px', '80px', '104px'),
+        flow: v('column', 'row', 'row'), autoCols: v('86%', 'auto', 'auto'), revCols: v('none', 'repeat(3, minmax(0, 1fr))', 'repeat(3, minmax(0, 1fr))'),
+        ovx: v('auto', 'visible', 'visible'), bleedM: v('0 -20px', '0', '0'), bleedP: v('6px 20px 14px', '0', '0'),
+        relCols: v('repeat(2, minmax(0, 1fr))', 'repeat(3, minmax(0, 1fr))', 'repeat(3, minmax(0, 1fr))'), relGap: v('14px', '22px', '28px')
+      },
+      p, eyebrow, hasBadge: !!p.badge, isZ, isCard, isSimple,
+      imgBg: p.imgBg || '#F3E6CC', imgSize: p.fit === 'contain' ? '66%' : 'cover',
+      mainImg: gal[S.img] ? 'url(' + gal[S.img] + ')' : 'none',
+      thumbs: gal.length > 1 ? gal.map((g, i) => ({ img: 'url(' + g + ')', label: 'Photo ' + (i + 1), ...pill(S.img === i), pick: () => this.setState({ img: i }) })) : [],
+      sizes: (M ? M.sizes : []).map(o => ({ ...o, priceTxt: money(o.price), ...pill(S.size === o.n), pick: () => this.setState({ size: o.n, added: false }) })),
+      bases: opt(B.bases, 'base'), chips: opt(B.chips, 'chip'),
+      flavs: B.flavours.map(o => { const on = S.flav.includes(o.id); return { ...o, ...pill(on), tick: on ? (['vanilla', 'coconut', 'banana'].includes(o.id) ? '#3A2A22' : '#FFFFFF') : 'transparent', pick: () => togFlav(o.id) }; }), split,
+      isSub: S.sub, isOnce: !S.sub, subOpt: card(S.sub), once: card(!S.sub),
+      pickSub: () => this.setState({ sub: true, added: false }), pickOnce: () => this.setState({ sub: false, added: false }),
+      freqs: [2, 4].map(w => ({ label: 'Every ' + w + ' weeks', bg: S.freq === w ? '#F9CF6E' : '#FFFAF0', pick: () => this.setState({ freq: w }) })),
+      subTxt: money(sz.price * 0.9), onceTxt: money(sz.price),
+      amounts: [15, 25, 40].map(a => ({ label: '£' + a, ...pill(S.amount === a), pick: () => this.setState({ amount: a, added: false }) })),
+      inside, giftable: !isCard, giftOn: S.giftOn, msg: S.msg, msgLeft: 200 - S.msg.length,
+      toggleGift: e => this.setState({ giftOn: e.target.checked }), onMsg: e => this.setState({ msg: e.target.value.slice(0, 200) }),
+      showQty: isSimple, qty: S.qty, inc: () => this.setState({ qty: S.qty + 1, added: false }), dec: () => this.setState({ qty: Math.max(1, S.qty - 1), added: false }),
+      addLabel, priceTxt: money(total),
+      add: () => {
+        if (!M) return;
+        const it = isZ ? { key: ['zookies', S.size, S.base, S.chip, S.flav.join('+'), S.sub ? 'sub' + S.freq : ''].join('-'), id: 'zookies', name: 'Zookies · ' + S.size + ' pack', variant: variantZ + (S.sub ? ' · every ' + S.freq + ' weeks' : ''), price: +unit.toFixed(2), img: p.img }
+          : isCard ? { key: 'giftcard-' + S.amount, id: 'giftcard', name: 'Baby Shower Gift Card', variant: '£' + S.amount + ' · printed card', price: S.amount, img: p.img }
+          : { key: p.id, id: p.id, name: p.name, variant: p.unit, price: p.from, img: p.img, qty: S.qty };
+        M.cart.add(it);
+        if (S.giftOn) M.cart.setGift({ on: true, message: S.msg });
+        this.setState({ added: true }); M.openBasket();
+      },
+      acc: accData.map(([tt, body], i) => { const open = S.acc === i; return { t: tt, body, open, rot: open ? '45deg' : '0deg', bg: open ? '#FCEBBE' : '#FFFAF0', toggle: () => this.setState({ acc: open ? -1 : i }) }; }),
+      reviews: R.map((r, i) => ({ ...r, bg: ['#FFFAF0', '#F9D5D3', '#FCEBBE'][i], rot: ['-1deg', '1deg', '-.5deg'][i] })),
+      related, cardSize: m ? 'sm' : 'md',
+      showBar: m, barY: S.barOn ? 'translateY(0)' : 'translateY(110%)',
+      barSub: isZ ? S.size + ' Zookies' + (S.sub ? ' · subscription' : '') : p.name, barLabel: S.added ? 'Added ✓' : 'Add to basket'
+    };
+  }
+}
+</script>
+</body>
+</html>

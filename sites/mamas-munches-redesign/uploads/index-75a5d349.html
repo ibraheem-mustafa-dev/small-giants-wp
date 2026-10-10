@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mama's Munches Zookies — Freshly Baked, Made to Order</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:       #E68A95;
+      --primary-dark:  #C56A7A;
+      --surface-pink:  #F5C2C8;
+      --surface-cream: #FBF3DC;
+      --surface-alt:   #FFF9F0;
+      --accent:        #F5D050;
+      --text:          #3A2E26;
+      --text-muted:    #6B5C50;
+      --text-inverse:  #FFFAF5;
+      --success:       #2E7D4F;
+      --border:        #E8D5C0;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; }
+    body { font-family: 'Inter', sans-serif; background: var(--surface-cream); color: var(--text); line-height: 1.6; }
+    h1, h2, h3, h4 { font-family: 'Fraunces', serif; line-height: 1.2; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: 15px;
+      padding: 14px 24px; border-radius: 10px; border: 2px solid transparent;
+      cursor: pointer; min-height: 48px; width: 100%; text-align: center;
+      transition: background 0.18s, color 0.18s, border-color 0.18s;
+    }
+    .btn-primary { background: var(--primary); color: var(--text); border-color: var(--primary); }
+    .btn-primary:hover { background: var(--text); color: var(--text-inverse); border-color: var(--text); }
+    .btn-secondary { background: transparent; color: var(--text); border-color: var(--primary); }
+    .btn-secondary:hover { background: var(--text); color: var(--text-inverse); border-color: var(--text); }
+
+    .section-label {
+      font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--text); display: block; margin-bottom: 4px;
+    }
+
+    /* Skip link (WCAG 2.4.1) */
+    .skip-link {
+      position: absolute; left: -9999px; top: 0;
+      background: var(--text); color: var(--text-inverse);
+      padding: 12px 20px; z-index: 9999;
+      font-weight: 600; text-decoration: none;
+      border-radius: 0 0 8px 0;
+    }
+    .skip-link:focus { left: 0; }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Focus visibility */
+    *:focus-visible {
+      outline: 2px solid var(--text);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* HEADER */
+    .site-header { background: var(--surface-cream); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; max-width: 1280px; margin: 0 auto; gap: 16px; }
+    .site-logo img { height: 44px; width: auto; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .cart-btn { display: flex; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px; color: var(--text); padding: 8px 10px; border-radius: 8px; min-height: 44px; min-width: 44px; justify-content: center; }
+    .cart-badge { background: var(--primary); color: var(--text-inverse); border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .hamburger-btn { background: none; border: none; cursor: pointer; padding: 8px; min-height: 44px; min-width: 44px; display: flex; flex-direction: column; justify-content: center; gap: 5px; align-items: center; }
+    .hamburger-btn span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+    .desktop-nav { display: none; }
+    @media (min-width: 768px) {
+      .hamburger-btn { display: none; }
+      .desktop-nav { display: flex; align-items: center; gap: 4px; flex: 1; justify-content: center; }
+      .desktop-nav a { font-size: 14px; font-weight: 500; color: var(--text); padding: 10px 14px; border-radius: 8px; min-height: 44px; display: flex; align-items: center; white-space: nowrap; transition: background 0.18s; }
+      .desktop-nav a:hover { background: var(--surface-pink); }
+      .nav-featured { background: var(--primary) !important; color: var(--text) !important; font-weight: 600 !important; }
+      .nav-featured:hover { background: var(--primary) !important; color: var(--text) !important; box-shadow: inset 0 -2px 0 var(--accent); }
+    }
+
+    /* BREADCRUMB */
+    .breadcrumb { padding: 12px 20px; max-width: 1280px; margin: 0 auto; }
+    .breadcrumb ol { list-style: none; display: flex; gap: 6px; font-size: 13px; color: var(--text-muted); }
+    .breadcrumb ol li::after { content: '›'; margin-left: 6px; }
+    .breadcrumb ol li:last-child::after { content: ''; }
+    .breadcrumb ol li a { color: var(--text-muted); }
+    .breadcrumb ol li a:hover { color: var(--primary-dark); text-decoration: underline; }
+
+    /* PRODUCT LAYOUT */
+    .product-page { max-width: 1200px; margin: 0 auto; padding: 16px 20px 64px; }
+    .product-gallery { margin-bottom: 28px; }
+    @media (min-width: 768px) {
+      .product-page { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; padding-top: 24px; }
+      .product-gallery { margin-bottom: 0; }
+    }
+    @media (min-width: 1024px) { .product-page { grid-template-columns: 3fr 2fr; gap: 56px; } }
+
+    /* GALLERY */
+    .gallery-main { border-radius: 16px; overflow: hidden; background: white; border: 1px solid var(--border); margin-bottom: 10px; }
+    .gallery-main img { width: 100%; height: 340px; object-fit: cover; }
+    .gallery-thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .gallery-thumb { border-radius: 8px; overflow: hidden; border: 2px solid transparent; cursor: pointer; transition: border-color 0.15s; background: white; padding: 0; }
+    .gallery-thumb.active { border-color: var(--primary); }
+    .gallery-thumb:hover:not(.active) { border-color: var(--border); }
+    .gallery-thumb img { width: 100%; height: 68px; object-fit: cover; }
+    @media (min-width: 768px) { .gallery-main img { height: 420px; } .gallery-thumb img { height: 78px; } }
+
+    /* PRODUCT INFO */
+    .product-name { font-size: 26px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .product-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .rating-stars { color: var(--accent); font-size: 16px; }
+    .rating-count { font-size: 13px; color: var(--text-muted); }
+    .product-short-desc { font-size: 15px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.65; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+
+    /* VARIANT SELECTORS */
+    .variant-group { margin-bottom: 20px; }
+    .variant-label { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .variant-label .selected-value { font-weight: 400; color: var(--text-muted); }
+    .pill-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill { background: white; border: 2px solid var(--border); border-radius: 8px; padding: 8px 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; min-height: 44px; min-width: 44px; justify-content: center; display: flex; align-items: center; gap: 6px; transition: all 0.15s; line-height: 1; }
+    .pill.active { border-color: var(--primary); background: rgba(230,138,149,0.08); color: var(--text); }
+    .pill:hover:not(.active):not([disabled]) { border-color: var(--primary-dark); color: var(--text); }
+    .pill[disabled], .pill.unavailable { opacity: 0.38; cursor: not-allowed; text-decoration: line-through; }
+    .best-value-badge { background: var(--success); color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; }
+    .discount-badge { background: var(--accent); color: var(--text); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; line-height: 1.2; }
+    .pill-coming-soon { opacity: 0.5; font-style: italic; cursor: not-allowed; border-style: dashed; }
+    .allergen-callout { color: var(--primary-dark); font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+
+    /* PRICE BLOCK */
+    .price-block { background: var(--surface-cream); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; }
+    .price-main { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
+    .price-per { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    .delivery-note { font-size: 13px; color: var(--success); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+    /* CTA */
+    .cta-area { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .trial-note { text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+    .trial-note a { color: var(--primary-dark); font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; padding: 6px 4px; }
+    .trial-note a:hover { text-decoration: underline; }
+
+    /* TRUST MICRO */
+    .product-trust { display: flex; gap: 12px; flex-wrap: wrap; padding: 14px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .product-trust-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .product-trust-item span:first-child { font-size: 16px; }
+
+    /* INGREDIENTS (inline) */
+    .ingredients-section { max-width: 1200px; margin: 0 auto; padding: 0 20px 56px; }
+    .ingredients-section h2 { font-size: 24px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .ingredients-section .section-intro { font-size: 15px; color: var(--text-muted); margin-bottom: 24px; }
+    .ingr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .ingr-card { background: white; border-radius: 12px; padding: 18px 16px; border: 1px solid var(--border); text-align: center; }
+    .ingr-icon { font-size: 28px; margin-bottom: 8px; }
+    .ingr-card h4 { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .ingr-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    @media (min-width: 600px) { .ingr-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    /* ALLERGEN BLOCK */
+    .allergen-section { max-width: 1200px; margin: 0 auto; padding: 0 20px 56px; }
+    .allergen-block { background: #FFF5F6; border: 2px solid var(--primary); border-radius: 12px; padding: 22px 24px; }
+    .allergen-block h3 { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .allergen-list { font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 12px; }
+    .allergen-list strong { font-weight: 700; }
+    .allergen-note { font-size: 13px; color: var(--text-muted); font-style: italic; }
+    .allergen-vegan { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--primary); font-size: 14px; color: var(--text); }
+    .allergen-vegan strong { color: var(--success); }
+
+    /* REVIEWS */
+    .product-reviews { background: var(--surface-alt); padding: 48px 20px; }
+    .product-reviews-inner { max-width: 1000px; margin: 0 auto; }
+    .product-reviews h2 { font-size: 24px; font-weight: 600; color: var(--text); margin-bottom: 24px; }
+    .reviews-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .review-card { background: white; border-radius: 12px; padding: 18px; border: 1px solid var(--border); }
+    .review-stars { color: var(--accent); font-size: 14px; margin-bottom: 8px; }
+    .review-text { font-size: 14px; color: var(--text-muted); line-height: 1.65; font-style: italic; margin-bottom: 10px; }
+    .review-author { font-size: 13px; font-weight: 600; color: var(--text); }
+    .review-date { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+    @media (min-width: 640px) { .reviews-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    /* FOOTER */
+    .site-footer { background: var(--text); color: var(--text-inverse); padding: 32px 20px 20px; }
+    .footer-mini { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+    .footer-mini-logo { height: 32px; width: auto; filter: brightness(0) invert(1); }
+    .footer-mini-links { display: flex; gap: 16px; flex-wrap: wrap; }
+    .footer-mini-links a { font-size: 13px; color: rgba(255,250,245,0.7); }
+    .footer-mini-links a:hover { color: var(--primary); }
+    .footer-copyright { font-size: 12px; color: rgba(255,250,245,0.4); }
+    @media (min-width: 640px) { .footer-mini { flex-direction: row; align-items: center; justify-content: space-between; } }
+  </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="/" class="site-logo" aria-label="Mama's Munches — Home">
+      <img src="../../research/brand/Mamas-Munches-Horizontal-Logo-2-305x102.webp" alt="Mama's Munches" width="183" height="61">
+    </a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="/shop/">Shop</a>
+      <a href="/about/">Our Story</a>
+      <a href="/send-to-ward/" class="nav-featured">Send to Ward ★</a>
+      <a href="/gift-ideas/">Gift Ideas</a>
+      <a href="/faqs/">FAQs</a>
+    </nav>
+    <div class="header-right">
+      <a href="/cart/" class="cart-btn" aria-label="Cart — 0 items">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span class="cart-badge" aria-hidden="true">0</span>
+      </a>
+      <button class="hamburger-btn" aria-label="Open navigation menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/">Home</a></li>
+    <li><a href="/shop/">Shop</a></li>
+    <li aria-current="page">Zookies</li>
+  </ol>
+</nav>
+
+<main id="main-content">
+<div class="product-page">
+
+  <!-- Gallery -->
+  <section class="product-gallery" aria-label="Product photos">
+    <div class="gallery-main">
+      <img id="gallery-main-img"
+           src="../../research/photography/wp-media-library/cookies-stacked.jpeg"
+           alt="Mama's Munches Zookies — stack of freshly baked lactation cookies"
+           loading="eager" width="1920" height="1080">
+    </div>
+    <div class="gallery-thumbs" role="list" aria-label="Photo thumbnails">
+      <button class="gallery-thumb active" role="listitem" aria-label="Main product photo" type="button" data-src="../../research/photography/wp-media-library/cookies-stacked.jpeg" data-alt="Mama's Munches Zookies — stack of freshly baked lactation cookies">
+        <img src="../../research/photography/wp-media-library/cookies-stacked.jpeg" alt="" loading="lazy" width="480" height="270">
+      </button>
+      <button class="gallery-thumb" role="listitem" aria-label="Bakery display" type="button" data-src="../../research/photography/wp-media-library/cookies-on-bun-case.jpeg" data-alt="Mama's Munches cookies in a bakery case">
+        <img src="../../research/photography/wp-media-library/cookies-on-bun-case.jpeg" alt="" loading="lazy" width="512" height="446">
+      </button>
+      <button class="gallery-thumb" role="listitem" aria-label="Close-up texture" type="button" data-src="../../research/photography/wp-media-library/cookie-zoom.jpeg" data-alt="Close-up of a Mama's Munches Zookie showing texture">
+        <img src="../../research/photography/wp-media-library/cookie-zoom.jpeg" alt="" loading="lazy" width="1080" height="1920">
+      </button>
+      <button class="gallery-thumb" role="listitem" aria-label="Person with product" type="button" data-src="../../research/photography/wp-media-library/Lactation-Cookies-Reham.jpeg" data-alt="Reham holding Mama's Munches lactation cookies">
+        <img src="../../research/photography/wp-media-library/Lactation-Cookies-Reham.jpeg" alt="" loading="lazy" width="2048" height="1560">
+      </button>
+    </div>
+  </section>
+
+  <!-- Product info -->
+  <section class="product-info" aria-labelledby="product-title">
+
+    <h1 class="product-name" id="product-title">Mama's Munches Zookies — Freshly Baked, Made to Order</h1>
+
+    <div class="product-rating">
+      <span class="rating-stars" aria-label="5 out of 5 stars">★★★★★</span>
+      <span class="rating-count">Be the first to leave a review on Trustpilot</span>
+    </div>
+
+    <p class="product-short-desc">A Zookie is a proper-sized treat. Baked with oats, brewer's yeast, flaxseed, and fenugreek — the galactagogue ingredients used in postpartum food traditions around the world. Fresh every week, posted same day. No preservatives. Many mums tell us they helped. We don't make medical claims — but we do make really good cookies.</p>
+
+    <!-- Pack size -->
+    <div class="variant-group">
+      <div class="variant-label">Pack size: <span class="selected-value" id="pack-label">8-pack</span></div>
+      <div class="pill-group" role="group" aria-label="Select pack size">
+        <!-- 4-pack: brief §7.2 shows it; CLAUDE.md doesn't list — confirm with Zainab before launch -->
+        <button class="pill" type="button" aria-pressed="false" data-pack="4" data-price="6.00">4</button>
+        <button class="pill active" type="button" aria-pressed="true" data-pack="8" data-price="10.00">8</button>
+        <button class="pill" type="button" aria-pressed="false" data-pack="12" data-price="14.00">12</button>
+        <button class="pill" type="button" aria-pressed="false" data-pack="20" data-price="22.00">
+          20 <span class="discount-badge">−12%</span>
+        </button>
+        <button class="pill" type="button" aria-pressed="false" data-pack="40" data-price="32.00">
+          40 <span class="discount-badge">−36%</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Flavour -->
+    <div class="variant-group">
+      <div class="variant-label">Flavour: <span class="selected-value" id="flavour-label">Classic Oat</span></div>
+      <div class="pill-group" role="group" aria-label="Select flavour">
+        <button class="pill active" type="button" aria-pressed="true" data-group="flavour" data-value="Classic Oat">Classic Oat</button>
+        <button class="pill" type="button" aria-pressed="false" data-group="flavour" data-value="Chocolate">Chocolate</button>
+        <!-- Coming-soon placeholder for the fruit-flavour roadmap (CLAUDE.md notes strawberry / blueberry / banana) -->
+        <button class="pill pill-coming-soon" type="button" disabled aria-disabled="true" aria-label="Add berry flavour — coming soon">+ Add berry</button>
+      </div>
+    </div>
+
+    <!-- Topping -->
+    <div class="variant-group">
+      <div class="variant-label">Topping: <span class="selected-value" id="topping-label">Chocolate Chip</span></div>
+      <div class="pill-group" role="group" aria-label="Select topping">
+        <button class="pill active" type="button" aria-pressed="true" data-group="topping" data-value="Chocolate Chip">Choc Chip</button>
+        <button class="pill topping-dairy" type="button" aria-pressed="false" data-group="topping" data-value="White Chocolate Chip">White Choc</button>
+        <button class="pill" type="button" aria-pressed="false" data-group="topping" data-value="No Topping">No Topping</button>
+      </div>
+    </div>
+
+    <!-- Dietary -->
+    <div class="variant-group">
+      <div class="variant-label">Dietary: <span class="selected-value" id="dietary-label">Regular</span></div>
+      <div class="pill-group" role="group" aria-label="Select dietary preference">
+        <button class="pill active" type="button" aria-pressed="true" data-group="dietary" data-value="Regular">Regular</button>
+        <button class="pill" type="button" aria-pressed="false" data-group="dietary" data-value="Vegan">Vegan</button>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Vegan: no eggs, no dairy. White Choc topping unavailable.</p>
+    </div>
+
+    <!-- Price -->
+    <div class="price-block">
+      <div class="price-main" id="price-display">£10.00</div>
+      <p class="price-per" id="price-per">8-pack — £1.25 per cookie</p>
+      <p class="delivery-note">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="1" y="3" width="15" height="13"/><path d="m16 8 5 2v5h-5z"/>
+          <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+        Free UK delivery on orders over £35
+      </p>
+    </div>
+
+    <div class="cta-area">
+      <button class="btn btn-primary" type="button" id="add-to-cart-btn">Add to Cart — £10.00</button>
+    </div>
+    <p class="trial-note">New? <a href="/product/trial-pack/">Try 3 Classic Zookies for £5</a> first — postage included.</p>
+
+    <div class="product-trust" aria-label="Product trust signals">
+      <div class="product-trust-item"><span>🍪</span><span>Baked fresh weekly</span></div>
+      <div class="product-trust-item"><span>📦</span><span>Posted same day</span></div>
+      <div class="product-trust-item"><span>🏡</span><span>Made in Birmingham</span></div>
+      <div class="product-trust-item"><span>✅</span><span>Registered food business</span></div>
+    </div>
+
+  </section>
+</div>
+
+<!-- INGREDIENT EDUCATION -->
+<section class="ingredients-section" aria-labelledby="ingr-h2">
+  <span class="section-label" style="padding:0 0 4px;">What's in them?</span>
+  <h2 id="ingr-h2">Four galactagogues. No shortcuts.</h2>
+  <p class="section-intro">Every Zookie contains the same four ingredients used in postpartum food traditions across cultures for centuries.</p>
+  <div class="ingr-grid">
+    <div class="ingr-card">
+      <div class="ingr-icon" aria-hidden="true">🌾</div>
+      <h4>Oats</h4>
+      <p>Rich in iron. A traditional postpartum staple across cultures.</p>
+    </div>
+    <div class="ingr-card">
+      <div class="ingr-icon" aria-hidden="true">🍺</div>
+      <h4>Brewer's Yeast</h4>
+      <p>B-vitamins and chromium. A traditional galactagogue.</p>
+    </div>
+    <div class="ingr-card">
+      <div class="ingr-icon" aria-hidden="true">🌿</div>
+      <h4>Flaxseed</h4>
+      <p>Omega-3 fatty acids. Good for mum and baby.</p>
+    </div>
+    <div class="ingr-card">
+      <div class="ingr-icon" aria-hidden="true">🌱</div>
+      <h4>Fenugreek</h4>
+      <p>Traditional postpartum herb. Speak to your midwife if baby shows GI sensitivity.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ALLERGEN BLOCK -->
+<section class="allergen-section" aria-labelledby="allergen-h3">
+  <div class="allergen-block" role="region" aria-label="Allergen information">
+    <p class="allergen-callout"><span aria-hidden="true">⚠️</span> Please read carefully</p>
+    <h3 id="allergen-h3">Allergen Information</h3>
+    <p class="allergen-list">
+      Contains: <strong>oats (gluten)</strong>, <strong>eggs</strong>, <strong>milk</strong>, <strong>fenugreek</strong>
+      (legume — may cross-react with peanut and soy allergies in sensitive individuals).
+    </p>
+    <p class="allergen-note">Made in a kitchen that also handles tree nuts. Not suitable for those with a tree nut allergy.</p>
+    <div class="allergen-vegan">
+      <strong>Vegan variant:</strong> no eggs, no dairy. Contains oats, fenugreek, and flaxseed. Same tree nut kitchen advisory applies.
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="product-reviews" aria-labelledby="reviews-h2">
+  <div class="product-reviews-inner">
+    <h2 id="reviews-h2">Many mums tell us it helped</h2>
+    <div class="reviews-grid">
+      <article class="review-card">
+        <div class="review-stars" aria-label="5 stars">★★★★★</div>
+        <p class="review-text">"I was sceptical but honestly these have made such a difference. My supply picked up within a few days. And they actually taste amazing — my husband keeps stealing them."</p>
+        <p class="review-author">Reham <span class="review-date">· February 2026</span></p>
+      </article>
+      <article class="review-card">
+        <div class="review-stars" aria-label="5 stars">★★★★★</div>
+        <p class="review-text">"Ordered the 20-pack and they arrived so quickly. Fresh, delicious, and I think they really did help. Will be ordering again when this batch runs out."</p>
+        <p class="review-author">Sarah M. <span class="review-date">· March 2026</span></p>
+      </article>
+      <article class="review-card">
+        <div class="review-stars" aria-label="5 stars">★★★★★</div>
+        <p class="review-text">"Bought these as a gift for my daughter who just had her first baby. Zainab was so helpful. The cookies were beautiful and my daughter is very happy."</p>
+        <p class="review-author">Halimah <span class="review-date">· April 2026</span></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-mini">
+    <img class="footer-mini-logo"
+         src="../../research/brand/Mamas-Munches-Horizontal-Logo-2-305x102.webp"
+         alt="Mama's Munches" width="120" height="40" loading="lazy">
+    <div class="footer-mini-links">
+      <a href="/shop/">Shop</a>
+      <a href="/about/">Our Story</a>
+      <a href="/allergens/">Allergen Info</a>
+      <a href="/privacy-policy/">Privacy</a>
+      <a href="/shipping/">Shipping</a>
+      <a href="/contact/">Contact</a>
+    </div>
+    <p class="footer-copyright">© 2026 Mama's Munches, Birmingham.</p>
+  </div>
+</footer>
+
+<script>
+  /* Price data (server would provide real prices in production) */
+  var packData = {
+    '4':  { price: '6.00',  per: '4-pack — £1.50 per cookie · perfect taster' },
+    '8':  { price: '10.00', per: '8-pack — £1.25 per cookie' },
+    '12': { price: '14.00', per: '12-pack — £1.17 per cookie' },
+    '20': { price: '22.00', per: '20-pack — £1.10 per cookie · save 12%' },
+    '40': { price: '32.00', per: '40-pack — £0.80 per cookie · save 36%' }
+  };
+  var currentPrice = '10.00';
+
+  /* Gallery thumbnails */
+  document.querySelectorAll('.gallery-thumb').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.gallery-thumb').forEach(function(t) { t.classList.remove('active'); });
+      btn.classList.add('active');
+      var mainImg = document.getElementById('gallery-main-img');
+      mainImg.src = btn.dataset.src;
+      mainImg.alt = btn.dataset.alt;
+    });
+  });
+
+  /* Pack size pills */
+  document.querySelectorAll('[data-pack]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('[data-pack]').forEach(function(p) {
+        p.classList.remove('active');
+        p.removeAttribute('aria-pressed');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+      var pack = btn.dataset.pack;
+      var data = packData[pack];
+      currentPrice = data.price;
+      document.getElementById('pack-label').textContent = pack + '-pack';
+      document.getElementById('price-display').textContent = '£' + data.price;
+      document.getElementById('price-per').textContent = data.per;
+      document.getElementById('add-to-cart-btn').textContent = 'Add to Cart — £' + data.price;
+    });
+  });
+
+  /* Flavour / topping generic selectors */
+  document.querySelectorAll('[data-group]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var group = btn.dataset.group;
+      var label = group + '-label';
+      document.querySelectorAll('[data-group="' + group + '"]').forEach(function(p) {
+        p.classList.remove('active');
+        p.removeAttribute('aria-pressed');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+      document.getElementById(label).textContent = btn.dataset.value;
+
+      /* Vegan: disable dairy toppings */
+      if (group === 'dietary' && btn.dataset.value === 'Vegan') {
+        document.querySelectorAll('.topping-dairy').forEach(function(t) {
+          t.classList.add('unavailable');
+          t.disabled = true;
+          if (t.classList.contains('active')) {
+            t.classList.remove('active');
+            var noTopping = t.parentElement.querySelector('[data-value="No Topping"]');
+            if (noTopping) {
+              noTopping.classList.add('active');
+              document.getElementById('topping-label').textContent = 'No Topping';
+            }
+          }
+        });
+      } else if (group === 'dietary' && btn.dataset.value === 'Regular') {
+        document.querySelectorAll('.topping-dairy').forEach(function(t) {
+          t.classList.remove('unavailable');
+          t.disabled = false;
+        });
+      }
+    });
+  });
+
+  /* Add to cart feedback */
+  document.getElementById('add-to-cart-btn').addEventListener('click', function() {
+    var btn = this;
+    var badge = document.querySelector('.cart-badge');
+    btn.textContent = '✓ Added to cart!';
+    btn.style.background = 'var(--success)';
+    btn.style.borderColor = 'var(--success)';
+    badge.textContent = String(parseInt(badge.textContent || '0', 10) + 1);
+    var price = currentPrice;
+    setTimeout(function() {
+      btn.textContent = 'Add to Cart — £' + price;
+      btn.style.background = '';
+      btn.style.borderColor = '';
+    }, 2000);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Checkout · Mama's Munches</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="store.js"></script>
+<style>body{margin:0;background:#FBF3DC;color:#3A2A22;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#3A2A22}button,input,select,textarea{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:3px solid #3A2A22;outline-offset:3px}input::placeholder,textarea::placeholder{color:#8A7666}</style>
+</helmet>
+<div data-screen-label="Checkout" style="background:#FBF3DC;min-height:100vh">
+<header style="background:#F5C2C8;border-bottom:2px solid #3A2A22">
+  <div style="max-width:1160px;margin:0 auto;padding:0 20px;height:72px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center">
+    <a href="Basket.dc.html" style="font-weight:700;color:#3A2A22;font-size:15px;min-height:44px;display:flex;align-items:center">← Basket</a>
+    <a href="Home.dc.html" aria-label="Mama's Munches home"><img src="assets/logo-horizontal.png" alt="Mama's Munches" style="height:{{ logoH }};width:auto"></a>
+    <span style="justify-self:end;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.2"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>{{ secureTxt }}</span>
+  </div>
+</header>
+<main style="padding:{{ L.pad }}">
+  <div style="max-width:1160px;margin:0 auto;display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start">
+    <sc-if value="{{ isM }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ toggleSum }}" style="width:100%;min-height:60px;border:2px solid #3A2A22;border-radius:20px;background:#F9D5D3;padding:0 18px;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:16px;cursor:pointer"><span>{{ sumLabel }}</span><span style="font-family:'Young Serif',serif;font-size:20px">{{ totalText }}</span></button>
+    </sc-if>
+    <sc-if value="{{ showSumTop }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ items }}" as="it" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center"><div style="width:52px;height:52px;border-radius:12px;border:2px solid #3A2A22;background-image:{{ it.bg }};background-size:cover;background-position:center"></div><div style="min-width:0"><div style="font-weight:700;font-size:15px">{{ it.qty }} × {{ it.name }}</div><div style="font-size:13px;color:#5E4A3D">{{ it.variant }}</div></div><b>{{ it.total }}</b></div></sc-for>
+      </div>
+    </sc-if>
+
+    <form onSubmit="{{ pay }}" style="display:flex;flex-direction:column;gap:22px;min-width:0">
+      <div>
+        <div style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1">last bit, promise</div>
+        <h1 style="margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1">Checkout</h1>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <button type="button" style="height:52px;border-radius:999px;border:2px solid #3A2A22;background:#000000;color:#FFFFFF;font-weight:700;font-size:{{ L.exp }};cursor:pointer">Apple Pay</button>
+          <button type="button" style="height:52px;border-radius:999px;border:2px solid #3A2A22;background:#FFFFFF;font-weight:700;font-size:{{ L.exp }};cursor:pointer">Google Pay</button>
+          <button type="button" style="height:52px;border-radius:999px;border:2px solid #3A2A22;background:#FFC439;font-weight:700;font-size:{{ L.exp }};cursor:pointer">PayPal</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:18px;font-size:14px;font-weight:700"><span style="flex:1;border-top:2px dashed rgba(58,42,34,.3)"></span>or pay by card<span style="flex:1;border-top:2px dashed rgba(58,42,34,.3)"></span></div>
+      </div>
+
+      <fieldset style="border:2px solid #3A2A22;border-radius:26px;background:#FFFAF0;padding:{{ L.boxPad }};margin:0;min-width:0;display:flex;flex-direction:column;gap:14px">
+        <legend style="font-family:'Young Serif',serif;font-size:22px;padding:0 8px">1 · Your details</legend>
+        <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Email<input type="email" required="{{ true }}" autocomplete="email" placeholder="you@example.com" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Mobile, for delivery updates (optional)<input type="tel" autocomplete="tel" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+      </fieldset>
+
+      <fieldset style="border:2px solid #3A2A22;border-radius:26px;background:#FFFAF0;padding:{{ L.boxPad }};margin:0;min-width:0;display:flex;flex-direction:column;gap:14px">
+        <legend style="font-family:'Young Serif',serif;font-size:22px;padding:0 8px">2 · Who’s it for?</legend>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <button type="button" onClick="{{ forMe }}" aria-pressed="{{ isMe }}" style="min-height:76px;border-radius:20px;border:2px solid #3A2A22;background:{{ me.bg }};box-shadow:{{ me.shadow }};font-weight:700;font-size:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:box-shadow .2s, background .2s"><span style="font-family:'Caveat',cursive;font-size:24px;font-weight:600">for me</span>Send to my address</button>
+          <button type="button" onClick="{{ forHer }}" aria-pressed="{{ isGift }}" style="min-height:76px;border-radius:20px;border:2px solid #3A2A22;background:{{ her.bg }};box-shadow:{{ her.shadow }};font-weight:700;font-size:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:box-shadow .2s, background .2s"><span style="font-family:'Caveat',cursive;font-size:24px;font-weight:600">it’s a gift ♥</span>Send to someone else</button>
+        </div>
+        <sc-if value="{{ isGift }}" hint-placeholder-val="{{ false }}">
+          <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Her name<input autocomplete="off" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Your note<textarea value="{{ gift.message }}" onChange="{{ onMsg }}" rows="3" placeholder="Congratulations, mama!" style="border:2px solid #3A2A22;border-radius:14px;padding:12px 16px;background:#FFFFFF;resize:vertical;font-family:'Caveat',cursive;font-size:24px;line-height:1.2"></textarea></label>
+          <div style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;border-radius:99px;background:#F9CF6E;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:11px">✓</span>We’ll leave the prices off the packing slip</div>
+        </sc-if>
+      </fieldset>
+
+      <fieldset style="border:2px solid #3A2A22;border-radius:26px;background:#FFFAF0;padding:{{ L.boxPad }};margin:0;min-width:0;display:flex;flex-direction:column;gap:14px">
+        <legend style="font-family:'Young Serif',serif;font-size:22px;padding:0 8px">{{ addrTitle }}</legend>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end">
+          <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Postcode<input autocomplete="postal-code" placeholder="B1 1AA" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;text-transform:uppercase;width:100%;min-width:0"></label>
+          <button type="button" style="height:54px;padding:0 18px;border-radius:14px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;cursor:pointer">Find address</button>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Address line 1<input autocomplete="address-line1" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+        <div style="display:grid;grid-template-columns:{{ L.two }};gap:14px">
+          <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Address line 2 (optional)<input autocomplete="address-line2" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Town or city<input autocomplete="address-level2" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+          <sc-for list="{{ methods }}" as="d" hint-placeholder-count="0">
+            <button type="button" onClick="{{ d.pick }}" aria-pressed="{{ d.on }}" style="min-height:66px;border-radius:18px;border:2px solid #3A2A22;background:{{ d.bg }};box-shadow:{{ d.shadow }};padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;text-align:left;cursor:pointer;transition:box-shadow .2s, background .2s"><span style="width:22px;height:22px;border-radius:99px;border:2px solid #3A2A22;background:{{ d.dot }}"></span><span style="display:flex;flex-direction:column"><b style="font-size:16px">{{ d.name }}</b><span style="font-size:13px;color:#5E4A3D">{{ d.eta }}</span></span><b>{{ d.price }}</b></button>
+          </sc-for>
+        </div>
+      </fieldset>
+
+      <fieldset style="border:2px solid #3A2A22;border-radius:26px;background:#FFFAF0;padding:{{ L.boxPad }};margin:0;min-width:0;display:flex;flex-direction:column;gap:14px">
+        <legend style="font-family:'Young Serif',serif;font-size:22px;padding:0 8px">4 · Payment</legend>
+        <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Card number<input inputmode="numeric" autocomplete="cc-number" placeholder="1234 1234 1234 1234" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Expiry<input autocomplete="cc-exp" placeholder="MM / YY" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Security code<input inputmode="numeric" autocomplete="cc-csc" placeholder="CVC" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+        </div>
+      </fieldset>
+
+      <div style="border:2px dashed #3A2A22;border-radius:20px;padding:14px 18px;font-size:14px;line-height:1.55">Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts. <a href="Help.dc.html#allergens" style="font-weight:700;color:#3A2A22">Full allergen info</a></div>
+      <button type="submit" style="height:66px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:19px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22" style-active="transform:translate(3px,3px);box-shadow:0 0 0 #3A2A22">Pay {{ totalText }}</button>
+      <div style="font-size:13px;text-align:center;color:#5E4A3D">By placing your order you agree to our <a href="Help.dc.html#legal" style="color:#3A2A22">terms</a>.</div>
+    </form>
+
+    <sc-if value="{{ notM }}" hint-placeholder-val="{{ true }}">
+      <aside style="position:sticky;top:24px;background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:8px 8px 0 #3A2A22">
+        <div style="font-family:'Young Serif',serif;font-size:24px">Your order</div>
+        <sc-for list="{{ items }}" as="it" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center"><div style="position:relative;width:56px;height:56px;border-radius:12px;border:2px solid #3A2A22;background-image:{{ it.bg }};background-size:cover;background-position:center"><span style="position:absolute;top:-8px;right:-8px;min-width:22px;height:22px;border-radius:99px;background:#3A2A22;color:#FFFAF0;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ it.qty }}</span></div><div style="min-width:0"><div style="font-weight:700;font-size:15px">{{ it.name }}</div><div style="font-size:13px;color:#4E3C31">{{ it.variant }}</div></div><b>{{ it.total }}</b></div></sc-for>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px"><input placeholder="Discount code" style="height:48px;border:2px solid #3A2A22;border-radius:14px;padding:0 14px;font-size:15px;background:#FFFAF0;min-width:0"><button type="button" style="height:48px;padding:0 16px;border-radius:14px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;cursor:pointer">Apply</button></div>
+        <div style="display:flex;justify-content:space-between;padding-top:12px;border-top:2px dashed rgba(58,42,34,.3)"><span>Subtotal</span><b>{{ subText }}</b></div>
+        <div style="display:flex;justify-content:space-between"><span>Delivery</span><b>{{ delText }}</b></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;border-top:2px dashed rgba(58,42,34,.3)"><b style="font-size:17px">Total</b><span style="font-family:'Young Serif',serif;font-size:30px">{{ totalText }}</span></div>
+        <div style="font-size:14px;text-align:center">Baked fresh for you · with you in 3–5 days</div>
+      </aside>
+    </sc-if>
+  </div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { bp: this.bpOf(), tick: 0, method: 't48', gift: false, sumOpen: false };
+  bpOf() { const w = window.innerWidth; return w < 768 ? 'm' : w < 1024 ? 't' : 'd'; }
+  componentDidMount() {
+    this.onR = () => { const b = this.bpOf(); if (b !== this.state.bp) this.setState({ bp: b }); };
+    window.addEventListener('resize', this.onR);
+    const go = () => { MM.cart.seed(); this.off = MM.on(() => this.setState(s => ({ tick: s.tick + 1 }))); this.setState(s => ({ tick: s.tick + 1, gift: MM.cart.gift().on })); };
+    if (window.MM) go(); else window.addEventListener('mm:ready', go, { once: true });
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); this.off && this.off(); }
+  renderVals() {
+    const S = this.state, m = S.bp === 'm', t = S.bp === 't', M = window.MM;
+    const v = (a, b, c) => (m ? a : t ? b : c);
+    const money = n => '£' + n.toFixed(2);
+    const items = M ? M.cart.items() : [], sub = M ? M.cart.subtotal() : 0;
+    const del = M && items.length ? M.delivery(S.method, sub) : 0;
+    const sel = on => ({ bg: on ? '#F9CF6E' : '#FFFFFF', shadow: on ? '4px 4px 0 #3A2A22' : '0 0 0 #3A2A22' });
+    const methods = M ? Object.values(M.methods) : [];
+    return {
+      L: { pad: v('16px 16px 56px', '28px 28px 72px', '40px 40px 96px'), cols: v('1fr', '1fr', '1.35fr 1fr'), gap: v('16px', '28px', '40px'), h1: v('40px', '48px', '56px'), boxPad: v('14px 16px 20px', '18px 22px 24px', '20px 26px 26px'), two: v('1fr', '1fr 1fr', '1fr 1fr'), exp: v('14px', '16px', '16px') },
+      isM: m, notM: !m, logoH: m ? '40px' : '50px', secureTxt: m ? 'Secure' : 'Secure checkout',
+      showSumTop: m && S.sumOpen, toggleSum: () => this.setState({ sumOpen: !S.sumOpen }), sumLabel: S.sumOpen ? 'Hide order summary ▴' : 'Show order summary ▾',
+      items: items.map(it => ({ ...it, bg: 'url(' + it.img + ')', total: money(it.price * it.qty) })),
+      isMe: !S.gift, isGift: S.gift, me: sel(!S.gift), her: sel(S.gift),
+      forMe: () => { this.setState({ gift: false }); M && M.cart.setGift({ on: false }); }, forHer: () => { this.setState({ gift: true }); M && M.cart.setGift({ on: true }); },
+      gift: M ? M.cart.gift() : { message: '' }, onMsg: e => M.cart.setGift({ message: e.target.value.slice(0, 200) }),
+      addrTitle: S.gift ? '3 · Her address & delivery' : '3 · Delivery',
+      methods: methods.map(d => { const on = S.method === d.id; const pr = M ? M.delivery(d.id, sub) : d.price; return { ...d, on, price: pr === 0 ? 'Free' : money(pr), bg: on ? '#FCEBBE' : '#FFFFFF', shadow: on ? '4px 4px 0 #3A2A22' : '0 0 0 #3A2A22', dot: on ? '#3A2A22' : '#FFFFFF', pick: () => this.setState({ method: d.id }) }; }),
+      subText: money(sub), delText: del === 0 ? 'Free' : money(del), totalText: money(sub + del),
+      pay: e => { e.preventDefault(); if (!M) return; M.placeOrder({ total: sub + del, delivery: del, method: S.method }); location.href = 'Confirmation.dc.html'; }
+    };
+  }
+}
+</script>
+</body>
+</html>

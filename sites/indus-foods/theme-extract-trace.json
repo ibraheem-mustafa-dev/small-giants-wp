@@ -1,0 +1,321 @@
+[
+  {
+    "kind": "derive",
+    "slug": "primary",
+    "_source": "derived",
+    "role": "link-colour",
+    "confidence": 0.8,
+    "relative_share": 1.0,
+    "value": "#0a7ea8",
+    "reason": "Pass B: derived link-colour by usage-context (share 1.0 within role)"
+  },
+  {
+    "kind": "derive",
+    "slug": "surface",
+    "_source": "derived",
+    "role": "surface",
+    "confidence": 0.95,
+    "relative_share": 1.0,
+    "value": "#ffffff",
+    "reason": "Pass B: derived surface by usage-context (share 1.0 within role)"
+  },
+  {
+    "kind": "merge",
+    "reason": "Pass B palette OVERLAID on the framework baseline (baseline slugs kept, never replaced)",
+    "overlaid": 2,
+    "appended": 0
+  },
+  {
+    "kind": "base",
+    "what": "styles.typography",
+    "_source": "declared",
+    "reason": "computed on representative <p> 'Our customers stay with us for d'",
+    "fontSize": "16px",
+    "lineHeight": "1.6",
+    "root_px": 16.0
+  },
+  {
+    "kind": "base",
+    "what": "settings.typography.fontSizes[base]",
+    "_source": "declared",
+    "reason": "base body size routed through a non-fluid preset so WP's fluid engine cannot recompute the draft's authored value (FR-33-4)",
+    "size": "16px",
+    "fluid": false
+  },
+  {
+    "kind": "base",
+    "what": "styles.color.background",
+    "_source": "declared",
+    "reason": "widest content-containing ancestor 'html>body>div>div>div' (area 7912800)",
+    "value": "rgb(255, 255, 255)"
+  },
+  {
+    "kind": "base",
+    "what": "styles.elements.heading",
+    "_source": "declared",
+    "reason": "mode line-height ratio 1.08 across non-chrome headings (ratios=[1.08, 1.15, 1.55]); hero outlier excluded",
+    "lineHeight": "1.08",
+    "letterSpacing": "-1.24px"
+  },
+  {
+    "kind": "base",
+    "what": "styles.elements.h1..h6.typography.fontSize",
+    "_source": "declared",
+    "reason": "literal computed fontSize per non-chrome heading tag (overrides the shared preset var for that tag only, no unrelated element touched)",
+    "sizes": {
+      "h1": "62px",
+      "h2": "36px",
+      "h3": "22px"
+    }
+  },
+  {
+    "kind": "base",
+    "what": "styles.elements.h1..h6",
+    "reason": "no non-chrome measurement for these levels — framework baseline PRESERVED untouched (blind spot, not measured-absent; deleting it would strip the level from the live site)",
+    "baseline_preserved": "h4,h5,h6"
+  },
+  {
+    "kind": "font-loading",
+    "what": "font-face:Source Sans 3",
+    "reason": "self-hosted a font not already bundled in the framework",
+    "saved_to": "file:./assets/fonts/source-sans-3/source-sans-3-variable-latin.woff2",
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400..900&display=swap"
+  },
+  {
+    "kind": "font-loading",
+    "what": "font-face:Montserrat",
+    "reason": "self-hosted a font not already bundled in the framework",
+    "saved_to": "file:./assets/fonts/montserrat/montserrat-variable-latin.woff2",
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap"
+  },
+  {
+    "kind": "font-loading",
+    "what": "font-face:Montserrat",
+    "reason": "self-hosted a font not already bundled in the framework",
+    "saved_to": "file:./assets/fonts/montserrat/montserrat-variable-latin.woff2",
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap"
+  },
+  {
+    "kind": "font-family",
+    "what": "fontFamilies:montserrat",
+    "reason": "loaded by the draft and rendered on 44 element(s) — FR-33-18",
+    "fontFamily": "Montserrat, sans-serif",
+    "weights": "700,800",
+    "google": true
+  },
+  {
+    "kind": "preset",
+    "slot": "buttonPresets.primary",
+    "_source": "derived",
+    "reason": "slot inferred from an unclassed style signature (sig:rgb(10, 126, 168)|rgb(255, 255, 255)|rgb(255, 255, 255)|0px|999px|none|600), 4 occurrence(s), on the PAINTING element <a>",
+    "variant_from": "unclassed style signature",
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,padding,hover-background,hover-text,hover-border,hover-transform"
+  },
+  {
+    "kind": "preset",
+    "slot": "buttonPresets.secondary",
+    "_source": "derived",
+    "reason": "slot inferred from an unclassed style signature (sig:rgb(10, 126, 168)|rgb(255, 255, 255)|rgb(10, 126, 168)|2px|999px|none|600), 2 occurrence(s), on the PAINTING element <a:nth-of-type(2)>",
+    "variant_from": "unclassed style signature",
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,padding,hover-transform"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets.primary",
+    "reason": "derived keys overlaid onto the framework baseline preset; baseline keys the extractor cannot derive are preserved",
+    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-border,hover-text,hover-transform,padding,text",
+    "preserved_from_baseline": "min-height"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets.secondary",
+    "reason": "derived keys overlaid onto the framework baseline preset; baseline keys the extractor cannot derive are preserved",
+    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-transform,padding,text",
+    "preserved_from_baseline": "hover-background,hover-border,hover-text,min-height"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets",
+    "reason": "baseline preset slots the draft does not define are preserved whole (a wholesale replace would delete them from the live site)",
+    "preserved_slots": "outline"
+  },
+  {
+    "kind": "layout",
+    "what": "layout.contentSize",
+    "_source": "rendered",
+    "value": "1080px",
+    "wideSize": "1400px",
+    "reason": "most common content box of the top-level bands at the widest census viewport; one width only; wideSize 1400px kept",
+    "tally": {
+      "1040": 2,
+      "1080": 4,
+      "1120": 1,
+      "1240": 1
+    },
+    "superseded": {
+      "contentSize": "1200px",
+      "wideSize": "1400px"
+    },
+    "evidence": [
+      {
+        "band": "div",
+        "text": "0121 771 4330 amir@indusfoodsltd.com",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1320px",
+        "boxSizing": "border-box",
+        "padding": "40/40",
+        "contentWidth": 1240,
+        "at1440": {
+          "x": 100,
+          "width": 1240
+        },
+        "at1920": {
+          "x": 340,
+          "width": 1240
+        }
+      },
+      {
+        "band": "header",
+        "text": "Home About Sectors Brands Trade Contact ",
+        "reason": "chrome (header/footer/nav): evidence only"
+      },
+      {
+        "band": "section",
+        "text": "Leading Indian Food & Drinks Wholesaler ",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1120px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1120,
+        "at1440": {
+          "x": 160,
+          "width": 1120
+        },
+        "at1920": {
+          "x": 400,
+          "width": 1120
+        }
+      },
+      {
+        "band": "section",
+        "text": "Our Brands",
+        "reason": "full width (a row of text has no binding layout cap)"
+      },
+      {
+        "band": "section",
+        "text": "Our UK Wide Food Services Food Service T",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1080px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1080,
+        "at1440": {
+          "x": 180,
+          "width": 1080
+        },
+        "at1920": {
+          "x": 420,
+          "width": 1080
+        }
+      },
+      {
+        "band": "section",
+        "text": "Why Choose Indus Foods? Experience Six d",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1080px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1080,
+        "at1440": {
+          "x": 180,
+          "width": 1080
+        },
+        "at1920": {
+          "x": 420,
+          "width": 1080
+        }
+      },
+      {
+        "band": "section",
+        "text": "OUR HERITAGE Family-run since 1962. From",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1080px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1080,
+        "at1440": {
+          "x": 180,
+          "width": 1080
+        },
+        "at1920": {
+          "x": 420,
+          "width": 1080
+        }
+      },
+      {
+        "band": "section",
+        "text": "Our Partners Love Us! “ The white labell",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1040px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1040,
+        "at1440": {
+          "x": 200,
+          "width": 1040
+        },
+        "at1920": {
+          "x": 440,
+          "width": 1040
+        }
+      },
+      {
+        "band": "section",
+        "text": "GETTING STARTED How to open a trade acco",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1080px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1080,
+        "at1440": {
+          "x": 180,
+          "width": 1080
+        },
+        "at1920": {
+          "x": 420,
+          "width": 1080
+        }
+      },
+      {
+        "band": "section",
+        "text": "What Are You Waiting For? Our customers ",
+        "reason": "constrained",
+        "cap": "div",
+        "maxWidth": "1040px",
+        "boxSizing": "border-box",
+        "padding": "0/0",
+        "contentWidth": 1040,
+        "at1440": {
+          "x": 200,
+          "width": 1040
+        },
+        "at1920": {
+          "x": 440,
+          "width": 1040
+        }
+      },
+      {
+        "band": "footer",
+        "text": "CALL US 0121 771 4330 Speak to our sales",
+        "reason": "chrome (header/footer/nav): evidence only"
+      }
+    ]
+  }
+]

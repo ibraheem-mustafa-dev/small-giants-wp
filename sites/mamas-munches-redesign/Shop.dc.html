@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Shop · Mama's Munches</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="store.js"></script>
+<style>body{margin:0;background:#FBF3DC;color:#3A2A22;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#3A2A22}button,input,select,textarea{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:3px solid #3A2A22;outline-offset:3px}@keyframes mmMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}</style>
+</helmet>
+<div ref="{{ rootRef }}" data-screen-label="Shop" style="background:#FBF3DC;min-height:100vh">
+<dc-import name="SiteHeader" current="shop" hint-size="100%,96px" style="position:sticky;top:-32px;z-index:50;display:block"></dc-import>
+<main>
+<section style="background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.headPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:{{ L.headCols }};gap:24px;align-items:end">
+    <div>
+      <div data-reveal="" style="font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1;transform:rotate(-2deg);transform-origin:left">fresh from Zainab’s kitchen</div>
+      <h1 data-reveal="" style="margin:6px 0 10px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.025em">The shop</h1>
+      <p data-reveal="" style="margin:0;font-size:{{ L.lead }};line-height:1.55;color:#4E3C31;max-width:560px">Every Zookie is baked fresh when you order and with you in 3–5 days. Free UK delivery over £35.</p>
+    </div>
+    <label data-reveal="" style="display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;justify-self:{{ L.sortJust }}">
+      <span>Sort</span>
+      <select value="{{ sort }}" onChange="{{ onSort }}" style="height:50px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;padding:0 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:3px 3px 0 #3A2A22">
+        <option value="featured">Featured</option>
+        <option value="low">Price: low to high</option>
+        <option value="high">Price: high to low</option>
+      </select>
+    </label>
+  </div>
+  <div role="group" aria-label="Filter products" style="max-width:1240px;margin:{{ L.chipM }};display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:{{ L.chipP }}">
+    <sc-for list="{{ chips }}" as="c" hint-placeholder-count="0">
+      <button onClick="{{ c.pick }}" aria-pressed="{{ c.on }}" style="flex:none;min-height:46px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ c.bg }};font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;box-shadow:{{ c.shadow }};transform:{{ c.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)">{{ c.label }}<span style="min-width:22px;height:22px;border-radius:999px;background:#3A2A22;color:#FFFAF0;font-size:12px;display:flex;align-items:center;justify-content:center;padding:0 6px">{{ c.n }}</span></button>
+    </sc-for>
+  </div>
+</section>
+
+<section style="padding:{{ L.pad }}">
+  <div style="max-width:1240px;margin:0 auto">
+    <div style="font-size:15px;font-weight:700;margin-bottom:18px">{{ countText }}</div>
+    <div style="display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }}">
+      <sc-for list="{{ list }}" as="p" hint-placeholder-count="0">
+        <div style="min-width:0"><dc-import name="ProductCard" product="{{ p }}" size="{{ cardSize }}" hint-size="100%,440px"></dc-import></div>
+      </sc-for>
+    </div>
+
+    <div style="margin-top:{{ L.secGap }};display:grid;grid-template-columns:{{ L.two }};gap:20px">
+      <a data-reveal="" href="Home.dc.html#build" style="position:relative;background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.bannerPad }};text-decoration:none;color:#3A2A22;display:flex;flex-direction:column;gap:10px;overflow:hidden;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22">
+        <span style="font-family:'Caveat',cursive;font-size:26px;color:#8E3444;line-height:1">your cookie, your way ✦</span>
+        <span style="font-family:'Young Serif',serif;font-size:{{ L.h2 }};line-height:1.05">Build your own box</span>
+        <span style="font-size:16px;line-height:1.5;color:#4E3C31;max-width:380px">Pick a base, chips and up to three of Zainab’s 11 flavours.</span>
+        <span style="margin-top:6px;font-weight:700;display:flex;align-items:center;gap:8px">Start building <span aria-hidden="true" style="width:34px;height:34px;border-radius:999px;background:#3A2A22;color:#F9D5D3;display:flex;align-items:center;justify-content:center">→</span></span>
+      </a>
+      <a data-reveal="" href="Product.dc.html?id=zookies&amp;sub=1" style="background:#FCEBBE;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.bannerPad }};text-decoration:none;color:#3A2A22;display:flex;flex-direction:column;gap:10px;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22">
+        <span style="font-family:'Caveat',cursive;font-size:26px;color:#7A5A12;line-height:1">never run out</span>
+        <span style="font-family:'Young Serif',serif;font-size:{{ L.h2 }};line-height:1.05">Subscribe &amp; save 10%</span>
+        <span style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px"><sc-for list="{{ perks }}" as="k" hint-placeholder-count="0"><span style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700">{{ k }}</span></sc-for></span>
+      </a>
+    </div>
+
+    <a data-reveal="" href="Gifts.dc.html" style="margin-top:20px;display:grid;grid-template-columns:{{ L.giftCols }};align-items:center;background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;overflow:hidden;text-decoration:none;color:#3A2A22;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22">
+      <div style="padding:{{ L.bannerPad }};display:flex;flex-direction:column;gap:8px">
+        <span style="font-family:'Caveat',cursive;font-size:26px;color:#8E3444;line-height:1">buying for someone?</span>
+        <span style="font-family:'Young Serif',serif;font-size:{{ L.h2 }};line-height:1.05">Find a gift by moment or budget</span>
+        <span style="font-size:16px;color:#4E3C31">Baby showers, new arrivals and the first 40 days.</span>
+      </div>
+      <div style="height:100%;min-height:200px;background:url(assets/photo-gift-heart.jpg) center / cover;border-left:{{ L.giftBorder }}"></div>
+    </a>
+  </div>
+</section>
+</main>
+<dc-import name="SiteFooter" hint-size="100%,1100px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { bp: this.bpOf(), filter: 'all', sort: 'featured', tick: 0 };
+  rootRef = React.createRef();
+  bpOf() { const w = window.innerWidth; return w < 768 ? 'm' : w < 1024 ? 't' : 'd'; }
+  componentDidMount() {
+    this.onR = () => { const b = this.bpOf(); if (b !== this.state.bp) this.setState({ bp: b }); };
+    window.addEventListener('resize', this.onR);
+    const f = new URLSearchParams(location.search).get('filter'); if (f) this.setState({ filter: f });
+    const go = () => this.setState(s => ({ tick: s.tick + 1 }), () => setTimeout(() => this.motion(), 60));
+    if (window.MM) go(); else window.addEventListener('mm:ready', go, { once: true });
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); this.io && this.io.disconnect(); }
+  motion() {
+    const r = this.rootRef.current; if (!r || this.io || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    this.io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; this.io.unobserve(e.target); e.target.animate([{ opacity: 0, translate: '0 28px' }, { opacity: 1, translate: '0 0' }], { duration: 750, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' }); }), { threshold: 0.1 });
+    r.querySelectorAll('[data-reveal]').forEach(el => this.io.observe(el));
+  }
+  renderVals() {
+    const { bp, filter, sort } = this.state, m = bp === 'm', t = bp === 't', M = window.MM;
+    const v = (a, b, c) => (m ? a : t ? b : c);
+    const P = M ? M.products : [];
+    const defs = [['all', 'All'], ['zookies', 'Zookies'], ['gifts', 'Gifts'], ['subscribe', 'Subscribe'], ['trial', 'Taster'], ['bundles', 'Bundles'], ['vegan', 'Vegan']];
+    const inF = (p, f) => f === 'all' || p.cats.includes(f);
+    let list = P.filter(p => inF(p, filter));
+    if (sort === 'low') list = [...list].sort((a, b) => a.from - b.from);
+    if (sort === 'high') list = [...list].sort((a, b) => b.from - a.from);
+    return {
+      rootRef: this.rootRef,
+      L: {
+        headPad: v('32px 20px 20px', '48px 32px 24px', '64px 40px 28px'), headCols: v('1fr', '1fr auto', '1fr auto'), sortJust: v('start', 'end', 'end'),
+        h1: v('48px', '64px', '84px'), lead: v('17px', '18px', '19px'), h2: v('26px', '30px', '34px'),
+        chipM: v('20px -20px 0', '28px auto 0', '32px auto 0'), chipP: v('4px 20px 8px', '4px 0 8px', '4px 0 8px'),
+        pad: v('28px 20px 64px', '40px 32px 80px', '48px 40px 112px'),
+        cols: v('repeat(2, minmax(0, 1fr))', 'repeat(3, minmax(0, 1fr))', 'repeat(3, minmax(0, 1fr))'), gap: v('14px', '22px', '28px'),
+        secGap: v('48px', '64px', '88px'), two: v('1fr', '1fr 1fr', '1fr 1fr'), bannerPad: v('26px 22px', '32px', '40px'),
+        giftCols: v('1fr', '1.4fr 1fr', '1.6fr 1fr'), giftBorder: v('0', '2px solid #3A2A22', '2px solid #3A2A22')
+      },
+      cardSize: m ? 'sm' : 'md',
+      chips: defs.map(([id, label]) => { const on = filter === id; return { label, on, n: P.filter(p => inF(p, id)).length, bg: on ? '#F9CF6E' : '#FFFAF0', shadow: on ? '3px 3px 0 #3A2A22' : '0 0 0 #3A2A22', tf: on ? 'translate(-2px,-2px)' : 'none', pick: () => this.setState({ filter: id }) }; }),
+      list, countText: list.length + (list.length === 1 ? ' treat' : ' treats') + ' to choose from',
+      sort, onSort: e => this.setState({ sort: e.target.value }),
+      perks: M ? M.subscribe.perks : []
+    };
+  }
+}
+</script>
+</body>
+</html>

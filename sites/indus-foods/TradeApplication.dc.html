@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&amp;family=Source+Sans+3:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  a { color: #0A7EA8; text-decoration: none; } a:hover { color: #075E80; }
+  input, select, textarea, button { font-family: inherit; }
+</style>
+</helmet>
+<div style="font-family:'Source Sans 3',system-ui,sans-serif;color:#2C3E50;font-size:17px;line-height:1.5;">
+  <sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start;">
+      <div style="min-width:0;background:#FFFFFF;border-radius:30px;border:1px solid rgba(44,62,80,.1);box-shadow:0 40px 80px -50px rgba(44,62,80,.55);overflow:clip;">
+        <div style="padding:{{ L.pad }};padding-bottom:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <span style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#0A7EA8;">Step {{ stepNum }} of {{ stepTotal }}<sc-if value="{{ L.noLabels }}" hint-placeholder-val="{{ false }}"> · {{ cur.label }}</sc-if></span>
+            <span style="font-size:15px;color:#5E6873;display:inline-flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#6EC07A;"></span>{{ savedLabel }}</span>
+          </div>
+          <div style="position:relative;height:6px;border-radius:6px;background:#EEF2F5;margin-top:14px;overflow:hidden;">
+            <span style="position:absolute;left:0;top:0;bottom:0;width:{{ progress }};border-radius:6px;background:linear-gradient(90deg,#D8CA50,#2EADE2);transition:width .6s cubic-bezier(.2,.8,.2,1);"></span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat({{ stepTotal }},minmax(0,1fr));gap:8px;margin-top:16px;">
+            <sc-for list="{{ steps }}" as="st" hint-placeholder-count="5">
+              <button type="button" onClick="{{ st.onClick }}" disabled="{{ st.locked }}" style="display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0;cursor:{{ st.cursor }};text-align:left;color:{{ st.color }};">
+                <span style="flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});">{{ st.mark }}</span>
+                <sc-if value="{{ L.labels }}" hint-placeholder-val="{{ true }}"><span style="font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ st.label }}</span></sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div ref="{{ setBody }}" style="padding:{{ L.pad }};padding-top:28px;">
+          <h2 style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(26px,3vw,34px);line-height:1.15;letter-spacing:-.015em;color:#2C3E50;margin:0;">{{ cur.title }}</h2>
+          <p style="font-size:17px;color:#4A5563;margin:8px 0 0;max-width:620px;">{{ cur.intro }}</p>
+
+          <sc-if value="{{ notReview }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;grid-template-columns:{{ L.fieldCols }};gap:20px 18px;margin-top:28px;">
+              <sc-for list="{{ fields }}" as="f" hint-placeholder-count="6">
+                <div style="grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;">
+                  <sc-if value="{{ f.isHeading }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;"><span style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:18px;color:#2C3E50;padding-top:14px;">{{ f.label }}</span></div>
+                  </sc-if>
+                  <sc-if value="{{ f.hasLabel }}" hint-placeholder-val="{{ true }}">
+                    <label for="{{ f.id }}" style="font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;">{{ f.label }}<sc-if value="{{ f.req }}" hint-placeholder-val="{{ false }}"><span style="color:#C8412B;">*</span></sc-if><sc-if value="{{ f.opt }}" hint-placeholder-val="{{ false }}"><span style="font-weight:500;font-size:14px;color:#8793A0;">Optional</span></sc-if></label>
+                  </sc-if>
+                  <sc-if value="{{ f.isInput }}" hint-placeholder-val="{{ true }}">
+                    <input id="{{ f.id }}" type="{{ f.type }}" value="{{ f.value }}" onChange="{{ f.onChange }}" placeholder="{{ f.ph }}" autocomplete="{{ f.ac }}" style="height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;" style-focus="border-color:#0A7EA8;background:#FFFFFF;box-shadow:0 0 0 4px rgba(46,173,226,.18)">
+                  </sc-if>
+                  <sc-if value="{{ f.isSelect }}" hint-placeholder-val="{{ false }}">
+                    <select id="{{ f.id }}" value="{{ f.value }}" onChange="{{ f.onChange }}" style="height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;cursor:pointer;" style-focus="border-color:#0A7EA8;background:#FFFFFF;box-shadow:0 0 0 4px rgba(46,173,226,.18)">
+                      <sc-for list="{{ f.options }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+                    </select>
+                  </sc-if>
+                  <sc-if value="{{ f.isArea }}" hint-placeholder-val="{{ false }}">
+                    <textarea id="{{ f.id }}" value="{{ f.value }}" onChange="{{ f.onChange }}" placeholder="{{ f.ph }}" rows="3" style="padding:14px 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;resize:vertical;" style-focus="border-color:#0A7EA8;background:#FFFFFF;box-shadow:0 0 0 4px rgba(46,173,226,.18)"></textarea>
+                  </sc-if>
+                  <sc-if value="{{ f.isChips }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                      <sc-for list="{{ f.chips }}" as="c" hint-placeholder-count="5">
+                        <button type="button" onClick="{{ c.onClick }}" aria-pressed="{{ c.on }}" style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);" style-hover="transform:translateY(-2px);border-color:#0A7EA8"><sc-if value="{{ c.on }}" hint-placeholder-val="{{ false }}"><span style="display:flex;">{{ tick }}</span></sc-if>{{ c.label }}</button>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ f.isCheck }}" hint-placeholder-val="{{ false }}">
+                    <button type="button" onClick="{{ f.onToggle }}" role="checkbox" aria-checked="{{ f.on }}" style="display:flex;align-items:flex-start;gap:14px;padding:16px 18px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.checkBg }};text-align:left;cursor:pointer;color:#2C3E50;font-size:16px;line-height:1.5;transition:border-color .2s,background .2s;">
+                      <span style="flex-shrink:0;width:24px;height:24px;border-radius:7px;border:2px solid {{ f.boxRing }};background:{{ f.boxBg }};color:#FFFFFF;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:background .2s,border-color .2s;">{{ f.boxMark }}</span>
+                      <span>{{ f.text }}</span>
+                    </button>
+                  </sc-if>
+                  <sc-if value="{{ f.isFile }}" hint-placeholder-val="{{ false }}">
+                    <label for="{{ f.id }}" style="display:flex;align-items:center;gap:16px;padding:18px;border-radius:16px;border:1.5px dashed {{ f.fileRing }};background:#F7F9FA;cursor:pointer;transition:border-color .2s,background .2s;" style-hover="border-color:#0A7EA8;background:#FFFFFF">
+                      <span style="flex-shrink:0;width:46px;height:46px;border-radius:50%;background:#D8CA50;color:#2C3E50;display:flex;align-items:center;justify-content:center;">{{ uploadIcon }}</span>
+                      <span style="min-width:0;"><span style="display:block;font-weight:700;font-size:16px;color:#2C3E50;overflow-wrap:anywhere;">{{ f.fileLabel }}</span><span style="display:block;font-size:15px;color:#5E6873;">PDF, JPG or PNG, up to 10MB</span></span>
+                    </label>
+                    <input id="{{ f.id }}" type="file" onChange="{{ f.onFile }}" accept=".pdf,.jpg,.jpeg,.png" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;">
+                  </sc-if>
+                  <sc-if value="{{ f.hasHint }}" hint-placeholder-val="{{ false }}"><span style="font-size:15px;color:#5E6873;">{{ f.hint }}</span></sc-if>
+                  <sc-if value="{{ f.hasErr }}" hint-placeholder-val="{{ false }}"><span style="font-size:15px;font-weight:600;color:#C8412B;">{{ f.err }}</span></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isReview }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:14px;margin-top:26px;">
+              <sc-for list="{{ review }}" as="rv" hint-placeholder-count="4">
+                <div style="border:1px solid #E4EAEF;border-radius:20px;padding:20px 22px;background:#FAFBFC;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+                    <span style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:18px;color:#2C3E50;">{{ rv.title }}</span>
+                    <button type="button" onClick="{{ rv.onEdit }}" style="background:transparent;border:1.5px solid #D5DEE5;border-radius:999px;padding:7px 16px;font-weight:700;font-size:15px;color:#0A7EA8;cursor:pointer;" style-hover="border-color:#0A7EA8">Edit</button>
+                  </div>
+                  <div style="display:grid;grid-template-columns:{{ L.revCols }};gap:10px 24px;margin-top:14px;">
+                    <sc-for list="{{ rv.rows }}" as="r" hint-placeholder-count="4">
+                      <div style="min-width:0;"><span style="display:block;font-size:14px;font-weight:600;color:#8793A0;">{{ r.l }}</span><span style="display:block;font-size:16px;font-weight:600;color:#2C3E50;overflow-wrap:anywhere;">{{ r.v }}</span></div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <div style="display:flex;flex-wrap:{{ L.navWrap }};align-items:center;justify-content:space-between;gap:12px;margin-top:34px;padding:{{ L.navPad }};border-top:1px solid #EEF2F5;position:{{ L.navPos }};bottom:0;z-index:5;background:#FFFFFF;margin-left:{{ L.navM }};margin-right:{{ L.navM }};box-shadow:{{ L.navShadow }};">
+            <sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ back }}" style="display:inline-flex;align-items:center;gap:10px;background:transparent;border:1.5px solid #D5DEE5;border-radius:999px;padding:14px 24px;font-weight:700;font-size:16px;color:#2C3E50;cursor:pointer;transition:border-color .2s,transform .25s;" style-hover="border-color:#2C3E50;transform:translateX(-3px)"><span style="display:flex;transform:rotate(180deg);">{{ arrow }}</span>Back</button>
+            </sc-if>
+            <sc-if value="{{ noBackHint }}" hint-placeholder-val="{{ true }}"><span style="font-size:15px;color:#5E6873;">Takes about 5 minutes · Your progress saves automatically</span></sc-if>
+            <button type="button" onClick="{{ next }}" style="flex:{{ L.nextFlex }};justify-content:center;display:inline-flex;align-items:center;gap:10px;background:{{ nextBg }};color:{{ nextFg }};border:2px solid {{ nextBg }};border-radius:999px;padding:15px 28px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 22px -10px rgba(10,126,168,.7);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;" style-hover="transform:scale(1.04) translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.25)">{{ nextLabel }} {{ arrow }}</button>
+          </div>
+        </div>
+      </div>
+
+      <aside style="min-width:0;display:flex;flex-direction:column;gap:16px;position:{{ L.asidePos }};top:110px;order:{{ L.asideOrder }};">
+        <div style="background:#2C3E50;color:#FFFFFF;border-radius:26px;padding:{{ L.ckPad }};">
+          <button type="button" onClick="{{ toggleCk }}" aria-expanded="{{ ckOpen }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:transparent;border:0;padding:0;color:#D8CA50;cursor:{{ L.ckCursor }};text-align:left;"><span style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;">Have these ready</span><sc-if value="{{ L.noLabels2 }}" hint-placeholder-val="{{ false }}"><span style="display:flex;transform:rotate({{ ckRot }}deg);transition:transform .3s;">{{ chev }}</span></sc-if></button>
+          <sc-if value="{{ ckOpen }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:2px;margin-top:14px;">
+            <sc-for list="{{ checklist }}" as="ck" hint-placeholder-count="5">
+              <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;"><span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;">{{ tick }}</span>{{ ck }}</div>
+            </sc-for>
+          </div></sc-if>
+        </div>
+        <sc-if value="{{ L.desk }}" hint-placeholder-val="{{ true }}"><div style="background:linear-gradient(135deg,#EBDD78 0%,#D8CA50 100%);border-radius:26px;padding:26px;color:#2C3E50;">
+          <span style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;">Need a hand?</span>
+          <p style="font-size:16px;margin:8px 0 14px;">Our trade team can complete the application with you over the phone.</p>
+          <a href="tel:01217714330" style="display:inline-flex;align-items:center;gap:10px;background:#000000;color:#D8CA50;font-weight:700;font-size:16px;padding:13px 22px;border-radius:999px;box-shadow:0 8px 18px -8px rgba(0,0,0,.55);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;" style-hover="transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.25);color:#E7D768">0121 771 4330</a>
+        </div></sc-if>
+      </aside>
+      <sc-if value="{{ L.notDesk }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(135deg,#EBDD78 0%,#D8CA50 100%);border-radius:26px;padding:22px;color:#2C3E50;"><span style="font-size:16px;font-weight:600;">Prefer to apply over the phone?</span><a href="tel:01217714330" style="display:inline-flex;align-items:center;gap:10px;background:#000000;color:#D8CA50;font-weight:700;font-size:16px;padding:12px 22px;border-radius:999px;box-shadow:0 8px 18px -8px rgba(0,0,0,.55);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;" style-hover="transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.25);color:#E7D768">Call 0121 771 4330</a></div></sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+    <div ref="{{ setDone }}" style="max-width:760px;margin:0 auto;background:#FFFFFF;border-radius:30px;border:1px solid rgba(44,62,80,.1);box-shadow:0 40px 80px -50px rgba(44,62,80,.55);padding:{{ L.pad }};text-align:center;">
+      <span style="margin:0 auto;width:84px;height:84px;border-radius:50%;background:#D8CA50;color:#2C3E50;display:flex;align-items:center;justify-content:center;">{{ bigTick }}</span>
+      <h2 style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(28px,3.4vw,38px);color:#2C3E50;margin:22px 0 0;">Application received</h2>
+      <p style="font-size:17px;color:#4A5563;margin:10px auto 0;max-width:520px;">Thanks, {{ firstName }}. Your reference is <strong style="color:#0A7EA8;">{{ ref }}</strong>. We’ve emailed a copy to {{ email }}.</p>
+      <div style="display:grid;grid-template-columns:{{ L.nextCols }};gap:14px;margin-top:30px;text-align:left;">
+        <sc-for list="{{ after }}" as="a" hint-placeholder-count="3">
+          <div style="border-radius:20px;background:#F7F9FA;padding:20px;"><span style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;">{{ a.n }}</span><span style="display:block;font-weight:700;font-size:17px;margin-top:6px;">{{ a.t }}</span><span style="display:block;font-size:15px;color:#5E6873;margin-top:4px;">{{ a.d }}</span></div>
+        </sc-for>
+      </div>
+      <button type="button" onClick="{{ restart }}" style="margin-top:28px;background:transparent;border:1.5px solid #D5DEE5;border-radius:999px;padding:12px 22px;font-weight:700;font-size:15px;color:#2C3E50;cursor:pointer;" style-hover="border-color:#2C3E50">Start a new application</button>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;1200px&quot;,&quot;height&quot;:&quot;1000px&quot;}}">
+class Component extends DCLogic {
+  state = { ckOpen: null, step: 0, v: {}, errs: {}, done: false, ref: '', w: typeof window !== 'undefined' ? window.innerWidth : 1200, saved: false };
+  KEY = 'indus-trade-application';
+  componentDidMount() {
+    try { const d = JSON.parse(localStorage.getItem(this.KEY) || 'null'); if (d && d.v) this.setState({ v: d.v, step: Math.min(d.step || 0, 4), saved: true }); } catch (e) {}
+    this._r = () => this.setState({ w: window.innerWidth });
+    window.addEventListener('resize', this._r);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this._r); }
+  componentDidUpdate(pp, ps) {
+    if (ps.step !== this.state.step && this._body) {
+      const dir = this.state.step > ps.step ? 1 : -1;
+      this._body.animate([{ opacity: 0, transform: 'translateX(' + 36 * dir + 'px)' }, { opacity: 1, transform: 'none' }], { duration: 480, easing: 'cubic-bezier(.16,.84,.32,1)' });
+      const top = this._body.parentElement.getBoundingClientRect().top + window.scrollY - 120;
+      if (window.scrollY > top) window.scrollTo({ top, behavior: 'smooth' });
+    }
+    if (!ps.done && this.state.done && this._done) this._done.animate([{ opacity: 0, transform: 'scale(.94) translateY(20px)' }, { opacity: 1, transform: 'none' }], { duration: 700, easing: 'cubic-bezier(.34,1.56,.64,1)' });
+  }
+  persist(v, step) { try { localStorage.setItem(this.KEY, JSON.stringify({ v, step })); } catch (e) {} }
+  setV(name, val) { this.setState((s) => { const v = { ...s.v, [name]: val }; const errs = { ...s.errs }; delete errs[name]; this.persist(v, s.step); return { v, errs, saved: true }; }); }
+  get schema() {
+    const v = this.state.v;
+    const ltd = ['Limited company', 'LLP'].includes(v.structure);
+    const credit = v.payment === 'Credit account (30 days)';
+    const diffDel = v.sameDelivery === false;
+    return [
+      { key: 'business', label: 'Business', title: 'Tell us about your business', intro: 'The basics we need to set up your account and check your details.', fields: [
+        { name: 'bizType', label: 'What kind of business are you?', type: 'chips', req: true, options: ['Restaurant or takeaway', 'Caterer or events', 'Retailer or convenience', 'Wholesaler or cash & carry', 'Food manufacturer', 'Other'] },
+        { name: 'tradingName', label: 'Trading name', req: true, ph: 'e.g. Spice Garden', ac: 'organization' },
+        { name: 'legalName', label: 'Registered business name', ph: 'If different from trading name' },
+        { name: 'structure', label: 'Business structure', type: 'select', req: true, options: ['Sole trader', 'Partnership', 'Limited company', 'LLP', 'Charity or other'] },
+        { name: 'companyNo', label: 'Companies House number', req: ltd, show: ltd, ph: '8 digits', rx: /^[A-Z0-9]{8}$/i, rxMsg: 'Company numbers are 8 characters' },
+        { name: 'vat', label: 'VAT number', ph: 'GB123456789', hint: 'Leave blank if you are not VAT registered.' },
+        { name: 'years', label: 'Time trading', type: 'select', req: true, options: ['New business', 'Under 1 year', '1–3 years', '3–10 years', '10+ years'] },
+        { name: 'fhrs', label: 'Food hygiene rating', type: 'chips', options: ['5', '4', '3', 'Awaiting inspection', 'Not applicable'], hint: 'From your local authority (Food Standards Agency scheme).' }
+      ] },
+      { key: 'premises', label: 'Premises', title: 'Where are you based?', intro: 'We deliver across the UK and Europe. Tell us where and how to reach you.', fields: [
+        { name: 'addr1', label: 'Business address', req: true, full: true, ph: 'Building and street', ac: 'address-line1' },
+        { name: 'city', label: 'Town or city', req: true, ac: 'address-level2' },
+        { name: 'postcode', label: 'Postcode', req: true, ac: 'postal-code', rx: /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i, rxMsg: 'Enter a valid UK postcode' },
+        { name: 'sameDelivery', type: 'check', full: true, text: 'Deliver to this address', dflt: true },
+        { name: 'delHead', label: 'Delivery address', type: 'heading', show: diffDel },
+        { name: 'delAddr', label: 'Delivery address', req: diffDel, show: diffDel, full: true },
+        { name: 'delPostcode', label: 'Delivery postcode', req: diffDel, show: diffDel },
+        { name: 'delWindow', label: 'Preferred delivery window', type: 'chips', options: ['Early (6–9am)', 'Morning (9am–12pm)', 'Afternoon (12–5pm)', 'Any time'] },
+        { name: 'access', label: 'Access notes for drivers', type: 'textarea', full: true, ph: 'Parking, loading bay, height limits, key contact on site…' }
+      ] },
+      { key: 'contact', label: 'Contact', title: 'Who should we speak to?', intro: 'Your main contact and the person responsible for the business.', fields: [
+        { name: 'firstName', label: 'First name', req: true, ac: 'given-name' },
+        { name: 'lastName', label: 'Last name', req: true, ac: 'family-name' },
+        { name: 'role', label: 'Your role', type: 'select', req: true, options: ['Owner or director', 'Manager', 'Head chef', 'Buyer or purchasing', 'Accounts', 'Other'] },
+        { name: 'email', label: 'Email', type: 'email', req: true, ac: 'email', rx: /^[^@\s]+@[^@\s]+\.[^@\s]+$/, rxMsg: 'Enter a valid email address' },
+        { name: 'phone', label: 'Phone', type: 'tel', req: true, ac: 'tel', rx: /^[+\d\s()-]{10,}$/, rxMsg: 'Enter a valid phone number' },
+        { name: 'contactPref', label: 'Best way to reach you', type: 'chips', options: ['Phone', 'Email', 'WhatsApp'] },
+        { name: 'ownerHead', label: 'Owner or director', type: 'heading' },
+        { name: 'ownerName', label: 'Full name', req: true, ph: 'As it appears on official documents' },
+        { name: 'ownerPostcode', label: 'Home postcode', req: credit, opt: !credit, hint: credit ? 'Needed for the credit check.' : 'Only needed for credit accounts.' }
+      ] },
+      { key: 'ordering', label: 'Ordering', title: 'How will you order?', intro: 'This helps us set up the right pricing, ranges and payment terms.', fields: [
+        { name: 'cats', label: 'Ranges you’re interested in', type: 'chips', multi: true, req: true, full: true, options: ['Rice', 'Flour & atta', 'Spices & seasonings', 'Lentils & pulses', 'Oils & ghee', 'Frozen', 'Snacks & sweets', 'Drinks', 'Sauces & pastes', 'Packaging & disposables'] },
+        { name: 'brands', label: 'Brands you stock or use', type: 'chips', multi: true, full: true, options: ['Sanam', 'Shan', 'Green Leaf', 'The Lemon Tree', 'Others'] },
+        { name: 'spend', label: 'Estimated weekly spend', type: 'select', req: true, options: ['Under £250', '£250–£500', '£500–£1,000', '£1,000–£2,500', '£2,500+'] },
+        { name: 'freq', label: 'How often will you order?', type: 'select', req: true, options: ['Several times a week', 'Weekly', 'Fortnightly', 'Monthly'] },
+        { name: 'payment', label: 'How would you like to pay?', type: 'chips', req: true, full: true, options: ['Card or cash on delivery', 'Direct debit', 'Credit account (30 days)'] },
+        { name: 'creditHead', label: 'Credit account details', type: 'heading', show: credit },
+        { name: 'creditLimit', label: 'Credit limit requested', type: 'select', req: credit, show: credit, options: ['£1,000', '£2,500', '£5,000', '£10,000', '£10,000+'] },
+        { name: 'ref1', label: 'Trade reference 1', req: credit, show: credit, ph: 'Supplier name and contact' },
+        { name: 'ref2', label: 'Trade reference 2', show: credit, ph: 'Supplier name and contact' },
+        { name: 'creditOk', type: 'check', full: true, show: credit, req: credit, text: 'I agree to Indus Foods carrying out a credit check on the business and its directors.' },
+        { name: 'docs', label: 'Supporting document', type: 'file', full: true, hint: 'Optional: VAT certificate, food business registration or a recent utility bill speeds up approval.' }
+      ] },
+      { key: 'review', label: 'Review', title: 'Check and submit', intro: 'Make sure everything looks right. You can edit any section before submitting.', fields: [] }
+    ];
+  }
+  visible(step) { return step.fields.filter((f) => f.show !== false); }
+  validate(i) {
+    const v = this.state.v, errs = {};
+    this.visible(this.schema[i]).forEach((f) => {
+      const val = f.type === 'check' ? (v[f.name] ?? f.dflt ?? false) : v[f.name];
+      const empty = val == null || val === '' || (Array.isArray(val) && !val.length) || val === false;
+      if (f.req && empty) errs[f.name] = f.type === 'chips' ? 'Please choose at least one option' : f.type === 'check' ? 'Please confirm to continue' : 'This field is required';
+      else if (!empty && f.rx && !f.rx.test(String(val).trim())) errs[f.name] = f.rxMsg;
+    });
+    return errs;
+  }
+  go(i) { this.setState({ step: i }); this.persist(this.state.v, i); }
+  next = () => {
+    const S = this.schema, i = this.state.step;
+    if (i === S.length - 1) {
+      const ref = 'IND-' + Math.floor(100000 + Math.random() * 900000);
+      try { localStorage.removeItem(this.KEY); } catch (e) {}
+      this.setState({ done: true, ref });
+      return;
+    }
+    const errs = this.validate(i);
+    if (Object.keys(errs).length) {
+      this.setState({ errs });
+      if (this._body) this._body.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-8px)' }, { transform: 'translateX(8px)' }, { transform: 'translateX(0)' }], { duration: 320 });
+      return;
+    }
+    this.go(i + 1);
+  };
+  back = () => this.go(Math.max(0, this.state.step - 1));
+  toggleCk = () => { if ((this.state.w || 1200) < 1024) this.setState((s) => ({ ckOpen: !this.isCkOpen(s) })); };
+  isCkOpen(s) { return s.ckOpen == null ? (s.w >= 1024) : s.ckOpen; }
+  restart = () => this.setState({ done: false, step: 0, v: {}, errs: {}, saved: false });
+  setBody = (el) => { this._body = el; };
+  setDone = (el) => { this._done = el; };
+  svg(d, z, sw) { return React.createElement('svg', { width: z, height: z, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: sw || 2.4, strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d })); }
+  display(f) {
+    const val = this.state.v[f.name];
+    if (f.type === 'check') return (val ?? f.dflt) ? 'Yes' : 'No';
+    if (Array.isArray(val)) return val.length ? val.join(', ') : '—';
+    return val ? String(val) : '—';
+  }
+  renderVals() {
+    const { step, v, errs, w, done } = this.state;
+    const m = w < 768, t = w >= 768 && w < 1024;
+    const S = this.schema, cur = S[step], isReview = step === S.length - 1;
+    const tick = this.svg('M5 12.5l4.2 4.2L19 7', 14, 3);
+    const fields = this.visible(cur).map((f) => {
+      const type = f.type || 'text', val = v[f.name], err = errs[f.name];
+      const base = { ...f, id: 'ta-' + f.name, type, req: !!f.req, opt: !!f.opt, ph: f.ph || '', ac: f.ac || 'off', span: f.full || type === 'chips' || type === 'heading' || type === 'textarea' ? '1 / -1' : 'auto',
+        isHeading: type === 'heading', hasLabel: type !== 'heading' && type !== 'check', isInput: ['text', 'email', 'tel'].includes(type), isSelect: type === 'select', isArea: type === 'textarea', isChips: type === 'chips', isCheck: type === 'check', isFile: type === 'file',
+        hasHint: !!f.hint, hint: f.hint || '', hasErr: !!err, err: err || '',
+        border: err ? '#C8412B' : '#DCE3E9', bg: err ? '#FFF6F4' : '#F7F9FA',
+        value: val ?? '', onChange: (e) => this.setV(f.name, e.target.value) };
+      if (type === 'select') base.options = [{ v: '', l: 'Please select' }, ...f.options.map((o) => ({ v: o, l: o }))];
+      if (type === 'chips') base.chips = f.options.map((o) => {
+        const on = f.multi ? (val || []).includes(o) : val === o;
+        return { label: o, on, bg: on ? '#0A7EA8' : '#FFFFFF', fg: on ? '#FFFFFF' : '#2C3E50', ring: on ? '#0A7EA8' : (err ? '#C8412B' : '#DCE3E9'),
+          onClick: () => this.setV(f.name, f.multi ? (on ? (val || []).filter((x) => x !== o) : [...(val || []), o]) : o) };
+      });
+      if (type === 'check') { const on = !!(val ?? f.dflt); Object.assign(base, { on, onToggle: () => this.setV(f.name, !on), checkBg: on ? 'rgba(10,126,168,.06)' : '#F7F9FA', boxBg: on ? '#0A7EA8' : '#FFFFFF', boxRing: on ? '#0A7EA8' : (err ? '#C8412B' : '#B9C5CF'), boxMark: on ? tick : null, border: err ? '#C8412B' : on ? 'rgba(10,126,168,.35)' : '#DCE3E9' }); }
+      if (type === 'file') Object.assign(base, { fileLabel: val || 'Choose a file or drag it here', fileRing: val ? '#0A7EA8' : '#C5D0D9', onFile: (e) => { const fl = e.target.files && e.target.files[0]; if (fl) this.setV(f.name, fl.name); } });
+      return base;
+    });
+    const steps = S.map((s, i) => {
+      const doneStep = i < step, active = i === step, locked = i > step;
+      return { label: s.label, mark: doneStep ? '✓' : String(i + 1), locked, cursor: locked ? 'default' : 'pointer',
+        bg: active ? '#0A7EA8' : doneStep ? '#D8CA50' : '#FFFFFF', fg: active ? '#FFFFFF' : doneStep ? '#2C3E50' : '#8793A0', ring: active ? '#0A7EA8' : doneStep ? '#D8CA50' : '#DCE3E9',
+        color: active ? '#2C3E50' : doneStep ? '#2C3E50' : '#8793A0', scale: active ? 1.08 : 1, onClick: () => { if (!locked) this.go(i); } };
+    });
+    const review = S.slice(0, -1).map((s, i) => ({ title: s.label, onEdit: () => this.go(i),
+      rows: this.visible(s).filter((f) => f.type !== 'heading').map((f) => ({ l: f.label || (f.type === 'check' ? f.text.slice(0, 40) + (f.text.length > 40 ? '…' : '') : f.name), v: this.display(f) })) }));
+    return {
+      L: { gap: m ? '16px' : '24px', desk: !m && !t, notDesk: m || t, noLabels: m, noLabels2: m || t, asideOrder: m || t ? -1 : 0, ckPad: m || t ? '20px 22px' : '26px', ckCursor: m || t ? 'pointer' : 'default', navPos: m ? 'sticky' : 'static', navM: m ? '-22px' : '0', navPad: m ? '14px 22px' : '24px 0 0', navShadow: m ? '0 -12px 24px -18px rgba(44,62,80,.35)' : 'none', navWrap: m ? 'nowrap' : 'wrap', nextFlex: m ? '1' : 'none', cols: m || t ? 'minmax(0,1fr)' : 'minmax(0,1fr) 340px', pad: m ? '22px' : '40px', fieldCols: m ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))', labels: !m, revCols: m ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))', asidePos: m || t ? 'static' : 'sticky', nextCols: m ? 'minmax(0,1fr)' : 'repeat(3,minmax(0,1fr))' },
+      notDone: !done, done, stepNum: step + 1, stepTotal: S.length, progress: Math.round((step / (S.length - 1)) * 100) + '%',
+      savedLabel: this.state.saved ? 'Progress saved' : 'Saves as you go',
+      steps, cur, fields, isReview, notReview: !isReview, review,
+      canBack: step > 0, noBack: step === 0, noBackHint: step === 0 && !m, ckOpen: this.isCkOpen(this.state), ckRot: this.isCkOpen(this.state) ? 180 : 0, toggleCk: this.toggleCk, chev: this.svg('M6 9l6 6 6-6', 18, 2.4), back: this.back, next: this.next,
+      nextLabel: isReview ? 'Submit application' : 'Continue', nextBg: isReview ? '#000000' : '#0A7EA8', nextFg: isReview ? '#D8CA50' : '#FFFFFF',
+      arrow: this.svg('M5 12h14M13 6l6 6-6 6', 18, 2.2), tick, bigTick: this.svg('M5 12.5l4.2 4.2L19 7', 40, 2.6), uploadIcon: this.svg('M12 16V4M7 9l5-5 5 5M4 20h16', 20, 2.2),
+      checklist: ['Your trading and registered business name', 'Companies House and VAT numbers (if you have them)', 'Business and delivery address', 'Owner or director details', 'Two trade references for a credit account'],
+      setBody: this.setBody, setDone: this.setDone, restart: this.restart,
+      firstName: v.firstName || 'there', email: v.email || 'your email', ref: this.state.ref,
+      after: [{ n: '01', t: 'We review', d: 'Our trade team checks your details, usually within one working day.' }, { n: '02', t: 'We call you', d: 'Your account manager confirms pricing, ranges and delivery days.' }, { n: '03', t: 'Start ordering', d: 'Place your first order with trade pricing from day one.' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

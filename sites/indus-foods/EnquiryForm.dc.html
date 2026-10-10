@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&amp;family=Source+Sans+3:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  a { color: #0A7EA8; text-decoration: none; } a:hover { color: #075E80; }
+  input, textarea, button { font-family: inherit; }
+</style>
+</helmet>
+<div style="font-family:'Source Sans 3',system-ui,sans-serif;color:#2C3E50;font-size:17px;line-height:1.5;">
+  <div ref="{{ setCard }}" style="background:#FFFFFF;border-radius:30px;border:1px solid rgba(44,62,80,.1);box-shadow:0 40px 80px -50px rgba(44,62,80,.55);padding:{{ L.pad }};">
+    <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+      <form onSubmit="{{ submit }}" noValidate="{{ true }}">
+        <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;">
+          <span style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;">01</span>
+          <h3 style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;">What can we help with?</h3>
+          <span style="font-size:15px;color:#5E6873;">Choose all that apply</span>
+        </div>
+        <div style="display:grid;grid-template-columns:{{ L.topicCols }};gap:12px;margin-top:18px;">
+          <sc-for list="{{ topics }}" as="tp" hint-placeholder-count="6">
+            <button type="button" onClick="{{ tp.onClick }}" aria-pressed="{{ tp.on }}" style="position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-shadow .25s;" style-hover="transform:translateY(-3px);box-shadow:0 18px 30px -20px rgba(10,126,168,.6)">
+              <span style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;">{{ tp.label }}</span>
+              <span style="font-size:15px;opacity:.85;">{{ tp.desc }}</span>
+              <sc-if value="{{ tp.on }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;background:#D8CA50;color:#2C3E50;display:flex;align-items:center;justify-content:center;">{{ tick }}</span></sc-if>
+            </button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ topicErr }}" hint-placeholder-val="{{ false }}"><span style="display:block;margin-top:10px;font-size:15px;font-weight:600;color:#C8412B;">Please choose at least one topic</span></sc-if>
+
+        <div style="display:flex;align-items:baseline;gap:14px;margin-top:36px;">
+          <span style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;">02</span>
+          <h3 style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;">Your details</h3>
+        </div>
+        <div style="display:grid;grid-template-columns:{{ L.fieldCols }};gap:18px;margin-top:18px;">
+          <sc-for list="{{ fields }}" as="f" hint-placeholder-count="4">
+            <div style="position:relative;min-width:0;">
+              <input id="{{ f.id }}" type="{{ f.type }}" value="{{ f.value }}" onChange="{{ f.onChange }}" onFocus="{{ f.onFocus }}" onBlur="{{ f.onBlur }}" autocomplete="{{ f.ac }}" style="height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;" style-focus="border-color:#0A7EA8;background:#FFFFFF;box-shadow:0 0 0 4px rgba(46,173,226,.18)">
+              <label for="{{ f.id }}" style="position:absolute;left:19px;top:{{ f.lTop }};font-size:{{ f.lSize }};font-weight:600;color:{{ f.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;">{{ f.label }}</label>
+              <sc-if value="{{ f.hasErr }}" hint-placeholder-val="{{ false }}"><span style="display:block;margin-top:6px;font-size:15px;font-weight:600;color:#C8412B;">{{ f.err }}</span></sc-if>
+            </div>
+          </sc-for>
+          <div style="grid-column:1 / -1;position:relative;">
+            <textarea id="enq-msg" value="{{ msg.value }}" onChange="{{ msg.onChange }}" onFocus="{{ msg.onFocus }}" onBlur="{{ msg.onBlur }}" maxLength="{{ 800 }}" rows="5" style="padding:30px 18px 14px;border-radius:16px;border:1.5px solid {{ msg.border }};background:{{ msg.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;resize:vertical;min-height:160px;" style-focus="border-color:#0A7EA8;background:#FFFFFF;box-shadow:0 0 0 4px rgba(46,173,226,.18)"></textarea>
+            <label for="enq-msg" style="position:absolute;left:19px;top:{{ msg.lTop }};font-size:{{ msg.lSize }};font-weight:600;color:{{ msg.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;">How can we help?</label>
+            <span style="position:absolute;right:16px;bottom:14px;font-size:14px;color:#8793A0;font-variant-numeric:tabular-nums;">{{ msg.count }}</span>
+            <sc-if value="{{ msg.hasErr }}" hint-placeholder-val="{{ false }}"><span style="display:block;margin-top:6px;font-size:15px;font-weight:600;color:#C8412B;">{{ msg.err }}</span></sc-if>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:22px;">
+          <span style="font-weight:700;font-size:16px;margin-right:4px;flex-basis:{{ L.prefBasis }};">Reply by</span>
+          <sc-for list="{{ prefs }}" as="p" hint-placeholder-count="3">
+            <button type="button" onClick="{{ p.onClick }}" style="padding:9px 18px;border-radius:999px;border:1.5px solid {{ p.ring }};background:{{ p.bg }};color:{{ p.fg }};font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s,border-color .2s;">{{ p.label }}</button>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-top:30px;padding-top:24px;border-top:1px solid #EEF2F5;">
+          <span style="font-size:15px;color:#5E6873;max-width:420px;">We reply within one working day. Your details are only used to answer your enquiry.</span>
+          <button type="submit" style="width:{{ L.btnW }};justify-content:center;display:inline-flex;align-items:center;gap:10px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:15px 30px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 22px -10px rgba(10,126,168,.7);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;" style-hover="transform:scale(1.04) translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.25)">{{ sendLabel }} {{ arrow }}</button>
+        </div>
+      </form>
+    </sc-if>
+    <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:30px 0;">
+        <span style="margin:0 auto;width:84px;height:84px;border-radius:50%;background:#D8CA50;color:#2C3E50;display:flex;align-items:center;justify-content:center;">{{ bigTick }}</span>
+        <h3 style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(26px,3vw,34px);color:#2C3E50;margin:22px 0 0;">Message sent</h3>
+        <p style="font-size:17px;color:#4A5563;margin:10px auto 0;max-width:460px;">Thanks, {{ name }}. Your {{ topicLower }} enquiry is with the right team and we’ll reply by {{ prefLower }} within one working day.</p>
+        <button type="button" onClick="{{ reset }}" style="margin-top:24px;background:transparent;border:1.5px solid #D5DEE5;border-radius:999px;padding:12px 22px;font-weight:700;font-size:15px;color:#2C3E50;cursor:pointer;" style-hover="border-color:#2C3E50">Send another message</button>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;1100px&quot;,&quot;height&quot;:&quot;900px&quot;}}">
+class Component extends DCLogic {
+  state = { topic: [], v: {}, focus: null, errs: {}, sent: false, sending: false, pref: 'Email', w: typeof window !== 'undefined' ? window.innerWidth : 1200 };
+  componentDidMount() { this._r = () => this.setState({ w: window.innerWidth }); window.addEventListener('resize', this._r); }
+  componentWillUnmount() { window.removeEventListener('resize', this._r); }
+  componentDidUpdate(pp, ps) { if (!ps.sent && this.state.sent && this._card) this._card.animate([{ opacity: 0, transform: 'scale(.96)' }, { opacity: 1, transform: 'none' }], { duration: 600, easing: 'cubic-bezier(.34,1.56,.64,1)' }); }
+  setCard = (el) => { this._card = el; };
+  svg(d, z, sw) { return React.createElement('svg', { width: z, height: z, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: sw, strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d })); }
+  setV(n, val) { this.setState((s) => { const errs = { ...s.errs }; delete errs[n]; return { v: { ...s.v, [n]: val }, errs }; }); }
+  submit = (e) => {
+    e.preventDefault();
+    const v = this.state.v, errs = {};
+    if (!this.state.topic.length) errs.topic = true;
+    if (!v.name) errs.name = 'Please enter your name';
+    if (!v.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.email)) errs.email = 'Enter a valid email address';
+    if (!v.msg || v.msg.trim().length < 10) errs.msg = 'Tell us a little more (at least 10 characters)';
+    if (Object.keys(errs).length) { this.setState({ errs }); if (this._card) this._card.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-8px)' }, { transform: 'translateX(8px)' }, { transform: 'none' }], { duration: 320 }); return; }
+    this.setState({ sending: true });
+    setTimeout(() => this.setState({ sending: false, sent: true }), 900);
+  };
+  reset = () => this.setState({ sent: false, v: {}, topic: [], errs: {} });
+  float(n, focus, val, err) {
+    const up = focus === n || !!val;
+    return { lTop: up ? '9px' : '20px', lSize: up ? '13px' : '17px', lColor: err ? '#C8412B' : focus === n ? '#0A7EA8' : '#6B7784', border: err ? '#C8412B' : '#DCE3E9', bg: err ? '#FFF6F4' : '#F7F9FA', hasErr: !!err, err: err || '',
+      onFocus: () => this.setState({ focus: n }), onBlur: () => this.setState({ focus: null }), onChange: (e) => this.setV(n, e.target.value) };
+  }
+  renderVals() {
+    const { topic, v, focus, errs, sent, w, pref, sending } = this.state;
+    const m = w < 768;
+    const T = [['New trade account', 'Open an account with us'], ['Existing order', 'Delivery, invoice or account help'], ['Product enquiry', 'Ranges, specs and availability'], ['White label', 'Your brand, our products'], ['Careers', 'Working at Indus Foods'], ['Something else', 'Anything we haven’t covered']];
+    const tick = this.svg('M5 12.5l4.2 4.2L19 7', 14, 3);
+    const F = [['name', 'Your name', 'text', 'name'], ['business', 'Business name (optional)', 'text', 'organization'], ['email', 'Email', 'email', 'email'], ['phone', 'Phone (optional)', 'tel', 'tel']];
+    const msgLen = (v.msg || '').length;
+    return {
+      L: { pad: m ? '22px' : '40px', topicCols: m ? 'minmax(0,1fr)' : w < 1024 ? 'repeat(2,minmax(0,1fr))' : 'repeat(3,minmax(0,1fr))', fieldCols: m ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))', prefBasis: m ? '100%' : 'auto', btnW: m ? '100%' : 'auto' },
+      topics: T.map(([l, d]) => { const on = topic.includes(l); return { label: l, desc: d, on, bg: on ? '#0A7EA8' : '#F7F9FA', fg: on ? '#FFFFFF' : '#2C3E50', ring: on ? '#0A7EA8' : (errs.topic ? '#C8412B' : 'transparent'), onClick: () => this.setState((s) => { const e = { ...s.errs }; delete e.topic; return { topic: on ? s.topic.filter((x) => x !== l) : [...s.topic, l], errs: e }; }) }; }),
+      topicErr: !!errs.topic, tick,
+      fields: F.map(([n, l, t, ac]) => ({ id: 'enq-' + n, label: l, type: t, ac, value: v[n] || '', ...this.float(n, focus, v[n], errs[n]) })),
+      msg: { value: v.msg || '', count: msgLen + ' / 800', ...this.float('msg', focus, v.msg, errs.msg), lTop: focus === 'msg' || v.msg ? '10px' : '22px' },
+      prefs: ['Email', 'Phone', 'WhatsApp'].map((p) => ({ label: p, bg: pref === p ? '#2C3E50' : '#FFFFFF', fg: pref === p ? '#FFFFFF' : '#2C3E50', ring: pref === p ? '#2C3E50' : '#DCE3E9', onClick: () => this.setState({ pref: p }) })),
+      submit: this.submit, reset: this.reset, setCard: this.setCard,
+      sendLabel: sending ? 'Sending…' : 'Send message', arrow: this.svg('M5 12h14M13 6l6 6-6 6', 18, 2.2), bigTick: this.svg('M5 12.5l4.2 4.2L19 7', 40, 2.6),
+      notSent: !sent, sent, name: v.name || 'there', topicLower: topic.length ? (topic.length > 1 ? topic.slice(0, -1).join(', ') + ' and ' + topic[topic.length - 1] : topic[0]).toLowerCase() : 'general', prefLower: pref.toLowerCase()
+    };
+  }
+}
+</script>
+</body>
+</html>
