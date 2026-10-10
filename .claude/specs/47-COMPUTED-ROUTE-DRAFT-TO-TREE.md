@@ -665,8 +665,10 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 4. **Fill on an unbuilt surface (proved on a built one).** Fill is proved against a built surface with its committed
    tree withheld as the hand-checked answer. The demonstration on a genuinely unbuilt surface carries to the first
    client that has one.
-5. **A second draft** from a different designer, to test generality. Blocked: no second draft exists, and no route work
-   unblocks it.
+5. **A second draft** from a different designer, to test generality. Not built. Two Claude Design drafts are ready as
+   local references with fresh WordPress test sites: Mama's Munches redesign (`sites/mamas-munches-redesign/`, target
+   `mamas-test`) and Indus Foods (`sites/indus-foods/`, target `indus-test`). Setup and draft checks:
+   `.claude/plans/2026-10-04-spec47-full-coverage.md` stage 5.
 
 **Bean rulings that govern this section**
 - A correctly named gap is a success, not a miss (Success above, 2026-10-03).
@@ -723,7 +725,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
   `scripts/parity/flows/state-map-reasons.json`; the guard that must refuse such a group belongs to
   `lib/solve-rows.mjs`.
 - Walker items 15 to 18 (§3.6) are not built.
-- Step 5 (a second draft) is blocked.
+- Step 5 (a second draft) is not built; both drafts and their test sites are set up.
 
 The results, run records and dated history of steps 1 to 4 are in `.claude/plans/2026-10-04-spec47-full-coverage.md`
 (section "Spec 47 build log").
