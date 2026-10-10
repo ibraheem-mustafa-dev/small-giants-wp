@@ -206,10 +206,24 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
     the phone display. Both plans now share `instanceCtx`, and the business-info fixture names
     `addressLink: { displayType: address }`. It takes effect at the next business-info calibration.
   - `showIcon`, `hoursRowJustify` and `labelColour` get their evidence from the skeleton writer's `draftSlots`.
-  - `hoursLayout` is a Spec 47 §5 Residual: a shared calibration change, so Bean signs it off first. The two icon fixes (social-icon styling onto the row's
-  `childIcon*` settings; icon size from the glyph, not the box) run in a separate session:
-  `.claude/prompts/2026-10-10-icon-fill-and-draft-domains.md`. The social-icons calibration predates the `childIcon*`
-  rename (`675df46e3`), so that session recalibrates it first.
+  - `hoursLayout` is a Spec 47 §5 Residual: a shared calibration change, so Bean signs it off first.
+  - **Icon fixes, done 2026-10-10.** Fill on the real footer social row (hosted draft, scratch skeleton) writes
+    `childIconBackground`, `childIconBorderColour`, `childIconTransitionDuration` 250, `childIconShapeSize` 44px and
+    `childIconSize` 18px on the row once; the icons keep brand and link only; no UNMAPPED icon rows. Causes fixed:
+    a stale social-icons cache (recalibrated on local-eye-care); `lib/fill-row-lift.mjs::liftRow`; per-device
+    `{width,height}` sizes (`lib/resolve.mjs::isSizeBox`, marker and write); a hugging root dropped from a setting's
+    slots (`lib/calibrate.mjs::mergeSetting` `misses`); an svg presentation attribute as a declared width
+    (`parity/lib/devtools.mjs::cascadeWinner`); a repeated timing list as one time (`lib/resolve.mjs::formatValue`).
+  - **Open: calibration fixture preconditions are Fill's baseline.** The social-icons fixture sets
+    `childIconShowBackground` and a 1px `childIconBorderWidth`, so the default paint already shows a 1px solid border
+    and Fill writes no border width, style or background switch; the block's own defaults are none, so a row built
+    from the tree loses them. Needs a ruling: Fill writes a fixture's styling preconditions into the node, or
+    calibration reads the default paint without them. Affects every block whose fixture sets styling attributes.
+  - **Open: a standalone `sgs/icon` glyph width is ambiguous.** `shapeSize`'s 7px and 23px markers sit below the
+    glyph's 32px rest, so the glyph shrinks with the shape and both `iconSize` and `shapeSize` reach it. A glyph read
+    reports `ambiguous`, never a wrong write. Fix: shape-size markers above the resting glyph.
+  - **Open: the 2026-10-09 footer skeleton's raw `data-dc-tpl` selectors are stale** (the hosted draft's footer is now
+    844, links 44px). Regenerate it with `tpl` finders before reusing it.
 - **R4. Exact ID pairing.** `pairs.mjs` pairs each block through its `tpl` finder when an origin file exists. Word
   pairing runs as the cross-check, and a disagreement is listed as `mispaired` in `qa/pairs/<surface>.json`. Inside a
   block, the block's named parts (DB element manifest) are matched by structure inside its own draft element.

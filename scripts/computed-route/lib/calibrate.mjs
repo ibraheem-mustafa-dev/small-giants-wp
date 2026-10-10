@@ -80,7 +80,11 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 	// colour); a descendant whose own rule overrides the value never changes, so it is never among them.
 	const reaches = inherited ? [ ...new Set( pool.map( ( c ) => c.path ) ) ].sort( ( a, b ) => depth( a ) - depth( b ) ) : null;
 	const overriddenBy = reaches ? overridingChildren( props, marker, defReads, best.path, reaches ) : [];
-	return { slot: best.path, slots, ...( reaches ? { reaches } : {} ), ...( overriddenBy.length ? { overriddenBy } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
+	// misses: elements that changed without ever carrying the marker value in this reading. One that carries it in
+	// another variant only follows a size there (a root hugging its glyph), so mergeSetting drops it from the slots.
+	const hitPaths = new Set( pool.filter( ( c ) => c.hit ).map( ( c ) => c.path ) );
+	const misses = marker.expect && hitPaths.size ? [ ...new Set( changes.filter( ( c ) => ! hitPaths.has( c.path ) ).map( ( c ) => c.path ) ) ] : [];
+	return { slot: best.path, slots, ...( misses.length ? { misses } : {} ), ...( reaches ? { reaches } : {} ), ...( overriddenBy.length ? { overriddenBy } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
 }
 
 const pathDepth = ( p ) => ( '' === p ? 0 : p.split( ' > ' ).length );
@@ -110,14 +114,22 @@ export function overridingChildren( props, marker, defReads, slot, reaches ) {
 
 // One setting's entry in the cache file, folding a fresh reading into the entry its earlier markers built. prev:
 // the entry so far (undefined for the first marker); s: a slotFor reading; ctx: { state, form, variant } from the
-// instance. Array fields are the union across every marker; the slot is the first marker's.
+// instance. Array fields are the union across every marker; the slot is the first marker's. An element some reading
+// changed without carrying the marker value (`misses`) leaves the slots, and the slot moves to the shallowest one left,
+// unless that would leave none.
 export function mergeSetting( prev, s, { state = null, form = null, variant = 0 } = {} ) {
 	const union = ( a, b ) => [ ...new Set( [ ...( a || [] ), ...( b || [] ) ] ) ];
 	const reaches = s.reaches || prev?.reaches ? union( prev?.reaches, s.reaches ) : null;
 	const overriddenBy = union( prev?.overriddenBy, s.overriddenBy );
+	const misses = union( prev?.misses, s.misses );
+	const all = union( prev?.slots, s.slots );
+	const kept = all.filter( ( p ) => ! misses.includes( p ) );
+	const slots = misses.length && kept.length ? kept.sort( ( a, b ) => pathDepth( a ) - pathDepth( b ) ) : all;
+	const first = prev?.slot ?? s.slot;
 	return {
-		slot: prev?.slot ?? s.slot,
-		slots: union( prev?.slots, s.slots ),
+		slot: slots.includes( first ) ? first : slots[ 0 ],
+		slots,
+		...( misses.length ? { misses } : {} ),
 		...( reaches ? { reaches } : {} ),
 		...( overriddenBy.length ? { overriddenBy } : {} ),
 		property: s.property,

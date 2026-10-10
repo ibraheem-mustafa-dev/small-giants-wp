@@ -150,8 +150,10 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 		return m ? { value: { url: m[ 1 ] } } : { error: `${ raw } is not one image` };
 	}
 	if ( TIME_PROPS.includes( prop ) ) {
-		// A time setting holds whole milliseconds: seconds convert (0.25s is 250), never a decimal or a unit suffix.
-		const ms = timeToMs( raw );
+		// A time setting holds whole milliseconds: seconds convert (0.25s is 250), never a decimal or a unit suffix. A list
+		// repeating one time for every transitioned property ("0.25s, 0.25s") is that time.
+		const times = [ ...new Set( String( raw ?? '' ).split( ',' ).map( ( v ) => timeToMs( v ) ) ) ];
+		const ms = 1 === times.length ? times[ 0 ] : null;
 		if ( null === ms ) {
 			return { error: `${ raw } is not one non-negative time` };
 		}
@@ -248,6 +250,10 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 // A border-radius box stores corners, never sides (helpers-box.php::sgs_border_radius_tiers reads topLeft, topRight,
 // bottomLeft, bottomRight and ignores any other key), per device when the attribute's default is a tier object.
 export const CORNERS = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
+
+// A per-device size held as { width, height } in each tier (block.json describes it "{desktop:{width,height},…}";
+// icon/render.php reads `shapeSize[tier]['width']` and ignores a plain length). True for such a setting's schema entry.
+export const isSizeBox = ( def ) => /\{desktop:\{width,\s*height\}/.test( def?.description ?? '' );
 
 // The computed border-radius shorthand ("8px", "8px 4px", …) as corners, or null for an elliptical radius.
 export function radiusCorners( raw ) {
@@ -387,7 +393,8 @@ export function resolve( input, ctx ) {
 			writes.push( { attr: name, value: v, merge: 'replace' } );
 		}
 	} else if ( 'tier_object' === row.tier_shape ) {
-		writes.push( { attr, value: Object.fromEntries( Object.entries( out ).map( ( [ t, v ] ) => [ t, boxed( v, t ) ] ) ), merge: 'deep' } );
+		const sized = isSizeBox( schema[ attr ] ) && /^(width|height)$/.test( short );
+		writes.push( { attr, value: Object.fromEntries( Object.entries( out ).map( ( [ t, v ] ) => [ t, sized ? { [ short ]: v } : boxed( v, t ) ] ) ), merge: 'deep' } );
 	} else {
 		const vals = [ ...new Set( Object.values( out ).map( ( v ) => JSON.stringify( v ) ) ) ];
 		if ( 1 !== vals.length || undefined === vals[ 0 ] ) {

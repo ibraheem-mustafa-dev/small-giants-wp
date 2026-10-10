@@ -88,6 +88,17 @@ test( 'cascade winner: inline beats rules, user-agent rules are ignored, a disab
 	assert.equal( cascadeWinner( { matchedCSSRules: [ rule( 'user-agent', [ { name: 'width', value: 'auto' } ] ) ] }, 'width' ), null );
 } );
 
+test( 'MUST FAIL: a presentation attribute declares, below every author rule, a unitless length in px', () => {
+	// The Eye Care footer glyph: <svg width="18">, which CDP lists only as attributesStyle.
+	const attrs = { attributesStyle: { cssProperties: [ { name: 'width', value: '18' }, { name: 'fill', value: 'none' } ] } };
+	assert.equal( cascadeWinner( attrs, 'width' ), '18px' );
+	assert.equal( cascadeWinner( attrs, 'fill' ), 'none' );
+	// negative control: any author rule or inline style beats the attribute.
+	const rule = ( props ) => ( { rule: { origin: 'regular', style: { cssProperties: props } } } );
+	assert.equal( cascadeWinner( { ...attrs, matchedCSSRules: [ rule( [ { name: 'width', value: '24px' } ] ) ] }, 'width' ), '24px' );
+	assert.equal( cascadeWinner( { ...attrs, inlineStyle: { cssProperties: [ { name: 'width', value: '30px' } ] } }, 'width' ), '30px' );
+} );
+
 test( 'MUST FAIL TO MISS: a text run reads its rows and the space between them in the page', async () => {
 	const page = await pageWith( `<style>ul { margin: 0; padding: 0; list-style: none; display: grid; row-gap: 14px; font: 16px/20px sans-serif }</style>
 		<ul class="hours"><li><span>Mon</span> <span>9 to 5</span></li><li>Tue 9 to 5</li><li>Wed 9 to 5</li></ul>` );

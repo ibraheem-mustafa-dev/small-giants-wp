@@ -3,7 +3,7 @@
 // each width when the setting works; null means "any change". base: attributes the marker's own baseline instance
 // carries too (a partner setting the marker needs before it can paint), so only the marker's own effect is measured.
 import { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT } from './calibrate-props.mjs';
-import { CORNERS } from './resolve.mjs';
+import { CORNERS, isSizeBox } from './resolve.mjs';
 
 // The duration marker is a whole number of milliseconds, never a CSS time: helpers-tokens.php::sgs_transition_vars
 // refuses anything that is not a non-negative integer. 437 reads unmistakably as 0.437s in a computed style.
@@ -253,6 +253,11 @@ export function markersFor( row, schema, snapshot, current = {}, ctx = {} ) {
 	if ( 'tier_object' === row.tier_shape && /\{x, y\}/.test( def.description ?? '' ) ) {
 		const pairOf = ( x, y ) => ( { x, y } );
 		return [ { label: 'tiers-xy', attrs: set( { desktop: pairOf( 37, 41 ), tablet: pairOf( 23, 29 ), mobile: pairOf( 7, 11 ) } ), expect: null } ];
+	}
+	// A per-device { width, height } size: each tier holds both, so the marker lands where the block reads it.
+	if ( 'tier_object' === row.tier_shape && isSizeBox( def ) ) {
+		const sizeOf = ( n ) => ( { width: `${ n }px`, height: `${ n }px` } );
+		return [ { label: 'tiers-size', attrs: set( { desktop: sizeOf( 37 ), tablet: sizeOf( 23 ), mobile: sizeOf( 7 ) } ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ TIER_PX[ WIDTH_TIER[ w ] ] }px` ] ) ) } ];
 	}
 	if ( 'tier_object' === row.tier_shape ) {
 		if ( box ) {

@@ -15,6 +15,8 @@ import { spacingOwnership } from './fill-spacing.mjs';
 import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
+import { hasRow } from './fill-skeleton.mjs';
+import { liftRow } from './fill-row-lift.mjs';
 
 const GAP_PROPS = [ 'row-gap', 'column-gap' ];
 const PSEUDO_LAYERS = [ '::before', '::after' ];
@@ -342,6 +344,10 @@ export function fillTree( opts ) {
 			continue;
 		}
 		fillContent( st, rec, ref, cal );
+		// A generated Site Info icon's look belongs to its row (liftRow, run at the row): the icon keeps its content only.
+		if ( null !== rec.parent && hasRow( st.nodes[ rec.parent ].node ) ) {
+			continue;
+		}
 		for ( const target of rec.targets ) {
 			const snaps = snapsOf( st, target.id );
 			if ( ! Object.keys( snaps ).length ) {
@@ -359,6 +365,9 @@ export function fillTree( opts ) {
 				}
 				fillElement( st, rec, ref, cal, target, snaps, layer );
 			}
+		}
+		if ( hasRow( st.nodes[ rec.index ].node ) ) {
+			liftRow( st, rec, ref, cal, { fillElement, snapsOf } );
 		}
 		// What this node's calibration knows and nothing read or judged, so no setting is skipped silently.
 		const read = rec.targets.filter( ( t ) => Object.keys( snapsOf( st, t.id ) ).length ).map( ( t ) => t.slot );

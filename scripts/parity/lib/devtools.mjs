@@ -162,7 +162,11 @@ export const forcedHover = ( cdp, page, finder, resolveSrc, read ) => forcedPseu
 // matched author rules in ascending precedence then the inline style, the last declaration winning, an !important
 // one over any normal one. User-agent rules are ignored (they declare no design). Null when nothing declares it.
 export function cascadeWinner( matched, prop ) {
+	// A presentation attribute (an svg's width="18") is an author declaration below every rule; SVG reads a unitless
+	// length as px.
+	const attrs = ( matched.attributesStyle?.cssProperties || [] ).map( ( p ) => ( /^\d*\.?\d+$/.test( String( p.value ).trim() ) && /width|height|^(x|y|r|rx|ry|cx|cy)$/.test( p.name ) ? { ...p, value: `${ String( p.value ).trim() }px` } : p ) );
 	const decls = [
+		{ cssProperties: attrs },
 		...( matched.matchedCSSRules || [] ).filter( ( m ) => 'user-agent' !== m.rule?.origin ).map( ( m ) => m.rule.style ),
 		...( matched.inlineStyle ? [ matched.inlineStyle ] : [] ),
 	].flatMap( ( s ) => ( s?.cssProperties || [] ).filter( ( p ) => p.name === prop && ! p.disabled && false !== p.parsedOk && '' !== String( p.value ).trim() ) );

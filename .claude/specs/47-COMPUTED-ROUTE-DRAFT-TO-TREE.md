@@ -375,6 +375,13 @@ Presence and content: the skeleton carries the draft's words in each block's `co
 block's visibility and variant settings from calibration's `presence` so the built block shows the elements its draft
 element shows and no others.
 
+Site Info rows: a row of generated brand icons shares one look, held by the row's `childIcon*` settings
+(`lib/fill-row-lift.mjs::liftRow`). Each generated icon's draft link is read as the row's `shape` element and the glyph
+inside it (`lib/fill-skeleton.mjs::ROW_GLYPH_SLOT`, finder `svg`) as the row's `glyph` element; the row's element paths
+come from the DB's `css_element` and the row's calibration (`rowElementPaths`). A setting is written on the row once,
+only when every icon gives the same value; a disagreement is an UNMAPPED `disagree:` row, never averaged. The icons
+keep their brand, link and content settings only.
+
 **Values that need care:**
 - **Fluid sizes:** sampled at 375, 768, 1024, 1440 and 1920. Linear within 0.5px means fluid. A fluid value is written
   only where calibration showed the setting accepts a `clamp()` string; otherwise per-tier values from 375, 768 and

@@ -19,7 +19,10 @@ const isStr = ( v ) => 'string' === typeof v && '' !== v.trim();
 //   childRefs:       { "<slug>": selector } the draft element each icon copies, resolved inside the row's own draftRef
 //                    (a selector string), so the icon can take the draft's typed address as its fallback link
 export const ROW_KEYS = [ 'siteInfoRow', 'childAttributes', 'childRefs' ];
-const hasRow = ( node ) => 'sgs/social-icons' === node.name && ROW_KEYS.some( ( k ) => undefined !== node[ k ] );
+export const hasRow = ( node ) => 'sgs/social-icons' === node.name && ROW_KEYS.some( ( k ) => undefined !== node[ k ] );
+// A generated icon's glyph: the svg inside its draft link, at sgs/icon's glyph element path. Fill reads the link and
+// the glyph against the row's shape and glyph elements (lib/fill-row-lift.mjs).
+export const ROW_GLYPH_SLOT = '.sgs-icon__shape > .sgs-icon__svg';
 
 // The attribute Fill puts on a node's draft element while its slots resolve (scopeSelector names it).
 export const SCOPE_ATTR = 'data-fill-scope';
@@ -254,6 +257,7 @@ export function expandSiteInfoRows( tree ) {
 				};
 				if ( node.childRefs?.[ slug ] && isStr( node.draftRef ) ) {
 					child.draftRef = `${ node.draftRef } ${ node.childRefs[ slug ] }`;
+					child.draftSlots = { [ ROW_GLYPH_SLOT ]: 'svg' };
 				}
 				return child;
 			} );

@@ -29,7 +29,9 @@ test( 'skeletonTargets lists every draftRef and draftSlots finder, and the icons
 			{ name: 'sgs/text' },
 		] },
 	] );
-	assert.deepEqual( t.map( ( x ) => [ x.id, x.kind ] ), [ [ '0:', 'tpl' ], [ '1:', 'tpl' ], [ '1:svg', 'tpl' ], [ '2:', 'selector' ], [ '3:', 'selector' ], [ '4:', 'selector' ] ] );
+	// Each generated icon also names its glyph inside its draft link (fill-skeleton.mjs::ROW_GLYPH_SLOT).
+	const glyph = '.sgs-icon__shape > .sgs-icon__svg';
+	assert.deepEqual( t.map( ( x ) => [ x.id, x.kind ] ), [ [ '0:', 'tpl' ], [ '1:', 'tpl' ], [ '1:svg', 'tpl' ], [ '2:', 'selector' ], [ '3:', 'selector' ], [ `3:${ glyph }`, 'selector' ], [ '4:', 'selector' ], [ `4:${ glyph }`, 'selector' ] ] );
 	assert.equal( t[ 2 ].parentId, '1:' );
 	assert.equal( t[ 3 ].finder, '.row' );
 	assert.equal( t[ 4 ].finder, '.row a.ig' );
