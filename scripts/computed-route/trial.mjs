@@ -107,7 +107,8 @@ async function tryOne( { cand, attrs, session, live, finders, widths, draft } ) 
 		restored = restored && JSON.stringify( m0 ) === JSON.stringify( m2 );
 		before[ w ] = m0.pairs;
 		after[ w ] = m1.pairs;
-		blockX[ w ] = { live: minX( m0.pairs, scope ), draft: minX( draft[ w ] || {}, scope ) };
+		const both = scope.filter( ( n ) => m0.pairs[ n ] && draft[ w ]?.[ n ] );
+		blockX[ w ] = { live: minX( m0.pairs, both ), draft: minX( draft[ w ] || {}, both ) };
 	}
 	const v = judgeTrial( { before, after, draft, blockX } );
 	return { verdict: v.verdict, delta: v.delta, worse: v.worse, scope: scope.length, added: added.length, removed: removed.length, restored };

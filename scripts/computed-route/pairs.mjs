@@ -247,7 +247,8 @@ export async function recheckWidths( { browser, cfg, prefix, width, recheck, sta
 // pair of an origin block takes the tpl finder, a disagreement recorded in `replaced`; a hand pair that disagrees still
 // measures the words' element, so it is listed in `mispaired` (the walker flags the block's rows and Solve never writes
 // through them). An origin block no pair measures (none generated, none by hand: `covered`) is added with its tpl
-// finder. Mutates kept and left. Returns { counts, mispaired, replaced }.
+// finder, unless the width re-check refused it (its element differs at another width, which one width cannot judge).
+// Mutates kept and left. Returns { counts, mispaired, replaced }.
 export async function identityPass( { browser, cfg, width, state, origin, kept, left, retarget = new Map(), covered = new Set(), handByRef = new Map() } ) {
 	// A hand pair measuring the block's root: found in the page (runPairing's handByRef), or by its live finder after
 	// reconcileHandPairs moved it there (`retarget`, the config's `moved`).
@@ -292,7 +293,7 @@ export async function identityPass( { browser, cfg, width, state, origin, kept, 
 				delete k[ key ];
 			}
 			Object.assign( k, { draft: { tpl: r.tpl }, identity: true } );
-		} else if ( ! handWord( r.ref ) && ! covered.has( r.ref ) ) {
+		} else if ( ! handWord( r.ref ) && ! covered.has( r.ref ) && ! /^its (draft element at|width is|height is)|no partner at/.test( left.find( ( l ) => l.ref === r.ref )?.why || '' ) ) {
 			kept.push( { ref: r.ref, draft: { tpl: r.tpl }, identity: true, why: null, words: 0, matched: 0, first: null, last: null } );
 			counts.added++;
 			const at = left.findIndex( ( l ) => l.ref === r.ref );

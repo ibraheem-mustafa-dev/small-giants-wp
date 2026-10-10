@@ -39,3 +39,7 @@ test( 'negative control: the same element, or a wrapper with the same box, agree
 	assert.equal( identityAgrees( { relation: 'same', idBox: { w: 10, h: 10 }, wordBox: { w: 10, h: 10 } } ), true );
 	assert.equal( identityAgrees( { relation: 'word-contains', idBox: { w: 300, h: 40 }, wordBox: { w: 301, h: 40 } } ), true );
 } );
+
+test( 'two zero-size elements never agree (an element not shown proves no pairing)', () => {
+	assert.equal( identityAgrees( { relation: 'word-contains', idBox: { w: 0, h: 0 }, wordBox: { w: 0, h: 0 } } ), false );
+} );

@@ -399,6 +399,12 @@ export function classify( report, { writes, gaps, held = {}, elements, stateMap 
 	const written = new Set( writes.filter( ( w ) => ! w.reverted ).map( ( w ) => w.group ) );
 	const out = { hardcode: [], missing: [], unresolved: [], derived: [], other: [] };
 	for ( const r of openRows( report ) ) {
+		// A row on a block whose two pairings disagree compares two different elements: filed as mispaired, never as a
+		// setting not written (writableGroups never groups it).
+		if ( r.mispaired ) {
+			out.other.push( { ...r, reason: `mispaired: ${ r.mispaired }` } );
+			continue;
+		}
 		// A content row stays in `other` (the sweep and triage count it there) with the fate Solve gave it: written,
 		// missing (the block could hold it and has no setting), handover (the content lives outside the tree) or
 		// unresolved. The node it was resolved on is `target`, kept off the row so its issue key is unchanged.

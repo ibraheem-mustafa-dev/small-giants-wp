@@ -8,7 +8,8 @@
 // (`walk`, `report`). `none` leaves an input out. The baseline is
 // `qa/answer-sheet-baseline.json`: the ids that passed when it was written. Prints, per surface, each label's pass count
 // (false alarms per pattern) and the rows that fail. Exits 1 when a row that passed in the baseline fails now (a
-// regression); rows that never passed are listed as known misses. `--write-baseline` records the current passes.
+// regression); rows that never passed are listed as known misses; exits 2 when a file the baseline or triage names is
+// missing. `--write-baseline` records the current passes.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -61,6 +62,11 @@ function main() {
 	let failed = 0;
 	for ( const surface of surfaces ) {
 		const run = runFor( qa, surface, a, 1 === surfaces.length, baseline[ surface ] );
+		const missing = Object.entries( run.files ).filter( ( [ k, f ] ) => f && ! run[ k ] );
+		if ( missing.length ) {
+			console.error( `${ surface }: ${ missing.map( ( [ k, f ] ) => `${ k } ${ f }` ).join( ', ' ) } not found (a walk under qa/solve/ is not in git: re-walk it, or pass the files)` );
+			process.exit( 2 );
+		}
 		const score = scoreSurface( sheet, surface, run );
 		console.log( `\n== ${ surface }  walk ${ run.files.report ?? '-' }\n   triage ${ run.files.triage ?? '-' }  solve ${ run.files.solve ?? '-' }` );
 		for ( const [ k, t ] of Object.entries( score.tally ).sort() ) {

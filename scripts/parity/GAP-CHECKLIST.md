@@ -614,7 +614,9 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
 - **Detected by:** `qa/pairs/<surface>.json::mispaired` (`[{ ref, why }]`), the blocks whose draft element by the draft's
   own identity (`tpl` finder) and by the word matcher disagree. `lib/ref-trace.mjs::loadMispaired` reads it beside the
   config like `loadUnmatched`; `compare-state.mjs::compareState` flags each row on such a block with
-  `mispaired: <why>` (`markMispaired`) and keeps it. Solve never groups a flagged row
+  `mispaired: <why>` (`markMispaired`) and keeps it; when the pair's own root block is mispaired every row of the pair
+  is flagged, a child block's row included. Solve's classification files a flagged row as `mispaired`, never as a
+  setting not written. Solve never groups a flagged row
   (`computed-route/lib/solve-rows.mjs::writableGroups` files it under `other`); triage labels it W / `mispaired` with
   evidence `source: 'identity'` before any setting lookup; the answer sheet scores it an artefact.
 - **Proof:** `computed-route/tests/walker-mispaired.test.mjs`: a flagged block keeps both its rows with the flag on its

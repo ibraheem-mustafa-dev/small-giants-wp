@@ -74,7 +74,7 @@ export function identityAgrees( { relation, idBox, wordBox }, tol = 2 ) {
 	if ( 'same' === relation ) {
 		return true;
 	}
-	if ( 'apart' === relation || ! idBox || ! wordBox ) {
+	if ( 'apart' === relation || ! idBox || ! wordBox || ! ( idBox.w > 0 && idBox.h > 0 ) ) {
 		return false;
 	}
 	return Math.abs( idBox.w - wordBox.w ) <= tol && Math.abs( idBox.h - wordBox.h ) <= tol;

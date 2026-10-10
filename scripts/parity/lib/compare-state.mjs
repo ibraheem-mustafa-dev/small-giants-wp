@@ -77,7 +77,7 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 		// recorded on the pair as `unmatched`, never silently.
 		// Rows on a block the pairing marked mispaired stay, flagged (ref-trace.mjs::markMispaired).
 		const { diffs: kept, unmatched: dropped } = dropUnmatched( all, unmatched );
-		run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, markMispaired( kept, mispaired ) ), ...( dropped.length ? { unmatched: dropped } : {} ) };
+		run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, markMispaired( kept, mispaired, l.snap[ p.name ].trace?.ref ) ), ...( dropped.length ? { unmatched: dropped } : {} ) };
 	}
 	// Box-held rows that move nothing on the pair or inside it (compare.mjs::acceptHeld).
 	acceptHeld( run.pairs, tol.box );

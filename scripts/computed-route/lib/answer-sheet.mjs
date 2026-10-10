@@ -29,13 +29,21 @@ export function reportRows( report ) {
 	return out;
 }
 
+// Whether the walk measured a sheet row's block (its ref traced on a pair, or its pair for a block-less row) in the
+// row's state and width: an absent row on an unmeasured block proves nothing.
+function measured( report, sheetRow ) {
+	const bare = ( r ) => String( r || '' ).replace( /^[a-z]+-ref-/, '' );
+	return ( report?.runs || [] ).some( ( run ) => ( run.state ?? '' ) === ( sheetRow.state ?? '' ) && Number( run.width ) === Number( sheetRow.width ) && Object.entries( run.pairs || {} ).some( ( [ name, p ] ) => ( noRef( sheetRow.ref ) ? name === sheetRow.pair : [ p?.live?.trace?.ref, ...( p?.diffs || [] ).map( ( d ) => d.ref ) ].some( ( r ) => r && bare( r ) === bare( sheetRow.ref ) ) ) ) );
+}
+
 // What the walk says of one sheet row: `open`, `accepted` (every matching row accepted), `artefact` (every open matching
-// row is on a block the walker flagged mispaired) or `absent`.
-function walkOutcome( rows, sheetRow ) {
+// row is on a block the walker flagged mispaired), `absent` (no row, its block measured) or `unmeasured` (no row, its
+// block not measured there).
+function walkOutcome( report, sheetRow ) {
 	const k = matchKey( sheetRow );
-	const hits = rows.filter( ( r ) => matchKey( r ) === k );
+	const hits = reportRows( report ).filter( ( r ) => matchKey( r ) === k );
 	if ( ! hits.length ) {
-		return 'absent';
+		return measured( report, sheetRow ) ? 'absent' : 'unmeasured';
 	}
 	const open = hits.filter( ( r ) => null === r.accepted );
 	if ( ! open.length ) {
@@ -56,8 +64,9 @@ export function writtenGroups( solve ) {
 }
 
 // One sheet row's outcome against a run.
-//   false alarm / real problem: `open`, `accepted`, `absent`, or `artefact` (open in the walk but flagged mispaired by
-//   the walker or labelled an artefact by triage); `not-scored` without a walk.
+//   false alarm / real problem: `open`, `accepted`, `absent` (its block measured), `unmeasured` (its block not measured
+//   there), or `artefact` (open in the walk but flagged mispaired by the walker or labelled an artefact by triage);
+//   `not-scored` without a walk.
 //   wrong write: `written` or `avoided`; `not-scored` without a solve report.
 export function outcomeOf( sheetRow, { report, triage, solve } ) {
 	if ( 'wrong-write' === sheetRow.label ) {
@@ -70,7 +79,7 @@ export function outcomeOf( sheetRow, { report, triage, solve } ) {
 	if ( ! report ) {
 		return 'not-scored';
 	}
-	const walk = walkOutcome( reportRows( report ), sheetRow );
+	const walk = walkOutcome( report, sheetRow );
 	if ( 'open' !== walk ) {
 		return walk;
 	}
@@ -78,13 +87,14 @@ export function outcomeOf( sheetRow, { report, triage, solve } ) {
 	return v && ARTEFACT_LABELS.includes( v.decidedBy ) ? 'artefact' : 'open';
 }
 
-// Whether an outcome passes for its label: a false alarm is dropped, a real problem kept, a wrong write avoided.
+// Whether an outcome passes for its label: a false alarm is dropped, a real problem kept, a wrong write avoided. An
+// unmeasured block scores nothing for a false alarm and fails a real problem (it is no longer seen).
 export function passes( label, outcome ) {
-	if ( 'not-scored' === outcome ) {
-		return null;
-	}
 	if ( 'real-problem' === label ) {
-		return 'open' === outcome;
+		return 'not-scored' === outcome ? null : 'open' === outcome;
+	}
+	if ( 'not-scored' === outcome || 'unmeasured' === outcome ) {
+		return null;
 	}
 	if ( 'wrong-write' === label ) {
 		return 'avoided' === outcome;

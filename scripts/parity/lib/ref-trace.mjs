@@ -204,11 +204,17 @@ export function loadMispaired( cfgPath, cfg ) {
 
 // Flags each row on a mispaired block with why (`mispaired`), keeping every row: the rows stay visible, so a real
 // difference is never hidden, and Solve never writes through a flagged row.
-export function markMispaired( diffs, mispaired ) {
+// pairRef: the ref of the pair's own root element (its live trace); when that block is mispaired every row of the pair
+// is flagged, a child block's row included, because the whole pair compares against the wrong draft element.
+export function markMispaired( diffs, mispaired, pairRef = null ) {
 	if ( ! mispaired?.size ) {
 		return diffs;
 	}
-	return diffs.map( ( d ) => ( d.ref && mispaired.has( bareRef( d.ref ) ) ? { ...d, mispaired: mispaired.get( bareRef( d.ref ) ) } : d ) );
+	const whole = pairRef ? mispaired.get( bareRef( pairRef ) ) : null;
+	return diffs.map( ( d ) => {
+		const why = whole || ( d.ref ? mispaired.get( bareRef( d.ref ) ) : null );
+		return why ? { ...d, mispaired: why } : d;
+	} );
 }
 
 // Removes the rows whose ref is in `unmatched` (a Map from loadUnmatched). Returns { diffs, unmatched }: the rows kept,

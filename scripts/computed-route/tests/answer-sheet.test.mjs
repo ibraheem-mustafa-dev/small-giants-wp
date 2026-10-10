@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { matchKey, reportRows, outcomeOf, scoreSurface, baselineOf, regressions, writtenGroups } from '../lib/answer-sheet.mjs';
+import { matchKey, reportRows, outcomeOf, scoreSurface, baselineOf, regressions, writtenGroups, passes } from '../lib/answer-sheet.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const SHEET = JSON.parse( fs.readFileSync( path.resolve( HERE, '../../../sites/eye-care-ward-end/build/qa/answer-sheet.json' ), 'utf8' ) );
@@ -20,7 +20,7 @@ const walkOf = ( rows ) => {
 		runs.has( k ) || runs.set( k, { state: r.state, width: r.width, pairs: {} } );
 		const pairs = runs.get( k ).pairs;
 		const name = `renamed-${ r.pair }`;
-		pairs[ name ] ||= { diffs: [] };
+		pairs[ name ] ||= { live: { trace: { ref: r.ref } }, diffs: [] };
 		pairs[ name ].diffs.push( { kind: r.kind, key: r.property, draft: r.draftValue, live: r.liveValue, ref: r.ref, path: r.path, accepted: null } );
 	}
 	return { config: 'footer', runs: [ ...runs.values() ] };
@@ -46,7 +46,8 @@ test( 'an accepted row and an absent row count as dropped; without a walk a row 
 	const walk = walkOf( [ fa ] );
 	walk.runs[ 0 ].pairs[ `renamed-${ fa.pair }` ].diffs[ 0 ].accepted = 'paints nothing';
 	assert.equal( outcomeOf( fa, { report: walk } ), 'accepted' );
-	assert.equal( outcomeOf( fa, { report: walkOf( [] ) } ), 'absent' );
+	const other = walkOf( [ footer.find( ( r ) => r.ref === fa.ref && r.id !== fa.id && r.state === fa.state && r.width === fa.width ) || { ...fa, property: 'zz-other' } ] );
+	assert.equal( outcomeOf( fa, { report: other } ), 'absent' );
 	assert.equal( outcomeOf( fa, {} ), 'not-scored' );
 } );
 
@@ -89,4 +90,17 @@ test( 'negative control: the same walk scored again has no regression, and a row
 	assert.deepEqual( regressions( score, baselineOf( score ) ), [] );
 	assert.ok( score.rows.some( ( r ) => false === r.pass ) );
 	assert.deepEqual( regressions( score, { pass: [] } ), [] );
+} );
+
+test( 'MUST FAIL (council 2026-10-10): a row is dropped only when the walk measured its block there; an unmeasured block scores nothing', () => {
+	const fa = footer.find( ( r ) => 'false-alarm' === r.label && r.ref );
+	const rp = footer.find( ( r ) => 'real-problem' === r.label && r.ref );
+	const measured = walkOf( [] );
+	measured.runs = [ { state: fa.state, width: fa.width, pairs: { other: { live: { trace: { ref: fa.ref } }, diffs: [] } } } ];
+	assert.equal( outcomeOf( fa, { report: measured } ), 'absent' );
+	const empty = { runs: [ { state: fa.state, width: fa.width, pairs: {} } ] };
+	assert.equal( outcomeOf( fa, { report: empty } ), 'unmeasured' );
+	assert.equal( passes( 'false-alarm', 'unmeasured' ), null );
+	assert.equal( passes( 'real-problem', 'unmeasured' ), false );
+	assert.equal( outcomeOf( rp, { report: { runs: [ { state: rp.state, width: rp.width, pairs: {} } ] } } ), 'unmeasured' );
 } );

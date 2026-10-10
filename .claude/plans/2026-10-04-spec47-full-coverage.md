@@ -270,6 +270,33 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   - **Step 3, next:** call the trial from `solve.mjs` after `writeRound` and before the rebuild (pre-round saved
     attributes as A, undo and block a rejected write). Prove it with one home Solve run on the mirror; then amend
     R-47-9 and record that the guard's per-walk trials remain only for blocks the trial cannot judge.
+
+**QC council on R1-R6 (2026-10-10, three read-only raters):**
+- Fixed in the same session (each with a MUST FAIL test):
+  - An absent answer-sheet row counts as dropped only when the walk measured its block there; otherwise it is
+    `unmeasured`. The footer's FA-P1-01 had passed only because the address block went unmeasured, so the footer was
+    re-baselined. The scorer exits 2 when a file its baseline names is missing.
+  - The paint check calls a gap or alignment on a non-flex, non-grid element `moves` (no proof), and restores the value
+    while transitions are still off.
+  - Every row of a pair whose root block is mispaired is flagged; Solve's `classify` files flagged rows as mispaired.
+  - Identity pairing never revives a block the width re-check refused, and two zero-size elements never agree.
+  - The trial's block origin uses only pairs present on both sides.
+- Open, in order:
+  1. Hand pairs not on the block root are never identity-checked (header: 4 `noWordPair`). Resolve each hand pair's live
+     element to its owning ref, and report `uncheckedHand`.
+  2. `identityPass` never compares the origin fingerprint with the resolved element's tag, and does not report
+     unaligned skeleton nodes.
+  3. Multi-state surfaces are identity-checked in the first state only.
+  4. `breaks-box` with a matching box does not check the children's positions; also watch the parent or document height
+     beyond the next 20 siblings.
+  5. Trial: viewport height and device profile differ from the walker's (812px and phone below 500px); per-pair
+     numbers are not stored; the tolerance does not scale with pair count (`cr-ref-home-25` kept at -1.6 over about 90
+     pair-widths); `restored` is not gated; vertical movement is ignored. Replay shop, product and header too.
+  6. The answer sheet has no `obsolete` status for rows whose draft element is gone (RP-FT-04..06); baseline walks
+     under `qa/solve/` are not in git.
+  7. `unreadOf` repeats per node (aggregate by block, kind and slot); `sgsOnly` merging inflates confidence; the root
+     `fits` tie returns for a header holding both an image and a wrapper.
+  8. `decoPath` changes the path of underline rows on non-link text: check divergence and calibration keys.
 Header and footer reshaped on 2026-10-09 (register N47-N49): the wordmark is an image on both sides and Visit or call is
 one icon-list (`cr-ref-footer-23`). Done the same day: mirror refreshed from eye-care-test (home cards back to 291px at 375;
 `refresh-from-remote.sh` now runs its WSL step with `--exec`, because `wsl --` expanded `$got` in an extra shell and the

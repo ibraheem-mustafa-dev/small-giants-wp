@@ -42,3 +42,18 @@ test( 'triage labels a flagged row W / mispaired from the identity check, before
 	assert.equal( v.evidence[ 0 ].source, 'identity' );
 	assert.equal( asked, 0 );
 } );
+
+test( 'MUST FAIL (council 2026-10-10): every row of a pair whose root block is mispaired is flagged, a child block\'s row included', () => {
+	const child = { kind: 'style', key: 'color', draft: 'a', live: 'b', ref: 'cr-ref-header-9', path: '', accepted: null };
+	const marked = markMispaired( [ child ], mispairedRefs( pairing ), 'cr-ref-header-0' );
+	assert.equal( marked[ 0 ].mispaired, WHY );
+	assert.equal( markMispaired( [ child ], mispairedRefs( pairing ), 'cr-ref-header-5' )[ 0 ].mispaired, undefined );
+} );
+
+test( 'MUST FAIL (council 2026-10-10): Solve\'s classification files a flagged row as mispaired, never as unresolved or missing', async () => {
+	const { classify } = await import( '../lib/solve-rows.mjs' );
+	const r = { ...rows()[ 0 ], mispaired: WHY };
+	const out = classify( { runs: [ { state: 'opening', width: 1440, pairs: { 'header-root': { diffs: [ r ] } } } ] }, { writes: [], gaps: {}, stateMap: { opening: null } } );
+	assert.equal( out.unresolved.length + out.missing.length, 0 );
+	assert.match( out.other[ 0 ].reason, /^mispaired/ );
+} );

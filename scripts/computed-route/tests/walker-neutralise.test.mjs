@@ -21,10 +21,11 @@ after( () => browser?.close() );
 
 const HTML = `<style>body{margin:0;font:16px/20px sans-serif}</style>
 	<a id="addr" href="#" style="display:flex;column-gap:7px;transition:column-gap 1s">12 High Street</a>
-	<div id="row" style="display:flex;width:600px;gap:16px"><span style="width:50px">A</span><span style="width:50px">B</span><span style="width:50px">C</span></div>
+	<div id="row" style="display:flex;width:600px;gap:16px;transition:gap 1s"><span style="width:50px">A</span><span style="width:50px">B</span><span style="width:50px">C</span></div>
 	<p id="short" style="width:600px">Short</p>
 	<p id="fills" style="width:max-content">Fills</p>
 	<div id="grid" style="display:grid;grid-template-columns:30px 1fr;grid-template-rows:auto 0px;row-gap:0px"><span>1</span><span>Step</span></div>
+	<div id="stack"><p style="margin:0">One</p><p style="margin:0">Two</p></div>
 	<p id="after">Below</p>`;
 const run = async ( id, items ) => {
 	const page = await browser.newPage( { viewport: { width: 800, height: 600 } } );
@@ -52,6 +53,19 @@ test( 'text-align moves short text in a wide box and nothing in a box the text f
 
 test( 'a value that would move the own box of the pair (the home process step: a grid with an empty second row, row-gap 0 live against 16px) breaks the box', async () => {
 	assert.equal( ( await run( 'grid', [ { prop: 'row-gap', value: '16px' } ] ) ).out[ 'row-gap' ], 'breaks-box' );
+} );
+
+test( 'MUST FAIL (council 2026-10-10): a gap on a live element that is not flex or grid paints nothing by construction, so it is not proof of anything and stays open', async () => {
+	assert.equal( ( await run( 'stack', [ { prop: 'row-gap', value: '16px' } ] ) ).out[ 'row-gap' ], 'moves' );
+} );
+
+test( 'restoring the value runs while transitions are still off, so a later read never catches the element mid-transition', async () => {
+	const page = await browser.newPage( { viewport: { width: 800, height: 600 } } );
+	await page.setContent( `<!doctype html><html><body>${ HTML }</body></html>` );
+	await page.evaluate( neutraliseInPage, [ '#row', [ { prop: 'gap', value: '48px' } ], RESOLVE, PAINT_SRC ] );
+	const running = await page.evaluate( () => document.getAnimations().length );
+	await page.close();
+	assert.equal( running, 0 );
 } );
 
 test( 'candidates: only the tested layout properties whose draft and live values differ, never a text run or group pair', () => {

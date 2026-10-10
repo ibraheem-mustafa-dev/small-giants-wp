@@ -61,13 +61,21 @@ export function neutraliseInPage( [ finder, items, resolveSrc, paintSrc ] ) {
 	const result = {};
 	for ( const { prop, value } of items ) {
 		const target = LAYOUT.includes( prop ) ? layoutElement( el ) : el;
-		const keep = [ prop, 'transition' ].map( ( p ) => [ p, target.style.getPropertyValue( p ), target.style.getPropertyPriority( p ) ] );
+		// A gap or alignment on an element not laying out with flex or grid paints nothing by construction: no proof.
+		if ( LAYOUT.includes( prop ) && ! /(^|-)(flex|grid)$/.test( getComputedStyle( target ).display ) ) {
+			result[ prop ] = 'moves';
+			continue;
+		}
+		const keep = target.style.getPropertyValue( prop );
+		const keepPri = target.style.getPropertyPriority( prop );
 		const attr = target.getAttribute( 'style' );
 		const before = read();
 		target.style.setProperty( 'transition', 'none', 'important' );
 		target.style.setProperty( prop, value, 'important' );
 		const now = read();
-		keep.forEach( ( [ p, v, pri ] ) => ( v ? target.style.setProperty( p, v, pri ) : target.style.removeProperty( p ) ) );
+		// Restore the value while transitions are still off and let it settle, so no transition starts back.
+		keep ? target.style.setProperty( prop, keep, keepPri ) : target.style.removeProperty( prop );
+		target.getBoundingClientRect();
 		null === attr ? target.removeAttribute( 'style' ) : target.setAttribute( 'style', attr );
 		const moved = ( i ) => Math.abs( before[ i ] - now[ i ] ) > 0.5;
 		// The first four values are the pair element's own box.
