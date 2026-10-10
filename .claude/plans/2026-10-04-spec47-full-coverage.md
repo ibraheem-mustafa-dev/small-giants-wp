@@ -212,7 +212,7 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
     `{width,height}` sizes (`lib/resolve.mjs::isSizeBox`, marker and write); a hugging root dropped from a setting's
     slots (`lib/calibrate.mjs::mergeSetting` `misses`); an svg presentation attribute as a declared width
     (`parity/lib/devtools.mjs::cascadeWinner`); a repeated timing list as one time (`lib/resolve.mjs::formatValue`).
-  - **Fixture styling preconditions, done 2026-10-10 (Bean's ruling: Fill writes them).** Calibration's default
+  - **Fixture styling preconditions, done 2026-10-10 (`676d1f15a`; Bean's ruling: Fill writes them).** Calibration's default
     instance carries its fixture's attributes, so the social-icons rest paint showed the fixture's 1px solid border and
     background. `lib/fill-fixture.mjs` names a fixture's styling preconditions (a css_property, or a switch gating one,
     prefixed switches included); Fill compares each property they paint with its unstyled value
@@ -221,13 +221,15 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
     `childIconShowBackground` true now written; a borderless draft writes no border (it wrote 0px before). Only border,
     background and shadow baselines change, and of the ten fixtures with styling preconditions only social-icons paints
     those, so no other block's writes move.
-  - **Standalone `sgs/icon` glyph, done 2026-10-10.** The glyph is a shrinking flex item of the shape
+  - **Standalone `sgs/icon` glyph, done 2026-10-10 (`b2bb2e636`).** The glyph is a shrinking flex item of the shape
     (`icon/style.css::.sgs-icon__svg`), so `shapeSize`'s 7px and 23px markers squeezed the 32px glyph and both
     `iconSize` and `shapeSize` reached it. A size-box marker is now 96/80/64px (`lib/calibrate-markers.mjs::SIZE_BOX_PX`),
     above the glyph and the 48px boxed rest. `calibrate.mjs --site local-eye-care --client eye-care-ward-end --blocks
     sgs/icon --recalibrate`: `shapeSize` slots `["", ".sgs-icon__shape"]` (the glyph and svg are gone), 19 settings as
-    before. `sgs/social-icons`' `childIconShapeSize` uses the same marker; its cache keeps the old markers until its next
-    recalibration.
+    before.
+  - **Open: recalibrate `sgs/social-icons` with the new size-box markers** (its `childIconShapeSize` uses the same branch
+    and its cache still holds the 7px/23px markers): `calibrate.mjs --site local-eye-care --client eye-care-ward-end
+    --blocks sgs/social-icons --recalibrate` on the local mirror; done when its `childIconShapeSize` slots exclude the glyph.
   - **Open: the 2026-10-09 footer skeleton's raw `data-dc-tpl` selectors are stale** (the hosted draft's footer is now
     844, links 44px). Regenerate it with `tpl` finders before reusing it.
 - **R4. Exact ID pairing.** `pairs.mjs` pairs each block through its `tpl` finder when an origin file exists. Word
@@ -765,13 +767,15 @@ Results, run records and counts moved out of Spec 47 section 5. Spec 47 section 
    demonstration carries forward to the first client that has one.
 5. **A second draft** from a different designer, to test generality. **Unblocked 2026-10-10:** two Claude Design
    drafts are set up as local references, each with a fresh WordPress test site: Mama's Munches redesign
-   (`sites/mamas-munches-redesign/`, one file per surface, `mamas-test`) and Indus Foods (`sites/indus-foods/`, `indus-test`;
-   its v2 home page throws a React error at runtime and needs fixing in Claude Design first). Both drafts carry the
+   (`sites/mamas-munches-redesign/`, one file per surface, `mamas-test`) and Indus Foods (`sites/indus-foods/`, `indus-test`).
+   Both local folders are the old zip exports, replaced in the handover plan's Task B3; the Indus v2 headless crash they
+   carry is fixed in Claude Design's new handoff (0 of 15 cold loads). Both drafts carry the
    `data-dc-tpl` stamps the skeleton writer uses. The redesign's `Theme Mapping.md` is a candidate answer key for the
    skeleton writer once reviewed (its core-block and plugin picks replaced through `blocks.replaces`).
    **Stage 5 is replanned (Bean, 2026-10-10):** all three drafts (Indus, Mama's, Eye Care) are re-exported through
-   Claude Design's "Handoff to Claude Code" skill, the handover folder is standardised first, and setting up and
-   cloning the three drafts is replanned against it. The run below was on a zip export with no README and is not resumed.
+   Claude Design's "Handoff to Claude Code" skill, the handover folder is standardised and the cloning system is
+   rewritten as one spec first (`plans/2026-10-10-claude-design-handover-standard.md`); setting up and cloning the three
+   drafts is replanned after it. The run below was on a zip export with no README and is not resumed.
    **First surface run 2026-10-10: Mama's footer (`SiteFooter.dc.html`), not yet at the done line.** Setup:
    `sites/mamas-munches-redesign/build/surfaces.json` (footer = `sgs_footer` post 19 on mamas-test, made the active
    footer through `sgs_active_footer_cpt_id` as Eye Care's 182 is, `canvas: true`); the draft served by

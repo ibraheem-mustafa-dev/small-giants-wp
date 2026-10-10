@@ -53,7 +53,7 @@ carries. The route reads the framework database, the parity walker and the page 
 | **R-47-1 Isolation** | All route code lives in `scripts/computed-route/`. Its `README.md` lists every file and every exported function with a one-line purpose, inputs, outputs and external imports; `lint.mjs` fails on a file or export missing from it. The route never edits, imports or copies code from `plugins/sgs-blocks/scripts/`, and opens the framework DB read-only; `lint.mjs` enforces the import ban. |
 | **R-47-2 Read-only database** | The framework database (`~/.claude/skills/sgs-wp-engine/sgs-framework.db`) is opened read-only with Node's built-in `node:sqlite` (`file:<path>?mode=ro`, which refuses writes on Node 24). The route never seeds, migrates or writes it. |
 | **R-47-3 One engine** | Solve and Fill write settings only through `lib/resolve.mjs`. There is no second property-to-setting mapping in the route. |
-| **R-47-4 Measured, not copied** | Every written value comes from a computed style read in a real browser. Draft source text is never parsed for values. Draft code may supply identity and structure only: the Claude Design runtime's `data-dc-tpl` stamps, its import hosts and `sc-for` loop membership, read through the page bridge `window.__dcAnnotatedTemplate`. Identity says which draft element a block copies; the value still comes from that element's computed style. |
+| **R-47-4 Measured, not copied** | Every written value comes from a computed style read in a real browser. Draft source text is never parsed for values. Draft code may supply identity and structure only: the Claude Design runtime's `data-dc-tpl` stamps, its import hosts and `sc-for` loop membership, read through the page bridge `window.__dcAnnotatedTemplate`. Identity says which draft element a block copies; the value still comes from that element's computed style. The planned unified cloning spec makes the draft's code the primary source (`plans/2026-10-10-claude-design-handover-standard.md`); until it lands this rule stands. |
 | **R-47-5 Write only what differs** | A setting is written only where the draft's value differs from what the node already shows: its calibrated default paint (§3.2) for non-inherited properties (a border, background or shadow property that a styling setting in the block's calibration fixture paints is compared with its unstyled value instead, and a written setting carries the switch the fixture turned on for it: `lib/fill-fixture.mjs`), or its parent's measured live value for inherited ones (colour, font family, size, weight, line height, letter spacing, text transform). Inherited values are never repeated on descendants. |
 | **R-47-6 Calibration is the slot truth** | Which rendered element a setting paints, and each block's default paint, come from calibration (§3.2). The database's `css_element` and `derived_selector` seed calibration; they never replace it. |
 | **R-47-7 Tokens before literals** | Values snap to the site's tokens, read from `sites/<client>/theme-snapshot.json`, in a fixed order: exact token, then nearest within tolerance (colour ΔE ≤ 2, lengths ±0.5px), then a literal flagged in the report. A font stack takes the font-family preset whose first family matches (the slug the node already holds wins a tie, then theme order; `lib/normalise.mjs::snapFontFamily`), else it is written as measured. Every snap is logged with its distance. |
@@ -679,11 +679,11 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 4. **Fill on an unbuilt surface (proved on a built one).** Fill is proved against a built surface with its committed
    tree withheld as the hand-checked answer. The demonstration on a genuinely unbuilt surface carries to the first
    client that has one.
-5. **A second draft** from a different designer, to test generality. First surface run (Mama's footer, 2026-10-10),
-   not at the done line; its findings are in the plan's stage 5 and the Residual below. Two Claude Design drafts are ready as
-   local references with fresh WordPress test sites: Mama's Munches redesign (`sites/mamas-munches-redesign/`, target
-   `mamas-test`) and Indus Foods (`sites/indus-foods/`, target `indus-test`). Setup and draft checks:
-   `.claude/plans/2026-10-04-spec47-full-coverage.md` stage 5.
+5. **A second draft** from a different designer, to test generality. First surface run (Mama's footer, 2026-10-10)
+   was on a zip export and is not resumed; its findings are in the plan's stage 5 and the Residual below. The stage is
+   replanned after the Claude Design handover standard and the unified cloning spec
+   (`plans/2026-10-10-claude-design-handover-standard.md`), whose Task B3 replaces the local zip-export folders
+   `sites/mamas-munches-redesign/` and `sites/indus-foods/`; their test sites are `mamas-test` and `indus-test`.
 
 **Bean rulings that govern this section**
 - A correctly named gap is a success, not a miss (Success above, 2026-10-03).

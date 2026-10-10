@@ -1,0 +1,431 @@
+.claude/architecture.md: Spec 32x2
+.claude/backups/2026-08-25/sitewide-post-content.BEFORE.json: Spec 32x2
+.claude/catalogues/tooling.md: FR-32-1x2, FR-32-9x2, FR-33-1x3, FR-33-14x2, FR-33-18, FR-33-19, FR-33-2, FR-33-3, FR-33-5, FR-33-7, Spec 32x6
+.claude/memory/session-2026-07-20-2.md: Spec 32 §6.1
+.claude/memory/session-2026-07-26-2.md: Spec 32, Spec 32 §6.1
+.claude/memory/state-archive.md: FR-32-11, FR-33-1, FR-33-11x3, FR-33-12x3, FR-33-13x2, FR-33-2, FR-33-3, FR-33-4, FR-33-5x2, FR-33-6x2, Spec 32x2, Spec 32 §6.1, Spec 32 §6.1(b)
+.claude/plans/2026-10-04-spec47-full-coverage.md: FR-33-5
+.claude/reports/2026-07-30-fr32-residual-inline-sites.md: FR-32-1x2, FR-32-4x2, FR-32-4ax3, Spec 32
+.claude/reports/2026-08-21-unenforced-prohibition-register.md: FR-32-4, Spec 32
+.claude/reports/2026-08-23-template-design-benchmark.md: Spec 32x2
+.claude/reports/2026-09-18-spec44-live-flagged-run.md: FR-33-12
+.claude/reports/2026-09-19-inv-spec33-palette.md: FR-33-1x4, FR-33-5x5
+.claude/reports/2026-09-20-script-binding-tiers-design.md: Spec 32
+.claude/reports/2026-09-20-spec33-qc-council.md: FR-33-1, FR-33-14, FR-33-15, FR-33-17
+.claude/reports/2026-09-20-w2p-floating-header-pill-design.md: Spec 32
+.claude/reports/2026-09-21-lottie-player-research.md: Spec 32
+.claude/reports/2026-09-23-shadow-tone-design.md: Spec 32
+.claude/reports/2026-09-24-u2-scrim-design.md: Spec 32
+.claude/reports/2026-09-26-u17-lottie-design.md: Spec 32
+.claude/reports/2026-10-04-route-data-audit/README.md: FR-32-4
+.claude/reports/2026-10-06-session-c2/HERO-DEAD-SETTINGS.md: Spec 32
+.claude/rules/block-editor-controls.md: FR-32-12, Spec 32
+.claude/rules/cloning-pipeline.md: FR-32-13, Spec 32
+.claude/specs/00-OVERVIEW.md: Spec 32 PartC
+.claude/specs/01-SGS-THEME.md: FR-33-4, Spec 32 PartBx2, Spec 32 PartC, Spec 32 PartD
+.claude/specs/02-SGS-BLOCKS.md: FR-32-2, FR-32-9, Spec 32x4, Spec 32 PartCx3
+.claude/specs/11-SGS-BUTTON-ARCHITECTURE.md: Spec 32, Spec 32 PartC
+.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md: Spec 32x2, Spec 32 PartBx3
+.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md: FR-32-4, Spec 32x2
+.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md: FR-32-4x2, Spec 32x7, Spec 32 §6.2(a)
+.claude/specs/36-SGS-NAVIGATION-SYSTEM.md: Spec 32x7
+.claude/specs/37-HEADER-FOOTER-BUILDER.md: FR-33-20, Spec 32x4, Spec 32 PartCx2
+.claude/specs/38-SGS-MOTION-SYSTEM.md: Spec 32x5
+.claude/specs/40-GENERATIVE-COVER-IMAGES.md: Spec 32, Spec 32 PartCx2
+.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md: FR-33-5, Spec 32, Spec 32 §14, Spec 32 §6.1(a1)
+.claude/specs/README.md: FR-32-13, Spec 32x2
+.claude/wp-sgs-cli.md: Spec 32 §13.2
+CLAUDE.md: Spec 32, Spec 32 PartC
+plugins/sgs-blocks/CLAUDE.md: Spec 32, Spec 32 §3
+plugins/sgs-blocks/assets/admin/customiser-button-presets.css: Spec 32
+plugins/sgs-blocks/assets/css/extensions.css: FR-32-11x2, Spec 32x2
+plugins/sgs-blocks/assets/css/fx-cursor-field.css: Spec 32
+plugins/sgs-blocks/assets/css/fx-generative-background.css: Spec 32
+plugins/sgs-blocks/assets/css/fx-grid-dots.css: Spec 32
+plugins/sgs-blocks/assets/css/fx-magnet.css: Spec 32
+plugins/sgs-blocks/assets/css/fx-motion-path.css: FR-32-11, Spec 32
+plugins/sgs-blocks/assets/css/fx-particles.css: Spec 32
+plugins/sgs-blocks/assets/css/fx-shape-routes.css: FR-32-11, Spec 32
+plugins/sgs-blocks/assets/css/fx-surface-treatment.css: Spec 32
+plugins/sgs-blocks/assets/js/customiser-button-presets-preview.js: FR-32-1, FR-32-4
+plugins/sgs-blocks/assets/js/parallax.js: FR-32-11, Spec 32
+plugins/sgs-blocks/includes/account/templates/dashboard.php: Spec 32
+plugins/sgs-blocks/includes/animation-attributes.php: Spec 32
+plugins/sgs-blocks/includes/animation-stagger.php: Spec 32
+plugins/sgs-blocks/includes/buybox-guided.php: Spec 32
+plugins/sgs-blocks/includes/child-sizing.php: Spec 32
+plugins/sgs-blocks/includes/choice-flow-chrome.php: Spec 32x2
+plugins/sgs-blocks/includes/choice-flow-showcase.php: Spec 32
+plugins/sgs-blocks/includes/choice-flow-summary.php: Spec 32
+plugins/sgs-blocks/includes/class-button-presets-customiser.php: FR-26-D2, FR-32-1, FR-32-4
+plugins/sgs-blocks/includes/class-css-output-settings.php: FR-32-11, Spec 32 §6.2
+plugins/sgs-blocks/includes/class-google-fonts-self-host.php: FR-33-18, Spec 32 PartD
+plugins/sgs-blocks/includes/class-post-grid-rest.php: FR-32-4x2, Spec 32
+plugins/sgs-blocks/includes/class-sgs-blocks.php: Spec 32x2
+plugins/sgs-blocks/includes/class-sgs-container-wrapper.php: FR-32-1x3, FR-32-12, FR-32-4x7, FR-32-4ax3, Spec 32x27
+plugins/sgs-blocks/includes/class-sgs-css-registry.php: FR-32-11, FR-32-13, Spec 32, Spec 32 §6.2, Spec 32 §6.2(b)
+plugins/sgs-blocks/includes/class-sgs-motion-registry.php: Spec 32x5
+plugins/sgs-blocks/includes/container-bg-hover-zoom.php: Spec 32
+plugins/sgs-blocks/includes/custom-css.php: FR-32-13x2, Spec 32x3, Spec 32 §6.1(b)
+plugins/sgs-blocks/includes/forms/field-render-helpers.php: Spec 32
+plugins/sgs-blocks/includes/fx-attributes.php: Spec 32
+plugins/sgs-blocks/includes/fx-cursor-field.php: Spec 32
+plugins/sgs-blocks/includes/fx-path-routes.php: FR-32-11, Spec 32
+plugins/sgs-blocks/includes/fx-shape-routes.php: FR-32-11, Spec 32
+plugins/sgs-blocks/includes/fx-surface-treatment.php: Spec 32
+plugins/sgs-blocks/includes/helpers-border-style.php: Spec 32
+plugins/sgs-blocks/includes/helpers-box.php: Spec 32 §6.1x2
+plugins/sgs-blocks/includes/helpers-brand-logo.php: Spec 32
+plugins/sgs-blocks/includes/helpers-button-style.php: Spec 32x2
+plugins/sgs-blocks/includes/helpers-grid-item.php: FR-32-12, Spec 32
+plugins/sgs-blocks/includes/helpers-media-element.php: Spec 32
+plugins/sgs-blocks/includes/helpers-nav-drawer-motion.php: Spec 32
+plugins/sgs-blocks/includes/helpers-scoped-instance-vars.php: FR-32-11, Spec 32
+plugins/sgs-blocks/includes/helpers-tokens.php: Spec 32, Spec 32 §6.1
+plugins/sgs-blocks/includes/helpers-trust-bar-item.php: Spec 32
+plugins/sgs-blocks/includes/hover-effects/classes.php: FR-32-11, Spec 32
+plugins/sgs-blocks/includes/hover-effects/hover-effects.php: FR-32-11, Spec 32x3
+plugins/sgs-blocks/includes/image-controls.php: FR-32-11, Spec 32x2
+plugins/sgs-blocks/includes/lottie-render.php: Spec 32x2
+plugins/sgs-blocks/includes/nav-drawer-chrome-css.php: Spec 32
+plugins/sgs-blocks/includes/nav-menu-submenu-css.php: Spec 32x3
+plugins/sgs-blocks/includes/notice-banner-icon-badge.php: Spec 32x2
+plugins/sgs-blocks/includes/parallax.php: FR-32-11, Spec 32x2
+plugins/sgs-blocks/includes/product-card-swatches.php: Spec 32
+plugins/sgs-blocks/includes/product-filter-chips-gap.php: FR-32-11, Spec 32
+plugins/sgs-blocks/includes/sgs-header-float-css.php: Spec 32
+plugins/sgs-blocks/includes/shape-dividers.php: FR-32-1x2, FR-32-4x2
+plugins/sgs-blocks/scripts/audit-inline-styling.js: FR-32-4, Spec 32x3
+plugins/sgs-blocks/scripts/business_info/__init__.py: FR-33-14
+plugins/sgs-blocks/scripts/check-border-width-without-style.py: Spec 32
+plugins/sgs-blocks/scripts/check-duplicate-controls.js: Spec 32
+plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js: Spec 32
+plugins/sgs-blocks/scripts/check-id-scoped-emits.js: Spec 32 §6.1(b)
+plugins/sgs-blocks/scripts/check-palette-slug-refs.py: FR-32-2, Spec 32, Spec 32 §12.5, Spec 32 §3
+plugins/sgs-blocks/scripts/check-preset-token-naming.py: FR-32-9x5, Spec 32x4
+plugins/sgs-blocks/scripts/check-style-blob-sanitisation.py: Spec 32 §5x3
+plugins/sgs-blocks/scripts/consistency/box-flat-baseline.json: Spec 32 §6.1x10
+plugins/sgs-blocks/scripts/consistency/check-box-flat.py: Spec 32 §6.1
+plugins/sgs-blocks/scripts/consistency/cluster-member-sets.json: Spec 32
+plugins/sgs-blocks/scripts/consistency/setting-registry-css.json: Spec 32
+plugins/sgs-blocks/scripts/consistency/setting-registry.json: Spec 32x2
+plugins/sgs-blocks/scripts/feature-parity-exceptions.json: Spec 32x2
+plugins/sgs-blocks/scripts/migrate-length-sanitiser.py: Spec 32 §6.1x2
+plugins/sgs-blocks/scripts/migrate-theme-attr-rename.py: Spec 32
+plugins/sgs-blocks/scripts/no-inline/check-no-inline.py: FR-32-1x6, FR-32-11, FR-32-4x2, Spec 32x3
+plugins/sgs-blocks/scripts/no-inline/check-stranded-guards.py: Spec 32x5
+plugins/sgs-blocks/scripts/no-inline/detect.py: FR-32-4, Spec 32
+plugins/sgs-blocks/scripts/push-theme-snapshot.py: FR-26-D2x4, FR-33-11x9, FR-33-5x4
+plugins/sgs-blocks/scripts/shared_utils.py: FR-33-12x3
+plugins/sgs-blocks/scripts/surveys/survey-background-colour-support.py: Spec 32
+plugins/sgs-blocks/scripts/surveys/survey-dead-css.py: FR-32-11x2, Spec 32
+plugins/sgs-blocks/scripts/surveys/survey-inspector-surface.js: Spec 32
+plugins/sgs-blocks/scripts/surveys/survey-length-controls.py: Spec 32
+plugins/sgs-blocks/scripts/surveys/survey-native-supports.py: Spec 32 §6.1, Spec 32 §6.1(b)
+plugins/sgs-blocks/scripts/sync-business-info.py: FR-33-14
+plugins/sgs-blocks/scripts/tests/test_sync_business_info.py: FR-33-14
+plugins/sgs-blocks/scripts/theme-extractor/colour.py: FR-33-2x2, FR-33-8
+plugins/sgs-blocks/scripts/theme-extractor/declared_reconcile.py: FR-33-1x2, FR-33-6
+plugins/sgs-blocks/scripts/theme-extractor/derive.py: FR-33-5, FR-33-9
+plugins/sgs-blocks/scripts/theme-extractor/extract.py: FR-33-1x3, FR-33-11, FR-33-12x5, FR-33-13, FR-33-14x6, FR-33-18x2, FR-33-19, FR-33-3, FR-33-4x2, FR-33-5, FR-33-6x2
+plugins/sgs-blocks/scripts/theme-extractor/font-usage.js: FR-33-18
+plugins/sgs-blocks/scripts/theme-extractor/layout-census.js: FR-33-19
+plugins/sgs-blocks/scripts/theme-extractor/measure.js: FR-33-1, FR-33-18, FR-33-19, FR-33-3x2, FR-33-4, FR-33-6x4
+plugins/sgs-blocks/scripts/theme-extractor/palette.py: FR-33-1x2, FR-33-6x2, FR-33-9x2, Spec 32x2
+plugins/sgs-blocks/scripts/theme-extractor/palette_vocab.py: FR-33-1
+plugins/sgs-blocks/scripts/theme-extractor/presets.py: FR-33-3, FR-33-4
+plugins/sgs-blocks/scripts/theme-extractor/roles.py: FR-33-2, FR-33-9, Spec 32
+plugins/sgs-blocks/scripts/theme-extractor/schema_validate.py: FR-33-7
+plugins/sgs-blocks/scripts/theme-extractor/site_palette.py: FR-33-1, FR-33-9
+plugins/sgs-blocks/scripts/theme-extractor/tests/test_declared_generalisation.py: FR-33-1
+plugins/sgs-blocks/scripts/theme-extractor/tests/test_extractor.py: FR-33-11, FR-33-2, FR-33-3, FR-33-4x5, FR-33-5, FR-33-6, FR-33-7x2, FR-33-8
+plugins/sgs-blocks/scripts/theme-extractor/tests/test_freshness_source_hash.py: FR-33-12
+plugins/sgs-blocks/scripts/theme-extractor/tests/test_used_fonts.py: FR-33-18
+plugins/sgs-blocks/scripts/theme-extractor/tests/test_used_layout.py: FR-33-19
+plugins/sgs-blocks/scripts/theme-extractor/token_map.py: FR-33-10, FR-33-8
+plugins/sgs-blocks/scripts/theme-extractor/typography.py: FR-33-3x4, FR-33-4x3
+plugins/sgs-blocks/scripts/theme-extractor/used_fonts.py: FR-33-18x4
+plugins/sgs-blocks/scripts/theme-extractor/used_layout.py: FR-33-1, FR-33-19x2
+plugins/sgs-blocks/scripts/wiring-fingerprint/wf_bugs.py: FR-32-12, Spec 32
+plugins/sgs-blocks/scripts/wiring-fingerprint/wf_links.py: FR-32-12, Spec 32
+plugins/sgs-blocks/sgs-blocks.php: FR-32-11, Spec 32, Spec 32 §6.2
+plugins/sgs-blocks/src/blocks/accordion-item/render.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/accordion/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/account/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/account/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/audio/render.php: FR-32-4x2, Spec 32
+plugins/sgs-blocks/src/blocks/before-after/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/before-after/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/brand-strip/render.php: Spec 32x4
+plugins/sgs-blocks/src/blocks/breadcrumbs/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/business-info/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/button/render.php: FR-32-1, FR-32-2x2, FR-32-4, Spec 32x9, Spec 32 §6.1(b)
+plugins/sgs-blocks/src/blocks/button/style.css: FR-32-2, FR-33-4, Spec 32x3
+plugins/sgs-blocks/src/blocks/buybox/extras.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/buybox/render.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/buybox/style.css: Spec 32x3
+plugins/sgs-blocks/src/blocks/card-grid/render-native-css.php: Spec 32
+plugins/sgs-blocks/src/blocks/card-grid/render.php: FR-32-4a
+plugins/sgs-blocks/src/blocks/card-grid/style.css: Spec 32x4
+plugins/sgs-blocks/src/blocks/cart/PillBorderControl.js: Spec 32 §6.1x2
+plugins/sgs-blocks/src/blocks/cart/block.json: FR-32-4, Spec 32, Spec 32 §6.1
+plugins/sgs-blocks/src/blocks/cart/render-scoped-css.php: Spec 32
+plugins/sgs-blocks/src/blocks/cart/render.php: FR-32-4x3, Spec 32x3
+plugins/sgs-blocks/src/blocks/cart/style.css: FR-32-4, Spec 32
+plugins/sgs-blocks/src/blocks/choice-flow-question/TitlePanel.js: Spec 32
+plugins/sgs-blocks/src/blocks/choice-flow-question/block.json: Spec 32
+plugins/sgs-blocks/src/blocks/choice-flow-question/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/choice-flow-question/style.css: Spec 32x2
+plugins/sgs-blocks/src/blocks/choice-flow-result/render.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/choice-flow/edit.js: Spec 32
+plugins/sgs-blocks/src/blocks/choice-flow/preview-style.js: Spec 32
+plugins/sgs-blocks/src/blocks/choice-flow/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/choice-flow/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/collapsible-text/render.php: FR-32-4, Spec 32x2
+plugins/sgs-blocks/src/blocks/container/edit.js: FR-32-12, Spec 32
+plugins/sgs-blocks/src/blocks/container/editor.css: FR-32-12, Spec 32
+plugins/sgs-blocks/src/blocks/container/grid-item-preview.js: FR-32-12, Spec 32
+plugins/sgs-blocks/src/blocks/container/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/container/style.css: FR-32-12, Spec 32
+plugins/sgs-blocks/src/blocks/countdown-timer/render.php: FR-32-4x2, Spec 32
+plugins/sgs-blocks/src/blocks/counter/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/counter/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/decorative-image/edit.js: Spec 32
+plugins/sgs-blocks/src/blocks/decorative-image/render.php: FR-32-4x2, Spec 32x4
+plugins/sgs-blocks/src/blocks/diagram-dimension/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/diagram-dimension/style.css: FR-32-5
+plugins/sgs-blocks/src/blocks/extensions/child-sizing.js: Spec 32
+plugins/sgs-blocks/src/blocks/extensions/custom-css.js: FR-32-13, FR-32-4, Spec 32x2
+plugins/sgs-blocks/src/blocks/extensions/fx.js: Spec 32
+plugins/sgs-blocks/src/blocks/extensions/image-controls.js: Spec 32
+plugins/sgs-blocks/src/blocks/extensions/product-filter-chips-gap.js: Spec 32
+plugins/sgs-blocks/src/blocks/feature-grid/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/filter-search/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/form-field-tiles/render.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/form-step/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/form/render.php: FR-32-4, Spec 32
+plugins/sgs-blocks/src/blocks/form/style.css: Spec 32x3
+plugins/sgs-blocks/src/blocks/gallery/render.php: FR-32-1, FR-32-4x2, Spec 32x3
+plugins/sgs-blocks/src/blocks/google-rating-badge/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/google-reviews/render-interior.php: FR-32-4
+plugins/sgs-blocks/src/blocks/google-reviews/render-styles.php: Spec 32
+plugins/sgs-blocks/src/blocks/google-reviews/render-wrapper.php: Spec 32
+plugins/sgs-blocks/src/blocks/google-reviews/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/heading/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/hero/editor.css: Spec 32
+plugins/sgs-blocks/src/blocks/hero/render.php: Spec 32x6
+plugins/sgs-blocks/src/blocks/hero/style.css: Spec 32x3
+plugins/sgs-blocks/src/blocks/icon-list/render.php: FR-32-1, FR-32-4, Spec 32x2
+plugins/sgs-blocks/src/blocks/icon-list/style.css: Spec 32x2
+plugins/sgs-blocks/src/blocks/icon/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/image-sequence/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/info-box/render.php: FR-32-4x2, Spec 32x3
+plugins/sgs-blocks/src/blocks/info-box/style.css: FR-32-4, Spec 32
+plugins/sgs-blocks/src/blocks/label/render.php: Spec 32, Spec 32 §6.1(c)
+plugins/sgs-blocks/src/blocks/language-switch/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/language-switch/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/local-time/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/measured-diagram/render.php: FR-32-4, FR-32-5, Spec 32x2
+plugins/sgs-blocks/src/blocks/media/render.php: FR-32-4x2, Spec 32x4
+plugins/sgs-blocks/src/blocks/mega-aside/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/mega-panel/drawer-preview.js: Spec 32
+plugins/sgs-blocks/src/blocks/mega-panel/render.php: Spec 32x3
+plugins/sgs-blocks/src/blocks/mega-panel/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/modal/modal-core.js: Spec 32
+plugins/sgs-blocks/src/blocks/modal/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/multi-button/render.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php: FR-32-4, Spec 32x2, Spec 32 §3
+plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css: Spec 32x2
+plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css: Spec 32x2
+plugins/sgs-blocks/src/blocks/nav-drawer/ChromePreview.js: Spec 32
+plugins/sgs-blocks/src/blocks/nav-drawer/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/notice-banner/block.json: Spec 32
+plugins/sgs-blocks/src/blocks/notice-banner/edit.js: Spec 32
+plugins/sgs-blocks/src/blocks/notice-banner/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/notice-banner/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/notice-message/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/option-picker/edit.js: FR-32-4, Spec 32
+plugins/sgs-blocks/src/blocks/option-picker/render.php: FR-32-4x5, Spec 32x8
+plugins/sgs-blocks/src/blocks/option-picker/style.css: FR-32-4, Spec 32x3
+plugins/sgs-blocks/src/blocks/physics-canvas/render.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/physics-canvas/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/post-grid/render-scoped-css.php: FR-32-4, Spec 32
+plugins/sgs-blocks/src/blocks/pricing-table/render.php: FR-32-4, Spec 32
+plugins/sgs-blocks/src/blocks/process-steps/render.php: FR-32-4x2, Spec 32x2
+plugins/sgs-blocks/src/blocks/process-steps/style.css: Spec 32x4
+plugins/sgs-blocks/src/blocks/product-card/block.json: Spec 32x4, Spec 32 §6.1
+plugins/sgs-blocks/src/blocks/product-card/edit.js: Spec 32 §6.1
+plugins/sgs-blocks/src/blocks/product-card/render.php: FR-32-4, Spec 32x2
+plugins/sgs-blocks/src/blocks/product-card/style.css: Spec 32x4
+plugins/sgs-blocks/src/blocks/product-faq-item/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/product-faq/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/product-search/view.js: Spec 32
+plugins/sgs-blocks/src/blocks/quote/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/responsive-logo/style.scss: Spec 32
+plugins/sgs-blocks/src/blocks/separator/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/site-footer-row/render.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/site-footer/block.json: Spec 32
+plugins/sgs-blocks/src/blocks/site-footer/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/site-footer/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/site-header-row/render.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/site-header/block.json: Spec 32
+plugins/sgs-blocks/src/blocks/site-header/render.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/site-header/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/social-icons/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/star-rating/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/store-selector/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/tab/render.php: Spec 32x2
+plugins/sgs-blocks/src/blocks/table-of-contents/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/table-of-contents/style.css: Spec 32x2
+plugins/sgs-blocks/src/blocks/tabs/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/team-member/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/testimonial-slider/render.php: FR-32-4, Spec 32x4
+plugins/sgs-blocks/src/blocks/testimonial-slider/style.css: FR-32-4, Spec 32
+plugins/sgs-blocks/src/blocks/testimonial/render.php: FR-32-4, Spec 32x2
+plugins/sgs-blocks/src/blocks/testimonial/style.css: FR-32-4, Spec 32x10
+plugins/sgs-blocks/src/blocks/text/render.php: FR-32-1x2, Spec 32x5
+plugins/sgs-blocks/src/blocks/theme-toggle/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/theme-toggle/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/timeline/block.json: Spec 32
+plugins/sgs-blocks/src/blocks/timeline/render.php: FR-32-1, FR-32-4x2, Spec 32x4, Spec 32 §6.1(c)
+plugins/sgs-blocks/src/blocks/timeline/style.scss: Spec 32x3
+plugins/sgs-blocks/src/blocks/trust-bar/render.php: FR-32-4x2, FR-32-6, Spec 32x3
+plugins/sgs-blocks/src/blocks/trust-bar/style.css: Spec 32
+plugins/sgs-blocks/src/blocks/trustpilot-reviews/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/whatsapp-cta/card-fields.js: Spec 32
+plugins/sgs-blocks/src/blocks/whatsapp-cta/floating-panel.js: Spec 32
+plugins/sgs-blocks/src/blocks/whatsapp-cta/preview-style.js: Spec 32
+plugins/sgs-blocks/src/blocks/whatsapp-cta/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/whatsapp-cta/style.css: Spec 32x2
+plugins/sgs-blocks/src/blocks/wishlist-link/render.php: Spec 32
+plugins/sgs-blocks/src/blocks/wishlist-panel/colour-preview.js: Spec 32
+plugins/sgs-blocks/src/blocks/wishlist-panel/render.php: Spec 32
+plugins/sgs-blocks/src/components/LinkPopoverControl.css: Spec 32
+plugins/sgs-blocks/src/components/RowScrollBehaviourControls.js: Spec 32
+plugins/sgs-blocks/src/components/media/canvasStyle.js: Spec 32
+plugins/sgs-blocks/src/components/shadow-control/shadow-control.css: Spec 32
+plugins/sgs-blocks/src/shared/effects/cursor-field.js: Spec 32
+plugins/sgs-blocks/src/shared/effects/fx-magnet.js: Spec 32
+plugins/sgs-blocks/src/shared/effects/fx-particles.js: Spec 32
+plugins/sgs-blocks/src/shared/effects/fx-surface-treatment.js: Spec 32
+plugins/sgs-blocks/src/shared/effects/grid-dots.js: Spec 32
+plugins/sgs-blocks/src/shared/effects/gsap/fx-draggable.js: Spec 32
+plugins/sgs-blocks/src/shared/effects/gsap/fx-horizontal-panel.js: Spec 32
+plugins/sgs-blocks/src/shared/effects/gsap/fx-pin-scrub.js: Spec 32
+plugins/sgs-blocks/src/shared/effects/particles.js: Spec 32
+plugins/sgs-blocks/src/shared/effects/spotlight.js: Spec 32
+plugins/sgs-blocks/src/shared/effects/webgl/README.md: Spec 32
+plugins/sgs-blocks/src/shared/effects/webgl/index.js: Spec 32
+plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js: Spec 32x7
+plugins/sgs-blocks/tests/js/container-grid-item-preview.test.js: FR-32-12, Spec 32
+plugins/sgs-blocks/tests/php/ContainerGridItemShadowLiftTest.php: FR-32-12, Spec 32
+plugins/sgs-blocks/tests/php/ContainerGridItemTest.php: FR-32-12, Spec 32
+plugins/sgs-blocks/tests/php/ContainerWrapperTest.php: Spec 32
+plugins/sgs-blocks/tests/php/NavDrawerChromeRatingTest.php: Spec 32
+plugins/sgs-blocks/tests/php/TrustBarRenderTest.php: Spec 32
+plugins/sgs-blocks/tests/php/run-audio-toggle-standalone.php: Spec 32x2
+plugins/sgs-blocks/tests/php/run-close-control-standalone.php: Spec 32x2
+plugins/sgs-blocks/tests/php/run-container-wrapper-standalone.php: Spec 32x2
+plugins/sgs-blocks/tests/php/run-lottie-standalone.php: Spec 32
+plugins/sgs-blocks/tests/php/run-nav-drawer-surface-standalone.php: Spec 32x2
+plugins/sgs-blocks/tests/php/run-scrim-cart-standalone.php: Spec 32x2
+plugins/sgs-blocks/tests/php/run-scrim-product-search-standalone.php: Spec 32x2
+plugins/sgs-blocks/tests/php/run-separators-standalone.php: Spec 32
+plugins/sgs-blocks/tests/php/run-store-selector-standalone.php: Spec 32x2
+plugins/sgs-blocks/tests/php/run-surface-ground-standalone.php: Spec 32x2
+plugins/sgs-blocks/tests/php/run-theme-toggle-standalone.php: Spec 32x2
+reports/2026-08-01-muted-text-surface-audit.md: Spec 32 §12.2
+reports/migrations/media-element-census.json: Spec 32
+reports/no-inline-track-E-report.md: Spec 32 §6.1(c)
+reports/option-picker-cloning-report.md: FR-32-6, Spec 32x3, Spec 32 §6.1, Spec 32 §6.1(c), Spec 32 §7
+reports/visual-diff/accordion-2026-08-07.md: Spec 32
+reports/visual-diff/adaptive-nav-2026-07-15.md: Spec 32
+reports/visual-diff/adaptive-nav-2026-07-17.md: Spec 32
+reports/visual-diff/audio-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/button-2026-07-09.md: Spec 32x2
+reports/visual-diff/button-2026-07-13.md: FR-33-4
+reports/visual-diff/button-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/button-2026-08-17.md: FR-32-1, Spec 32 §6.1(b)
+reports/visual-diff/card-grid-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/card-grid-2026-07-21.md: Spec 32
+reports/visual-diff/card-grid-2026-07-25.md: Spec 32x2
+reports/visual-diff/card-grid-2026-07-30.md: FR-32-4x2
+reports/visual-diff/card-grid-2026-08-07.md: Spec 32
+reports/visual-diff/cart-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/collapsible-text-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/container-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/container-2026-07-26.md: Spec 32
+reports/visual-diff/countdown-timer-2026-07-30.md: FR-32-4
+reports/visual-diff/counter-2026-08-07.md: Spec 32
+reports/visual-diff/css-consolidation-2026-07-12.md: FR-32-11, Spec 32 §6.2x2
+reports/visual-diff/cta-section-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/cta-section-2026-07-26.md: Spec 32
+reports/visual-diff/cta-section-2026-07-30.md: FR-32-4x2
+reports/visual-diff/cta-section-2026-08-07.md: Spec 32
+reports/visual-diff/d717-overlay-opacity-2026-08-21.md: Spec 32
+reports/visual-diff/d724-img-background-layer-2026-08-21.md: Spec 32
+reports/visual-diff/decorative-image-2026-08-06.md: Spec 32
+reports/visual-diff/focus-within-2026-08-18.md: Spec 32
+reports/visual-diff/form-2026-07-30.md: FR-32-4
+reports/visual-diff/form-2026-08-07.md: Spec 32
+reports/visual-diff/gallery-2026-07-30.md: FR-32-1, FR-32-4
+reports/visual-diff/gallery-2026-08-07.md: Spec 32
+reports/visual-diff/google-reviews-2026-07-30.md: FR-32-4
+reports/visual-diff/hero-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/hero-2026-07-26.md: Spec 32
+reports/visual-diff/icon-2026-07-10.md: Spec 32 §6.1
+reports/visual-diff/icon-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/icon-list-2026-08-07.md: Spec 32
+reports/visual-diff/info-box-2026-07-18.md: FR-32-11, FR-32-4, Spec 32
+reports/visual-diff/label-2026-07-12.md: Spec 32 §6.1
+reports/visual-diff/manual-skips.log: Spec 32x5
+reports/visual-diff/media-2026-08-07.md: Spec 32x2
+reports/visual-diff/mega-menu-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/mega-panel-2026-08-07.md: Spec 32
+reports/visual-diff/mega-panel-2026-08-29.md: Spec 32
+reports/visual-diff/nav-drawer-2026-08-07.md: Spec 32
+reports/visual-diff/nav-menu-2026-07-17.md: Spec 32
+reports/visual-diff/nav-menu-2026-07-28.md: Spec 32
+reports/visual-diff/nav-menu-2026-08-07.md: Spec 32
+reports/visual-diff/nav-menu-2026-08-29.md: Spec 32x2
+reports/visual-diff/nav-menu-drawer-link-colour-2026-07-17.md: Spec 32
+reports/visual-diff/notice-banner-2026-08-07.md: Spec 32
+reports/visual-diff/option-picker-2026-07-10.md: FR-32-4, Spec 32
+reports/visual-diff/option-picker-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/option-picker-2026-09-03.md: FR-32-4, Spec 32x2
+reports/visual-diff/option-picker-pill-fill-2026-07-10.md: FR-32-4, Spec 32
+reports/visual-diff/physics-canvas-2026-08-03.md: Spec 32
+reports/visual-diff/post-grid-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/post-grid-2026-07-30.md: FR-32-4
+reports/visual-diff/preset-gap-typography-2026-07-15.md: Spec 32
+reports/visual-diff/pricing-table-2026-07-30.md: FR-32-4x2
+reports/visual-diff/process-steps-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/process-steps-2026-08-07.md: FR-32-1, FR-32-4x2, Spec 32x2
+reports/visual-diff/product-card-2026-07-12.md: Spec 32 §6.1
+reports/visual-diff/product-card-2026-07-25.md: Spec 32
+reports/visual-diff/product-card-2026-07-26.md: Spec 32
+reports/visual-diff/product-card-2026-07-30.md: FR-32-4
+reports/visual-diff/product-card-2026-08-18.md: FR-32-1
+reports/visual-diff/product-card-cardpadding-2026-07-24.md: Spec 32
+reports/visual-diff/responsive-logo-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/site-footer-2026-07-13.md: Spec 32
+reports/visual-diff/site-footer-2026-08-05.md: Spec 32
+reports/visual-diff/site-header-2026-07-13.md: Spec 32 §6.1
+reports/visual-diff/site-header-2026-08-05.md: Spec 32
+reports/visual-diff/site-header-row-2026-07-13.md: Spec 32
+reports/visual-diff/table-of-contents-2026-08-07.md: Spec 32
+reports/visual-diff/team-member-2026-07-21.md: Spec 32
+reports/visual-diff/testimonial-2026-07-18.md: FR-32-4, Spec 32
+reports/visual-diff/timeline-2026-08-07.md: FR-32-1, FR-32-4x2, Spec 32x2
+reports/visual-diff/trust-bar-2026-07-26.md: Spec 32
+reports/visual-diff/trust-bar-2026-07-30.md: FR-32-1, FR-32-4, FR-32-4ax2
+reports/visual-diff/trust-bar-2026-09-10.md: FR-32-1, FR-32-4, Spec 32, Spec 32 §6.1
+reports/visual-diff/whatsapp-cta-2026-08-07.md: Spec 32
+scripts/computed-route/lint.mjs: Spec 32x2
+sites/eye-care-ward-end/theme-extract-trace.json: FR-33-4
+sites/indus-foods/theme-extract-trace.json: FR-33-18, FR-33-4
+sites/mamas-munches-redesign/theme-extract-trace.json: FR-33-18x3, FR-33-4
+sites/mamas-munches/theme-extract-trace.json: FR-33-3
+theme/sgs-theme/assets/css/type-scale.css: Spec 32 PartD
+theme/sgs-theme/assets/css/utilities.css: Spec 32 PartC
