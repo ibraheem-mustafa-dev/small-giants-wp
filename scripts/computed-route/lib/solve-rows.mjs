@@ -444,7 +444,9 @@ export function classify( report, { writes, gaps, held = {}, elements, stateMap 
 			continue;
 		}
 		const k = groupKey( r, st );
-		if ( 'breaks-layout' === gaps[ k ]?.gap ) {
+		// A guard revert (breaks-layout) and a trial reject before writing (trial-reject) are one finding: the setting
+		// reaches the draft value only by moving the layout away from the draft.
+		if ( [ 'breaks-layout', 'trial-reject' ].includes( gaps[ k ]?.gap ) ) {
 			out.hardcode.push( { ...r, reason: gaps[ k ].detail } );
 		} else if ( written.has( k ) ) {
 			out.hardcode.push( { ...r, reason: 'the setting holds the draft value; paint still differs', widths: widthPattern( report, r ) } );

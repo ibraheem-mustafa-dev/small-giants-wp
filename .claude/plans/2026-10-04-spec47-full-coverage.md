@@ -134,16 +134,14 @@ false positives (random sample of 30, interval 39% to 73%).
    size-and-words label (`lib/triage.mjs::mispairOf`) never gates Solve. Mega-brands had 5 of 6 wrong settings this way.
    Fix: give every surface an origin (skeleton writer plus `origin.mjs`, R4), not a second heuristic gate.
 2. `lib/guard.mjs::guardRound` deletes an exhausted trial with its `tried` set, so the same suspects are tried again until
-   the `maxRounds * 4 + 1` cap (home rounds 5 to 13 repeat exactly). Owned by R6 step 3: the trial in the write round
-   removes most guard trials; the memory fix stays for blocks the trial cannot judge.
-3. A padding write doubled by a level below already carrying it (home cards): the trial rejects it before writing
-   (R6 replay); it stops reaching the tree when R6 step 3 wires the trial into `solve.mjs::writeRound`.
-4. Shop: clean re-run from the committed tree; product: prove the cause of the 87 new rows before any fix.
-5. `solve.mjs` throws ENOENT reading `round-1/report.json` after a round-1 build failure instead of reporting it.
-6. Smaller, from the council: ledger `placed-after` attribution never compares shift sizes (`ac78fee32`);
+   the `maxRounds * 4 + 1` cap (home rounds 5 to 13 repeated exactly on 2026-10-09). With the trial in Solve, home's
+   2026-10-10 run needed one guard round, so this now bites only on writes the trial cannot judge (per-request-class and
+   usesContext blocks, colours); the memory fix is still owed for those.
+3. Shop: clean re-run from the committed tree; product: prove the cause of the 87 new rows before any fix.
+4. Smaller, from the council: ledger `placed-after` attribution never compares shift sizes (`ac78fee32`);
    `effectiveState` misses an open-state style live adds; `acceptHeld` ignores unpaired children and box x/y; a nested
    container shift can repeat on each child row; `SGS_LIVE_ORIGIN` in the environment retargets every walk.
-7. Still open from before: the loose `layout-row` consequence (unproven followers), calibration coverage
+5. Still open from before: the loose `layout-row` consequence (unproven followers), calibration coverage
    (`uncalibrated-fit`; mega-group `sgsChildSizing` discovery is empty even on a clean solo run, so the crossed-runs
    theory is disproved), `css_property` NULL settings, a hand pair that displaced a generated pair and misses live
    (Contact `-20` `form-card`), business-info `displayType`, repeated inner text pairing, layout never written, missed x
@@ -156,7 +154,7 @@ The draft's template identity (below) turns this into evidence: allow the parent
 copy of one `sc-for` loop body and the property is static there.
 
 **Route-accuracy build (Bean chose the order 2026-10-09; council `.claude/reports/2026-10-09-route-accuracy-council/`,
-proofs `.claude/reports/2026-10-09-skeleton-writer-test/`).** Open tool defects 1 to 3 above are
+proofs `.claude/reports/2026-10-09-skeleton-writer-test/`).** Open tool defects 1 and 2 above are
 owned by its phases R4 and R6. Each phase is scored on the answer sheet before and after; every new test is MUST FAIL first
 with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` stays green.
 
@@ -288,9 +286,44 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
     rejected before writing; WW-HM-06 (multi-button gap) and -07 (button transition) are per-request-class blocks,
     which the trial cannot judge.
   - One reject to check: `cr-ref-home-54` borderWidth (+3px, not on the answer sheet).
-  - **Step 3, next:** call the trial from `solve.mjs` after `writeRound` and before the rebuild (pre-round saved
-    attributes as A, undo and block a rejected write). Prove it with one home Solve run on the mirror; then amend
-    R-47-9 and record that the guard's per-walk trials remain only for blocks the trial cannot judge.
+  - **Step 3, built 2026-10-10.** `solve.mjs`'s write step runs the trial after `writeRound` and before the rebuild
+    (`lib/trial-run.mjs::openTrial`, shared with the replay CLI). A is the attributes saved on the post, which hold
+    the last build, so the round's own writes are undone by construction. A rejected setting goes back to its
+    round-start value and every group that wrote it is blocked as `trial-reject` (`lib/trial.mjs::applyVerdicts`),
+    classified Hardcode like a guard revert. `--no-trial` turns it off. R-47-9 is amended.
+    - Home Solve on the mirror (`qa/solve/home/2026-10-10T-trial-in-solve/`): round 1 tried 24 settings and
+      rejected 6 before writing: the four card paddings, the strip padding (`-8`) and `-54` borderWidth. No padding
+      write reached the tree (`tree-writes.diff` in the run folder; the tree was restored to HEAD).
+    - The run took 3 walks, not 13; there were 21 writes and 1 wrong setting of 18 (`-53` cardBackground, a colour
+      the trial cannot judge, reverted by the guard).
+    - Answer sheet: wrong writes avoided 5/7. Real problems RP-HM-01..03 now score `fixed`: they were symptoms of
+      the doubled card padding, and their elements measure the draft value (291 and 299px on both sides). Home was
+      re-baselined on this run; the nine-surface gate exits 0.
+  - **Trial hardening (council finding 5), built 2026-10-10:**
+    - The walker's device profile: an iPhone 13 below 500px for a full-mode config, at 812px high (900 above), one
+      page per profile.
+    - Per-pair before, after and draft numbers in `trial.json`.
+    - The summed tolerance is `max(1, 0.5 * sqrt(n))` over n pair-widths.
+    - A trial that cannot restore the page stops Solve (`applyVerdicts` throws) and fails the replay.
+    - Template surfaces are trialled from their block template.
+    - Replays with it (`trial-round-1-hardened/` in each run folder):
+      - shop: keep 1 (`-1` maxWidth), no box change 3, rebuild 7;
+      - product: keep 2 (`-89`, `-111` lineHeight), no box change 15, rebuild 19, same CSS 3;
+      - header: rebuild 3 (per-request classes).
+      - No rejects and no unrestored page.
+    - The trial avoids none of the answer sheet's shop or product wrong writes:
+      - needs-rebuild: WW-SH-02/03 and WW-PR-01..04;
+      - no-box-change: the margin and padding writes WW-SH-01/05/06 and WW-PR-05;
+      - kept: WW-SH-04.
+    - **Open: no-box-change on margin writes.** WW-SH-01's rebuild zeroed the paragraph's 240px centring margins at
+      1920, but the trial measured no box move over 16 pair-widths (`cr-ref-shop-5`: 3 rules added, 1 removed). The
+      cause is unproven. The next step is to inject that trial's CSS into the shop page at 1920 and read the
+      paragraph's computed margin and the rule that wins.
+    - **Owed to Bean: WW-SH-04's label.** The trial keeps `cr-ref-shop-1` maxWidth 1440px. At 1920 it moves the root
+      box from x 0, w 1920 to x 240, w 1440, which is the draft's box exactly (`trial.json` `pairs`). The sheet labels
+      the write wrong with confidence "assumed"; the 2026-10-09 guard reverted it on its margin rows, which are used
+      values of the centring.
+    - Vertical movement is still ignored.
 
 **QC council on R1-R6 (2026-10-10, three read-only raters):**
 - Fixed in the same session (each with a MUST FAIL test):
@@ -302,22 +335,36 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   - Every row of a pair whose root block is mispaired is flagged; Solve's `classify` files flagged rows as mispaired.
   - Identity pairing never revives a block the width re-check refused, and two zero-size elements never agree.
   - The trial's block origin uses only pairs present on both sides.
+- Built 2026-10-10 (each with a MUST FAIL test and a negative control):
+  - Findings 1 to 3, in `pairs.mjs::identityPass` and `lib/identity.mjs`:
+    - a hand pair inside a block must measure a draft element inside the block's identity element (`innerVerdicts`);
+    - an identity element whose tag is not the fingerprint's is not trusted (`tagMismatch`);
+    - identity runs in every pairing state (`identityStates`);
+    - live blocks with no origin entry are listed `unaligned`.
+  - Finding 4, the children half: a `breaks-box` acceptance holds only while every pair inside it is settled
+    (`compare.mjs::holdEquivalent`).
+  - Finding 5 (see R6, trial hardening).
+  - The answer sheet scores a real problem `fixed` when its row is absent and its own element measures the draft value
+    on both sides.
+- Found by re-pairing footer and header with findings 1 to 3. The re-pair was not adopted; the configs and
+  `qa/pairs` stay at HEAD, and the outputs are in `.claude/reports/2026-10-10-identity-repair-check/`.
+  - **Footer:** `cr-ref-footer-9`, `-16` and `-23` (`sgs/icon-list`) come out mispaired because their origin identity
+    is the list's first `<a>` (the R2 defect: a link-list node's draftRef is its first link). The other links' hand
+    pairs sit outside it. Fix at the source first: the skeleton writer gives a link-list node the list's container,
+    then regenerate the footer skeleton and origin and re-pair.
+  - **Header:** `gen-header-1` and `gen-header-10` are dropped. The width re-check refused their word pairing ("no
+    partner at 375/768"), and the council rule "identity never revives a block the width re-check refused" now applies.
+    That refusal is about words, not the tpl element. Check the tpl element at the re-check widths instead of
+    inheriting the word refusal. The header also has 7 unaligned blocks and 9 unchecked hand pairs (no origin entry).
 - Open, in order:
-  1. Hand pairs not on the block root are never identity-checked (header: 4 `noWordPair`). Resolve each hand pair's live
-     element to its owning ref, and report `uncheckedHand`.
-  2. `identityPass` never compares the origin fingerprint with the resolved element's tag, and does not report
-     unaligned skeleton nodes.
-  3. Multi-state surfaces are identity-checked in the first state only.
-  4. `breaks-box` with a matching box does not check the children's positions; also watch the parent or document height
-     beyond the next 20 siblings.
-  5. Trial: viewport height and device profile differ from the walker's (812px and phone below 500px); per-pair
-     numbers are not stored; the tolerance does not scale with pair count (`cr-ref-home-25` kept at -1.6 over about 90
-     pair-widths); `restored` is not gated; vertical movement is ignored. Replay shop, product and header too.
-  6. The answer sheet has no `obsolete` status for rows whose draft element is gone (RP-FT-04..06); baseline walks
+  1. Finding 4, the page half: watching the parent or page height beyond the next 20 siblings. Not built: no layout
+     was found where something past the watched set moves while the element, its contents and its next 20 siblings
+     stay still, so there is no failure to prove it against.
+  2. The answer sheet has no `obsolete` status for rows whose draft element is gone (RP-FT-04..06); baseline walks
      under `qa/solve/` are not in git.
-  7. `unreadOf` repeats per node (aggregate by block, kind and slot); `sgsOnly` merging inflates confidence; the root
+  3. `unreadOf` repeats per node (aggregate by block, kind and slot); `sgsOnly` merging inflates confidence; the root
      `fits` tie returns for a header holding both an image and a wrapper.
-  8. `decoPath` changes the path of underline rows on non-link text: check divergence and calibration keys.
+  4. `decoPath` changes the path of underline rows on non-link text: check divergence and calibration keys.
 Header and footer reshaped on 2026-10-09 (register N47-N49): the wordmark is an image on both sides and Visit or call is
 one icon-list (`cr-ref-footer-23`). Done the same day: mirror refreshed from eye-care-test (home cards back to 291px at 375;
 `refresh-from-remote.sh` now runs its WSL step with `--exec`, because `wsl --` expanded `$got` in an extra shell and the

@@ -58,6 +58,8 @@ export function writeSolveReport( outDir, r ) {
 		'## Writes', '', '| Round | Node | Block | Element | Property | Setting | Before | After |', '|---|---|---|---|---|---|---|---|',
 		...r.writes.map( ( w ) => `| ${ w.round } | ${ w.ref } | ${ w.block } | \`${ w.path }\` | ${ w.prop }${ w.state ? ':' + w.state : '' } | ${ w.attr } | ${ cell( w.before ) } | ${ cell( w.after ) } |` ), '',
 		'## Wrong writes', '', ...( r.wrong.length ? r.wrong.map( ( w ) => `- round ${ w.round } ${ w.ref } ${ w.block } ${ w.attr } = ${ cell( w.after ) }${ w.reverted ? ' (reverted: ' + cell( w.revertReason ) + ')' : '' }` ) : [ 'None.' ] ), '',
+		// Try before write (R6): every setting the trial judged, by verdict; a reject never reached the tree.
+		'## Tried before writing', '', ...( r.trial?.verdicts?.length ? [ `${ r.trial.verdicts.length } settings tried: ${ [ ...new Set( r.trial.verdicts.map( ( v ) => v.verdict ) ) ].map( ( k ) => `${ k } ${ r.trial.verdicts.filter( ( v ) => v.verdict === k ).length }` ).join( ', ' ) }.`, '', '| Round | Node | Block | Setting | Verdict | Delta px | Why |', '|---|---|---|---|---|---|---|', ...r.trial.verdicts.map( ( v ) => `| ${ v.round } | ${ v.ref } | ${ v.block } | ${ v.attr } | ${ v.verdict } | ${ v.delta ?? '' } | ${ cell( v.why || ( v.worse || [] ).map( ( x ) => `${ x.pair }@${ x.width } +${ x.by }` ).join( ', ' ) ) } |` ) ] : [ r.trial?.off ? `Not tried: ${ r.trial.off }.` : 'Nothing tried.' ] ), '',
 		'## Token snaps', '', '| Where | From | To | Distance | Kind |', '|---|---|---|---|---|',
 		...r.snaps.map( ( s ) => `| ${ s.where } | ${ s.from } | ${ s.to } | ${ s.distance ?? '' } | ${ s.kind } |` ), '' ];
 	L.splice( L.indexOf( '## Handover' ), 0, ...groupsMarkdown( issues, causes ) );

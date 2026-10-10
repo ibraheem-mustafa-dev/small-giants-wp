@@ -36,14 +36,33 @@ function measured( report, sheetRow ) {
 	return ( report?.runs || [] ).some( ( run ) => ( run.state ?? '' ) === ( sheetRow.state ?? '' ) && Number( run.width ) === Number( sheetRow.width ) && Object.entries( run.pairs || {} ).some( ( [ name, p ] ) => ( noRef( sheetRow.ref ) ? name === sheetRow.pair : [ p?.live?.trace?.ref, ...( p?.diffs || [] ).map( ( d ) => d.ref ) ].some( ( r ) => r && bare( r ) === bare( sheetRow.ref ) ) ) ) );
 }
 
+// Whether a row on a block's own element (path '') is gone because the walk measured that element at the draft value
+// in the row's state and width, on both sides, and no longer at the live value the sheet recorded. Lengths compare
+// within half a pixel; other values as text.
+function fixedInWalk( report, sheetRow ) {
+	if ( ( sheetRow.path ?? '' ) !== '' || noRef( sheetRow.ref ) || 'style' !== sheetRow.kind ) {
+		return false;
+	}
+	const bare = ( r ) => String( r || '' ).replace( /^[a-z]+-ref-/, '' );
+	const same = ( a, b ) => ( /^-?[\d.]+px$/.test( a ) && /^-?[\d.]+px$/.test( b ) ? Math.abs( parseFloat( a ) - parseFloat( b ) ) <= 0.5 : a === b );
+	const run = ( report?.runs || [] ).find( ( x ) => ( x.state ?? '' ) === ( sheetRow.state ?? '' ) && Number( x.width ) === Number( sheetRow.width ) );
+	const pair = Object.values( run?.pairs || {} ).find( ( p ) => p?.live?.trace?.ref && bare( p.live.trace.ref ) === bare( sheetRow.ref ) );
+	const live = pair?.live?.styles?.[ sheetRow.property ];
+	const draft = pair?.draft?.styles?.[ sheetRow.property ];
+	return null != live && null != draft && same( live, draft ) && same( draft, sheetRow.draftValue ) && ! same( live, sheetRow.liveValue );
+}
+
 // What the walk says of one sheet row: `open`, `accepted` (every matching row accepted), `artefact` (every open matching
-// row is on a block the walker flagged mispaired), `absent` (no row, its block measured) or `unmeasured` (no row, its
-// block not measured there).
+// row is on a block the walker flagged mispaired), `fixed` (no row, its element measured at the draft value),
+// `absent` (no row, its block measured) or `unmeasured` (no row, its block not measured there).
 function walkOutcome( report, sheetRow ) {
 	const k = matchKey( sheetRow );
 	const hits = reportRows( report ).filter( ( r ) => matchKey( r ) === k );
 	if ( ! hits.length ) {
-		return measured( report, sheetRow ) ? 'absent' : 'unmeasured';
+		if ( ! measured( report, sheetRow ) ) {
+			return 'unmeasured';
+		}
+		return fixedInWalk( report, sheetRow ) ? 'fixed' : 'absent';
 	}
 	const open = hits.filter( ( r ) => null === r.accepted );
 	if ( ! open.length ) {
@@ -88,10 +107,11 @@ export function outcomeOf( sheetRow, { report, triage, solve } ) {
 }
 
 // Whether an outcome passes for its label: a false alarm is dropped, a real problem kept, a wrong write avoided. An
-// unmeasured block scores nothing for a false alarm and fails a real problem (it is no longer seen).
+// unmeasured block scores nothing for a false alarm and fails a real problem (it is no longer seen). A real problem
+// whose element now measures the draft value (`fixed`) passes: the defect is gone, not hidden.
 export function passes( label, outcome ) {
 	if ( 'real-problem' === label ) {
-		return 'not-scored' === outcome ? null : 'open' === outcome;
+		return 'not-scored' === outcome ? null : [ 'open', 'fixed' ].includes( outcome );
 	}
 	if ( 'not-scored' === outcome || 'unmeasured' === outcome ) {
 		return null;

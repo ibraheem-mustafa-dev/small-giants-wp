@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // Solve (FR-47-3): compare a built surface with its draft, turn each open style or hover difference into a setting
 // write through the resolver, rebuild, and repeat (at most three write rounds), then classify what survives.
-//   node scripts/computed-route/solve.mjs --client eye-care-ward-end --surface footer [--out <dir>] [--rounds 3] [--site <calibration target>]
+//   node scripts/computed-route/solve.mjs --client eye-care-ward-end --surface footer [--out <dir>] [--rounds 3] [--site <calibration target>] [--no-trial]
+// Each write round's settings are tried in the open live page before the rebuild (lib/trial-run.mjs); a rejected one
+// is undone and blocked (lib/trial.mjs::applyVerdicts). --no-trial skips the trial.
 // Reads only sites/<client>/build/surfaces.json for the surface. Writes the updated tree back to the surface's tree
 // file, and solve-report.md / solve-report.json (plus every round's walker report) to --out.
 import fs from 'fs';
@@ -19,6 +21,8 @@ import { readWinningRules } from './lib/winning-rule.mjs';
 import { detectReferences, referenceOf, BLOCKS_SRC } from './lib/references.mjs';
 import { entranceStart, groupRects } from './lib/entrance.mjs';
 import { retargetLive } from '../parity/lib/helpers.mjs';
+import { candidatesOf, applyVerdicts } from './lib/trial.mjs';
+import { openTrial, draftBoxes } from './lib/trial-run.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -407,9 +411,12 @@ export function settingRatio( wrong, writes ) {
 // The build, walk and write rounds (R-47-9): at most maxRounds write rounds. Guard rounds (revert a named culprit, try
 // one suspect, restore an innocent one) are not write rounds; the walk cap leaves room for a few per write round.
 // maxRounds 0 is measure-only: one build and one walk, never a write. Every step is passed in: build() → { ok, err },
-// walk( round ) → report, guard( prev, report, lastWrites ) → changed writes, write( report, round ) → { writes, gaps },
+// walk( round ) → report, guard( prev, report, lastWrites ) → changed writes, write( report, round ) → { writes, gaps }
+// (or a promise of it: the trial runs inside the write step),
 // save() persists the tree. pending() says a guard trial is still open when the walk cap is reached; settle( prev, report,
-// lastWrites ) then judges it on one more walk, so no trial ends unconfirmed. Returns { report, writes, gaps, rounds, lastWrote }.
+// lastWrites ) then judges it on one more walk, so no trial ends unconfirmed. A failed build ends the loop. Returns
+// { report, writes, gaps, rounds, lastWrote, buildFailed: { round, err } or null }; report is undefined when the first
+// build failed.
 export async function solveLoop( { maxRounds, build, walk, guard, write, save, settle = null, pending = () => false, blocked = new Map(), log = console.log } ) {
 	const allWrites = [];
 	let gaps = {};
@@ -419,10 +426,12 @@ export async function solveLoop( { maxRounds, build, walk, guard, write, save, s
 	let prev = null;
 	let lastWrites = [];
 	let writeRounds = 0;
+	let buildFailed = null;
 	for ( let round = 1; round <= maxRounds * 4 + 1; round++ ) {
 		const b = build( round );
 		if ( ! b.ok ) {
 			console.error( `[FAIL] build in round ${ round }: ${ b.err.slice( -800 ) }` );
+			buildFailed = { round, err: b.err };
 			break;
 		}
 		report = await walk( round );
@@ -439,7 +448,7 @@ export async function solveLoop( { maxRounds, build, walk, guard, write, save, s
 		if ( writeRounds >= maxRounds ) {
 			break;
 		}
-		const r = write( report, round );
+		const r = await write( report, round );
 		gaps = { ...gaps, ...r.gaps };
 		writeRounds++;
 		rounds = writeRounds;
@@ -465,7 +474,7 @@ export async function solveLoop( { maxRounds, build, walk, guard, write, save, s
 			report = await walk( 'final' );
 		}
 	}
-	return { report, writes: allWrites, gaps, rounds, lastWrote };
+	return { report, writes: allWrites, gaps, rounds, lastWrote, buildFailed };
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
@@ -508,21 +517,54 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	writeTree( treeFile, tree );
 	const blocked = new Map();
 	const trials = new Map();
-	const { report, writes: allWrites, gaps, rounds, lastWrote } = await solveLoop( {
-		maxRounds,
-		blocked,
-		build: () => {
-			assertQuiet( site.sshArgs );
-			return build( s, treeFile );
-		},
-		walk: ( round ) => walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates, site.liveOrigin ),
-		guard: ( prev, rep, lastWrites ) => guardRound( prev, rep, tree, lastWrites, blocked, calibrationFor, trials ),
-		// The settling walk only judges open trials: with no last writes the guard opens no new one.
-		settle: ( prev, rep ) => guardRound( prev, rep, tree, [], blocked, calibrationFor, trials ),
-		pending: () => [ ...trials.values() ].some( ( t ) => t.setting ),
-		write: ( rep, round ) => writeRound( rep, tree, { ...ctx, round, blocked, stateMap: s.states, canvas: !! s.canvas, refs, ownerOf: ( node ) => outsideOwner( node, { refs } ) } ),
-		save: () => writeTree( treeFile, tree ),
-	} );
+	// Try before write (R6): each write round's settings are tried in the open live page before the rebuild, and a
+	// rejected one never reaches the tree (lib/trial.mjs::applyVerdicts). --no-trial skips it.
+	const trialOn = ! argv.includes( '--no-trial' );
+	const walkerCfg = trialOn ? retargetLive( ( await import( pathToFileURL( walker ).href ) ).default, site.liveOrigin ) : null;
+	const trialWidths = WIDTHS.split( ',' ).map( Number );
+	const trialVerdicts = [];
+	const trialRejected = [];
+	let trialRun = null;
+	const writeStep = async ( rep, round ) => {
+		const start = structuredClone( tree );
+		const r = writeRound( rep, tree, { ...ctx, round, blocked, stateMap: s.states, canvas: !! s.canvas, refs, ownerOf: ( node ) => outsideOwner( node, { refs } ) } );
+		if ( ! trialOn || ! r.writes.length ) {
+			return r;
+		}
+		trialRun ||= await openTrial( { envFile: s.envFile, envKey: s.envKey, walkerCfg, target: s.target } );
+		const results = await trialRun.round( candidatesOf( r.writes, round ), draftBoxes( outDir, trialWidths ), trialWidths );
+		trialVerdicts.push( ...results.map( ( x ) => ( { round, ...x } ) ) );
+		const v = applyVerdicts( { tree, start, writes: r.writes, gaps: r.gaps, blocked, results } );
+		trialRejected.push( ...v.rejected );
+		console.log( `round ${ round } trial: ${ results.length } settings tried, ${ new Set( v.rejected.map( ( w ) => `${ w.ref }|${ w.attr }` ) ).size } rejected before writing` );
+		return { ...r, writes: v.writes, gaps: v.gaps };
+	};
+	let loopOut;
+	try {
+		loopOut = await solveLoop( {
+			maxRounds,
+			blocked,
+			build: () => {
+				assertQuiet( site.sshArgs );
+				return build( s, treeFile );
+			},
+			walk: ( round ) => walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates, site.liveOrigin ),
+			guard: ( prev, rep, lastWrites ) => guardRound( prev, rep, tree, lastWrites, blocked, calibrationFor, trials ),
+			// The settling walk only judges open trials: with no last writes the guard opens no new one.
+			settle: ( prev, rep ) => guardRound( prev, rep, tree, [], blocked, calibrationFor, trials ),
+			pending: () => [ ...trials.values() ].some( ( t ) => t.setting ),
+			write: writeStep,
+			save: () => writeTree( treeFile, tree ),
+		} );
+	} finally {
+		await trialRun?.close();
+	}
+	const { report, writes: allWrites, gaps, rounds, lastWrote, buildFailed } = loopOut;
+	// A build that failed before any walk leaves nothing to classify or compare: say so and stop.
+	if ( ! report ) {
+		console.error( `solve ${ surface }: no walk to report, the build failed in round ${ buildFailed?.round ?? '?' } (see [FAIL] above). Run folder: ${ outDir }` );
+		process.exit( 1 );
+	}
 	closeTrials( trials, blocked ).forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
 	const before = JSON.parse( fs.readFileSync( path.join( outDir, 'round-1', 'report.json' ), 'utf8' ) );
 	// What the tree already holds for each still-open group, read against the final walk on a copy (nothing is written):
@@ -544,6 +586,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const wrong = wrongWrites( allWrites, report, s.states );
 	const unmappedState = writableGroups( report, s.states ).unmappedState.length;
 	const handover = handoverOf( classes );
-	writeSolveReport( outDir, { handover, surface, refsAdded: added, rounds, roundThreeWrote: rounds >= 3 && lastWrote, writes: allWrites, wrong, wrongSettings: settingRatio( wrong, allWrites ), gaps, classes, snaps: ctx.log, intended: intendedCount( report ), unmappedState, before, after: report } );
+	const trial = { verdicts: trialVerdicts, rejected: trialRejected, ...( trialOn ? {} : { off: '--no-trial' } ) };
+	writeSolveReport( outDir, { trial, handover, surface, refsAdded: added, rounds, roundThreeWrote: rounds >= 3 && lastWrote, writes: allWrites, wrong, wrongSettings: settingRatio( wrong, allWrites ), gaps, classes, snaps: ctx.log, intended: intendedCount( report ), unmappedState, before, after: report } );
 	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }, unmapped-state ${ unmappedState }, handover ${ handover.length }; wrong writes ${ wrong.length } (settings ${ settingRatio( wrong, allWrites ).wrong } of ${ settingRatio( wrong, allWrites ).total }). Report: ${ path.join( outDir, 'solve-report.md' ) }` );
 }

@@ -104,3 +104,24 @@ test( 'MUST FAIL (council 2026-10-10): a row is dropped only when the walk measu
 	assert.equal( passes( 'real-problem', 'unmeasured' ), false );
 	assert.equal( outcomeOf( rp, { report: { runs: [ { state: rp.state, width: rp.width, pairs: {} } ] } } ), 'unmeasured' );
 } );
+
+// A real problem caused by a wrong write disappears once the write is never made (home RP-HM-01..03, 2026-10-10: the
+// trial rejected the doubled card padding, so the 247px card content is 291px on both sides). Measured equal on the
+// block's own element, it is fixed, never "lost"; anything short of that proof still fails.
+const RP_HM_02 = SHEET.find( ( r ) => 'RP-HM-02' === r.id );
+const measuredWalk = ( live, draft = RP_HM_02.draftValue, ref = RP_HM_02.ref ) => ( { runs: [ { state: RP_HM_02.state, width: RP_HM_02.width, pairs: {
+	'gen-home-32': { live: { trace: { ref }, styles: { [ RP_HM_02.property ]: live } }, draft: { styles: { [ RP_HM_02.property ]: draft } }, diffs: [] },
+} } ] } );
+
+test( 'MUST FAIL: a real problem absent because its element now measures the draft value is fixed, and passes', () => {
+	const outcome = outcomeOf( RP_HM_02, { report: measuredWalk( '291px' ) } );
+	assert.equal( outcome, 'fixed' );
+	assert.equal( passes( 'real-problem', outcome ), true );
+} );
+
+test( 'negative control: absent while the element still reads another value, or measured on another block, is not fixed', () => {
+	assert.equal( outcomeOf( RP_HM_02, { report: measuredWalk( '260px' ) } ), 'absent' );
+	assert.equal( passes( 'real-problem', 'absent' ), false );
+	assert.equal( outcomeOf( RP_HM_02, { report: measuredWalk( '291px', '291px', 'cr-ref-home-99' ) } ), 'unmeasured' );
+	assert.equal( outcomeOf( { ...RP_HM_02, path: '.sgs-x__inner' }, { report: measuredWalk( '291px' ) } ), 'absent' );
+} );

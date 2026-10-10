@@ -162,3 +162,20 @@ test( 'two rows on one setting: the write round writes it once into the tree, th
 	assert.equal( second.writes.length, 0 );
 	assert.equal( Object.keys( second.held ).length, 2 );
 } );
+
+// R6 step 3: a setting the trial rejected before writing holds the draft value only by breaking the layout, the same
+// finding as a guard revert, so its rows are Hardcode (framework repair), never "Unresolved".
+import { groupKey } from '../lib/solve-rows.mjs';
+test( 'MUST FAIL: a group the trial rejected before writing is a Hardcode carrying the trial reason', () => {
+	const k = groupKey( { ...row, state: 'opening' }, null );
+	const classes = classify( report(), { writes: [], gaps: { [ k ]: { gap: 'trial-reject', detail: 'tried before writing, sgs/heading fontSize moves the page away from the draft' } }, held: {}, stateMap: { opening: null } } );
+	assert.equal( classes.hardcode.length, 2 );
+	assert.match( classes.hardcode[ 0 ].reason, /tried before writing/ );
+} );
+
+test( 'negative control: another gap on the same group stays Unresolved', () => {
+	const k = groupKey( { ...row, state: 'opening' }, null );
+	const classes = classify( report(), { writes: [], gaps: { [ k ]: { gap: 'conflict', detail: 'two values' } }, held: {}, stateMap: { opening: null } } );
+	assert.equal( classes.hardcode.length, 0 );
+	assert.equal( classes.unresolved.length, 2 );
+} );

@@ -47,8 +47,8 @@ test( 'a block reading its parent (usesContext) or minting classes per request i
 	assert.deepEqual( withWrite( { a: 1, b: 2 }, { attr: 'b', after: null } ), { a: 1 } );
 } );
 
-test( 'the replay tries the last write of each setting on each block in the round, and nothing from other rounds', async () => {
-	const { candidatesOf } = await import( '../trial.mjs' );
+test( 'the trial tries the last write of each setting on each block in the round, and nothing from other rounds', async () => {
+	const { candidatesOf } = await import( '../lib/trial.mjs' );
 	const w = ( ref, attr, round, after ) => ( { ref, attr, round, after, group: `${ ref }||${ attr }|` } );
 	const c = candidatesOf( [ w( 'r1', 'padding', 1, 'a' ), w( 'r1', 'padding', 1, 'b' ), w( 'r1', 'gap', 1, 'g' ), w( 'r2', 'padding', 2, 'x' ) ], 1 );
 	assert.deepEqual( c.map( ( x ) => [ x.ref, x.attr, x.after ] ), [ [ 'r1', 'padding', 'b' ], [ 'r1', 'gap', 'g' ] ] );
@@ -60,4 +60,32 @@ test( 'the saved attributes of a block are found by its ref in raw post content,
 	assert.deepEqual( savedBlock( raw, 'cr-ref-home-31' ), { name: 'sgs/text', attributes: { text: 'a } brace', className: 'x cr-ref-home-31' } } );
 	assert.equal( savedBlock( raw, 'cr-ref-home-30' ).attributes.padding.desktop.top, '1px' );
 	assert.equal( savedBlock( raw, 'cr-ref-home-3' ), null );
+} );
+
+// QC council finding 5: the summed tolerance grows with the pair-widths judged, per-pair numbers are kept, and a page
+// the trial could not restore stops the run.
+test( 'MUST FAIL (cr-ref-home-25, kept at -1.6 over about 90 pair-widths): rounding-sized drift summed over many pairs is no box change, not keep', () => {
+	const names = Array.from( { length: 90 }, ( _, i ) => `p${ i }` );
+	const of = ( w ) => Object.fromEntries( names.map( ( n ) => [ n, box( w ) ] ) );
+	const v = judgeTrial( { before: at( of( 100 ) ), after: at( of( 99.98 ) ), draft: at( of( 90 ) ), blockX } );
+	assert.equal( v.verdict, 'no-box-change' );
+} );
+
+test( 'positive control: a real move toward the draft over the same 90 pairs is still kept', () => {
+	const names = Array.from( { length: 90 }, ( _, i ) => `p${ i }` );
+	const of = ( w ) => Object.fromEntries( names.map( ( n ) => [ n, box( w ) ] ) );
+	assert.equal( judgeTrial( { before: at( of( 100 ) ), after: at( of( 95 ) ), draft: at( of( 90 ) ), blockX } ).verdict, 'keep' );
+} );
+
+test( 'MUST FAIL: the verdict carries each pair\'s distance to the draft before and after, per width', () => {
+	const v = judgeTrial( { before: at( { item: box( 291, 42 ) } ), after: at( { item: box( 247, 64 ) } ), draft: at( { item: box( 291, 42 ) } ), blockX } );
+	assert.deepEqual( v.pairs, [ { width: 375, pair: 'item', before: 0, after: 66 } ] );
+} );
+
+test( 'MUST FAIL: a trial that could not restore the live page stops the round before anything is applied', async () => {
+	const { applyVerdicts } = await import( '../lib/trial.mjs' );
+	const tree = [ { name: 'sgs/container', attributes: { className: 'r1', padding: '2px' }, innerBlocks: [] } ];
+	const args = { tree, start: structuredClone( tree ), writes: [ { ref: 'r1', attr: 'padding', group: 'g' } ], gaps: {}, blocked: new Map() };
+	assert.throws( () => applyVerdicts( { ...args, results: [ { ref: 'r1', attr: 'padding', verdict: 'keep', restored: false } ] } ), /restore/ );
+	assert.doesNotThrow( () => applyVerdicts( { ...args, results: [ { ref: 'r1', attr: 'padding', verdict: 'keep', restored: true } ] } ) );
 } );

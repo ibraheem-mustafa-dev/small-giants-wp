@@ -797,3 +797,82 @@ test( 'MUST FAIL (QC A4): a border drawn only on hover is painted, so its hover 
 	r.runs.forEach( ( run ) => Object.assign( run.pairs.phone.draft.hover, { 'border-top-width': '1px', 'border-top-style': 'solid' } ) );
 	assert.equal( unpaintedBorder( r, borderGroup ), null );
 } );
+
+// R6 step 3: the trial judges each round's writes before the rebuild. A rejected setting goes back to its round-start
+// value, its writes leave the round and every group that wrote it is blocked with the trial's reason.
+import { applyVerdicts } from '../lib/trial.mjs';
+const cardTree = () => [ { name: 'sgs/container', attributes: { className: 'cr-ref-home-9', padding: { top: '16px' } }, innerBlocks: [
+	{ name: 'sgs/heading', attributes: { className: 'cr-ref-home-10', fontSize: '20px' }, innerBlocks: [] },
+] } ];
+const roundOf = () => {
+	const start = cardTree();
+	const tree = cardTree();
+	tree[ 0 ].attributes.padding = { top: '32px' };
+	tree[ 0 ].innerBlocks[ 0 ].attributes.fontSize = '24px';
+	const writes = [
+		{ round: 1, group: 'g-pad-top', ref: 'cr-ref-home-9', block: 'sgs/container', attr: 'padding', before: { top: '16px' }, after: { top: '32px' } },
+		{ round: 1, group: 'g-pad-inner', ref: 'cr-ref-home-9', block: 'sgs/container', attr: 'padding', before: { top: '32px' }, after: { top: '32px' } },
+		{ round: 1, group: 'g-font', ref: 'cr-ref-home-10', block: 'sgs/heading', attr: 'fontSize', before: '20px', after: '24px' },
+	];
+	return { start, tree, writes, gaps: {}, blocked: new Map() };
+};
+
+test( 'MUST FAIL TO WRITE A REJECT: a rejected card padding goes back to its round-start value, leaves the writes and blocks its group', () => {
+	const r = roundOf();
+	const out = applyVerdicts( { ...r, results: [ { ref: 'cr-ref-home-9', attr: 'padding', verdict: 'reject', delta: 12.5, worse: [ { width: 375, pair: 'card', by: 44 } ] } ] } );
+	assert.deepEqual( r.tree[ 0 ].attributes.padding, { top: '16px' } );
+	assert.ok( ! out.writes.some( ( w ) => 'padding' === w.attr ) );
+	assert.equal( out.rejected.length, 2 );
+	assert.equal( r.blocked.get( 'g-pad-top' ).gap, 'trial-reject' );
+	assert.match( r.blocked.get( 'g-pad-top' ).detail, /card@375/ );
+	assert.equal( out.gaps[ 'g-pad-top' ].gap, 'trial-reject' );
+} );
+
+test( 'MUST FAIL TO WRITE A REJECT: two groups that resolved to one rejected setting are both blocked, and the other setting stays', () => {
+	const r = roundOf();
+	const out = applyVerdicts( { ...r, results: [ { ref: 'cr-ref-home-9', attr: 'padding', verdict: 'reject', delta: 3, worse: [] } ] } );
+	assert.ok( r.blocked.has( 'g-pad-top' ) && r.blocked.has( 'g-pad-inner' ) );
+	assert.equal( r.tree[ 0 ].innerBlocks[ 0 ].attributes.fontSize, '24px' );
+	assert.deepEqual( out.writes.map( ( w ) => w.group ), [ 'g-font' ] );
+} );
+
+test( 'a rejected setting the block did not hold at round start is removed, never left at the written value', () => {
+	const r = roundOf();
+	delete r.start[ 0 ].attributes.padding;
+	applyVerdicts( { ...r, results: [ { ref: 'cr-ref-home-9', attr: 'padding', verdict: 'reject', delta: 3, worse: [] } ] } );
+	assert.ok( ! Object.hasOwn( r.tree[ 0 ].attributes, 'padding' ) );
+} );
+
+test( 'negative control: keep, no-box-change, needs-rebuild, no-css and error leave the tree, the writes and blocked alone', () => {
+	for ( const verdict of [ 'keep', 'no-box-change', 'needs-rebuild', 'no-css', 'error' ] ) {
+		const r = roundOf();
+		const tree = structuredClone( r.tree );
+		const out = applyVerdicts( { ...r, results: [ { ref: 'cr-ref-home-9', attr: 'padding', verdict } ] } );
+		assert.deepEqual( r.tree, tree, verdict );
+		assert.equal( out.writes.length, 3, verdict );
+		assert.equal( r.blocked.size, 0, verdict );
+		assert.deepEqual( out.rejected, [], verdict );
+	}
+} );
+
+test( 'MUST FAIL TO COUNT: an async write step (the trial runs inside it) has its writes counted and walked', async () => {
+	const { calls, steps } = loopSteps();
+	const out = await solveLoop( { maxRounds: 1, ...steps, write: async () => ( calls.write++, { writes: [ { group: 'g' } ], gaps: {} } ) } );
+	assert.deepEqual( calls, { build: 2, walk: 2, write: 1 } );
+	assert.equal( out.writes.length, 1 );
+} );
+
+// Open tool defect 5: a build that fails in round 1 left no walk, and the CLI then threw ENOENT reading
+// round-1/report.json instead of reporting the failure.
+test( 'MUST FAIL (defect 5): a failed round-1 build is reported with its round and error, and no walk runs', async () => {
+	const { calls, steps } = loopSteps();
+	const out = await solveLoop( { maxRounds: 1, ...steps, build: () => ( calls.build++, { ok: false, err: 'wp-build-page exited 1' } ) } );
+	assert.deepEqual( out.buildFailed, { round: 1, err: 'wp-build-page exited 1' } );
+	assert.equal( calls.walk, 0 );
+	assert.equal( out.report, undefined );
+} );
+
+test( 'negative control: a run whose builds all pass reports no build failure', async () => {
+	const { steps } = loopSteps();
+	assert.equal( ( await solveLoop( { maxRounds: 1, ...steps } ) ).buildFailed, null );
+} );

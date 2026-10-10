@@ -6,6 +6,7 @@
 // toward the draft and no pair moves away. The pure parts are here; the page parts are lib/trial-page.mjs.
 import fs from 'fs';
 import path from 'path';
+import { nodeByRef } from './tree.mjs';
 
 // A block's style uid class: `sgs-<prefix>-<8 hex>` (class-sgs-container-wrapper.php: a hash of the attributes).
 export const UID_RE = /^sgs-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}$/;
@@ -75,11 +76,14 @@ export function pairDistance( live, draft, blockX ) {
 // The verdict on one trial at all widths. before/after: { [width]: { [pair]: { box } } } measured live; draft: the same
 // for the draft; blockX: { [width]: { live, draft } }. `keep` when the summed distance falls and no pair moves more than
 // tol px further from the draft; `reject` when a pair moves further or the sum rises; `no-box-change` when no box moved
-// (a colour, a border colour: boxes cannot judge it, so the rebuild and walk do, as before). Returns { verdict, keep,
-// delta, worse: [ { width, pair, by } ] }.
+// (a colour, a border colour: boxes cannot judge it, so the rebuild and walk do, as before). The sum is judged against
+// max( tol, 0.5 * sqrt( n ) ) over the n pair-widths compared: each pair carries about half a pixel of rounding, and
+// that noise grows with the square root of how many are summed. Returns { verdict, keep, delta, sumTol, worse: [ {
+// width, pair, by } ], pairs: [ { width, pair, before, after } ] } (each pair's distance to the draft).
 export function judgeTrial( { before, after, draft, blockX }, tol = 1 ) {
 	let delta = 0;
 	const worse = [];
+	const pairs = [];
 	for ( const w of Object.keys( before ) ) {
 		for ( const pair of Object.keys( before[ w ] ) ) {
 			const b = pairDistance( before[ w ][ pair ], draft[ w ]?.[ pair ], blockX[ w ] );
@@ -88,11 +92,56 @@ export function judgeTrial( { before, after, draft, blockX }, tol = 1 ) {
 				continue;
 			}
 			delta += a - b;
+			pairs.push( { width: Number( w ), pair, before: +b.toFixed( 1 ), after: +a.toFixed( 1 ) } );
 			a - b > tol && worse.push( { width: Number( w ), pair, by: +( a - b ).toFixed( 1 ) } );
 		}
 	}
-	const verdict = worse.length || delta > tol ? 'reject' : ( delta < -tol ? 'keep' : 'no-box-change' );
-	return { verdict, keep: 'keep' === verdict, delta: +delta.toFixed( 1 ), worse };
+	const sumTol = Math.max( tol, 0.5 * Math.sqrt( pairs.length ) );
+	const verdict = worse.length || delta > sumTol ? 'reject' : ( delta < -sumTol ? 'keep' : 'no-box-change' );
+	return { verdict, keep: 'keep' === verdict, delta: +delta.toFixed( 1 ), sumTol: +sumTol.toFixed( 1 ), worse, pairs };
+}
+
+// The last write of each setting on each block in a round: [ { ref, block, attr, after, group, ... } ]. A setting
+// several groups wrote in one round carries its whole value in the last write's `after`.
+export function candidatesOf( writes, round ) {
+	const last = new Map();
+	for ( const w of writes.filter( ( x ) => x.round === round ) ) {
+		last.set( `${ w.ref }|${ w.attr }`, w );
+	}
+	return [ ...last.values() ];
+}
+
+// Applies one round's trial verdicts to Solve's tree (R6 step 3). Each rejected setting goes back to its value in
+// `start` (the tree before the round's first write), or is removed where start lacks it; its writes leave the round;
+// every group that wrote it is blocked, and gapped, with the trial's reason. Every other verdict (keep, no-box-change,
+// needs-rebuild, no-css, error) leaves the write to the rebuild and the guard. Throws, before changing anything, when
+// any trial left the live page changed (`restored: false`). Mutates tree, gaps and blocked. Returns { writes, gaps,
+// rejected }.
+export function applyVerdicts( { tree, start, writes, gaps, blocked, results } ) {
+	// A trial that could not give the live page back exactly left every later trial measuring a changed page.
+	const dirty = results.filter( ( r ) => false === r.restored );
+	if ( dirty.length ) {
+		throw new Error( `the trial could not restore the live page after ${ dirty.map( ( r ) => `${ r.ref } ${ r.attr }` ).join( ', ' ) }: no verdict of this round is trusted` );
+	}
+	const rejects = new Map( results.filter( ( r ) => 'reject' === r.verdict ).map( ( r ) => [ `${ r.ref }|${ r.attr }`, r ] ) );
+	const rejected = writes.filter( ( w ) => rejects.has( `${ w.ref }|${ w.attr }` ) );
+	for ( const r of rejects.values() ) {
+		const node = nodeByRef( tree, r.ref );
+		const was = nodeByRef( start, r.ref )?.attributes || {};
+		if ( ! node ) {
+			continue;
+		}
+		node.attributes = node.attributes || {};
+		Object.hasOwn( was, r.attr ) ? ( node.attributes[ r.attr ] = structuredClone( was[ r.attr ] ) ) : delete node.attributes[ r.attr ];
+	}
+	for ( const w of rejected ) {
+		const r = rejects.get( `${ w.ref }|${ w.attr }` );
+		const worse = ( r.worse || [] ).map( ( x ) => `${ x.pair }@${ x.width } +${ x.by }px` ).join( ', ' );
+		const entry = { gap: 'trial-reject', detail: `tried before writing, ${ w.block } ${ w.attr } moves the page away from the draft (summed ${ r.delta ?? '?' }px${ worse ? `; further: ${ worse }` : '' })` };
+		blocked.set( w.group, entry );
+		gaps[ w.group ] = entry;
+	}
+	return { writes: writes.filter( ( w ) => ! rejected.includes( w ) ), gaps, rejected };
 }
 
 // The saved attributes of the block whose className carries ref, from a post's raw content: { name, attributes } or

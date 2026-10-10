@@ -18,16 +18,21 @@
 		]
 	},
 	"home": {
-		"report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/round-13/report.json",
+		"report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-10T-trial-in-solve/round-3/report.json",
 		"triage": "sites/eye-care-ward-end/build/qa/triage/home.json",
-		"solve": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/solve-report.json",
+		"solve": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-10T-trial-in-solve/solve-report.json",
 		"pass": [
 			"FA-P6-04",
 			"FA-P6-05",
 			"FA-P6-06",
 			"RP-HM-01",
 			"RP-HM-02",
-			"RP-HM-03"
+			"RP-HM-03",
+			"WW-HM-01",
+			"WW-HM-02",
+			"WW-HM-03",
+			"WW-HM-04",
+			"WW-HM-05"
 		]
 	},
 	"header": {
