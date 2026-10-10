@@ -787,7 +787,12 @@ Results, run records and counts moved out of Spec 47 section 5. Spec 47 section 
    - **Advisory snapshot.** `theme-snapshot.json` (extract.py from the draft) marks the draft's primary, surface and
      text colours advisory, and the rest of its palette is framework baseline; `push-theme-snapshot.py` strips advisory
      entries (FR-33-5), so the live site paints the framework palette and every colour Fill resolved to a Mama's slug
-     shows the baseline. Needs Bean's confirmation (push with `--include-advisory`) or a re-extraction.
+     shows the baseline. A fresh `theme-extractor/extract.py` run on `Home.dc.html` gives the same palette byte for
+     byte: the draft declares no `:root` tokens and has no `README.md`, so only Pass B's three usage roles land. With
+     `Theme Mapping.md` copied in as the README (scratch copy only), the declared path lands accent `#F9CF6E` and
+     surface-alt `#F5C2C8`, but primary becomes cream `#FFFAF0` (the measured most-used pill button, 15 uses, wins) and
+     the doc's `primary #EE8088` row is skipped ("README row has no recognised role"). Two Spec 33 extractor defects:
+     a design doc not named `README.md` is never read, and a slug-named colour row is not a recognised role.
    - **Layout not carried:** the Instagram grid's six columns (`grid-template-columns` UNMAPPED no-setting) became two
      ~290px columns; the strip's header row lost its flex row (Follow along drops below); the icon lists paint default
      check icons the draft lacks; `display` ambiguous on 22 rows.
