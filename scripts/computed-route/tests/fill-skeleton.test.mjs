@@ -2,7 +2,7 @@
 // slot finders resolve inside their node's draft element, and the filled tree carries none of the draft keys.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { finderKind, finderProblem, scopeFinder, scopeSelector, skeletonNodes, skeletonProblems, cleanTree } from '../lib/fill-skeleton.mjs';
+import { finderKind, finderProblem, scopeFinder, scopeSelector, skeletonNodes, skeletonProblems, cleanTree, parseTplKey, tplKey, originMap } from '../lib/fill-skeleton.mjs';
 import { lintSkeleton } from '../lint.mjs';
 import { openDb } from '../lib/db.mjs';
 
@@ -74,4 +74,52 @@ test( 'cleanTree removes draftRef, draftSlots and handover and never touches the
 	assert.ok( ! JSON.stringify( c ).match( /draftRef|draftSlots|handover/ ) );
 	assert.deepEqual( c[ 0 ].innerBlocks[ 0 ].attributes, { content: 'Hello' } );
 	assert.deepEqual( lintSkeleton( t, openDb() ), [], 'the draft keys sit beside attributes, so R-47-10 still sees only attributes' );
+} );
+
+// The tpl finder (Spec 47 §3.4, R-47-4): the draft runtime's data-dc-tpl stamp, named by import-host chain, number and copy.
+test( 'MUST FAIL: a tpl finder that is not chain/number#copy is a problem, a well-formed one never is', () => {
+	for ( const bad of [ { tpl: '' }, { tpl: 'Root/12' }, { tpl: 'Root/x#0' }, { tpl: '/12#0' }, { tpl: 'Root/12#-1' }, { tpl: 12 }, { tpl: 'Root/12#0', within: 5 }, { tpl: 'Root/12#0', nth: 1 }, { tpl: 'Root>/12#0' } ] ) {
+		assert.ok( finderProblem( bad ), `${ JSON.stringify( bad ) } should be refused` );
+		assert.equal( finderKind( bad ), null );
+	}
+	for ( const good of [ { tpl: 'Root/12#0' }, { tpl: 'Root>Frame Card@129#3/12#2' }, { tpl: 'Root/12#0', within: '[data-fill-scope="2"]' } ] ) {
+		assert.equal( finderProblem( good ), null, JSON.stringify( good ) );
+		assert.equal( finderKind( good ), 'tpl' );
+	}
+} );
+
+test( 'a tpl key names the import chain, so the same number in two imports, and two copies of one import, never collide', () => {
+	const keys = [ 'Root/5#0', 'Root/5#1', 'Root>Frame Card@129#0/5#0', 'Root>Frame Card@129#1/5#0', 'Root>Frame Card@130#0/5#0' ];
+	assert.equal( new Set( keys ).size, keys.length );
+	for ( const k of keys ) {
+		const p = parseTplKey( k );
+		assert.ok( p, k );
+		assert.equal( tplKey( p ), k, 'parse then build gives the key back' );
+	}
+	assert.deepEqual( parseTplKey( 'Root>Frame Card@129#1/5#2' ), { chain: [ 'Root', 'Frame Card@129#1' ], tpl: 5, copy: 2 } );
+	assert.equal( parseTplKey( 'Root/5' ), null );
+} );
+
+test( 'scopeFinder keeps a tpl finder exact and adds the scope as its within, so a slot is checked to lie inside its node', () => {
+	const s = scopeSelector( 3 );
+	assert.deepEqual( scopeFinder( { tpl: 'Root/9#0' }, s ), { tpl: 'Root/9#0', within: s } );
+	assert.deepEqual( scopeFinder( { tpl: 'Root/9#0', within: 'div' }, s ), { tpl: 'Root/9#0', within: `${ s } :is(div)` } );
+	const nodes = skeletonNodes( [ { name: 'sgs/icon', draftRef: { tpl: 'Root/9#0' }, draftSlots: { svg: { tpl: 'Root/10#0' } }, attributes: {} } ] );
+	assert.deepEqual( nodes[ 0 ].targets.map( ( t ) => t.id ), [ '0:', '0:svg' ] );
+	assert.deepEqual( skeletonProblems( [ { name: 'sgs/icon', draftRef: { tpl: 'Root/9#0' }, draftSlots: { svg: { tpl: 'Root/10#0' } } } ] ), [] );
+} );
+
+test( 'originMap names, for each node with a tpl draftRef, its cr-ref, tpl key, fingerprint and tpl slots; selector nodes are left out', () => {
+	const sk = [ { name: 'sgs/container', draftRef: { tpl: 'Root/1#0' }, draftFingerprint: { tag: 'div', cls: '', styleHash: 'a1' }, innerBlocks: [
+		{ name: 'sgs/icon', draftRef: { tpl: 'Root/2#0' }, draftSlots: { svg: { tpl: 'Root/3#0' }, i: 'svg' }, draftFingerprint: { tag: 'a', cls: 'x', styleHash: 'b2' } },
+		{ name: 'sgs/text', draftRef: '.row p' },
+		{ name: 'sgs/text' },
+	] } ];
+	const nodes = skeletonNodes( sk );
+	assert.deepEqual( originMap( nodes, [ 'cr-ref-t-0', 'cr-ref-t-1', 'cr-ref-t-2', 'cr-ref-t-3' ] ), {
+		'cr-ref-t-0': { tpl: 'Root/1#0', fingerprint: { tag: 'div', cls: '', styleHash: 'a1' } },
+		'cr-ref-t-1': { tpl: 'Root/2#0', fingerprint: { tag: 'a', cls: 'x', styleHash: 'b2' }, slots: { svg: 'Root/3#0' } },
+	} );
+	assert.ok( ! JSON.stringify( cleanTree( sk ) ).includes( 'draftFingerprint' ), 'cleanTree strips the fingerprint with the other draft keys' );
+	assert.match( skeletonProblems( [ { name: 'sgs/text', draftFingerprint: 'x' } ] ).join(), /draftFingerprint must be/ );
 } );

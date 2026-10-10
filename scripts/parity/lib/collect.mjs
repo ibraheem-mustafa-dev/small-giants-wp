@@ -36,9 +36,33 @@ export const FOCUS_PROPS = [ 'outline-style', 'outline-width', 'outline-color', 
 // press feedback a visitor sees (a button that sinks, darkens or loses its shadow). Read at rest and while pressed.
 export const ACTIVE_PROPS = [ 'color', 'background-color', 'border-top-color', 'border-top-width', 'box-shadow', 'transform', 'scale', 'translate', 'rotate', 'opacity', 'filter', 'text-decoration-line', 'text-decoration-color', 'outline-style', 'outline-width', 'outline-color' ];
 
+// The draft runtime's own name for a stamped element (data-dc-tpl), self-contained so it can be serialised into a page:
+// `<chain>/<n>#<copy>`. The chain is the import hosts (.sc-host) from the document root to the element's nearest host:
+// `Root`, then `<template name>@<host stamp>#<host copy>` for each nested import (the copy is the host's position among
+// same-named hosts of its own parent host). The number restarts in every template, so a number alone is ambiguous; the
+// copy is the element's position among same-numbered stamps of its nearest host, in document order.
+export function tplKeyOf( e ) {
+	const parentHost = ( x ) => ( x.parentElement ? x.parentElement.closest( '.sc-host' ) : null );
+	const chainOf = ( host ) => {
+		const parts = [];
+		for ( let h = host; h; h = parentHost( h ) ) {
+			const up = parentHost( h );
+			const same = up ? [ ...up.querySelectorAll( '.sc-host' ) ].filter( ( x ) => parentHost( x ) === up && x.dataset.scName === h.dataset.scName && x.dataset.dcTpl === h.dataset.dcTpl ) : [];
+			parts.unshift( up ? `${ h.dataset.scName }${ h.dataset.dcTpl ? `@${ h.dataset.dcTpl }` : '' }#${ same.indexOf( h ) }` : h.dataset.scName );
+		}
+		return parts.join( '>' );
+	};
+	const host = parentHost( e );
+	const n = e.dataset.dcTpl;
+	const copies = [ ...host.querySelectorAll( `[data-dc-tpl="${ n }"]` ) ].filter( ( x ) => parentHost( x ) === host );
+	return `${ chainOf( host ) }/${ n }#${ copies.indexOf( e ) }`;
+}
+
 // Resolves a finder to one element inside the page. A finder is a CSS selector string,
 // { text: 'regex source', within?: selector, tag?: selector } for the smallest visible
-// element whose rendered text matches, or { js: '(root) => element' } run in the page.
+// element whose rendered text matches, { js: '(root) => element' } run in the page, or
+// { tpl: '<chain>/<n>#<copy>', within?: selector } for the exact element the draft runtime stamped (tplKeyOf's key; the
+// element is returned whether or not it shows, and `within` must contain it).
 export function resolveFinder( finder ) {
 	const visible = ( e ) => !! e && ( e.offsetParent !== null || getComputedStyle( e ).position === 'fixed' ) && e.getClientRects().length > 0;
 	const scope = ( sel ) => ( sel ? document.querySelector( sel ) : document ) || document;
@@ -50,6 +74,22 @@ export function resolveFinder( finder ) {
 	}
 	if ( finder.group ) {
 		return finder.group.paths.map( ( p ) => document.querySelector( p ) ).find( visible ) || null;
+	}
+	if ( finder.tpl ) {
+		const m = /^(.+)\/(\d+)#(\d+)$/.exec( finder.tpl );
+		if ( ! m ) {
+			return null;
+		}
+		const parentHost = ( x ) => ( x.parentElement ? x.parentElement.closest( '.sc-host' ) : null );
+		const parts = m[ 1 ].split( '>' );
+		let host = [ ...document.querySelectorAll( '.sc-host' ) ].find( ( h ) => ! parentHost( h ) && h.dataset.scName === parts[ 0 ] ) || null;
+		for ( const part of parts.slice( 1 ) ) {
+			const p = /^(.*?)(?:@(\d+))?#(\d+)$/.exec( part );
+			const owner = host;
+			host = ! owner || ! p ? null : [ ...owner.querySelectorAll( '.sc-host' ) ].filter( ( h ) => parentHost( h ) === owner && h.dataset.scName === p[ 1 ] && ( undefined === p[ 2 ] || h.dataset.dcTpl === p[ 2 ] ) )[ Number( p[ 3 ] ) ] || null;
+		}
+		const el = host ? [ ...host.querySelectorAll( `[data-dc-tpl="${ m[ 2 ] }"]` ) ].filter( ( x ) => parentHost( x ) === host )[ Number( m[ 3 ] ) ] || null : null;
+		return el && ( ! finder.within || document.querySelector( finder.within )?.contains( el ) ) ? el : null;
 	}
 	if ( finder.js ) {
 		// eslint-disable-next-line no-new-func

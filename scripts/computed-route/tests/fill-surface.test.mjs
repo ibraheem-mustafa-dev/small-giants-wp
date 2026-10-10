@@ -144,3 +144,25 @@ test( 'calibrationLoader reads a cache directory and answers null for a block wi
 	assert.equal( load( 'sgs/text' ).block, 'sgs/text' );
 	assert.equal( load( 'sgs/nothing' ), null );
 } );
+
+// A skeleton that names its draft elements by tpl finder leaves <surface>.origin.json beside the tree (cr-ref to tpl key and
+// fingerprint); the built tree itself carries none of it. The second copy of the same tpl number is the one it names.
+test( 'a tpl-finder skeleton writes the origin map: cr-ref to tpl key, fingerprint; the filled tree carries no draft key', async () => {
+	const repo2 = path.join( work, 'repo2' );
+	const build = path.join( repo2, 'sites', 'acme', 'build' );
+	fs.mkdirSync( path.join( build, 'qa' ), { recursive: true } );
+	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { about: { tree: 'about.tree.json', states: { opening: null } } } ) );
+	fs.writeFileSync( path.join( build, 'qa', 'divergences.json' ), '[]\n' );
+	fs.copyFileSync( path.join( repo, 'sites', 'acme', 'theme-snapshot.json' ), path.join( repo2, 'sites', 'acme', 'theme-snapshot.json' ) );
+	const draft = path.join( work, 'draft2' );
+	fs.mkdirSync( draft );
+	fs.writeFileSync( path.join( draft, 'About.dc.html' ), '<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0}main{padding:20px}p{margin:0;font-size:20px}</style></head><body><div class="sc-host" data-sc-name="Root"><main data-dc-tpl="1"><p data-dc-tpl="2">First words</p><p data-dc-tpl="2">Second words</p></main></div></body></html>' );
+	const fp = ( tag ) => ( { tag, cls: '', styleHash: '0' } );
+	fs.writeFileSync( path.join( work, 'tpl-skeleton.json' ), JSON.stringify( [ { name: 'sgs/container', draftRef: { tpl: 'Root/1#0' }, draftFingerprint: fp( 'main' ), attributes: { tagName: 'main' }, innerBlocks: [ { name: 'sgs/text', draftRef: { tpl: 'Root/2#1' }, draftFingerprint: fp( 'p' ), attributes: { text: 'Second words' } } ] } ] ) );
+	const r = await fillSurface( { repo: repo2, client: 'acme', surface: 'about', skeleton: path.join( work, 'tpl-skeleton.json' ), draftDir: draft, draftIndex: 'About.dc.html', liveUrl: 'http://127.0.0.1:9/about/', out: path.join( work, 'out2' ), cache: path.join( work, 'cache' ), sweep: false } );
+	const origin = JSON.parse( fs.readFileSync( path.join( build, 'about.origin.json' ), 'utf8' ) );
+	assert.deepEqual( Object.keys( origin ), [ 'cr-ref-about-0', 'cr-ref-about-1' ] );
+	assert.deepEqual( origin[ 'cr-ref-about-1' ], { tpl: 'Root/2#1', fingerprint: { tag: 'p', cls: '', styleHash: '0' } } );
+	assert.ok( ! /draftFingerprint|draftRef|"tpl"/.test( JSON.stringify( r.tree ) ) );
+	assert.ok( ! fs.existsSync( path.join( path.dirname( treeFile ), 'home.origin.json' ) ), 'a skeleton with no tpl finder leaves no origin file' );
+} );

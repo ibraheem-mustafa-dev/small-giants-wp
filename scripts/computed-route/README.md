@@ -23,11 +23,15 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lint.mjs` | The route's gate: README index, plugins/sgs-blocks/scripts import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, every divergence-ledger entry beside that manifest citing register items its register holds (`--register`, else the `register` of `qa/ledger.config.json` beside the ledger; B4), client names. |
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse and focus by keyboard on the styled element, its panel opened when hidden; a shrunk marker with its ancestor class; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
-| `fill.mjs` | Fill command (FR-47-4): a skeleton tree plus a draft (a hosted url or a local folder) to a tree resolved root-down in one pass, before anything is built. Needs `--client`, `--surface`, `--skeleton`, `--live-url` and one of `--draft-url` / `--draft-dir`; `--serve <folder>` serves a draft until Ctrl-C. Reads `surfaces.json`, the snapshot and the ledger; writes only into `--out`: `filled.tree.json`, `fill-report.md`/`.json`, `unmapped.json`, `handover.json`, `breakpoints.json` and the generated walker config. |
+| `fill.mjs` | Fill command (FR-47-4): a skeleton tree plus a draft (a hosted url or a local folder) to a tree resolved root-down in one pass, before anything is built. Needs `--client`, `--surface`, `--skeleton`, `--live-url` and one of `--draft-url` / `--draft-dir`; `--serve <folder>` serves a draft until Ctrl-C. Reads `surfaces.json`, the snapshot and the ledger; writes only into `--out`: `filled.tree.json`, `fill-report.md`/`.json`, `unmapped.json`, `handover.json`, `breakpoints.json` and the generated walker config, plus `<build>/<surface>.origin.json` (cr-ref to `tpl` key and fingerprint) when the skeleton names its draft elements by `tpl` finder. |
 | `sweep.mjs` | Sweep command: `--surfaces <surfaces.json> [--date YYYY-MM-DD] [--out <file>]`; reads each surface's newest `solve-report.json` and writes `<build>/qa/sweep/<date>/sweep.json`: one row per distinct open issue across the site `{ surface, ref, pair, path, block, property, widths, state, kind, class, reason, values, report }` (`pair` names a block-less hand-pair row; `values` holds each distinct draft and live pair, at most 6), totals per surface and class, and the surfaces with no report. |
 | `register-sweep.mjs` | Register sweep command (A4): `bundle --register <md> --sweep <json> --pairs <qa/pairs dir> --out <folder>` writes one input file per A4 group (items, the sweep rows and measured refs of their surfaces, the status rules; agent brief `sites/eye-care-ward-end/build/qa/sweep/2026-10-05/a4/agent-brief.md`) and exits 1 on an item in no group; `merge … --verdicts <json> … --out <file>` checks the agents' verdicts and writes a copy of the register with a Sweep column (never in place). |
 | `triage.mjs` | Triage command (B1): `--client <slug> --surface <s> [--report <solve-report.json>] [--out <file>]`; reads the surface's newest (or given) Solve report and its final walk (highest `round-N/report.json`), every surface tree, the DB read-only, calibration, the extension roster, block sources and every PHP file under the plugin's `includes/`; writes `<build>/qa/triage/<surface>.json` (a candidate class W, F, T or U with evidence per distinct issue) and prints counts by class. |
 | `pairs.mjs` | Block pairing command: pairs every block of a surface with its draft element through the walker's word matcher, re-checks each kept finder at 375 and 768, and writes `<surface>.full.mjs` (the hand config plus one pair per block) and `qa/pairs/<surface>.json` (kept pairs and every left-out block with its reason). A panel surface pairs with its walker state open on both sides (`--state <name> --width <w> [--recheck <widths>|none]`), recorded in the report. A surface's `walkerFull` in `surfaces.json` makes Solve walk it. |
+| `skeleton.mjs` | Skeleton writer command (Spec 47 §3.4): `inventory|propose|review|finalise|decide --client <slug> --surface <s>` into `sites/<client>/build/skeleton/`. `inventory --root <selector>` reads the hosted draft (`surfaces.json[surface].draftUrl`) at 1440, 375 and 768 and writes `<s>.inventory.json` and `shots/`; `propose [--site-name <text>]` writes `<s>.skeleton.json` (a Fill skeleton whose every draft link is a `tpl` finder) and `<s>.proposal.json` (per element: candidates, evidence, confidence, low = below 0.7); `review` writes `<s>.review.html`; `finalise` writes `<s>.finalise-request.json` for the low rows and `finalise --apply <picks.json>` merges the picks and re-proposes; `decide --key <k> (--block <slug> [--attrs <json>] | --remove)` and `decide --site-name <text>` record into `decisions.json`. Never calls a model, builds a page or writes outside that folder. |
+| `check-refs.mjs` | Draft-link check: `--client <slug> --surface <s> [--skeleton <file>] [--draft-url <url>]`; opens the draft, resolves every `draftRef` and `draftSlots` finder (a Site Info row's generated icons included) through the walker's `resolveFinder`, counts what the raw selector would match, prints resolved / unique / missing per node, and exits 1 on any target that is missing, ambiguous or outside its node. |
+| `data/skeleton-decisions.json` | The skeleton writer's standing, client-free decisions: the column-label block, the list rule (minimum links, stacked), brief-only line patterns, Site Info text patterns (copyright, hours, address, attribution), the maps-link and logo-image patterns, and element decisions. Every block named is checked against the framework database on load. |
+| `prompts/skeleton-finaliser.md` | The brief for the finaliser subagent that settles a skeleton's low-confidence rows from `<s>.finalise-request.json`; the session runs it, the scripts never call a model. |
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`) and `image`, a media object on that site written into background-image markers and overlay preconditions. |
 | `calibration-fixtures.json` | Minimum content, inner blocks, parent chain, optional variants, optional `preconditions` (`{ <setting>: { <attr>: <value> } }`: attributes a setting paints only under, put on that setting's instance) and optional `before` blocks (placed ahead of the instance, for a block that reads the page, such as a table of contents) per calibrated block. |
 | `ledger.mjs` | Divergence ledger command: `accept <report.json> <row id>` adds an entry dated today; `stale <report.json>` exits 1 while any entry is stale. |
@@ -49,6 +53,13 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/deploy-hash.mjs` | The deploy key: md5 of a block's front-end build files, locally and on the site. |
 | `lib/draft.mjs` | Serves a local draft folder on 127.0.0.1 at an ephemeral port: directory index, an explicit index file, content types, Range, no path escape, clean close. |
 | `lib/fill-skeleton.mjs` | The skeleton contract: `draftRef` and `draftSlots` are walker finders, slot finders resolve inside their node's element; node indices, targets, problems, and the clean tree. |
+| `lib/skeleton-inventory.mjs` | Skeleton step 1: every `data-dc-tpl` element of a draft surface in a real browser at 1440, 375 and 768 (key, parent, tag, words, attributes, the draft's own code, loop membership, boxes, visibility, screenshots), through the page bridges `__dcAnnotatedTemplate` and `__dcRootName`. |
+| `lib/skeleton-model.mjs` | Skeleton step 2, reading an inventory: the element tree, parts of another element, words, placeholders, stacked runs, the fingerprint. Pure functions. |
+| `lib/skeleton-facts.mjs` | The data the skeleton writer reasons from: the framework database (read-only), the brand registry, the client's Site Info placeholder map, `data/skeleton-decisions.json` and the list block's `block.json` items; and the check that the decisions data is sound. |
+| `lib/skeleton-classify.mjs` | Skeleton step 2a: which block each element becomes, as scored candidates with their evidence (the four generator rules: footer and header wrappers and rows, link runs as one list, typed brand names and logo images as the logo block, brief-only lines as remove); client decisions and finaliser picks override the scoring. |
+| `lib/skeleton-propose.mjs` | Skeleton step 2b: the inventory to a Fill skeleton and the proposal rows (units of siblings that are one block, content settings, `tpl` draft links, fingerprints, handover). |
+| `lib/skeleton-review.mjs` | Skeleton step 3: the review table (key, tag, words, code, screenshot, proposed block, confidence, decision). |
+| `lib/skeleton-finalise.mjs` | Client decisions and finaliser picks on disk (with the element signature that makes a stale decision visible), the finalise request for the low rows and the validated merge of the picks. |
 | `lib/fill-read.mjs` | Reads the draft in Chromium through the walker's `collectPair` and `resolveFinder` at 375, 768, 1440 and the fluid widths, plus the 16px sweep; blocks or mirrors requests beyond the draft's origin. |
 | `lib/fill-prop.mjs` | One property of one element: which tiers differ from what the node shows, the slots a setting could paint, `clamp()` where a setting accepts one; every write is the resolver's. |
 | `lib/fill-resolve.mjs` | Root-down resolution of a whole skeleton: inherited baselines, spacing ownership, presence, words, links, the divergence ledger, UNMAPPED and handover. |
@@ -129,6 +140,9 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/wp-session.test.mjs` | `scripts/lib/wp-session.js` in headless Chromium: a child attached to the shared browser and the owner both survive a page dialog; a confirm is dismissed and a beforeunload left, as Playwright's default does (MUST FAIL: the two auto-dismissals raced and one crashed with "No dialog is showing"; dismissing a beforeunload aborted the editor navigation). |
 | `tests/draft-serve.test.mjs` | FR-47-4 draft server: no path escape or symlink escape (MUST FAIL), ephemeral port, directory index, content types, Range, and close frees the port. |
 | `tests/fill-skeleton.test.mjs` | FR-47-4: the finder vocabulary, slot scoping, node numbering, skeleton problems and the clean tree. |
+| `tests/skeleton-propose.test.mjs` | Spec 47 §3.4: the four generator rules over the committed footer inventory plus a fixture slice for the typed wordmark and the coming-soon line; no style value in a skeleton; client decisions and stale signatures; the 13 uncertain rows scored against the committed footer tree (at least 12 must match: MUST FAIL). |
+| `tests/walker-tpl-finder.test.mjs` | R-47-4: a bare `[data-dc-tpl]` selector picks the wrong copy or nested element and the `tpl` finder picks the right one (MUST FAIL); `tplKeyOf` and the finder are inverses. |
+| `tests/check-refs.test.mjs` | `check-refs` verdicts: missing, ambiguous and outside targets are refused (MUST FAIL); `skeletonTargets` lists generated icons. |
 | `tests/fill-read.test.mjs` | FR-47-4: a local draft read in headless Chromium — widths, the carrier rule, scoping, the declared width, fluid samples and the sweep. |
 | `tests/fill-mirror.test.mjs` | FR-47-4: a script on another origin is blocked, answered from a `--mirror`, and the flag parses. |
 | `tests/fill-prop.test.mjs` | FR-47-4: tier carry, canonical values, not-painted leftovers, and that every write is the resolver's. |
@@ -507,11 +521,13 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/fill-skeleton.mjs`
 - `SCOPE_ATTR`: the attribute a node's draft element carries while its slots resolve. `scopeSelector(index)` → the selector for it.
-- `finderProblem(f)` → why a value is not a walker finder, or null. `finderKind(f)` → `selector`, `text`, `textRun`, `group` or `js`, else null.
+- `finderProblem(f)` → why a value is not a walker finder, or null. `finderKind(f)` → `selector`, `text`, `textRun`, `group`, `js` or `tpl`, else null.
+- `parseTplKey(key)` → `{ chain, tpl, copy }` for a `tpl` finder's `<import chain>/<n>#<copy>`, else null; `tplKey(parts)` is its inverse. The chain is `Root` then `<template>@<host stamp>#<host copy>` per nested import, so the same number in two imports, or in two copies of one import, never collides.
+- `originMap(nodes, refs)` → `{ [cr-ref]: { tpl, fingerprint, slots? } }` for every node whose `draftRef` is a `tpl` finder; `fill.mjs` writes it to `<build>/<surface>.origin.json`.
 - `scopeFinder(f, scope)` → the finder rewritten to resolve inside the scoped element.
 - `skeletonNodes(tree)` → depth-first nodes with parent, children and targets.
 - `skeletonProblems(tree)` → readable problems in a skeleton's draft keys.
-- `cleanTree(tree)` → a copy without `draftRef`, `draftSlots`, `handover`, `siteInfoRow`, `childAttributes` and `childRefs`.
+- `cleanTree(tree)` → a copy without `draftRef`, `draftSlots`, `draftFingerprint`, `handover`, `siteInfoRow`, `childAttributes` and `childRefs`.
 - `ROW_KEYS` → the Fill-only keys of a `sgs/social-icons` Site Info row. `siteInfoRow` is a list of registry brand slugs (absent: every registry brand in order); `childAttributes` is merged into every generated `sgs/icon`; `childRefs` maps a slug to the selector of the draft element it copies, resolved inside the row's own `draftRef`.
 - `expandSiteInfoRows(tree)` → a copy where each such node holds `sgs/icon` innerBlocks (`iconSource: "brand"`, `brandName`, and `metadata.bindings.linkUrl` to Site Info's registry key); `fill.mjs` runs it after `skeletonProblems` and the lint.
 
@@ -685,6 +701,41 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `surfaceContext({ client, surface, report?, measuredReach? })` → `{ buildDir, reportFile, walkFile, report, walkReport, ctx, close }`: one surface's Solve report, final walk and triage ctx; `measuredReach` replaces the canvas-confirm.json lookup.
 - `runTriage({ client, surface, report?, out? })` → `{ verdicts, counts, file }`.
 - `surfaceBlocks(buildDir, entry)` → every block in one surface's own tree as `[ { ref, name } ]`: the sibling roster R-47-12 (c) checks for a block that can hold the row.
+
+### `lib/skeleton-inventory.mjs` (Playwright by path; imports `scripts/parity/lib/collect.mjs`)
+- `INVENTORY_WIDTHS`: 1440, 375, 768.
+- `readInventory({ url, root, shotsDir, log })` → `{ generated, source, root, keyFormat, checks, elements }`; an element is `{ key, parentKey, depth, tag, template, tpl, attrs, words, allText, membership, srcTag, srcOwnText, snippet, box, visible, display, flexDirection, layoutChanged375, screenshots }`.
+
+### `lib/skeleton-model.mjs`
+- `inventoryModel(inventory)` → `{ els, byKey, kids, isPart, blockKids, words, textWithBreaks, placeholders, box, stacked, isTextLink, isIconLink, childIndex, fingerprint, root, tplFinder }`.
+
+### `lib/skeleton-facts.mjs` (reads the framework database read-only, `brand-registry.json`, `block.json`)
+- `REPO`, `DECISIONS_FILE`: the repository root and `data/skeleton-decisions.json`.
+- `rxList(spec)` → the regular expressions of a `{ patterns, flags }` spec; `specHit(spec, text)` → the spec when any pattern matches, else null.
+- `loadFacts({ db, client, repo?, siteName?, decisionsFile? })` → the facts object (tag map, composition, capabilities, attributes, row and logo blocks, the list block and its item properties, display types, the placeholder map, the brand registry).
+- `decisionsProblems(facts)` → readable problems in the decisions data (an unknown block, a pattern that does not compile, no list block).
+
+### `lib/skeleton-classify.mjs`
+- `W`: the evidence weights. `finish(candidates)` → ranked candidates with shares and `confidence = min(1, top) * top / (top + second)`.
+- `overrideFor(element, { clientDecisions, picks, facts, surface, words })` → the decision that settles an element (a client decision kept only while its signature holds, a finaliser pick, a standing element decision), `{ stale }` for a decision that no longer fits, else null.
+- `makeClassifier({ m, facts, overrides })` → `{ classify(element, parentBlock, ctx), brandFor, siteInfoKinds, isColumnLabel, briefOnly }`.
+
+### `lib/skeleton-propose.mjs`
+- `proposeSkeleton({ inventory, facts, surface, clientDecisions?, picks?, calKeys?, db? })` → `{ skeleton, proposal, problems }`; the skeleton passes `skeletonProblems` and `lintSkeleton`.
+
+### `lib/skeleton-review.mjs`
+- `decisionCell(key, surface, clientDecisions, picks)` → the recorded decision for a key, or null. `reviewHtml({ inventory, proposal, surface, clientDecisions, picks })` → the review page.
+
+### `lib/skeleton-finalise.mjs`
+- `skeletonDir(repo, client)`; `signatureOf(element)` → `tag|words`.
+- `readDecisions(file)`, `recordDecision({ file, surface, element, choice, reason? })`, `recordSiteName({ file, siteName })`, `readPicks(file)`.
+- `finaliseRequest({ inventory, proposal, surface, promptFile })` → the low-confidence rows with their elements and evidence; `applyPicks({ picks, request, knownBlock, file })` → the merged picks, refusing a key outside the request or an unknown block.
+
+### `skeleton.mjs` (Playwright by path)
+- `skeletonPaths({ client, surface, repo? })` → the run's files and draft url. `proposeSurface({ client, surface, repo?, siteName?, db? })` → propose from the files on disk and write the skeleton and proposal. `main(argv)` → the command line.
+
+### `check-refs.mjs` (Playwright by path)
+- `refStatus(entries)` → each entry with `status` (`ok`, `missing`, `ambiguous`, `outside`) and a reason. `skeletonTargets(skeleton)` → every `draftRef` and `draftSlots` target, Site Info row icons included. `checkRefs({ skeleton, draftUrl })` → `{ targets, summary }`.
 
 ### `lint.mjs`
 - `routeFiles(root)` → every route file, relative.

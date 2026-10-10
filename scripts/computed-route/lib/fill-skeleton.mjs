@@ -3,7 +3,8 @@
 //
 // A finder is the walker's own vocabulary (scripts/parity/lib/collect.mjs::resolveFinder): a CSS selector string,
 // { text, tag?, within?, nth?, flags? } (the smallest visible element whose rendered text matches), { textRun: { within,
-// direct?, match? } }, { group: { paths } }, or { js: '(root) => element', within? }. `draftRef` is resolved on the
+// direct?, match? } }, { group: { paths } }, { js: '(root) => element', within? }, or { tpl: '<chain>/<n>#<copy>', within? }
+// (the element the draft runtime stamped data-dc-tpl="n": the exact draft element, see parseTplKey). `draftRef` is resolved on the
 // whole draft page, exactly as a walker pair's finder is. A slot finder is resolved inside its node's `draftRef`
 // element (the slot key is the element's path from the block root, the format of calibration's `elements` keys), so
 // it needs no knowledge of the page around it.
@@ -24,7 +25,27 @@ const hasRow = ( node ) => 'sgs/social-icons' === node.name && ROW_KEYS.some( ( 
 export const SCOPE_ATTR = 'data-fill-scope';
 export const scopeSelector = ( index ) => `[${ SCOPE_ATTR }="${ index }"]`;
 
-const KEYS = { text: [ 'text', 'tag', 'within', 'nth', 'flags' ], textRun: [ 'textRun' ], group: [ 'group' ], js: [ 'js', 'within' ] };
+const KEYS = { text: [ 'text', 'tag', 'within', 'nth', 'flags' ], textRun: [ 'textRun' ], group: [ 'group' ], js: [ 'js', 'within' ], tpl: [ 'tpl', 'within' ] };
+const KINDS = [ 'text', 'textRun', 'group', 'js', 'tpl' ];
+
+// A tpl key is `<chain>/<n>#<copy>`: the import-host chain from the document root (`Root`, then `<template name>@<host
+// stamp>#<host copy>` for each nested import, joined by `>`), the data-dc-tpl number (the runtime restarts it at 0 in
+// every template, so a number alone is ambiguous), and the element's position among same-numbered elements of its
+// nearest host. { chain, tpl, copy }, or null when the text is not a key.
+export function parseTplKey( key ) {
+	const m = 'string' === typeof key ? /^(.+)\/(\d+)#(\d+)$/.exec( key ) : null;
+	if ( ! m ) {
+		return null;
+	}
+	const chain = m[ 1 ].split( '>' );
+	if ( chain.some( ( part, i ) => '' === part || ( i > 0 && ! /^.+#\d+$/.test( part ) ) ) ) {
+		return null;
+	}
+	return { chain, tpl: Number( m[ 2 ] ), copy: Number( m[ 3 ] ) };
+}
+
+// The key text of { chain, tpl, copy } (parseTplKey's inverse).
+export const tplKey = ( { chain, tpl, copy } ) => `${ chain.join( '>' ) }/${ tpl }#${ copy }`;
 
 // A reason a value is not a walker finder, or null when it is one.
 export function finderProblem( f ) {
@@ -34,7 +55,7 @@ export function finderProblem( f ) {
 	if ( ! f || 'object' !== typeof f || Array.isArray( f ) ) {
 		return 'a finder is a selector string or a walker finder object';
 	}
-	const kind = [ 'text', 'textRun', 'group', 'js' ].find( ( k ) => k in f );
+	const kind = KINDS.find( ( k ) => k in f );
 	if ( ! kind ) {
 		return `finder object has none of ${ Object.keys( KEYS ).join( ', ' ) }`;
 	}
@@ -54,18 +75,21 @@ export function finderProblem( f ) {
 	if ( 'group' === kind && ( ! Array.isArray( f.group?.paths ) || ! f.group.paths.length || ! f.group.paths.every( isStr ) ) ) {
 		return 'finder group needs a list of selector paths';
 	}
+	if ( 'tpl' === kind && ( ! parseTplKey( f.tpl ) || ( undefined !== f.within && ! isStr( f.within ) ) ) ) {
+		return 'finder tpl is "<import chain>/<number>#<copy>", with an optional within selector';
+	}
 	if ( 'js' === kind && ( ! isStr( f.js ) || ( undefined !== f.within && ! isStr( f.within ) ) ) ) {
 		return 'finder js is a function source, with an optional within selector';
 	}
 	return null;
 }
 
-// 'selector' | 'text' | 'textRun' | 'group' | 'js', or null for a value that is not a finder.
+// 'selector' | 'text' | 'textRun' | 'group' | 'js' | 'tpl', or null for a value that is not a finder.
 export function finderKind( f ) {
 	if ( finderProblem( f ) ) {
 		return null;
 	}
-	return 'string' === typeof f ? 'selector' : [ 'text', 'textRun', 'group', 'js' ].find( ( k ) => k in f );
+	return 'string' === typeof f ? 'selector' : KINDS.find( ( k ) => k in f );
 }
 
 const within = ( scope, sel ) => ( sel ? `${ scope } :is(${ sel })` : scope );
@@ -82,6 +106,7 @@ export function scopeFinder( f, scope ) {
 		case 'group':
 			return { group: { ...f.group, paths: f.group.paths.map( ( p ) => within( scope, p ) ) } };
 		case 'js':
+		case 'tpl':
 			return { ...f, within: within( scope, f.within ) };
 		default:
 			throw new Error( `not a finder: ${ JSON.stringify( f ) }` );
@@ -181,12 +206,33 @@ export function skeletonProblems( tree ) {
 				problems.push( `${ label } slot "${ slot }": ${ finderProblem( finder ) }` );
 			}
 		}
+		if ( undefined !== node.draftFingerprint && ! ( node.draftFingerprint && 'object' === typeof node.draftFingerprint && isStr( node.draftFingerprint.tag ) ) ) {
+			problems.push( `${ label } draftFingerprint must be { tag, cls, styleHash }` );
+		}
 		problems.push( ...handoverProblems( node.handover, label ), ...rowProblems( node, label ) );
 	}
 	return problems;
 }
 
-const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'handover', ...ROW_KEYS ];
+// `draftFingerprint` ({ tag, cls, styleHash }) is the skeleton writer's record of the draft element a tpl finder names;
+// Fill moves it into the surface's origin map (originMap) and strips it with the other draft keys.
+const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftFingerprint', 'handover', ...ROW_KEYS ];
+
+// The origin map of a skeleton: for every node whose draftRef is a tpl finder, { [cr-ref]: { tpl, fingerprint, slots } }
+// (slots: the slot path to the tpl key of each tpl slot finder). `refs[i]` is the cr-ref of node i (tree.mjs::refOf).
+// A node with a selector or other finder is not in the map: only a tpl finder names one draft element for good.
+export function originMap( nodes, refs ) {
+	const out = {};
+	for ( const n of nodes ) {
+		const f = n.node.draftRef;
+		if ( 'tpl' !== finderKind( f ) || ! refs[ n.index ] ) {
+			continue;
+		}
+		const slots = Object.fromEntries( Object.entries( n.node.draftSlots || {} ).filter( ( [ , sf ] ) => 'tpl' === finderKind( sf ) ).map( ( [ k, sf ] ) => [ k, sf.tpl ] ) );
+		out[ refs[ n.index ] ] = { tpl: f.tpl, fingerprint: n.node.draftFingerprint || null, ...( Object.keys( slots ).length ? { slots } : {} ) };
+	}
+	return out;
+}
 
 // The skeleton with each Site Info row node expanded into its `sgs/icon` innerBlocks: `{ iconSource: 'brand', brandName,
 // metadata.bindings.linkUrl -> sgs/site-info <registry siteInfoKey>, ...childAttributes }`. The Fill-only keys stay on the
