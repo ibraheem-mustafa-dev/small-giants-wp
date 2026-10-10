@@ -160,20 +160,52 @@ relaxed to "every reached descendant wants the same value"; risk: with one measu
 The draft's template identity (below) turns this into evidence: allow the parent write when every reached descendant is a
 copy of one `sc-for` loop body and the property is static there.
 
-**Route-accuracy build order (Bean chose it 2026-10-09; council `.claude/reports/2026-10-09-route-accuracy-council/`,
-proofs `.claude/reports/2026-10-09-skeleton-writer-test/`).** It replaces items 1, 2 and 3 above rather than adding to them:
-1. The answer sheet (`evidence/fixtures.json`, 100 labelled rows) becomes a permanent test every route change is scored on.
-2. Skeleton writer: generator (draft code via the runtime's `data-dc-tpl` and `__dcAnnotatedTemplate`, block candidates
-   from the DB and saved decisions), AI finaliser for low-confidence rows, review table, saved decisions; Fill reads the
-   exact IDs. Generator rules owed: footer wrapper blocks, a run of links becomes one `sgs/icon-list`, a typed brand name
-   becomes the logo. Fill fixes owed: social-icon styling onto the row's `childIcon*` settings, icon size from the glyph not
-   the box, five business-info settings dropped unreported. Spec 47 needs a clause: identity from the draft code is allowed,
-   values never (R-47-4).
-3. Exact ID pairing in the walker, with word pairing as a cross-check; a disagreement is labelled mispaired and never written
-   through. Inside a block, match the block's named parts within its own draft element.
-4. The "does it paint?" check (neutralise a value in the browser; nothing moves means not a difference), after 3.
-5. Try before write: render the block twice through `/wp/v2/block-renderer`, map the CSS difference onto the live uid,
-   measure (proven on the home cards); blocks with `wp_unique_id`/`microtime` classes or block context rebuild as today.
+**Route-accuracy build (Bean chose the order 2026-10-09; council `.claude/reports/2026-10-09-route-accuracy-council/`,
+proofs `.claude/reports/2026-10-09-skeleton-writer-test/`).** It replaces open tool defects 1, 2 and 3 above (owned by
+phases R5, R4 and R6). Each phase is scored on the answer sheet before and after; every new test is MUST FAIL first
+with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` stays green.
+
+- **R1. Answer sheet as a permanent test.** `sites/eye-care-ward-end/build/qa/answer-sheet.json` (the frozen 100 rows:
+  47 false alarms, 29 wrong writes, 24 real problems), `scripts/computed-route/lib/answer-sheet.mjs` (row keys matched on
+  state, width, ref, path, kind and property; pair names renumber, so they are not matched), CLI
+  `scripts/computed-route/answer-sheet.mjs`, test `tests/answer-sheet.test.mjs`. A real problem not kept fails (exit 1);
+  false alarms dropped and wrong writes avoided are printed per pattern. Done: footer and home baselines recorded here,
+  and a planted dropped real problem fails.
+- **R2. Skeleton writer.** CLI `scripts/computed-route/skeleton.mjs` (inventory, propose, review, finalise, decide) with
+  `lib/skeleton-{inventory,propose,review}.mjs`, ported from the prototype in `evidence/`. Block knowledge only from the
+  DB and saved decisions (`scripts/computed-route/data/skeleton-decisions.json`, client-free;
+  `sites/<client>/build/skeleton/decisions.json`, per client). Generator rules: footer/header wrapper blocks from
+  `block_composition` section roots and what they accept; a run of sibling links becomes one `sgs/icon-list`; a typed
+  brand name becomes `sgs/responsive-logo`; brief-only lines are flagged for removal. New finder kind `tpl`
+  (`lib/fill-skeleton.mjs`, `scripts/parity/lib/collect.mjs::resolveFinder`); `scripts/computed-route/check-refs.mjs`
+  resolves every finder (the 2026-10-09 "33/33" was a hand check). Fill keeps identity in `<surface>.origin.json`. The
+  prototype's inventory, proposal and picks are not on disk, so the inventory is regenerated; the 13 uncertain rows are
+  the confidence-below-0.7 rows of `evidence/compare.md`, with Bean's choices updated for N47-N49. Done: footer
+  `check-refs` resolves every finder uniquely and the skeleton matches Bean's choices on at least 12 of 13.
+- **R3. Fill: business-info's five settings** (`addressLink`, `hoursLayout`, `showIcon`, `hoursRowJustify`,
+  `labelColour`). Each drops because it is not a plain style read: `addressLink` needs a calibration `link` key,
+  `hoursLayout` a `presence` entry, the other three a `draftSlots` entry. Fill now writes each skipped setting as an
+  UNMAPPED row with its reason, then the evidence is supplied. The two icon fixes (social-icon styling onto the row's
+  `childIcon*` settings; icon size from the glyph, not the box) run in a separate session:
+  `.claude/prompts/2026-10-10-icon-fill-and-draft-domains.md`. The social-icons calibration predates the `childIcon*`
+  rename (`675df46e3`), so that session recalibrates it first.
+- **R4. Exact ID pairing.** `pairs.mjs` pairs each block through its `tpl` finder when an origin file exists. Word
+  pairing runs as the cross-check, and a disagreement is listed as `mispaired` in `qa/pairs/<surface>.json`. Inside a
+  block, the block's named parts (DB element manifest) are matched by structure inside its own draft element.
+  `lib/solve-rows.mjs::writableGroups` never writes through a mispaired pair. Origin files come from fresh
+  skeleton-writer links, never converted from word pairs. Done: footer and header pattern-2 false alarms dropped, every
+  real problem kept.
+- **R5. "Does it paint?"** `scripts/parity/lib/neutralise.mjs` sets the draft value on the live element in the open
+  browser. When no box (the element, its contents, the siblings after it) moves and the live crop is identical, the row
+  is inert. It ships with the value-source field (`collectPair` returns `{value, src}`), which absorbs
+  `walker-decoration.test.mjs.pending`. It replaces `compare.mjs::INERT_LAYOUT` (`ba31e5157`). A gap of 48 vs 16 in a
+  fixed box stays open.
+- **R6. Try before write.** `scripts/computed-route/lib/trial.mjs` (from `evidence/trial.mjs`) renders the block twice
+  through `/wp/v2/block-renderer`. The current render must reproduce the live uid and its CSS, otherwise the block is
+  `needs-rebuild`; `wp_unique_id`/`microtime` and `usesContext` blocks always rebuild. It injects the CSS difference,
+  re-measures every width, and keeps a write only if the page moves toward the draft. It replaces `guard.mjs`'s
+  per-walk trials for trialled blocks. R-47-9 is amended: a wrong write is any write a post-write read shows moving away
+  from the draft. Done: the home cards' doubled padding (WW-HM-01..03) is rejected before writing.
 Header and footer reshaped on 2026-10-09 (register N47-N49): the wordmark is an image on both sides and Visit or call is
 one icon-list (`cr-ref-footer-23`). Done the same day: mirror refreshed from eye-care-test (home cards back to 291px at 375;
 `refresh-from-remote.sh` now runs its WSL step with `--exec`, because `wsl --` expanded `$got` in an extra shell and the

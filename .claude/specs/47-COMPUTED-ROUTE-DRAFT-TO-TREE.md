@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.17.1"
+spec_version: "0.18.0"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
-last_verified: 2026-10-09
+last_verified: 2026-10-10
 status: active
 references:
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
@@ -53,7 +53,7 @@ carries. The route reads the framework database, the parity walker and the page 
 | **R-47-1 Isolation** | All route code lives in `scripts/computed-route/`. Its `README.md` lists every file and every exported function with a one-line purpose, inputs, outputs and external imports; `lint.mjs` fails on a file or export missing from it. The route never edits, imports or copies code from `plugins/sgs-blocks/scripts/`, and opens the framework DB read-only; `lint.mjs` enforces the import ban. |
 | **R-47-2 Read-only database** | The framework database (`~/.claude/skills/sgs-wp-engine/sgs-framework.db`) is opened read-only with Node's built-in `node:sqlite` (`file:<path>?mode=ro`, which refuses writes on Node 24). The route never seeds, migrates or writes it. |
 | **R-47-3 One engine** | Solve and Fill write settings only through `lib/resolve.mjs`. There is no second property-to-setting mapping in the route. |
-| **R-47-4 Measured, not copied** | Every written value comes from a computed style read in a real browser. Draft source text is never parsed for values. |
+| **R-47-4 Measured, not copied** | Every written value comes from a computed style read in a real browser. Draft source text is never parsed for values. Draft code may supply identity and structure only: the Claude Design runtime's `data-dc-tpl` stamps, its import hosts and `sc-for` loop membership, read through the page bridge `window.__dcAnnotatedTemplate`. Identity says which draft element a block copies; the value still comes from that element's computed style. |
 | **R-47-5 Write only what differs** | A setting is written only where the draft's value differs from what the node already shows: its calibrated default paint (§3.2) for non-inherited properties, or its parent's measured live value for inherited ones (colour, font family, size, weight, line height, letter spacing, text transform). Inherited values are never repeated on descendants. |
 | **R-47-6 Calibration is the slot truth** | Which rendered element a setting paints, and each block's default paint, come from calibration (§3.2). The database's `css_element` and `derived_selector` seed calibration; they never replace it. |
 | **R-47-7 Tokens before literals** | Values snap to the site's tokens, read from `sites/<client>/theme-snapshot.json`, in a fixed order: exact token, then nearest within tolerance (colour ΔE ≤ 2, lengths ±0.5px), then a literal flagged in the report. A font stack takes the font-family preset whose first family matches (the slug the node already holds wins a tie, then theme order; `lib/normalise.mjs::snapFontFamily`), else it is written as measured. Every snap is logged with its distance. |
@@ -334,8 +334,24 @@ every token snap) and `solve-report.json`.
 ### 3.4 Fill: `fill.mjs` (FR-47-4)
 
 Input: a skeleton tree. Each node carries `draftRef`, a walker-style finder for the draft element it copies, and
-optional `draftSlots` (`{ slot: finder }`) for inner elements, plus content. AI writes the skeleton; a style value in
-it fails the lint (R-47-10).
+optional `draftSlots` (`{ slot: finder }`) for inner elements, plus content. A style value in it fails the lint
+(R-47-10).
+
+The skeleton writer (`skeleton.mjs`) produces it from the draft's own elements:
+1. **Inventory:** every element of the surface's draft root, keyed `<importPath>/<n>#<copy>` (the `data-dc-tpl` number
+   restarts per template, so a key names the chain of import hosts, the number and the copy index), with its boxes at
+   375, 768 and 1440 and a screenshot.
+2. **Propose:** a block per element from the framework DB (`html_tag_to_core_block`, `block_composition`,
+   `block_capabilities`, `block_attributes`) and saved decisions, each with a confidence.
+3. **Finalise:** an AI finaliser decides only the low-confidence choices.
+4. **Review:** a table (key, code, screenshot, proposed block, confidence) for Bean to confirm; confirmed choices are
+   saved so the next client needs fewer.
+
+Each node's `draftRef` is a `tpl` finder (`{ tpl: "<importPath>/<n>#<copy>" }`, resolved by
+`scripts/parity/lib/collect.mjs::resolveFinder`). `check-refs.mjs` resolves every finder of a skeleton on the draft
+and fails on a miss or an ambiguous match. Fill keeps each node's draft identity beside the tree
+(`<surface>.origin.json`, `cr-ref` to `tpl` key and fingerprint) so the walker can pair by identity (§3.6). Drafts not
+made with the Claude Design runtime have no stamps; their skeletons use the other finder kinds.
 
 **Steps:**
 1. Render the draft (a hosted URL, or a local folder served by `lib/draft.mjs`) and read every referenced element's
