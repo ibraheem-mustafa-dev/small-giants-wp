@@ -129,26 +129,21 @@ baseline's writes are kept as `baseline-tree-writes.diff` in the report folder. 
 false positives (random sample of 30, interval 39% to 73%).
 
 **Open tool defects, in order** (each proven by a live read, a code read or a run; the report cites which):
-1. `scripts/parity/lib/compare.mjs::INERT_LAYOUT` (`ba31e5157`) accepts display, gap, alignment and text-align for any
-   value once the pair's own box matches; children can move inside a same-size box. Require every pair inside to be
-   settled, as `acceptHeld` does. Council severity high.
-2. Solve writes through a mispaired pair: `lib/triage.mjs::mispairOf` is never applied in `solve.mjs::writeRound` /
-   `lib/solve-rows.mjs::writableGroups` (mega-brands 5 of 6 wrong settings; header 3 of 3: the draft's inner row compared
-   with the live header root, live read).
-3. `lib/guard.mjs::guardRound` deletes an exhausted trial with its `tried` set, so the same suspects are tried again until
-   the `maxRounds * 4 + 1` cap (home rounds 5 to 13 repeat exactly); this is why home's doubled padding survived.
-4. Underline rows carry the pair element's path, not the link's: `scripts/parity/lib/ref-trace.mjs::TEXT_CARRIED` lacks
-   `text-decoration-*` while `collect.mjs` reads them from `paint.mjs::paintedDecoration(carrier)` (footer-29, -30, -31
-   hardcode). Fix: record the decorated element's path in `traceRef` (`decoPath`) and stamp `text-decoration-*` with it;
-   the test is ready in the report folder (`walker-decoration.test.mjs.pending`).
-5. A padding write doubled by a level below already carrying it (home cards): `solve.mjs::writeRound` should not write a box
-   side on a node whose inner wrapper already paints the draft value (read the inner element's padding in the walk first).
-6. Shop: clean re-run from the committed tree; product: prove the cause of the 87 new rows before any fix.
-7. `solve.mjs` throws ENOENT reading `round-1/report.json` after a round-1 build failure instead of reporting it.
-8. Smaller, from the council: ledger `placed-after` attribution never compares shift sizes (`ac78fee32`);
+1. Solve writes through a mispaired pair on a surface with no origin file (`<surface>.origin.json`, R4): only rows the
+   walker flagged from an identity disagreement are skipped (`lib/solve-rows.mjs::writableGroups`), and triage's
+   size-and-words label (`lib/triage.mjs::mispairOf`) never gates Solve. Mega-brands had 5 of 6 wrong settings this way.
+   Fix: give every surface an origin (skeleton writer plus `origin.mjs`, R4), not a second heuristic gate.
+2. `lib/guard.mjs::guardRound` deletes an exhausted trial with its `tried` set, so the same suspects are tried again until
+   the `maxRounds * 4 + 1` cap (home rounds 5 to 13 repeat exactly). Owned by R6 step 3: the trial in the write round
+   removes most guard trials; the memory fix stays for blocks the trial cannot judge.
+3. A padding write doubled by a level below already carrying it (home cards): the trial rejects it before writing
+   (R6 replay); it stops reaching the tree when R6 step 3 wires the trial into `solve.mjs::writeRound`.
+4. Shop: clean re-run from the committed tree; product: prove the cause of the 87 new rows before any fix.
+5. `solve.mjs` throws ENOENT reading `round-1/report.json` after a round-1 build failure instead of reporting it.
+6. Smaller, from the council: ledger `placed-after` attribution never compares shift sizes (`ac78fee32`);
    `effectiveState` misses an open-state style live adds; `acceptHeld` ignores unpaired children and box x/y; a nested
    container shift can repeat on each child row; `SGS_LIVE_ORIGIN` in the environment retargets every walk.
-9. Still open from before: the loose `layout-row` consequence (unproven followers), calibration coverage
+7. Still open from before: the loose `layout-row` consequence (unproven followers), calibration coverage
    (`uncalibrated-fit`; mega-group `sgsChildSizing` discovery is empty even on a clean solo run, so the crossed-runs
    theory is disproved), `css_property` NULL settings, a hand pair that displaced a generated pair and misses live
    (Contact `-20` `form-card`), business-info `displayType`, repeated inner text pairing, layout never written, missed x
@@ -161,8 +156,8 @@ The draft's template identity (below) turns this into evidence: allow the parent
 copy of one `sc-for` loop body and the property is static there.
 
 **Route-accuracy build (Bean chose the order 2026-10-09; council `.claude/reports/2026-10-09-route-accuracy-council/`,
-proofs `.claude/reports/2026-10-09-skeleton-writer-test/`).** It replaces open tool defects 1, 2 and 3 above (owned by
-phases R5, R4 and R6). Each phase is scored on the answer sheet before and after; every new test is MUST FAIL first
+proofs `.claude/reports/2026-10-09-skeleton-writer-test/`).** Open tool defects 1 to 3 above are
+owned by its phases R4 and R6. Each phase is scored on the answer sheet before and after; every new test is MUST FAIL first
 with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` stays green.
 
 - **R1. Answer sheet as a permanent test.** `sites/eye-care-ward-end/build/qa/answer-sheet.json` (the frozen 100 rows:
@@ -172,7 +167,8 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   false alarms dropped and wrong writes avoided are printed per pattern. **Built 2026-10-10.** The gate is a ratchet
   (`qa/answer-sheet-baseline.json`): a row that passed in the baseline and fails now exits 1. A row that never passed is
   a known miss. A false alarm "absent" from a walk counts as dropped, so the printout shows each label's outcomes.
-  Baseline on each surface's newest stored run:
+  First baseline (each surface's newest stored run; footer and header later re-baselined, see R4 and the council
+  notes under R6):
   - false alarms dropped: 20 of 47 (footer 4/11, home 3/9, header 0/3, mega-lenses 4/9, mega-brands 7/8, shop 0/3,
     product 1/3, mega-sunglasses 1/1);
   - real problems kept: 22 of 24. RP-MB-01 is lost because triage labels it `mispaired`; RP-ML-01 is lost because it
@@ -190,6 +186,17 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   prototype's inventory, proposal and picks are not on disk, so the inventory is regenerated; the 13 uncertain rows are
   the confidence-below-0.7 rows of `evidence/compare.md`, with Bean's choices updated for N47-N49. Done: footer
   `check-refs` resolves every finder uniquely and the skeleton matches Bean's choices on at least 12 of 13.
+  **Built 2026-10-10:**
+  - Footer: `check-refs` resolves 24 of 24 finders uniquely. The skeleton matches 13 of 13 uncertain rows; the
+    column-label and link-list decisions were written knowing Bean's choices, so this shows the data agrees, not
+    unaided discovery.
+  - The root rule breaks the hero/site-header tie by what each root accepts. Every core block is rewritten through
+    `blocks.replaces` or rejected (`sgsOnly`).
+  - Header skeleton: root, rows and columns are right; the nav is proposed as three buttons, not `sgs/nav-bar-menu`,
+    and the trust bar, rating badge and cart get no node.
+  - Not built: the finaliser has never been run as a subagent; the site name comes from
+    `sites/<client>/build/skeleton/decisions.json` (`siteName`), not live Site Info; a link-list node's `draftRef` is
+    its first link, so Fill does not read the list's own gap or width.
 - **R3. Fill: business-info's five settings** (`addressLink`, `hoursLayout`, `showIcon`, `hoursRowJustify`,
   `labelColour`). Each drops because it is not a plain style read: `addressLink` needs a calibration `link` key,
   `hoursLayout` a `presence` entry, the other three a `draftSlots` entry.

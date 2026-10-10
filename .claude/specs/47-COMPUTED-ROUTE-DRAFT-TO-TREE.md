@@ -488,6 +488,15 @@ before it counts (GAP-CHECKLIST §11).
 Items 10 to 13 and the built parts of 1 and 3: GAP-CHECKLIST §19, proven in headless Chromium on local pages
 (`tests/walker-devtools.test.mjs`) and on About (measure-only on the local mirror: no false rows after the
 animation-timing rule; 1 real open issue).
+19. **Identity pairing, mispaired rows and the paint check (built 2026-10-10; GAP-CHECKLIST §8 and §28).**
+    - `pairs.mjs::identityPass` pairs each block in a surface's origin (`<surface>.origin.json`, from the skeleton writer
+      or `origin.mjs`) by its `tpl` finder and cross-checks the word pairs against it.
+    - A block whose hand pair disagrees is listed `mispaired`; every row of its pair is flagged and kept, and Solve never
+      writes through it (`lib/solve-rows.mjs::writableGroups`, `classify`).
+    - `lib/neutralise.mjs` sets the draft value of each differing layout property (display, gaps, alignment, text-align)
+      on the live element in the open page and records `inert`, `breaks-box` or `moves`. `compare.mjs::isAccepted`
+      accepts `inert`, and `breaks-box` while the pair's box matches; a matching box alone accepts nothing.
+    - Underline rows carry the decorated element's path (`decoPath`, `paint.mjs::decoratedElement`).
 
 **Done when:** each built item has a GAP-CHECKLIST section with its planted fault turning red and each not-built item (15 to 18) meets its own done line. `node
 scripts/parity/benchmark.mjs --noise` still catches 5 of 5 with no new noise rows.
