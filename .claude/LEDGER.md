@@ -60,7 +60,7 @@ Open owed items:
 **State:** Task A done for Indus (2026-10-10): every file of the "Handoff to Claude Code" and design-system output judged with its reader; Claude Design answered our review, fixed the drafts (an intermittent headless crash, update behaviour that never ran) and added `animations.json` (183 records), `surfaces.json` (60), `MANIFEST.md`, `READING-DC-FILES.md`, schemas, a method and the `dc-handoff-inventory` skill, all verified here (0 schema errors, counts reconciled, 43 of 43 traced animations match). The Indus export under review is local only, `.claude/Indus-Foods-Claude-Design-Files/` (not in git); the real Indus brand logos are saved locally in `sites/indus-foods/old-site-logos/` (gitignored images). Evidence: `.claude/reports/2026-10-10-handover-council/`. Nothing deployed; no code changed for this front.
 **Blockers:** Task B needs Bean's Eye Care and Mama's Munches redesign exports made with the plan's A4 recipe.
 **Resume from:** `plans/2026-10-10-claude-design-handover-standard.md`, Task B (B1).
-**Bean-only tasks:** the two exports; the Indus footer-logo and `whatsapp-ink.svg` questions in the plan's last section.
+**Bean-only tasks:** the two exports.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 

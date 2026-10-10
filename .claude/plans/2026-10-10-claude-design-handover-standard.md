@@ -116,8 +116,7 @@ folder; a README does not): at most a few lines pointing at the README and Spec 
 
 **After B.** Replan setting up and cloning the three drafts against Spec 48 (a fresh plan).
 
-## Open questions for Bean
+## Settled with Bean (2026-10-10)
 
-- Indus footer logo: its wordmark rises as one piece because the square logo SVG has a single letter group (Claude
-  Design's `unresolved`). Intended?
-- `assets/whatsapp-ink.svg` is not among Bean's uploads in the Indus project: where did it come from?
+- Indus footer logo: the square logo's wordmark rises as one piece (its SVG has one letter group); acceptable, no change.
+- `assets/whatsapp-ink.svg` was made by Claude Design for the floating WhatsApp CTA (the same CTA as Eye Care's).
