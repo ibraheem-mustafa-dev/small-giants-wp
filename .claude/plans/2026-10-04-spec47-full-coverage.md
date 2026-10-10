@@ -212,11 +212,15 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
     `{width,height}` sizes (`lib/resolve.mjs::isSizeBox`, marker and write); a hugging root dropped from a setting's
     slots (`lib/calibrate.mjs::mergeSetting` `misses`); an svg presentation attribute as a declared width
     (`parity/lib/devtools.mjs::cascadeWinner`); a repeated timing list as one time (`lib/resolve.mjs::formatValue`).
-  - **Open: calibration fixture preconditions are Fill's baseline.** The social-icons fixture sets
-    `childIconShowBackground` and a 1px `childIconBorderWidth`, so the default paint already shows a 1px solid border
-    and Fill writes no border width, style or background switch; the block's own defaults are none, so a row built
-    from the tree loses them. Needs a ruling: Fill writes a fixture's styling preconditions into the node, or
-    calibration reads the default paint without them. Affects every block whose fixture sets styling attributes.
+  - **Fixture styling preconditions, done 2026-10-10 (Bean's ruling: Fill writes them).** Calibration's default
+    instance carries its fixture's attributes, so the social-icons rest paint showed the fixture's 1px solid border and
+    background. `lib/fill-fixture.mjs` names a fixture's styling preconditions (a css_property, or a switch gating one,
+    prefixed switches included); Fill compares each property they paint with its unstyled value
+    (`fill-resolve.mjs::baselineFn`) and a written setting carries the switch the fixture turned on (`apply`). Real
+    footer row (hosted draft, scratch skeleton): `childIconBorderWidth` 1px, `childIconBorderStyle` solid and
+    `childIconShowBackground` true now written; a borderless draft writes no border (it wrote 0px before). Only border,
+    background and shadow baselines change, and of the ten fixtures with styling preconditions only social-icons paints
+    those, so no other block's writes move.
   - **Open: a standalone `sgs/icon` glyph width is ambiguous.** `shapeSize`'s 7px and 23px markers sit below the
     glyph's 32px rest, so the glyph shrinks with the shape and both `iconSize` and `shapeSize` reach it. A glyph read
     reports `ambiguous`, never a wrong write. Fix: shape-size markers above the resting glyph.

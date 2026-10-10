@@ -17,6 +17,7 @@ import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
 import { hasRow } from './fill-skeleton.mjs';
 import { liftRow } from './fill-row-lift.mjs';
+import { unstyledBaseline, gateFor } from './fill-fixture.mjs';
 
 const GAP_PROPS = [ 'row-gap', 'column-gap' ];
 const PSEUDO_LAYERS = [ '::before', '::after' ];
@@ -52,6 +53,7 @@ function makeState( o ) {
 		gapSet: new Map(), // `${index}|${prop}` -> { width: value } the parent decided from rendered gaps
 		margins: new Map(), // child index -> { width: [margin sides the parent owns] }
 		notedBlocks: new Set(),
+		fixtureViews: new Map(), // block -> its calibration fixture's styling preconditions (lib/fill-fixture.mjs)
 		page: ( ( cache ) => ( tag ) => {
 			if ( ! cache.has( tag ) ) {
 				cache.set( tag, pageBaseline( o.rawSnapshot, tag ) );
@@ -104,7 +106,8 @@ function baselineFn( st, rec, cal, prop, ownFontPx = () => undefined ) {
 			const here = '' === slot ? undefined : shownAt( st, rec.index, prop, w, fs );
 			return here ?? inheritedFrom( st, rec, prop, w, fs ) ?? page.value( prop, w, fs ) ?? defaultPaint( cal, slot, w, prop );
 		}
-		return defaultPaint( cal, slot, w, prop );
+		// A property the calibration fixture switched on (lib/fill-fixture.mjs) is compared with its unstyled value.
+		return unstyledBaseline( st, rec.name, cal, blockSchema( rec.name ), slot, prop ) ?? defaultPaint( cal, slot, w, prop );
 	};
 }
 
@@ -186,6 +189,13 @@ function apply( st, rec, ref, target, prop, res, slot ) {
 		const { before, after } = setAttr( node, w );
 		changed++;
 		st.out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: res.how } );
+		// The switch the fixture turned on for this setting (childIconShowBackground for childIconBackground).
+		const gate = gateFor( st, rec.name, st.calFor( rec.name ), blockSchema( rec.name ), w.attr, node.attributes );
+		if ( gate ) {
+			const g = setAttr( node, { attr: gate, value: true } );
+			changed++;
+			st.out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop: '(switch)', attr: gate, before: g.before, after: g.after, widths: [], how: 'fixture-switch' } );
+		}
 	}
 	return changed;
 }
@@ -323,10 +333,11 @@ function fillContent( st, rec, ref, cal ) {
 
 // Fills the tree in place. tree: the cleaned skeleton (refs added, draft keys removed), nodes: skeletonNodes of the
 // skeleton (same indices), reads: lib/fill-read.mjs::readDraft, calFor( block ): calibration or null, ledger: the
-// divergence entries, ledgerStates: the walker states that are the rest state (the ledger's `state` names one).
+// divergence entries, ledgerStates: the walker states that are the rest state (the ledger's `state` names one),
+// fixtures: calibration-fixtures.json (null reads every rest paint as the block's default).
 // Returns { writes, unmapped, notes, handover, spacing, fluid, held, snaps }.
 export function fillTree( opts ) {
-	const st = makeState( { ledger: [], ledgerStates: [], origin: '', ...opts, snaps: [] } );
+	const st = makeState( { ledger: [], ledgerStates: [], origin: '', fixtures: null, ...opts, snaps: [] } );
 	for ( const rec of st.nodes ) {
 		const ref = refOf( st.flat[ rec.index ] );
 		planSpacing( st, rec );

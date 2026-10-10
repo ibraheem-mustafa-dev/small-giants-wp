@@ -113,6 +113,7 @@ export async function fillSurface( o ) {
 		const result = fillTree( {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
 			snapshot, rawSnapshot,
+			fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ),
 			ledger: loadLedger( ledgerFile ),
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
 		} );

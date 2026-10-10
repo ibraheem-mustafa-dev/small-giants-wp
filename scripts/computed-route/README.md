@@ -68,6 +68,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/fill-spacing.mjs` | Spacing ownership per tier from rendered border-box gaps (equal within 0.5px). |
 | `lib/fill-values.mjs` | Fluid fit and `clamp()`, the 16px breakpoint sweep against the SGS boundaries, and the sweep log. |
 | `lib/fill-presence.mjs` | Visibility and variant settings from calibration `presence`, words from `text`, links from `link`. |
+| `lib/fill-fixture.mjs` | A calibration fixture's styling preconditions as Fill sees them: a property a precondition paints in the calibrated rest (the social-icons fixture's 1px border and background switch) is compared with its unstyled value, and a written setting carries the switch the fixture turned on for it. |
 | `lib/fill-row-lift.mjs` | Fill's Site Info row lift: the generated icons' shared look (link box as the row's shape element, svg as its glyph element) written once on the `sgs/social-icons` row when every copy agrees. |
 | `lib/fill-unread.mjs` | What Fill leaves unjudged on a measured node: style settings whose calibrated element no finder read, presence settings with no reading or no read element, text and link settings with no reading, and layout or mode enums calibration reads no presence for; never a setting the skeleton sets or Fill wrote. |
 | `lib/brand-registry.mjs` | Reads the one brand and contact registry (`plugins/sgs-blocks/includes/data/brand-registry.json`) and derives which addresses belong to which brand (scheme for phone and email, domain for socials); no platform table of its own. |
@@ -169,6 +170,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/fill-resolve.test.mjs` | FR-47-4: whole-tree resolution with fixture reads and calibration over the real database. |
 | `tests/fill-unread.test.mjs` | FR-47-4 step 5: the 2026-10-09 footer's five dropped `sgs/business-info` settings (`addressLink`, `hoursLayout`, `showIcon`, `hoursRowJustify`, `labelColour`) are each listed with a reason on a draftRef-only node (MUST FAIL); a setting the skeleton sets, a slot it names or a setting Fill wrote is never listed; content settings come from the database roles. |
 | `tests/fill-row-lift.test.mjs` | The Site Info row lift: the footer's social links write the row's `childIcon*` once when every copy agrees, the generated icons carry none of those values, and the 40px link box never becomes an 18px glyph's `iconSize`. |
+| `tests/fill-fixture-preconditions.test.mjs` | The footer social row keeps the 1px solid border and the background switch the social-icons fixture paints in calibration (MUST FAIL); a draft with no border writes no border settings; the fixture's preconditions are its styling settings only, and a words-and-level fixture has none. |
 | `tests/calibrate-size-box.test.mjs` | A per-device `{ width, height }` size setting gets a marker of that shape and Fill writes it in that shape; a setting's slots drop an element that changed in a variant without carrying the marker value (`sgs/icon`'s hugging root). |
 | `tests/fill-surface.test.mjs` | FR-47-4 step 5: `fillSurface` end to end over a local folder and a temp repo; an invalid skeleton is refused and only `--out` is written (MUST FAIL). |
 
@@ -582,6 +584,13 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `expandSiteInfoRows(tree)` → a copy where each such node holds `sgs/icon` innerBlocks (`iconSource: "brand"`, `brandName`, and `metadata.bindings.linkUrl` to Site Info's registry key); `fill.mjs` runs it after `skeletonProblems` and the lint.
 - `hasRow(node)` → true for a `sgs/social-icons` node carrying any `ROW_KEYS` key.
 - `ROW_GLYPH_SLOT`: a generated icon's glyph element path (`.sgs-icon__shape > .sgs-icon__svg`), read against the row's glyph element (`lib/fill-row-lift.mjs`).
+
+### `lib/fill-fixture.mjs`
+- `toggleStem(name, def)` → the stem an off-by-default boolean switch gates (`showBadge` → `badge`, `childIconShowBackground` → `childIconBackground`), or null.
+- `fixturePreconditions(block, fixtures, schema, db)` → `{ attr: value }`: the fixture's attributes (with its first variant) that differ from the block's default and style it (a css_property, or a switch gating one).
+- `taintedProps(block, preconds, schema, db, cal)` → `Map(LOOSE(slot) → Set(prop))`: the properties each calibrated slot shows only because of a precondition; a border width brings its style.
+- `unstyledBaseline(st, block, cal, schema, slot, prop)` → the unstyled value (`0px` width, `none` style, transparent background, `none` image or shadow) Fill compares with for a tainted property, else undefined.
+- `gateFor(st, block, cal, schema, attr, attributes)` → the fixture-precondition switch a written setting needs and the node does not hold, or null.
 
 ### `lib/fill-row-lift.mjs`
 - `rowElementPaths(db, block, cal)` → the row's element path for each element name (`shape`, `glyph`): the calibrated slot of a setting the DB places there.
