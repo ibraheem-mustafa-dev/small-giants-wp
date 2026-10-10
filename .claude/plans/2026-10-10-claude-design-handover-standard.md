@@ -50,7 +50,7 @@ the zip; not in git).
 | `MANIFEST.md` | Essential: date, runtime version (`support.js` SHA-256) and a hash per file; a copy is current only if its hash matches. |
 | `READING-DC-FILES.md` | Essential: how to read and run a draft (boot, template language, logic API, reaching the live logic instance to `setState` any menu, drawer or form step, every element-to-code marker, a determinism recipe for headless runs). |
 | `handoff-schema/` (two JSON Schemas, `METHOD.md`, `trace/trace-harness.html`) and `dc-handoff-inventory/` (the skill) | Essential: the fixed format and the method to reproduce the inventory. |
-| Design-system `tokens/colors.css`, `typography.css`, `spacing.css` | Essential: the only machine-readable tokens (34 colour properties, fonts with the Google Fonts URL, radii, shadows, gap scale, per-device gutters and section padding, four easings). 33 of the draft's 52 hex values are not tokenised; the draft wins on conflict (body text #1E2A3C). |
+| Design-system `tokens/colors.css`, `typography.css`, `spacing.css` | Essential: the only machine-readable tokens (34 colour properties, fonts with the Google Fonts URL, radii, shadows, gap scale, per-device gutters and section padding, four easings). The tokens are the brand palette; the draft's other 33 colours are one-offs by design and are written as hex, never added as palette tokens (`memory: one-off-colours-are-hex-not-presets`), so the colour picker shows only the real palette. The draft wins on conflict (body text #1E2A3C). |
 | Design-system `readme.md` | Useful for content tone and iconography only. |
 | `components/` (Button, Chip, card), `guidelines/*.html`, `styles.css`, `SKILL.md` | Not needed: variant names at most; values come from the draft. |
 | Everything else in the full zip (v1 page, mega-menu prototypes, `_feature.dc.html`, `screenshots/`, `uploads/`, root duplicates) | Not needed and hazardous: earlier explorations with different hooks. Never export the full zip for cloning. |
@@ -103,7 +103,7 @@ folder; a README does not): at most a few lines pointing at the README and Spec 
   - the draft's code is the primary source (A1, `READING-DC-FILES.md`, `handoff-schema/METHOD.md`); measurement only for what code cannot state;
   - every file in the folder has a named reader, every input the process needs maps to a file, and a check script proves both;
   - Spec 47's open route gaps (§5 Residual) and the route-accuracy mechanisms R1-R6 (answer sheet, element-ID skeleton writer, exact ID pairing, "does it paint?", try before write) carry forward or are retired with a reason;
-  - the extractor reads declared tokens (`tokens/*.css`, the README) instead of guessing roles from usage;
+  - the extractor builds the palette from the declared tokens (`tokens/*.css`, the README) instead of guessing roles from usage; every other colour, font or value stays a one-off written as a literal;
   - intake (approach B) builds the structured file from README, tokens and code, and lists every README-versus-draft contradiction for Bean.
 - Framework vocabulary edits a handover exposes (go to the owning framework spec, not Spec 48; `R4-needs-and-specs.md`
   Part 3): a gradient slot, shadow role names, per-tier section padding and gutter tokens, header-settings keys, extractor
