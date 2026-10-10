@@ -13,6 +13,16 @@ of known files, every file with a named reader in our tooling; then the cloning 
 Today the drafts arrived as zip or standalone downloads with no README, each client folder is laid out differently, and
 the tools read almost nothing from a draft beyond its rendered pixels.
 
+**Platform change (verified on Anthropic's help pages, 2026-10-10).** The standalone Claude Design site
+(claude.ai/design) closes on **14 December 2026** and its projects are then deleted; only design systems migrate.
+Each project must be downloaded by hand before then: open it, Share > "Project HTML" > keep "Project archive" > Export
+(a .zip with every file). Claude Design now lives in Claude chat as an artifact template, with `/design` and
+`/design-sync` in Claude Code and "Handoff to Claude Code" in its Export menu. Whether new artifact-based designs are
+still `.dc.html` files on the same `support.js` runtime is untested. Custom skills uploaded into a Claude Design project
+are never registered (its skills are a fixed built-in list); a root `CLAUDE.md` is injected into every conversation and
+can name a procedure file, but only advisorily. Research record:
+`~/.claude/memory/research/2026-10-10-claude-design-custom-skills-and-sunset.md`.
+
 **Bean's decisions (2026-10-10).**
 - A draft is exported with Claude Design's "Handoff to Claude Code" skill and its design-system skill in one prompt, never
   the zip or standalone download (recorded in Spec 47 §2, `dev-setup.md` "Client drafts", `CLAUDE.md` Sites).
@@ -56,8 +66,10 @@ the zip; not in git).
 | Everything else in the full zip (v1 page, mega-menu prototypes, `_feature.dc.html`, `screenshots/`, `uploads/`, root duplicates) | Not needed and hazardous: earlier explorations with different hooks. Never export the full zip for cloning. |
 
 **A4. Export recipe (per project, in Claude Design).**
-1. The project has the `dc-handoff-inventory` skill and the project `CLAUDE.md` line that runs it with every handoff
-   (Indus has both; copy them into the Eye Care and Mama's Munches redesign projects).
+1. Upload into the project: `CLAUDE.md` at its root and the `dc-handoff-inventory/` folder at
+   `skills/dc-handoff-inventory/` (both ready in `.claude/Indus-Foods-Claude-Design-Files/design_handoff_indus_foods_website/`;
+   the folder includes `reference/READING-DC-FILES.md`). No slash command appears; the `CLAUDE.md` tells Claude Design to
+   read and follow the skill file on every handoff, and its output is a bonus that Claude Code re-derives and checks.
 2. One prompt runs "Handoff to Claude Code" and the design-system skill.
 3. Download only: the handoff folder (with `animations.json`, `surfaces.json`, `MANIFEST.md`, `READING-DC-FILES.md`),
    the design-system `tokens/`, and `handoff-schema/`.
@@ -77,6 +89,17 @@ the Mama's test site). Gitignored image types, so they exist only on this machin
 in B3.
 
 ## Task B: three exports, clean client folders, the new spec
+
+**B0. Before 14 December 2026 (time-critical).**
+- Bean downloads a "Project archive" of every standalone Claude Design project worth keeping (Indus, Eye Care, the
+  Mama's Munches redesign and any others) and migrates design systems from the Artifacts page; standalone projects are
+  deleted after that date.
+- Test the new artifact-based Claude Design once (~15 min): make or open a small design, run "Handoff to Claude Code",
+  and check whether the result is still `.dc.html` on the same runtime (compare the `support.js` hash with Indus's
+  `MANIFEST.md`), whether a README and the inventory files come with it, and whether account-level Skills load there.
+  Spec 48A targets whichever format new client designs will use, so this settles B1's scope.
+- The inventory is produced in Claude Code at intake by following `handoff-schema/METHOD.md` (deterministic, validated,
+  fails loudly); anything Claude Design writes is cross-checked against it, never trusted alone.
 
 **B1. Compare the three exports.** Bean exports Eye Care and the Mama's Munches redesign with the A4 recipe into
 `.claude/`. Compare equivalent files across Indus, Eye Care and Mama's: README sections, `animations.json` and
