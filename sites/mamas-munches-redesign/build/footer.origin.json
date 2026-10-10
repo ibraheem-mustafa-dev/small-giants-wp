@@ -1,0 +1,365 @@
+{
+  "cr-ref-footer-0": {
+    "tpl": "SiteFooter/2#0",
+    "fingerprint": {
+      "tag": "footer",
+      "cls": "",
+      "styleHash": "e5c2f6e2"
+    }
+  },
+  "cr-ref-footer-1": {
+    "tpl": "SiteFooter/3#0",
+    "fingerprint": {
+      "tag": "section",
+      "cls": "",
+      "styleHash": "92132ddb"
+    }
+  },
+  "cr-ref-footer-2": {
+    "tpl": "SiteFooter/4#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "ebee20dc"
+    }
+  },
+  "cr-ref-footer-3": {
+    "tpl": "SiteFooter/5#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "e16c0349"
+    }
+  },
+  "cr-ref-footer-4": {
+    "tpl": "SiteFooter/6#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1505"
+    }
+  },
+  "cr-ref-footer-5": {
+    "tpl": "SiteFooter/7#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "9448f64e"
+    }
+  },
+  "cr-ref-footer-6": {
+    "tpl": "SiteFooter/8#0",
+    "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "f5228848"
+    }
+  },
+  "cr-ref-footer-7": {
+    "tpl": "SiteFooter/9#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp0",
+      "styleHash": "2c4a97cb"
+    },
+    "slots": {
+      ".sgs-button__icon > svg": "SiteFooter/10#0"
+    }
+  },
+  "cr-ref-footer-8": {
+    "tpl": "SiteFooter/14#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "546172e2"
+    }
+  },
+  "cr-ref-footer-9": {
+    "tpl": "SiteFooter/16#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp1",
+      "styleHash": "34356168"
+    }
+  },
+  "cr-ref-footer-10": {
+    "tpl": "SiteFooter/17#0",
+    "fingerprint": {
+      "tag": "img",
+      "cls": "",
+      "styleHash": "36485473"
+    }
+  },
+  "cr-ref-footer-11": {
+    "tpl": "SiteFooter/16#1",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp1",
+      "styleHash": "118452fd"
+    }
+  },
+  "cr-ref-footer-12": {
+    "tpl": "SiteFooter/17#1",
+    "fingerprint": {
+      "tag": "img",
+      "cls": "",
+      "styleHash": "36485473"
+    }
+  },
+  "cr-ref-footer-13": {
+    "tpl": "SiteFooter/16#2",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp1",
+      "styleHash": "197b520b"
+    }
+  },
+  "cr-ref-footer-14": {
+    "tpl": "SiteFooter/17#2",
+    "fingerprint": {
+      "tag": "img",
+      "cls": "",
+      "styleHash": "36485473"
+    }
+  },
+  "cr-ref-footer-15": {
+    "tpl": "SiteFooter/16#3",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp1",
+      "styleHash": "eb94da25"
+    }
+  },
+  "cr-ref-footer-16": {
+    "tpl": "SiteFooter/17#3",
+    "fingerprint": {
+      "tag": "img",
+      "cls": "",
+      "styleHash": "36485473"
+    }
+  },
+  "cr-ref-footer-17": {
+    "tpl": "SiteFooter/16#4",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp1",
+      "styleHash": "e141d830"
+    }
+  },
+  "cr-ref-footer-18": {
+    "tpl": "SiteFooter/17#4",
+    "fingerprint": {
+      "tag": "img",
+      "cls": "",
+      "styleHash": "36485473"
+    }
+  },
+  "cr-ref-footer-19": {
+    "tpl": "SiteFooter/16#5",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp1",
+      "styleHash": "e0eb2d06"
+    }
+  },
+  "cr-ref-footer-20": {
+    "tpl": "SiteFooter/17#5",
+    "fingerprint": {
+      "tag": "img",
+      "cls": "",
+      "styleHash": "36485473"
+    }
+  },
+  "cr-ref-footer-21": {
+    "tpl": "SiteFooter/18#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "c62cf530"
+    }
+  },
+  "cr-ref-footer-22": {
+    "tpl": "SiteFooter/19#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "8ec5a5c3"
+    }
+  },
+  "cr-ref-footer-23": {
+    "tpl": "SiteFooter/20#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "ebee20dc"
+    }
+  },
+  "cr-ref-footer-24": {
+    "tpl": "SiteFooter/21#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "64dfa69"
+    }
+  },
+  "cr-ref-footer-25": {
+    "tpl": "SiteFooter/22#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "90c7514d"
+    }
+  },
+  "cr-ref-footer-26": {
+    "tpl": "SiteFooter/23#0",
+    "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "12343f85"
+    }
+  },
+  "cr-ref-footer-27": {
+    "tpl": "SiteFooter/24#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp0",
+      "styleHash": "969f086d"
+    }
+  },
+  "cr-ref-footer-28": {
+    "tpl": "SiteFooter/26#0",
+    "fingerprint": {
+      "tag": "img",
+      "cls": "scp2",
+      "styleHash": "a7e1ab3f"
+    }
+  },
+  "cr-ref-footer-29": {
+    "tpl": "SiteFooter/27#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "a407114e"
+    }
+  },
+  "cr-ref-footer-30": {
+    "tpl": "SiteFooter/28#0",
+    "fingerprint": {
+      "tag": "nav",
+      "cls": "",
+      "styleHash": "99bb8b6c"
+    }
+  },
+  "cr-ref-footer-31": {
+    "tpl": "SiteFooter/29#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "7cc84a08"
+    }
+  },
+  "cr-ref-footer-32": {
+    "tpl": "SiteFooter/30#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp3",
+      "styleHash": "330a228c"
+    }
+  },
+  "cr-ref-footer-33": {
+    "tpl": "SiteFooter/35#0",
+    "fingerprint": {
+      "tag": "nav",
+      "cls": "",
+      "styleHash": "99bb8b6c"
+    }
+  },
+  "cr-ref-footer-34": {
+    "tpl": "SiteFooter/36#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "7cc84a08"
+    }
+  },
+  "cr-ref-footer-35": {
+    "tpl": "SiteFooter/37#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp3",
+      "styleHash": "330a228c"
+    }
+  },
+  "cr-ref-footer-36": {
+    "tpl": "SiteFooter/41#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b488f10"
+    }
+  },
+  "cr-ref-footer-37": {
+    "tpl": "SiteFooter/42#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "87863ea9"
+    }
+  },
+  "cr-ref-footer-38": {
+    "tpl": "SiteFooter/43#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp4",
+      "styleHash": "4bcbd69f"
+    }
+  },
+  "cr-ref-footer-42": {
+    "tpl": "SiteFooter/55#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "56d4c2a3"
+    }
+  },
+  "cr-ref-footer-43": {
+    "tpl": "SiteFooter/56#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "b694059b"
+    }
+  },
+  "cr-ref-footer-44": {
+    "tpl": "SiteFooter/57#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "e1faa8bf"
+    }
+  },
+  "cr-ref-footer-45": {
+    "tpl": "SiteFooter/58#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "ef1f56a3"
+    }
+  },
+  "cr-ref-footer-46": {
+    "tpl": "SiteFooter/59#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "ef1f56a3"
+    }
+  },
+  "cr-ref-footer-47": {
+    "tpl": "SiteFooter/60#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp6",
+      "styleHash": "ce17cff9"
+    }
+  }
+}

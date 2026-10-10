@@ -1,0 +1,783 @@
+[
+	{
+		"name": "sgs/site-footer",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "SiteFooter/2#0"
+		},
+		"draftFingerprint": {
+			"tag": "footer",
+			"cls": "",
+			"styleHash": "e5c2f6e2"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "SiteFooter/3#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "92132ddb"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "SiteFooter/4#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "ebee20dc"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "SiteFooter/5#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "e16c0349"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/6#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "1505"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "fresh out the oven…"
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/7#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "9448f64e"
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "@mamasmunches"
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/8#0"
+												},
+												"draftFingerprint": {
+													"tag": "h2",
+													"cls": "",
+													"styleHash": "f5228848"
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "Follow along",
+											"url": "https://www.instagram.com/mamasmunches/"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/9#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp0",
+											"styleHash": "2c4a97cb"
+										},
+										"innerBlocks": [],
+										"draftSlots": {
+											".sgs-button__icon > svg": {
+												"tpl": "SiteFooter/10#0"
+											}
+										}
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "SiteFooter/14#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "546172e2"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/16#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp1",
+											"styleHash": "34356168"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/media",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "SiteFooter/17#0"
+												},
+												"draftFingerprint": {
+													"tag": "img",
+													"cls": "",
+													"styleHash": "36485473"
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/16#1"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp1",
+											"styleHash": "118452fd"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/media",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "SiteFooter/17#1"
+												},
+												"draftFingerprint": {
+													"tag": "img",
+													"cls": "",
+													"styleHash": "36485473"
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/16#2"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp1",
+											"styleHash": "197b520b"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/media",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "SiteFooter/17#2"
+												},
+												"draftFingerprint": {
+													"tag": "img",
+													"cls": "",
+													"styleHash": "36485473"
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/16#3"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp1",
+											"styleHash": "eb94da25"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/media",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "SiteFooter/17#3"
+												},
+												"draftFingerprint": {
+													"tag": "img",
+													"cls": "",
+													"styleHash": "36485473"
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/16#4"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp1",
+											"styleHash": "e141d830"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/media",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "SiteFooter/17#4"
+												},
+												"draftFingerprint": {
+													"tag": "img",
+													"cls": "",
+													"styleHash": "36485473"
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/16#5"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp1",
+											"styleHash": "e0eb2d06"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/media",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "SiteFooter/17#5"
+												},
+												"draftFingerprint": {
+													"tag": "img",
+													"cls": "",
+													"styleHash": "36485473"
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦"
+				},
+				"draftRef": {
+					"tpl": "SiteFooter/18#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "c62cf530"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "SiteFooter/19#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "8ec5a5c3"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "SiteFooter/20#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "ebee20dc"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "SiteFooter/21#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "64dfa69"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/22#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "90c7514d"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Hungry? Of course you are."
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/23#0"
+												},
+												"draftFingerprint": {
+													"tag": "h2",
+													"cls": "",
+													"styleHash": "12343f85"
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Build your box",
+													"url": "Home.dc.html#build"
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/24#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "scp0",
+													"styleHash": "969f086d"
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/responsive-logo",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "SiteFooter/26#0"
+										},
+										"draftFingerprint": {
+											"tag": "img",
+											"cls": "scp2",
+											"styleHash": "a7e1ab3f"
+										},
+										"innerBlocks": [],
+										"handover": [
+											{
+												"owner": "site-info",
+												"kind": "presence",
+												"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "SiteFooter/27#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "a407114e"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "nav",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/28#0"
+										},
+										"draftFingerprint": {
+											"tag": "nav",
+											"cls": "",
+											"styleHash": "99bb8b6c"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "shop"
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/29#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "7cc84a08"
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/icon-list",
+												"attributes": {
+													"items": [
+														{
+															"text": "All Zookies",
+															"url": "Shop.dc.html"
+														},
+														{
+															"text": "Build your box",
+															"url": "Home.dc.html#build"
+														},
+														{
+															"text": "Subscribe & save",
+															"url": "Product.dc.html?id=zookies&sub=1"
+														},
+														{
+															"text": "Gifts",
+															"url": "Gifts.dc.html"
+														},
+														{
+															"text": "Taster Trio",
+															"url": "Product.dc.html?id=trial"
+														}
+													]
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/30#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "scp3",
+													"styleHash": "330a228c"
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "nav",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/35#0"
+										},
+										"draftFingerprint": {
+											"tag": "nav",
+											"cls": "",
+											"styleHash": "99bb8b6c"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "help"
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/36#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "7cc84a08"
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/icon-list",
+												"attributes": {
+													"items": [
+														{
+															"text": "FAQs",
+															"url": "Help.dc.html"
+														},
+														{
+															"text": "Delivery",
+															"url": "Help.dc.html#delivery"
+														},
+														{
+															"text": "Allergens",
+															"url": "Help.dc.html#allergens"
+														},
+														{
+															"text": "Contact",
+															"url": "Contact.dc.html"
+														}
+													]
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/37#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "scp3",
+													"styleHash": "330a228c"
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/41#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "b488f10"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "say hello"
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/42#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "87863ea9"
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/business-info",
+												"attributes": {
+													"displayType": "email"
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/43#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "scp4",
+													"styleHash": "4bcbd69f"
+												},
+												"innerBlocks": [],
+												"handover": [
+													{
+														"owner": "site-info",
+														"kind": "text",
+														"detail": "Site Info \"email\" must read: <a href=\"mailto:Zainab@mamasmunches.com\" style=\"align-self:flex-start;color:#3A2A22;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px;text-decoration-color:#E86A75;word-break:break-all;padding:2px 6px;margin-left:-6px;border-radius:8px;transition:background .2s, text-decoration-color .2s\" style-hover=\"background:#FFFAF0;text-decoration"
+													}
+												]
+											},
+											{
+												"name": "sgs/social-icons",
+												"attributes": {},
+												"draftRef": "footer[data-dc-tpl=\"2\"] [data-dc-tpl=\"44\"]",
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "e88c8477"
+												},
+												"innerBlocks": [],
+												"siteInfoRow": [
+													"instagram",
+													"whatsapp"
+												],
+												"childRefs": {
+													"instagram": "[data-dc-tpl=\"45\"]",
+													"whatsapp": "[data-dc-tpl=\"50\"]"
+												}
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "SiteFooter/55#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "56d4c2a3"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"displayType": "copyright",
+											"copyrightPrefix": ""
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/56#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "b694059b"
+										},
+										"innerBlocks": [],
+										"handover": [
+											{
+												"owner": "site-info",
+												"kind": "text",
+												"detail": "Site Info \"copyright\" must read: © 2026 Mama’s Munches · Registered food business"
+											}
+										]
+									},
+									{
+										"name": "sgs/multi-button",
+										"attributes": {
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/57#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "e1faa8bf"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Privacy",
+													"url": "Help.dc.html#legal"
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/58#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "",
+													"styleHash": "ef1f56a3"
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Terms",
+													"url": "Help.dc.html#legal"
+												},
+												"draftRef": {
+													"tpl": "SiteFooter/59#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "",
+													"styleHash": "ef1f56a3"
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"displayType": "attribution"
+										},
+										"draftRef": {
+											"tpl": "SiteFooter/60#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp6",
+											"styleHash": "ce17cff9"
+										},
+										"innerBlocks": [],
+										"handover": [
+											{
+												"owner": "site-info",
+												"kind": "text",
+												"detail": "Site Info \"attribution\" must read: Website by Small Giants Studio"
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

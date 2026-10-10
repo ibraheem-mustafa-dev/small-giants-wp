@@ -1,0 +1,20 @@
+{
+	"surfaces": {
+		"footer": {
+			"SiteFooter/24#0": {
+				"block": "sgs/button",
+				"attributes": {
+					"label": "Build your box",
+					"url": "Home.dc.html#build"
+				},
+				"signature": "a|Build your box",
+				"reason": "a pill link with text and a trailing arrow is a button (stage 5 review against Theme Mapping.md: CTA)"
+			},
+			"SiteFooter/25#0": {
+				"remove": true,
+				"signature": "span|→",
+				"reason": "the CTA arrow belongs to its button"
+			}
+		}
+	}
+}

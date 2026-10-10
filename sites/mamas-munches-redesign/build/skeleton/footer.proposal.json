@@ -1,0 +1,2139 @@
+{
+	"generated": "2026-10-10T09:55:52.112Z",
+	"inventory": "2026-10-10T09:45:12.942Z",
+	"source": "http://127.0.0.1:52502/SiteFooter.dc.html",
+	"surface": "footer",
+	"siteName": null,
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5
+	},
+	"counts": {
+		"inventoryElements": 68,
+		"parts": 11,
+		"rows": 57,
+		"skeletonNodes": 46,
+		"expandedNodes": 48,
+		"low": 13,
+		"removed": 1,
+		"unresolved": 1
+	},
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "SiteFooter/2#0",
+			"tag": "footer",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/site-footer",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/site-footer",
+					"score": 1.4,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/site-footer lists \"footer\" (the draft root tag)",
+						"block_composition: sgs/site-footer is a section-root accepting [\"sgs/site-footer-row\"]",
+						"the root of the surface",
+						"the root's children fit what it accepts (sgs/site-footer-row)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_2_0@375.png",
+				"1440": "shots/SiteFooter_2_0@1440.png"
+			},
+			"snippet": "<footer style=\"font-family:'Karla',system-ui,sans-serif;color:#3A2A22\" data-dc-tpl=\"2\"> <section aria-label=\"Instagram\" style=\"background:#FBF3DC;padding:{{ igPad }}\" data-dc-tpl=\"3\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-",
+			"attributes": {}
+		},
+		{
+			"order": 1,
+			"key": "SiteFooter/3#0",
+			"tag": "section",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/site-footer-row",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/site-footer-row",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/site-footer (section-root) accepts [\"sgs/site-footer-row\"]; sgs/site-footer-row is a content-block",
+						"sgs/site-footer accepts sgs/site-footer-row as its only child",
+						"element holds 1 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_3_0@375.png",
+				"1440": "shots/SiteFooter_3_0@1440.png"
+			},
+			"snippet": "<section aria-label=\"Instagram\" style=\"background:#FBF3DC;padding:{{ igPad }}\" data-dc-tpl=\"3\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform",
+			"attributes": {}
+		},
+		{
+			"order": 2,
+			"key": "SiteFooter/4#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_4_0@375.png",
+				"1440": "shots/SiteFooter_4_0@1440.png"
+			},
+			"snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margi",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 3,
+			"key": "SiteFooter/5#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_5_0@375.png",
+				"1440": "shots/SiteFooter_5_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;f",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 4,
+			"key": "SiteFooter/6#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_6_0@375.png",
+				"1440": "shots/SiteFooter_6_0@1440.png"
+			},
+			"snippet": "<div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05\" data-dc-tpl=\"8\">@mamasmunches</h2> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 5,
+			"key": "SiteFooter/7#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "fresh out the oven…",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_7_0@375.png",
+				"1440": "shots/SiteFooter_7_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div>",
+			"attributes": {
+				"text": "fresh out the oven…"
+			}
+		},
+		{
+			"order": 6,
+			"key": "SiteFooter/8#0",
+			"tag": "h2",
+			"depth": 5,
+			"words": "@mamasmunches",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_8_0@375.png",
+				"1440": "shots/SiteFooter_8_0@1440.png"
+			},
+			"snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05\" data-dc-tpl=\"8\">@mamasmunches</h2>",
+			"attributes": {
+				"content": "@mamasmunches"
+			}
+		},
+		{
+			"order": 7,
+			"key": "SiteFooter/9#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Follow along",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [
+				"SiteFooter/10#0"
+			],
+			"screenshots": {
+				"375": "shots/SiteFooter_9_0@375.png",
+				"1440": "shots/SiteFooter_9_0@1440.png"
+			},
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" style=\"height:52px;padding:0 22px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;color:#3A2A22;font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-",
+			"attributes": {
+				"label": "Follow along",
+				"url": "https://www.instagram.com/mamasmunches/"
+			},
+			"slots": {
+				".sgs-button__icon > svg": {
+					"tpl": "SiteFooter/10#0"
+				}
+			}
+		},
+		{
+			"order": 8,
+			"key": "SiteFooter/14#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 6 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_14_0@375.png",
+				"1440": "shots/SiteFooter_14_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-auto-flow:{{ flow }};grid-auto-columns:{{ autoCols }};grid-template-columns:{{ igCols }};gap:14px;overflow-x:{{ ovx }};scroll-snap-type:x mandatory;scrollbar-width:none;margin:{{ bleedM }};padding:{{ bleedP }}\" data-dc-tpl=\"14\"> <sc-for list=\"{{ posts }}\" as=\"p\" hint-placeholder-count=\"0\" data-dc-tpl=\"15\"> <a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 9,
+			"key": "SiteFooter/16#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_16_0@375.png",
+				"1440": "shots/SiteFooter_16_0@1440.png"
+			},
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 10,
+			"key": "SiteFooter/17#0",
+			"tag": "img",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.29,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 0.5,
+					"share": 0.588,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\")"
+					]
+				},
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.35,
+					"share": 0.412,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_17_0@375.png",
+				"1440": "shots/SiteFooter_17_0@1440.png"
+			},
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"attributes": {}
+		},
+		{
+			"order": 11,
+			"key": "SiteFooter/16#1",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_16_1@375.png",
+				"1440": "shots/SiteFooter_16_1@1440.png"
+			},
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 12,
+			"key": "SiteFooter/17#1",
+			"tag": "img",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.29,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 0.5,
+					"share": 0.588,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\")"
+					]
+				},
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.35,
+					"share": 0.412,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_17_1@375.png",
+				"1440": "shots/SiteFooter_17_1@1440.png"
+			},
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "SiteFooter/16#2",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_16_2@375.png",
+				"1440": "shots/SiteFooter_16_2@1440.png"
+			},
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 14,
+			"key": "SiteFooter/17#2",
+			"tag": "img",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.29,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 0.5,
+					"share": 0.588,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\")"
+					]
+				},
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.35,
+					"share": 0.412,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_17_2@375.png",
+				"1440": "shots/SiteFooter_17_2@1440.png"
+			},
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"attributes": {}
+		},
+		{
+			"order": 15,
+			"key": "SiteFooter/16#3",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_16_3@375.png",
+				"1440": "shots/SiteFooter_16_3@1440.png"
+			},
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 16,
+			"key": "SiteFooter/17#3",
+			"tag": "img",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.29,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 0.5,
+					"share": 0.588,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\")"
+					]
+				},
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.35,
+					"share": 0.412,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_17_3@375.png",
+				"1440": "shots/SiteFooter_17_3@1440.png"
+			},
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"attributes": {}
+		},
+		{
+			"order": 17,
+			"key": "SiteFooter/16#4",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_16_4@375.png",
+				"1440": "shots/SiteFooter_16_4@1440.png"
+			},
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 18,
+			"key": "SiteFooter/17#4",
+			"tag": "img",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.29,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 0.5,
+					"share": 0.588,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\")"
+					]
+				},
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.35,
+					"share": 0.412,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_17_4@375.png",
+				"1440": "shots/SiteFooter_17_4@1440.png"
+			},
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"attributes": {}
+		},
+		{
+			"order": 19,
+			"key": "SiteFooter/16#5",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_16_5@375.png",
+				"1440": "shots/SiteFooter_16_5@1440.png"
+			},
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 20,
+			"key": "SiteFooter/17#5",
+			"tag": "img",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.29,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 0.5,
+					"share": 0.588,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\")"
+					]
+				},
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.35,
+					"share": 0.412,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_17_5@375.png",
+				"1440": "shots/SiteFooter_17_5@1440.png"
+			},
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"attributes": {}
+		},
+		{
+			"order": 21,
+			"key": "SiteFooter/18#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_18_0@375.png",
+				"1440": "shots/SiteFooter_18_0@1440.png"
+			},
+			"snippet": "<div aria-hidden=\"true\" style=\"background:#F9CF6E;border-top:2px solid #3A2A22;border-bottom:2px solid #3A2A22;overflow:hidden;padding:14px 0\" data-dc-tpl=\"18\">{{ tagline }}</div>",
+			"attributes": {
+				"text": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦"
+			}
+		},
+		{
+			"order": 22,
+			"key": "SiteFooter/19#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/site-footer-row",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/site-footer-row",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/site-footer (section-root) accepts [\"sgs/site-footer-row\"]; sgs/site-footer-row is a content-block",
+						"sgs/site-footer accepts sgs/site-footer-row as its only child",
+						"element holds 1 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_19_0@375.png",
+				"1440": "shots/SiteFooter_19_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#F5C2C8;padding:{{ mainPad }};overflow:hidden\" data-dc-tpl=\"19\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"20\"> <div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{",
+			"attributes": {}
+		},
+		{
+			"order": 23,
+			"key": "SiteFooter/20#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_20_0@375.png",
+				"1440": "shots/SiteFooter_20_0@1440.png"
+			},
+			"snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"20\"> <div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 24,
+			"key": "SiteFooter/21#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_21_0@375.png",
+				"1440": "shots/SiteFooter_21_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaS",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 25,
+			"key": "SiteFooter/22#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_22_0@375.png",
+				"1440": "shots/SiteFooter_22_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaSize }};line-height:1;letter-spacing:-0.02em;text-wrap:balance\" data-dc-tpl=\"23\">Hungry? Of course you are.</h2> <a href=\"Home.dc.html#build\" style=\"height:60px;padding:0 30px;borde",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 26,
+			"key": "SiteFooter/23#0",
+			"tag": "h2",
+			"depth": 5,
+			"words": "Hungry? Of course you are.",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_23_0@375.png",
+				"1440": "shots/SiteFooter_23_0@1440.png"
+			},
+			"snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaSize }};line-height:1;letter-spacing:-0.02em;text-wrap:balance\" data-dc-tpl=\"23\">Hungry? Of course you are.</h2>",
+			"attributes": {
+				"content": "Hungry? Of course you are."
+			}
+		},
+		{
+			"order": 27,
+			"key": "SiteFooter/24#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Build your box",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: a pill link with text and a trailing arrow is a button (stage 5 review against Theme Mapping.md: CTA)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_24_0@375.png",
+				"1440": "shots/SiteFooter_24_0@1440.png"
+			},
+			"snippet": "<a href=\"Home.dc.html#build\" style=\"height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#EE8088;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-2px);box-shadow:6px 6",
+			"attributes": {
+				"label": "Build your box",
+				"url": "Home.dc.html#build"
+			}
+		},
+		{
+			"order": 28,
+			"key": "SiteFooter/25#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "→",
+			"block": null,
+			"action": "remove",
+			"reason": "the CTA arrow belongs to its button",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/SiteFooter_25_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" data-dc-tpl=\"25\">→</span>",
+			"attributes": {}
+		},
+		{
+			"order": 29,
+			"key": "SiteFooter/26#0",
+			"tag": "img",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/responsive-logo",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.66,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.85,
+					"share": 0.773,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf",
+						"logo image: logo-round.png / alt \"Mama's Munches\" (an image whose file name, alt text or class says it is the brand mark)"
+					]
+				},
+				{
+					"block": "sgs/media",
+					"score": 0.25,
+					"share": 0.227,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\"), halved: the image is named as a logo"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_26_0@375.png",
+				"1440": "shots/SiteFooter_26_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/logo-round.png\" alt=\"Mama's Munches\" style=\"width:{{ logoW }};justify-self:{{ logoJust }};transform:rotate(-8deg);transition:transform .6s cubic-bezier(.3,1.6,.5,1)\" style-hover=\"transform:rotate(6deg) scale(1.05)\" data-dc-tpl=\"26\">",
+			"attributes": {}
+		},
+		{
+			"order": 30,
+			"key": "SiteFooter/27#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_27_0@375.png",
+				"1440": "shots/SiteFooter_27_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ cols }};gap:{{ gap }};padding:{{ colsPad }}\" data-dc-tpl=\"27\"> <nav aria-label=\"Shop\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"28\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div> <a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17p",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 31,
+			"key": "SiteFooter/28#0",
+			"tag": "nav",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 6 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_28_0@375.png",
+				"1440": "shots/SiteFooter_28_0@1440.png"
+			},
+			"snippet": "<nav aria-label=\"Shop\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"28\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div> <a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;te",
+			"attributes": {
+				"tagName": "nav",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 32,
+			"key": "SiteFooter/29#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "shop",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.8,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 0.8,
+					"evidence": [
+						"decisions: column label (the first text child of a wrapper whose other children are a run of links is the column heading)"
+					]
+				},
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 0.2,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_29_0@375.png",
+				"1440": "shots/SiteFooter_29_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div>",
+			"attributes": {
+				"content": "shop"
+			}
+		},
+		{
+			"order": 33,
+			"key": "SiteFooter/30#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "All Zookies",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"5 bare text links, one above the next"
+					]
+				},
+				{
+					"block": "sgs/button",
+					"score": 0.5,
+					"share": 0.303,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (each link on its own)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_30_0@375.png",
+				"1440": "shots/SiteFooter_30_0@1440.png"
+			},
+			"snippet": "<a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"30\">All Zookies</a>",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "All Zookies",
+				"url": "Shop.dc.html"
+			}
+		},
+		{
+			"order": 34,
+			"key": "SiteFooter/31#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Build your box",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"5 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_31_0@375.png",
+				"1440": "shots/SiteFooter_31_0@1440.png"
+			},
+			"snippet": "<a href=\"Home.dc.html#build\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"31\">Build your box</a>",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Build your box",
+				"url": "Home.dc.html#build"
+			}
+		},
+		{
+			"order": 35,
+			"key": "SiteFooter/32#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Subscribe & save",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"5 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_32_0@375.png",
+				"1440": "shots/SiteFooter_32_0@1440.png"
+			},
+			"snippet": "<a href=\"Product.dc.html?id=zookies&amp;sub=1\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"32\">Subscribe &amp; save</a>",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Subscribe & save",
+				"url": "Product.dc.html?id=zookies&sub=1"
+			}
+		},
+		{
+			"order": 36,
+			"key": "SiteFooter/33#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Gifts",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"5 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_33_0@375.png",
+				"1440": "shots/SiteFooter_33_0@1440.png"
+			},
+			"snippet": "<a href=\"Gifts.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"33\">Gifts</a>",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Gifts",
+				"url": "Gifts.dc.html"
+			}
+		},
+		{
+			"order": 37,
+			"key": "SiteFooter/34#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Taster Trio",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"5 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_34_0@375.png",
+				"1440": "shots/SiteFooter_34_0@1440.png"
+			},
+			"snippet": "<a href=\"Product.dc.html?id=trial\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"34\">Taster Trio</a>",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Taster Trio",
+				"url": "Product.dc.html?id=trial"
+			}
+		},
+		{
+			"order": 38,
+			"key": "SiteFooter/35#0",
+			"tag": "nav",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_35_0@375.png",
+				"1440": "shots/SiteFooter_35_0@1440.png"
+			},
+			"snippet": "<nav aria-label=\"Help\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"35\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"36\">help</div> <a href=\"Help.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;te",
+			"attributes": {
+				"tagName": "nav",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 39,
+			"key": "SiteFooter/36#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "help",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.8,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 0.8,
+					"evidence": [
+						"decisions: column label (the first text child of a wrapper whose other children are a run of links is the column heading)"
+					]
+				},
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 0.2,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_36_0@375.png",
+				"1440": "shots/SiteFooter_36_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"36\">help</div>",
+			"attributes": {
+				"content": "help"
+			}
+		},
+		{
+			"order": 40,
+			"key": "SiteFooter/37#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "FAQs",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"4 bare text links, one above the next"
+					]
+				},
+				{
+					"block": "sgs/button",
+					"score": 0.5,
+					"share": 0.303,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (each link on its own)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_37_0@375.png",
+				"1440": "shots/SiteFooter_37_0@1440.png"
+			},
+			"snippet": "<a href=\"Help.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"37\">FAQs</a>",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "FAQs",
+				"url": "Help.dc.html"
+			}
+		},
+		{
+			"order": 41,
+			"key": "SiteFooter/38#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Delivery",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"4 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_38_0@375.png",
+				"1440": "shots/SiteFooter_38_0@1440.png"
+			},
+			"snippet": "<a href=\"Help.dc.html#delivery\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"38\">Delivery</a>",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Delivery",
+				"url": "Help.dc.html#delivery"
+			}
+		},
+		{
+			"order": 42,
+			"key": "SiteFooter/39#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Allergens",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"4 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_39_0@375.png",
+				"1440": "shots/SiteFooter_39_0@1440.png"
+			},
+			"snippet": "<a href=\"Help.dc.html#allergens\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"39\">Allergens</a>",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Allergens",
+				"url": "Help.dc.html#allergens"
+			}
+		},
+		{
+			"order": 43,
+			"key": "SiteFooter/40#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Contact",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"4 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_40_0@375.png",
+				"1440": "shots/SiteFooter_40_0@1440.png"
+			},
+			"snippet": "<a href=\"Contact.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"40\">Contact</a>",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Contact",
+				"url": "Contact.dc.html"
+			}
+		},
+		{
+			"order": 44,
+			"key": "SiteFooter/41#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_41_0@375.png",
+				"1440": "shots/SiteFooter_41_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:12px;grid-column:{{ helloSpan }}\" data-dc-tpl=\"41\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444\" data-dc-tpl=\"42\">say hello</div> <a href=\"mailto:Zainab@mamasmunches.com\" style=\"align-self:flex-start;color:#3A2A22;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 45,
+			"key": "SiteFooter/42#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "say hello",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_42_0@375.png",
+				"1440": "shots/SiteFooter_42_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444\" data-dc-tpl=\"42\">say hello</div>",
+			"attributes": {
+				"text": "say hello"
+			}
+		},
+		{
+			"order": 46,
+			"key": "SiteFooter/43#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Zainab@mamasmunches.com",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.67,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 0.667,
+					"evidence": [
+						"block_attributes: sgs/business-info.displayType enum has \"email\"",
+						"brand-registry: email owns mailto:Zainab@mamasmunches.com",
+						"block_capabilities: sgs/business-info lists \"email\""
+					]
+				},
+				{
+					"block": "sgs/button",
+					"score": 0.5,
+					"share": 0.333,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button, halved: Site Info content",
+						"block_attributes: sgs/button.linkSource enum has \"email\""
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/SiteFooter_43_0@1440.png"
+			},
+			"snippet": "<a href=\"mailto:Zainab@mamasmunches.com\" style=\"align-self:flex-start;color:#3A2A22;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px;text-decoration-color:#E86A75;word-break:break-all;padding:2px 6px;margin-left:-6px;border-radius:8px;transition:background .2s, text-decoration-color .2s\" style-hover=\"background:#FFFAF0;text-decoration",
+			"attributes": {
+				"displayType": "email"
+			}
+		},
+		{
+			"order": 47,
+			"key": "SiteFooter/44#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/social-icons",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.74,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/social-icons",
+					"score": 1,
+					"share": 0.741,
+					"evidence": [
+						"block_composition: sgs/social-icons is a content-block accepting exactly [\"sgs/icon\"]; all 2 children propose sgs/icon",
+						"a row of 2 sgs/icon",
+						"block_capabilities: sgs/social-icons lists instagram, whatsapp"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.259,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_44_0@375.png",
+				"1440": "shots/SiteFooter_44_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:10px\" data-dc-tpl=\"44\"> <a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"Instagram\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;tra",
+			"attributes": {},
+			"rowNote": "icons generated by Fill from siteInfoRow [\"instagram\",\"whatsapp\"]"
+		},
+		{
+			"order": 48,
+			"key": "SiteFooter/45#0",
+			"tag": "a",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.9,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.9,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry: instagram owns https://www.instagram.com/mamasmunches/; brand-registry label \"Instagram\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"SiteFooter/46#0"
+			],
+			"screenshots": {
+				"1440": "shots/SiteFooter_45_0@1440.png"
+			},
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"Instagram\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "instagram",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.instagram"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "SiteFooter/44#0"
+		},
+		{
+			"order": 49,
+			"key": "SiteFooter/50#0",
+			"tag": "a",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"WhatsApp\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"SiteFooter/51#0"
+			],
+			"screenshots": {
+				"1440": "shots/SiteFooter_50_0@1440.png"
+			},
+			"snippet": "<a href=\"Contact.dc.html\" aria-label=\"WhatsApp\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:#25D366;color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px,-2px) rotate(-8deg);box-shadow:5px 5px 0 #3A2A22\" data-dc-tpl=\"5",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "whatsapp",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.whatsapp"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "SiteFooter/44#0"
+		},
+		{
+			"order": 50,
+			"key": "SiteFooter/54#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unresolved",
+			"reason": "no block fits this element: decide it with skeleton.mjs decide",
+			"source": null,
+			"confidence": 0,
+			"low": true,
+			"stale": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_54_0@375.png",
+				"1440": "shots/SiteFooter_54_0@1440.png"
+			},
+			"snippet": "<div style=\"height:8px\" data-dc-tpl=\"54\"></div>",
+			"attributes": {}
+		},
+		{
+			"order": 51,
+			"key": "SiteFooter/55#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_55_0@375.png",
+				"1440": "shots/SiteFooter_55_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ bottomCols }};align-items:center;gap:10px 24px;font-size:14px;padding-top:18px;border-top:2px dashed rgba(58,42,34,.28);text-align:center\" data-dc-tpl=\"55\"> <span style=\"justify-self:{{ leftJust }}\" data-dc-tpl=\"56\">© 2026 Mama’s Munches · Registered food business</span> <span style=\"display:flex;justify-content:center;gap:18px\" data-dc-tpl=\"57\"><a",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 52,
+			"key": "SiteFooter/56#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "© 2026 Mama’s Munches · Registered food business",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.8,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 0.8,
+					"evidence": [
+						"block_attributes: sgs/business-info.displayType enum has \"copyright\"",
+						"decisions: copyright pattern (a line opening with a copyright mark (the marker business-info's own render uses))",
+						"block_capabilities: sgs/business-info lists \"copyright\""
+					]
+				},
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 0.2,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_56_0@375.png",
+				"1440": "shots/SiteFooter_56_0@1440.png"
+			},
+			"snippet": "<span style=\"justify-self:{{ leftJust }}\" data-dc-tpl=\"56\">© 2026 Mama’s Munches · Registered food business</span>",
+			"attributes": {
+				"displayType": "copyright",
+				"copyrightPrefix": ""
+			}
+		},
+		{
+			"order": 53,
+			"key": "SiteFooter/57#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/multi-button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.51,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/multi-button",
+					"score": 0.75,
+					"share": 0.682,
+					"evidence": [
+						"block_composition: sgs/multi-button is a content-block accepting exactly [\"sgs/button\"]; all 2 children propose sgs/button",
+						"a row of 2 sgs/button"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.318,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_57_0@375.png",
+				"1440": "shots/SiteFooter_57_0@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;justify-content:center;gap:18px\" data-dc-tpl=\"57\"><a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"58\">Privacy</a><a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"59\">Terms</a></span>",
+			"attributes": {
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 54,
+			"key": "SiteFooter/58#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Privacy",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_58_0@375.png",
+				"1440": "shots/SiteFooter_58_0@1440.png"
+			},
+			"snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"58\">Privacy</a>",
+			"attributes": {
+				"label": "Privacy",
+				"url": "Help.dc.html#legal"
+			}
+		},
+		{
+			"order": 55,
+			"key": "SiteFooter/59#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Terms",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_59_0@375.png",
+				"1440": "shots/SiteFooter_59_0@1440.png"
+			},
+			"snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"59\">Terms</a>",
+			"attributes": {
+				"label": "Terms",
+				"url": "Help.dc.html#legal"
+			}
+		},
+		{
+			"order": 56,
+			"key": "SiteFooter/60#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Website by Small Giants Studio",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.38,
+			"low": true,
+			"stale": null,
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 0.75,
+					"share": 0.5,
+					"evidence": [
+						"block_attributes: sgs/business-info.displayType enum has \"attribution\"",
+						"decisions: attribution pattern (a credit line for the agency that built the site)"
+					]
+				},
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 0.5,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/SiteFooter_60_0@375.png",
+				"1440": "shots/SiteFooter_60_0@1440.png"
+			},
+			"snippet": "<a href=\"https://smallgiantsstudio.com\" style=\"justify-self:{{ rightJust }};color:#3A2A22;font-weight:700;text-decoration:none;white-space:nowrap\" style-hover=\"text-decoration:underline\" data-dc-tpl=\"60\">Website by Small Giants Studio</a>",
+			"attributes": {
+				"displayType": "attribution"
+			}
+		}
+	]
+}

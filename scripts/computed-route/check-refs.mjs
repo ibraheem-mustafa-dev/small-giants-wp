@@ -47,7 +47,10 @@ function readTargets( [ targets, resolveSrc ] ) {
 	const seen = new Map();
 	const els = {};
 	return targets.map( ( t ) => {
-		const el = resolve( t.finder );
+		// A slot's selector is resolved inside its node's element, as Fill reads it (lib/fill-read.mjs::scopeFinder):
+		// a generated icon's 'svg' is the one in its own link, never the page's first svg.
+		const scope = t.parentId && 'selector' === t.kind ? els[ t.parentId ] : null;
+		const el = scope ? scope.querySelector( t.finder ) : resolve( t.finder );
 		els[ t.id ] = el;
 		if ( el && ! seen.has( el ) ) {
 			seen.set( el, seen.size );
@@ -55,7 +58,7 @@ function readTargets( [ targets, resolveSrc ] ) {
 		const raw = 'selector' === t.kind ? t.finder : `[data-dc-tpl="${ /\/(\d+)#\d+$/.exec( t.finder.tpl || '' )?.[ 1 ] }"]`;
 		let rawCount = null;
 		try {
-			rawCount = 'selector' === t.kind || 'tpl' === t.kind ? document.querySelectorAll( raw ).length : null;
+			rawCount = 'selector' === t.kind || 'tpl' === t.kind ? ( scope || document ).querySelectorAll( raw ).length : null;
 		} catch {
 			rawCount = null;
 		}

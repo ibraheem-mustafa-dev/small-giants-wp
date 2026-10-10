@@ -244,9 +244,12 @@ replace the Mama's Munches header sitewide. Indus Foods therefore builds on its 
 client target is one `TARGETS` entry with `explicit_opt_in_required: True` (enforced in code).
 
 **Client drafts (the reference a build is compared with):** each Claude Design draft is a folder of `.dc.html` pages
-served locally by `scripts/computed-route/lib/draft.mjs::serveDraft`; Fill and the walker take it as
-`--draft-dir <folder> --draft-index <entry>`, and `node scripts/computed-route/fill.mjs --serve <folder> --draft-index <entry>`
-serves it until Ctrl-C. A surface on another page of the draft is `<served url>/<Page>.dc.html`.
+served locally by `scripts/computed-route/lib/draft.mjs::serveDraft`. `node scripts/computed-route/fill.mjs --serve
+<folder> --draft-index <entry>` serves it until Ctrl-C on a new port each run, and a surface on another page of the draft
+is `<served url>/<Page>.dc.html`. Fill takes the folder as `--draft-dir <folder> --draft-index <entry>` (or the served
+page as `--draft-url`); `skeleton.mjs inventory` and `check-refs.mjs` read `surfaces.json[surface].draftUrl`, and the
+walker reads `SGS_DRAFT_URL`, so point both at the served page. A Claude Design draft loads React and Babel from
+unpkg.com (`support.js`), so Fill needs `--allow-external` or it renders nothing.
 
 | Client | Draft folder | Entry |
 |---|---|---|

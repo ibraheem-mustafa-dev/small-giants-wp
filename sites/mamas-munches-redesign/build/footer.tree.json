@@ -1,0 +1,1028 @@
+[
+  {
+    "name": "sgs/site-footer",
+    "attributes": {
+      "className": "cr-ref-footer-0",
+      "flexDirection": "row"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/site-footer-row",
+        "attributes": {
+          "className": "cr-ref-footer-1",
+          "backgroundColour": "surface",
+          "padding": {
+            "mobile": {
+              "top": "48px",
+              "right": "20px",
+              "bottom": "48px",
+              "left": "20px"
+            },
+            "tablet": {
+              "top": "64px",
+              "right": "32px",
+              "bottom": "64px",
+              "left": "32px"
+            },
+            "desktop": {
+              "top": "88px",
+              "right": "40px",
+              "bottom": "88px",
+              "left": "40px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "className": "cr-ref-footer-2",
+              "fontSize": {
+                "desktop": 16
+              },
+              "gap": {
+                "desktop": "24px"
+              },
+              "maxWidth": {
+                "desktop": "1240px"
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "className": "cr-ref-footer-3",
+                  "gap": {
+                    "mobile": "24px",
+                    "tablet": "171.91px",
+                    "desktop": "642.63px"
+                  },
+                  "justifyContent": "space-between",
+                  "alignItems": "flex-end",
+                  "flexWrap": "wrap"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "className": "cr-ref-footer-4"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "fresh out the oven…",
+                          "className": "cr-ref-footer-5",
+                          "fontFamily": "caveat",
+                          "fontSize": {
+                            "desktop": 26
+                          },
+                          "lineHeight": {
+                            "desktop": 1.423
+                          },
+                          "textColour": "primary"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "@mamasmunches",
+                          "className": "cr-ref-footer-6",
+                          "fontFamily": "heading",
+                          "fontSize": {
+                            "mobile": 34,
+                            "tablet": 42,
+                            "desktop": 52
+                          },
+                          "lineHeight": {
+                            "mobile": 1.05,
+                            "tablet": 1.05,
+                            "desktop": 1.05
+                          },
+                          "margin": {
+                            "desktop": {
+                              "bottom": "0px"
+                            }
+                          }
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Follow along",
+                      "url": "https://www.instagram.com/mamasmunches/",
+                      "className": "cr-ref-footer-7",
+                      "linkTarget": "https://www.instagram.com/mamasmunches/",
+                      "fontWeight": "700",
+                      "lineHeight": {
+                        "desktop": 1.313
+                      },
+                      "colourBackground": "#FFFAF0",
+                      "borderWidth": {
+                        "right": "2px",
+                        "bottom": "2px",
+                        "left": "2px",
+                        "top": "2px"
+                      },
+                      "borderColour": "text",
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "999px",
+                          "topRight": "999px",
+                          "bottomRight": "999px",
+                          "bottomLeft": "999px"
+                        }
+                      },
+                      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+                      "padding": {
+                        "desktop": {
+                          "right": "22px",
+                          "left": "22px"
+                        }
+                      },
+                      "iconGap": {
+                        "desktop": "10px"
+                      },
+                      "transitionDuration": 200
+                    },
+                    "innerBlocks": []
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "grid",
+                  "className": "cr-ref-footer-8",
+                  "padding": {
+                    "mobile": {
+                      "top": "8px",
+                      "right": "20px",
+                      "bottom": "12px",
+                      "left": "20px"
+                    }
+                  },
+                  "gap": {
+                    "mobile": "14px",
+                    "tablet": "6.46px",
+                    "desktop": "14px"
+                  },
+                  "margin": {
+                    "mobile": {
+                      "right": "-20px",
+                      "left": "-20px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "className": "cr-ref-footer-9",
+                      "textColour": "#0000EE",
+                      "backgroundColour": "#F9D5D3",
+                      "borderWidth": {
+                        "right": "2px",
+                        "bottom": "2px",
+                        "left": "2px",
+                        "top": "2px"
+                      },
+                      "borderStyle": "solid",
+                      "borderColour": "text",
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "18px",
+                          "topRight": "18px",
+                          "bottomRight": "18px",
+                          "bottomLeft": "18px"
+                        }
+                      },
+                      "boxAspectRatio": "1 / 1",
+                      "textDecoration": "underline"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/media",
+                        "attributes": {
+                          "className": "cr-ref-footer-10"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "className": "cr-ref-footer-11",
+                      "textColour": "#0000EE",
+                      "backgroundColour": "#F9D5D3",
+                      "borderWidth": {
+                        "right": "2px",
+                        "bottom": "2px",
+                        "left": "2px",
+                        "top": "2px"
+                      },
+                      "borderStyle": "solid",
+                      "borderColour": "text",
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "18px",
+                          "topRight": "18px",
+                          "bottomRight": "18px",
+                          "bottomLeft": "18px"
+                        }
+                      },
+                      "boxAspectRatio": "1 / 1",
+                      "textDecoration": "underline"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/media",
+                        "attributes": {
+                          "className": "cr-ref-footer-12"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "className": "cr-ref-footer-13",
+                      "textColour": "#0000EE",
+                      "backgroundColour": "#F9D5D3",
+                      "borderWidth": {
+                        "right": "2px",
+                        "bottom": "2px",
+                        "left": "2px",
+                        "top": "2px"
+                      },
+                      "borderStyle": "solid",
+                      "borderColour": "text",
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "18px",
+                          "topRight": "18px",
+                          "bottomRight": "18px",
+                          "bottomLeft": "18px"
+                        }
+                      },
+                      "boxAspectRatio": "1 / 1",
+                      "textDecoration": "underline"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/media",
+                        "attributes": {
+                          "className": "cr-ref-footer-14"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "className": "cr-ref-footer-15",
+                      "textColour": "#0000EE",
+                      "backgroundColour": "#F9D5D3",
+                      "borderWidth": {
+                        "right": "2px",
+                        "bottom": "2px",
+                        "left": "2px",
+                        "top": "2px"
+                      },
+                      "borderStyle": "solid",
+                      "borderColour": "text",
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "18px",
+                          "topRight": "18px",
+                          "bottomRight": "18px",
+                          "bottomLeft": "18px"
+                        }
+                      },
+                      "boxAspectRatio": "1 / 1",
+                      "textDecoration": "underline"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/media",
+                        "attributes": {
+                          "className": "cr-ref-footer-16"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "className": "cr-ref-footer-17",
+                      "textColour": "#0000EE",
+                      "backgroundColour": "#F9D5D3",
+                      "borderWidth": {
+                        "right": "2px",
+                        "bottom": "2px",
+                        "left": "2px",
+                        "top": "2px"
+                      },
+                      "borderStyle": "solid",
+                      "borderColour": "text",
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "18px",
+                          "topRight": "18px",
+                          "bottomRight": "18px",
+                          "bottomLeft": "18px"
+                        }
+                      },
+                      "boxAspectRatio": "1 / 1",
+                      "textDecoration": "underline"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/media",
+                        "attributes": {
+                          "className": "cr-ref-footer-18"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "className": "cr-ref-footer-19",
+                      "textColour": "#0000EE",
+                      "backgroundColour": "#F9D5D3",
+                      "borderWidth": {
+                        "right": "2px",
+                        "bottom": "2px",
+                        "left": "2px",
+                        "top": "2px"
+                      },
+                      "borderStyle": "solid",
+                      "borderColour": "text",
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "18px",
+                          "topRight": "18px",
+                          "bottomRight": "18px",
+                          "bottomLeft": "18px"
+                        }
+                      },
+                      "boxAspectRatio": "1 / 1",
+                      "textDecoration": "underline"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/media",
+                        "attributes": {
+                          "className": "cr-ref-footer-20"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦",
+          "className": "cr-ref-footer-21",
+          "fontFamily": "heading",
+          "fontSize": {
+            "mobile": 24,
+            "desktop": 32
+          },
+          "lineHeight": {
+            "mobile": 1.125,
+            "desktop": 1.156
+          },
+          "borderWidth": {
+            "right": "0px",
+            "bottom": "2px",
+            "left": "0px",
+            "top": "2px"
+          },
+          "borderStyle": "solid",
+          "borderColour": "text",
+          "padding": {
+            "desktop": {
+              "top": "14px",
+              "bottom": "14px"
+            }
+          }
+        },
+        "innerBlocks": []
+      },
+      {
+        "name": "sgs/site-footer-row",
+        "attributes": {
+          "className": "cr-ref-footer-22",
+          "backgroundColour": "#F5C2C8",
+          "padding": {
+            "mobile": {
+              "top": "48px",
+              "right": "20px",
+              "bottom": "24px",
+              "left": "20px"
+            },
+            "tablet": {
+              "top": "64px",
+              "right": "32px",
+              "bottom": "28px",
+              "left": "32px"
+            },
+            "desktop": {
+              "top": "80px",
+              "right": "40px",
+              "bottom": "32px",
+              "left": "40px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "className": "cr-ref-footer-23",
+              "fontSize": {
+                "desktop": 16
+              },
+              "maxWidth": {
+                "desktop": "1240px"
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "grid",
+                  "className": "cr-ref-footer-24",
+                  "borderWidth": {
+                    "top": "0px",
+                    "right": "0px",
+                    "left": "0px",
+                    "bottom": "2px"
+                  },
+                  "borderColour": "#3A2A2247",
+                  "padding": {
+                    "mobile": {
+                      "bottom": "36px"
+                    },
+                    "tablet": {
+                      "bottom": "44px"
+                    },
+                    "desktop": {
+                      "bottom": "56px"
+                    }
+                  },
+                  "gap": {
+                    "mobile": "28px",
+                    "tablet": "18.79px",
+                    "desktop": "16.34px"
+                  },
+                  "alignItems": "center",
+                  "borderStyle": "dashed"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "stack",
+                      "className": "cr-ref-footer-25",
+                      "gap": {
+                        "desktop": "18px"
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Hungry? Of course you are.",
+                          "className": "cr-ref-footer-26",
+                          "fontFamily": "heading",
+                          "fontSize": {
+                            "mobile": 40,
+                            "tablet": 56,
+                            "desktop": 80
+                          },
+                          "lineHeight": {
+                            "mobile": 1,
+                            "tablet": 1,
+                            "desktop": 1
+                          },
+                          "letterSpacing": {
+                            "mobile": -0.02,
+                            "desktop": -0.02
+                          },
+                          "margin": {
+                            "desktop": {
+                              "bottom": "0px"
+                            }
+                          },
+                          "textWrap": "balance"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/button",
+                        "attributes": {
+                          "label": "Build your box",
+                          "url": "Home.dc.html#build",
+                          "className": "cr-ref-footer-27",
+                          "fontSize": {
+                            "desktop": 17
+                          },
+                          "fontWeight": "700",
+                          "lineHeight": {
+                            "desktop": 1.294
+                          },
+                          "colourBackground": "#EE8088",
+                          "borderWidth": {
+                            "right": "2px",
+                            "bottom": "2px",
+                            "left": "2px",
+                            "top": "2px"
+                          },
+                          "borderColour": "text",
+                          "borderRadius": {
+                            "desktop": {
+                              "topLeft": "999px",
+                              "topRight": "999px",
+                              "bottomRight": "999px",
+                              "bottomLeft": "999px"
+                            }
+                          },
+                          "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+                          "padding": {
+                            "desktop": {
+                              "right": "30px",
+                              "left": "30px"
+                            }
+                          },
+                          "iconGap": {
+                            "desktop": "10px"
+                          },
+                          "transitionDuration": 200
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/responsive-logo",
+                    "attributes": {
+                      "className": "cr-ref-footer-28"
+                    },
+                    "innerBlocks": []
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "grid",
+                  "className": "cr-ref-footer-29",
+                  "padding": {
+                    "mobile": {
+                      "top": "36px",
+                      "bottom": "28px"
+                    },
+                    "tablet": {
+                      "top": "44px",
+                      "bottom": "32px"
+                    },
+                    "desktop": {
+                      "top": "56px",
+                      "bottom": "40px"
+                    }
+                  },
+                  "gap": {
+                    "mobile": "20px",
+                    "tablet": "32px",
+                    "desktop": "48px"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "nav",
+                      "layout": "stack",
+                      "className": "cr-ref-footer-30",
+                      "gap": {
+                        "desktop": "2px"
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "shop",
+                          "className": "cr-ref-footer-31",
+                          "fontFamily": "caveat",
+                          "fontSize": {
+                            "desktop": 24
+                          },
+                          "lineHeight": {
+                            "desktop": 1.375
+                          },
+                          "textColour": "#8E3444",
+                          "margin": {
+                            "desktop": {
+                              "bottom": "0px"
+                            }
+                          }
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/icon-list",
+                        "attributes": {
+                          "items": [
+                            {
+                              "text": "All Zookies",
+                              "url": "Shop.dc.html"
+                            },
+                            {
+                              "text": "Build your box",
+                              "url": "Home.dc.html#build"
+                            },
+                            {
+                              "text": "Subscribe & save",
+                              "url": "Product.dc.html?id=zookies&sub=1"
+                            },
+                            {
+                              "text": "Gifts",
+                              "url": "Gifts.dc.html"
+                            },
+                            {
+                              "text": "Taster Trio",
+                              "url": "Product.dc.html?id=trial"
+                            }
+                          ],
+                          "className": "cr-ref-footer-32",
+                          "headingFontSize": {
+                            "desktop": 17
+                          },
+                          "headingFontWeight": "600",
+                          "headingLineHeight": 1.294,
+                          "padding": {
+                            "desktop": {
+                              "top": "6px",
+                              "bottom": "6px"
+                            }
+                          }
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "nav",
+                      "layout": "stack",
+                      "className": "cr-ref-footer-33",
+                      "gap": {
+                        "desktop": "2px"
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "help",
+                          "className": "cr-ref-footer-34",
+                          "fontFamily": "caveat",
+                          "fontSize": {
+                            "desktop": 24
+                          },
+                          "lineHeight": {
+                            "desktop": 1.375
+                          },
+                          "textColour": "#8E3444",
+                          "margin": {
+                            "desktop": {
+                              "bottom": "0px"
+                            }
+                          }
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/icon-list",
+                        "attributes": {
+                          "items": [
+                            {
+                              "text": "FAQs",
+                              "url": "Help.dc.html"
+                            },
+                            {
+                              "text": "Delivery",
+                              "url": "Help.dc.html#delivery"
+                            },
+                            {
+                              "text": "Allergens",
+                              "url": "Help.dc.html#allergens"
+                            },
+                            {
+                              "text": "Contact",
+                              "url": "Contact.dc.html"
+                            }
+                          ],
+                          "className": "cr-ref-footer-35",
+                          "headingFontSize": {
+                            "desktop": 17
+                          },
+                          "headingFontWeight": "600",
+                          "headingLineHeight": 1.294,
+                          "padding": {
+                            "desktop": {
+                              "top": "6px",
+                              "bottom": "6px"
+                            }
+                          }
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "stack",
+                      "className": "cr-ref-footer-36",
+                      "gap": {
+                        "desktop": "12px"
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "say hello",
+                          "className": "cr-ref-footer-37",
+                          "fontFamily": "caveat",
+                          "fontSize": {
+                            "desktop": 24
+                          },
+                          "lineHeight": {
+                            "desktop": 1.375
+                          },
+                          "textColour": "#8E3444"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/business-info",
+                        "attributes": {
+                          "displayType": "email",
+                          "className": "cr-ref-footer-38",
+                          "fontSize": {
+                            "desktop": 17
+                          },
+                          "fontWeight": "700",
+                          "lineHeight": {
+                            "desktop": 1.294
+                          },
+                          "borderRadius": {
+                            "desktop": {
+                              "topLeft": "8px",
+                              "topRight": "8px",
+                              "bottomRight": "8px",
+                              "bottomLeft": "8px"
+                            }
+                          },
+                          "padding": {
+                            "desktop": {
+                              "top": "2px",
+                              "right": "6px",
+                              "bottom": "2px",
+                              "left": "6px"
+                            }
+                          },
+                          "textDecoration": "underline",
+                          "margin": {
+                            "desktop": {
+                              "left": "-6px"
+                            }
+                          }
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/social-icons",
+                        "attributes": {
+                          "className": "cr-ref-footer-39",
+                          "gap": {
+                            "desktop": "10px"
+                          },
+                          "childIconShowBackground": true,
+                          "childIconBorderWidth": {
+                            "right": "2px",
+                            "bottom": "2px",
+                            "left": "2px",
+                            "top": "2px"
+                          },
+                          "childIconBorderStyle": "solid",
+                          "childIconBorderColour": "text",
+                          "childIconBoxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+                          "childIconTransitionDuration": 200,
+                          "childIconSize": {
+                            "desktop": "20px"
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/icon",
+                            "attributes": {
+                              "iconSource": "brand",
+                              "brandName": "instagram",
+                              "metadata": {
+                                "bindings": {
+                                  "linkUrl": {
+                                    "source": "sgs/site-info",
+                                    "args": {
+                                      "key": "socials.instagram"
+                                    }
+                                  }
+                                }
+                              },
+                              "className": "cr-ref-footer-40",
+                              "linkUrl": "https://www.instagram.com/mamasmunches/"
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/icon",
+                            "attributes": {
+                              "iconSource": "brand",
+                              "brandName": "whatsapp",
+                              "metadata": {
+                                "bindings": {
+                                  "linkUrl": {
+                                    "source": "sgs/site-info",
+                                    "args": {
+                                      "key": "socials.whatsapp"
+                                    }
+                                  }
+                                }
+                              },
+                              "className": "cr-ref-footer-41"
+                            },
+                            "innerBlocks": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "grid",
+                  "className": "cr-ref-footer-42",
+                  "fontSize": {
+                    "desktop": 14
+                  },
+                  "textAlign": "center",
+                  "borderWidth": {
+                    "right": "0px",
+                    "bottom": "0px",
+                    "left": "0px",
+                    "top": "2px"
+                  },
+                  "borderStyle": "dashed",
+                  "borderColour": "#3A2A2247",
+                  "padding": {
+                    "desktop": {
+                      "top": "18px"
+                    }
+                  },
+                  "gap": {
+                    "tablet": "24px"
+                  },
+                  "alignItems": "center"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/business-info",
+                    "attributes": {
+                      "displayType": "copyright",
+                      "copyrightPrefix": "",
+                      "className": "cr-ref-footer-43",
+                      "lineHeight": {
+                        "desktop": 1.357
+                      }
+                    },
+                    "innerBlocks": []
+                  },
+                  {
+                    "name": "sgs/multi-button",
+                    "attributes": {
+                      "layout": "flex",
+                      "className": "cr-ref-footer-44",
+                      "gap": {
+                        "desktop": "18px"
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/button",
+                        "attributes": {
+                          "label": "Privacy",
+                          "url": "Help.dc.html#legal",
+                          "className": "cr-ref-footer-45",
+                          "lineHeight": {
+                            "desktop": 1.357
+                          },
+                          "colourBackground": "#00000000",
+                          "borderStyle": "none",
+                          "padding": {
+                            "desktop": {
+                              "right": "0px",
+                              "left": "0px"
+                            }
+                          },
+                          "textDecoration": "underline",
+                          "transitionDuration": 0
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/button",
+                        "attributes": {
+                          "label": "Terms",
+                          "url": "Help.dc.html#legal",
+                          "className": "cr-ref-footer-46",
+                          "lineHeight": {
+                            "desktop": 1.357
+                          },
+                          "colourBackground": "#00000000",
+                          "borderStyle": "none",
+                          "padding": {
+                            "desktop": {
+                              "right": "0px",
+                              "left": "0px"
+                            }
+                          },
+                          "textDecoration": "underline",
+                          "transitionDuration": 0
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/business-info",
+                    "attributes": {
+                      "displayType": "attribution",
+                      "className": "cr-ref-footer-47",
+                      "fontWeight": "700",
+                      "lineHeight": {
+                        "desktop": 1.357
+                      },
+                      "textWrap": "nowrap"
+                    },
+                    "innerBlocks": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

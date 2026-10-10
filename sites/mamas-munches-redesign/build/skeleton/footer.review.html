@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>footer skeleton review</title><style>:root{--bg:#fbfaf8;--fg:#1d1b19;--muted:#6b665f;--line:#e2ddd5;--card:#fff;--accent:#2f5d8a;--code:#f3f0ea;--low:#fbe9cf;--gone:#f3dcdc}
+@media (prefers-color-scheme: dark){:root{--bg:#1a1917;--fg:#ece8e1;--muted:#a49d92;--line:#3a3732;--card:#23211e;--accent:#8db7e0;--code:#2c2a26;--low:#4a3a1c;--gone:#4a2626}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{padding:24px 16px;max-width:1800px;margin:0 auto}h1{font-size:1.5rem;margin:0 0 4px}.muted{color:var(--muted)}
+.summary{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.summary span{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+table{width:100%;border-collapse:collapse;background:var(--card)}th,td{border-bottom:1px solid var(--line);padding:8px;vertical-align:top;text-align:left}
+th{position:sticky;top:0;background:var(--card);font-size:.85rem;z-index:1}code,pre{font-family:ui-monospace,Consolas,monospace;font-size:.8rem}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--code);padding:6px;border-radius:4px;margin:0;min-width:220px;max-width:320px}
+.key{white-space:nowrap;color:var(--accent)}.indent{display:inline-block;width:calc(var(--d)*14px)}.attrs{font-size:.75rem;color:var(--muted);word-break:break-all;max-width:240px}
+figure{margin:0 0 6px}figure img{max-width:200px;max-height:160px;border:1px solid var(--line);background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/12px 12px}figcaption{font-size:.7rem;color:var(--muted)}
+tr.low td{background:var(--low)}tr.gone td{background:var(--gone)}.why{font-size:.78rem;color:var(--muted);margin:4px 0 0;padding-left:16px;max-width:360px}
+a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:800px){table,thead,tbody,tr,td{display:block}thead{display:none}tr{border:1px solid var(--line);border-radius:8px;margin:0 0 12px;padding:8px}td{border:0;padding:4px 0}td::before{content:attr(data-label);display:block;font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase}.indent{display:none}pre{max-width:100%}figure img{max-width:100%}}</style></head><body><main>
+<h1>footer skeleton review</h1>
+<p class="muted">Source: http://127.0.0.1:52502/SiteFooter.dc.html · root footer[data-dc-tpl=&quot;2&quot;] · inventory 2026-10-10T09:45:12.942Z · key = import chain / template number # copy</p>
+<div class="summary"><span>Elements: 68</span><span>Parts of another element: 11</span><span>Skeleton nodes: 46 (48 once Fill generates the icon rows)</span><span>Low confidence: 13</span><span>Removed or absorbed: 1</span><span>Unresolved: 1</span></div>
+<p class="muted">Record a choice with <code>node scripts/computed-route/skeleton.mjs decide --key "&lt;key&gt;" --block &lt;slug&gt;</code> (or <code>--remove</code>), then run <code>propose</code> and <code>review</code> again.</p>
+<table><thead><tr><th>Key</th><th>Tag</th><th>Words</th><th>Draft code</th><th>Screenshot</th><th>Proposed block</th><th>Confidence</th><th>Decision</th></tr></thead><tbody>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:0"></span><code class="key">SiteFooter/2#0</code></td>
+<td data-label="Tag"><code>&lt;footer&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;footer style=&quot;font-family:'Karla',system-ui,sans-serif;color:#3A2A22&quot; data-dc-tpl=&quot;2&quot;&gt; &lt;section aria-label=&quot;Instagram&quot; style=&quot;background:#FBF3DC;padding:{{ igPad }}&quot; data-dc-tpl=&quot;3&quot;&gt; &lt;div style=&quot;max-width:1240px;margin:0 auto&quot; data-dc-tpl=&quot;4&quot;&gt; &lt;div style=&quot;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px&quot; data-dc-tpl=&quot;5&quot;&gt; &lt;div data-dc-</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_2_0@1440.png"><img src="shots/SiteFooter_2_0@1440.png" alt="Screenshot of SiteFooter/2#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_2_0@375.png"><img src="shots/SiteFooter_2_0@375.png" alt="Screenshot of SiteFooter/2#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/site-footer</strong><ul class="why"><li>block_capabilities: sgs/site-footer lists &quot;footer&quot; (the draft root tag)</li><li>block_composition: sgs/site-footer is a section-root accepting [&quot;sgs/site-footer-row&quot;]</li><li>the root of the surface</li><li>the root's children fit what it accepts (sgs/site-footer-row)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:1"></span><code class="key">SiteFooter/3#0</code></td>
+<td data-label="Tag"><code>&lt;section&gt;</code><div class="attrs">aria-label=&quot;Instagram&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;section aria-label=&quot;Instagram&quot; style=&quot;background:#FBF3DC;padding:{{ igPad }}&quot; data-dc-tpl=&quot;3&quot;&gt; &lt;div style=&quot;max-width:1240px;margin:0 auto&quot; data-dc-tpl=&quot;4&quot;&gt; &lt;div style=&quot;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px&quot; data-dc-tpl=&quot;5&quot;&gt; &lt;div data-dc-tpl=&quot;6&quot;&gt; &lt;div style=&quot;font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_3_0@1440.png"><img src="shots/SiteFooter_3_0@1440.png" alt="Screenshot of SiteFooter/3#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_3_0@375.png"><img src="shots/SiteFooter_3_0@375.png" alt="Screenshot of SiteFooter/3#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/site-footer-row</strong><ul class="why"><li>block_composition: sgs/site-footer (section-root) accepts [&quot;sgs/site-footer-row&quot;]; sgs/site-footer-row is a content-block</li><li>sgs/site-footer accepts sgs/site-footer-row as its only child</li><li>element holds 1 block children</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:2"></span><code class="key">SiteFooter/4#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;max-width:1240px;margin:0 auto&quot; data-dc-tpl=&quot;4&quot;&gt; &lt;div style=&quot;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px&quot; data-dc-tpl=&quot;5&quot;&gt; &lt;div data-dc-tpl=&quot;6&quot;&gt; &lt;div style=&quot;font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left&quot; data-dc-tpl=&quot;7&quot;&gt;fresh out the oven…&lt;/div&gt; &lt;h2 style=&quot;margi</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_4_0@1440.png"><img src="shots/SiteFooter_4_0@1440.png" alt="Screenshot of SiteFooter/4#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_4_0@375.png"><img src="shots/SiteFooter_4_0@375.png" alt="Screenshot of SiteFooter/4#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 2 block children</li><li>no row block fits: a generic wrapper</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">SiteFooter/5#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px&quot; data-dc-tpl=&quot;5&quot;&gt; &lt;div data-dc-tpl=&quot;6&quot;&gt; &lt;div style=&quot;font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left&quot; data-dc-tpl=&quot;7&quot;&gt;fresh out the oven…&lt;/div&gt; &lt;h2 style=&quot;margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;f</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_5_0@1440.png"><img src="shots/SiteFooter_5_0@1440.png" alt="Screenshot of SiteFooter/5#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_5_0@375.png"><img src="shots/SiteFooter_5_0@375.png" alt="Screenshot of SiteFooter/5#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 2 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;flex&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/6#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div data-dc-tpl=&quot;6&quot;&gt; &lt;div style=&quot;font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left&quot; data-dc-tpl=&quot;7&quot;&gt;fresh out the oven…&lt;/div&gt; &lt;h2 style=&quot;margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05&quot; data-dc-tpl=&quot;8&quot;&gt;@mamasmunches&lt;/h2&gt; &lt;/div&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_6_0@1440.png"><img src="shots/SiteFooter_6_0@1440.png" alt="Screenshot of SiteFooter/6#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_6_0@375.png"><img src="shots/SiteFooter_6_0@375.png" alt="Screenshot of SiteFooter/6#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 2 block children</li><li>no row block fits: a generic wrapper</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/7#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">fresh out the oven…</td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left&quot; data-dc-tpl=&quot;7&quot;&gt;fresh out the oven…&lt;/div&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_7_0@1440.png"><img src="shots/SiteFooter_7_0@1440.png" alt="Screenshot of SiteFooter/7#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_7_0@375.png"><img src="shots/SiteFooter_7_0@375.png" alt="Screenshot of SiteFooter/7#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/text</strong><ul class="why"><li>html_tag_to_core_block: p -&gt; sgs/text: the generic block for words in a div</li></ul></td>
+<td data-label="Confidence">0.25 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/8#0</code></td>
+<td data-label="Tag"><code>&lt;h2&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">@mamasmunches</td>
+<td data-label="Draft code"><pre>&lt;h2 style=&quot;margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05&quot; data-dc-tpl=&quot;8&quot;&gt;@mamasmunches&lt;/h2&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_8_0@1440.png"><img src="shots/SiteFooter_8_0@1440.png" alt="Screenshot of SiteFooter/8#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_8_0@375.png"><img src="shots/SiteFooter_8_0@375.png" alt="Screenshot of SiteFooter/8#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/heading</strong><ul class="why"><li>html_tag_to_core_block: h2 -&gt; sgs/heading (&quot;Heading level 2&quot;)</li><li>block_composition: sgs/heading is a leaf; the element holds words and no block children</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/9#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://www.instagram.com/mamasmunches/&quot; class=&quot;scp0&quot;</div></td>
+<td data-label="Words">Follow along</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;https://www.instagram.com/mamasmunches/&quot; style=&quot;height:52px;padding:0 22px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;color:#3A2A22;font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s&quot; style-hover=&quot;background:#F9CF6E;transform:translate(-2px,-</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_9_0@1440.png"><img src="shots/SiteFooter_9_0@1440.png" alt="Screenshot of SiteFooter/9#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_9_0@375.png"><img src="shots/SiteFooter_9_0@375.png" alt="Screenshot of SiteFooter/9#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/button</strong><ul class="why"><li>html_tag_to_core_block: a -&gt; sgs/button (&quot;Link shape — routes to the same atomic leaf as button&quot;)</li><li>block_composition: sgs/button is a leaf; the element holds words and no block children</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/10#0</code></td>
+<td data-label="Tag"><code>&lt;svg&gt;</code><div class="attrs">viewBox=&quot;0 0 24 24&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;svg width=&quot;20&quot; height=&quot;20&quot; sc-camel-view-box=&quot;0 0 24 24&quot; style=&quot;fill:none;stroke:currentColor;stroke-width:2&quot; data-dc-tpl=&quot;10&quot;&gt;&lt;rect x=&quot;3&quot; y=&quot;3&quot; width=&quot;18&quot; height=&quot;18&quot; rx=&quot;5&quot; data-dc-tpl=&quot;11&quot;&gt;&lt;/rect&gt;&lt;circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;4&quot; data-dc-tpl=&quot;12&quot;&gt;&lt;/circle&gt;&lt;circle cx=&quot;17.5&quot; cy=&quot;6.5&quot; r=&quot;1.2&quot; style=&quot;fill:currentColor;stroke:none&quot; data-dc-tpl=&quot;13&quot;&gt;&lt;/circle&gt;&lt;/svg&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_10_0@1440.png"><img src="shots/SiteFooter_10_0@1440.png" alt="Screenshot of SiteFooter/10#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of SiteFooter/9#0</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">SiteFooter/11#0</code></td>
+<td data-label="Tag"><code>&lt;rect&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;rect x=&quot;3&quot; y=&quot;3&quot; width=&quot;18&quot; height=&quot;18&quot; rx=&quot;5&quot; data-dc-tpl=&quot;11&quot;&gt;&lt;/rect&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_11_0@1440.png"><img src="shots/SiteFooter_11_0@1440.png" alt="Screenshot of SiteFooter/11#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">SiteFooter/12#0</code></td>
+<td data-label="Tag"><code>&lt;circle&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;4&quot; data-dc-tpl=&quot;12&quot;&gt;&lt;/circle&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_12_0@1440.png"><img src="shots/SiteFooter_12_0@1440.png" alt="Screenshot of SiteFooter/12#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">SiteFooter/13#0</code></td>
+<td data-label="Tag"><code>&lt;circle&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;circle cx=&quot;17.5&quot; cy=&quot;6.5&quot; r=&quot;1.2&quot; style=&quot;fill:currentColor;stroke:none&quot; data-dc-tpl=&quot;13&quot;&gt;&lt;/circle&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_13_0@1440.png"><img src="shots/SiteFooter_13_0@1440.png" alt="Screenshot of SiteFooter/13#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">SiteFooter/14#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:grid;grid-auto-flow:{{ flow }};grid-auto-columns:{{ autoCols }};grid-template-columns:{{ igCols }};gap:14px;overflow-x:{{ ovx }};scroll-snap-type:x mandatory;scrollbar-width:none;margin:{{ bleedM }};padding:{{ bleedP }}&quot; data-dc-tpl=&quot;14&quot;&gt; &lt;sc-for list=&quot;{{ posts }}&quot; as=&quot;p&quot; hint-placeholder-count=&quot;0&quot; data-dc-tpl=&quot;15&quot;&gt; &lt;a href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_14_0@1440.png"><img src="shots/SiteFooter_14_0@1440.png" alt="Screenshot of SiteFooter/14#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_14_0@375.png"><img src="shots/SiteFooter_14_0@375.png" alt="Screenshot of SiteFooter/14#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 6 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;grid&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/16#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; class=&quot;scp1&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; style=&quot;position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s&quot; style-hover=&quot;transform:rotate(0deg) translateY(-6px);box-sh</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_16_0@1440.png"><img src="shots/SiteFooter_16_0@1440.png" alt="Screenshot of SiteFooter/16#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_16_0@375.png"><img src="shots/SiteFooter_16_0@375.png" alt="Screenshot of SiteFooter/16#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 1 block children</li><li>no row block fits: a generic wrapper</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/17#0</code></td>
+<td data-label="Tag"><code>&lt;img&gt;</code><div class="attrs">srcBasename=&quot;photo-hero-mug.jpg&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;img src=&quot;{{ p.src }}&quot; alt=&quot;&quot; style=&quot;width:100%;height:100%;object-fit:cover&quot; data-dc-tpl=&quot;17&quot;&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_17_0@1440.png"><img src="shots/SiteFooter_17_0@1440.png" alt="Screenshot of SiteFooter/17#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_17_0@375.png"><img src="shots/SiteFooter_17_0@375.png" alt="Screenshot of SiteFooter/17#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/media</strong><ul class="why"><li>html_tag_to_core_block: img -&gt; sgs/media (&quot;Image — atomic media leaf&quot;)</li></ul></td>
+<td data-label="Confidence">0.29 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/16#1</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; class=&quot;scp1&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; style=&quot;position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s&quot; style-hover=&quot;transform:rotate(0deg) translateY(-6px);box-sh</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_16_1@1440.png"><img src="shots/SiteFooter_16_1@1440.png" alt="Screenshot of SiteFooter/16#1 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_16_1@375.png"><img src="shots/SiteFooter_16_1@375.png" alt="Screenshot of SiteFooter/16#1 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 1 block children</li><li>no row block fits: a generic wrapper</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/17#1</code></td>
+<td data-label="Tag"><code>&lt;img&gt;</code><div class="attrs">srcBasename=&quot;photo-gift-heart.jpg&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;img src=&quot;{{ p.src }}&quot; alt=&quot;&quot; style=&quot;width:100%;height:100%;object-fit:cover&quot; data-dc-tpl=&quot;17&quot;&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_17_1@1440.png"><img src="shots/SiteFooter_17_1@1440.png" alt="Screenshot of SiteFooter/17#1 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_17_1@375.png"><img src="shots/SiteFooter_17_1@375.png" alt="Screenshot of SiteFooter/17#1 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/media</strong><ul class="why"><li>html_tag_to_core_block: img -&gt; sgs/media (&quot;Image — atomic media leaf&quot;)</li></ul></td>
+<td data-label="Confidence">0.29 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/16#2</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; class=&quot;scp1&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; style=&quot;position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s&quot; style-hover=&quot;transform:rotate(0deg) translateY(-6px);box-sh</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_16_2@1440.png"><img src="shots/SiteFooter_16_2@1440.png" alt="Screenshot of SiteFooter/16#2 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_16_2@375.png"><img src="shots/SiteFooter_16_2@375.png" alt="Screenshot of SiteFooter/16#2 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 1 block children</li><li>no row block fits: a generic wrapper</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/17#2</code></td>
+<td data-label="Tag"><code>&lt;img&gt;</code><div class="attrs">srcBasename=&quot;photo-pair-love.jpg&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;img src=&quot;{{ p.src }}&quot; alt=&quot;&quot; style=&quot;width:100%;height:100%;object-fit:cover&quot; data-dc-tpl=&quot;17&quot;&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_17_2@1440.png"><img src="shots/SiteFooter_17_2@1440.png" alt="Screenshot of SiteFooter/17#2 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_17_2@375.png"><img src="shots/SiteFooter_17_2@375.png" alt="Screenshot of SiteFooter/17#2 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/media</strong><ul class="why"><li>html_tag_to_core_block: img -&gt; sgs/media (&quot;Image — atomic media leaf&quot;)</li></ul></td>
+<td data-label="Confidence">0.29 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/16#3</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; class=&quot;scp1&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; style=&quot;position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s&quot; style-hover=&quot;transform:rotate(0deg) translateY(-6px);box-sh</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_16_3@1440.png"><img src="shots/SiteFooter_16_3@1440.png" alt="Screenshot of SiteFooter/16#3 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_16_3@375.png"><img src="shots/SiteFooter_16_3@375.png" alt="Screenshot of SiteFooter/16#3 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 1 block children</li><li>no row block fits: a generic wrapper</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/17#3</code></td>
+<td data-label="Tag"><code>&lt;img&gt;</code><div class="attrs">srcBasename=&quot;photo-bags-pink.jpg&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;img src=&quot;{{ p.src }}&quot; alt=&quot;&quot; style=&quot;width:100%;height:100%;object-fit:cover&quot; data-dc-tpl=&quot;17&quot;&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_17_3@1440.png"><img src="shots/SiteFooter_17_3@1440.png" alt="Screenshot of SiteFooter/17#3 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_17_3@375.png"><img src="shots/SiteFooter_17_3@375.png" alt="Screenshot of SiteFooter/17#3 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/media</strong><ul class="why"><li>html_tag_to_core_block: img -&gt; sgs/media (&quot;Image — atomic media leaf&quot;)</li></ul></td>
+<td data-label="Confidence">0.29 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/16#4</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; class=&quot;scp1&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; style=&quot;position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s&quot; style-hover=&quot;transform:rotate(0deg) translateY(-6px);box-sh</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_16_4@1440.png"><img src="shots/SiteFooter_16_4@1440.png" alt="Screenshot of SiteFooter/16#4 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_16_4@375.png"><img src="shots/SiteFooter_16_4@375.png" alt="Screenshot of SiteFooter/16#4 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 1 block children</li><li>no row block fits: a generic wrapper</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/17#4</code></td>
+<td data-label="Tag"><code>&lt;img&gt;</code><div class="attrs">srcBasename=&quot;photo-tray-love.jpg&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;img src=&quot;{{ p.src }}&quot; alt=&quot;&quot; style=&quot;width:100%;height:100%;object-fit:cover&quot; data-dc-tpl=&quot;17&quot;&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_17_4@1440.png"><img src="shots/SiteFooter_17_4@1440.png" alt="Screenshot of SiteFooter/17#4 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_17_4@375.png"><img src="shots/SiteFooter_17_4@375.png" alt="Screenshot of SiteFooter/17#4 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/media</strong><ul class="why"><li>html_tag_to_core_block: img -&gt; sgs/media (&quot;Image — atomic media leaf&quot;)</li></ul></td>
+<td data-label="Confidence">0.29 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/16#5</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; class=&quot;scp1&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;View on Instagram&quot; style=&quot;position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s&quot; style-hover=&quot;transform:rotate(0deg) translateY(-6px);box-sh</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_16_5@1440.png"><img src="shots/SiteFooter_16_5@1440.png" alt="Screenshot of SiteFooter/16#5 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_16_5@375.png"><img src="shots/SiteFooter_16_5@375.png" alt="Screenshot of SiteFooter/16#5 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 1 block children</li><li>no row block fits: a generic wrapper</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/17#5</code></td>
+<td data-label="Tag"><code>&lt;img&gt;</code><div class="attrs">srcBasename=&quot;photo-bun-case.jpg&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;img src=&quot;{{ p.src }}&quot; alt=&quot;&quot; style=&quot;width:100%;height:100%;object-fit:cover&quot; data-dc-tpl=&quot;17&quot;&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_17_5@1440.png"><img src="shots/SiteFooter_17_5@1440.png" alt="Screenshot of SiteFooter/17#5 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_17_5@375.png"><img src="shots/SiteFooter_17_5@375.png" alt="Screenshot of SiteFooter/17#5 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/media</strong><ul class="why"><li>html_tag_to_core_block: img -&gt; sgs/media (&quot;Image — atomic media leaf&quot;)</li></ul></td>
+<td data-label="Confidence">0.29 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:1"></span><code class="key">SiteFooter/18#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs">aria-hidden=&quot;true&quot;</div></td>
+<td data-label="Words">boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦</td>
+<td data-label="Draft code"><pre>&lt;div aria-hidden=&quot;true&quot; style=&quot;background:#F9CF6E;border-top:2px solid #3A2A22;border-bottom:2px solid #3A2A22;overflow:hidden;padding:14px 0&quot; data-dc-tpl=&quot;18&quot;&gt;{{ tagline }}&lt;/div&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_18_0@1440.png"><img src="shots/SiteFooter_18_0@1440.png" alt="Screenshot of SiteFooter/18#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_18_0@375.png"><img src="shots/SiteFooter_18_0@375.png" alt="Screenshot of SiteFooter/18#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/text</strong><ul class="why"><li>html_tag_to_core_block: p -&gt; sgs/text: the generic block for words in a div</li></ul></td>
+<td data-label="Confidence">0.25 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:1"></span><code class="key">SiteFooter/19#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;background:#F5C2C8;padding:{{ mainPad }};overflow:hidden&quot; data-dc-tpl=&quot;19&quot;&gt; &lt;div style=&quot;max-width:1240px;margin:0 auto&quot; data-dc-tpl=&quot;20&quot;&gt; &lt;div style=&quot;display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)&quot; data-dc-tpl=&quot;21&quot;&gt; &lt;div style=&quot;display:flex;flex-direction:column;gap:18px;align-items:{{</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_19_0@1440.png"><img src="shots/SiteFooter_19_0@1440.png" alt="Screenshot of SiteFooter/19#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_19_0@375.png"><img src="shots/SiteFooter_19_0@375.png" alt="Screenshot of SiteFooter/19#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/site-footer-row</strong><ul class="why"><li>block_composition: sgs/site-footer (section-root) accepts [&quot;sgs/site-footer-row&quot;]; sgs/site-footer-row is a content-block</li><li>sgs/site-footer accepts sgs/site-footer-row as its only child</li><li>element holds 1 block children</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:2"></span><code class="key">SiteFooter/20#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;max-width:1240px;margin:0 auto&quot; data-dc-tpl=&quot;20&quot;&gt; &lt;div style=&quot;display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)&quot; data-dc-tpl=&quot;21&quot;&gt; &lt;div style=&quot;display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}&quot; data-dc-tpl=&quot;22&quot;&gt; &lt;h2 style=&quot;margin:0;font-family</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_20_0@1440.png"><img src="shots/SiteFooter_20_0@1440.png" alt="Screenshot of SiteFooter/20#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_20_0@375.png"><img src="shots/SiteFooter_20_0@375.png" alt="Screenshot of SiteFooter/20#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 4 block children</li><li>no row block fits: a generic wrapper</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">SiteFooter/21#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)&quot; data-dc-tpl=&quot;21&quot;&gt; &lt;div style=&quot;display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}&quot; data-dc-tpl=&quot;22&quot;&gt; &lt;h2 style=&quot;margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaS</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_21_0@1440.png"><img src="shots/SiteFooter_21_0@1440.png" alt="Screenshot of SiteFooter/21#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_21_0@375.png"><img src="shots/SiteFooter_21_0@375.png" alt="Screenshot of SiteFooter/21#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 2 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;grid&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/22#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}&quot; data-dc-tpl=&quot;22&quot;&gt; &lt;h2 style=&quot;margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaSize }};line-height:1;letter-spacing:-0.02em;text-wrap:balance&quot; data-dc-tpl=&quot;23&quot;&gt;Hungry? Of course you are.&lt;/h2&gt; &lt;a href=&quot;Home.dc.html#build&quot; style=&quot;height:60px;padding:0 30px;borde</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_22_0@1440.png"><img src="shots/SiteFooter_22_0@1440.png" alt="Screenshot of SiteFooter/22#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_22_0@375.png"><img src="shots/SiteFooter_22_0@375.png" alt="Screenshot of SiteFooter/22#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 2 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;flex&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/23#0</code></td>
+<td data-label="Tag"><code>&lt;h2&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">Hungry? Of course you are.</td>
+<td data-label="Draft code"><pre>&lt;h2 style=&quot;margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaSize }};line-height:1;letter-spacing:-0.02em;text-wrap:balance&quot; data-dc-tpl=&quot;23&quot;&gt;Hungry? Of course you are.&lt;/h2&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_23_0@1440.png"><img src="shots/SiteFooter_23_0@1440.png" alt="Screenshot of SiteFooter/23#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_23_0@375.png"><img src="shots/SiteFooter_23_0@375.png" alt="Screenshot of SiteFooter/23#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/heading</strong><ul class="why"><li>html_tag_to_core_block: h2 -&gt; sgs/heading (&quot;Heading level 2&quot;)</li><li>block_composition: sgs/heading is a leaf; the element holds words and no block children</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/24#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Home.dc.html#build&quot; class=&quot;scp0&quot;</div></td>
+<td data-label="Words">Build your box</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Home.dc.html#build&quot; style=&quot;height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#EE8088;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s&quot; style-hover=&quot;background:#F9CF6E;transform:translate(-2px,-2px);box-shadow:6px 6</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_24_0@1440.png"><img src="shots/SiteFooter_24_0@1440.png" alt="Screenshot of SiteFooter/24#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_24_0@375.png"><img src="shots/SiteFooter_24_0@375.png" alt="Screenshot of SiteFooter/24#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/button</strong><ul class="why"><li>client decision: a pill link with text and a trailing arrow is a button (stage 5 review against Theme Mapping.md: CTA)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"><strong>sgs/button {&quot;label&quot;:&quot;Build your box&quot;,&quot;url&quot;:&quot;Home.dc.html#build&quot;}</strong><div class="attrs">decided</div></td>
+</tr>
+<tr class=" gone">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">SiteFooter/25#0</code></td>
+<td data-label="Tag"><code>&lt;span&gt;</code><div class="attrs">aria-hidden=&quot;true&quot;</div></td>
+<td data-label="Words">→</td>
+<td data-label="Draft code"><pre>&lt;span aria-hidden=&quot;true&quot; data-dc-tpl=&quot;25&quot;&gt;→&lt;/span&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_25_0@1440.png"><img src="shots/SiteFooter_25_0@1440.png" alt="Screenshot of SiteFooter/25#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>remove</strong><ul class="why"><li>the CTA arrow belongs to its button</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"><strong>remove</strong><div class="attrs">decided</div></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/26#0</code></td>
+<td data-label="Tag"><code>&lt;img&gt;</code><div class="attrs">alt=&quot;Mama's Munches&quot; class=&quot;scp2&quot; srcBasename=&quot;logo-round.png&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;img src=&quot;assets/logo-round.png&quot; alt=&quot;Mama's Munches&quot; style=&quot;width:{{ logoW }};justify-self:{{ logoJust }};transform:rotate(-8deg);transition:transform .6s cubic-bezier(.3,1.6,.5,1)&quot; style-hover=&quot;transform:rotate(6deg) scale(1.05)&quot; data-dc-tpl=&quot;26&quot;&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_26_0@1440.png"><img src="shots/SiteFooter_26_0@1440.png" alt="Screenshot of SiteFooter/26#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_26_0@375.png"><img src="shots/SiteFooter_26_0@375.png" alt="Screenshot of SiteFooter/26#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/responsive-logo</strong><ul class="why"><li>block_capabilities: sgs/responsive-logo lists &quot;logo&quot;; block_composition: leaf</li><li>logo image: logo-round.png / alt &quot;Mama's Munches&quot; (an image whose file name, alt text or class says it is the brand mark)</li></ul></td>
+<td data-label="Confidence">0.66 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">SiteFooter/27#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:grid;grid-template-columns:{{ cols }};gap:{{ gap }};padding:{{ colsPad }}&quot; data-dc-tpl=&quot;27&quot;&gt; &lt;nav aria-label=&quot;Shop&quot; style=&quot;display:flex;flex-direction:column;gap:2px&quot; data-dc-tpl=&quot;28&quot;&gt; &lt;div style=&quot;font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px&quot; data-dc-tpl=&quot;29&quot;&gt;shop&lt;/div&gt; &lt;a href=&quot;Shop.dc.html&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17p</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_27_0@1440.png"><img src="shots/SiteFooter_27_0@1440.png" alt="Screenshot of SiteFooter/27#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_27_0@375.png"><img src="shots/SiteFooter_27_0@375.png" alt="Screenshot of SiteFooter/27#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 3 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;grid&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/28#0</code></td>
+<td data-label="Tag"><code>&lt;nav&gt;</code><div class="attrs">aria-label=&quot;Shop&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;nav aria-label=&quot;Shop&quot; style=&quot;display:flex;flex-direction:column;gap:2px&quot; data-dc-tpl=&quot;28&quot;&gt; &lt;div style=&quot;font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px&quot; data-dc-tpl=&quot;29&quot;&gt;shop&lt;/div&gt; &lt;a href=&quot;Shop.dc.html&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s&quot; style-hover=&quot;transform:translateX(4px);color:#3A2A22;te</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_28_0@1440.png"><img src="shots/SiteFooter_28_0@1440.png" alt="Screenshot of SiteFooter/28#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_28_0@375.png"><img src="shots/SiteFooter_28_0@375.png" alt="Screenshot of SiteFooter/28#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 6 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;flex&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/29#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">shop</td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px&quot; data-dc-tpl=&quot;29&quot;&gt;shop&lt;/div&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_29_0@1440.png"><img src="shots/SiteFooter_29_0@1440.png" alt="Screenshot of SiteFooter/29#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_29_0@375.png"><img src="shots/SiteFooter_29_0@375.png" alt="Screenshot of SiteFooter/29#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/heading</strong><ul class="why"><li>decisions: column label (the first text child of a wrapper whose other children are a run of links is the column heading)</li></ul></td>
+<td data-label="Confidence">0.8</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/30#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Shop.dc.html&quot; class=&quot;scp3&quot;</div></td>
+<td data-label="Words">All Zookies</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Shop.dc.html&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s&quot; style-hover=&quot;transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0&quot; data-dc-tpl=&quot;30&quot;&gt;All Zookies&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_30_0@1440.png"><img src="shots/SiteFooter_30_0@1440.png" alt="Screenshot of SiteFooter/30#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_30_0@375.png"><img src="shots/SiteFooter_30_0@375.png" alt="Screenshot of SiteFooter/30#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;All Zookies&quot;,&quot;url&quot;:&quot;Shop.dc.html&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>5 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/31#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Home.dc.html#build&quot; class=&quot;scp3&quot;</div></td>
+<td data-label="Words">Build your box</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Home.dc.html#build&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s&quot; style-hover=&quot;transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0&quot; data-dc-tpl=&quot;31&quot;&gt;Build your box&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_31_0@1440.png"><img src="shots/SiteFooter_31_0@1440.png" alt="Screenshot of SiteFooter/31#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_31_0@375.png"><img src="shots/SiteFooter_31_0@375.png" alt="Screenshot of SiteFooter/31#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Build your box&quot;,&quot;url&quot;:&quot;Home.dc.html#build&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>5 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/32#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Product.dc.html?id=zookies&amp;sub=1&quot; class=&quot;scp3&quot;</div></td>
+<td data-label="Words">Subscribe &amp; save</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Product.dc.html?id=zookies&amp;amp;sub=1&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s&quot; style-hover=&quot;transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0&quot; data-dc-tpl=&quot;32&quot;&gt;Subscribe &amp;amp; save&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_32_0@1440.png"><img src="shots/SiteFooter_32_0@1440.png" alt="Screenshot of SiteFooter/32#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_32_0@375.png"><img src="shots/SiteFooter_32_0@375.png" alt="Screenshot of SiteFooter/32#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Subscribe &amp; save&quot;,&quot;url&quot;:&quot;Product.dc.html?id=zookies&amp;sub=1&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>5 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/33#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Gifts.dc.html&quot; class=&quot;scp3&quot;</div></td>
+<td data-label="Words">Gifts</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Gifts.dc.html&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s&quot; style-hover=&quot;transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0&quot; data-dc-tpl=&quot;33&quot;&gt;Gifts&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_33_0@1440.png"><img src="shots/SiteFooter_33_0@1440.png" alt="Screenshot of SiteFooter/33#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_33_0@375.png"><img src="shots/SiteFooter_33_0@375.png" alt="Screenshot of SiteFooter/33#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Gifts&quot;,&quot;url&quot;:&quot;Gifts.dc.html&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>5 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/34#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Product.dc.html?id=trial&quot; class=&quot;scp3&quot;</div></td>
+<td data-label="Words">Taster Trio</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Product.dc.html?id=trial&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s&quot; style-hover=&quot;transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0&quot; data-dc-tpl=&quot;34&quot;&gt;Taster Trio&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_34_0@1440.png"><img src="shots/SiteFooter_34_0@1440.png" alt="Screenshot of SiteFooter/34#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_34_0@375.png"><img src="shots/SiteFooter_34_0@375.png" alt="Screenshot of SiteFooter/34#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Taster Trio&quot;,&quot;url&quot;:&quot;Product.dc.html?id=trial&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>5 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/35#0</code></td>
+<td data-label="Tag"><code>&lt;nav&gt;</code><div class="attrs">aria-label=&quot;Help&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;nav aria-label=&quot;Help&quot; style=&quot;display:flex;flex-direction:column;gap:2px&quot; data-dc-tpl=&quot;35&quot;&gt; &lt;div style=&quot;font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px&quot; data-dc-tpl=&quot;36&quot;&gt;help&lt;/div&gt; &lt;a href=&quot;Help.dc.html&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s&quot; style-hover=&quot;transform:translateX(4px);color:#3A2A22;te</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_35_0@1440.png"><img src="shots/SiteFooter_35_0@1440.png" alt="Screenshot of SiteFooter/35#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_35_0@375.png"><img src="shots/SiteFooter_35_0@375.png" alt="Screenshot of SiteFooter/35#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 5 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;flex&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/36#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">help</td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px&quot; data-dc-tpl=&quot;36&quot;&gt;help&lt;/div&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_36_0@1440.png"><img src="shots/SiteFooter_36_0@1440.png" alt="Screenshot of SiteFooter/36#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_36_0@375.png"><img src="shots/SiteFooter_36_0@375.png" alt="Screenshot of SiteFooter/36#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/heading</strong><ul class="why"><li>decisions: column label (the first text child of a wrapper whose other children are a run of links is the column heading)</li></ul></td>
+<td data-label="Confidence">0.8</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/37#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Help.dc.html&quot; class=&quot;scp3&quot;</div></td>
+<td data-label="Words">FAQs</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Help.dc.html&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s&quot; style-hover=&quot;transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0&quot; data-dc-tpl=&quot;37&quot;&gt;FAQs&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_37_0@1440.png"><img src="shots/SiteFooter_37_0@1440.png" alt="Screenshot of SiteFooter/37#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_37_0@375.png"><img src="shots/SiteFooter_37_0@375.png" alt="Screenshot of SiteFooter/37#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;FAQs&quot;,&quot;url&quot;:&quot;Help.dc.html&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/38#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Help.dc.html#delivery&quot; class=&quot;scp3&quot;</div></td>
+<td data-label="Words">Delivery</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Help.dc.html#delivery&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s&quot; style-hover=&quot;transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0&quot; data-dc-tpl=&quot;38&quot;&gt;Delivery&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_38_0@1440.png"><img src="shots/SiteFooter_38_0@1440.png" alt="Screenshot of SiteFooter/38#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_38_0@375.png"><img src="shots/SiteFooter_38_0@375.png" alt="Screenshot of SiteFooter/38#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Delivery&quot;,&quot;url&quot;:&quot;Help.dc.html#delivery&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/39#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Help.dc.html#allergens&quot; class=&quot;scp3&quot;</div></td>
+<td data-label="Words">Allergens</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Help.dc.html#allergens&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s&quot; style-hover=&quot;transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0&quot; data-dc-tpl=&quot;39&quot;&gt;Allergens&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_39_0@1440.png"><img src="shots/SiteFooter_39_0@1440.png" alt="Screenshot of SiteFooter/39#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_39_0@375.png"><img src="shots/SiteFooter_39_0@375.png" alt="Screenshot of SiteFooter/39#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Allergens&quot;,&quot;url&quot;:&quot;Help.dc.html#allergens&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/40#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Contact.dc.html&quot; class=&quot;scp3&quot;</div></td>
+<td data-label="Words">Contact</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Contact.dc.html&quot; style=&quot;color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s&quot; style-hover=&quot;transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0&quot; data-dc-tpl=&quot;40&quot;&gt;Contact&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_40_0@1440.png"><img src="shots/SiteFooter_40_0@1440.png" alt="Screenshot of SiteFooter/40#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_40_0@375.png"><img src="shots/SiteFooter_40_0@375.png" alt="Screenshot of SiteFooter/40#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Contact&quot;,&quot;url&quot;:&quot;Contact.dc.html&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/41#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:flex;flex-direction:column;gap:12px;grid-column:{{ helloSpan }}&quot; data-dc-tpl=&quot;41&quot;&gt; &lt;div style=&quot;font-family:'Caveat',cursive;font-size:24px;color:#8E3444&quot; data-dc-tpl=&quot;42&quot;&gt;say hello&lt;/div&gt; &lt;a href=&quot;mailto:Zainab@mamasmunches.com&quot; style=&quot;align-self:flex-start;color:#3A2A22;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_41_0@1440.png"><img src="shots/SiteFooter_41_0@1440.png" alt="Screenshot of SiteFooter/41#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_41_0@375.png"><img src="shots/SiteFooter_41_0@375.png" alt="Screenshot of SiteFooter/41#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 3 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;flex&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/42#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">say hello</td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;font-family:'Caveat',cursive;font-size:24px;color:#8E3444&quot; data-dc-tpl=&quot;42&quot;&gt;say hello&lt;/div&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_42_0@1440.png"><img src="shots/SiteFooter_42_0@1440.png" alt="Screenshot of SiteFooter/42#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_42_0@375.png"><img src="shots/SiteFooter_42_0@375.png" alt="Screenshot of SiteFooter/42#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/text</strong><ul class="why"><li>html_tag_to_core_block: p -&gt; sgs/text: the generic block for words in a div</li></ul></td>
+<td data-label="Confidence">0.25 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/43#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;mailto:Zainab@mamasmunches.com&quot; class=&quot;scp4&quot;</div></td>
+<td data-label="Words">Zainab@mamasmunches.com</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;mailto:Zainab@mamasmunches.com&quot; style=&quot;align-self:flex-start;color:#3A2A22;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px;text-decoration-color:#E86A75;word-break:break-all;padding:2px 6px;margin-left:-6px;border-radius:8px;transition:background .2s, text-decoration-color .2s&quot; style-hover=&quot;background:#FFFAF0;text-decoration</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_43_0@1440.png"><img src="shots/SiteFooter_43_0@1440.png" alt="Screenshot of SiteFooter/43#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/business-info</strong><ul class="why"><li>block_attributes: sgs/business-info.displayType enum has &quot;email&quot;</li><li>brand-registry: email owns mailto:Zainab@mamasmunches.com</li><li>block_capabilities: sgs/business-info lists &quot;email&quot;</li></ul></td>
+<td data-label="Confidence">0.67 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/44#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:flex;gap:10px&quot; data-dc-tpl=&quot;44&quot;&gt; &lt;a href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;Instagram&quot; style=&quot;width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;tra</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_44_0@1440.png"><img src="shots/SiteFooter_44_0@1440.png" alt="Screenshot of SiteFooter/44#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_44_0@375.png"><img src="shots/SiteFooter_44_0@375.png" alt="Screenshot of SiteFooter/44#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/social-icons</strong><ul class="why"><li>block_composition: sgs/social-icons is a content-block accepting exactly [&quot;sgs/icon&quot;]; all 2 children propose sgs/icon</li><li>a row of 2 sgs/icon</li><li>block_capabilities: sgs/social-icons lists instagram, whatsapp</li></ul></td>
+<td data-label="Confidence">0.74</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">SiteFooter/45#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;Instagram&quot; class=&quot;scp5&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;https://www.instagram.com/mamasmunches/&quot; aria-label=&quot;Instagram&quot; style=&quot;width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_45_0@1440.png"><img src="shots/SiteFooter_45_0@1440.png" alt="Screenshot of SiteFooter/45#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon</strong><ul class="why"><li>block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg</li><li>brand-registry: instagram owns https://www.instagram.com/mamasmunches/; brand-registry label &quot;Instagram&quot; in aria-label/title</li></ul></td>
+<td data-label="Confidence">0.9</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:7"></span><code class="key">SiteFooter/46#0</code></td>
+<td data-label="Tag"><code>&lt;svg&gt;</code><div class="attrs">viewBox=&quot;0 0 24 24&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;svg width=&quot;20&quot; height=&quot;20&quot; sc-camel-view-box=&quot;0 0 24 24&quot; style=&quot;fill:none;stroke:currentColor;stroke-width:2&quot; data-dc-tpl=&quot;46&quot;&gt;&lt;rect x=&quot;3&quot; y=&quot;3&quot; width=&quot;18&quot; height=&quot;18&quot; rx=&quot;5&quot; data-dc-tpl=&quot;47&quot;&gt;&lt;/rect&gt;&lt;circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;4&quot; data-dc-tpl=&quot;48&quot;&gt;&lt;/circle&gt;&lt;circle cx=&quot;17.5&quot; cy=&quot;6.5&quot; r=&quot;1.2&quot; style=&quot;fill:currentColor;stroke:none&quot; data-dc-tpl=&quot;49&quot;&gt;&lt;/circle&gt;&lt;/svg&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_46_0@1440.png"><img src="shots/SiteFooter_46_0@1440.png" alt="Screenshot of SiteFooter/46#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of SiteFooter/45#0</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:8"></span><code class="key">SiteFooter/47#0</code></td>
+<td data-label="Tag"><code>&lt;rect&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;rect x=&quot;3&quot; y=&quot;3&quot; width=&quot;18&quot; height=&quot;18&quot; rx=&quot;5&quot; data-dc-tpl=&quot;47&quot;&gt;&lt;/rect&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_47_0@1440.png"><img src="shots/SiteFooter_47_0@1440.png" alt="Screenshot of SiteFooter/47#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:8"></span><code class="key">SiteFooter/48#0</code></td>
+<td data-label="Tag"><code>&lt;circle&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;4&quot; data-dc-tpl=&quot;48&quot;&gt;&lt;/circle&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_48_0@1440.png"><img src="shots/SiteFooter_48_0@1440.png" alt="Screenshot of SiteFooter/48#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:8"></span><code class="key">SiteFooter/49#0</code></td>
+<td data-label="Tag"><code>&lt;circle&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;circle cx=&quot;17.5&quot; cy=&quot;6.5&quot; r=&quot;1.2&quot; style=&quot;fill:currentColor;stroke:none&quot; data-dc-tpl=&quot;49&quot;&gt;&lt;/circle&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_49_0@1440.png"><img src="shots/SiteFooter_49_0@1440.png" alt="Screenshot of SiteFooter/49#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">SiteFooter/50#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Contact.dc.html&quot; aria-label=&quot;WhatsApp&quot; class=&quot;scp5&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Contact.dc.html&quot; aria-label=&quot;WhatsApp&quot; style=&quot;width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:#25D366;color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s&quot; style-hover=&quot;transform:translate(-2px,-2px) rotate(-8deg);box-shadow:5px 5px 0 #3A2A22&quot; data-dc-tpl=&quot;5</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_50_0@1440.png"><img src="shots/SiteFooter_50_0@1440.png" alt="Screenshot of SiteFooter/50#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon</strong><ul class="why"><li>block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg</li><li>brand-registry label &quot;WhatsApp&quot; in aria-label/title</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:7"></span><code class="key">SiteFooter/51#0</code></td>
+<td data-label="Tag"><code>&lt;svg&gt;</code><div class="attrs">viewBox=&quot;0 0 24 24&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;svg width=&quot;20&quot; height=&quot;20&quot; sc-camel-view-box=&quot;0 0 24 24&quot; style=&quot;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round&quot; data-dc-tpl=&quot;51&quot;&gt;&lt;path d=&quot;M4 20l1.3-4A8 8 0 1 1 8.5 19Z&quot; data-dc-tpl=&quot;52&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-2-2l.8-1-1-2Z&quot; style=&quot;fill:currentColor;stroke:none&quot; data-dc-tpl=&quot;53&quot;&gt;&lt;/path&gt;&lt;/svg&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_51_0@1440.png"><img src="shots/SiteFooter_51_0@1440.png" alt="Screenshot of SiteFooter/51#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of SiteFooter/50#0</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:8"></span><code class="key">SiteFooter/52#0</code></td>
+<td data-label="Tag"><code>&lt;path&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;path d=&quot;M4 20l1.3-4A8 8 0 1 1 8.5 19Z&quot; data-dc-tpl=&quot;52&quot;&gt;&lt;/path&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_52_0@1440.png"><img src="shots/SiteFooter_52_0@1440.png" alt="Screenshot of SiteFooter/52#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:8"></span><code class="key">SiteFooter/53#0</code></td>
+<td data-label="Tag"><code>&lt;path&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;path d=&quot;M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-2-2l.8-1-1-2Z&quot; style=&quot;fill:currentColor;stroke:none&quot; data-dc-tpl=&quot;53&quot;&gt;&lt;/path&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_53_0@1440.png"><img src="shots/SiteFooter_53_0@1440.png" alt="Screenshot of SiteFooter/53#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">SiteFooter/54#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;height:8px&quot; data-dc-tpl=&quot;54&quot;&gt;&lt;/div&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_54_0@1440.png"><img src="shots/SiteFooter_54_0@1440.png" alt="Screenshot of SiteFooter/54#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_54_0@375.png"><img src="shots/SiteFooter_54_0@375.png" alt="Screenshot of SiteFooter/54#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong></strong><ul class="why"><li>no block fits this element: decide it with skeleton.mjs decide</li></ul></td>
+<td data-label="Confidence">0 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">SiteFooter/55#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:grid;grid-template-columns:{{ bottomCols }};align-items:center;gap:10px 24px;font-size:14px;padding-top:18px;border-top:2px dashed rgba(58,42,34,.28);text-align:center&quot; data-dc-tpl=&quot;55&quot;&gt; &lt;span style=&quot;justify-self:{{ leftJust }}&quot; data-dc-tpl=&quot;56&quot;&gt;© 2026 Mama’s Munches · Registered food business&lt;/span&gt; &lt;span style=&quot;display:flex;justify-content:center;gap:18px&quot; data-dc-tpl=&quot;57&quot;&gt;&lt;a</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_55_0@1440.png"><img src="shots/SiteFooter_55_0@1440.png" alt="Screenshot of SiteFooter/55#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_55_0@375.png"><img src="shots/SiteFooter_55_0@375.png" alt="Screenshot of SiteFooter/55#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 3 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;grid&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/56#0</code></td>
+<td data-label="Tag"><code>&lt;span&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">© 2026 Mama’s Munches · Registered food business</td>
+<td data-label="Draft code"><pre>&lt;span style=&quot;justify-self:{{ leftJust }}&quot; data-dc-tpl=&quot;56&quot;&gt;© 2026 Mama’s Munches · Registered food business&lt;/span&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_56_0@1440.png"><img src="shots/SiteFooter_56_0@1440.png" alt="Screenshot of SiteFooter/56#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_56_0@375.png"><img src="shots/SiteFooter_56_0@375.png" alt="Screenshot of SiteFooter/56#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/business-info</strong><ul class="why"><li>block_attributes: sgs/business-info.displayType enum has &quot;copyright&quot;</li><li>decisions: copyright pattern (a line opening with a copyright mark (the marker business-info's own render uses))</li><li>block_capabilities: sgs/business-info lists &quot;copyright&quot;</li></ul></td>
+<td data-label="Confidence">0.8</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/57#0</code></td>
+<td data-label="Tag"><code>&lt;span&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;span style=&quot;display:flex;justify-content:center;gap:18px&quot; data-dc-tpl=&quot;57&quot;&gt;&lt;a href=&quot;Help.dc.html#legal&quot; style=&quot;color:#3A2A22&quot; data-dc-tpl=&quot;58&quot;&gt;Privacy&lt;/a&gt;&lt;a href=&quot;Help.dc.html#legal&quot; style=&quot;color:#3A2A22&quot; data-dc-tpl=&quot;59&quot;&gt;Terms&lt;/a&gt;&lt;/span&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_57_0@1440.png"><img src="shots/SiteFooter_57_0@1440.png" alt="Screenshot of SiteFooter/57#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_57_0@375.png"><img src="shots/SiteFooter_57_0@375.png" alt="Screenshot of SiteFooter/57#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/multi-button</strong><ul class="why"><li>block_composition: sgs/multi-button is a content-block accepting exactly [&quot;sgs/button&quot;]; all 2 children propose sgs/button</li><li>a row of 2 sgs/button</li></ul></td>
+<td data-label="Confidence">0.51 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/58#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Help.dc.html#legal&quot;</div></td>
+<td data-label="Words">Privacy</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Help.dc.html#legal&quot; style=&quot;color:#3A2A22&quot; data-dc-tpl=&quot;58&quot;&gt;Privacy&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_58_0@1440.png"><img src="shots/SiteFooter_58_0@1440.png" alt="Screenshot of SiteFooter/58#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_58_0@375.png"><img src="shots/SiteFooter_58_0@375.png" alt="Screenshot of SiteFooter/58#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/button</strong><ul class="why"><li>html_tag_to_core_block: a -&gt; sgs/button (&quot;Link shape — routes to the same atomic leaf as button&quot;)</li><li>block_composition: sgs/button is a leaf; the element holds words and no block children</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">SiteFooter/59#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;Help.dc.html#legal&quot;</div></td>
+<td data-label="Words">Terms</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;Help.dc.html#legal&quot; style=&quot;color:#3A2A22&quot; data-dc-tpl=&quot;59&quot;&gt;Terms&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_59_0@1440.png"><img src="shots/SiteFooter_59_0@1440.png" alt="Screenshot of SiteFooter/59#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_59_0@375.png"><img src="shots/SiteFooter_59_0@375.png" alt="Screenshot of SiteFooter/59#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/button</strong><ul class="why"><li>html_tag_to_core_block: a -&gt; sgs/button (&quot;Link shape — routes to the same atomic leaf as button&quot;)</li><li>block_composition: sgs/button is a leaf; the element holds words and no block children</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">SiteFooter/60#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://smallgiantsstudio.com&quot; class=&quot;scp6&quot;</div></td>
+<td data-label="Words">Website by Small Giants Studio</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;https://smallgiantsstudio.com&quot; style=&quot;justify-self:{{ rightJust }};color:#3A2A22;font-weight:700;text-decoration:none;white-space:nowrap&quot; style-hover=&quot;text-decoration:underline&quot; data-dc-tpl=&quot;60&quot;&gt;Website by Small Giants Studio&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/SiteFooter_60_0@1440.png"><img src="shots/SiteFooter_60_0@1440.png" alt="Screenshot of SiteFooter/60#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/SiteFooter_60_0@375.png"><img src="shots/SiteFooter_60_0@375.png" alt="Screenshot of SiteFooter/60#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/business-info</strong><ul class="why"><li>block_attributes: sgs/business-info.displayType enum has &quot;attribution&quot;</li><li>decisions: attribution pattern (a credit line for the agency that built the site)</li></ul></td>
+<td data-label="Confidence">0.38 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+</tbody></table></main></body></html>

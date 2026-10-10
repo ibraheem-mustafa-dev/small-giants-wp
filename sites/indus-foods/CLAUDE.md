@@ -13,7 +13,9 @@ The draft is the folder itself: Claude Design `.dc.html` pages that render throu
 node scripts/computed-route/fill.mjs --serve sites/indus-foods --draft-index "Indus Foods Website v2.dc.html"
 ```
 
-Fill and the walker take the same folder through `--draft-dir sites/indus-foods --draft-index "Indus Foods Website v2.dc.html"`.
+Fill takes the same folder through `--draft-dir sites/indus-foods --draft-index "Indus Foods Website v2.dc.html" --allow-external`
+(its `support.js` loads React and Babel from unpkg.com);
+the walker reads the served page from `SGS_DRAFT_URL` (`.claude/dev-setup.md` "Client drafts").
 
 | File | What it is |
 |---|---|

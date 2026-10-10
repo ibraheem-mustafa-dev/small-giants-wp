@@ -15,8 +15,9 @@ each other by file name, so one locally served folder gives every surface its ow
 node scripts/computed-route/fill.mjs --serve sites/mamas-munches-redesign --draft-index Home.dc.html
 ```
 
-Fill and the walker take `--draft-dir sites/mamas-munches-redesign --draft-index Home.dc.html`, and a surface's page
-is `<served url>/<Page>.dc.html`.
+Fill takes `--draft-dir sites/mamas-munches-redesign --draft-index Home.dc.html --allow-external` (the draft's
+`support.js` loads React and Babel from unpkg.com), and a surface's page is `<served url>/<Page>.dc.html`; the
+skeleton writer reads `build/surfaces.json`'s `draftUrl` and the walker reads `SGS_DRAFT_URL`, both the served page.
 
 **Surfaces** (the list in `Wireframes.dc.html`): Home (`Home.dc.html`, the entry), Shop, Product, Gifts, Basket,
 Checkout, Confirmation, Contact and Help (`<Name>.dc.html`); the header and footer (`SiteHeader.dc.html`,

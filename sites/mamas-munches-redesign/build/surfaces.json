@@ -1,0 +1,19 @@
+{
+	"footer": {
+		"tree": "footer.tree.json",
+		"envFile": ".claude/secrets/mamas-test.env",
+		"envKey": "MAMASTEST",
+		"site": "mamas-test",
+		"target": {
+			"postId": 19
+		},
+		"canvas": true,
+		"walker": "qa/parity/footer.mjs",
+		"walkerFull": "qa/parity/footer.full.mjs",
+		"draftUrl": "http://127.0.0.1:52502/SiteFooter.dc.html",
+		"states": {},
+		"provides": [
+			"core/template-part:footer"
+		]
+	}
+}

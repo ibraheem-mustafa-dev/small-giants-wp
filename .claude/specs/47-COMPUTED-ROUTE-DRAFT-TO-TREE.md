@@ -675,7 +675,8 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 4. **Fill on an unbuilt surface (proved on a built one).** Fill is proved against a built surface with its committed
    tree withheld as the hand-checked answer. The demonstration on a genuinely unbuilt surface carries to the first
    client that has one.
-5. **A second draft** from a different designer, to test generality. Not built. Two Claude Design drafts are ready as
+5. **A second draft** from a different designer, to test generality. First surface run (Mama's footer, 2026-10-10),
+   not at the done line; its findings are in the plan's stage 5 and the Residual below. Two Claude Design drafts are ready as
    local references with fresh WordPress test sites: Mama's Munches redesign (`sites/mamas-munches-redesign/`, target
    `mamas-test`) and Indus Foods (`sites/indus-foods/`, target `indus-test`). Setup and draft checks:
    `.claude/plans/2026-10-04-spec47-full-coverage.md` stage 5.
@@ -697,6 +698,13 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
   the plan).
 
 **Residual (open)**
+- Stage 5 (Mama's footer, 2026-10-10): the skeleton writer has no marquee rule (a repeated-item scrolling strip comes
+  out `sgs/text`, where `sgs/trust-bar` autoScroll holds it) and proposed a pill CTA link as a container holding only
+  its arrow; Fill carries no grid column count onto `sgs/container` (`grid-template-columns` no-setting) and no flex row
+  for a two-child header row; nothing fills Site Info from a draft; a draft-extracted snapshot is advisory and is not
+  painted until confirmed (FR-33-5). Fixture styling attributes whose css_property looks mis-tagged in the DB
+  (`responsive-logo.logoId`, `nav-bar-menu.featuredItemIds`, `nav-drawer.closeStyle`, `diagram-dimension.endX/endY`)
+  change no Fill baseline today (`lib/fill-fixture.mjs` only swaps border, background and shadow), but are wrong rows.
 - Each Eye Care surface to its done line (step 3), in the order the sweep ranks, Contact and its form first; the open
   causes per surface are in the plan.
 - Gap typing: a setting that paints a parent while a rule on a child overrides it can still come out Missing setting.

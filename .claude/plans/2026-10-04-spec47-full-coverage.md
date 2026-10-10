@@ -769,3 +769,29 @@ Results, run records and counts moved out of Spec 47 section 5. Spec 47 section 
    its v2 home page throws a React error at runtime and needs fixing in Claude Design first). Both drafts carry the
    `data-dc-tpl` stamps the skeleton writer uses. The redesign's `Theme Mapping.md` is a candidate answer key for the
    skeleton writer once reviewed (its core-block and plugin picks replaced through `blocks.replaces`).
+   **First surface run 2026-10-10: Mama's footer (`SiteFooter.dc.html`), not yet at the done line.** Setup:
+   `sites/mamas-munches-redesign/build/surfaces.json` (footer = `sgs_footer` post 19 on mamas-test, made the active
+   footer through `sgs_active_footer_cpt_id` as Eye Care's 182 is, `canvas: true`); the draft served by
+   `fill.mjs --serve` (its `draftUrl` is that session's port). Route: inventory 68 elements, proposal 46 nodes,
+   check-refs 52/52 unique, Fill 229 written, 158 UNMAPPED, 5 handover; build clean; walk 2170 open, 68 accepted at
+   1440/768/375 (headed). What differed from Eye Care, each a route or setup defect:
+   - **Draft runtime.** A Claude Design draft loads React and Babel from unpkg.com, so Fill without `--allow-external`
+     read 0 of 51 targets (fixed in the docs; the flag is required for every Claude Design draft).
+   - **check-refs resolved slot finders page-wide** (a generated icon's `svg` hit the page's first svg: 3 false
+     ambiguous rows); now scoped inside the node as Fill reads it (`check-refs.mjs::readTargets`).
+   - **Skeleton writer vs `Theme Mapping.md`:** right on rows, link columns, social row, copyright, legal links, credit.
+     Wrong on the CTA (a pill link with words and an arrow proposed as a container holding only the arrow; corrected by
+     `skeleton.mjs decide` to `sgs/button`) and the tagline marquee (proposed `sgs/text`; the mapping's
+     `sgs/trust-bar` autoScroll is right, and the writer has no marquee rule). The Instagram strip is six static
+     `sgs/media` tiles: the mapping's feed source does not exist in the framework.
+   - **Advisory snapshot.** `theme-snapshot.json` (extract.py from the draft) marks the draft's primary, surface and
+     text colours advisory, and the rest of its palette is framework baseline; `push-theme-snapshot.py` strips advisory
+     entries (FR-33-5), so the live site paints the framework palette and every colour Fill resolved to a Mama's slug
+     shows the baseline. Needs Bean's confirmation (push with `--include-advisory`) or a re-extraction.
+   - **Layout not carried:** the Instagram grid's six columns (`grid-template-columns` UNMAPPED no-setting) became two
+     ~290px columns; the strip's header row lost its flex row (Follow along drops below); the icon lists paint default
+     check icons the draft lacks; `display` ambiguous on 22 rows.
+   - **Site content on a fresh site:** no logo, email, copyright or WhatsApp in Site Info, so those render empty (the 5
+     handover rows; nothing fills Site Info from a draft yet).
+   - **Stale host cache after a reset:** the home page served a cached page from the site's previous install (LiteSpeed
+     and Astra assets) until `hosting_cache_clear-website`; a reset test site needs that clear before its first walk.

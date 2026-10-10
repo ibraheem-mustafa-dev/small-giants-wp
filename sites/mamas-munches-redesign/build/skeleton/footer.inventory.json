@@ -1,0 +1,3570 @@
+{
+	"generated": "2026-10-10T09:45:12.942Z",
+	"source": "http://127.0.0.1:52502/SiteFooter.dc.html",
+	"root": "footer[data-dc-tpl=\"2\"]",
+	"keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+	"checks": {
+		"rootName": "SiteFooter",
+		"rootKey": "SiteFooter/2#0",
+		"unstamped": [
+			{
+				"tag": "div",
+				"cls": "",
+				"text": "boost your milk, bite by bite✦baked when you order✦handmade "
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "boost your milk, bite by bite✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "baked when you order✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "handmade in Birmingham✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "one-handed snacking✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "boost your milk, bite by bite✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "baked when you order✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "handmade in Birmingham✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "one-handed snacking✦"
+			},
+			{
+				"tag": "span",
+				"cls": "",
+				"text": "✦"
+			}
+		],
+		"duplicateKeys": 0,
+		"perWidthCounts": {
+			"375": 68,
+			"768": 68,
+			"1440": 68
+		},
+		"tagAgree": 68,
+		"tagDisagree": [],
+		"keysMissingAt": {
+			"375": [],
+			"768": [],
+			"1440": []
+		},
+		"screenshotSkips": []
+	},
+	"elements": [
+		{
+			"key": "SiteFooter/2#0",
+			"parentKey": null,
+			"depth": 0,
+			"tag": "footer",
+			"template": "SiteFooter",
+			"tpl": 2,
+			"attrs": {
+				"style": "font-family: Karla, system-ui, sans-serif; color: rgb(58, 42, 34);"
+			},
+			"words": "",
+			"allText": "fresh out the oven… @mamasmunches Follow along boost your milk, bite by bite✦baked when you order✦handmade in Birmingham",
+			"membership": [],
+			"srcTag": "footer",
+			"srcOwnText": "",
+			"snippet": "<footer style=\"font-family:'Karla',system-ui,sans-serif;color:#3A2A22\" data-dc-tpl=\"2\"> <section aria-label=\"Instagram\" style=\"background:#FBF3DC;padding:{{ igPad }}\" data-dc-tpl=\"3\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-",
+			"box": {
+				"375": {
+					"x": 8,
+					"y": 8,
+					"w": 359,
+					"h": 1490.3
+				},
+				"768": {
+					"x": 8,
+					"y": 8,
+					"w": 752,
+					"h": 1492.1
+				},
+				"1440": {
+					"x": 8,
+					"y": 8,
+					"w": 1424,
+					"h": 1272.4
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_2_0@375.png",
+				"1440": "shots/SiteFooter_2_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/3#0",
+			"parentKey": "SiteFooter/2#0",
+			"depth": 1,
+			"tag": "section",
+			"template": "SiteFooter",
+			"tpl": 3,
+			"attrs": {
+				"aria-label": "Instagram",
+				"style": "background: rgb(251, 243, 220); padding: 88px 40px;"
+			},
+			"words": "",
+			"allText": "fresh out the oven… @mamasmunches Follow along",
+			"membership": [],
+			"srcTag": "section",
+			"srcOwnText": "",
+			"snippet": "<section aria-label=\"Instagram\" style=\"background:#FBF3DC;padding:{{ igPad }}\" data-dc-tpl=\"3\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform",
+			"box": {
+				"375": {
+					"x": 8,
+					"y": 8,
+					"w": 359,
+					"h": 421
+				},
+				"768": {
+					"x": 8,
+					"y": 8,
+					"w": 752,
+					"h": 687.1
+				},
+				"1440": {
+					"x": 8,
+					"y": 8,
+					"w": 1424,
+					"h": 486.6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_3_0@375.png",
+				"1440": "shots/SiteFooter_3_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/4#0",
+			"parentKey": "SiteFooter/3#0",
+			"depth": 2,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 4,
+			"attrs": {
+				"style": "max-width: 1240px; margin: 0px auto;"
+			},
+			"words": "",
+			"allText": "fresh out the oven… @mamasmunches Follow along",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margi",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 56,
+					"w": 319,
+					"h": 325
+				},
+				"768": {
+					"x": 40,
+					"y": 72,
+					"w": 688,
+					"h": 559.1
+				},
+				"1440": {
+					"x": 100,
+					"y": 96,
+					"w": 1240,
+					"h": 310.6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_4_0@375.png",
+				"1440": "shots/SiteFooter_4_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/5#0",
+			"parentKey": "SiteFooter/4#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 5,
+			"attrs": {
+				"style": "display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin-bottom: 24px;"
+			},
+			"words": "",
+			"allText": "fresh out the oven… @mamasmunches Follow along",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;f",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 56,
+					"w": 319,
+					"h": 140.7
+				},
+				"768": {
+					"x": 40,
+					"y": 72,
+					"w": 688,
+					"h": 81.1
+				},
+				"1440": {
+					"x": 100,
+					"y": 96,
+					"w": 1240,
+					"h": 91.6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_5_0@375.png",
+				"1440": "shots/SiteFooter_5_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/6#0",
+			"parentKey": "SiteFooter/5#0",
+			"depth": 4,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 6,
+			"attrs": {},
+			"words": "",
+			"allText": "fresh out the oven… @mamasmunches",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05\" data-dc-tpl=\"8\">@mamasmunches</h2> </div>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 56,
+					"w": 276.4,
+					"h": 72.7
+				},
+				"768": {
+					"x": 40,
+					"y": 72,
+					"w": 341.4,
+					"h": 81.1
+				},
+				"1440": {
+					"x": 100,
+					"y": 96,
+					"w": 422.7,
+					"h": 91.6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_6_0@375.png",
+				"1440": "shots/SiteFooter_6_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/7#0",
+			"parentKey": "SiteFooter/6#0",
+			"depth": 5,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 7,
+			"attrs": {
+				"style": "font-family: Caveat, cursive; font-size: 26px; color: rgb(168, 64, 79); transform: rotate(-2deg); transform-origin: left center;"
+			},
+			"words": "fresh out the oven…",
+			"allText": "fresh out the oven…",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "fresh out the oven…",
+			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div>",
+			"box": {
+				"375": {
+					"x": 27.4,
+					"y": 46.4,
+					"w": 277.5,
+					"h": 46.6
+				},
+				"768": {
+					"x": 39.4,
+					"y": 60.1,
+					"w": 342.5,
+					"h": 48.9
+				},
+				"1440": {
+					"x": 99.4,
+					"y": 81.3,
+					"w": 423.7,
+					"h": 51.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_7_0@375.png",
+				"1440": "shots/SiteFooter_7_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/8#0",
+			"parentKey": "SiteFooter/6#0",
+			"depth": 5,
+			"tag": "h2",
+			"template": "SiteFooter",
+			"tpl": 8,
+			"attrs": {
+				"style": "margin: 0px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 52px; line-height: 1.05;"
+			},
+			"words": "@mamasmunches",
+			"allText": "@mamasmunches",
+			"membership": [],
+			"srcTag": "h2",
+			"srcOwnText": "@mamasmunches",
+			"snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05\" data-dc-tpl=\"8\">@mamasmunches</h2>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 93,
+					"w": 276.4,
+					"h": 35.7
+				},
+				"768": {
+					"x": 40,
+					"y": 109,
+					"w": 341.4,
+					"h": 44.1
+				},
+				"1440": {
+					"x": 100,
+					"y": 133,
+					"w": 422.7,
+					"h": 54.6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_8_0@375.png",
+				"1440": "shots/SiteFooter_8_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/9#0",
+			"parentKey": "SiteFooter/5#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 9,
+			"attrs": {
+				"href": "https://www.instagram.com/mamasmunches/",
+				"class": "scp0",
+				"style": "height: 52px; padding: 0px 22px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 10px; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;"
+			},
+			"words": "Follow along",
+			"allText": "Follow along",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Follow along",
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" style=\"height:52px;padding:0 22px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;color:#3A2A22;font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 140.7,
+					"w": 174.7,
+					"h": 56
+				},
+				"768": {
+					"x": 553.3,
+					"y": 97.1,
+					"w": 174.7,
+					"h": 56
+				},
+				"1440": {
+					"x": 1165.3,
+					"y": 131.6,
+					"w": 174.7,
+					"h": 56
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_9_0@375.png",
+				"1440": "shots/SiteFooter_9_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/10#0",
+			"parentKey": "SiteFooter/9#0",
+			"depth": 5,
+			"tag": "svg",
+			"template": "SiteFooter",
+			"tpl": 10,
+			"attrs": {
+				"viewBox": "0 0 24 24",
+				"style": "fill: none; stroke: currentcolor; stroke-width: 2;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2\" data-dc-tpl=\"10\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"11\"></rect><circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"12\"></circle><circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"13\"></circle></svg>",
+			"box": {
+				"375": {
+					"x": 52,
+					"y": 158.7,
+					"w": 20,
+					"h": 20
+				},
+				"768": {
+					"x": 577.3,
+					"y": 115.1,
+					"w": 20,
+					"h": 20
+				},
+				"1440": {
+					"x": 1189.3,
+					"y": 149.6,
+					"w": 20,
+					"h": 20
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_10_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/11#0",
+			"parentKey": "SiteFooter/10#0",
+			"depth": 6,
+			"tag": "rect",
+			"template": "SiteFooter",
+			"tpl": 11,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "rect",
+			"srcOwnText": "",
+			"snippet": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"11\"></rect>",
+			"box": {
+				"375": {
+					"x": 54.5,
+					"y": 161.2,
+					"w": 15,
+					"h": 15
+				},
+				"768": {
+					"x": 579.8,
+					"y": 117.6,
+					"w": 15,
+					"h": 15
+				},
+				"1440": {
+					"x": 1191.8,
+					"y": 152.1,
+					"w": 15,
+					"h": 15
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_11_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/12#0",
+			"parentKey": "SiteFooter/10#0",
+			"depth": 6,
+			"tag": "circle",
+			"template": "SiteFooter",
+			"tpl": 12,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "circle",
+			"srcOwnText": "",
+			"snippet": "<circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"12\"></circle>",
+			"box": {
+				"375": {
+					"x": 58.7,
+					"y": 165.4,
+					"w": 6.7,
+					"h": 6.7
+				},
+				"768": {
+					"x": 584,
+					"y": 121.8,
+					"w": 6.7,
+					"h": 6.7
+				},
+				"1440": {
+					"x": 1196,
+					"y": 156.3,
+					"w": 6.7,
+					"h": 6.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_12_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/13#0",
+			"parentKey": "SiteFooter/10#0",
+			"depth": 6,
+			"tag": "circle",
+			"template": "SiteFooter",
+			"tpl": 13,
+			"attrs": {
+				"style": "fill: currentcolor; stroke: none;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "circle",
+			"srcOwnText": "",
+			"snippet": "<circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"13\"></circle>",
+			"box": {
+				"375": {
+					"x": 65.6,
+					"y": 163.1,
+					"w": 2,
+					"h": 2
+				},
+				"768": {
+					"x": 590.9,
+					"y": 119.5,
+					"w": 2,
+					"h": 2
+				},
+				"1440": {
+					"x": 1202.9,
+					"y": 154,
+					"w": 2,
+					"h": 2
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_13_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/14#0",
+			"parentKey": "SiteFooter/4#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 14,
+			"attrs": {
+				"style": "display: grid; grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(6, minmax(0px, 1fr)); gap: 14px; overflow-x: visible; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0px; padding: 0px;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:grid;grid-auto-flow:{{ flow }};grid-auto-columns:{{ autoCols }};grid-template-columns:{{ igCols }};gap:14px;overflow-x:{{ ovx }};scroll-snap-type:x mandatory;scrollbar-width:none;margin:{{ bleedM }};padding:{{ bleedP }}\" data-dc-tpl=\"14\"> <sc-for list=\"{{ posts }}\" as=\"p\" hint-placeholder-count=\"0\" data-dc-tpl=\"15\"> <a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"",
+			"box": {
+				"375": {
+					"x": 8,
+					"y": 220.7,
+					"w": 359,
+					"h": 160.4
+				},
+				"768": {
+					"x": 40,
+					"y": 177.1,
+					"w": 688,
+					"h": 454
+				},
+				"1440": {
+					"x": 100,
+					"y": 211.6,
+					"w": 1240,
+					"h": 195
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "grid",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_14_0@375.png",
+				"1440": "shots/SiteFooter_14_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/16#0",
+			"parentKey": "SiteFooter/14#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 16,
+			"attrs": {
+				"href": "https://www.instagram.com/mamasmunches/",
+				"aria-label": "View on Instagram",
+				"class": "scp1",
+				"style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(-2deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"box": {
+				"375": {
+					"x": 7.6,
+					"y": 226.3,
+					"w": 145.2,
+					"h": 145.2
+				},
+				"768": {
+					"x": 36.2,
+					"y": 173.3,
+					"w": 227.5,
+					"h": 227.5
+				},
+				"1440": {
+					"x": 96.7,
+					"y": 208.3,
+					"w": 201.7,
+					"h": 201.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_16_0@375.png",
+				"1440": "shots/SiteFooter_16_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/17#0",
+			"parentKey": "SiteFooter/16#0",
+			"depth": 5,
+			"tag": "img",
+			"template": "SiteFooter",
+			"tpl": 17,
+			"attrs": {
+				"style": "width: 100%; height: 100%; object-fit: cover;",
+				"srcBasename": "photo-hero-mug.jpg"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "img",
+			"srcOwnText": "",
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"box": {
+				"375": {
+					"x": 9.7,
+					"y": 228.3,
+					"w": 141,
+					"h": 141
+				},
+				"768": {
+					"x": 38.3,
+					"y": 175.4,
+					"w": 223.4,
+					"h": 223.4
+				},
+				"1440": {
+					"x": 98.7,
+					"y": 210.3,
+					"w": 197.5,
+					"h": 197.5
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_17_0@375.png",
+				"1440": "shots/SiteFooter_17_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/16#1",
+			"parentKey": "SiteFooter/14#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 16,
+			"attrs": {
+				"href": "https://www.instagram.com/mamasmunches/",
+				"aria-label": "View on Instagram",
+				"class": "scp1",
+				"style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(1.5deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"box": {
+				"375": {
+					"x": 162.5,
+					"y": 226.9,
+					"w": 144,
+					"h": 144
+				},
+				"768": {
+					"x": 271.2,
+					"y": 174.3,
+					"w": 225.7,
+					"h": 225.7
+				},
+				"1440": {
+					"x": 306.5,
+					"y": 209.1,
+					"w": 200,
+					"h": 200
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_16_1@375.png",
+				"1440": "shots/SiteFooter_16_1@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/17#1",
+			"parentKey": "SiteFooter/16#1",
+			"depth": 5,
+			"tag": "img",
+			"template": "SiteFooter",
+			"tpl": 17,
+			"attrs": {
+				"style": "width: 100%; height: 100%; object-fit: cover;",
+				"srcBasename": "photo-gift-heart.jpg"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "img",
+			"srcOwnText": "",
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"box": {
+				"375": {
+					"x": 164.6,
+					"y": 228.9,
+					"w": 139.9,
+					"h": 139.9
+				},
+				"768": {
+					"x": 273.2,
+					"y": 176.3,
+					"w": 221.6,
+					"h": 221.6
+				},
+				"1440": {
+					"x": 308.5,
+					"y": 211.1,
+					"w": 195.9,
+					"h": 195.9
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_17_1@375.png",
+				"1440": "shots/SiteFooter_17_1@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/16#2",
+			"parentKey": "SiteFooter/14#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 16,
+			"attrs": {
+				"href": "https://www.instagram.com/mamasmunches/",
+				"aria-label": "View on Instagram",
+				"class": "scp1",
+				"style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(-1deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"box": {
+				"375": {
+					"x": 317.5,
+					"y": 227.5,
+					"w": 142.8,
+					"h": 142.8
+				},
+				"768": {
+					"x": 506.1,
+					"y": 175.2,
+					"w": 223.8,
+					"h": 223.8
+				},
+				"1440": {
+					"x": 516.3,
+					"y": 209.9,
+					"w": 198.4,
+					"h": 198.4
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_16_2@375.png",
+				"1440": "shots/SiteFooter_16_2@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/17#2",
+			"parentKey": "SiteFooter/16#2",
+			"depth": 5,
+			"tag": "img",
+			"template": "SiteFooter",
+			"tpl": 17,
+			"attrs": {
+				"style": "width: 100%; height: 100%; object-fit: cover;",
+				"srcBasename": "photo-pair-love.jpg"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "img",
+			"srcOwnText": "",
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"box": {
+				"375": {
+					"x": 319.5,
+					"y": 229.5,
+					"w": 138.7,
+					"h": 138.7
+				},
+				"768": {
+					"x": 508.1,
+					"y": 177.2,
+					"w": 219.7,
+					"h": 219.7
+				},
+				"1440": {
+					"x": 518.3,
+					"y": 211.9,
+					"w": 194.3,
+					"h": 194.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_17_2@375.png",
+				"1440": "shots/SiteFooter_17_2@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/16#3",
+			"parentKey": "SiteFooter/14#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 16,
+			"attrs": {
+				"href": "https://www.instagram.com/mamasmunches/",
+				"aria-label": "View on Instagram",
+				"class": "scp1",
+				"style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(2deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"box": {
+				"375": {
+					"x": 470.7,
+					"y": 226.3,
+					"w": 145.2,
+					"h": 145.2
+				},
+				"768": {
+					"x": 36.2,
+					"y": 407.3,
+					"w": 227.5,
+					"h": 227.5
+				},
+				"1440": {
+					"x": 723.7,
+					"y": 208.3,
+					"w": 201.7,
+					"h": 201.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_16_3@375.png",
+				"1440": "shots/SiteFooter_16_3@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/17#3",
+			"parentKey": "SiteFooter/16#3",
+			"depth": 5,
+			"tag": "img",
+			"template": "SiteFooter",
+			"tpl": 17,
+			"attrs": {
+				"style": "width: 100%; height: 100%; object-fit: cover;",
+				"srcBasename": "photo-bags-pink.jpg"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "img",
+			"srcOwnText": "",
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"box": {
+				"375": {
+					"x": 472.7,
+					"y": 228.3,
+					"w": 141,
+					"h": 141
+				},
+				"768": {
+					"x": 38.3,
+					"y": 409.4,
+					"w": 223.4,
+					"h": 223.4
+				},
+				"1440": {
+					"x": 725.7,
+					"y": 210.3,
+					"w": 197.5,
+					"h": 197.5
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_17_3@375.png",
+				"1440": "shots/SiteFooter_17_3@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/16#4",
+			"parentKey": "SiteFooter/14#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 16,
+			"attrs": {
+				"href": "https://www.instagram.com/mamasmunches/",
+				"aria-label": "View on Instagram",
+				"class": "scp1",
+				"style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(-1.5deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"box": {
+				"375": {
+					"x": 625.6,
+					"y": 226.9,
+					"w": 144,
+					"h": 144
+				},
+				"768": {
+					"x": 271.2,
+					"y": 408.3,
+					"w": 225.7,
+					"h": 225.7
+				},
+				"1440": {
+					"x": 933.5,
+					"y": 209.1,
+					"w": 200,
+					"h": 200
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_16_4@375.png",
+				"1440": "shots/SiteFooter_16_4@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/17#4",
+			"parentKey": "SiteFooter/16#4",
+			"depth": 5,
+			"tag": "img",
+			"template": "SiteFooter",
+			"tpl": 17,
+			"attrs": {
+				"style": "width: 100%; height: 100%; object-fit: cover;",
+				"srcBasename": "photo-tray-love.jpg"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "img",
+			"srcOwnText": "",
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"box": {
+				"375": {
+					"x": 627.7,
+					"y": 228.9,
+					"w": 139.9,
+					"h": 139.9
+				},
+				"768": {
+					"x": 273.2,
+					"y": 410.3,
+					"w": 221.6,
+					"h": 221.6
+				},
+				"1440": {
+					"x": 935.5,
+					"y": 211.1,
+					"w": 195.9,
+					"h": 195.9
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_17_4@375.png",
+				"1440": "shots/SiteFooter_17_4@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/16#5",
+			"parentKey": "SiteFooter/14#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 16,
+			"attrs": {
+				"href": "https://www.instagram.com/mamasmunches/",
+				"aria-label": "View on Instagram",
+				"class": "scp1",
+				"style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(1deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+			"box": {
+				"375": {
+					"x": 780.6,
+					"y": 227.5,
+					"w": 142.8,
+					"h": 142.8
+				},
+				"768": {
+					"x": 506.1,
+					"y": 409.2,
+					"w": 223.8,
+					"h": 223.8
+				},
+				"1440": {
+					"x": 1143.3,
+					"y": 209.9,
+					"w": 198.4,
+					"h": 198.4
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_16_5@375.png",
+				"1440": "shots/SiteFooter_16_5@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/17#5",
+			"parentKey": "SiteFooter/16#5",
+			"depth": 5,
+			"tag": "img",
+			"template": "SiteFooter",
+			"tpl": 17,
+			"attrs": {
+				"style": "width: 100%; height: 100%; object-fit: cover;",
+				"srcBasename": "photo-bun-case.jpg"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ posts }}",
+					"as": "p",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "img",
+			"srcOwnText": "",
+			"snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+			"box": {
+				"375": {
+					"x": 782.6,
+					"y": 229.5,
+					"w": 138.7,
+					"h": 138.7
+				},
+				"768": {
+					"x": 508.1,
+					"y": 411.2,
+					"w": 219.7,
+					"h": 219.7
+				},
+				"1440": {
+					"x": 1145.3,
+					"y": 211.9,
+					"w": 194.3,
+					"h": 194.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_17_5@375.png",
+				"1440": "shots/SiteFooter_17_5@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/18#0",
+			"parentKey": "SiteFooter/2#0",
+			"depth": 1,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 18,
+			"attrs": {
+				"aria-hidden": "true",
+				"style": "background: rgb(249, 207, 110); border-top: 2px solid rgb(58, 42, 34); border-bottom: 2px solid rgb(58, 42, 34); overflow: hidden; padding: 14px 0px;"
+			},
+			"words": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦",
+			"allText": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by b",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "{{ tagline }}",
+			"snippet": "<div aria-hidden=\"true\" style=\"background:#F9CF6E;border-top:2px solid #3A2A22;border-bottom:2px solid #3A2A22;overflow:hidden;padding:14px 0\" data-dc-tpl=\"18\">{{ tagline }}</div>",
+			"box": {
+				"375": {
+					"x": 8,
+					"y": 429,
+					"w": 359,
+					"h": 64
+				},
+				"768": {
+					"x": 8,
+					"y": 695.1,
+					"w": 752,
+					"h": 75
+				},
+				"1440": {
+					"x": 8,
+					"y": 494.6,
+					"w": 1424,
+					"h": 75
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_18_0@375.png",
+				"1440": "shots/SiteFooter_18_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/19#0",
+			"parentKey": "SiteFooter/2#0",
+			"depth": 1,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 19,
+			"attrs": {
+				"style": "background: rgb(245, 194, 200); padding: 80px 40px 32px; overflow: hidden;"
+			},
+			"words": "",
+			"allText": "Hungry? Of course you are. Build your box → shop All Zookies Build your box Subscribe & save Gifts Taster Trio help FAQs",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"background:#F5C2C8;padding:{{ mainPad }};overflow:hidden\" data-dc-tpl=\"19\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"20\"> <div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{",
+			"box": {
+				"375": {
+					"x": 8,
+					"y": 493,
+					"w": 359,
+					"h": 1005.3
+				},
+				"768": {
+					"x": 8,
+					"y": 770.1,
+					"w": 752,
+					"h": 730
+				},
+				"1440": {
+					"x": 8,
+					"y": 569.6,
+					"w": 1424,
+					"h": 710.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_19_0@375.png",
+				"1440": "shots/SiteFooter_19_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/20#0",
+			"parentKey": "SiteFooter/19#0",
+			"depth": 2,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 20,
+			"attrs": {
+				"style": "max-width: 1240px; margin: 0px auto;"
+			},
+			"words": "",
+			"allText": "Hungry? Of course you are. Build your box → shop All Zookies Build your box Subscribe & save Gifts Taster Trio help FAQs",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"20\"> <div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 541,
+					"w": 319,
+					"h": 933.3
+				},
+				"768": {
+					"x": 40,
+					"y": 834.1,
+					"w": 688,
+					"h": 638
+				},
+				"1440": {
+					"x": 100,
+					"y": 649.6,
+					"w": 1240,
+					"h": 598.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_20_0@375.png",
+				"1440": "shots/SiteFooter_20_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/21#0",
+			"parentKey": "SiteFooter/20#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 21,
+			"attrs": {
+				"style": "display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; padding-bottom: 56px; border-bottom: 2px dashed rgba(58, 42, 34, 0.28);"
+			},
+			"words": "",
+			"allText": "Hungry? Of course you are. Build your box →",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaS",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 541,
+					"w": 319,
+					"h": 361.3
+				},
+				"768": {
+					"x": 40,
+					"y": 834.1,
+					"w": 688,
+					"h": 240
+				},
+				"1440": {
+					"x": 100,
+					"y": 649.6,
+					"w": 1240,
+					"h": 238.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "grid",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_21_0@375.png",
+				"1440": "shots/SiteFooter_21_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/22#0",
+			"parentKey": "SiteFooter/21#0",
+			"depth": 4,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 22,
+			"attrs": {
+				"style": "display: flex; flex-direction: column; gap: 18px; align-items: flex-start; text-align: left;"
+			},
+			"words": "",
+			"allText": "Hungry? Of course you are. Build your box →",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaSize }};line-height:1;letter-spacing:-0.02em;text-wrap:balance\" data-dc-tpl=\"23\">Hungry? Of course you are.</h2> <a href=\"Home.dc.html#build\" style=\"height:60px;padding:0 30px;borde",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 541,
+					"w": 319,
+					"h": 162
+				},
+				"768": {
+					"x": 40,
+					"y": 834.1,
+					"w": 510,
+					"h": 194
+				},
+				"1440": {
+					"x": 100,
+					"y": 659,
+					"w": 1022,
+					"h": 162
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "column",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_22_0@375.png",
+				"1440": "shots/SiteFooter_22_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/23#0",
+			"parentKey": "SiteFooter/22#0",
+			"depth": 5,
+			"tag": "h2",
+			"template": "SiteFooter",
+			"tpl": 23,
+			"attrs": {
+				"style": "margin: 0px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 80px; line-height: 1; letter-spacing: -0.02em; text-wrap: balance;"
+			},
+			"words": "Hungry? Of course you are.",
+			"allText": "Hungry? Of course you are.",
+			"membership": [],
+			"srcTag": "h2",
+			"srcOwnText": "Hungry? Of course you are.",
+			"snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaSize }};line-height:1;letter-spacing:-0.02em;text-wrap:balance\" data-dc-tpl=\"23\">Hungry? Of course you are.</h2>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 541,
+					"w": 319,
+					"h": 80
+				},
+				"768": {
+					"x": 40,
+					"y": 834.1,
+					"w": 510,
+					"h": 112
+				},
+				"1440": {
+					"x": 100,
+					"y": 659,
+					"w": 924.1,
+					"h": 80
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_23_0@375.png",
+				"1440": "shots/SiteFooter_23_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/24#0",
+			"parentKey": "SiteFooter/22#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 24,
+			"attrs": {
+				"href": "Home.dc.html#build",
+				"class": "scp0",
+				"style": "height: 60px; padding: 0px 30px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(238, 128, 136); color: rgb(58, 42, 34); font-weight: 700; font-size: 17px; display: flex; align-items: center; gap: 10px; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;"
+			},
+			"words": "Build your box",
+			"allText": "Build your box →",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Build your box",
+			"snippet": "<a href=\"Home.dc.html#build\" style=\"height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#EE8088;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-2px);box-shadow:6px 6",
+			"box": {
+				"375": {
+					"x": 84.6,
+					"y": 639,
+					"w": 205.8,
+					"h": 64
+				},
+				"768": {
+					"x": 40,
+					"y": 964.1,
+					"w": 205.8,
+					"h": 64
+				},
+				"1440": {
+					"x": 100,
+					"y": 757,
+					"w": 205.8,
+					"h": 64
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_24_0@375.png",
+				"1440": "shots/SiteFooter_24_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/25#0",
+			"parentKey": "SiteFooter/24#0",
+			"depth": 6,
+			"tag": "span",
+			"template": "SiteFooter",
+			"tpl": 25,
+			"attrs": {
+				"aria-hidden": "true"
+			},
+			"words": "→",
+			"allText": "→",
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "→",
+			"snippet": "<span aria-hidden=\"true\" data-dc-tpl=\"25\">→</span>",
+			"box": {
+				"375": {
+					"x": 243.8,
+					"y": 660,
+					"w": 14.7,
+					"h": 22
+				},
+				"768": {
+					"x": 199.2,
+					"y": 985.1,
+					"w": 14.7,
+					"h": 22
+				},
+				"1440": {
+					"x": 259.2,
+					"y": 778,
+					"w": 14.7,
+					"h": 22
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_25_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/26#0",
+			"parentKey": "SiteFooter/21#0",
+			"depth": 4,
+			"tag": "img",
+			"template": "SiteFooter",
+			"tpl": 26,
+			"attrs": {
+				"alt": "Mama's Munches",
+				"class": "scp2",
+				"style": "width: 190px; justify-self: end; transform: rotate(-8deg); transition: transform 0.6s cubic-bezier(0.3, 1.6, 0.5, 1);",
+				"srcBasename": "logo-round.png"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "img",
+			"srcOwnText": "",
+			"snippet": "<img src=\"assets/logo-round.png\" alt=\"Mama's Munches\" style=\"width:{{ logoW }};justify-self:{{ logoJust }};transform:rotate(-8deg);transition:transform .6s cubic-bezier(.3,1.6,.5,1)\" style-hover=\"transform:rotate(6deg) scale(1.05)\" data-dc-tpl=\"26\">",
+			"box": {
+				"375": {
+					"x": 108.9,
+					"y": 722,
+					"w": 157.2,
+					"h": 151.4
+				},
+				"768": {
+					"x": 568.8,
+					"y": 850,
+					"w": 168.4,
+					"h": 162.3
+				},
+				"1440": {
+					"x": 1138.3,
+					"y": 637.3,
+					"w": 213.3,
+					"h": 205.5
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_26_0@375.png",
+				"1440": "shots/SiteFooter_26_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/27#0",
+			"parentKey": "SiteFooter/20#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 27,
+			"attrs": {
+				"style": "display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: 48px; padding: 56px 0px 40px;"
+			},
+			"words": "",
+			"allText": "shop All Zookies Build your box Subscribe & save Gifts Taster Trio help FAQs Delivery Allergens Contact say hello Zainab",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ cols }};gap:{{ gap }};padding:{{ colsPad }}\" data-dc-tpl=\"27\"> <nav aria-label=\"Shop\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"28\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div> <a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17p",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 902.3,
+					"w": 319,
+					"h": 448
+				},
+				"768": {
+					"x": 40,
+					"y": 1074.1,
+					"w": 688,
+					"h": 293
+				},
+				"1440": {
+					"x": 100,
+					"y": 888.4,
+					"w": 1240,
+					"h": 313
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "grid",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_27_0@375.png",
+				"1440": "shots/SiteFooter_27_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/28#0",
+			"parentKey": "SiteFooter/27#0",
+			"depth": 4,
+			"tag": "nav",
+			"template": "SiteFooter",
+			"tpl": 28,
+			"attrs": {
+				"aria-label": "Shop",
+				"style": "display: flex; flex-direction: column; gap: 2px;"
+			},
+			"words": "",
+			"allText": "shop All Zookies Build your box Subscribe & save Gifts Taster Trio",
+			"membership": [],
+			"srcTag": "nav",
+			"srcOwnText": "",
+			"snippet": "<nav aria-label=\"Shop\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"28\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div> <a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;te",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 938.3,
+					"w": 149.5,
+					"h": 217
+				},
+				"768": {
+					"x": 40,
+					"y": 1118.1,
+					"w": 189.1,
+					"h": 217
+				},
+				"1440": {
+					"x": 100,
+					"y": 944.4,
+					"w": 346.7,
+					"h": 217
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "column",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_28_0@375.png",
+				"1440": "shots/SiteFooter_28_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/29#0",
+			"parentKey": "SiteFooter/28#0",
+			"depth": 5,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 29,
+			"attrs": {
+				"style": "font-family: Caveat, cursive; font-size: 24px; color: rgb(142, 52, 68); margin-bottom: 4px;"
+			},
+			"words": "shop",
+			"allText": "shop",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "shop",
+			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 938.3,
+					"w": 149.5,
+					"h": 33
+				},
+				"768": {
+					"x": 40,
+					"y": 1118.1,
+					"w": 189.1,
+					"h": 33
+				},
+				"1440": {
+					"x": 100,
+					"y": 944.4,
+					"w": 346.7,
+					"h": 33
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_29_0@375.png",
+				"1440": "shots/SiteFooter_29_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/30#0",
+			"parentKey": "SiteFooter/28#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 30,
+			"attrs": {
+				"href": "Shop.dc.html",
+				"class": "scp3",
+				"style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+			},
+			"words": "All Zookies",
+			"allText": "All Zookies",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "All Zookies",
+			"snippet": "<a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"30\">All Zookies</a>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 977.3,
+					"w": 149.5,
+					"h": 34
+				},
+				"768": {
+					"x": 40,
+					"y": 1157.1,
+					"w": 189.1,
+					"h": 34
+				},
+				"1440": {
+					"x": 100,
+					"y": 983.4,
+					"w": 346.7,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_30_0@375.png",
+				"1440": "shots/SiteFooter_30_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/31#0",
+			"parentKey": "SiteFooter/28#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 31,
+			"attrs": {
+				"href": "Home.dc.html#build",
+				"class": "scp3",
+				"style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+			},
+			"words": "Build your box",
+			"allText": "Build your box",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Build your box",
+			"snippet": "<a href=\"Home.dc.html#build\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"31\">Build your box</a>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1013.3,
+					"w": 149.5,
+					"h": 34
+				},
+				"768": {
+					"x": 40,
+					"y": 1193.1,
+					"w": 189.1,
+					"h": 34
+				},
+				"1440": {
+					"x": 100,
+					"y": 1019.4,
+					"w": 346.7,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_31_0@375.png",
+				"1440": "shots/SiteFooter_31_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/32#0",
+			"parentKey": "SiteFooter/28#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 32,
+			"attrs": {
+				"href": "Product.dc.html?id=zookies&sub=1",
+				"class": "scp3",
+				"style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+			},
+			"words": "Subscribe & save",
+			"allText": "Subscribe & save",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Subscribe & save",
+			"snippet": "<a href=\"Product.dc.html?id=zookies&amp;sub=1\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"32\">Subscribe &amp; save</a>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1049.3,
+					"w": 149.5,
+					"h": 34
+				},
+				"768": {
+					"x": 40,
+					"y": 1229.1,
+					"w": 189.1,
+					"h": 34
+				},
+				"1440": {
+					"x": 100,
+					"y": 1055.4,
+					"w": 346.7,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_32_0@375.png",
+				"1440": "shots/SiteFooter_32_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/33#0",
+			"parentKey": "SiteFooter/28#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 33,
+			"attrs": {
+				"href": "Gifts.dc.html",
+				"class": "scp3",
+				"style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+			},
+			"words": "Gifts",
+			"allText": "Gifts",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Gifts",
+			"snippet": "<a href=\"Gifts.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"33\">Gifts</a>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1085.3,
+					"w": 149.5,
+					"h": 34
+				},
+				"768": {
+					"x": 40,
+					"y": 1265.1,
+					"w": 189.1,
+					"h": 34
+				},
+				"1440": {
+					"x": 100,
+					"y": 1091.4,
+					"w": 346.7,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_33_0@375.png",
+				"1440": "shots/SiteFooter_33_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/34#0",
+			"parentKey": "SiteFooter/28#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 34,
+			"attrs": {
+				"href": "Product.dc.html?id=trial",
+				"class": "scp3",
+				"style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+			},
+			"words": "Taster Trio",
+			"allText": "Taster Trio",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Taster Trio",
+			"snippet": "<a href=\"Product.dc.html?id=trial\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"34\">Taster Trio</a>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1121.3,
+					"w": 149.5,
+					"h": 34
+				},
+				"768": {
+					"x": 40,
+					"y": 1301.1,
+					"w": 189.1,
+					"h": 34
+				},
+				"1440": {
+					"x": 100,
+					"y": 1127.4,
+					"w": 346.7,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_34_0@375.png",
+				"1440": "shots/SiteFooter_34_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/35#0",
+			"parentKey": "SiteFooter/27#0",
+			"depth": 4,
+			"tag": "nav",
+			"template": "SiteFooter",
+			"tpl": 35,
+			"attrs": {
+				"aria-label": "Help",
+				"style": "display: flex; flex-direction: column; gap: 2px;"
+			},
+			"words": "",
+			"allText": "help FAQs Delivery Allergens Contact",
+			"membership": [],
+			"srcTag": "nav",
+			"srcOwnText": "",
+			"snippet": "<nav aria-label=\"Help\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"35\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"36\">help</div> <a href=\"Help.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;te",
+			"box": {
+				"375": {
+					"x": 197.5,
+					"y": 938.3,
+					"w": 149.5,
+					"h": 217
+				},
+				"768": {
+					"x": 261.1,
+					"y": 1118.1,
+					"w": 189.1,
+					"h": 217
+				},
+				"1440": {
+					"x": 494.7,
+					"y": 944.4,
+					"w": 346.7,
+					"h": 217
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "column",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_35_0@375.png",
+				"1440": "shots/SiteFooter_35_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/36#0",
+			"parentKey": "SiteFooter/35#0",
+			"depth": 5,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 36,
+			"attrs": {
+				"style": "font-family: Caveat, cursive; font-size: 24px; color: rgb(142, 52, 68); margin-bottom: 4px;"
+			},
+			"words": "help",
+			"allText": "help",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "help",
+			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"36\">help</div>",
+			"box": {
+				"375": {
+					"x": 197.5,
+					"y": 938.3,
+					"w": 149.5,
+					"h": 33
+				},
+				"768": {
+					"x": 261.1,
+					"y": 1118.1,
+					"w": 189.1,
+					"h": 33
+				},
+				"1440": {
+					"x": 494.7,
+					"y": 944.4,
+					"w": 346.7,
+					"h": 33
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_36_0@375.png",
+				"1440": "shots/SiteFooter_36_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/37#0",
+			"parentKey": "SiteFooter/35#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 37,
+			"attrs": {
+				"href": "Help.dc.html",
+				"class": "scp3",
+				"style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+			},
+			"words": "FAQs",
+			"allText": "FAQs",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "FAQs",
+			"snippet": "<a href=\"Help.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"37\">FAQs</a>",
+			"box": {
+				"375": {
+					"x": 197.5,
+					"y": 977.3,
+					"w": 149.5,
+					"h": 34
+				},
+				"768": {
+					"x": 261.1,
+					"y": 1157.1,
+					"w": 189.1,
+					"h": 34
+				},
+				"1440": {
+					"x": 494.7,
+					"y": 983.4,
+					"w": 346.7,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_37_0@375.png",
+				"1440": "shots/SiteFooter_37_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/38#0",
+			"parentKey": "SiteFooter/35#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 38,
+			"attrs": {
+				"href": "Help.dc.html#delivery",
+				"class": "scp3",
+				"style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+			},
+			"words": "Delivery",
+			"allText": "Delivery",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Delivery",
+			"snippet": "<a href=\"Help.dc.html#delivery\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"38\">Delivery</a>",
+			"box": {
+				"375": {
+					"x": 197.5,
+					"y": 1013.3,
+					"w": 149.5,
+					"h": 34
+				},
+				"768": {
+					"x": 261.1,
+					"y": 1193.1,
+					"w": 189.1,
+					"h": 34
+				},
+				"1440": {
+					"x": 494.7,
+					"y": 1019.4,
+					"w": 346.7,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_38_0@375.png",
+				"1440": "shots/SiteFooter_38_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/39#0",
+			"parentKey": "SiteFooter/35#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 39,
+			"attrs": {
+				"href": "Help.dc.html#allergens",
+				"class": "scp3",
+				"style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+			},
+			"words": "Allergens",
+			"allText": "Allergens",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Allergens",
+			"snippet": "<a href=\"Help.dc.html#allergens\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"39\">Allergens</a>",
+			"box": {
+				"375": {
+					"x": 197.5,
+					"y": 1049.3,
+					"w": 149.5,
+					"h": 34
+				},
+				"768": {
+					"x": 261.1,
+					"y": 1229.1,
+					"w": 189.1,
+					"h": 34
+				},
+				"1440": {
+					"x": 494.7,
+					"y": 1055.4,
+					"w": 346.7,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_39_0@375.png",
+				"1440": "shots/SiteFooter_39_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/40#0",
+			"parentKey": "SiteFooter/35#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 40,
+			"attrs": {
+				"href": "Contact.dc.html",
+				"class": "scp3",
+				"style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+			},
+			"words": "Contact",
+			"allText": "Contact",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Contact",
+			"snippet": "<a href=\"Contact.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"40\">Contact</a>",
+			"box": {
+				"375": {
+					"x": 197.5,
+					"y": 1085.3,
+					"w": 149.5,
+					"h": 34
+				},
+				"768": {
+					"x": 261.1,
+					"y": 1265.1,
+					"w": 189.1,
+					"h": 34
+				},
+				"1440": {
+					"x": 494.7,
+					"y": 1091.4,
+					"w": 346.7,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_40_0@375.png",
+				"1440": "shots/SiteFooter_40_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/41#0",
+			"parentKey": "SiteFooter/27#0",
+			"depth": 4,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 41,
+			"attrs": {
+				"style": "display: flex; flex-direction: column; gap: 12px; grid-column: auto;"
+			},
+			"words": "",
+			"allText": "say hello Zainab@mamasmunches.com",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:12px;grid-column:{{ helloSpan }}\" data-dc-tpl=\"41\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444\" data-dc-tpl=\"42\">say hello</div> <a href=\"mailto:Zainab@mamasmunches.com\" style=\"align-self:flex-start;color:#3A2A22;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1187.3,
+					"w": 319,
+					"h": 135
+				},
+				"768": {
+					"x": 482.2,
+					"y": 1118.1,
+					"w": 245.8,
+					"h": 217
+				},
+				"1440": {
+					"x": 889.3,
+					"y": 944.4,
+					"w": 450.7,
+					"h": 217
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "column",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_41_0@375.png",
+				"1440": "shots/SiteFooter_41_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/42#0",
+			"parentKey": "SiteFooter/41#0",
+			"depth": 5,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 42,
+			"attrs": {
+				"style": "font-family: Caveat, cursive; font-size: 24px; color: rgb(142, 52, 68);"
+			},
+			"words": "say hello",
+			"allText": "say hello",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "say hello",
+			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444\" data-dc-tpl=\"42\">say hello</div>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1187.3,
+					"w": 319,
+					"h": 33
+				},
+				"768": {
+					"x": 482.2,
+					"y": 1118.1,
+					"w": 245.8,
+					"h": 33
+				},
+				"1440": {
+					"x": 889.3,
+					"y": 944.4,
+					"w": 450.7,
+					"h": 33
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_42_0@375.png",
+				"1440": "shots/SiteFooter_42_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/43#0",
+			"parentKey": "SiteFooter/41#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 43,
+			"attrs": {
+				"href": "mailto:Zainab@mamasmunches.com",
+				"class": "scp4",
+				"style": "align-self: flex-start; color: rgb(58, 42, 34); font-size: 17px; font-weight: 700; text-decoration: underline 2px rgb(232, 106, 117); text-underline-offset: 4px; word-break: break-all; padding: 2px 6px; margin-left: -6px; border-radius: 8px; transition: background 0.2s, text-decoration-color 0.2s;"
+			},
+			"words": "Zainab@mamasmunches.com",
+			"allText": "Zainab@mamasmunches.com",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Zainab@mamasmunches.com",
+			"snippet": "<a href=\"mailto:Zainab@mamasmunches.com\" style=\"align-self:flex-start;color:#3A2A22;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px;text-decoration-color:#E86A75;word-break:break-all;padding:2px 6px;margin-left:-6px;border-radius:8px;transition:background .2s, text-decoration-color .2s\" style-hover=\"background:#FFFAF0;text-decoration",
+			"box": {
+				"375": {
+					"x": 22,
+					"y": 1232.3,
+					"w": 249.4,
+					"h": 26
+				},
+				"768": {
+					"x": 476.2,
+					"y": 1163.1,
+					"w": 249.4,
+					"h": 26
+				},
+				"1440": {
+					"x": 883.3,
+					"y": 989.4,
+					"w": 249.4,
+					"h": 26
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_43_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/44#0",
+			"parentKey": "SiteFooter/41#0",
+			"depth": 5,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 44,
+			"attrs": {
+				"style": "display: flex; gap: 10px;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;gap:10px\" data-dc-tpl=\"44\"> <a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"Instagram\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;tra",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1270.3,
+					"w": 319,
+					"h": 52
+				},
+				"768": {
+					"x": 482.2,
+					"y": 1201.1,
+					"w": 245.8,
+					"h": 52
+				},
+				"1440": {
+					"x": 889.3,
+					"y": 1027.4,
+					"w": 450.7,
+					"h": 52
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_44_0@375.png",
+				"1440": "shots/SiteFooter_44_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/45#0",
+			"parentKey": "SiteFooter/44#0",
+			"depth": 6,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 45,
+			"attrs": {
+				"href": "https://www.instagram.com/mamasmunches/",
+				"aria-label": "Instagram",
+				"class": "scp5",
+				"style": "width: 48px; height: 48px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: radial-gradient(circle at 30% 107%, rgb(253, 244, 151) 0%, rgb(253, 89, 73) 45%, rgb(214, 36, 159) 60%, rgb(40, 90, 235) 90%); color: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; box-shadow: rgb(58, 42, 34) 3px 3px 0px; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"Instagram\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1270.3,
+					"w": 52,
+					"h": 52
+				},
+				"768": {
+					"x": 482.2,
+					"y": 1201.1,
+					"w": 52,
+					"h": 52
+				},
+				"1440": {
+					"x": 889.3,
+					"y": 1027.4,
+					"w": 52,
+					"h": 52
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_45_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/46#0",
+			"parentKey": "SiteFooter/45#0",
+			"depth": 7,
+			"tag": "svg",
+			"template": "SiteFooter",
+			"tpl": 46,
+			"attrs": {
+				"viewBox": "0 0 24 24",
+				"style": "fill: none; stroke: currentcolor; stroke-width: 2;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2\" data-dc-tpl=\"46\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"47\"></rect><circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"48\"></circle><circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"49\"></circle></svg>",
+			"box": {
+				"375": {
+					"x": 44,
+					"y": 1286.3,
+					"w": 20,
+					"h": 20
+				},
+				"768": {
+					"x": 498.2,
+					"y": 1217.1,
+					"w": 20,
+					"h": 20
+				},
+				"1440": {
+					"x": 905.3,
+					"y": 1043.4,
+					"w": 20,
+					"h": 20
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_46_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/47#0",
+			"parentKey": "SiteFooter/46#0",
+			"depth": 8,
+			"tag": "rect",
+			"template": "SiteFooter",
+			"tpl": 47,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "rect",
+			"srcOwnText": "",
+			"snippet": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"47\"></rect>",
+			"box": {
+				"375": {
+					"x": 46.5,
+					"y": 1288.8,
+					"w": 15,
+					"h": 15
+				},
+				"768": {
+					"x": 500.7,
+					"y": 1219.6,
+					"w": 15,
+					"h": 15
+				},
+				"1440": {
+					"x": 907.8,
+					"y": 1045.9,
+					"w": 15,
+					"h": 15
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_47_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/48#0",
+			"parentKey": "SiteFooter/46#0",
+			"depth": 8,
+			"tag": "circle",
+			"template": "SiteFooter",
+			"tpl": 48,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "circle",
+			"srcOwnText": "",
+			"snippet": "<circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"48\"></circle>",
+			"box": {
+				"375": {
+					"x": 50.7,
+					"y": 1293,
+					"w": 6.7,
+					"h": 6.7
+				},
+				"768": {
+					"x": 504.8,
+					"y": 1223.8,
+					"w": 6.7,
+					"h": 6.7
+				},
+				"1440": {
+					"x": 912,
+					"y": 1050.1,
+					"w": 6.7,
+					"h": 6.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_48_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/49#0",
+			"parentKey": "SiteFooter/46#0",
+			"depth": 8,
+			"tag": "circle",
+			"template": "SiteFooter",
+			"tpl": 49,
+			"attrs": {
+				"style": "fill: currentcolor; stroke: none;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "circle",
+			"srcOwnText": "",
+			"snippet": "<circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"49\"></circle>",
+			"box": {
+				"375": {
+					"x": 57.6,
+					"y": 1290.7,
+					"w": 2,
+					"h": 2
+				},
+				"768": {
+					"x": 511.8,
+					"y": 1221.5,
+					"w": 2,
+					"h": 2
+				},
+				"1440": {
+					"x": 918.9,
+					"y": 1047.9,
+					"w": 2,
+					"h": 2
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_49_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/50#0",
+			"parentKey": "SiteFooter/44#0",
+			"depth": 6,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 50,
+			"attrs": {
+				"href": "Contact.dc.html",
+				"aria-label": "WhatsApp",
+				"class": "scp5",
+				"style": "width: 48px; height: 48px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(37, 211, 102); color: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; box-shadow: rgb(58, 42, 34) 3px 3px 0px; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"Contact.dc.html\" aria-label=\"WhatsApp\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:#25D366;color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px,-2px) rotate(-8deg);box-shadow:5px 5px 0 #3A2A22\" data-dc-tpl=\"5",
+			"box": {
+				"375": {
+					"x": 90,
+					"y": 1270.3,
+					"w": 52,
+					"h": 52
+				},
+				"768": {
+					"x": 544.2,
+					"y": 1201.1,
+					"w": 52,
+					"h": 52
+				},
+				"1440": {
+					"x": 951.3,
+					"y": 1027.4,
+					"w": 52,
+					"h": 52
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_50_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/51#0",
+			"parentKey": "SiteFooter/50#0",
+			"depth": 7,
+			"tag": "svg",
+			"template": "SiteFooter",
+			"tpl": 51,
+			"attrs": {
+				"viewBox": "0 0 24 24",
+				"style": "fill: none; stroke: currentcolor; stroke-width: 2; stroke-linejoin: round;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round\" data-dc-tpl=\"51\"><path d=\"M4 20l1.3-4A8 8 0 1 1 8.5 19Z\" data-dc-tpl=\"52\"></path><path d=\"M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-2-2l.8-1-1-2Z\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"53\"></path></svg>",
+			"box": {
+				"375": {
+					"x": 106,
+					"y": 1286.3,
+					"w": 20,
+					"h": 20
+				},
+				"768": {
+					"x": 560.2,
+					"y": 1217.1,
+					"w": 20,
+					"h": 20
+				},
+				"1440": {
+					"x": 967.3,
+					"y": 1043.4,
+					"w": 20,
+					"h": 20
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_51_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/52#0",
+			"parentKey": "SiteFooter/51#0",
+			"depth": 8,
+			"tag": "path",
+			"template": "SiteFooter",
+			"tpl": 52,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path d=\"M4 20l1.3-4A8 8 0 1 1 8.5 19Z\" data-dc-tpl=\"52\"></path>",
+			"box": {
+				"375": {
+					"x": 109.3,
+					"y": 1289.5,
+					"w": 13.5,
+					"h": 13.4
+				},
+				"768": {
+					"x": 563.5,
+					"y": 1220.3,
+					"w": 13.5,
+					"h": 13.4
+				},
+				"1440": {
+					"x": 970.7,
+					"y": 1046.7,
+					"w": 13.5,
+					"h": 13.4
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_52_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/53#0",
+			"parentKey": "SiteFooter/51#0",
+			"depth": 8,
+			"tag": "path",
+			"template": "SiteFooter",
+			"tpl": 53,
+			"attrs": {
+				"style": "fill: currentcolor; stroke: none;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path d=\"M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-2-2l.8-1-1-2Z\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"53\"></path>",
+			"box": {
+				"375": {
+					"x": 113.5,
+					"y": 1293.2,
+					"w": 5.4,
+					"h": 5.6
+				},
+				"768": {
+					"x": 567.7,
+					"y": 1224,
+					"w": 5.4,
+					"h": 5.6
+				},
+				"1440": {
+					"x": 974.8,
+					"y": 1050.4,
+					"w": 5.4,
+					"h": 5.6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/SiteFooter_53_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/54#0",
+			"parentKey": "SiteFooter/20#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 54,
+			"attrs": {
+				"style": "height: 8px;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"height:8px\" data-dc-tpl=\"54\"></div>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1350.3,
+					"w": 319,
+					"h": 8
+				},
+				"768": {
+					"x": 40,
+					"y": 1367.1,
+					"w": 688,
+					"h": 8
+				},
+				"1440": {
+					"x": 100,
+					"y": 1201.4,
+					"w": 1240,
+					"h": 8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_54_0@375.png",
+				"1440": "shots/SiteFooter_54_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/55#0",
+			"parentKey": "SiteFooter/20#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "SiteFooter",
+			"tpl": 55,
+			"attrs": {
+				"style": "display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px 24px; font-size: 14px; padding-top: 18px; border-top: 2px dashed rgba(58, 42, 34, 0.28); text-align: center;"
+			},
+			"words": "",
+			"allText": "© 2026 Mama’s Munches · Registered food business PrivacyTerms Website by Small Giants Studio",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ bottomCols }};align-items:center;gap:10px 24px;font-size:14px;padding-top:18px;border-top:2px dashed rgba(58,42,34,.28);text-align:center\" data-dc-tpl=\"55\"> <span style=\"justify-self:{{ leftJust }}\" data-dc-tpl=\"56\">© 2026 Mama’s Munches · Registered food business</span> <span style=\"display:flex;justify-content:center;gap:18px\" data-dc-tpl=\"57\"><a",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1358.3,
+					"w": 319,
+					"h": 116
+				},
+				"768": {
+					"x": 40,
+					"y": 1375.1,
+					"w": 688,
+					"h": 97
+				},
+				"1440": {
+					"x": 100,
+					"y": 1209.4,
+					"w": 1240,
+					"h": 39
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "grid",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_55_0@375.png",
+				"1440": "shots/SiteFooter_55_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/56#0",
+			"parentKey": "SiteFooter/55#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "SiteFooter",
+			"tpl": 56,
+			"attrs": {
+				"style": "justify-self: start;"
+			},
+			"words": "© 2026 Mama’s Munches · Registered food business",
+			"allText": "© 2026 Mama’s Munches · Registered food business",
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "© 2026 Mama’s Munches · Registered food business",
+			"snippet": "<span style=\"justify-self:{{ leftJust }}\" data-dc-tpl=\"56\">© 2026 Mama’s Munches · Registered food business</span>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1378.3,
+					"w": 319,
+					"h": 38
+				},
+				"768": {
+					"x": 222.2,
+					"y": 1395.1,
+					"w": 323.6,
+					"h": 19
+				},
+				"1440": {
+					"x": 100,
+					"y": 1229.4,
+					"w": 323.6,
+					"h": 19
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_56_0@375.png",
+				"1440": "shots/SiteFooter_56_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/57#0",
+			"parentKey": "SiteFooter/55#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "SiteFooter",
+			"tpl": 57,
+			"attrs": {
+				"style": "display: flex; justify-content: center; gap: 18px;"
+			},
+			"words": "",
+			"allText": "PrivacyTerms",
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"display:flex;justify-content:center;gap:18px\" data-dc-tpl=\"57\"><a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"58\">Privacy</a><a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"59\">Terms</a></span>",
+			"box": {
+				"375": {
+					"x": 28,
+					"y": 1426.3,
+					"w": 319,
+					"h": 19
+				},
+				"768": {
+					"x": 40,
+					"y": 1424.1,
+					"w": 688,
+					"h": 19
+				},
+				"1440": {
+					"x": 671.3,
+					"y": 1229.4,
+					"w": 97.3,
+					"h": 19
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_57_0@375.png",
+				"1440": "shots/SiteFooter_57_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/58#0",
+			"parentKey": "SiteFooter/57#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 58,
+			"attrs": {
+				"href": "Help.dc.html#legal",
+				"style": "color: rgb(58, 42, 34);"
+			},
+			"words": "Privacy",
+			"allText": "Privacy",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Privacy",
+			"snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"58\">Privacy</a>",
+			"box": {
+				"375": {
+					"x": 138.8,
+					"y": 1426.3,
+					"w": 43.2,
+					"h": 19
+				},
+				"768": {
+					"x": 335.3,
+					"y": 1424.1,
+					"w": 43.2,
+					"h": 19
+				},
+				"1440": {
+					"x": 671.3,
+					"y": 1229.4,
+					"w": 43.2,
+					"h": 19
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_58_0@375.png",
+				"1440": "shots/SiteFooter_58_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/59#0",
+			"parentKey": "SiteFooter/57#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 59,
+			"attrs": {
+				"href": "Help.dc.html#legal",
+				"style": "color: rgb(58, 42, 34);"
+			},
+			"words": "Terms",
+			"allText": "Terms",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Terms",
+			"snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"59\">Terms</a>",
+			"box": {
+				"375": {
+					"x": 200,
+					"y": 1426.3,
+					"w": 36.2,
+					"h": 19
+				},
+				"768": {
+					"x": 396.5,
+					"y": 1424.1,
+					"w": 36.2,
+					"h": 19
+				},
+				"1440": {
+					"x": 732.5,
+					"y": 1229.4,
+					"w": 36.2,
+					"h": 19
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_59_0@375.png",
+				"1440": "shots/SiteFooter_59_0@1440.png"
+			}
+		},
+		{
+			"key": "SiteFooter/60#0",
+			"parentKey": "SiteFooter/55#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "SiteFooter",
+			"tpl": 60,
+			"attrs": {
+				"href": "https://smallgiantsstudio.com",
+				"class": "scp6",
+				"style": "justify-self: end; color: rgb(58, 42, 34); font-weight: 700; text-decoration: none; white-space: nowrap;"
+			},
+			"words": "Website by Small Giants Studio",
+			"allText": "Website by Small Giants Studio",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Website by Small Giants Studio",
+			"snippet": "<a href=\"https://smallgiantsstudio.com\" style=\"justify-self:{{ rightJust }};color:#3A2A22;font-weight:700;text-decoration:none;white-space:nowrap\" style-hover=\"text-decoration:underline\" data-dc-tpl=\"60\">Website by Small Giants Studio</a>",
+			"box": {
+				"375": {
+					"x": 85,
+					"y": 1455.3,
+					"w": 205,
+					"h": 19
+				},
+				"768": {
+					"x": 281.5,
+					"y": 1453.1,
+					"w": 205,
+					"h": 19
+				},
+				"1440": {
+					"x": 1135,
+					"y": 1229.4,
+					"w": 205,
+					"h": 19
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/SiteFooter_60_0@375.png",
+				"1440": "shots/SiteFooter_60_0@1440.png"
+			}
+		}
+	]
+}
