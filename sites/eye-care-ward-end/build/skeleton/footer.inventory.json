@@ -1,0 +1,2404 @@
+{
+	"generated": "2026-10-10T00:24:25.219Z",
+	"source": "https://mintcream-lyrebird-224487.hostingersite.com/",
+	"root": "footer",
+	"keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+	"checks": {
+		"rootName": "Root",
+		"rootKey": "Root/844#0",
+		"unstamped": [
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "0121 729 8233"
+			}
+		],
+		"duplicateKeys": 0,
+		"perWidthCounts": {
+			"375": 50,
+			"768": 50,
+			"1440": 50
+		},
+		"tagAgree": 50,
+		"tagDisagree": [],
+		"keysMissingAt": {
+			"375": [],
+			"768": [],
+			"1440": []
+		},
+		"screenshotSkips": [
+			{
+				"w": 1440,
+				"key": "Root/852#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 1440,
+				"key": "Root/853#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 1440,
+				"key": "Root/854#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 1440,
+				"key": "Root/855#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 1440,
+				"key": "Root/856#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 1440,
+				"key": "Root/857#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 1440,
+				"key": "Root/886#0",
+				"why": "not visible (box 0x18)"
+			},
+			{
+				"w": 375,
+				"key": "Root/852#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 375,
+				"key": "Root/853#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 375,
+				"key": "Root/854#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 375,
+				"key": "Root/855#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 375,
+				"key": "Root/856#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 375,
+				"key": "Root/857#0",
+				"why": "not rendered (no layout box)"
+			},
+			{
+				"w": 375,
+				"key": "Root/886#0",
+				"why": "not visible (box 0x18)"
+			}
+		]
+	},
+	"elements": [
+		{
+			"key": "Root/844#0",
+			"parentKey": "Root/7#0",
+			"depth": 0,
+			"tag": "footer",
+			"template": "Root",
+			"tpl": 844,
+			"attrs": {
+				"style": "border-top: 1px solid rgb(230, 225, 218); background: rgb(250, 248, 245); margin-top: 40px;"
+			},
+			"words": "",
+			"allText": "Designer eyewear from an independent optician in Birmingham. ShopSunglassesAll brandsPrescription lenses HelpDelivery & ",
+			"membership": [],
+			"srcTag": "footer",
+			"srcOwnText": "",
+			"snippet": "<footer style=\"border-top:1px solid #E6E1DA;background:#FAF8F5;margin-top:40px\" data-dc-tpl=\"844\"> <div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"845\"> <div data-dc-tpl=\"846\"> <img src=\"image/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" style=\"display:block;he",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 8045.4,
+					"w": 375,
+					"h": 899.8
+				},
+				"768": {
+					"x": 0,
+					"y": 8642.2,
+					"w": 768,
+					"h": 646.3
+				},
+				"1440": {
+					"x": 0,
+					"y": 5996.4,
+					"w": 1440,
+					"h": 426.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_844_0@375.png",
+				"1440": "shots/Root_844_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/845#0",
+			"parentKey": "Root/844#0",
+			"depth": 1,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 845,
+			"attrs": {
+				"style": "max-width: 1440px; margin: 0px auto; padding: 104px 52px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 36px; font-size: 14px;"
+			},
+			"words": "",
+			"allText": "Designer eyewear from an independent optician in Birmingham. ShopSunglassesAll brandsPrescription lenses HelpDelivery & ",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"845\"> <div data-dc-tpl=\"846\"> <img src=\"image/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" style=\"display:block;height:32px;width:auto\" data-dc-tpl=\"847\"> <p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;tex",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 8046.4,
+					"w": 375,
+					"h": 801.8
+				},
+				"768": {
+					"x": 0,
+					"y": 8643.2,
+					"w": 768,
+					"h": 566.3
+				},
+				"1440": {
+					"x": 0,
+					"y": 5997.4,
+					"w": 1440,
+					"h": 374.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "grid",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_845_0@375.png",
+				"1440": "shots/Root_845_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/846#0",
+			"parentKey": "Root/845#0",
+			"depth": 2,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 846,
+			"attrs": {},
+			"words": "",
+			"allText": "Designer eyewear from an independent optician in Birmingham.",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div data-dc-tpl=\"846\"> <img src=\"image/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" style=\"display:block;height:32px;width:auto\" data-dc-tpl=\"847\"> <p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"848\">Designer eyewear from an independent optician in Birmingham.</p> <div style=\"display:flex;gap:10px;margin-top:20px\" data-dc-tpl=\"849\"> <a href=\"{{ igHref }}",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8102.4,
+					"w": 335,
+					"h": 156
+				},
+				"768": {
+					"x": 52,
+					"y": 8747.2,
+					"w": 314,
+					"h": 156
+				},
+				"1440": {
+					"x": 52,
+					"y": 6101.4,
+					"w": 307,
+					"h": 166.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_846_0@375.png",
+				"1440": "shots/Root_846_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/847#0",
+			"parentKey": "Root/846#0",
+			"depth": 3,
+			"tag": "img",
+			"template": "Root",
+			"tpl": 847,
+			"attrs": {
+				"alt": "Eye Care Birmingham",
+				"style": "display: block; height: 32px; width: auto;",
+				"srcBasename": "eye-care-wordmark.png"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "img",
+			"srcOwnText": "",
+			"snippet": "<img src=\"image/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" style=\"display:block;height:32px;width:auto\" data-dc-tpl=\"847\">",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8102.4,
+					"w": 111.2,
+					"h": 32
+				},
+				"768": {
+					"x": 52,
+					"y": 8747.2,
+					"w": 111.2,
+					"h": 32
+				},
+				"1440": {
+					"x": 52,
+					"y": 6101.4,
+					"w": 111.2,
+					"h": 32
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_847_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/848#0",
+			"parentKey": "Root/846#0",
+			"depth": 3,
+			"tag": "p",
+			"template": "Root",
+			"tpl": 848,
+			"attrs": {
+				"style": "margin: 18px 0px 0px; color: rgb(94, 88, 79); max-width: 32ch; text-wrap: pretty;"
+			},
+			"words": "Designer eyewear from an independent optician in Birmingham.",
+			"allText": "Designer eyewear from an independent optician in Birmingham.",
+			"membership": [],
+			"srcTag": "p",
+			"srcOwnText": "Designer eyewear from an independent optician in Birmingham.",
+			"snippet": "<p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"848\">Designer eyewear from an independent optician in Birmingham.</p>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8152.4,
+					"w": 293.9,
+					"h": 42
+				},
+				"768": {
+					"x": 52,
+					"y": 8797.2,
+					"w": 293.9,
+					"h": 42
+				},
+				"1440": {
+					"x": 52,
+					"y": 6151.4,
+					"w": 293.9,
+					"h": 42
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_848_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/849#0",
+			"parentKey": "Root/846#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 849,
+			"attrs": {
+				"style": "display: flex; gap: 10px; margin-top: 20px;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;gap:10px;margin-top:20px\" data-dc-tpl=\"849\"> <a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#E4405F;box-shadow:0 0 0 1px #E4405F\"",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8214.4,
+					"w": 335,
+					"h": 44
+				},
+				"768": {
+					"x": 52,
+					"y": 8859.2,
+					"w": 314,
+					"h": 44
+				},
+				"1440": {
+					"x": 52,
+					"y": 6213.4,
+					"w": 307,
+					"h": 44
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_849_0@375.png",
+				"1440": "shots/Root_849_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/850#0",
+			"parentKey": "Root/849#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 850,
+			"attrs": {
+				"href": "https://www.instagram.com/eyecare.birmingham/",
+				"aria-label": "Instagram",
+				"title": "Instagram",
+				"target": "_blank",
+				"class": "scpu",
+				"style": "width: 44px; height: 44px; border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; transition: border-color 0.25s, box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#E4405F;box-shadow:0 0 0 1px #E4405F\" data-dc-tpl=\"850\"> <svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8214.4,
+					"w": 44,
+					"h": 44
+				},
+				"768": {
+					"x": 52,
+					"y": 8859.2,
+					"w": 44,
+					"h": 44
+				},
+				"1440": {
+					"x": 52,
+					"y": 6213.4,
+					"w": 44,
+					"h": 44
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_850_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/851#0",
+			"parentKey": "Root/850#0",
+			"depth": 5,
+			"tag": "svg",
+			"template": "Root",
+			"tpl": 851,
+			"attrs": {
+				"aria-hidden": "true",
+				"viewBox": "0 0 24 24"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" aria-hidden=\"true\" data-dc-tpl=\"851\"><defs data-dc-tpl=\"852\"><linearGradient id=\"igGradFooter\" x1=\"2\" y1=\"22\" x2=\"22\" y2=\"2\" sc-camel-gradient-units=\"userSpaceOnUse\" data-dc-tpl=\"853\"><stop offset=\"0\" stop-color=\"#FFC107\" data-dc-tpl=\"854\"></stop><stop offset=\".35\" stop-color=\"#F44336\" data-dc-tpl=\"855\"></stop><stop offset=\".7\" ",
+			"box": {
+				"375": {
+					"x": 33,
+					"y": 8227.4,
+					"w": 18,
+					"h": 18
+				},
+				"768": {
+					"x": 65,
+					"y": 8872.2,
+					"w": 18,
+					"h": 18
+				},
+				"1440": {
+					"x": 65,
+					"y": 6226.4,
+					"w": 18,
+					"h": 18
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_851_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/852#0",
+			"parentKey": "Root/851#0",
+			"depth": 6,
+			"tag": "defs",
+			"template": "Root",
+			"tpl": 852,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "defs",
+			"srcOwnText": "",
+			"snippet": "<defs data-dc-tpl=\"852\"><linearGradient id=\"igGradFooter\" x1=\"2\" y1=\"22\" x2=\"22\" y2=\"2\" sc-camel-gradient-units=\"userSpaceOnUse\" data-dc-tpl=\"853\"><stop offset=\"0\" stop-color=\"#FFC107\" data-dc-tpl=\"854\"></stop><stop offset=\".35\" stop-color=\"#F44336\" data-dc-tpl=\"855\"></stop><stop offset=\".7\" stop-color=\"#C13584\" data-dc-tpl=\"856\"></stop><stop offset=\"1\" stop-color=\"#5851DB\" data-dc-tpl=\"857\"></sto",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": null
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": false
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {}
+		},
+		{
+			"key": "Root/853#0",
+			"parentKey": "Root/852#0",
+			"depth": 7,
+			"tag": "lineargradient",
+			"template": "Root",
+			"tpl": 853,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "linearGradient",
+			"srcOwnText": "",
+			"snippet": "<linearGradient id=\"igGradFooter\" x1=\"2\" y1=\"22\" x2=\"22\" y2=\"2\" sc-camel-gradient-units=\"userSpaceOnUse\" data-dc-tpl=\"853\"><stop offset=\"0\" stop-color=\"#FFC107\" data-dc-tpl=\"854\"></stop><stop offset=\".35\" stop-color=\"#F44336\" data-dc-tpl=\"855\"></stop><stop offset=\".7\" stop-color=\"#C13584\" data-dc-tpl=\"856\"></stop><stop offset=\"1\" stop-color=\"#5851DB\" data-dc-tpl=\"857\"></stop></linearGradient>",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": null
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": false
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {}
+		},
+		{
+			"key": "Root/854#0",
+			"parentKey": "Root/853#0",
+			"depth": 8,
+			"tag": "stop",
+			"template": "Root",
+			"tpl": 854,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "stop",
+			"srcOwnText": "",
+			"snippet": "<stop offset=\"0\" stop-color=\"#FFC107\" data-dc-tpl=\"854\"></stop>",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": null
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": false
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {}
+		},
+		{
+			"key": "Root/855#0",
+			"parentKey": "Root/853#0",
+			"depth": 8,
+			"tag": "stop",
+			"template": "Root",
+			"tpl": 855,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "stop",
+			"srcOwnText": "",
+			"snippet": "<stop offset=\".35\" stop-color=\"#F44336\" data-dc-tpl=\"855\"></stop>",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": null
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": false
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {}
+		},
+		{
+			"key": "Root/856#0",
+			"parentKey": "Root/853#0",
+			"depth": 8,
+			"tag": "stop",
+			"template": "Root",
+			"tpl": 856,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "stop",
+			"srcOwnText": "",
+			"snippet": "<stop offset=\".7\" stop-color=\"#C13584\" data-dc-tpl=\"856\"></stop>",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": null
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": false
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {}
+		},
+		{
+			"key": "Root/857#0",
+			"parentKey": "Root/853#0",
+			"depth": 8,
+			"tag": "stop",
+			"template": "Root",
+			"tpl": 857,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "stop",
+			"srcOwnText": "",
+			"snippet": "<stop offset=\"1\" stop-color=\"#5851DB\" data-dc-tpl=\"857\"></stop>",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": null
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": false
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {}
+		},
+		{
+			"key": "Root/858#0",
+			"parentKey": "Root/851#0",
+			"depth": 6,
+			"tag": "rect",
+			"template": "Root",
+			"tpl": 858,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "rect",
+			"srcOwnText": "",
+			"snippet": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" stroke=\"url(#igGradFooter)\" stroke-width=\"1.9\" data-dc-tpl=\"858\"></rect>",
+			"box": {
+				"375": {
+					"x": 35.3,
+					"y": 8229.6,
+					"w": 13.5,
+					"h": 13.5
+				},
+				"768": {
+					"x": 67.3,
+					"y": 8874.5,
+					"w": 13.5,
+					"h": 13.5
+				},
+				"1440": {
+					"x": 67.3,
+					"y": 6228.7,
+					"w": 13.5,
+					"h": 13.5
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_858_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/859#0",
+			"parentKey": "Root/851#0",
+			"depth": 6,
+			"tag": "circle",
+			"template": "Root",
+			"tpl": 859,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "circle",
+			"srcOwnText": "",
+			"snippet": "<circle cx=\"12\" cy=\"12\" r=\"4\" stroke=\"url(#igGradFooter)\" stroke-width=\"1.9\" data-dc-tpl=\"859\"></circle>",
+			"box": {
+				"375": {
+					"x": 39,
+					"y": 8233.4,
+					"w": 6,
+					"h": 6
+				},
+				"768": {
+					"x": 71,
+					"y": 8878.2,
+					"w": 6,
+					"h": 6
+				},
+				"1440": {
+					"x": 71,
+					"y": 6232.4,
+					"w": 6,
+					"h": 6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_859_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/860#0",
+			"parentKey": "Root/851#0",
+			"depth": 6,
+			"tag": "circle",
+			"template": "Root",
+			"tpl": 860,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "circle",
+			"srcOwnText": "",
+			"snippet": "<circle cx=\"17.4\" cy=\"6.6\" r=\"1.3\" fill=\"#C13584\" data-dc-tpl=\"860\"></circle>",
+			"box": {
+				"375": {
+					"x": 45.1,
+					"y": 8231.4,
+					"w": 2,
+					"h": 1.9
+				},
+				"768": {
+					"x": 77.1,
+					"y": 8876.2,
+					"w": 2,
+					"h": 1.9
+				},
+				"1440": {
+					"x": 77.1,
+					"y": 6230.4,
+					"w": 2,
+					"h": 2
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_860_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/861#0",
+			"parentKey": "Root/849#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 861,
+			"attrs": {
+				"href": "https://share.google/9YZzTiRj2gvW1Xrpr",
+				"aria-label": "Google Business profile",
+				"title": "Google reviews",
+				"target": "_blank",
+				"class": "scpv",
+				"style": "width: 44px; height: 44px; border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; transition: border-color 0.25s, box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Google Business profile\" title=\"Google reviews\" style=\"width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#4285F4;box-shadow:0 0 0 1px #4285F4\" data-dc-tpl=\"861\"> <svg width=\"18\" height=\"18\" sc",
+			"box": {
+				"375": {
+					"x": 74,
+					"y": 8214.4,
+					"w": 44,
+					"h": 44
+				},
+				"768": {
+					"x": 106,
+					"y": 8859.2,
+					"w": 44,
+					"h": 44
+				},
+				"1440": {
+					"x": 106,
+					"y": 6213.4,
+					"w": 44,
+					"h": 44
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_861_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/862#0",
+			"parentKey": "Root/861#0",
+			"depth": 5,
+			"tag": "svg",
+			"template": "Root",
+			"tpl": 862,
+			"attrs": {
+				"aria-hidden": "true",
+				"viewBox": "0 0 48 48"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 48 48\" aria-hidden=\"true\" data-dc-tpl=\"862\"><path fill=\"#4285F4\" d=\"M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z\" data-dc-tpl=\"863\"></path><path fill=\"#34A853\" d=\"M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v",
+			"box": {
+				"375": {
+					"x": 87,
+					"y": 8227.4,
+					"w": 18,
+					"h": 18
+				},
+				"768": {
+					"x": 119,
+					"y": 8872.2,
+					"w": 18,
+					"h": 18
+				},
+				"1440": {
+					"x": 119,
+					"y": 6226.4,
+					"w": 18,
+					"h": 18
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_862_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/863#0",
+			"parentKey": "Root/862#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 863,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#4285F4\" d=\"M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z\" data-dc-tpl=\"863\"></path>",
+			"box": {
+				"375": {
+					"x": 96,
+					"y": 8234.9,
+					"w": 7.9,
+					"h": 7.8
+				},
+				"768": {
+					"x": 128,
+					"y": 8879.7,
+					"w": 7.9,
+					"h": 7.8
+				},
+				"1440": {
+					"x": 128,
+					"y": 6233.9,
+					"w": 7.9,
+					"h": 7.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_863_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/864#0",
+			"parentKey": "Root/862#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 864,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#34A853\" d=\"M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z\" data-dc-tpl=\"864\"></path>",
+			"box": {
+				"375": {
+					"x": 88.6,
+					"y": 8237.9,
+					"w": 12.8,
+					"h": 6.7
+				},
+				"768": {
+					"x": 120.6,
+					"y": 8882.8,
+					"w": 12.8,
+					"h": 6.7
+				},
+				"1440": {
+					"x": 120.6,
+					"y": 6237,
+					"w": 12.8,
+					"h": 6.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_864_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/865#0",
+			"parentKey": "Root/862#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 865,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#FBBC05\" d=\"M11.69 28.18A13.8 13.8 0 0 1 11 24c0-1.45.25-2.86.69-4.18v-5.7H4.34A21.9 21.9 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z\" data-dc-tpl=\"865\"></path>",
+			"box": {
+				"375": {
+					"x": 87.7,
+					"y": 8232.7,
+					"w": 3.6,
+					"h": 7.4
+				},
+				"768": {
+					"x": 119.7,
+					"y": 8877.5,
+					"w": 3.6,
+					"h": 7.4
+				},
+				"1440": {
+					"x": 119.7,
+					"y": 6231.7,
+					"w": 3.6,
+					"h": 7.4
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_865_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/866#0",
+			"parentKey": "Root/862#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 866,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#EA4335\" d=\"M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z\" data-dc-tpl=\"866\"></path>",
+			"box": {
+				"375": {
+					"x": 88.6,
+					"y": 8228.1,
+					"w": 12.9,
+					"h": 6.7
+				},
+				"768": {
+					"x": 120.6,
+					"y": 8873,
+					"w": 12.9,
+					"h": 6.7
+				},
+				"1440": {
+					"x": 120.6,
+					"y": 6227.2,
+					"w": 12.9,
+					"h": 6.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_866_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/867#0",
+			"parentKey": "Root/849#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 867,
+			"attrs": {
+				"href": "https://wa.me/4479605978",
+				"aria-label": "WhatsApp",
+				"title": "WhatsApp",
+				"target": "_blank",
+				"class": "scpw",
+				"style": "width: 44px; height: 44px; border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); color: rgb(37, 211, 102); display: flex; align-items: center; justify-content: center; transition: border-color 0.25s, box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" aria-label=\"WhatsApp\" title=\"WhatsApp\" style=\"width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;color:#25D366;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#25D366;box-shadow:0 0 0 1px #25D366\" data-dc-tpl=\"867\"> <svg width=\"18\" height=\"18",
+			"box": {
+				"375": {
+					"x": 128,
+					"y": 8214.4,
+					"w": 44,
+					"h": 44
+				},
+				"768": {
+					"x": 160,
+					"y": 8859.2,
+					"w": 44,
+					"h": 44
+				},
+				"1440": {
+					"x": 160,
+					"y": 6213.4,
+					"w": 44,
+					"h": 44
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_867_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/868#0",
+			"parentKey": "Root/867#0",
+			"depth": 5,
+			"tag": "svg",
+			"template": "Root",
+			"tpl": 868,
+			"attrs": {
+				"aria-hidden": "true",
+				"viewBox": "0 0 24 24"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\" data-dc-tpl=\"868\"><path d=\"M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-",
+			"box": {
+				"375": {
+					"x": 141,
+					"y": 8227.4,
+					"w": 18,
+					"h": 18
+				},
+				"768": {
+					"x": 173,
+					"y": 8872.2,
+					"w": 18,
+					"h": 18
+				},
+				"1440": {
+					"x": 173,
+					"y": 6226.4,
+					"w": 18,
+					"h": 18
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_868_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/869#0",
+			"parentKey": "Root/868#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 869,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path d=\"M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 12 12 0 0 0 4.6 4.1c1.7.7 2.4.8 3.2.7a2.7 2.7 0 0 0",
+			"box": {
+				"375": {
+					"x": 142.5,
+					"y": 8228.9,
+					"w": 14.9,
+					"h": 15
+				},
+				"768": {
+					"x": 174.5,
+					"y": 8873.7,
+					"w": 14.9,
+					"h": 15
+				},
+				"1440": {
+					"x": 174.5,
+					"y": 6227.9,
+					"w": 14.9,
+					"h": 15
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_869_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/870#0",
+			"parentKey": "Root/845#0",
+			"depth": 2,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 870,
+			"attrs": {
+				"style": "display: flex; flex-direction: column; gap: 10px;"
+			},
+			"words": "",
+			"allText": "ShopSunglassesAll brandsPrescription lenses",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"870\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"871\">Shop</span><a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"872\">Sunglasses</a><a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"873\">All brands</a><a href=\"#\" sc-camel-on-c",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8294.4,
+					"w": 335,
+					"h": 114.3
+				},
+				"768": {
+					"x": 402,
+					"y": 8747.2,
+					"w": 314,
+					"h": 156
+				},
+				"1440": {
+					"x": 395,
+					"y": 6101.4,
+					"w": 307,
+					"h": 166.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "column",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_870_0@375.png",
+				"1440": "shots/Root_870_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/871#0",
+			"parentKey": "Root/870#0",
+			"depth": 3,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 871,
+			"attrs": {
+				"style": "font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase; color: rgb(119, 113, 106); margin-bottom: 4px;"
+			},
+			"words": "Shop",
+			"allText": "Shop",
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "Shop",
+			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"871\">Shop</span>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8294.4,
+					"w": 335,
+					"h": 17.3
+				},
+				"768": {
+					"x": 402,
+					"y": 8747.2,
+					"w": 314,
+					"h": 17.3
+				},
+				"1440": {
+					"x": 395,
+					"y": 6101.4,
+					"w": 307,
+					"h": 17.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_871_0@375.png",
+				"1440": "shots/Root_871_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/872#0",
+			"parentKey": "Root/870#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 872,
+			"attrs": {
+				"href": "#"
+			},
+			"words": "Sunglasses",
+			"allText": "Sunglasses",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Sunglasses",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"872\">Sunglasses</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8325.6,
+					"w": 67.5,
+					"h": 21
+				},
+				"768": {
+					"x": 402,
+					"y": 8778.5,
+					"w": 67.5,
+					"h": 21
+				},
+				"1440": {
+					"x": 395,
+					"y": 6132.7,
+					"w": 67.5,
+					"h": 21
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_872_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/873#0",
+			"parentKey": "Root/870#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 873,
+			"attrs": {
+				"href": "#"
+			},
+			"words": "All brands",
+			"allText": "All brands",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "All brands",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"873\">All brands</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8356.6,
+					"w": 62.4,
+					"h": 21
+				},
+				"768": {
+					"x": 402,
+					"y": 8809.5,
+					"w": 62.4,
+					"h": 21
+				},
+				"1440": {
+					"x": 395,
+					"y": 6163.7,
+					"w": 62.4,
+					"h": 21
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_873_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/874#0",
+			"parentKey": "Root/870#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 874,
+			"attrs": {
+				"href": "#"
+			},
+			"words": "Prescription lenses",
+			"allText": "Prescription lenses",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Prescription lenses",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goLenses }}\" data-dc-tpl=\"874\">Prescription lenses</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8387.6,
+					"w": 115.4,
+					"h": 21
+				},
+				"768": {
+					"x": 402,
+					"y": 8840.5,
+					"w": 115.4,
+					"h": 21
+				},
+				"1440": {
+					"x": 395,
+					"y": 6194.7,
+					"w": 115.4,
+					"h": 21
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_874_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/875#0",
+			"parentKey": "Root/845#0",
+			"depth": 2,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 875,
+			"attrs": {
+				"style": "display: flex; flex-direction: column; gap: 10px;"
+			},
+			"words": "",
+			"allText": "HelpDelivery & returnsFAQsSize guideContact",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"875\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"876\">Help</span><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"877\">Delivery &amp; returns</a><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"878\">FAQs</a><a href=\"#\" sc-camel-on-clic",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8444.6,
+					"w": 335,
+					"h": 145.3
+				},
+				"768": {
+					"x": 52,
+					"y": 8939.2,
+					"w": 314,
+					"h": 166.3
+				},
+				"1440": {
+					"x": 738,
+					"y": 6101.4,
+					"w": 307,
+					"h": 166.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "column",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_875_0@375.png",
+				"1440": "shots/Root_875_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/876#0",
+			"parentKey": "Root/875#0",
+			"depth": 3,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 876,
+			"attrs": {
+				"style": "font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase; color: rgb(119, 113, 106); margin-bottom: 4px;"
+			},
+			"words": "Help",
+			"allText": "Help",
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "Help",
+			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"876\">Help</span>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8444.6,
+					"w": 335,
+					"h": 17.3
+				},
+				"768": {
+					"x": 52,
+					"y": 8939.2,
+					"w": 314,
+					"h": 17.3
+				},
+				"1440": {
+					"x": 738,
+					"y": 6101.4,
+					"w": 307,
+					"h": 17.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_876_0@375.png",
+				"1440": "shots/Root_876_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/877#0",
+			"parentKey": "Root/875#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 877,
+			"attrs": {
+				"href": "#"
+			},
+			"words": "Delivery & returns",
+			"allText": "Delivery & returns",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Delivery & returns",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"877\">Delivery &amp; returns</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8475.9,
+					"w": 110.1,
+					"h": 21
+				},
+				"768": {
+					"x": 52,
+					"y": 8970.5,
+					"w": 110.1,
+					"h": 21
+				},
+				"1440": {
+					"x": 738,
+					"y": 6132.7,
+					"w": 110.1,
+					"h": 21
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_877_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/878#0",
+			"parentKey": "Root/875#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 878,
+			"attrs": {
+				"href": "#"
+			},
+			"words": "FAQs",
+			"allText": "FAQs",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "FAQs",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"878\">FAQs</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8506.9,
+					"w": 33.5,
+					"h": 21
+				},
+				"768": {
+					"x": 52,
+					"y": 9001.5,
+					"w": 33.5,
+					"h": 21
+				},
+				"1440": {
+					"x": 738,
+					"y": 6163.7,
+					"w": 33.5,
+					"h": 21
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_878_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/879#0",
+			"parentKey": "Root/875#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 879,
+			"attrs": {
+				"href": "#"
+			},
+			"words": "Size guide",
+			"allText": "Size guide",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Size guide",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ openSizeGuide }}\" data-dc-tpl=\"879\">Size guide</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8537.9,
+					"w": 61.6,
+					"h": 21
+				},
+				"768": {
+					"x": 52,
+					"y": 9032.5,
+					"w": 61.6,
+					"h": 21
+				},
+				"1440": {
+					"x": 738,
+					"y": 6194.7,
+					"w": 61.6,
+					"h": 21
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_879_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/880#0",
+			"parentKey": "Root/875#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 880,
+			"attrs": {
+				"href": "#"
+			},
+			"words": "Contact",
+			"allText": "Contact",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Contact",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goContact }}\" data-dc-tpl=\"880\">Contact</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8568.9,
+					"w": 49.9,
+					"h": 21
+				},
+				"768": {
+					"x": 52,
+					"y": 9063.5,
+					"w": 49.9,
+					"h": 21
+				},
+				"1440": {
+					"x": 738,
+					"y": 6225.7,
+					"w": 49.9,
+					"h": 21
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_880_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/881#0",
+			"parentKey": "Root/845#0",
+			"depth": 2,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 881,
+			"attrs": {
+				"style": "display: flex; flex-direction: column; gap: 10px;"
+			},
+			"words": "",
+			"allText": "Visit or call About Eye Care 0121 729 8233 644 Washwood Heath RdBirmingham B8 2HQ Mon–Sat 9.30–17.30",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"881\"> <span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"882\">Visit or call</span> <a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"883\">About Eye Care</a> <a href=\"{{ phoneHref }}\" data-dc-tpl=\"884\">{{ phone }}</a> <a href=\"{{ mapHref }}\" target=\"_b",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8625.9,
+					"w": 335,
+					"h": 166.3
+				},
+				"768": {
+					"x": 402,
+					"y": 8939.2,
+					"w": 314,
+					"h": 166.3
+				},
+				"1440": {
+					"x": 1081,
+					"y": 6101.4,
+					"w": 307,
+					"h": 166.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "column",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_881_0@375.png",
+				"1440": "shots/Root_881_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/882#0",
+			"parentKey": "Root/881#0",
+			"depth": 3,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 882,
+			"attrs": {
+				"style": "font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase; color: rgb(119, 113, 106); margin-bottom: 4px;"
+			},
+			"words": "Visit or call",
+			"allText": "Visit or call",
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "Visit or call",
+			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"882\">Visit or call</span>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8625.9,
+					"w": 335,
+					"h": 17.3
+				},
+				"768": {
+					"x": 402,
+					"y": 8939.2,
+					"w": 314,
+					"h": 17.3
+				},
+				"1440": {
+					"x": 1081,
+					"y": 6101.4,
+					"w": 307,
+					"h": 17.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_882_0@375.png",
+				"1440": "shots/Root_882_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/883#0",
+			"parentKey": "Root/881#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 883,
+			"attrs": {
+				"href": "#"
+			},
+			"words": "About Eye Care",
+			"allText": "About Eye Care",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "About Eye Care",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"883\">About Eye Care</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8657.1,
+					"w": 97.1,
+					"h": 21
+				},
+				"768": {
+					"x": 402,
+					"y": 8970.5,
+					"w": 97.1,
+					"h": 21
+				},
+				"1440": {
+					"x": 1081,
+					"y": 6132.7,
+					"w": 97.1,
+					"h": 21
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_883_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/884#0",
+			"parentKey": "Root/881#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 884,
+			"attrs": {
+				"href": "tel:01217298233"
+			},
+			"words": "0121 729 8233",
+			"allText": "0121 729 8233",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "{{ phone }}",
+			"snippet": "<a href=\"{{ phoneHref }}\" data-dc-tpl=\"884\">{{ phone }}</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8688.1,
+					"w": 85.2,
+					"h": 21
+				},
+				"768": {
+					"x": 402,
+					"y": 9001.5,
+					"w": 85.2,
+					"h": 21
+				},
+				"1440": {
+					"x": 1081,
+					"y": 6163.7,
+					"w": 85.2,
+					"h": 21
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_884_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/885#0",
+			"parentKey": "Root/881#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 885,
+			"attrs": {
+				"href": "https://maps.google.com/?q=644+Washwood+Heath+Rd+Birmingham+B8+2HQ",
+				"target": "_blank"
+			},
+			"words": "644 Washwood Heath Rd Birmingham B8 2HQ",
+			"allText": "644 Washwood Heath RdBirmingham B8 2HQ",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "644 Washwood Heath Rd Birmingham B8 2HQ",
+			"snippet": "<a href=\"{{ mapHref }}\" target=\"_blank\" rel=\"noopener\" data-dc-tpl=\"885\">644 Washwood Heath Rd<br data-dc-tpl=\"886\">Birmingham B8 2HQ</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8719.1,
+					"w": 156.8,
+					"h": 42
+				},
+				"768": {
+					"x": 402,
+					"y": 9032.5,
+					"w": 156.8,
+					"h": 42
+				},
+				"1440": {
+					"x": 1081,
+					"y": 6194.7,
+					"w": 156.8,
+					"h": 42
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_885_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/886#0",
+			"parentKey": "Root/885#0",
+			"depth": 4,
+			"tag": "br",
+			"template": "Root",
+			"tpl": 886,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "br",
+			"srcOwnText": "",
+			"snippet": "<br data-dc-tpl=\"886\">",
+			"box": {
+				"375": {
+					"x": 176.8,
+					"y": 8720.1,
+					"w": 0,
+					"h": 18
+				},
+				"768": {
+					"x": 558.8,
+					"y": 9033.5,
+					"w": 0,
+					"h": 18
+				},
+				"1440": {
+					"x": 1237.8,
+					"y": 6195.7,
+					"w": 0,
+					"h": 18
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": false
+			},
+			"display": "inline",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {}
+		},
+		{
+			"key": "Root/887#0",
+			"parentKey": "Root/881#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 887,
+			"attrs": {
+				"href": "https://share.google/9YZzTiRj2gvW1Xrpr",
+				"target": "_blank"
+			},
+			"words": "Mon–Sat 9.30–17.30",
+			"allText": "Mon–Sat 9.30–17.30",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Mon–Sat 9.30–17.30",
+			"snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" data-dc-tpl=\"887\">Mon–Sat 9.30–17.30</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8771.1,
+					"w": 126.2,
+					"h": 21
+				},
+				"768": {
+					"x": 402,
+					"y": 9084.5,
+					"w": 126.2,
+					"h": 21
+				},
+				"1440": {
+					"x": 1081,
+					"y": 6246.7,
+					"w": 126.2,
+					"h": 21
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_887_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/888#0",
+			"parentKey": "Root/844#0",
+			"depth": 1,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 888,
+			"attrs": {
+				"style": "border-top: 1px solid rgb(230, 225, 218); padding: 16px 24px; font-size: 12px; color: rgb(20, 20, 20); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; max-width: 1440px; margin: 0px auto;"
+			},
+			"words": "",
+			"allText": "© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners PrivacyTermsWebsite by Smal",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"border-top:1px solid #E6E1DA;padding:16px 24px;font-size:12px;color:#141414;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto\" data-dc-tpl=\"888\"> <span data-dc-tpl=\"889\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span> <span style=\"display:flex;gap:14px\" data-dc-tpl=\"890\"><a href=\"#\" styl",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 8848.1,
+					"w": 375,
+					"h": 97
+				},
+				"768": {
+					"x": 0,
+					"y": 9209.5,
+					"w": 768,
+					"h": 79
+				},
+				"1440": {
+					"x": 0,
+					"y": 6371.7,
+					"w": 1440,
+					"h": 51
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_888_0@375.png",
+				"1440": "shots/Root_888_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/889#0",
+			"parentKey": "Root/888#0",
+			"depth": 2,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 889,
+			"attrs": {},
+			"words": "© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners",
+			"allText": "© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners",
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners",
+			"snippet": "<span data-dc-tpl=\"889\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span>",
+			"box": {
+				"375": {
+					"x": 24,
+					"y": 8865.1,
+					"w": 327,
+					"h": 36
+				},
+				"768": {
+					"x": 24,
+					"y": 9226.5,
+					"w": 512.1,
+					"h": 18
+				},
+				"1440": {
+					"x": 24,
+					"y": 6388.7,
+					"w": 512.1,
+					"h": 18
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_889_0@375.png",
+				"1440": "shots/Root_889_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/890#0",
+			"parentKey": "Root/888#0",
+			"depth": 2,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 890,
+			"attrs": {
+				"style": "display: flex; gap: 14px;"
+			},
+			"words": "",
+			"allText": "PrivacyTermsWebsite by Small Giants Studio",
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"display:flex;gap:14px\" data-dc-tpl=\"890\"><a href=\"#\" style=\"text-decoration:underline\" data-dc-tpl=\"891\">Privacy</a><a href=\"#\" style=\"text-decoration:underline\" data-dc-tpl=\"892\">Terms</a><a class=\"ec-credit\" href=\"https://smallgiantsstudio.co.uk/\" rel=\"noopener\" data-dc-tpl=\"893\">Website by Small Giants Studio</a></span>",
+			"box": {
+				"375": {
+					"x": 24,
+					"y": 8911.1,
+					"w": 263.8,
+					"h": 18
+				},
+				"768": {
+					"x": 24,
+					"y": 9254.5,
+					"w": 263.8,
+					"h": 18
+				},
+				"1440": {
+					"x": 1152.2,
+					"y": 6388.7,
+					"w": 263.8,
+					"h": 18
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_890_0@375.png",
+				"1440": "shots/Root_890_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/891#0",
+			"parentKey": "Root/890#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 891,
+			"attrs": {
+				"href": "#",
+				"style": "text-decoration: underline;"
+			},
+			"words": "Privacy",
+			"allText": "Privacy",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Privacy",
+			"snippet": "<a href=\"#\" style=\"text-decoration:underline\" data-dc-tpl=\"891\">Privacy</a>",
+			"box": {
+				"375": {
+					"x": 24,
+					"y": 8911.1,
+					"w": 39.7,
+					"h": 18
+				},
+				"768": {
+					"x": 24,
+					"y": 9254.5,
+					"w": 39.7,
+					"h": 18
+				},
+				"1440": {
+					"x": 1152.2,
+					"y": 6388.7,
+					"w": 39.7,
+					"h": 18
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_891_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/892#0",
+			"parentKey": "Root/890#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 892,
+			"attrs": {
+				"href": "#",
+				"style": "text-decoration: underline;"
+			},
+			"words": "Terms",
+			"allText": "Terms",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Terms",
+			"snippet": "<a href=\"#\" style=\"text-decoration:underline\" data-dc-tpl=\"892\">Terms</a>",
+			"box": {
+				"375": {
+					"x": 77.7,
+					"y": 8911.1,
+					"w": 32.6,
+					"h": 18
+				},
+				"768": {
+					"x": 77.7,
+					"y": 9254.5,
+					"w": 32.6,
+					"h": 18
+				},
+				"1440": {
+					"x": 1205.9,
+					"y": 6388.7,
+					"w": 32.6,
+					"h": 18
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_892_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/893#0",
+			"parentKey": "Root/890#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 893,
+			"attrs": {
+				"href": "https://smallgiantsstudio.co.uk/",
+				"class": "ec-credit"
+			},
+			"words": "Website by Small Giants Studio",
+			"allText": "Website by Small Giants Studio",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Website by Small Giants Studio",
+			"snippet": "<a class=\"ec-credit\" href=\"https://smallgiantsstudio.co.uk/\" rel=\"noopener\" data-dc-tpl=\"893\">Website by Small Giants Studio</a>",
+			"box": {
+				"375": {
+					"x": 124.3,
+					"y": 8911.1,
+					"w": 163.5,
+					"h": 18
+				},
+				"768": {
+					"x": 124.3,
+					"y": 9254.5,
+					"w": 163.5,
+					"h": 18
+				},
+				"1440": {
+					"x": 1252.5,
+					"y": 6388.7,
+					"w": 163.5,
+					"h": 18
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_893_0@1440.png"
+			}
+		}
+	]
+}

@@ -1,0 +1,457 @@
+[
+	{
+		"name": "sgs/site-footer",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root/844#0"
+		},
+		"draftFingerprint": {
+			"tag": "footer",
+			"cls": "",
+			"styleHash": "906c2415"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {
+					"layout": "grid"
+				},
+				"draftRef": {
+					"tpl": "Root/845#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "92247fe6"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/846#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "1505"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/responsive-logo",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/847#0"
+								},
+								"draftFingerprint": {
+									"tag": "img",
+									"cls": "",
+									"styleHash": "924f5e88"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "presence",
+										"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+									}
+								]
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Designer eyewear from an independent optician in Birmingham."
+								},
+								"draftRef": {
+									"tpl": "Root/848#0"
+								},
+								"draftFingerprint": {
+									"tag": "p",
+									"cls": "",
+									"styleHash": "a4158abd"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/social-icons",
+								"attributes": {},
+								"draftRef": "footer[data-dc-tpl=\"844\"] [data-dc-tpl=\"849\"]",
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "a03e8424"
+								},
+								"innerBlocks": [],
+								"siteInfoRow": [
+									"instagram",
+									"google",
+									"whatsapp"
+								],
+								"childRefs": {
+									"instagram": "[data-dc-tpl=\"850\"]",
+									"google": "[data-dc-tpl=\"861\"]",
+									"whatsapp": "[data-dc-tpl=\"867\"]"
+								},
+								"childAttributes": {
+									"linkTarget": "_blank"
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"tpl": "Root/870#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "d0f4af7f"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Shop"
+								},
+								"draftRef": {
+									"tpl": "Root/871#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "72cd63c6"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/icon-list",
+								"attributes": {
+									"items": [
+										{
+											"text": "Sunglasses"
+										},
+										{
+											"text": "All brands"
+										},
+										{
+											"text": "Prescription lenses"
+										}
+									]
+								},
+								"draftRef": {
+									"tpl": "Root/872#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "1505"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link \"Sunglasses\" is \"#\": its destination is not in the draft, url left empty"
+									},
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link \"All brands\" is \"#\": its destination is not in the draft, url left empty"
+									},
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link \"Prescription lenses\" is \"#\": its destination is not in the draft, url left empty"
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"tpl": "Root/875#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "d0f4af7f"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Help"
+								},
+								"draftRef": {
+									"tpl": "Root/876#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "72cd63c6"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/icon-list",
+								"attributes": {
+									"items": [
+										{
+											"text": "Delivery & returns"
+										},
+										{
+											"text": "FAQs"
+										},
+										{
+											"text": "Size guide"
+										},
+										{
+											"text": "Contact"
+										}
+									]
+								},
+								"draftRef": {
+									"tpl": "Root/877#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "1505"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link \"Delivery & returns\" is \"#\": its destination is not in the draft, url left empty"
+									},
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link \"FAQs\" is \"#\": its destination is not in the draft, url left empty"
+									},
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link \"Size guide\" is \"#\": its destination is not in the draft, url left empty"
+									},
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link \"Contact\" is \"#\": its destination is not in the draft, url left empty"
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"tpl": "Root/881#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "d0f4af7f"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Visit or call"
+								},
+								"draftRef": {
+									"tpl": "Root/882#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "72cd63c6"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/icon-list",
+								"attributes": {
+									"items": [
+										{
+											"text": "About Eye Care"
+										},
+										{
+											"text": "",
+											"siteInfoSource": "phone"
+										},
+										{
+											"text": "",
+											"siteInfoSource": "address",
+											"siteInfoLink": true
+										},
+										{
+											"text": "",
+											"siteInfoSource": "hours",
+											"siteInfoLink": true
+										}
+									]
+								},
+								"draftRef": {
+									"tpl": "Root/883#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "1505"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link \"About Eye Care\" is \"#\": its destination is not in the draft, url left empty"
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {
+					"layout": "flex"
+				},
+				"draftRef": {
+					"tpl": "Root/888#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "ecd6e835"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/business-info",
+						"attributes": {
+							"displayType": "copyright",
+							"copyrightPrefix": ""
+						},
+						"draftRef": {
+							"tpl": "Root/889#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "1505"
+						},
+						"innerBlocks": [],
+						"handover": [
+							{
+								"owner": "site-info",
+								"kind": "text",
+								"detail": "Site Info \"copyright\" must read: © 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners"
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/890#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "e88a52f3"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Privacy"
+								},
+								"draftRef": {
+									"tpl": "Root/891#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "26842410"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\": destination not in the draft, url left empty"
+									}
+								]
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Terms"
+								},
+								"draftRef": {
+									"tpl": "Root/892#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "26842410"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\": destination not in the draft, url left empty"
+									}
+								]
+							},
+							{
+								"name": "sgs/business-info",
+								"attributes": {
+									"displayType": "attribution"
+								},
+								"draftRef": {
+									"tpl": "Root/893#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "ec-credit",
+									"styleHash": "1505"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "text",
+										"detail": "Site Info \"attribution\" must read: Website by Small Giants Studio"
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

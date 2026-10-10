@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>footer skeleton review</title><style>:root{--bg:#fbfaf8;--fg:#1d1b19;--muted:#6b665f;--line:#e2ddd5;--card:#fff;--accent:#2f5d8a;--code:#f3f0ea;--low:#fbe9cf;--gone:#f3dcdc}
+@media (prefers-color-scheme: dark){:root{--bg:#1a1917;--fg:#ece8e1;--muted:#a49d92;--line:#3a3732;--card:#23211e;--accent:#8db7e0;--code:#2c2a26;--low:#4a3a1c;--gone:#4a2626}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{padding:24px 16px;max-width:1800px;margin:0 auto}h1{font-size:1.5rem;margin:0 0 4px}.muted{color:var(--muted)}
+.summary{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.summary span{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+table{width:100%;border-collapse:collapse;background:var(--card)}th,td{border-bottom:1px solid var(--line);padding:8px;vertical-align:top;text-align:left}
+th{position:sticky;top:0;background:var(--card);font-size:.85rem;z-index:1}code,pre{font-family:ui-monospace,Consolas,monospace;font-size:.8rem}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--code);padding:6px;border-radius:4px;margin:0;min-width:220px;max-width:320px}
+.key{white-space:nowrap;color:var(--accent)}.indent{display:inline-block;width:calc(var(--d)*14px)}.attrs{font-size:.75rem;color:var(--muted);word-break:break-all;max-width:240px}
+figure{margin:0 0 6px}figure img{max-width:200px;max-height:160px;border:1px solid var(--line);background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/12px 12px}figcaption{font-size:.7rem;color:var(--muted)}
+tr.low td{background:var(--low)}tr.gone td{background:var(--gone)}.why{font-size:.78rem;color:var(--muted);margin:4px 0 0;padding-left:16px;max-width:360px}
+a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:800px){table,thead,tbody,tr,td{display:block}thead{display:none}tr{border:1px solid var(--line);border-radius:8px;margin:0 0 12px;padding:8px}td{border:0;padding:4px 0}td::before{content:attr(data-label);display:block;font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase}.indent{display:none}pre{max-width:100%}figure img{max-width:100%}}</style></head><body><main>
+<h1>footer skeleton review</h1>
+<p class="muted">Source: https://mintcream-lyrebird-224487.hostingersite.com/ · root footer · inventory 2026-10-10T00:24:25.219Z · key = import chain / template number # copy</p>
+<div class="summary"><span>Elements: 50</span><span>Parts of another element: 18</span><span>Skeleton nodes: 21 (24 once Fill generates the icon rows)</span><span>Low confidence: 1</span><span>Removed or absorbed: 0</span><span>Unresolved: 0</span></div>
+<p class="muted">Record a choice with <code>node scripts/computed-route/skeleton.mjs decide --key "&lt;key&gt;" --block &lt;slug&gt;</code> (or <code>--remove</code>), then run <code>propose</code> and <code>review</code> again.</p>
+<table><thead><tr><th>Key</th><th>Tag</th><th>Words</th><th>Draft code</th><th>Screenshot</th><th>Proposed block</th><th>Confidence</th><th>Decision</th></tr></thead><tbody>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:0"></span><code class="key">Root/844#0</code></td>
+<td data-label="Tag"><code>&lt;footer&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;footer style=&quot;border-top:1px solid #E6E1DA;background:#FAF8F5;margin-top:40px&quot; data-dc-tpl=&quot;844&quot;&gt; &lt;div style=&quot;max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px&quot; data-dc-tpl=&quot;845&quot;&gt; &lt;div data-dc-tpl=&quot;846&quot;&gt; &lt;img src=&quot;image/eye-care-wordmark.png&quot; alt=&quot;Eye Care Birmingham&quot; style=&quot;display:block;he</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_844_0@1440.png"><img src="shots/Root_844_0@1440.png" alt="Screenshot of Root/844#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_844_0@375.png"><img src="shots/Root_844_0@375.png" alt="Screenshot of Root/844#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/site-footer</strong><ul class="why"><li>block_capabilities: sgs/site-footer lists &quot;footer&quot; (the draft root tag)</li><li>block_composition: sgs/site-footer is a section-root accepting [&quot;sgs/site-footer-row&quot;]</li><li>the root of the surface</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:1"></span><code class="key">Root/845#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px&quot; data-dc-tpl=&quot;845&quot;&gt; &lt;div data-dc-tpl=&quot;846&quot;&gt; &lt;img src=&quot;image/eye-care-wordmark.png&quot; alt=&quot;Eye Care Birmingham&quot; style=&quot;display:block;height:32px;width:auto&quot; data-dc-tpl=&quot;847&quot;&gt; &lt;p style=&quot;margin:18px 0 0;color:#5E584F;max-width:32ch;tex</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_845_0@1440.png"><img src="shots/Root_845_0@1440.png" alt="Screenshot of Root/845#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_845_0@375.png"><img src="shots/Root_845_0@375.png" alt="Screenshot of Root/845#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/site-footer-row</strong><ul class="why"><li>block_composition: sgs/site-footer (section-root) accepts [&quot;sgs/site-footer-row&quot;]; sgs/site-footer-row is a content-block</li><li>sgs/site-footer accepts sgs/site-footer-row as its only child</li><li>element holds 4 block children</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:2"></span><code class="key">Root/846#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div data-dc-tpl=&quot;846&quot;&gt; &lt;img src=&quot;image/eye-care-wordmark.png&quot; alt=&quot;Eye Care Birmingham&quot; style=&quot;display:block;height:32px;width:auto&quot; data-dc-tpl=&quot;847&quot;&gt; &lt;p style=&quot;margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty&quot; data-dc-tpl=&quot;848&quot;&gt;Designer eyewear from an independent optician in Birmingham.&lt;/p&gt; &lt;div style=&quot;display:flex;gap:10px;margin-top:20px&quot; data-dc-tpl=&quot;849&quot;&gt; &lt;a href=&quot;{{ igHref }}</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_846_0@1440.png"><img src="shots/Root_846_0@1440.png" alt="Screenshot of Root/846#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_846_0@375.png"><img src="shots/Root_846_0@375.png" alt="Screenshot of Root/846#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 3 block children</li><li>no row block fits: a generic wrapper</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/847#0</code></td>
+<td data-label="Tag"><code>&lt;img&gt;</code><div class="attrs">alt=&quot;Eye Care Birmingham&quot; srcBasename=&quot;eye-care-wordmark.png&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;img src=&quot;image/eye-care-wordmark.png&quot; alt=&quot;Eye Care Birmingham&quot; style=&quot;display:block;height:32px;width:auto&quot; data-dc-tpl=&quot;847&quot;&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_847_0@1440.png"><img src="shots/Root_847_0@1440.png" alt="Screenshot of Root/847#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/responsive-logo</strong><ul class="why"><li>block_capabilities: sgs/responsive-logo lists &quot;logo&quot;; block_composition: leaf</li><li>logo image: eye-care-wordmark.png / alt &quot;Eye Care Birmingham&quot; (an image whose file name, alt text or class says it is the brand mark)</li><li>the image's alt text is the site name &quot;Eye Care Birmingham&quot;</li></ul></td>
+<td data-label="Confidence">0.82</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/848#0</code></td>
+<td data-label="Tag"><code>&lt;p&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">Designer eyewear from an independent optician in Birmingham.</td>
+<td data-label="Draft code"><pre>&lt;p style=&quot;margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty&quot; data-dc-tpl=&quot;848&quot;&gt;Designer eyewear from an independent optician in Birmingham.&lt;/p&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_848_0@1440.png"><img src="shots/Root_848_0@1440.png" alt="Screenshot of Root/848#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/text</strong><ul class="why"><li>html_tag_to_core_block: p -&gt; sgs/text (&quot;Paragraph text&quot;)</li><li>block_composition: sgs/text is a leaf; the element holds words and no block children</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/849#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:flex;gap:10px;margin-top:20px&quot; data-dc-tpl=&quot;849&quot;&gt; &lt;a href=&quot;{{ igHref }}&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; aria-label=&quot;Instagram&quot; title=&quot;Instagram&quot; style=&quot;width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s&quot; style-hover=&quot;border-color:#E4405F;box-shadow:0 0 0 1px #E4405F&quot;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_849_0@1440.png"><img src="shots/Root_849_0@1440.png" alt="Screenshot of Root/849#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_849_0@375.png"><img src="shots/Root_849_0@375.png" alt="Screenshot of Root/849#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/social-icons</strong><ul class="why"><li>block_composition: sgs/social-icons is a content-block accepting exactly [&quot;sgs/icon&quot;]; all 3 children propose sgs/icon</li><li>a row of 3 sgs/icon</li><li>block_capabilities: sgs/social-icons lists instagram, whatsapp</li></ul></td>
+<td data-label="Confidence">0.74</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">Root/850#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://www.instagram.com/eyecare.birmingham/&quot; aria-label=&quot;Instagram&quot; title=&quot;Instagram&quot; target=&quot;_blank&quot; class=&quot;scpu&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;{{ igHref }}&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; aria-label=&quot;Instagram&quot; title=&quot;Instagram&quot; style=&quot;width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s&quot; style-hover=&quot;border-color:#E4405F;box-shadow:0 0 0 1px #E4405F&quot; data-dc-tpl=&quot;850&quot;&gt; &lt;svg width=&quot;18&quot; height=&quot;18&quot; sc-camel-view-box=&quot;0 0</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_850_0@1440.png"><img src="shots/Root_850_0@1440.png" alt="Screenshot of Root/850#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon</strong><ul class="why"><li>block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg</li><li>brand-registry: instagram owns https://www.instagram.com/eyecare.birmingham/; site-info-placeholder-map: {{ igHref }} -&gt; socials.instagram; brand-registry label &quot;Instagram&quot; in aria-label/title</li></ul></td>
+<td data-label="Confidence">0.9</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">Root/851#0</code></td>
+<td data-label="Tag"><code>&lt;svg&gt;</code><div class="attrs">aria-hidden=&quot;true&quot; viewBox=&quot;0 0 24 24&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;svg width=&quot;18&quot; height=&quot;18&quot; sc-camel-view-box=&quot;0 0 24 24&quot; fill=&quot;none&quot; aria-hidden=&quot;true&quot; data-dc-tpl=&quot;851&quot;&gt;&lt;defs data-dc-tpl=&quot;852&quot;&gt;&lt;linearGradient id=&quot;igGradFooter&quot; x1=&quot;2&quot; y1=&quot;22&quot; x2=&quot;22&quot; y2=&quot;2&quot; sc-camel-gradient-units=&quot;userSpaceOnUse&quot; data-dc-tpl=&quot;853&quot;&gt;&lt;stop offset=&quot;0&quot; stop-color=&quot;#FFC107&quot; data-dc-tpl=&quot;854&quot;&gt;&lt;/stop&gt;&lt;stop offset=&quot;.35&quot; stop-color=&quot;#F44336&quot; data-dc-tpl=&quot;855&quot;&gt;&lt;/stop&gt;&lt;stop offset=&quot;.7&quot; </pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_851_0@1440.png"><img src="shots/Root_851_0@1440.png" alt="Screenshot of Root/851#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of Root/850#0</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">Root/852#0</code></td>
+<td data-label="Tag"><code>&lt;defs&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;defs data-dc-tpl=&quot;852&quot;&gt;&lt;linearGradient id=&quot;igGradFooter&quot; x1=&quot;2&quot; y1=&quot;22&quot; x2=&quot;22&quot; y2=&quot;2&quot; sc-camel-gradient-units=&quot;userSpaceOnUse&quot; data-dc-tpl=&quot;853&quot;&gt;&lt;stop offset=&quot;0&quot; stop-color=&quot;#FFC107&quot; data-dc-tpl=&quot;854&quot;&gt;&lt;/stop&gt;&lt;stop offset=&quot;.35&quot; stop-color=&quot;#F44336&quot; data-dc-tpl=&quot;855&quot;&gt;&lt;/stop&gt;&lt;stop offset=&quot;.7&quot; stop-color=&quot;#C13584&quot; data-dc-tpl=&quot;856&quot;&gt;&lt;/stop&gt;&lt;stop offset=&quot;1&quot; stop-color=&quot;#5851DB&quot; data-dc-tpl=&quot;857&quot;&gt;&lt;/sto</pre></td>
+<td data-label="Screenshot"><span class="muted">none (not shown, or the layout is unchanged at 375px)</span></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:7"></span><code class="key">Root/853#0</code></td>
+<td data-label="Tag"><code>&lt;lineargradient&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;linearGradient id=&quot;igGradFooter&quot; x1=&quot;2&quot; y1=&quot;22&quot; x2=&quot;22&quot; y2=&quot;2&quot; sc-camel-gradient-units=&quot;userSpaceOnUse&quot; data-dc-tpl=&quot;853&quot;&gt;&lt;stop offset=&quot;0&quot; stop-color=&quot;#FFC107&quot; data-dc-tpl=&quot;854&quot;&gt;&lt;/stop&gt;&lt;stop offset=&quot;.35&quot; stop-color=&quot;#F44336&quot; data-dc-tpl=&quot;855&quot;&gt;&lt;/stop&gt;&lt;stop offset=&quot;.7&quot; stop-color=&quot;#C13584&quot; data-dc-tpl=&quot;856&quot;&gt;&lt;/stop&gt;&lt;stop offset=&quot;1&quot; stop-color=&quot;#5851DB&quot; data-dc-tpl=&quot;857&quot;&gt;&lt;/stop&gt;&lt;/linearGradient&gt;</pre></td>
+<td data-label="Screenshot"><span class="muted">none (not shown, or the layout is unchanged at 375px)</span></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:8"></span><code class="key">Root/854#0</code></td>
+<td data-label="Tag"><code>&lt;stop&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;stop offset=&quot;0&quot; stop-color=&quot;#FFC107&quot; data-dc-tpl=&quot;854&quot;&gt;&lt;/stop&gt;</pre></td>
+<td data-label="Screenshot"><span class="muted">none (not shown, or the layout is unchanged at 375px)</span></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:8"></span><code class="key">Root/855#0</code></td>
+<td data-label="Tag"><code>&lt;stop&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;stop offset=&quot;.35&quot; stop-color=&quot;#F44336&quot; data-dc-tpl=&quot;855&quot;&gt;&lt;/stop&gt;</pre></td>
+<td data-label="Screenshot"><span class="muted">none (not shown, or the layout is unchanged at 375px)</span></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:8"></span><code class="key">Root/856#0</code></td>
+<td data-label="Tag"><code>&lt;stop&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;stop offset=&quot;.7&quot; stop-color=&quot;#C13584&quot; data-dc-tpl=&quot;856&quot;&gt;&lt;/stop&gt;</pre></td>
+<td data-label="Screenshot"><span class="muted">none (not shown, or the layout is unchanged at 375px)</span></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:8"></span><code class="key">Root/857#0</code></td>
+<td data-label="Tag"><code>&lt;stop&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;stop offset=&quot;1&quot; stop-color=&quot;#5851DB&quot; data-dc-tpl=&quot;857&quot;&gt;&lt;/stop&gt;</pre></td>
+<td data-label="Screenshot"><span class="muted">none (not shown, or the layout is unchanged at 375px)</span></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">Root/858#0</code></td>
+<td data-label="Tag"><code>&lt;rect&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;rect x=&quot;3&quot; y=&quot;3&quot; width=&quot;18&quot; height=&quot;18&quot; rx=&quot;5&quot; stroke=&quot;url(#igGradFooter)&quot; stroke-width=&quot;1.9&quot; data-dc-tpl=&quot;858&quot;&gt;&lt;/rect&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_858_0@1440.png"><img src="shots/Root_858_0@1440.png" alt="Screenshot of Root/858#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">Root/859#0</code></td>
+<td data-label="Tag"><code>&lt;circle&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;4&quot; stroke=&quot;url(#igGradFooter)&quot; stroke-width=&quot;1.9&quot; data-dc-tpl=&quot;859&quot;&gt;&lt;/circle&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_859_0@1440.png"><img src="shots/Root_859_0@1440.png" alt="Screenshot of Root/859#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">Root/860#0</code></td>
+<td data-label="Tag"><code>&lt;circle&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;circle cx=&quot;17.4&quot; cy=&quot;6.6&quot; r=&quot;1.3&quot; fill=&quot;#C13584&quot; data-dc-tpl=&quot;860&quot;&gt;&lt;/circle&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_860_0@1440.png"><img src="shots/Root_860_0@1440.png" alt="Screenshot of Root/860#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">Root/861#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://share.google/9YZzTiRj2gvW1Xrpr&quot; aria-label=&quot;Google Business profile&quot; title=&quot;Google reviews&quot; target=&quot;_blank&quot; class=&quot;scpv&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;{{ gmbHref }}&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; aria-label=&quot;Google Business profile&quot; title=&quot;Google reviews&quot; style=&quot;width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s&quot; style-hover=&quot;border-color:#4285F4;box-shadow:0 0 0 1px #4285F4&quot; data-dc-tpl=&quot;861&quot;&gt; &lt;svg width=&quot;18&quot; height=&quot;18&quot; sc</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_861_0@1440.png"><img src="shots/Root_861_0@1440.png" alt="Screenshot of Root/861#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon</strong><ul class="why"><li>block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg</li><li>site-info-placeholder-map: {{ gmbHref }} -&gt; socials.google; brand-registry label &quot;Google&quot; in aria-label/title</li></ul></td>
+<td data-label="Confidence">0.9</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">Root/862#0</code></td>
+<td data-label="Tag"><code>&lt;svg&gt;</code><div class="attrs">aria-hidden=&quot;true&quot; viewBox=&quot;0 0 48 48&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;svg width=&quot;18&quot; height=&quot;18&quot; sc-camel-view-box=&quot;0 0 48 48&quot; aria-hidden=&quot;true&quot; data-dc-tpl=&quot;862&quot;&gt;&lt;path fill=&quot;#4285F4&quot; d=&quot;M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z&quot; data-dc-tpl=&quot;863&quot;&gt;&lt;/path&gt;&lt;path fill=&quot;#34A853&quot; d=&quot;M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_862_0@1440.png"><img src="shots/Root_862_0@1440.png" alt="Screenshot of Root/862#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of Root/861#0</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">Root/863#0</code></td>
+<td data-label="Tag"><code>&lt;path&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;path fill=&quot;#4285F4&quot; d=&quot;M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z&quot; data-dc-tpl=&quot;863&quot;&gt;&lt;/path&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_863_0@1440.png"><img src="shots/Root_863_0@1440.png" alt="Screenshot of Root/863#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">Root/864#0</code></td>
+<td data-label="Tag"><code>&lt;path&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;path fill=&quot;#34A853&quot; d=&quot;M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z&quot; data-dc-tpl=&quot;864&quot;&gt;&lt;/path&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_864_0@1440.png"><img src="shots/Root_864_0@1440.png" alt="Screenshot of Root/864#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">Root/865#0</code></td>
+<td data-label="Tag"><code>&lt;path&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;path fill=&quot;#FBBC05&quot; d=&quot;M11.69 28.18A13.8 13.8 0 0 1 11 24c0-1.45.25-2.86.69-4.18v-5.7H4.34A21.9 21.9 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z&quot; data-dc-tpl=&quot;865&quot;&gt;&lt;/path&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_865_0@1440.png"><img src="shots/Root_865_0@1440.png" alt="Screenshot of Root/865#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">Root/866#0</code></td>
+<td data-label="Tag"><code>&lt;path&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;path fill=&quot;#EA4335&quot; d=&quot;M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z&quot; data-dc-tpl=&quot;866&quot;&gt;&lt;/path&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_866_0@1440.png"><img src="shots/Root_866_0@1440.png" alt="Screenshot of Root/866#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">Root/867#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://wa.me/4479605978&quot; aria-label=&quot;WhatsApp&quot; title=&quot;WhatsApp&quot; target=&quot;_blank&quot; class=&quot;scpw&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;https://wa.me/4479605978&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; aria-label=&quot;WhatsApp&quot; title=&quot;WhatsApp&quot; style=&quot;width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;color:#25D366;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s&quot; style-hover=&quot;border-color:#25D366;box-shadow:0 0 0 1px #25D366&quot; data-dc-tpl=&quot;867&quot;&gt; &lt;svg width=&quot;18&quot; height=&quot;18</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_867_0@1440.png"><img src="shots/Root_867_0@1440.png" alt="Screenshot of Root/867#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon</strong><ul class="why"><li>block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg</li><li>brand-registry label &quot;WhatsApp&quot; in aria-label/title</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:5"></span><code class="key">Root/868#0</code></td>
+<td data-label="Tag"><code>&lt;svg&gt;</code><div class="attrs">aria-hidden=&quot;true&quot; viewBox=&quot;0 0 24 24&quot;</div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;svg width=&quot;18&quot; height=&quot;18&quot; sc-camel-view-box=&quot;0 0 24 24&quot; fill=&quot;currentColor&quot; aria-hidden=&quot;true&quot; data-dc-tpl=&quot;868&quot;&gt;&lt;path d=&quot;M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_868_0@1440.png"><img src="shots/Root_868_0@1440.png" alt="Screenshot of Root/868#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of Root/867#0</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:6"></span><code class="key">Root/869#0</code></td>
+<td data-label="Tag"><code>&lt;path&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;path d=&quot;M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 12 12 0 0 0 4.6 4.1c1.7.7 2.4.8 3.2.7a2.7 2.7 0 0 0</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_869_0@1440.png"><img src="shots/Root_869_0@1440.png" alt="Screenshot of Root/869#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><span class="muted">part of its parent</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:2"></span><code class="key">Root/870#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:flex;flex-direction:column;gap:10px&quot; data-dc-tpl=&quot;870&quot;&gt;&lt;span style=&quot;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px&quot; data-dc-tpl=&quot;871&quot;&gt;Shop&lt;/span&gt;&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ goSun }}&quot; data-dc-tpl=&quot;872&quot;&gt;Sunglasses&lt;/a&gt;&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ toggleMegaBrands }}&quot; data-dc-tpl=&quot;873&quot;&gt;All brands&lt;/a&gt;&lt;a href=&quot;#&quot; sc-camel-on-c</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_870_0@1440.png"><img src="shots/Root_870_0@1440.png" alt="Screenshot of Root/870#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_870_0@375.png"><img src="shots/Root_870_0@375.png" alt="Screenshot of Root/870#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 4 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;flex&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/871#0</code></td>
+<td data-label="Tag"><code>&lt;span&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">Shop</td>
+<td data-label="Draft code"><pre>&lt;span style=&quot;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px&quot; data-dc-tpl=&quot;871&quot;&gt;Shop&lt;/span&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_871_0@1440.png"><img src="shots/Root_871_0@1440.png" alt="Screenshot of Root/871#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_871_0@375.png"><img src="shots/Root_871_0@375.png" alt="Screenshot of Root/871#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/heading</strong><ul class="why"><li>decisions: column label (the first text child of a wrapper whose other children are a run of links is the column heading)</li></ul></td>
+<td data-label="Confidence">0.8</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/872#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;#&quot;</div></td>
+<td data-label="Words">Sunglasses</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ goSun }}&quot; data-dc-tpl=&quot;872&quot;&gt;Sunglasses&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_872_0@1440.png"><img src="shots/Root_872_0@1440.png" alt="Screenshot of Root/872#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Sunglasses&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>3 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/873#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;#&quot;</div></td>
+<td data-label="Words">All brands</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ toggleMegaBrands }}&quot; data-dc-tpl=&quot;873&quot;&gt;All brands&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_873_0@1440.png"><img src="shots/Root_873_0@1440.png" alt="Screenshot of Root/873#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;All brands&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>3 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/874#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;#&quot;</div></td>
+<td data-label="Words">Prescription lenses</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ goLenses }}&quot; data-dc-tpl=&quot;874&quot;&gt;Prescription lenses&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_874_0@1440.png"><img src="shots/Root_874_0@1440.png" alt="Screenshot of Root/874#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Prescription lenses&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>3 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:2"></span><code class="key">Root/875#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:flex;flex-direction:column;gap:10px&quot; data-dc-tpl=&quot;875&quot;&gt;&lt;span style=&quot;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px&quot; data-dc-tpl=&quot;876&quot;&gt;Help&lt;/span&gt;&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ goHelp }}&quot; data-dc-tpl=&quot;877&quot;&gt;Delivery &amp;amp; returns&lt;/a&gt;&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ goHelp }}&quot; data-dc-tpl=&quot;878&quot;&gt;FAQs&lt;/a&gt;&lt;a href=&quot;#&quot; sc-camel-on-clic</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_875_0@1440.png"><img src="shots/Root_875_0@1440.png" alt="Screenshot of Root/875#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_875_0@375.png"><img src="shots/Root_875_0@375.png" alt="Screenshot of Root/875#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 5 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;flex&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/876#0</code></td>
+<td data-label="Tag"><code>&lt;span&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">Help</td>
+<td data-label="Draft code"><pre>&lt;span style=&quot;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px&quot; data-dc-tpl=&quot;876&quot;&gt;Help&lt;/span&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_876_0@1440.png"><img src="shots/Root_876_0@1440.png" alt="Screenshot of Root/876#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_876_0@375.png"><img src="shots/Root_876_0@375.png" alt="Screenshot of Root/876#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/heading</strong><ul class="why"><li>decisions: column label (the first text child of a wrapper whose other children are a run of links is the column heading)</li></ul></td>
+<td data-label="Confidence">0.8</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/877#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;#&quot;</div></td>
+<td data-label="Words">Delivery &amp; returns</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ goHelp }}&quot; data-dc-tpl=&quot;877&quot;&gt;Delivery &amp;amp; returns&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_877_0@1440.png"><img src="shots/Root_877_0@1440.png" alt="Screenshot of Root/877#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Delivery &amp; returns&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/878#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;#&quot;</div></td>
+<td data-label="Words">FAQs</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ goHelp }}&quot; data-dc-tpl=&quot;878&quot;&gt;FAQs&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_878_0@1440.png"><img src="shots/Root_878_0@1440.png" alt="Screenshot of Root/878#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;FAQs&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/879#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;#&quot;</div></td>
+<td data-label="Words">Size guide</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ openSizeGuide }}&quot; data-dc-tpl=&quot;879&quot;&gt;Size guide&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_879_0@1440.png"><img src="shots/Root_879_0@1440.png" alt="Screenshot of Root/879#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Size guide&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/880#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;#&quot;</div></td>
+<td data-label="Words">Contact</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ goContact }}&quot; data-dc-tpl=&quot;880&quot;&gt;Contact&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_880_0@1440.png"><img src="shots/Root_880_0@1440.png" alt="Screenshot of Root/880#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;Contact&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:2"></span><code class="key">Root/881#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;display:flex;flex-direction:column;gap:10px&quot; data-dc-tpl=&quot;881&quot;&gt; &lt;span style=&quot;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px&quot; data-dc-tpl=&quot;882&quot;&gt;Visit or call&lt;/span&gt; &lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ goAbout }}&quot; data-dc-tpl=&quot;883&quot;&gt;About Eye Care&lt;/a&gt; &lt;a href=&quot;{{ phoneHref }}&quot; data-dc-tpl=&quot;884&quot;&gt;{{ phone }}&lt;/a&gt; &lt;a href=&quot;{{ mapHref }}&quot; target=&quot;_b</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_881_0@1440.png"><img src="shots/Root_881_0@1440.png" alt="Screenshot of Root/881#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_881_0@375.png"><img src="shots/Root_881_0@375.png" alt="Screenshot of Root/881#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 5 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;flex&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/882#0</code></td>
+<td data-label="Tag"><code>&lt;span&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">Visit or call</td>
+<td data-label="Draft code"><pre>&lt;span style=&quot;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px&quot; data-dc-tpl=&quot;882&quot;&gt;Visit or call&lt;/span&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_882_0@1440.png"><img src="shots/Root_882_0@1440.png" alt="Screenshot of Root/882#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_882_0@375.png"><img src="shots/Root_882_0@375.png" alt="Screenshot of Root/882#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/heading</strong><ul class="why"><li>decisions: column label (the first text child of a wrapper whose other children are a run of links is the column heading)</li></ul></td>
+<td data-label="Confidence">0.8</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/883#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;#&quot;</div></td>
+<td data-label="Words">About Eye Care</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;#&quot; sc-camel-on-click=&quot;{{ goAbout }}&quot; data-dc-tpl=&quot;883&quot;&gt;About Eye Care&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_883_0@1440.png"><img src="shots/Root_883_0@1440.png" alt="Screenshot of Root/883#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;About Eye Care&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/884#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;tel:01217298233&quot;</div></td>
+<td data-label="Words">0121 729 8233</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;{{ phoneHref }}&quot; data-dc-tpl=&quot;884&quot;&gt;{{ phone }}&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_884_0@1440.png"><img src="shots/Root_884_0@1440.png" alt="Screenshot of Root/884#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;&quot;,&quot;siteInfoSource&quot;:&quot;phone&quot;}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/885#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://maps.google.com/?q=644+Washwood+Heath+Rd+Birmingham+B8+2HQ&quot; target=&quot;_blank&quot;</div></td>
+<td data-label="Words">644 Washwood Heath Rd Birmingham B8 2HQ</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;{{ mapHref }}&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; data-dc-tpl=&quot;885&quot;&gt;644 Washwood Heath Rd&lt;br data-dc-tpl=&quot;886&quot;&gt;Birmingham B8 2HQ&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_885_0@1440.png"><img src="shots/Root_885_0@1440.png" alt="Screenshot of Root/885#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;&quot;,&quot;siteInfoSource&quot;:&quot;address&quot;,&quot;siteInfoLink&quot;:true}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:4"></span><code class="key">Root/886#0</code></td>
+<td data-label="Tag"><code>&lt;br&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;br data-dc-tpl=&quot;886&quot;&gt;</pre></td>
+<td data-label="Screenshot"><span class="muted">none (not shown, or the layout is unchanged at 375px)</span></td>
+<td data-label="Proposed block"><span class="muted">part of Root/885#0</span></td>
+<td data-label="Confidence"></td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/887#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://share.google/9YZzTiRj2gvW1Xrpr&quot; target=&quot;_blank&quot;</div></td>
+<td data-label="Words">Mon–Sat 9.30–17.30</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;{{ gmbHref }}&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; data-dc-tpl=&quot;887&quot;&gt;Mon–Sat 9.30–17.30&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_887_0@1440.png"><img src="shots/Root_887_0@1440.png" alt="Screenshot of Root/887#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/icon-list</strong><div class="attrs">list item {&quot;text&quot;:&quot;&quot;,&quot;siteInfoSource&quot;:&quot;hours&quot;,&quot;siteInfoLink&quot;:true}</div><ul class="why"><li>html_tag_to_core_block: ul -&gt; sgs/icon-list: the database block for a list</li><li>block_capabilities: sgs/icon-list lists &quot;list&quot;</li><li>4 bare text links, one above the next</li></ul></td>
+<td data-label="Confidence">0.7</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:1"></span><code class="key">Root/888#0</code></td>
+<td data-label="Tag"><code>&lt;div&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;div style=&quot;border-top:1px solid #E6E1DA;padding:16px 24px;font-size:12px;color:#141414;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto&quot; data-dc-tpl=&quot;888&quot;&gt; &lt;span data-dc-tpl=&quot;889&quot;&gt;© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners&lt;/span&gt; &lt;span style=&quot;display:flex;gap:14px&quot; data-dc-tpl=&quot;890&quot;&gt;&lt;a href=&quot;#&quot; styl</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_888_0@1440.png"><img src="shots/Root_888_0@1440.png" alt="Screenshot of Root/888#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_888_0@375.png"><img src="shots/Root_888_0@375.png" alt="Screenshot of Root/888#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/site-footer-row</strong><ul class="why"><li>block_composition: sgs/site-footer (section-root) accepts [&quot;sgs/site-footer-row&quot;]; sgs/site-footer-row is a content-block</li><li>sgs/site-footer accepts sgs/site-footer-row as its only child</li><li>element holds 2 block children</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:2"></span><code class="key">Root/889#0</code></td>
+<td data-label="Tag"><code>&lt;span&gt;</code><div class="attrs"></div></td>
+<td data-label="Words">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</td>
+<td data-label="Draft code"><pre>&lt;span data-dc-tpl=&quot;889&quot;&gt;© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners&lt;/span&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_889_0@1440.png"><img src="shots/Root_889_0@1440.png" alt="Screenshot of Root/889#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_889_0@375.png"><img src="shots/Root_889_0@375.png" alt="Screenshot of Root/889#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/business-info</strong><ul class="why"><li>block_attributes: sgs/business-info.displayType enum has &quot;copyright&quot;</li><li>decisions: copyright pattern (a line opening with a copyright mark (the marker business-info's own render uses))</li><li>block_capabilities: sgs/business-info lists &quot;copyright&quot;</li></ul></td>
+<td data-label="Confidence">0.8</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:2"></span><code class="key">Root/890#0</code></td>
+<td data-label="Tag"><code>&lt;span&gt;</code><div class="attrs"></div></td>
+<td data-label="Words"><span class="muted">none</span></td>
+<td data-label="Draft code"><pre>&lt;span style=&quot;display:flex;gap:14px&quot; data-dc-tpl=&quot;890&quot;&gt;&lt;a href=&quot;#&quot; style=&quot;text-decoration:underline&quot; data-dc-tpl=&quot;891&quot;&gt;Privacy&lt;/a&gt;&lt;a href=&quot;#&quot; style=&quot;text-decoration:underline&quot; data-dc-tpl=&quot;892&quot;&gt;Terms&lt;/a&gt;&lt;a class=&quot;ec-credit&quot; href=&quot;https://smallgiantsstudio.co.uk/&quot; rel=&quot;noopener&quot; data-dc-tpl=&quot;893&quot;&gt;Website by Small Giants Studio&lt;/a&gt;&lt;/span&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_890_0@1440.png"><img src="shots/Root_890_0@1440.png" alt="Screenshot of Root/890#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure><figure><a href="shots/Root_890_0@375.png"><img src="shots/Root_890_0@375.png" alt="Screenshot of Root/890#0 at 375px" loading="lazy"></a><figcaption>375px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/container</strong><ul class="why"><li>block_composition: sgs/container is a wrapper-shell; element has 3 block children</li><li>no row block fits: a generic wrapper</li><li>block_capabilities: sgs/container lists &quot;flex&quot; (draft display)</li></ul></td>
+<td data-label="Confidence">1</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/891#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;#&quot;</div></td>
+<td data-label="Words">Privacy</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;#&quot; style=&quot;text-decoration:underline&quot; data-dc-tpl=&quot;891&quot;&gt;Privacy&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_891_0@1440.png"><img src="shots/Root_891_0@1440.png" alt="Screenshot of Root/891#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/button</strong><ul class="why"><li>html_tag_to_core_block: a -&gt; sgs/button (&quot;Link shape — routes to the same atomic leaf as button&quot;)</li><li>block_composition: sgs/button is a leaf; the element holds words and no block children</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/892#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;#&quot;</div></td>
+<td data-label="Words">Terms</td>
+<td data-label="Draft code"><pre>&lt;a href=&quot;#&quot; style=&quot;text-decoration:underline&quot; data-dc-tpl=&quot;892&quot;&gt;Terms&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_892_0@1440.png"><img src="shots/Root_892_0@1440.png" alt="Screenshot of Root/892#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/button</strong><ul class="why"><li>html_tag_to_core_block: a -&gt; sgs/button (&quot;Link shape — routes to the same atomic leaf as button&quot;)</li><li>block_composition: sgs/button is a leaf; the element holds words and no block children</li></ul></td>
+<td data-label="Confidence">0.75</td>
+<td data-label="Decision"></td>
+</tr>
+<tr class="low">
+<td data-label="Key"><span class="indent" style="--d:3"></span><code class="key">Root/893#0</code></td>
+<td data-label="Tag"><code>&lt;a&gt;</code><div class="attrs">href=&quot;https://smallgiantsstudio.co.uk/&quot; class=&quot;ec-credit&quot;</div></td>
+<td data-label="Words">Website by Small Giants Studio</td>
+<td data-label="Draft code"><pre>&lt;a class=&quot;ec-credit&quot; href=&quot;https://smallgiantsstudio.co.uk/&quot; rel=&quot;noopener&quot; data-dc-tpl=&quot;893&quot;&gt;Website by Small Giants Studio&lt;/a&gt;</pre></td>
+<td data-label="Screenshot"><figure><a href="shots/Root_893_0@1440.png"><img src="shots/Root_893_0@1440.png" alt="Screenshot of Root/893#0 at 1440px" loading="lazy"></a><figcaption>1440px</figcaption></figure></td>
+<td data-label="Proposed block"><strong>sgs/business-info</strong><ul class="why"><li>block_attributes: sgs/business-info.displayType enum has &quot;attribution&quot;</li><li>decisions: attribution pattern (a credit line for the agency that built the site)</li></ul></td>
+<td data-label="Confidence">0.38 <strong>LOW</strong></td>
+<td data-label="Decision"></td>
+</tr>
+</tbody></table></main></body></html>

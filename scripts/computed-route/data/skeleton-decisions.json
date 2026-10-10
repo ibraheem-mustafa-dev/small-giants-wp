@@ -1,0 +1,48 @@
+{
+	"doc": "Standing, client-free decisions of the skeleton writer (Spec 47 §3.4). Everything a draft element can be asked that the framework database cannot answer: which text patterns are Site Info, which lines exist only because of the designer's brief, which structural shapes are a column label or a link list. A block named here must exist in the framework database (checked on every load by lib/skeleton-facts.mjs::decisionsProblems). Client-specific choices live in sites/<client>/build/skeleton/decisions.json, written by `skeleton.mjs decide`.",
+	"structural": {
+		"columnLabel": {
+			"block": "sgs/heading",
+			"reason": "the first text child of a wrapper whose other children are a run of links is the column heading"
+		},
+		"linkList": {
+			"minLinks": 2,
+			"arrangement": "stacked",
+			"reason": "a run of two or more bare text links, one above the next, is one list block; the same links side by side are separate links in a row"
+		}
+	},
+	"briefOnlyLines": [
+		{
+			"id": "coming-soon",
+			"patterns": [ "\\b(?:arriving|coming|launching|available|opening)\\s+soon\\b", "\\bcoming soon\\b" ],
+			"flags": "i",
+			"reason": "a coming-soon line exists only because the designer's brief said the thing is not ready; it has no place on a live page"
+		},
+		{
+			"id": "placeholder-copy",
+			"patterns": [ "\\blorem ipsum\\b", "^\\s*(?:your|insert)\\s+(?:text|content|copy)\\s+here\\s*$" ],
+			"flags": "i",
+			"reason": "placeholder copy is replaced by real content, never built"
+		}
+	],
+	"siteInfoPatterns": {
+		"copyright": { "patterns": [ "^\\s*(?:copyright\\b|\\(c\\)|©|&copy;)" ], "flags": "i", "reason": "a line opening with a copyright mark (the marker business-info's own render uses)" },
+		"hours": { "patterns": [ "\\b(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*\\b.*\\d{1,2}[.:]\\d{2}" ], "flags": "i", "reason": "a day name followed by a clock time" },
+		"address": { "patterns": [ "\\b[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}\\b" ], "flags": "", "reason": "a UK postcode" },
+		"attribution": { "patterns": [ "^\\s*(?:website|site|web design|designed|built|made)\\s+by\\b" ], "flags": "i", "reason": "a credit line for the agency that built the site" }
+	},
+	"addressLinkPatterns": { "patterns": [ "maps\\.google", "google\\.[a-z.]+/maps", "maps\\.apple" ], "flags": "i", "reason": "a link to a maps host is an address link" },
+	"logoImage": {
+		"patterns": [ "logo", "wordmark", "brandmark" ],
+		"flags": "i",
+		"reason": "an image whose file name, alt text or class says it is the brand mark"
+	},
+	"elements": [
+		{
+			"id": "skip-link",
+			"match": { "tag": "a", "wordsPattern": "^skip to (?:main )?content$" },
+			"action": "remove",
+			"reason": "the theme prints its own skip link"
+		}
+	]
+}
