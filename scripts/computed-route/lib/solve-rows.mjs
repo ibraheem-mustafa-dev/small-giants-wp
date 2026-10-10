@@ -178,6 +178,11 @@ export function writableGroups( report, stateMap ) {
 	const other = [];
 	const contentUnattributed = [];
 	for ( const r of openRows( report ) ) {
+		// A row on a block whose two pairings disagree (the walker's `mispaired` flag) compares two different elements.
+		if ( r.mispaired ) {
+			other.push( r );
+			continue;
+		}
 		const st = settingState( r, stateMap );
 		const type = contentTypeOf( r );
 		if ( type ) {

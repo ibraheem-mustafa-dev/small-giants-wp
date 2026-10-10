@@ -7,7 +7,7 @@ import { compareChrome } from './chrome-walk.mjs';
 import { autoPair } from './auto-walk.mjs';
 import { compareEntrances } from './entrances.mjs';
 import { compareLinks } from './links.mjs';
-import { stampRefs, dropUnmatched } from './ref-trace.mjs';
+import { stampRefs, dropUnmatched, markMispaired } from './ref-trace.mjs';
 import { judgeDivergence } from './divergences.mjs';
 
 // Where each pair sits in the page's flow (ref-traced walks): pairs with no configured anchor, in draft reading
@@ -39,7 +39,7 @@ export function flowOffsets( pairs, ds, ls, mainY, t ) {
 	return out;
 }
 
-export function compareState( run, d, l, { state, width, cfg, accept, divergences = [], tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched } ) {
+export function compareState( run, d, l, { state, width, cfg, accept, divergences = [], tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched, mispaired } ) {
 	// Box differences are judged first: a notPainted accept holds only while every
 	// box difference on the pair is itself accepted (a 44px touch target, say).
 	// The config's accepts first, then the divergence ledger.
@@ -75,8 +75,9 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 		stampRefs( all, l.snap[ p.name ].trace );
 		// Rows on a block the pairing left unmatched are false findings (GAP-CHECKLIST.md section 21); each dropped one is
 		// recorded on the pair as `unmatched`, never silently.
+		// Rows on a block the pairing marked mispaired stay, flagged (ref-trace.mjs::markMispaired).
 		const { diffs: kept, unmatched: dropped } = dropUnmatched( all, unmatched );
-		run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, kept ), ...( dropped.length ? { unmatched: dropped } : {} ) };
+		run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, markMispaired( kept, mispaired ) ), ...( dropped.length ? { unmatched: dropped } : {} ) };
 	}
 	// Box-held rows that move nothing on the pair or inside it (compare.mjs::acceptHeld).
 	acceptHeld( run.pairs, tol.box );

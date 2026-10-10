@@ -182,6 +182,27 @@ export function loadUnmatched( cfgPath, cfg ) {
 	return p ? unmatchedRefs( JSON.parse( fs.readFileSync( p, 'utf8' ) ) ) : new Map();
 }
 
+// Map of bare ref -> why for the blocks a pairing marked mispaired: two independent pairings of the block (the draft's
+// own element identity and the word matcher) chose different draft elements. Empty when the pairing lists none.
+export function mispairedRefs( pairing ) {
+	return new Map( ( pairing?.mispaired || [] ).filter( ( m ) => m?.ref ).map( ( m ) => [ bareRef( m.ref ), m.why || 'mispaired' ] ) );
+}
+
+// Reads a config's pairing for its mispaired blocks: the Map mispairedRefs gives, empty without a pairing file.
+export function loadMispaired( cfgPath, cfg ) {
+	const p = pairingPath( cfgPath, cfg );
+	return p ? mispairedRefs( JSON.parse( fs.readFileSync( p, 'utf8' ) ) ) : new Map();
+}
+
+// Flags each row on a mispaired block with why (`mispaired`), keeping every row: the rows stay visible, so a real
+// difference is never hidden, and Solve never writes through a flagged row.
+export function markMispaired( diffs, mispaired ) {
+	if ( ! mispaired?.size ) {
+		return diffs;
+	}
+	return diffs.map( ( d ) => ( d.ref && mispaired.has( bareRef( d.ref ) ) ? { ...d, mispaired: mispaired.get( bareRef( d.ref ) ) } : d ) );
+}
+
 // Removes the rows whose ref is in `unmatched` (a Map from loadUnmatched). Returns { diffs, unmatched }: the rows kept,
 // and one { ref, why, count } entry per dropped ref, so nothing is dropped silently (appendUnmatchedReport lists them
 // in report.md and report.json holds them as run.pairs[name].unmatched).

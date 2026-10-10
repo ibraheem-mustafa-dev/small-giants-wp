@@ -584,3 +584,21 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
   removing the `icon-stroke-width` read turns the line test red.
 - **Falsified by:** a pair whose svg stroke weight or dash differs, or whose positioned box sits at another declared
   offset, with no row.
+
+## 28. Rows on a block whose two pairings disagree stay, flagged, and are never written (Spec 47 route-accuracy R4)
+
+- **Gap:** Solve wrote through pairs that compared two different elements: on 2026-10-09 the header's draft inner row
+  against the live header root (3 of 3 writes wrong, reverted) and mega-brands' label span against the whole card (5 of
+  6). Triage's size-and-words check (`computed-route/lib/triage.mjs::mispairOf`) labelled some of them only after Solve
+  had written.
+- **Detected by:** `qa/pairs/<surface>.json::mispaired` (`[{ ref, why }]`), the blocks whose draft element by the draft's
+  own identity (`tpl` finder) and by the word matcher disagree. `lib/ref-trace.mjs::loadMispaired` reads it beside the
+  config like `loadUnmatched`; `compare-state.mjs::compareState` flags each row on such a block with
+  `mispaired: <why>` (`markMispaired`) and keeps it. Solve never groups a flagged row
+  (`computed-route/lib/solve-rows.mjs::writableGroups` files it under `other`); triage labels it W / `mispaired` with
+  evidence `source: 'identity'` before any setting lookup; the answer sheet scores it an artefact.
+- **Proof:** `computed-route/tests/walker-mispaired.test.mjs`: a flagged block keeps both its rows with the flag on its
+  own only (MUST FAIL); `writableGroups` writes the same row unflagged and not flagged (MUST FAIL TO WRITE, with the
+  negative control); triage decides it without calling the resolver.
+- **Falsified by:** a row on a `mispaired` ref missing from the report, a flagged row in a Solve write group, or a row on
+  an unlisted ref carrying the flag.

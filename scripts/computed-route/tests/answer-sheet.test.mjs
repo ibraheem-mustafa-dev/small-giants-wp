@@ -58,6 +58,13 @@ test( 'a triage artefact label drops a false alarm; `consequence` never drops a 
 	assert.equal( outcomeOf( rp, { report: walkOf( [ rp ] ), triage: { verdicts: [ verdict( rp, 'consequence' ) ] } } ), 'open' );
 } );
 
+test( 'a row the walker flagged mispaired counts as an artefact without any triage', () => {
+	const fa = footer.find( ( r ) => 'false-alarm' === r.label );
+	const walk = walkOf( [ fa ] );
+	walk.runs[ 0 ].pairs[ `renamed-${ fa.pair }` ].diffs[ 0 ].mispaired = 'identity and words disagree';
+	assert.equal( outcomeOf( fa, { report: walk } ), 'artefact' );
+} );
+
 test( 'a wrong write is avoided only when none of its groups was written or reverted', () => {
 	const ww = SHEET.find( ( r ) => 'WW-HM-01' === r.id );
 	assert.equal( outcomeOf( ww, { solve: { writes: [ { group: ww.groups[ 0 ] } ], wrong: [] } } ), 'written' );

@@ -40,7 +40,7 @@ import { makeHelpers, retargetLive } from './lib/helpers.mjs';
 import { sampleTimeline, collectChrome } from './lib/chrome-walk.mjs';
 import { withAutoScroll, collectAutoOn, markClipped } from './lib/auto-walk.mjs';
 import closeOnExit from '../lib/close-browser-on-exit.js';
-import { REF_PROPS, elementPath, traceRef, loadUnmatched, appendUnmatchedReport } from './lib/ref-trace.mjs';
+import { REF_PROPS, elementPath, traceRef, loadUnmatched, loadMispaired, appendUnmatchedReport } from './lib/ref-trace.mjs';
 import { loadDivergences } from './lib/divergences.mjs';
 import { openDevtools, settleAnimations, triggerArmed, declaredValues, DECLARED_PROPS } from './lib/devtools.mjs';
 
@@ -86,6 +86,8 @@ const propsFor = ( p ) => ( refPrefix ? [ ...new Set( [ ...DEFAULT_PROPS, ...( p
 const divergences = loadDivergences( cfgPath, cfg );
 // The blocks the pairing left unmatched (qa/pairs/<surface>.json, section 21): their rows are dropped and listed, never silent.
 const unmatched = refPrefix ? loadUnmatched( cfgPath, cfg ) : new Map();
+// The blocks whose two pairings disagree (qa/pairs/<surface>.json `mispaired`): their rows stay, flagged, never written.
+const mispaired = refPrefix ? loadMispaired( cfgPath, cfg ) : new Map();
 const cb = ( url ) => url.replace( '{cb}', String( Date.now() ) );
 // The full checks (GAP-CHECKLIST.md section 11: motion timelines, painted grounds, inventories, hover
 // effects, phone widths) run on every page; `mode: 'basic'` turns them off for a quick look.
@@ -301,7 +303,7 @@ for ( const width of widths ) {
 			await sideBySide( browser, d.shot, l.shot, shot, width );
 		}
 		const run = { state: state.name, width, shot: shot ? path.basename( shot ) : null, pairs: {} };
-		compareState( run, d, l, { state, width, cfg, accept, divergences, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched } );
+		compareState( run, d, l, { state, width, cfg, accept, divergences, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched, mispaired } );
 		results.runs.push( run );
 	}
 }

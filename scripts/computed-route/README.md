@@ -88,6 +88,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/calibrate-read.test.mjs` | FR-47-2 reader, in a local headless Chromium: elements past the 81st, `::after` and `::placeholder` layers, and an `aria-controls` panel outside the instance are read. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept; the independent check matches entries on `node` and leaves a drifted value entry open (A5). |
 | `tests/answer-sheet.test.mjs` | Route-accuracy R1: the frozen 100 rows; matching ignores the pair name; artefact labels drop a false alarm and `consequence` never drops a real problem; wrong-write groups; a real problem kept in the baseline and missing now is a regression (MUST FAIL) and an unchanged walk is not. |
+| `tests/walker-mispaired.test.mjs` | Route-accuracy R4: a block in `qa/pairs/<surface>.json::mispaired` keeps its rows, each flagged (MUST FAIL); `writableGroups` never groups a flagged row and does group it unflagged (MUST FAIL TO WRITE); triage labels it W / mispaired from the identity check without the resolver. |
 | `tests/references.test.mjs` | Reference blocks: the detector, the linked-placeholder rule in Solve, the surfaces lint. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint; B4: a ledger entry citing an item the register lacks, or none, fails; a house-rule entry needs none; a ledger with entries and no register fails; without `--register` the register comes from `qa/ledger.config.json`, and a named register that does not exist fails. |
 | `tests/solve-held.test.mjs` | A setting already holding the draft value is held, not written (a value another group wrote earlier in the same round is a write, not a hold, with a negative control), and its row is a Hardcode that names what the tree holds and the widths that differ; the winning-rule ranking, with negative controls. |
@@ -218,7 +219,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `matchKey(row)` → `state|width|element|path|kind|property`, the element being the ref, else `pair:<pair>` for a block-less row.
 - `reportRows(report)` → every diff of a walk report with its run's state and width and its pair name.
 - `writtenGroups(solve)` → the setting groups a Solve run wrote, kept (`writes`) or reverted (`wrong`).
-- `outcomeOf(sheetRow, { report, triage, solve })` → `open`, `accepted`, `absent` or `artefact` for a false alarm or real problem; `written` or `avoided` for a wrong write; `not-scored` without the input.
+- `outcomeOf(sheetRow, { report, triage, solve })` → `open`, `accepted`, `absent` or `artefact` (flagged mispaired by the walker, or a triage artefact label) for a false alarm or real problem; `written` or `avoided` for a wrong write; `not-scored` without the input.
 - `passes(label, outcome)` → a false alarm passes when not open, a real problem when open, a wrong write when avoided; null when not scored.
 - `scoreSurface(sheet, surface, run)` → `{ surface, rows, tally }`: per-row outcomes and per-label counts with their outcomes.
 - `baselineOf(score)` → `{ pass }`, the ids that pass.
@@ -341,7 +342,7 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 - `plainLength(v)` → whether a declared value is a plain length or percentage a setting can hold.
 - `usedValueTarget(prop, { perWidth, declared, held })` → `{ perWidth }` with the draft's declared value at every width no ledger entry holds (`held` from `draftValues`), or a `used-value` gap.
 - `draftValues(report, pair, prop, hover, walkerStates?, pseudo?)` → `{ perWidth, fontPx, declared, held }` from the draft snapshots, read only from runs in `walkerStates` when given, and on the `::before`/`::after` layer when `pseudo` is given (a group's `pseudo` comes from its rows).
-- `writableGroups(report, stateMap)` → `{ groups, box, unmapped, unmappedState, other }`; each group carries its setting `state` and `walkerStates`; a row with no draft value goes to `other` (nothing to write).
+- `writableGroups(report, stateMap)` → `{ groups, box, unmapped, unmappedState, other }`; each group carries its setting `state` and `walkerStates`; a row with no draft value goes to `other` (nothing to write), and so does a row the walker flagged `mispaired` (its block's two pairings disagree, so it compares two different elements).
 - `rowDistance(row)` → px distance from the draft (0 or 1 for non-lengths).
 - `regressedRows(prev, report)` → open style or box rows that are new or further from the draft than last round (keyed per walker state).
 - `heldReason(held, r)` → the text saying what the tree already holds for a row's group (`held[groupKey]`, recorded by `writeRound` when a setting already holds the draft value).

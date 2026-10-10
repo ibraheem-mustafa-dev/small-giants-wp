@@ -22,21 +22,26 @@ export function reportRows( report ) {
 	for ( const run of report?.runs || [] ) {
 		for ( const [ pair, p ] of Object.entries( run.pairs || {} ) ) {
 			for ( const d of p?.diffs || [] ) {
-				out.push( { state: run.state, width: run.width, pair, ref: d.ref ?? null, path: d.path ?? '', kind: d.kind, property: d.key, accepted: d.accepted ?? null } );
+				out.push( { state: run.state, width: run.width, pair, ref: d.ref ?? null, path: d.path ?? '', kind: d.kind, property: d.key, accepted: d.accepted ?? null, mispaired: d.mispaired ?? null } );
 			}
 		}
 	}
 	return out;
 }
 
-// What the walk says of one sheet row: `open`, `accepted` (every matching row accepted) or `absent`.
+// What the walk says of one sheet row: `open`, `accepted` (every matching row accepted), `artefact` (every open matching
+// row is on a block the walker flagged mispaired) or `absent`.
 function walkOutcome( rows, sheetRow ) {
 	const k = matchKey( sheetRow );
 	const hits = rows.filter( ( r ) => matchKey( r ) === k );
 	if ( ! hits.length ) {
 		return 'absent';
 	}
-	return hits.some( ( r ) => null === r.accepted ) ? 'open' : 'accepted';
+	const open = hits.filter( ( r ) => null === r.accepted );
+	if ( ! open.length ) {
+		return 'accepted';
+	}
+	return open.every( ( r ) => r.mispaired ) ? 'artefact' : 'open';
 }
 
 // The triage verdict for a sheet row, by triage's issue key (ref | path | kind | property).
@@ -51,8 +56,8 @@ export function writtenGroups( solve ) {
 }
 
 // One sheet row's outcome against a run.
-//   false alarm / real problem: `open`, `accepted`, `absent`, or `artefact` (open in the walk but labelled an artefact by
-//   triage); `not-scored` without a walk.
+//   false alarm / real problem: `open`, `accepted`, `absent`, or `artefact` (open in the walk but flagged mispaired by
+//   the walker or labelled an artefact by triage); `not-scored` without a walk.
 //   wrong write: `written` or `avoided`; `not-scored` without a solve report.
 export function outcomeOf( sheetRow, { report, triage, solve } ) {
 	if ( 'wrong-write' === sheetRow.label ) {

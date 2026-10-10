@@ -561,6 +561,12 @@ export function triageIssue( issue, ctx ) {
 		evidence.unshift( { check: 'unmeasured-side', sides: unread, detail: `${ issue.rows.length } rows, the ${ unread.join( ' and ' ) } value was never read at any width: no paint is compared` } );
 		return verdict( 'W', 'unmeasured-side' );
 	}
+	// The pairing's own disagreement (the walker's `mispaired` flag): the draft identity and the words chose different elements.
+	const flagged = issue.rows.find( ( r ) => r.mispaired );
+	if ( flagged ) {
+		evidence.unshift( { check: 'mispaired', source: 'identity', detail: flagged.mispaired } );
+		return verdict( 'W', 'mispaired' );
+	}
 	const mispaired = mispairOf( issue, ctx.walk );
 	if ( mispaired ) {
 		evidence.unshift( mispaired );
