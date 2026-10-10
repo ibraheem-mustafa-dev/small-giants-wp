@@ -255,7 +255,7 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   fixed box stays open.
   **Built 2026-10-10:**
   - Verdicts: `inert` (nothing moved), `breaks-box` (the pair's own box moved) or `moves` (only content moved).
-  - `isAccepted` accepts `inert`, and `breaks-box` while the pair's box matches; `moves` stays open.
+  - `isAccepted` accepts `inert`, and `breaks-box` while the pair's box matches and every pair measured inside it is settled (`compare.mjs::holdEquivalent`); `moves` stays open.
   - First home walk, binary verdict: the process steps were found to be a grid with an empty second row, so the draft's
     16px row gap would move a box that already matches. Hence the `breaks-box` verdict.
   - Home walk (`qa/solve/home/2026-10-10T-neutralise-walk-2/`): of the tested layout rows, 141 inert and 96 reached
@@ -272,7 +272,7 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   re-measures every width, and keeps a write only if the page moves toward the draft. It replaces `guard.mjs`'s
   per-walk trials for trialled blocks. R-47-9 is amended: a wrong write is any write a post-write read shows moving away
   from the draft. Done: the home cards' doubled padding (WW-HM-01..03) is rejected before writing.
-  **Built 2026-10-10 (steps 1 and 2 of 3):**
+  **Built 2026-10-10 (steps 1 to 3):**
   - `lib/trial.mjs` and `lib/trial-page.mjs` hold the judgement and the page side. `trial.mjs` replays one round of a
     Solve run.
   - The self-check needs the attributes saved on the post: the uid hashes exactly those, and the editor normalises the
@@ -318,7 +318,7 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
     - **Open: no-box-change on margin writes.** WW-SH-01's rebuild zeroed the paragraph's 240px centring margins at
       1920, but the trial measured no box move over 16 pair-widths (`cr-ref-shop-5`: 3 rules added, 1 removed). The
       cause is unproven. The next step is to inject that trial's CSS into the shop page at 1920 and read the
-      paragraph's computed margin and the rule that wins.
+      paragraph's computed margin and the rule that wins. Serves R6 (shop wrong writes avoided by the trial).
     - **Owed to Bean: WW-SH-04's label.** The trial keeps `cr-ref-shop-1` maxWidth 1440px. At 1920 it moves the root
       box from x 0, w 1920 to x 240, w 1440, which is the draft's box exactly (`trial.json` `pairs`). The sheet labels
       the write wrong with confidence "assumed"; the 2026-10-09 guard reverted it on its margin rows, which are used
@@ -351,20 +351,20 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   - **Footer:** `cr-ref-footer-9`, `-16` and `-23` (`sgs/icon-list`) come out mispaired because their origin identity
     is the list's first `<a>` (the R2 defect: a link-list node's draftRef is its first link). The other links' hand
     pairs sit outside it. Fix at the source first: the skeleton writer gives a link-list node the list's container,
-    then regenerate the footer skeleton and origin and re-pair.
+    then regenerate the footer skeleton and origin and re-pair. Blocks adopting the footer re-pair (R4 identity on the footer).
   - **Header:** `gen-header-1` and `gen-header-10` are dropped. The width re-check refused their word pairing ("no
     partner at 375/768"), and the council rule "identity never revives a block the width re-check refused" now applies.
     That refusal is about words, not the tpl element. Check the tpl element at the re-check widths instead of
-    inheriting the word refusal. The header also has 7 unaligned blocks and 9 unchecked hand pairs (no origin entry).
+    inheriting the word refusal. The header also has 7 unaligned blocks and 9 unchecked hand pairs (no origin entry). Blocks adopting the header re-pair (R4 identity on the header).
 - Open, in order:
   1. Finding 4, the page half: watching the parent or page height beyond the next 20 siblings. Not built: no layout
      was found where something past the watched set moves while the element, its contents and its next 20 siblings
-     stay still, so there is no failure to prove it against.
+     stay still, so there is no failure to prove it against. Serves R5 (the paint check never accepts a row that moves).
   2. The answer sheet has no `obsolete` status for rows whose draft element is gone (RP-FT-04..06); baseline walks
-     under `qa/solve/` are not in git.
+     under `qa/solve/` are not in git. Serves R1 (the gate scores footer RP-FT-04..06 truthfully).
   3. `unreadOf` repeats per node (aggregate by block, kind and slot); `sgsOnly` merging inflates confidence; the root
-     `fits` tie returns for a header holding both an image and a wrapper.
-  4. `decoPath` changes the path of underline rows on non-link text: check divergence and calibration keys.
+     `fits` tie returns for a header holding both an image and a wrapper. Serves R2 and R3.
+  4. `decoPath` changes the path of underline rows on non-link text: check divergence and calibration keys. Serves R5.
 Header and footer reshaped on 2026-10-09 (register N47-N49): the wordmark is an image on both sides and Visit or call is
 one icon-list (`cr-ref-footer-23`). Done the same day: mirror refreshed from eye-care-test (home cards back to 291px at 375;
 `refresh-from-remote.sh` now runs its WSL step with `--exec`, because `wsl --` expanded `$got` in an extra shell and the
