@@ -1,0 +1,273 @@
+{
+ "surface": "header",
+ "when": "2026-10-10T06:14:20.192Z",
+ "width": 1440,
+ "recheck": [
+  375,
+  768,
+  1920
+ ],
+ "lifted": [
+  "header",
+  ".sgs-site-header"
+ ],
+ "blocks": 13,
+ "kept": 0,
+ "coveredByHand": [
+  "cr-ref-header-3",
+  "cr-ref-header-13"
+ ],
+ "handMeasured": [
+  "cr-ref-header-0",
+  "cr-ref-header-3",
+  "cr-ref-header-6",
+  "cr-ref-header-5",
+  "cr-ref-header-8",
+  "cr-ref-header-12",
+  "cr-ref-header-11",
+  "cr-ref-header-13",
+  "cr-ref-header-4"
+ ],
+ "handScope": [
+  {
+   "name": "trust-ticker",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-bar",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-logo",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-logo-group",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-wordmark",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-about",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "header-phone",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "header-bag",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "shop-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "brands-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "lenses-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "help-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  }
+ ],
+ "retargeted": {
+  "header-bag": ".cr-ref-header-13"
+ },
+ "identity": {
+  "checked": 6,
+  "agree": 2,
+  "mispaired": 0,
+  "replaced": 0,
+  "unresolved": 0,
+  "noWordPair": 4,
+  "added": 0,
+  "tagMismatch": 0,
+  "innerChecked": 2,
+  "uncheckedHand": 9,
+  "states": 1
+ },
+ "mispaired": [],
+ "replaced": [],
+ "uncheckedHand": [
+  {
+   "name": "header-wordmark",
+   "ref": "cr-ref-header-8",
+   "why": "its block has no origin entry"
+  },
+  {
+   "name": "header-about",
+   "ref": "cr-ref-header-12",
+   "why": "its block has no origin entry"
+  },
+  {
+   "name": "shop-trigger",
+   "ref": "cr-ref-header-4",
+   "why": "its block has no origin entry"
+  },
+  {
+   "name": "brands-trigger",
+   "ref": "cr-ref-header-4",
+   "why": "its block has no origin entry"
+  },
+  {
+   "name": "lenses-trigger",
+   "ref": "cr-ref-header-4",
+   "why": "its block has no origin entry"
+  },
+  {
+   "name": "help-trigger",
+   "ref": "cr-ref-header-12",
+   "why": "its block has no origin entry"
+  },
+  {
+   "name": "menu-button",
+   "ref": "cr-ref-header-4",
+   "why": "its block has no origin entry"
+  },
+  {
+   "name": "drawer-link-about",
+   "ref": "cr-ref-header-12",
+   "why": "its block has no origin entry"
+  },
+  {
+   "name": "drawer-phone",
+   "ref": "cr-ref-header-11",
+   "why": "its draft finder finds nothing"
+  }
+ ],
+ "tagMismatch": [],
+ "unaligned": [
+  "cr-ref-header-0",
+  "cr-ref-header-12",
+  "cr-ref-header-13",
+  "cr-ref-header-15",
+  "cr-ref-header-4",
+  "cr-ref-header-7",
+  "cr-ref-header-8"
+ ],
+ "left": [
+  {
+   "ref": "cr-ref-header-15",
+   "draft": null,
+   "why": "no matched words",
+   "words": 1,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
+  {
+   "ref": "cr-ref-header-12",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
+   "why": "the draft element also holds 5 word(s) that belong outside this block",
+   "words": 4,
+   "matched": 4,
+   "first": "about",
+   "last": "help"
+  },
+  {
+   "ref": "cr-ref-header-11",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > div:nth-child(3) > a:nth-child(1) > span:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(0121|729|8233)($|[^\\p{L}\\p{N}])"
+   },
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 3,
+   "matched": 3,
+   "first": "0121",
+   "last": "8233"
+  },
+  {
+   "ref": "cr-ref-header-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 768)",
+   "words": 10,
+   "matched": 9,
+   "first": "0121",
+   "last": "0"
+  },
+  {
+   "ref": "cr-ref-header-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 15,
+   "matched": 14,
+   "first": "sunglasses",
+   "last": "0"
+  },
+  {
+   "ref": "cr-ref-header-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > nav:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 5,
+   "matched": 5,
+   "first": "sunglasses",
+   "last": "soon"
+  },
+  {
+   "ref": "cr-ref-header-0",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-header-5",
+   "why": "its paired ancestor holds 2 picture live against 0 on the draft"
+  },
+  {
+   "ref": "cr-ref-header-6",
+   "why": "its paired ancestor holds 2 picture live against 0 on the draft"
+  },
+  {
+   "ref": "cr-ref-header-7",
+   "why": "its paired ancestor holds 2 picture live against 0 on the draft"
+  },
+  {
+   "ref": "cr-ref-header-8",
+   "why": "its paired ancestor holds 2 picture live against 0 on the draft"
+  }
+ ],
+ "keptPairs": []
+}

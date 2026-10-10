@@ -83,8 +83,46 @@ export function identityAgrees( { relation, idBox, wordBox }, tol = 2 ) {
 // The why of a disagreement, for qa/pairs/<surface>.json `mispaired` and the walker's row flag.
 export const mispairWhy = ( { tpl, relation, idBox, wordBox, idTag, wordTag } ) => `identity ${ tpl } is <${ idTag || '?' }> ${ idBox ? `${ Math.round( idBox.w ) }x${ Math.round( idBox.h ) }` : 'unresolved' }; the words chose <${ wordTag || '?' }> ${ wordBox ? `${ Math.round( wordBox.w ) }x${ Math.round( wordBox.h ) }` : 'unresolved' } (${ relation })`;
 
-// In-page: for each { ref, tpl, word } (word: a walker finder or null), the identity element and the word element's
-// relation and boxes. resolveSrc: collect.mjs::resolveFinder's source. Self-contained.
+// Whether the identity element still is the element the skeleton writer stamped: its tag equals the fingerprint's (no
+// fingerprint, nothing to compare). A tpl number that now resolves to another tag points at a changed draft.
+export const fingerprintAgrees = ( fingerprint, idTag ) => ! fingerprint?.tag || fingerprint.tag === idTag;
+
+// The live block refs with no origin entry: blocks identity pairing cannot check (their skeleton node did not align).
+export const unalignedRefs = ( refs, origin ) => [ ...refs ].filter( ( r ) => ! Object.hasOwn( origin, r ) ).sort();
+
+// Hand pairs measuring an element inside a block (not its root) are checked by containment: their draft element must be
+// the block's identity element or inside it. handInner: [ { name, ref, draft } ]; rel: relateInPage's output, whose
+// `inner` holds { name, resolved, inside } per hand pair of that ref. Returns { mispaired: [ { ref, why } ],
+// uncheckedHand: [ { name, ref, why } ] }: a pair on a block with no origin entry, or whose draft finds nothing, is
+// unchecked, never agreeing.
+export function innerVerdicts( { handInner, origin, rel } ) {
+	const mispaired = [];
+	const uncheckedHand = [];
+	for ( const h of handInner ) {
+		const r = rel.find( ( x ) => x.ref === h.ref );
+		const v = r?.inner?.find( ( i ) => i.name === h.name );
+		if ( ! Object.hasOwn( origin, h.ref ) ) {
+			uncheckedHand.push( { name: h.name, ref: h.ref, why: 'its block has no origin entry' } );
+		} else if ( ! v || ! v.resolved || r.unresolved ) {
+			uncheckedHand.push( { name: h.name, ref: h.ref, why: r?.unresolved ? 'the identity element is not on the draft' : 'its draft finder finds nothing' } );
+		} else if ( ! v.inside ) {
+			mispaired.find( ( m ) => m.ref === h.ref ) || mispaired.push( { ref: h.ref, why: `hand pair ${ h.name } measures a draft element outside identity ${ r.tpl }` } );
+		}
+	}
+	return { mispaired, uncheckedHand };
+}
+
+// The identity check per pairing state: each state's own kept pairs (a panel state's carry its `scope`, the first
+// state's none), with blocks added only in the first state (a later state checks, it never duplicates a pair).
+// runs: pairs.mjs's [ { state, scope } ]. Returns [ { state, scope, kept, add } ]; kept holds the same objects.
+export function identityStates( runs, kept ) {
+	return runs.map( ( r, i ) => ( { state: r.state, scope: r.scope || null, kept: kept.filter( ( k ) => ( k.scope || null ) === ( r.scope || null ) ), add: 0 === i } ) );
+}
+
+// In-page: for each { ref, tpl, word, inner? } (word: a walker finder or null; inner: [ { name, draft } ] hand pairs
+// measuring inside the block), the identity element and the word element's relation and boxes, and per inner pair
+// whether its draft element is the identity element or inside it. resolveSrc: collect.mjs::resolveFinder's source.
+// Self-contained.
 export function relateInPage( [ resolveSrc, items ] ) {
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc })` )();
@@ -96,6 +134,15 @@ export function relateInPage( [ resolveSrc, items ] ) {
 		const id = resolve( { tpl: it.tpl } );
 		const word = it.word ? resolve( it.word ) : null;
 		const relation = ! id || ! word ? 'apart' : ( id === word ? 'same' : ( word.contains( id ) ? 'word-contains' : ( id.contains( word ) ? 'id-contains' : 'apart' ) ) );
-		return { ref: it.ref, tpl: it.tpl, relation, idBox: id ? box( id ) : null, wordBox: word ? box( word ) : null, idTag: id?.tagName.toLowerCase() || null, wordTag: word?.tagName.toLowerCase() || null, unresolved: ! id };
+		const inner = ( it.inner || [] ).map( ( h ) => {
+			let e = null;
+			try {
+				e = resolve( h.draft );
+			} catch {
+				e = null;
+			}
+			return { name: h.name, resolved: !! e, inside: !! ( id && e && id.contains( e ) ) };
+		} );
+		return { ref: it.ref, tpl: it.tpl, relation, idBox: id ? box( id ) : null, wordBox: word ? box( word ) : null, idTag: id?.tagName.toLowerCase() || null, wordTag: word?.tagName.toLowerCase() || null, unresolved: ! id, inner };
 	} );
 }
