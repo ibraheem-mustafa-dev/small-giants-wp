@@ -187,3 +187,13 @@ test( 'MUST FAIL: the skeleton agrees with Bean\'s recorded choices on at least 
 	scored.forEach( ( s ) => t.diagnostic( `${ s.ok ? 'match' : 'DIFFERS' } row ${ s.n } ${ s.what }: ours ${ s.got }; Bean ${ s.expect }` ) );
 	assert.ok( hit >= 12, `${ hit } of 13 match:\n${ scored.map( ( s ) => `${ s.ok ? 'yes' : 'NO ' } ${ s.n} ${ s.what }: got ${ s.got }, Bean ${ s.expect }` ).join( '\n' ) }` );
 } );
+
+test( 'MUST FAIL (2026-10-10 header: sgs/hero and sgs/site-header both list "header" and tied, so list order chose hero): a root block whose accepted children fit the root\'s own children wins the tie', () => {
+	const header = JSON.parse( fs.readFileSync( path.join( DIR, 'skeleton', 'header.inventory.json' ), 'utf8' ) );
+	const r = proposeSkeleton( { inventory: header, facts: facts(), surface: 'header', db } );
+	const root = r.proposal.rows.find( ( x ) => 0 === header.elements.find( ( e ) => e.key === x.key )?.depth );
+	assert.equal( root.candidates[ 0 ].block, 'sgs/site-header' );
+	assert.ok( root.candidates[ 0 ].score > root.candidates.find( ( c ) => 'sgs/hero' === c.block ).score );
+	// Negative control: the footer root still proposes the footer block.
+	assert.equal( real.skeleton[ 0 ].name, 'sgs/site-footer' );
+} );

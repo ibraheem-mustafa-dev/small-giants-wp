@@ -1,0 +1,146 @@
+{
+  "cr-ref-footer-0": {
+    "tpl": "Root/844#0",
+    "fingerprint": {
+      "tag": "footer",
+      "cls": "",
+      "styleHash": "906c2415"
+    }
+  },
+  "cr-ref-footer-1": {
+    "tpl": "Root/845#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "92247fe6"
+    }
+  },
+  "cr-ref-footer-2": {
+    "tpl": "Root/846#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1505"
+    }
+  },
+  "cr-ref-footer-3": {
+    "tpl": "Root/847#0",
+    "fingerprint": {
+      "tag": "img",
+      "cls": "",
+      "styleHash": "924f5e88"
+    }
+  },
+  "cr-ref-footer-5": {
+    "tpl": "Root/848#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "a4158abd"
+    }
+  },
+  "cr-ref-footer-7": {
+    "tpl": "Root/870#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d0f4af7f"
+    }
+  },
+  "cr-ref-footer-8": {
+    "tpl": "Root/871#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "72cd63c6"
+    }
+  },
+  "cr-ref-footer-9": {
+    "tpl": "Root/872#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "1505"
+    }
+  },
+  "cr-ref-footer-14": {
+    "tpl": "Root/875#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d0f4af7f"
+    }
+  },
+  "cr-ref-footer-15": {
+    "tpl": "Root/876#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "72cd63c6"
+    }
+  },
+  "cr-ref-footer-16": {
+    "tpl": "Root/877#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "1505"
+    }
+  },
+  "cr-ref-footer-21": {
+    "tpl": "Root/881#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d0f4af7f"
+    }
+  },
+  "cr-ref-footer-22": {
+    "tpl": "Root/882#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "72cd63c6"
+    }
+  },
+  "cr-ref-footer-23": {
+    "tpl": "Root/883#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "1505"
+    }
+  },
+  "cr-ref-footer-27": {
+    "tpl": "Root/888#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "ecd6e835"
+    }
+  },
+  "cr-ref-footer-28": {
+    "tpl": "Root/889#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505"
+    }
+  },
+  "cr-ref-footer-29": {
+    "tpl": "Root/890#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "e88a52f3"
+    }
+  },
+  "cr-ref-footer-42": {
+    "tpl": "Root/893#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "ec-credit",
+      "styleHash": "1505"
+    }
+  }
+}

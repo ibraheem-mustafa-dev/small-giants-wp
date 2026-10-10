@@ -109,10 +109,15 @@ export function makeClassifier( { m, facts, overrides } ) {
 		const bk = m.blockKids( e );
 		const rootRule = 0 === e.depth ? sectionRoots.filter( ( r ) => capsOf( r.block_slug ).includes( e.tag ) ) : [];
 		if ( rootRule.length ) {
+			// What a root accepts must fit the root's own children: a content block accepted as a row fits a child that holds
+			// blocks; any other accepted block fits a child whose tag maps to it.
+			const fits = ( accepted ) => bk.some( ( c ) => ( 'content-block' === composition[ accepted ]?.composition_role && m.blockKids( c ).length ) || tagMap[ c.tag ]?.core_block_slug === accepted );
 			rootRule.forEach( ( r ) => {
 				add( C, r.block_slug, 'capability', W.capability * 2, `block_capabilities: ${ r.block_slug } lists "${ e.tag }" (the draft root tag)` );
 				add( C, r.block_slug, 'db', W.composition, `block_composition: ${ r.block_slug } is a section-root accepting ${ JSON.stringify( r.accepts ) }` );
 				add( C, r.block_slug, 'structure', 0.15, 'the root of the surface' );
+				const fit = r.accepts.filter( fits );
+				fit.length && add( C, r.block_slug, 'structure', W.structure, `the root's children fit what it accepts (${ fit.join( ', ' ) })` );
 			} );
 			return { ...finish( C ), stale };
 		}

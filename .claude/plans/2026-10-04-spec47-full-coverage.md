@@ -209,6 +209,26 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   `lib/solve-rows.mjs::writableGroups` never writes through a mispaired pair. Origin files come from fresh
   skeleton-writer links, never converted from word pairs. Done: footer and header pattern-2 false alarms dropped, every
   real problem kept.
+  **Built 2026-10-10:**
+  - The walker flags rows on a `mispaired` block and keeps them. Solve never groups a flagged row, triage labels it
+    W / mispaired, and the answer sheet scores it an artefact (GAP-CHECKLIST section 28).
+  - `origin.mjs` aligns a committed tree with its skeleton by block names (`lib/identity.mjs`).
+  - `pairs.mjs::identityPass` pairs every origin block by its tpl finder and cross-checks the word pairs.
+  - The skeleton writer's root rule now breaks the hero/site-header tie by what each root accepts.
+  - Footer: 18 blocks with an identity. 13 hand pairs agree; the generated brand-column pair, which had paired the
+    column with its tagline paragraph (294x42 against 307x166), now measures the column. All 3 generated pairs are tpl
+    finders.
+  - Header: 6 blocks with an identity. `gen-header-1` now pairs the live root with the draft's own `<header>`, not the
+    inner row the words chose on 2026-10-09.
+  - Answer sheet on fresh read-only walks (`qa/solve/<surface>/2026-10-10T-identity-walk/`): header pattern-2 false
+    alarms dropped 3/3 (was 0/3); footer pattern 3 3/3 and pattern 5 2/4 (were 0/3 and 0/4).
+  - Footer real problems RP-FT-04 to 06 are absent from today's walk with the old word pairing too, so their absence is
+    the 2026-10-09 draft and footer changes (the removed Glasses line, the reshaped social row), not the pairing. Footer
+    and header were re-baselined on those walks.
+  - Identity against words on the same footer walk: one knock-on row (FA-P5-02, the column's y-in-main) is open with
+    identity and absent with words; knock-on splitting is R5 and R6 work.
+  - Still open: the header's nav-bar-menu, trust-bar, rating badge and cart have no skeleton node, because the generator
+    proposes the nav as buttons. Inside-block structural matching of named parts is not built yet.
 - **R5. "Does it paint?"** `scripts/parity/lib/neutralise.mjs` sets the draft value on the live element in the open
   browser. When no box (the element, its contents, the siblings after it) moves and the live crop is identical, the row
   is inert. It ships with the value-source field (`collectPair` returns `{value, src}`), which absorbs

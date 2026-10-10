@@ -1,6 +1,6 @@
 {
  "surface": "footer",
- "when": "2026-10-09T20:37:41.267Z",
+ "when": "2026-10-10T00:40:03.997Z",
  "width": 1440,
  "recheck": [
   375,
@@ -299,6 +299,22 @@
   "link-privacy": ".cr-ref-footer-30",
   "link-terms": ".cr-ref-footer-31"
  },
+ "identity": {
+  "checked": 18,
+  "agree": 13,
+  "mispaired": 0,
+  "replaced": 1,
+  "unresolved": 0,
+  "noWordPair": 4,
+  "added": 0
+ },
+ "mispaired": [],
+ "replaced": [
+  {
+   "ref": "cr-ref-footer-2",
+   "why": "identity Root/846#0 is <div> 307x166; the words chose <p> 294x42 (id-contains)"
+  }
+ ],
  "left": [
   {
    "ref": "cr-ref-footer-9",
@@ -347,38 +363,39 @@
  "keptPairs": [
   {
    "ref": "cr-ref-footer-2",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > p:nth-child(2)",
-   "textRun": {
-    "direct": true,
-    "match": "(^|[^\\p{L}\\p{N}])(designer|eyewear|from|an|independent|optician|in|birmingham\\.)($|[^\\p{L}\\p{N}])"
+   "draft": {
+    "tpl": "Root/846#0"
    },
    "why": null,
    "words": 8,
    "matched": 8,
    "first": "designer",
-   "last": "birmingham."
+   "last": "birmingham.",
+   "identity": true
   },
   {
    "ref": "cr-ref-footer-29",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(2) > span:nth-child(2)",
-   "textRun": {
-    "direct": false,
-    "match": "(^|[^\\p{L}\\p{N}])(privacy|terms|website|by|small|giants|studio)($|[^\\p{L}\\p{N}])"
+   "draft": {
+    "tpl": "Root/890#0"
    },
    "why": null,
    "words": 7,
    "matched": 7,
    "first": "privacy",
-   "last": "studio"
+   "last": "studio",
+   "identity": true
   },
   {
    "ref": "cr-ref-footer-42",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(2) > span:nth-child(2) > a:nth-child(3)",
+   "draft": {
+    "tpl": "Root/893#0"
+   },
    "why": null,
    "words": 5,
    "matched": 5,
    "first": "website",
-   "last": "studio"
+   "last": "studio",
+   "identity": true
   }
  ]
 }

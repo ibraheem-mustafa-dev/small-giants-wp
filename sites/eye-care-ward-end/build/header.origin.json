@@ -1,0 +1,50 @@
+{
+  "cr-ref-header-1": {
+    "tpl": "Root/14#0",
+    "fingerprint": {
+      "tag": "header",
+      "cls": "",
+      "styleHash": "129569ef"
+    }
+  },
+  "cr-ref-header-3": {
+    "tpl": "Root/15#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "30cc5cc8"
+    }
+  },
+  "cr-ref-header-5": {
+    "tpl": "Root/29#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "7d883d1"
+    }
+  },
+  "cr-ref-header-6": {
+    "tpl": "Root/30#0",
+    "fingerprint": {
+      "tag": "img",
+      "cls": "",
+      "styleHash": "1505"
+    }
+  },
+  "cr-ref-header-10": {
+    "tpl": "Root/32#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "133a4d71"
+    }
+  },
+  "cr-ref-header-11": {
+    "tpl": "Root/34#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp1",
+      "styleHash": "4eef3f81"
+    }
+  }
+}

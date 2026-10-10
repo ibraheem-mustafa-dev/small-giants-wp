@@ -15,6 +15,8 @@
 // --state a,b,c pairs once per state and scopes each pair to its state (`rest` is the page at rest, scoped to `opening`):
 //   node scripts/computed-route/pairs.mjs --client eye-care-ward-end --surface product --state rest,tab-details,tab-sizing
 // A state whose panel leaves the landmark it opens from names its own root in the hand config (`pairRoot`).
+// With an origin (`<surface>.origin.json`, origin.mjs), each block in it is paired by exact draft identity and the word
+// pairing is checked against it; a disagreement is listed as `mispaired` (identityPass).
 // Writes sites/<client>/build/qa/parity/<surface>.full.mjs and sites/<client>/build/qa/pairs/<surface>.json.
 import fs from 'fs';
 import path from 'path';
@@ -22,6 +24,8 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import { matchWords } from '../parity/lib/auto-compare.mjs';
 import { wordsByBlock, twinsByBlock, twinPlan, commonPath, wordMatch, choosePartner, chooseControlPartner, chooseGroupPartner, chooseMediaPartner, reconcileHandPairs, configText, pairingStates, mergeWidthFinders, joinFinders, assertReachable, rootFor, collectContext, RECHECK_WIDTHS } from './lib/pairs.mjs';
 import { judgePairScope } from './lib/pair-scope.mjs';
+import { identityAgrees, mispairWhy, relateInPage } from './lib/identity.mjs';
+import { resolveFinder } from '../parity/lib/collect.mjs';
 import { collectTagged, handScopes, liveBlocks, draftChains, formControls, groupBoxes, handElements, openDraft, openLive, liftedExclusions, liveReach, mediaPartners } from './lib/pairs-page.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -29,8 +33,9 @@ const REPO = path.resolve( HERE, '../..' );
 
 // One pairing run: the surface opened on both sides at one width (with its state open), every live block paired with
 // its draft element. check: refuse a live page that cannot be paired (lib/pairs.mjs::assertReachable).
-// Returns { kept, left, unworded, retarget, duplicate, measured, boxes, lifted, handScope }: handScope is each resolvable
-// hand pair's twin-containment verdict (lib/pair-scope.mjs::judgePairScope).
+// Returns { kept, left, unworded, retarget, duplicate, measured, boxes, lifted, handScope, handByRef }: handScope is each
+// resolvable hand pair's twin-containment verdict (lib/pair-scope.mjs::judgePairScope); handByRef the draft finder of each
+// hand pair measuring a block's root, by block ref.
 export async function runPairing( { browser, cfg, prefix, width, state = null, check = false } ) {
 	const draft = await openDraft( browser, cfg, width, state );
 	const live = await openLive( browser, cfg, width, state );
@@ -153,7 +158,9 @@ export async function runPairing( { browser, cfg, prefix, width, state = null, c
 		for ( let i = kept.length - 1; i >= 0; i-- ) {
 			duplicate.has( kept[ i ].ref ) && kept.splice( i, 1 );
 		}
-		return { kept, left, unworded, retarget, duplicate, measured, boxes, lifted, handScope };
+		// The draft finder of each hand pair measuring a block's own root, by that block (the identity cross-check reads it).
+		const handByRef = Object.fromEntries( handPairs.map( ( p, i ) => ( hLive[ i ]?.liveRef && hLive[ i ].liveIsRoot && serial( p.draft ) ? [ hLive[ i ].liveRef, p.draft ] : null ) ).filter( Boolean ) );
+		return { kept, left, unworded, retarget, duplicate, measured, boxes, lifted, handScope, handByRef };
 	} finally {
 		await draft.close();
 		await live.close();
@@ -234,6 +241,67 @@ export async function recheckWidths( { browser, cfg, prefix, width, recheck, sta
 	}
 }
 
+// Exact identity (route-accuracy R4): each block in the surface's origin (`<surface>.origin.json`, cr-ref to a tpl key)
+// is paired with its identity element, and the word matcher's element for it (a generated pair's, or a hand pair's whose
+// live finder is the block root, after the `retarget` move) is checked against it on the draft at `width`. A generated
+// pair of an origin block takes the tpl finder, a disagreement recorded in `replaced`; a hand pair that disagrees still
+// measures the words' element, so it is listed in `mispaired` (the walker flags the block's rows and Solve never writes
+// through them). An origin block no pair measures (none generated, none by hand: `covered`) is added with its tpl
+// finder. Mutates kept and left. Returns { counts, mispaired, replaced }.
+export async function identityPass( { browser, cfg, width, state, origin, kept, left, retarget = new Map(), covered = new Set(), handByRef = new Map() } ) {
+	// A hand pair measuring the block's root: found in the page (runPairing's handByRef), or by its live finder after
+	// reconcileHandPairs moved it there (`retarget`, the config's `moved`).
+	const handWord = ( ref ) => handByRef.get( ref ) || ( cfg.pairs || [] ).find( ( p ) => p && `.${ ref }` === ( retarget.get( p.name ) ?? p.live ) && 'function' !== typeof p.draft )?.draft || null;
+	const genWord = ( k ) => ( k.group ? null : ( k.textRun ? k.textRun.within || k.draft : k.draft ) );
+	const items = Object.entries( origin ).map( ( [ ref, o ] ) => {
+		const k = kept.find( ( x ) => x.ref === ref );
+		return { ref, tpl: o.tpl, word: ( k && genWord( k ) ) || handWord( ref ) };
+	} );
+	const page = await openDraft( browser, cfg, width, state );
+	let rel;
+	try {
+		rel = await page.evaluate( relateInPage, [ resolveFinder.toString(), items ] );
+	} finally {
+		await page.close();
+	}
+	const mispaired = [];
+	const replaced = [];
+	const counts = { checked: rel.length, agree: 0, mispaired: 0, replaced: 0, unresolved: 0, noWordPair: 0, added: 0 };
+	for ( const r of rel ) {
+		const word = items.find( ( i ) => i.ref === r.ref ).word;
+		if ( r.unresolved ) {
+			counts.unresolved++;
+			continue;
+		}
+		const k = kept.find( ( x ) => x.ref === r.ref );
+		if ( ! word ) {
+			counts.noWordPair++;
+		} else if ( identityAgrees( r ) ) {
+			counts.agree++;
+		} else if ( k ) {
+			// The generated pair now measures the identity element: the word matcher's choice is recorded, not measured.
+			counts.replaced++;
+			replaced.push( { ref: r.ref, why: mispairWhy( r ) } );
+		} else {
+			// A hand pair still measures the element the words chose: its rows compare two different elements.
+			counts.mispaired++;
+			mispaired.push( { ref: r.ref, why: mispairWhy( r ) } );
+		}
+		if ( k ) {
+			for ( const key of [ 'textRun', 'group', 'drafts' ] ) {
+				delete k[ key ];
+			}
+			Object.assign( k, { draft: { tpl: r.tpl }, identity: true } );
+		} else if ( ! handWord( r.ref ) && ! covered.has( r.ref ) ) {
+			kept.push( { ref: r.ref, draft: { tpl: r.tpl }, identity: true, why: null, words: 0, matched: 0, first: null, last: null } );
+			counts.added++;
+			const at = left.findIndex( ( l ) => l.ref === r.ref );
+			at >= 0 && left.splice( at, 1 );
+		}
+	}
+	return { counts, mispaired, replaced };
+}
+
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
 	const argv = process.argv.slice( 2 );
 	const flag = ( n ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : null );
@@ -262,6 +330,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const allRefs = new Set();
 	const scopeBy = new Map();
 	let lifted = [];
+	let identity = null;
+	const handByRef = new Map();
 	try {
 		for ( const { state, scope } of runs ) {
 			const ctx = { browser, cfg, prefix, width, recheck, state };
@@ -273,6 +343,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			run.retarget.forEach( ( v, k ) => retarget.set( k, v ) );
 			run.duplicate.forEach( ( r ) => duplicate.add( r ) );
 			run.measured.forEach( ( r ) => measured.add( r ) );
+			Object.entries( run.handByRef ).forEach( ( [ r, f ] ) => handByRef.has( r ) || handByRef.set( r, f ) );
 			// A pair judged in several states is a mispair when any state says so. A pair the config declares `text: false`
 			// is never judged, so its verdict carries no counts or split list.
 			run.handScope.forEach( ( v ) => {
@@ -281,6 +352,14 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			} );
 			Object.keys( run.boxes ).filter( ( r ) => r.startsWith( prefix ) ).forEach( ( r ) => allRefs.add( r ) );
 			lifted = run.lifted;
+		}
+		// Exact identity, when the surface has an origin: checked in the first pairing state.
+		const originFile = path.join( buildDir, `${ surface }.origin.json` );
+		if ( fs.existsSync( originFile ) ) {
+			const leftList = [ ...leftBy.values() ];
+			identity = await identityPass( { browser, cfg, width, state: runs[ 0 ].state, origin: JSON.parse( fs.readFileSync( originFile, 'utf8' ) ), kept, left: leftList, retarget, covered: new Set( [ ...duplicate, ...measured ] ), handByRef } );
+			leftBy.clear();
+			leftList.forEach( ( l ) => leftBy.set( l.ref, l ) );
 		}
 	} finally {
 		await browser.close();
@@ -295,7 +374,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	fs.mkdirSync( path.join( buildDir, 'qa', 'pairs' ), { recursive: true } );
 	const stateNames = runs.map( ( r ) => r.scope || r.state?.name ).filter( Boolean );
 	// `handMeasured`: the block ref of every hand pair whose draft and live both resolve (read by lib/register-sweep.mjs).
-	const report = { surface, when: new Date().toISOString(), ...( 1 === runs.length && runs[ 0 ].state ? { state: runs[ 0 ].state.name } : {} ), ...( runs.length > 1 ? { states: stateNames } : {} ), width, recheck, lifted, blocks: allRefs.size, kept: kept.length, coveredByHand: [ ...duplicate ], handMeasured: [ ...measured ], handScope: [ ...scopeBy.values() ], retargeted: Object.fromEntries( retarget ), left, keptPairs: kept };
+	const report = { surface, when: new Date().toISOString(), ...( 1 === runs.length && runs[ 0 ].state ? { state: runs[ 0 ].state.name } : {} ), ...( runs.length > 1 ? { states: stateNames } : {} ), width, recheck, lifted, blocks: allRefs.size, kept: kept.length, coveredByHand: [ ...duplicate ], handMeasured: [ ...measured ], handScope: [ ...scopeBy.values() ], retargeted: Object.fromEntries( retarget ), ...( identity ? { identity: identity.counts, mispaired: identity.mispaired, replaced: identity.replaced } : {} ), left, keptPairs: kept };
 	fs.writeFileSync( path.join( buildDir, 'qa', 'pairs', `${ surface }.json` ), JSON.stringify( report, null, 1 ) );
-	console.log( JSON.stringify( { surface, blocks: allRefs.size, kept: kept.length, left: left.length, config: path.join( path.dirname( s.walker ), fullFile ) } ) );
+	console.log( JSON.stringify( { surface, blocks: allRefs.size, kept: kept.length, left: left.length, ...( identity ? { identity: identity.counts } : {} ), config: path.join( path.dirname( s.walker ), fullFile ) } ) );
 }

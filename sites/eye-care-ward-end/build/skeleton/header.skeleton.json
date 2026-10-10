@@ -1,0 +1,339 @@
+[
+	{
+		"name": "sgs/site-header",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root/14#0"
+		},
+		"draftFingerprint": {
+			"tag": "header",
+			"cls": "",
+			"styleHash": "129569ef"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"layout": "grid"
+				},
+				"draftRef": {
+					"tpl": "Root/15#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "30cc5cc8"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "nav",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/16#0"
+						},
+						"draftFingerprint": {
+							"tag": "nav",
+							"cls": "",
+							"styleHash": "d0e1c09f"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Sunglasses"
+								},
+								"draftRef": {
+									"tpl": "Root/24#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "70cad5c6"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script goSun: destination not in the draft, url left empty"
+									}
+								]
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Brands"
+								},
+								"draftRef": {
+									"tpl": "Root/25#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "70cad5c6"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script toggleMegaBrands: destination not in the draft, url left empty"
+									}
+								]
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Lenses"
+								},
+								"draftRef": {
+									"tpl": "Root/26#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "70cad5c6"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script goLenses: destination not in the draft, url left empty"
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/27#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "69f51109"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "SOON"
+										},
+										"draftRef": {
+											"tpl": "Root/28#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "b04eff65"
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/29#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "",
+							"styleHash": "7d883d1"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/responsive-logo",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/30#0"
+								},
+								"draftFingerprint": {
+									"tag": "img",
+									"cls": "",
+									"styleHash": "1505"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "presence",
+										"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+									}
+								]
+							},
+							{
+								"name": "sgs/responsive-logo",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/31#0"
+								},
+								"draftFingerprint": {
+									"tag": "img",
+									"cls": "",
+									"styleHash": "bf4b632"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "presence",
+										"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/32#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "133a4d71"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/business-info",
+								"attributes": {
+									"displayType": "phone"
+								},
+								"draftRef": {
+									"tpl": "Root/34#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp1",
+									"styleHash": "4eef3f81"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "text",
+										"detail": "Site Info \"phone\" must read: <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentC"
+									}
+								],
+								"draftSlots": {
+									".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg": {
+										"tpl": "Root/35#0"
+									}
+								}
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "About Eye Care"
+								},
+								"draftRef": {
+									"tpl": "Root/37#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp2",
+									"styleHash": "4ac32d75"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script goAbout: destination not in the draft, url left empty"
+									}
+								]
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Help"
+								},
+								"draftRef": {
+									"tpl": "Root/38#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "4ac32d75"
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script goHelp: destination not in the draft, url left empty"
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/39#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "scp3",
+									"styleHash": "e97ba571"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Bag"
+										},
+										"draftRef": {
+											"tpl": "Root/40#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "1505"
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "0"
+										},
+										"draftRef": {
+											"tpl": "Root/41#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "fb026049"
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

@@ -1,19 +1,21 @@
 {
 	"footer": {
-		"report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T08-57-47/round-2/report.json",
-		"triage": "sites/eye-care-ward-end/build/qa/triage/footer.json",
-		"solve": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-09T08-57-47/solve-report.json",
+		"report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-10T-identity-walk/round-1/report.json",
+		"triage": null,
+		"solve": null,
 		"pass": [
 			"FA-P1-01",
+			"FA-P3-01",
+			"FA-P3-02",
+			"FA-P3-03",
+			"FA-P5-01",
+			"FA-P5-04",
 			"FA-P6-01",
 			"FA-P6-02",
 			"FA-P6-03",
 			"RP-FT-01",
 			"RP-FT-02",
-			"RP-FT-03",
-			"RP-FT-04",
-			"RP-FT-05",
-			"RP-FT-06"
+			"RP-FT-03"
 		]
 	},
 	"home": {
@@ -30,10 +32,14 @@
 		]
 	},
 	"header": {
-		"report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-09T08-08-15/round-9/report.json",
-		"triage": "sites/eye-care-ward-end/build/qa/triage/header.json",
-		"solve": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-09T08-08-15/solve-report.json",
-		"pass": []
+		"report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-10T-identity-walk/round-1/report.json",
+		"triage": null,
+		"solve": null,
+		"pass": [
+			"FA-P2-06",
+			"FA-P2-07",
+			"FA-P2-08"
+		]
 	},
 	"mega-lenses": {
 		"report": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-09T08-40-01/round-4/report.json",

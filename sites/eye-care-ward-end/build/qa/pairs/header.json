@@ -1,6 +1,6 @@
 {
  "surface": "header",
- "when": "2026-10-09T18:03:14.413Z",
+ "when": "2026-10-10T00:42:56.299Z",
  "width": 1440,
  "recheck": [
   375,
@@ -12,7 +12,7 @@
   ".sgs-site-header"
  ],
  "blocks": 13,
- "kept": 0,
+ "kept": 2,
  "coveredByHand": [
   "cr-ref-header-3",
   "cr-ref-header-13"
@@ -117,6 +117,17 @@
  "retargeted": {
   "header-bag": ".cr-ref-header-13"
  },
+ "identity": {
+  "checked": 6,
+  "agree": 2,
+  "mispaired": 0,
+  "replaced": 0,
+  "unresolved": 0,
+  "noWordPair": 4,
+  "added": 2
+ },
+ "mispaired": [],
+ "replaced": [],
  "left": [
   {
    "ref": "cr-ref-header-15",
@@ -150,24 +161,6 @@
    "last": "8233"
   },
   {
-   "ref": "cr-ref-header-10",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 768)",
-   "words": 10,
-   "matched": 9,
-   "first": "0121",
-   "last": "0"
-  },
-  {
-   "ref": "cr-ref-header-1",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 15,
-   "matched": 14,
-   "first": "sunglasses",
-   "last": "0"
-  },
-  {
    "ref": "cr-ref-header-4",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > nav:nth-child(1)",
    "why": "its draft element at 375 does not hold the same words (no partner at 375)",
@@ -197,5 +190,30 @@
    "why": "its paired ancestor holds 2 picture live against 0 on the draft"
   }
  ],
- "keptPairs": []
+ "keptPairs": [
+  {
+   "ref": "cr-ref-header-1",
+   "draft": {
+    "tpl": "Root/14#0"
+   },
+   "identity": true,
+   "why": null,
+   "words": 0,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
+  {
+   "ref": "cr-ref-header-10",
+   "draft": {
+    "tpl": "Root/32#0"
+   },
+   "identity": true,
+   "why": null,
+   "words": 0,
+   "matched": 0,
+   "first": null,
+   "last": null
+  }
+ ]
 }

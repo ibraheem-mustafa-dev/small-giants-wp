@@ -3,9 +3,9 @@
 import base from './footer.mjs';
 
 const generated = [
-	{ name: "gen-footer-2", text: false, structure: false, draft: {"textRun":{"within":"body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > p:nth-child(2)","direct":true,"match":"(^|[^\\p{L}\\p{N}])(designer|eyewear|from|an|independent|optician|in|birmingham\\.)($|[^\\p{L}\\p{N}])"}}, live: {"textRun":{"within":".cr-ref-footer-2","direct":false,"match":"(^|[^\\p{L}\\p{N}])(designer|eyewear|from|an|independent|optician|in|birmingham\\.)($|[^\\p{L}\\p{N}])"}} },
-	{ name: "gen-footer-29", text: false, structure: false, draft: {"textRun":{"within":"body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(2) > span:nth-child(2)","direct":false,"match":"(^|[^\\p{L}\\p{N}])(privacy|terms|website|by|small|giants|studio)($|[^\\p{L}\\p{N}])"}}, live: {"textRun":{"within":".cr-ref-footer-29","direct":false,"match":"(^|[^\\p{L}\\p{N}])(privacy|terms|website|by|small|giants|studio)($|[^\\p{L}\\p{N}])"}} },
-	{ name: "gen-footer-42", text: false, structure: false, draft: "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(2) > span:nth-child(2) > a:nth-child(3)", live: ".cr-ref-footer-42" },
+	{ name: "gen-footer-2", text: false, structure: false, draft: {"tpl":"Root/846#0"}, live: ".cr-ref-footer-2" },
+	{ name: "gen-footer-29", text: false, structure: false, draft: {"tpl":"Root/890#0"}, live: ".cr-ref-footer-29" },
+	{ name: "gen-footer-42", text: false, structure: false, draft: {"tpl":"Root/893#0"}, live: ".cr-ref-footer-42" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

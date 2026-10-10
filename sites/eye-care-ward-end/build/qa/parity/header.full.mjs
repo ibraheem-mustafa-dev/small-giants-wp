@@ -3,6 +3,8 @@
 import base from './header.mjs';
 
 const generated = [
+	{ name: "gen-header-1", text: false, structure: false, draft: {"tpl":"Root/14#0"}, live: ".cr-ref-header-1" },
+	{ name: "gen-header-10", text: false, structure: false, draft: {"tpl":"Root/32#0"}, live: ".cr-ref-header-10" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.
