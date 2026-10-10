@@ -245,7 +245,8 @@ client target is one `TARGETS` entry with `explicit_opt_in_required: True` (enfo
 
 **Client drafts (the reference a build is compared with):** a draft comes out of Claude Design through its built-in
 "Handoff to Claude Code" skill and its design-system skill, run by pasting the standard prompt
-`.claude/claude-design-handoff/PROMPT.txt` after uploading that folder's `handoff-schema/` into the project once. The
+`.claude/claude-design-handoff/PROMPT.txt` after uploading that folder's `CLAUDE.md` (runtime traps, rules and the
+expected file map) and `handoff-schema/` into the project once. The
 result is one `design_handoff_<project>/` folder with its README, `animations.json`, `surfaces.json`, `MANIFEST.md`,
 `READING-DC-FILES.md`, `tokens/` and `handoff-schema/`; never the zip or standalone download, which carry no README.
 The recipe and the folder standard being designed:

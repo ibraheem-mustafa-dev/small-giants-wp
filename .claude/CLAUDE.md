@@ -13,7 +13,7 @@ One home per job:
 | The `wp sgs` command reference | `wp-sgs-cli.md` |
 | Generated catalogues (every gate/script, every helper/component) | `catalogues/` |
 | System design | `architecture.md` |
-| The prompt pasted into Claude Design to export a draft, and the folder uploaded with it | `claude-design-handoff/` (Bean keeps a desktop copy) |
+| The prompt pasted into Claude Design to export a draft, and the `CLAUDE.md` and `handoff-schema/` uploaded with it | `claude-design-handoff/` (Bean keeps a desktop copy) |
 | Why something was decided | the doc it changed, and the commit message |
 | History | git |
 

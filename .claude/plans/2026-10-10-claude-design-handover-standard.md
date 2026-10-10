@@ -68,17 +68,21 @@ the zip; not in git).
 
 **A4. Export recipe (per project, in Claude Design).** Everything lives in `.claude/claude-design-handoff/` (a copy sits
 in `Claude Design handoff` on Bean's desktop; the repo copy is the one that gets edited).
-1. Once per project, upload the `handoff-schema/` folder (`METHOD.md`, the two JSON Schemas and
-   `READING-DC-FILES.example.md`, the Indus reading guide used as a model).
+1. Once per project, upload `CLAUDE.md` to the project root and the `handoff-schema/` folder (`METHOD.md`, the two JSON
+   Schemas and `READING-DC-FILES.example.md`, the Indus reading guide used as a model).
 2. Paste `PROMPT.txt` into the chat. It runs "Handoff to Claude Code" and the design-system skill, corrects the README
-   against the code, writes the inventory by `METHOD.md`, writes the project's own `READING-DC-FILES.md`, flags the two
-   known runtime traps, copies `tokens/` and `handoff-schema/` into the handoff folder and writes `MANIFEST.md` last.
+   against the code, writes the inventory by `METHOD.md`, writes the project's own `READING-DC-FILES.md`, flags the
+   runtime traps, copies `tokens/` and `handoff-schema/` into the handoff folder, writes `MANIFEST.md` last and checks
+   the folder against the file map.
 3. Download only the handoff folder.
 
-A pasted prompt replaces the earlier uploaded `CLAUDE.md` plus `dc-handoff-inventory` skill: Claude Design never
-registers uploaded skills, a `CLAUDE.md` is only advisory, and a prompt is a direct instruction that also works in the
-artifact-based Claude Design. The skill wrapper held nothing beyond `METHOD.md` (its `reference/method.md` is
-byte-identical) and the prompt. Claude Design's inventory remains a cross-check; Claude Code re-derives it at intake.
+The split: the prompt carries the steps, because a pasted prompt is a direct instruction (Claude Design never registers
+uploaded skills and treats a `CLAUDE.md` as advisory) and it also works in the artifact-based Claude Design. The
+`CLAUDE.md` carries the standing facts every conversation needs: the two runtime traps (so later design edits don't
+reintroduce them), the rules (drafts untouched, one-off colours stay hex) and the file map of the finished handoff
+folder, which is the done check and the seed of Spec 48A. The earlier `dc-handoff-inventory` skill wrapper is dropped:
+it held nothing beyond `METHOD.md` (its `reference/method.md` is byte-identical) and the prompt. Claude Design's
+inventory remains a cross-check; Claude Code re-derives it at intake.
 
 **Draft fixes Claude Design made (2026-10-10), relevant to every draft.** The runtime passes `componentDidUpdate` only
 `prevProps`; drafts written as `(pp, ps)` never ran their update behaviour (Indus: route-change entrance, mega-menu and

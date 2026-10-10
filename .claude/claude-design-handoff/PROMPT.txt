@@ -1,17 +1,15 @@
-Prepare this project for handoff to Claude Code. Work through every step without asking me anything first; stop to ask only if the project has no .dc.html draft.
+Prepare this project for handoff to Claude Code. Work through every step without asking me anything first. Stop and tell me only if the project has no .dc.html draft, or if CLAUDE.md or handoff-schema/ is missing from the project root.
 
 1. Run "Handoff to Claude Code" for the current drafts.
 2. Run the design-system skill, so the project's design system and its tokens/ folder (colors.css, typography.css, spacing.css) match the current drafts.
 3. Check the handoff README against the drafts' code and correct anything it states wrongly (routes, header, footer, forms, assets, animations).
-4. Inventory the drafts by following handoff-schema/METHOD.md exactly. Write animations.json and surfaces.json into the handoff folder and validate both against handoff-schema/animations.schema.json and handoff-schema/surfaces.schema.json (fix the records, never the schema). Leave the runtime trace out.
+4. Inventory the drafts by following handoff-schema/METHOD.md exactly. Write animations.json and surfaces.json into the handoff folder and validate both against the schemas in handoff-schema/. Leave the runtime trace out.
 5. Write READING-DC-FILES.md into the handoff folder for this project's drafts, modelled on handoff-schema/READING-DC-FILES.example.md. The example was written for another project: keep its structure and every runtime, template and logic fact that still holds; replace its examples, hook names, routes and data model with this project's.
-6. Check every draft for two runtime traps and list each hit under "unresolved" in animations.json:
-   - componentDidUpdate written with two parameters (the runtime passes only prevProps, so the second is always undefined and that update code never runs);
-   - a script or custom element in <helmet> that fills itself in before the runtime boots (it can crash the first render with a removeChild error).
+6. Check every draft for the runtime traps listed in CLAUDE.md and list each hit under "unresolved" in animations.json.
 7. Copy tokens/ and handoff-schema/ into the handoff folder, so the handoff folder is the only thing I download.
-8. Last, write MANIFEST.md in the handoff folder: today's date, the SHA-256 of support.js, and path, bytes and SHA-256 for every file in the handoff folder.
+8. Last, write MANIFEST.md in the handoff folder as CLAUDE.md describes.
+9. Compare the handoff folder with the file map in CLAUDE.md and fix any difference before replying.
 
-Rules:
-- Don't change the drafts, their scripts or assets. List bugs under "unresolved" and ask me before fixing any. After a fix, regenerate animations.json, surfaces.json and MANIFEST.md.
+Follow the rules in CLAUDE.md throughout.
 
-When done, reply briefly: record counts; the reconciled totals (.animate( sites, transitions, pseudo rules, routes, toggling sc-ifs); each unresolved item, phrased as a question when it needs my decision; and the handoff folder's file list. Don't paste the JSON.
+When done, reply briefly: record counts; the reconciled totals (.animate( sites, transitions, pseudo rules, routes, toggling sc-ifs); each unresolved item, phrased as a question when it needs my decision; and confirm the folder matches the file map (or name what differs and why). Don't paste the JSON.
