@@ -21,10 +21,19 @@ const PX = { 375: 7, 768: 23, 1440: 37 };
 
 test( 'MUST FAIL: a per-device {width, height} size gets a marker of that shape', () => {
 	const [ m ] = markersFor( SHAPE_ROW, blockSchema( 'sgs/icon' ), SNAP );
-	assert.deepEqual( m.attrs.shapeSize, { desktop: { width: '37px', height: '37px' }, tablet: { width: '23px', height: '23px' }, mobile: { width: '7px', height: '7px' } } );
-	assert.deepEqual( m.expect, { 375: '7px', 768: '23px', 1440: '37px' } );
+	assert.deepEqual( m.attrs.shapeSize, { desktop: { width: '96px', height: '96px' }, tablet: { width: '80px', height: '80px' }, mobile: { width: '64px', height: '64px' } } );
+	assert.deepEqual( m.expect, { 375: '64px', 768: '80px', 1440: '96px' } );
 	const [ row ] = markersFor( { ...SHAPE_ROW, attr_name: 'childIconShapeSize' }, blockSchema( 'sgs/social-icons' ), SNAP );
-	assert.deepEqual( row.attrs.childIconShapeSize.desktop, { width: '37px', height: '37px' } );
+	assert.deepEqual( row.attrs.childIconShapeSize.desktop, { width: '96px', height: '96px' } );
+} );
+
+// The glyph is a shrinking flex item of the shape (icon/style.css .sgs-icon__svg): a shape marker below the glyph's
+// 32px rest squeezes it, so the glyph moves with the shape and both iconSize and shapeSize seem to reach it.
+test( 'MUST FAIL: every shape-size marker sits above the resting glyph and the 48px boxed rest', () => {
+	const [ m ] = markersFor( SHAPE_ROW, blockSchema( 'sgs/icon' ), SNAP );
+	const px = Object.values( m.attrs.shapeSize ).map( ( b ) => parseFloat( b.width ) );
+	assert.ok( px.every( ( v ) => v > 48 ), `markers ${ px.join( '/' ) } all exceed the glyph (32px) and the boxed shape (48px)` );
+	assert.equal( new Set( px ).size, 3, 'the three tiers stay distinct' );
 } );
 
 test( 'negative control: a plain per-device length keeps its plain marker', () => {

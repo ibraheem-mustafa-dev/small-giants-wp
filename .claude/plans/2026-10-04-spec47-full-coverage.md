@@ -221,9 +221,13 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
     `childIconShowBackground` true now written; a borderless draft writes no border (it wrote 0px before). Only border,
     background and shadow baselines change, and of the ten fixtures with styling preconditions only social-icons paints
     those, so no other block's writes move.
-  - **Open: a standalone `sgs/icon` glyph width is ambiguous.** `shapeSize`'s 7px and 23px markers sit below the
-    glyph's 32px rest, so the glyph shrinks with the shape and both `iconSize` and `shapeSize` reach it. A glyph read
-    reports `ambiguous`, never a wrong write. Fix: shape-size markers above the resting glyph.
+  - **Standalone `sgs/icon` glyph, done 2026-10-10.** The glyph is a shrinking flex item of the shape
+    (`icon/style.css::.sgs-icon__svg`), so `shapeSize`'s 7px and 23px markers squeezed the 32px glyph and both
+    `iconSize` and `shapeSize` reached it. A size-box marker is now 96/80/64px (`lib/calibrate-markers.mjs::SIZE_BOX_PX`),
+    above the glyph and the 48px boxed rest. `calibrate.mjs --site local-eye-care --client eye-care-ward-end --blocks
+    sgs/icon --recalibrate`: `shapeSize` slots `["", ".sgs-icon__shape"]` (the glyph and svg are gone), 19 settings as
+    before. `sgs/social-icons`' `childIconShapeSize` uses the same marker; its cache keeps the old markers until its next
+    recalibration.
   - **Open: the 2026-10-09 footer skeleton's raw `data-dc-tpl` selectors are stale** (the hosted draft's footer is now
     844, links 44px). Regenerate it with `tpl` finders before reusing it.
 - **R4. Exact ID pairing.** `pairs.mjs` pairs each block through its `tpl` finder when an origin file exists. Word

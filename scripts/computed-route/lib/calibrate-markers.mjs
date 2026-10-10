@@ -15,6 +15,9 @@ export const MARKER_EASING = 'linear';
 const MARKER_EASING_ALT = 'ease-out';
 
 const TIER_PX = { desktop: 37, tablet: 23, mobile: 7 };
+// A box that holds a glyph (sgs/icon shapeSize): every tier above the 32px resting glyph and the 48px boxed shape, so
+// the glyph, a shrinking flex item of the box, never moves with the marker.
+const SIZE_BOX_PX = { desktop: 96, tablet: 80, mobile: 64 };
 // Minimum sizes a render floors at the 44px touch target.
 const FLOORED = /^min-(height|width)$/;
 // A setting whose render clamps its value to the 44px touch target (the detached burger chip's size), so its markers sit above it, and it reads bare px numbers (is_numeric rejects "137px").
@@ -257,7 +260,7 @@ export function markersFor( row, schema, snapshot, current = {}, ctx = {} ) {
 	// A per-device { width, height } size: each tier holds both, so the marker lands where the block reads it.
 	if ( 'tier_object' === row.tier_shape && isSizeBox( def ) ) {
 		const sizeOf = ( n ) => ( { width: `${ n }px`, height: `${ n }px` } );
-		return [ { label: 'tiers-size', attrs: set( { desktop: sizeOf( 37 ), tablet: sizeOf( 23 ), mobile: sizeOf( 7 ) } ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ TIER_PX[ WIDTH_TIER[ w ] ] }px` ] ) ) } ];
+		return [ { label: 'tiers-size', attrs: set( Object.fromEntries( Object.entries( SIZE_BOX_PX ).map( ( [ t, n ] ) => [ t, sizeOf( n ) ] ) ) ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ SIZE_BOX_PX[ WIDTH_TIER[ w ] ] }px` ] ) ) } ];
 	}
 	if ( 'tier_object' === row.tier_shape ) {
 		if ( box ) {
