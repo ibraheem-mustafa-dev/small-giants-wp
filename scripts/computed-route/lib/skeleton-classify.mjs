@@ -26,6 +26,29 @@ export function finish( C ) {
 	return { candidates: list, confidence: top ? +( Math.min( 1, top.score ) * ( top.score / ( top.score + ( second?.score || 0 ) ) ) ).toFixed( 2 ) : 0 };
 }
 
+// SGS bans core blocks: every core candidate, whatever proposed it (the tag map, a precedent tree, a decision, a
+// finaliser pick), becomes its SGS replacement (replacedBy: lib/skeleton-facts.mjs, from blocks.replaces) with the
+// rewrite as evidence, or is dropped and listed in `rejectedCore` when none exists. Candidates naming one block merge.
+export function sgsOnly( result, replacedBy = {} ) {
+	if ( ! result?.candidates?.some( ( c ) => c.block?.startsWith( 'core/' ) ) ) {
+		return result;
+	}
+	const C = {};
+	const rejectedCore = [];
+	for ( const c of result.candidates ) {
+		const core = c.block.startsWith( 'core/' );
+		const block = core ? replacedBy[ c.block ] : c.block;
+		if ( ! block ) {
+			rejectedCore.push( c.block );
+			continue;
+		}
+		const { score, share, evidence, ...rest } = c;
+		const into = ( C[ block ] ||= { ...rest, block, evidence: [] } );
+		into.evidence.push( ...evidence, ...( core ? [ { kind: 'db', w: 0, text: `blocks.replaces: ${ c.block } -> ${ block } (SGS bans core blocks)` } ] : [] ) );
+	}
+	return { ...result, ...finish( C ), ...( rejectedCore.length ? { rejectedCore } : {} ) };
+}
+
 // The decision (if any) that settles an element: a client decision for its key (kept only while the element still has the
 // words and tag it had when decided), a finaliser pick, or a standing element decision from the data file.
 export function overrideFor( e, { clientDecisions = {}, picks = {}, facts, surface, words } ) {
@@ -204,5 +227,5 @@ export function makeClassifier( { m, facts, overrides } ) {
 		return { ...finish( C ), stale };
 	}
 
-	return { classify, brandFor, siteInfoKinds, isColumnLabel, briefOnly };
+	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy ), brandFor, siteInfoKinds, isColumnLabel, briefOnly };
 }

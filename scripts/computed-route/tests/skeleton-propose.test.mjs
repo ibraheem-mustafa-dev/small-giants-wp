@@ -197,3 +197,16 @@ test( 'MUST FAIL (2026-10-10 header: sgs/hero and sgs/site-header both list "hea
 	// Negative control: the footer root still proposes the footer block.
 	assert.equal( real.skeleton[ 0 ].name, 'sgs/site-footer' );
 } );
+
+test( 'MUST FAIL (SGS bans core blocks): a core pick from any source is rewritten to its SGS replacement through blocks.replaces, or rejected when none exists', async () => {
+	const { sgsOnly } = await import( '../lib/skeleton-classify.mjs' );
+	const f = facts();
+	assert.equal( f.replacedBy[ 'core/heading' ], 'sgs/heading', 'read from blocks.replaces, never a list in code' );
+	const ev = ( text ) => [ { kind: 'decision', w: 1, text } ];
+	const out = sgsOnly( { candidates: [ { block: 'core/heading', evidence: ev( 'a pick' ) }, { block: 'core/not-a-block', evidence: ev( 'b' ) }, { block: 'sgs/text', evidence: ev( 'c' ) } ], confidence: 0.5 }, f.replacedBy );
+	assert.equal( out.candidates[ 0 ].block, 'sgs/heading' );
+	assert.ok( out.candidates.every( ( c ) => ! c.block.startsWith( 'core/' ) ) );
+	assert.deepEqual( out.rejectedCore, [ 'core/not-a-block' ] );
+	assert.ok( nodes( real.skeleton ).every( ( n ) => ! n.name.startsWith( 'core/' ) ), 'the real footer skeleton holds no core block' );
+	assert.match( decisionsProblems( { ...f, decisions: { ...f.decisions, structural: { columnLabel: { block: 'core/heading' } } } } ).join( ' ' ), /core block.*sgs\/heading/ );
+} );

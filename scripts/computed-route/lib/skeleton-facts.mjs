@@ -48,6 +48,8 @@ export function loadFacts( { db, client, repo = REPO, siteName = null, decisions
 	}
 	return {
 		client, repo, decisions, placeholderMap, composition, tagMap, capsOf, blocksWithCap, attr, attrsByRole, firstAttrByRole, blocksWithDisplayType, enumOf, q,
+		// SGS bans core blocks: each core block's SGS replacement, from blocks.replaces (a comma list per SGS block).
+		replacedBy: Object.fromEntries( q( "SELECT slug, replaces FROM blocks WHERE replaces IS NOT NULL AND replaces <> ''" ).flatMap( ( r ) => r.replaces.split( ',' ).map( ( c ) => [ c.trim(), r.slug ] ) ).filter( ( [ c ] ) => c ) ),
 		brands: brandRegistry(),
 		siteName: siteName ? String( siteName ).replace( /\s+/g, ' ' ).trim() : null,
 		wrapperShells: blocksOfRole( 'wrapper-shell' ).map( ( r ) => r.block_slug ),
@@ -60,13 +62,16 @@ export function loadFacts( { db, client, repo = REPO, siteName = null, decisions
 	};
 }
 
-// What is wrong with the decisions data, as readable lines (empty when sound): every block named exists in the database,
+// What is wrong with the decisions data, as readable lines (empty when sound): every block named exists in the database
+// and is not a core block,
 // every pattern compiles, the list block and its item properties were found.
 export function decisionsProblems( facts ) {
 	const d = facts.decisions;
 	const problems = [];
 	const known = ( slug, where ) => {
-		if ( ! facts.composition[ slug ] && ! facts.q( 'SELECT 1 FROM blocks WHERE slug = ? LIMIT 1', slug ).length ) {
+		if ( slug?.startsWith( 'core/' ) ) {
+			problems.push( `${ where } names ${ slug }, a core block (SGS bans core blocks)${ facts.replacedBy?.[ slug ] ? `: use ${ facts.replacedBy[ slug ] }` : '' }` );
+		} else if ( slug && ! facts.composition[ slug ] && ! facts.q( 'SELECT 1 FROM blocks WHERE slug = ? LIMIT 1', slug ).length ) {
 			problems.push( `${ where } names ${ slug }, which is not in the framework database` );
 		}
 	};
