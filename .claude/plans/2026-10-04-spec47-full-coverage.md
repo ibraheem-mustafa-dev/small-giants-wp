@@ -708,5 +708,9 @@ Results, run records and counts moved out of Spec 47 section 5. Spec 47 section 
    cache**, so every fluid size is written per tier and the clamp path is unreachable on real data; and
    `lib/entrance.mjs` is not a sampler but Solve's `entranceStart`, so Fill has its own probe. The unbuilt-surface
    demonstration carries forward to the first client that has one.
-5. **A second draft** from a different designer, to test generality. **Blocked: no second draft exists.** This is
-   the only item in this spec Session C does not build, and no route work unblocks it.
+5. **A second draft** from a different designer, to test generality. **Unblocked 2026-10-10:** two Claude Design
+   drafts are set up as local references, each with a fresh WordPress test site: Mama's Munches redesign
+   (`sites/mamas-munches-redesign/`, ten surfaces, `mamas-test`) and Indus Foods (`sites/indus-foods/`, `indus-test`;
+   its v2 home page throws a React error at runtime and needs fixing in Claude Design first). Both drafts carry the
+   `data-dc-tpl` stamps the skeleton writer uses. The redesign's `Theme Mapping.md` is a candidate answer key for the
+   skeleton writer once reviewed (its core-block and plugin picks replaced through `blocks.replaces`).

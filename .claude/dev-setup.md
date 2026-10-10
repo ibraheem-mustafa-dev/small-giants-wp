@@ -232,8 +232,9 @@ For an above-the-fold hero image, the theme injects a `<link rel="preload" as="i
 | Target | Site | Purpose |
 |---|---|---|
 | `sandybrown` (default) | `https://sandybrown-nightingale-600381.hostingersite.com` | The canary — pipeline canary (Mama's Munches) and framework verification. WP 7.1 |
-| `indus-test` | `https://lavender-dinosaur-183533.hostingersite.com` | Dedicated Indus Foods test site. Opt-in: deploys only when named with `--target indus-test` |
+| `indus-test` | `https://lavender-dinosaur-183533.hostingersite.com` | Dedicated Indus Foods test site (client `indus-foods`), a fresh WordPress since 2026-10-10. Opt-in: deploys only when named with `--target indus-test` |
 | `eye-care-test` | `https://darkcyan-grouse-898606.hostingersite.com` | Dedicated Eye Care Birmingham test site (client `eye-care-ward-end`). Opt-in: `--target eye-care-test` |
+| `mamas-test` | `https://lightsalmon-tarsier-683012.hostingersite.com` | Dedicated Mama's Munches redesign test site (client `mamas-munches-redesign`), a fresh WordPress since 2026-10-10, independent of the canary. Opt-in: `--target mamas-test` |
 
 **Why each client has its own site.** The active header, footer, drawer and theme-snapshot pointers are
 single global options per WordPress site (`sgs_active_header_cpt_id`,
@@ -242,7 +243,19 @@ cannot hold different active layouts on one site: activating an Indus header on 
 replace the Mama's Munches header sitewide. Indus Foods therefore builds on its own site. Another
 client target is one `TARGETS` entry with `explicit_opt_in_required: True` (enforced in code).
 
-**Reference site (READ ONLY):** `https://lightsalmon-tarsier-683012.hostingersite.com`
+**Client drafts (the reference a build is compared with):** each Claude Design draft is a folder of `.dc.html` pages
+served locally by `scripts/computed-route/lib/draft.mjs::serveDraft`; Fill and the walker take it as
+`--draft-dir <folder> --draft-index <entry>`, and `node scripts/computed-route/fill.mjs --serve <folder> --draft-index <entry>`
+serves it until Ctrl-C. A surface on another page of the draft is `<served url>/<Page>.dc.html`.
+
+| Client | Draft folder | Entry |
+|---|---|---|
+| Indus Foods | `sites/indus-foods/` | `Indus Foods Website v2.dc.html` |
+| Mama's Munches redesign | `sites/mamas-munches-redesign/` | `Home.dc.html` (one file per surface; list in its `CLAUDE.md`) |
+| Eye Care Birmingham | `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/` | `Eye Care Birmingham.dc.html`; also hosted at `https://mintcream-lyrebird-224487.hostingersite.com`, which now serves a newer single-file bundle (footer links 44px) than the local folder |
+
+`sites/mamas-munches/` is the canary's folder (its live catalogue and trees); the redesign lives only in
+`sites/mamas-munches-redesign/`.
 
 **SSH** (all targets share the one Hostinger account): `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias: `ssh hd`)
 
@@ -254,6 +267,7 @@ Gitignored; never committed.
 |---|---|---|
 | `.claude/secrets/sandybrown.env` | Canary (sandybrown-nightingale-600381.hostingersite.com) logins — ALWAYS available | `WP_USER_SANDYBROWN` + `WP_PWD_SANDYBROWN` (browser/admin login); `WP_APP_PWD_SANDYBROWN` (REST + WC Store-API Basic auth); `WP_URL_SANDYBROWN`. Use for Playwright editor login + REST verification: `grep KEY .claude/secrets/sandybrown.env` |
 | `.claude/secrets/indus-test.env` | Indus test site (lavender-dinosaur-183533.hostingersite.com) logins | `WP_USER_INDUSTEST` + `WP_PWD_INDUSTEST` (browser/admin login); `WP_APP_PWD_INDUSTEST` (REST Basic auth); `WP_URL_INDUSTEST` |
+| `.claude/secrets/mamas-test.env` | Mama's Munches redesign test site (lightsalmon-tarsier-683012.hostingersite.com) logins | `WP_USER_MAMASTEST` + `WP_PWD_MAMASTEST` (browser/admin login); `WP_APP_PWD_MAMASTEST` (REST Basic auth); `WP_URL_MAMASTEST` |
 | `.claude/secrets/eye-care-test.env` | Eye Care test site (darkcyan-grouse-898606.hostingersite.com) logins | `WP_USER_EYECARETEST` + `WP_PWD_EYECARETEST` (browser/admin login); `WP_APP_PWD_EYECARETEST` (REST Basic auth); `WP_URL_EYECARETEST`; `WP_PAGE_ID_EYECARETEST`; `HOSTINGER_USERNAME` |
 | `.claude/secrets/local-eye-care.env` | Local WSL mirror of Eye Care (`localhost:8081`) | `WP_URL_LOCALEYECARE`, `WP_USER_LOCALEYECARE`, `WP_PWD_LOCALEYECARE` |
 | `.claude/secrets/local-sandybrown.env` | Local WSL mirror of the canary (`localhost:8082`) | `WP_URL_LOCALSANDYBROWN`, `WP_USER_LOCALSANDYBROWN`, `WP_PWD_LOCALSANDYBROWN` |
