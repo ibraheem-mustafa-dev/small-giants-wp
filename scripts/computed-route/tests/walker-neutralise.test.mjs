@@ -74,3 +74,26 @@ test( 'candidates: only the tested layout properties whose draft and live values
 	assert.deepEqual( candidatesOf( d, l ), [ { prop: 'display', value: 'flex' }, { prop: 'gap', value: '16px' } ] );
 	assert.deepEqual( candidatesOf( d, { ...l, missing: true } ), [] );
 } );
+
+// QC council finding 4: `breaks-box` accepted on the pair's own matching box ignored the pairs inside it, so children
+// placed wrongly inside a box of the right size were accepted with it.
+import { holdEquivalent, EQUIVALENT_REASON } from '../../parity/lib/compare.mjs';
+const tsnap = ( box, trace ) => ( { box, extras: { textX: 0, textY: 0 }, trace } );
+const STEP = { x: 0, y: 0, w: 300, h: 80 };
+const stepPair = () => ( { draft: tsnap( STEP ), live: tsnap( STEP, { ref: 'cr-ref-h-4', path: '', owners: [] } ),
+	diffs: [ { kind: 'style', key: 'gap', draft: '16px', live: '0px', accepted: EQUIVALENT_REASON } ] } );
+const childPair = ( dx ) => ( { draft: tsnap( { x: 40, y: 0, w: 200, h: 40 } ), live: tsnap( { x: 40 + dx, y: 0, w: 200, h: 40 }, { ref: 'cr-ref-h-5', path: '', owners: [ { ref: 'cr-ref-h-4', path: '' } ] } ),
+	diffs: dx ? [ { kind: 'box', key: 'x-in-parent', draft: 40, live: 40 + dx } ] : [] } );
+
+test( 'MUST FAIL (council 4): a gap reached another way is reopened while a pair inside the matching box still sits elsewhere', () => {
+	const pairs = { step: stepPair(), title: childPair( 24 ) };
+	holdEquivalent( pairs, 1 );
+	assert.equal( pairs.step.diffs[ 0 ].accepted, null );
+} );
+
+test( 'negative control (council 4): with every pair inside it in place, the gap reached another way stays accepted', () => {
+	const pairs = { step: stepPair(), title: childPair( 0 ) };
+	holdEquivalent( pairs, 1 );
+	assert.equal( pairs.step.diffs[ 0 ].accepted, EQUIVALENT_REASON );
+} );
+

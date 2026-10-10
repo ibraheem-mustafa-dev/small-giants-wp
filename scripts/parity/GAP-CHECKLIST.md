@@ -150,7 +150,10 @@ Fixed in the walker; keep them in mind when a number looks wrong:
   `compare.mjs::isAccepted` (after the config's own accepts) accepts `inert`, and `breaks-box` while the pair's box
   rows all match. In that case writing the draft value would move a box that already matches the draft: the two sides
   reach the same paint by different layout (home's process step is a grid with an empty second row where the draft's
-  flex has one row). A `moves` verdict stays open.
+  flex has one row). The acceptance holds only while every pair measured inside it is settled too
+  (`compare.mjs::holdEquivalent`, after every pair of the state is judged): a pair inside whose box or text sits
+  elsewhere means the matching outer box hides a layout that differs, so the row is reopened. A `moves` verdict stays
+  open.
 
   A matching pair box alone accepts nothing. The earlier box-match rule (`ba31e5157`) accepted any value, so children
   moving inside a same-size box went unreported. Text-run and group pairs have no one element to set, so they are not tested. A client config never
@@ -160,7 +163,9 @@ Fixed in the walker; keep them in mind when a number looks wrong:
   - a row gap on a grid with an empty second row breaks the box;
   - a one-child link's gap is inert even under a transition, and the element's style attribute is restored byte for
     byte;
-  - centring moves short text in a wide box and nothing in a box the text fills.
+  - centring moves short text in a wide box and nothing in a box the text fills;
+  - a gap reached another way is reopened while a pair inside the matching box sits elsewhere (MUST FAIL), and stays
+    accepted when every pair inside is in place.
 - **Falsified by:** a `notPainted` accept on a pair that also has a box difference (the walker reopens it), a
   neutralised row whose shot shows the element differently, or an accepted tested-layout row with no inert verdict
   for its pair in that state and width.

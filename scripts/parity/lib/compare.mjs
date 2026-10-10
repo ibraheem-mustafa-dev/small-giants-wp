@@ -366,7 +366,7 @@ export function isAccepted( accept, ctx, diff ) {
 // (ctx.inert, lib/neutralise.mjs::neutralisePass), moved nothing, or moved only the pair's own box while that box matches
 // the draft. A matching box alone accepts nothing, and neither does a value that moves only what is inside the pair.
 const NEUTRAL_REASON = 'Layout property that paints nothing: the draft value set on the live element moves no box and no text in the pair or after it (neutralised in the walk, GAP-CHECKLIST 8)';
-const EQUIVALENT_REASON = 'Layout property reached another way: the box of the pair already matches the draft, and the draft value set on the live element would move it (neutralised in the walk, GAP-CHECKLIST 8)';
+export const EQUIVALENT_REASON = 'Layout property reached another way: the box of the pair already matches the draft, and the draft value set on the live element would move it (neutralised in the walk, GAP-CHECKLIST 8)';
 function measuredInert( ctx, diff ) {
 	if ( 'style' !== diff.kind || diff.pseudo || ! INERT_LAYOUT.includes( diff.key ) ) {
 		return null;
@@ -420,6 +420,21 @@ export function inside( q, p ) {
 		return '' === p.path ? '' !== q.path : under( q.path );
 	}
 	return ( q.owners || [] ).some( ( o ) => o.ref === p.ref && under( o.path ) );
+}
+
+// One state's pass after every pair is judged: a layout row accepted as reached another way (the pair's own box
+// matches and the draft value would move it) holds only while every pair measured inside it is settled too. A pair
+// inside whose box or text still sits elsewhere means the matching outer box hides a layout that differs, so the row
+// is reopened.
+export function holdEquivalent( pairs, tol ) {
+	const named = Object.entries( pairs ).filter( ( [ n, p ] ) => ! n.startsWith( '(' ) && p?.live?.trace );
+	for ( const [ , p ] of named ) {
+		const held = ( p.diffs || [] ).filter( ( x ) => EQUIVALENT_REASON === x.accepted );
+		if ( held.length && named.some( ( [ , q ] ) => q !== p && inside( q.live.trace, p.live.trace ) && ! pairSettled( q, tol ) ) ) {
+			held.forEach( ( x ) => ( x.accepted = null ) );
+		}
+	}
+	return pairs;
 }
 
 // One state's box-held pass, after every pair is judged: an open box-held style row is accepted on a settled pair whose
