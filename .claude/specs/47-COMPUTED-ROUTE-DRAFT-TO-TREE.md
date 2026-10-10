@@ -366,6 +366,10 @@ made with the Claude Design runtime have no stamps; their skeletons use the othe
    'cr-ref-'` and the ledger path, so every mapped node is compared on every property.
 5. Output the filled tree, `fill-report.md`, the UNMAPPED list (property, value, node, reason: the framework work for
    this surface, known before the first build) and the handover list (§3.3).
+   `fill-report.md` also lists under Not read every setting on a measured node that no read reached and no decision
+   judged (`lib/fill-unread.mjs::unreadOf`): a calibrated element no finder read, a presence, text or link setting with no
+   calibration reading, or a layout or mode enum calibration reads no presence for. A setting the skeleton sets or Fill
+   wrote is never listed, and nothing is dropped silently.
 
 Presence and content: the skeleton carries the draft's words in each block's `content` settings, and Fill sets each
 block's visibility and variant settings from calibration's `presence` so the built block shows the elements its draft
@@ -695,6 +699,10 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
   calibration's presence keys exist on real blocks) and border colour (no `borderColour` setting is tied). No cache
   carries a `forms` list containing `clamp`, so fluid sizes are written per tier. CR17's business-info `textBefore`
   element remains.
+- Calibration reads no presence for an enum with no CSS property in the `layout` or `select-from-enum` role (45 and 55
+  settings; business-info `hoursLayout` rows/condensed is the first one Fill needed), so Fill lists them under Not read
+  and never chooses one from the draft. Planning a presence instance per enum value, as `variantPresenceValues` does for
+  a block's variant setting, is the fix; it is a shared calibration change, so Bean signs it off first.
 - Walker-state rows that carry a conflict the state map cannot express are named in
   `scripts/parity/flows/state-map-reasons.json`; the guard that must refuse such a group belongs to
   `lib/solve-rows.mjs`.

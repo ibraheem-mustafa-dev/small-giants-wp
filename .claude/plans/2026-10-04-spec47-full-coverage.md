@@ -192,8 +192,14 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
   `check-refs` resolves every finder uniquely and the skeleton matches Bean's choices on at least 12 of 13.
 - **R3. Fill: business-info's five settings** (`addressLink`, `hoursLayout`, `showIcon`, `hoursRowJustify`,
   `labelColour`). Each drops because it is not a plain style read: `addressLink` needs a calibration `link` key,
-  `hoursLayout` a `presence` entry, the other three a `draftSlots` entry. Fill now writes each skipped setting as an
-  UNMAPPED row with its reason, then the evidence is supplied. The two icon fixes (social-icon styling onto the row's
+  `hoursLayout` a `presence` entry, the other three a `draftSlots` entry.
+  **Built 2026-10-10:**
+  - Fill lists every setting no read reached and no decision judged under Not read (`lib/fill-unread.mjs`).
+  - Proven cause for `addressLink`: `calibrate.mjs` gave the content plan no fixture preconditions, so it was read under
+    the phone display. Both plans now share `instanceCtx`, and the business-info fixture names
+    `addressLink: { displayType: address }`. It takes effect at the next business-info calibration.
+  - `showIcon`, `hoursRowJustify` and `labelColour` get their evidence from the skeleton writer's `draftSlots`.
+  - `hoursLayout` is a Spec 47 §5 Residual: a shared calibration change, so Bean signs it off first. The two icon fixes (social-icon styling onto the row's
   `childIcon*` settings; icon size from the glyph, not the box) run in a separate session:
   `.claude/prompts/2026-10-10-icon-fill-and-draft-domains.md`. The social-icons calibration predates the `childIcon*`
   rename (`675df46e3`), so that session recalibrates it first.

@@ -95,3 +95,18 @@ test( 'a content setting needing no preconditions is compared with the plain def
 	assert.equal( instances[ 0 ].baseKey, null );
 	assert.ok( ! instances.some( ( i ) => i.isBase ) );
 } );
+
+test( 'MUST FAIL (2026-10-09: business-info addressLink had no presence reading): the content plan carries the fixture\'s setting preconditions, from the same context as the style plan', async () => {
+	const { instanceCtx } = await import( '../lib/calibrate.mjs' );
+	const { variantInfo } = await import( '../lib/db.mjs' );
+	const { blockSchema } = await import( '../lib/resolve.mjs' );
+	const { default: fixtures } = await import( '../calibration-fixtures.json', { with: { type: 'json' } } );
+	const block = 'sgs/business-info';
+	const fixture = fixtures[ block ];
+	const variant = variantInfo( db, block );
+	const plan = ( ctx ) => planContentInstances( block, { contentRows: contentRowsFor( db, block ), variant, schema: blockSchema( block ), fixture, ctx } );
+	const address = ( ctx ) => plan( ctx ).instances.find( ( i ) => 'addressLink' === i.content?.attr )?.attrs.displayType;
+	assert.equal( address( { ...variant } ), 'phone', 'the cause: without the fixture preconditions addressLink is read under the phone display, where it renders nothing' );
+	assert.equal( address( instanceCtx( variant, null, fixture ) ), 'address' );
+	assert.deepEqual( instanceCtx( variant, null, fixture ).settingPreconditions, fixture.preconditions );
+} );

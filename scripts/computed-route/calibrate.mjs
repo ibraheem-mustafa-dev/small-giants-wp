@@ -21,7 +21,7 @@ import { skipReason } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
-import { WIDTHS, buildTree, slotFor, mergeSetting, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, readAll } from './lib/calibrate.mjs';
+import { WIDTHS, buildTree, slotFor, mergeSetting, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, readAll } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 
 export { REMOTE_PLUGIN, EDITOR_ONLY, BUNDLE_TEXT, normaliseBundle, TEXT_FILE, lfText, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
@@ -116,10 +116,11 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const rows = attrsFor( db, block ).filter( ( r ) => longhands( r.css_property ).length );
 	// Preconditions come from the framework's own data: the block's variant slots and a media object on the site.
 	const variant = variantInfo( db, block );
-	const plan = planInstances( block, { rows, enumRows: enumSettings( db, block ), schema, snapshot, fixture, ctx: { ...variant, image, settingPreconditions: fixture.preconditions || {} } } );
+	const ctx = instanceCtx( variant, image, fixture );
+	const plan = planInstances( block, { rows, enumRows: enumSettings( db, block ), schema, snapshot, fixture, ctx } );
 	// Text, presence and link settings paint no CSS property, so attrsFor never returns them: they are queried by role
 	// and planned apart (lib/calibrate-content.mjs), then read for existence, text and link attributes.
-	const contentPlan = planContentInstances( block, { contentRows: contentRowsFor( db, block ), variant, schema, fixture, ctx: { ...variant, image } } );
+	const contentPlan = planContentInstances( block, { contentRows: contentRowsFor( db, block ), variant, schema, fixture, ctx } );
 	const needles = needlesOf( contentPlan.instances );
 	let instances = [ ...plan.instances, ...contentPlan.instances ];
 	const noMarker = new Set( [ ...plan.noMarker, ...contentPlan.noMarker ] );

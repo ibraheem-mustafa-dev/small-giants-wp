@@ -55,6 +55,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/fill-spacing.mjs` | Spacing ownership per tier from rendered border-box gaps (equal within 0.5px). |
 | `lib/fill-values.mjs` | Fluid fit and `clamp()`, the 16px breakpoint sweep against the SGS boundaries, and the sweep log. |
 | `lib/fill-presence.mjs` | Visibility and variant settings from calibration `presence`, words from `text`, links from `link`. |
+| `lib/fill-unread.mjs` | What Fill leaves unjudged on a measured node: style settings whose calibrated element no finder read, presence settings with no reading or no read element, text and link settings with no reading, and layout or mode enums calibration reads no presence for; never a setting the skeleton sets or Fill wrote. |
 | `lib/brand-registry.mjs` | Reads the one brand and contact registry (`plugins/sgs-blocks/includes/data/brand-registry.json`) and derives which addresses belong to which brand (scheme for phone and email, domain for socials); no platform table of its own. |
 | `lib/fill-handover.mjs` | The handover entry shape Fill declares, validated against the five shared owners and four kinds. |
 | `lib/fill-page.mjs` | The page baseline for inherited properties from the theme snapshot (root typography and colour, heading and element styles, CSS initial values), which calibration deliberately does not record. |
@@ -140,6 +141,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/fill-handover.test.mjs` | FR-47-4/§3.3: the five owners, four kinds, and an entry with no evidence is refused. |
 | `tests/fill-config.test.mjs` | FR-47-4 step 4: a pair for every node with a `draftRef` and none without (MUST FAIL); the generated config passes the walker's own lint. |
 | `tests/fill-resolve.test.mjs` | FR-47-4: whole-tree resolution with fixture reads and calibration over the real database. |
+| `tests/fill-unread.test.mjs` | FR-47-4 step 5: the 2026-10-09 footer's five dropped `sgs/business-info` settings (`addressLink`, `hoursLayout`, `showIcon`, `hoursRowJustify`, `labelColour`) are each listed with a reason on a draftRef-only node (MUST FAIL); a setting the skeleton sets, a slot it names or a setting Fill wrote is never listed; content settings come from the database roles. |
 | `tests/fill-surface.test.mjs` | FR-47-4 step 5: `fillSurface` end to end over a local folder and a temp repo; an invalid skeleton is refused and only `--out` is written (MUST FAIL). |
 
 `cache/` (gitignored) holds calibration files: one per block for the whole library, each recording the `site` that measured it.
@@ -263,6 +265,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `preconditionsFor(row, schema, current, ctx)` → attributes the setting's element needs: its variant (`ctx.variantAttr`, `ctx.variantSlots` from `lib/db.mjs::variantInfo`), the show/enable toggle gating it, its border partners, a background image under an overlay.
 - `layoutModes(schema, current)` → the block's flex/grid mode settings and their other values; a layout property's markers are also tried under each.
 - `planInstances(block, { rows, enumRows, schema, snapshot, fixture, ctx })` → `{ instances, noMarker }`: defaults per variant, marked instances with `baseKey` (a baseline carrying the same preconditions), `trigger`, `target`, `stateClass`, and enum discovery instances.
+- `instanceCtx(variant, image, fixture)` → the one planning context for a block's style and content instances: variant data, the site's media object and the fixture's `preconditions` (`settingPreconditions`).
 
 ### `lib/calibrate-read.mjs` (imports `ref-trace.mjs`; Playwright pages)
 - Keys: an element's `elementPath` from the instance root; a layer is its element's key plus `::before`, `::after`, `::placeholder` or `::first-letter`; a panel the instance controls through `aria-controls` outside it (a cart dialog moved to `<body>`) is `@controls > <path>` (`@controls:2` for a second).
@@ -544,6 +547,11 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `nearestBoundary(width)` → `{ boundary, offset }`.
 - `breakpointSteps(prop, series)` → each step with its nearest SGS boundary.
 - `sweepSteps(sweep, labelOf)` → every step of a sweep, labelled and ordered.
+
+### `lib/fill-unread.mjs`
+- `STRUCTURE_ROLES`: database roles of an enum with no CSS property that changes what a block renders (`layout`, `select-from-enum`).
+- `structureRowsFor(db, block)` → the block's SGS-owned enums with no `css_property` in a `STRUCTURE_ROLES` role.
+- `unreadOf({ db, block, cal, attributes, slots, written })` → `[ { kind, slot, settings, reason } ]`: kinds `element`, `presence`, `text`, `link`, `structure`. `fillTree` adds `node` and `block` and returns them as `unread`; `fill-report.md` lists them under Not read.
 
 ### `lib/fill-presence.mjs`
 - `plainText(s)` → text without markup, whitespace collapsed.

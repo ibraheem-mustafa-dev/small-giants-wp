@@ -15,8 +15,8 @@ export function fillReport( r ) {
 	const counts = handoverCounts( r.handover );
 	const json = {
 		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets,
-		counts: { writes: r.writes.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length },
-		writes: r.writes, unmapped: unmappedList( r.unmapped ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes,
+		counts: { writes: r.writes.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, unread: ( r.unread || [] ).length },
+		writes: r.writes, unmapped: unmappedList( r.unmapped ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, unread: r.unread || [],
 	};
 	const L = [
 		`# Fill: ${ r.surface }`, '',
@@ -27,10 +27,14 @@ export function fillReport( r ) {
 		`| Handover (content outside the tree) | ${ r.handover.length } (${ HANDOVER_OWNERS.map( ( o ) => `${ o } ${ counts[ o ] }` ).join( ', ' ) }) |`,
 		`| Fluid sizes found | ${ r.fluid.length } (${ r.fluid.filter( ( f ) => 'clamp' === f.written ).length } written as clamp()) |`,
 		`| Breakpoint steps logged for a human | ${ r.steps.length } |`,
-		`| Held by the divergence ledger | ${ r.held.length } |`, '',
+		`| Held by the divergence ledger | ${ r.held.length } |`,
+		`| Not read (settings no read reached and no decision judged) | ${ ( r.unread || [] ).length } |`, '',
 		'## UNMAPPED', '',
 		'Each row is a draft value no block setting can hold (or that the draft paints and the block cannot), with the reason the resolver gave.', '',
 		...table( [ 'Property', 'Value', 'Node', 'Block', 'Element', 'Reason' ], r.unmapped.map( ( u ) => [ u.property, u.value, u.node, u.block, u.slot ?? '', u.reason ] ) ),
+		'## Not read', '',
+		'Settings the block\'s calibration or the framework database knows that no read reached and no decision judged on a measured node: a draftSlots finder the skeleton does not give, or a calibration reading that does not exist. Nothing here was written.', '',
+		...table( [ 'Node', 'Block', 'Kind', 'Element', 'Settings', 'Reason' ], ( r.unread || [] ).map( ( u ) => [ u.node, u.block, u.kind, u.slot, u.settings.join( ', ' ), u.reason ] ) ),
 		'## Handover', '',
 		...table( [ 'Owner', 'Kind', 'Node', 'Element', 'Evidence', 'Reason' ], r.handover.map( ( h ) => [ h.owner, h.kind, h.node, h.slot, h.evidence, h.reason ] ) ),
 		'## Settings written', '',

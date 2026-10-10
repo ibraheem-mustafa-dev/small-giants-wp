@@ -43,6 +43,13 @@ function gatingToggle( attr, schema, current ) {
 	return best ? { [ best.name ]: true } : {};
 }
 
+// The one planning context for a block's style and content instances: its variant data, the site's media object and
+// the fixture's per-setting `preconditions`, so a content setting gated by another attribute (business-info's
+// addressLink renders only under displayType address) gets the same preconditions as a style setting.
+export function instanceCtx( variant, image, fixture = {} ) {
+	return { ...variant, image, settingPreconditions: fixture.preconditions || {} };
+}
+
 // The attributes a setting's element needs before the setting can paint, from the framework's own data: its variant
 // (blocks.variant_attr + variant_slots), the toggle gating it, its border partners, and a background image under an
 // overlay. ctx: { variantAttr, variantSlots: [ { variant_value, unique_slot } ], image }.

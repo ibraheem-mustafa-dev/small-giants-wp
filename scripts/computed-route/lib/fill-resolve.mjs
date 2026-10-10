@@ -14,6 +14,7 @@ import { pageBaseline } from './fill-page.mjs';
 import { spacingOwnership } from './fill-spacing.mjs';
 import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence.mjs';
 import { handoverEntry } from './fill-handover.mjs';
+import { unreadOf } from './fill-unread.mjs';
 
 const GAP_PROPS = [ 'row-gap', 'column-gap' ];
 const PSEUDO_LAYERS = [ '::before', '::after' ];
@@ -44,7 +45,7 @@ function makeState( o ) {
 	} );
 	return {
 		...o, flat,
-		out: { writes: [], unmapped: [], notes: [], handover: [], spacing: [], fluid: [], held: [] },
+		out: { writes: [], unmapped: [], notes: [], handover: [], spacing: [], fluid: [], held: [], unread: [] },
 		shown: new Map(), // `${index}|${prop}` -> { width: value } for the node's own element, once resolved
 		gapSet: new Map(), // `${index}|${prop}` -> { width: value } the parent decided from rendered gaps
 		margins: new Map(), // child index -> { width: [margin sides the parent owns] }
@@ -359,6 +360,10 @@ export function fillTree( opts ) {
 				fillElement( st, rec, ref, cal, target, snaps, layer );
 			}
 		}
+		// What this node's calibration knows and nothing read or judged, so no setting is skipped silently.
+		const read = rec.targets.filter( ( t ) => Object.keys( snapsOf( st, t.id ) ).length ).map( ( t ) => t.slot );
+		const written = new Set( st.out.writes.filter( ( w ) => w.index === rec.index ).map( ( w ) => w.attr ) );
+		st.out.unread.push( ...unreadOf( { db: st.db, block: rec.name, cal, attributes: st.nodes[ rec.index ].node.attributes || {}, slots: read, written } ).map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
 	}
 	return { ...st.out, snaps: st.snaps };
 }

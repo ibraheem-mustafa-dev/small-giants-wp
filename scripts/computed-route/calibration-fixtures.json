@@ -153,6 +153,11 @@
         "textAfter": "any time"
       }
     ],
+    "preconditions": {
+      "addressLink": {
+        "displayType": "address"
+      }
+    },
     "chunk": 100
   },
   "sgs/accordion": {
