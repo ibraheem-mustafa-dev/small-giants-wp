@@ -1260,8 +1260,8 @@ client's test site has a local mirror and a `calibration-targets.json` entry for
 
 **Exit:** the check exits 0, `sites/<client>/build/intake/calibration-baseline.json` exists and validates
 (Appendix C), and each block in the fixed set has a slot-map cache whose deploy hash is the current one (G0, §14).
-Status: the check is built (`handoff-check.mjs`). The current Indus and Mama's exports fail it because each carries
-`MANIFEST.md`, not `MANIFEST.json`. The Indus mirror, its calibration target, the Indus calibration fixes and the
+Status: the check is built (`handoff-check.mjs`); the Indus and Mama's exports pass it (repackaged 2026-10-11, Spec 48A
+FR-48A-1). The Indus mirror, its calibration target, the Indus calibration fixes and the
 baseline file are not built.
 
 #### FR-48-17 — Stage 1: intake, closed by one batched review
@@ -2479,8 +2479,8 @@ One pass is about 10 minutes of agent time and 20 minutes of machine time.
 **Total: about 20 h of agent work, about 1.5 h of machine runs, and about 2 h of Bean's time.**
 
 *Set-up (Bean and stage 0)*
-1. **Re-export** (Bean, ~10 min). Bean re-exports Indus with the current prompt into `sites/indus-foods/handoff/`;
-   `handoff-check.mjs` passes. Blocker today: the export carries `MANIFEST.md`, not `MANIFEST.json`.
+1. **Current export** (done 2026-10-11). `sites/indus-foods/handoff/` passes `handoff-check.mjs` after
+   `handoff-repackage.mjs` (Spec 48A FR-48A-1); a design change from here means a fresh export.
 2. **Mailbox** (Bean, ~5 min). Bean creates the Indus mailbox in hPanel and adds its password to the email secrets
    file (Appendix A step 6).
 3. **Route dependencies** (agent, 30 min). The route's `package.json` with pinned Playwright, Ajv 8, `ajv-formats`,

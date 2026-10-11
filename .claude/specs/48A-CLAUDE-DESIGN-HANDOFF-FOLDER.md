@@ -40,8 +40,13 @@ Care and Mama's Munches exports) and `.claude/reports/2026-10-11-48a-council/` (
 A client's export lives at `sites/<client>/handoff/`, copied byte for byte from the downloaded folder and never edited
 there. A new export replaces the whole folder. Our own work stays outside it (`build/`, `theme-snapshot.json`, the
 divergence ledger), so `handoff/surfaces.json` (Claude Design's state inventory) and `build/surfaces.json` (our map of
-surfaces to WordPress posts) can never be confused by path.
-Status: specified; the three client folders move to it in plan task B3.
+surfaces to WordPress posts) can never be confused by path. One exception: an export made before `MANIFEST.json`
+existed (one carrying `MANIFEST.md`) may be brought to the current format by
+`scripts/computed-route/handoff-repackage.mjs`, which first proves every file still matches the size and SHA-256 its
+`MANIFEST.md` recorded (and stops on any mismatch), then removes `MANIFEST.md` and `handoff-schema/trace/`, copies the
+master schema files the folder lacks, and writes `MANIFEST.json`. No byte Claude Design produced changes.
+Status: the Indus and Mama's exports sit in `sites/indus-foods/handoff/` and `sites/mamas-munches-redesign/handoff/`,
+repackaged 2026-10-11 and passing the check; Eye Care moves in at plan task B5.
 
 ### FR-48A-2 -- Required files
 `MANIFEST.json`, `README.md`, at least one draft `.dc.html`, `support.js`, `tokens/colors.css`,
@@ -74,8 +79,8 @@ POSIX separators, NFC, case-sensitive, with no `./`, `..`, leading slash or back
 check passes only when the listed paths equal the files on disk in both directions, every size and hash matches, and
 `runtime_sha256` matches `support.js`. A design change after export means pasting the handoff prompt again and
 downloading the whole folder; files are never moved in or out by hand.
-Status: checked by `handoff-check.mjs`; the prompt asks for it from 2026-10-11 (the three current exports carry the
-older `MANIFEST.md` and fail until re-exported).
+Status: checked by `handoff-check.mjs`; the prompt asks for it from 2026-10-11. The Indus and Mama's exports, made
+before that, were repackaged (FR-48A-1); the Eye Care export still carries `MANIFEST.md` until B5.
 
 ### FR-48A-5 -- Runtime versions
 `scripts/computed-route/data/known-runtimes.json` lists every accepted `support.js` build by SHA-256, with the date it

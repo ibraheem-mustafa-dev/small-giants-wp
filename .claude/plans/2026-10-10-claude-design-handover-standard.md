@@ -99,8 +99,8 @@ until B0), after a design walk-through with Bean and an adversarial council
 check validates it before use; the README is a human guide from a template, sections not enforced (cloning reads the
 code); an unknown runtime stops intake, is probed against a fixture and added by one command; the WordPress page map is
 proposed at intake and confirmed by Bean (no required site file; image credits ignored, stock photos are previews); the
-export lives unchanged in `sites/<client>/handoff/`. The check is `scripts/computed-route/handoff-check.mjs`; the Indus
-folder is trimmed by re-exporting with the new prompt, not by hand.
+export lives unchanged in `sites/<client>/handoff/`. The check is `scripts/computed-route/handoff-check.mjs`; exports made
+before `MANIFEST.json` existed are brought to the current format by `handoff-repackage.mjs` (FR-48A-1), never by hand.
 
 **Old-site logos (local only).** `sites/indus-foods/old-site-logos/` holds the real Sanam, Shan, Green Leaf and Lemon Tree
 logos, the Indus square logo and the favicon, downloaded from the old Indus site's uploads on lightsalmon-tarsier (now
@@ -145,8 +145,9 @@ Spec 48A or by Claude Design:
    the `indus-logo` elements are 43, 114 and 684 (`__dcAnnotatedTemplate`). Please correct and regenerate.
 2. `counts.*.record_ids` is not one-to-one with the counted occurrences in any export, and the surface counts carry no
    ids: can each occurrence map to its record id, so the reconciliation is checkable?
-3. Re-export all three projects with the 2026-10-11 `PROMPT.txt` after re-uploading `handoff-schema/` (adds
-   `MANIFEST.json`, the README template, and drops the Eye Care Gap Map lines from its README and READING-DC-FILES).
+3. Indus and Mama's were repackaged here instead (2026-10-11, no design change since export). Eye Care is exported
+   again with the 2026-10-11 `PROMPT.txt` at B5, after re-uploading `handoff-schema/` (drops the Eye Care Gap Map lines
+   from its README and READING-DC-FILES).
 
 **B2. Cull proposal per client folder.** For `sites/indus-foods/`, `sites/mamas-munches-redesign/`,
 `sites/eye-care-ward-end/`: list every file and folder, propose each file worth keeping with its reason (assets missing
@@ -180,12 +181,12 @@ Approved by Bean and done 2026-10-11 for Indus and Mama's; Eye Care's regenerate
   `eye-care-wordmark.png` and any of v2's 37 `assets/brands/` logos missing from `reference/`, and repoint
   `plugins/sgs-blocks/scripts/tests/test_sync_business_info.py`, which reads v1).
 
-**B3. Replace (started 2026-10-11).** The current Indus and Mama's exports sit in `sites/<client>/handoff/` and fail `handoff-check.mjs` only on what the re-export adds (`MANIFEST.json`, the two new schema files, the removed `MANIFEST.md` and Indus's trace harness); client `CLAUDE.md` files cut to a few lines; images under any `handoff/` are tracked (`.gitignore`). Each client's re-export goes unchanged into `sites/<client>/handoff/` (FR-48A-1) and passes
+**B3. Replace (started 2026-10-11).** The Indus and Mama's exports sit in `sites/indus-foods/handoff/` and `sites/mamas-munches-redesign/handoff/` and pass `handoff-check.mjs` (2026-10-11: repackaged by `scripts/computed-route/handoff-repackage.mjs`, which proved every file matched its old `MANIFEST.md` hash, then added `MANIFEST.json` and the two new schema files and removed `MANIFEST.md` and Indus's trace harness; Bean confirmed no design change since export); client `CLAUDE.md` files cut to a few lines; images under any `handoff/` are tracked (`.gitignore`). Each client's re-export goes unchanged into `sites/<client>/handoff/` (FR-48A-1) and passes
 `handoff-check.mjs`; the rest of `sites/<client>/` keeps only Bean's approved keepers (Indus: the old-site logos;
 Eye Care: its build, content, seed data and divergence ledger, FR-48A-11). A client `CLAUDE.md` is kept only if it
 earns its place (it auto-loads when an agent works in the folder; a README does not): at most a few lines pointing at
 the README and Spec 48A. Then delete `.claude/design_handoff_indus_foods/` and `.claude/design_handoff_mamas_munches/`
-(after the re-exports land in `handoff/`), `.claude/design_handoff_ward_end_eye_care/` (after B5) and
+(now: the `handoff/` copies were byte-identical to them before repackaging), `.claude/design_handoff_ward_end_eye_care/` (after B5) and
 `.claude/Indus-Foods-Claude-Design-Files/` (Task A's full zip, once Bean confirms nothing more is needed from it).
 
 **B4. Spec 48, finish 48A, and slim Spec 32 (done 2026-10-11).**

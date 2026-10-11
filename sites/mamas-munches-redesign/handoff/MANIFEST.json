@@ -1,0 +1,206 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-11",
+  "project": "Mama's Munches ecommerce",
+  "entry_drafts": [
+    "Home.dc.html",
+    "Shop.dc.html",
+    "Product.dc.html",
+    "Basket.dc.html",
+    "Checkout.dc.html",
+    "Confirmation.dc.html",
+    "Account.dc.html",
+    "SignIn.dc.html",
+    "Contact.dc.html",
+    "Gifts.dc.html",
+    "Help.dc.html"
+  ],
+  "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
+  "files": [
+    {
+      "path": "Account.dc.html",
+      "bytes": 42898,
+      "sha256": "569c41da66b4296faa81347c53f0d5d922d7bca67aed70fdb23df5efee8d01b5"
+    },
+    {
+      "path": "Basket.dc.html",
+      "bytes": 12676,
+      "sha256": "f4520e82997834a44f5c99b456e3b9ca4a9fcdab575314d4b266bb2c8945bb8e"
+    },
+    {
+      "path": "Checkout.dc.html",
+      "bytes": 22651,
+      "sha256": "19b5c1fec140b77d22c72b5110d1a675f2aa985330b72803e5cd3a7570d8891b"
+    },
+    {
+      "path": "Confirmation.dc.html",
+      "bytes": 12951,
+      "sha256": "ddfcd751828e19d938d173826d514e40830a97221e4c6fa19e03c7836053f046"
+    },
+    {
+      "path": "Contact.dc.html",
+      "bytes": 14763,
+      "sha256": "7044b48beb77c75507cebaf71ef867ca65e3301bb5463b3c96ffa1fc20107572"
+    },
+    {
+      "path": "Gifts.dc.html",
+      "bytes": 16833,
+      "sha256": "c653d9aa8ca4475d3f1cfc45bd1f691341abd57ed56bedf07ee3cbfde2e227a9"
+    },
+    {
+      "path": "Help.dc.html",
+      "bytes": 14556,
+      "sha256": "e705fc78ad76548eada464f2feee868d8ae5a40a8632c0e7f13a841f87bb55d6"
+    },
+    {
+      "path": "Home.dc.html",
+      "bytes": 54671,
+      "sha256": "c25fa7cf4d35f8a68895902d7413f0534c7932cb3d8ca0bab692843bdf0282ca"
+    },
+    {
+      "path": "Product.dc.html",
+      "bytes": 29958,
+      "sha256": "8100f5944df6e5191dc960779a192e7b5116417ffefc39270247c08b04936960"
+    },
+    {
+      "path": "ProductCard.dc.html",
+      "bytes": 4235,
+      "sha256": "2f393444d81d0d03701e01e790a5aa5a49e0ecb46ba8ab2071f7193e34211f30"
+    },
+    {
+      "path": "READING-DC-FILES.md",
+      "bytes": 20969,
+      "sha256": "2d1f82f634856b5f2e5a8d49a4f61bc75fb07ac622c964a84eaa9c0ad9b63e0d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 31541,
+      "sha256": "68ecf2bfb10c99e8ebfe9f85d5f094d51b0b0f114c650e861a05951e69cb7bf7"
+    },
+    {
+      "path": "Shop.dc.html",
+      "bytes": 10768,
+      "sha256": "0dabe1dff85052f3258910eca5f86e3d0aa23746907450bf855912fd2c378a80"
+    },
+    {
+      "path": "SignIn.dc.html",
+      "bytes": 22372,
+      "sha256": "df5318346b9d9c84d026ea73bd034cd4a83dd5fe71fd3abd0e6f32cd716c1926"
+    },
+    {
+      "path": "SiteFooter.dc.html",
+      "bytes": 14324,
+      "sha256": "7a3f377969e9e4c48d67080bdf5aed13509e7b583de0e0deed71f81b49b45b9b"
+    },
+    {
+      "path": "SiteHeader.dc.html",
+      "bytes": 33476,
+      "sha256": "46e9c1365470b53cd9f3c8577f48ff93e97b663ae70a736af1eeb3ae9f02d0f2"
+    },
+    {
+      "path": "animations.json",
+      "bytes": 385818,
+      "sha256": "2fa588d44cb089f53d1beeb0159ec3c1d9d2066b60da5f66c6e574c7ef4b7a82"
+    },
+    {
+      "path": "assets/logo-horizontal.png",
+      "bytes": 186240,
+      "sha256": "55fd2eef5bfbd2ae7aa067b3cfdfd5f0c2170185540935d152cac25bd8dad49c"
+    },
+    {
+      "path": "assets/logo-round.png",
+      "bytes": 314766,
+      "sha256": "d1c039733af429dcaf0b2c8a051248cc1702c9501db1fcaf44d58eb427ce7815"
+    },
+    {
+      "path": "assets/photo-bags-pink.jpg",
+      "bytes": 53804,
+      "sha256": "3aee33ac0ff61ff2005175c225879567d0591a9180a22e71543fc72e72179334"
+    },
+    {
+      "path": "assets/photo-bun-case.jpg",
+      "bytes": 27566,
+      "sha256": "9875e09f8751f4f974025ad72aee8a773fec2262646e302d59a05209b197335d"
+    },
+    {
+      "path": "assets/photo-gift-heart.jpg",
+      "bytes": 48847,
+      "sha256": "7825c0c1f5aaaf160cd0c4b4aab58b0824f99cfa9b927ca5f96fad2f308e3479"
+    },
+    {
+      "path": "assets/photo-hero-mug.jpg",
+      "bytes": 383936,
+      "sha256": "6f5411ae2730cd6edf90b6a2c71e5714f6f6d9b4dcedf778a083a4538afa7cdf"
+    },
+    {
+      "path": "assets/photo-pair-love.jpg",
+      "bytes": 52435,
+      "sha256": "c100f3ec56b7133a8ec26bb64dfa09d10f6dbc4499468ceabaf4acbeb2ced6f0"
+    },
+    {
+      "path": "assets/photo-tray-love.jpg",
+      "bytes": 43751,
+      "sha256": "dc2306611ac203dbef6579eee755cf0d4bb6fb250f25216fd88caf17c423f63c"
+    },
+    {
+      "path": "handoff-schema/METHOD.md",
+      "bytes": 10989,
+      "sha256": "55c24d306cc86674d660db25603f24e17cf07911c11a904abbde43e747a12c2b"
+    },
+    {
+      "path": "handoff-schema/READING-DC-FILES.example.md",
+      "bytes": 16262,
+      "sha256": "6c1e7aca3d954ec2c08fcad41ed9d6e29c25b78699126392d43f24f10d7142f2"
+    },
+    {
+      "path": "handoff-schema/README.template.md",
+      "bytes": 1324,
+      "sha256": "2bdb1121154c1992e4878ebd959ab5c7859438f63747a0511769d6296cfc5555"
+    },
+    {
+      "path": "handoff-schema/animations.schema.json",
+      "bytes": 9005,
+      "sha256": "c75880917b381f81477d7c63684eea76d3744d4cc20dd96462f19b6f4f1b8c6c"
+    },
+    {
+      "path": "handoff-schema/manifest.schema.json",
+      "bytes": 2069,
+      "sha256": "901b95ccc2cfc0cf1f6ebffeec530191c197d08df616e24e1c5cd477fdefdcf1"
+    },
+    {
+      "path": "handoff-schema/surfaces.schema.json",
+      "bytes": 3969,
+      "sha256": "ed29da1e8076cb902967a8befeec4c2d25eded85d88197de36e0e17f6ae0943d"
+    },
+    {
+      "path": "store.js",
+      "bytes": 14410,
+      "sha256": "5136ec82d5671747da32799d692b6c4ff5a39c2f0514e2398cc0a1a7a1545179"
+    },
+    {
+      "path": "support.js",
+      "bytes": 69150,
+      "sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe"
+    },
+    {
+      "path": "surfaces.json",
+      "bytes": 75477,
+      "sha256": "cdfd32645458176d39be7a1306c23c4a58d74f6e837d0948fd9a2900820361c2"
+    },
+    {
+      "path": "tokens/colors.css",
+      "bytes": 2864,
+      "sha256": "ef63ad226532ea7fac236ae01c9f0ab6afe09766644ec6eb64048c19b2ebf899"
+    },
+    {
+      "path": "tokens/spacing.css",
+      "bytes": 2973,
+      "sha256": "f2ee00b6ce5813407d7938c18ad869209a6c92bb861a56355f540a66399bf5fa"
+    },
+    {
+      "path": "tokens/typography.css",
+      "bytes": 2707,
+      "sha256": "805e2a943a3484599ae1f0e4bd379d207e688ec48237113ea135eb03250e97df"
+    }
+  ]
+}

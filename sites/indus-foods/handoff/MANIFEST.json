@@ -1,0 +1,146 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-11",
+  "project": "Indus Foods",
+  "entry_drafts": [
+    "Indus Foods Website v2.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "EnquiryForm.dc.html",
+      "bytes": 13557,
+      "sha256": "cdb4408622be747be444e21c75e3a7096569af77bf7657e7cb45d41e93acbf66"
+    },
+    {
+      "path": "Indus Foods Website v2.dc.html",
+      "bytes": 249600,
+      "sha256": "4db1f8479d1a91fa26c34ec1c69894ba1fd901649fcdcef7b0c0e78b01e322bf"
+    },
+    {
+      "path": "READING-DC-FILES.md",
+      "bytes": 16262,
+      "sha256": "6c1e7aca3d954ec2c08fcad41ed9d6e29c25b78699126392d43f24f10d7142f2"
+    },
+    {
+      "path": "README.md",
+      "bytes": 15572,
+      "sha256": "797285a24cb6ef737fd35855d7ec021465b6d37ecdcc3fecfcf9fd611bfeda7f"
+    },
+    {
+      "path": "TradeApplication.dc.html",
+      "bytes": 34684,
+      "sha256": "660a8c0c4f9311cbdf28dd07eec4359c1a4d442624848470b483094aeb24ce77"
+    },
+    {
+      "path": "animations.json",
+      "bytes": 417638,
+      "sha256": "65dcc2c37383dfe5c9e0cdc40b54d1ec16248c0c71ce804e511149f5e88e1f1c"
+    },
+    {
+      "path": "assets/about-hero-desktop.svg",
+      "bytes": 21572,
+      "sha256": "fa7ad864f3a488fc566af6920cf06b49a48816c44a9e06dd102a79dd6f3bdcca"
+    },
+    {
+      "path": "assets/about-hero-mobile.svg",
+      "bytes": 21572,
+      "sha256": "7bd1a820160ff269be9c4c628fe42e97ba49428c50a40f31900ef5ed98f2da0c"
+    },
+    {
+      "path": "assets/about-hero-tablet.svg",
+      "bytes": 21572,
+      "sha256": "536cef72b4c2b3be178d19a0f6323b29137d112107e70d006fac30403decfb53"
+    },
+    {
+      "path": "assets/logo-horizontal-anim.svg",
+      "bytes": 52648,
+      "sha256": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a"
+    },
+    {
+      "path": "assets/logo-horizontal.svg",
+      "bytes": 52648,
+      "sha256": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a"
+    },
+    {
+      "path": "assets/logo-square-anim.svg",
+      "bytes": 29580,
+      "sha256": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88"
+    },
+    {
+      "path": "assets/logo-square.svg",
+      "bytes": 29580,
+      "sha256": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88"
+    },
+    {
+      "path": "assets/whatsapp-ink.svg",
+      "bytes": 8309,
+      "sha256": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d"
+    },
+    {
+      "path": "handoff-schema/METHOD.md",
+      "bytes": 10989,
+      "sha256": "55c24d306cc86674d660db25603f24e17cf07911c11a904abbde43e747a12c2b"
+    },
+    {
+      "path": "handoff-schema/READING-DC-FILES.example.md",
+      "bytes": 16262,
+      "sha256": "6c1e7aca3d954ec2c08fcad41ed9d6e29c25b78699126392d43f24f10d7142f2"
+    },
+    {
+      "path": "handoff-schema/README.template.md",
+      "bytes": 1324,
+      "sha256": "2bdb1121154c1992e4878ebd959ab5c7859438f63747a0511769d6296cfc5555"
+    },
+    {
+      "path": "handoff-schema/animations.schema.json",
+      "bytes": 9005,
+      "sha256": "c75880917b381f81477d7c63684eea76d3744d4cc20dd96462f19b6f4f1b8c6c"
+    },
+    {
+      "path": "handoff-schema/manifest.schema.json",
+      "bytes": 2069,
+      "sha256": "901b95ccc2cfc0cf1f6ebffeec530191c197d08df616e24e1c5cd477fdefdcf1"
+    },
+    {
+      "path": "handoff-schema/surfaces.schema.json",
+      "bytes": 3969,
+      "sha256": "ed29da1e8076cb902967a8befeec4c2d25eded85d88197de36e0e17f6ae0943d"
+    },
+    {
+      "path": "image-slot.js",
+      "bytes": 64449,
+      "sha256": "d797f41b7d66c445a7ddddc1f7d2871dfc0e996eee2b7a3dbab4c7a7d6c5d234"
+    },
+    {
+      "path": "indus-logo.js",
+      "bytes": 4713,
+      "sha256": "23b8e7b64deb9dfdeee0e2d2a7afc922eb8e4beeb81f7e3f0a3d9bc68bc9c7f4"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    },
+    {
+      "path": "surfaces.json",
+      "bytes": 86932,
+      "sha256": "c63b959982e692809a0f34ec716ad74296c3a5e1b71f57a90d65922a11a6cc18"
+    },
+    {
+      "path": "tokens/colors.css",
+      "bytes": 1067,
+      "sha256": "53a0a40ac3df470bc3f808c3b200c0372e0b4306871691cc4b44a0e1a5ac2035"
+    },
+    {
+      "path": "tokens/spacing.css",
+      "bytes": 710,
+      "sha256": "80d52d6046d3e690b5a5610150903218af5cbbf84028f35032c9a10d6a0515eb"
+    },
+    {
+      "path": "tokens/typography.css",
+      "bytes": 816,
+      "sha256": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
+    }
+  ]
+}

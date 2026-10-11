@@ -64,15 +64,14 @@ from stage 1: a value matrix gives every kind of value a read, write, check and 
 render confirming; a gap reaches the framework list only through gates G0-G7. Spec 32 is slim (3.1.0: styling contract
 and snapshot format, new FR-32-14 to FR-32-20); Spec 27 gains FR-30-16/17. `scripts/check-spec-id-landing.py` proves
 every kept ID lands. Nothing built or deployed: Spec 48 is mostly "not built"; its Appendix B is the Indus critical path
-(about 20 h agent, 2 h Bean). Spec 48A v0.1 with `handoff-check.mjs`; Indus and Mama's exports in `sites/<client>/handoff/`
-fail it only on what the re-export adds.
-**Blockers:** the Indus and Mama's re-exports (Bean: re-upload `.claude/claude-design-handoff/handoff-schema/` and
-`CLAUDE.md`, paste `PROMPT.txt`, download the folder) block Spec 48 stage 0. **Time-critical:** the standalone Claude
+(about 20 h agent, 2 h Bean). Spec 48A v0.1 with `handoff-check.mjs`; the Indus and Mama's exports in `sites/<client>/handoff/`
+pass it (repackaged 2026-10-11 by `handoff-repackage.mjs`; no design change since export).
+**Blockers:** none for Indus stage 0 beyond the mailbox. **Time-critical:** the standalone Claude
 Design site deletes its projects on 14 December 2026; export every project as a "Project archive" and test the
 artifact-based Claude Design once before then (plan B0; Spec 48A goes to 1.0 after it).
 **Resume from:** `plans/2026-10-10-claude-design-handover-standard.md` "After B" (a build plan from Spec 48 Appendix B,
 Indus first) and, as a separate session, B5 (mirror the live Eye Care site into its draft).
-**Bean-only tasks:** B0, the Indus and Mama's re-exports, the Indus mailbox (Spec 48 Appendix B step 2).
+**Bean-only tasks:** B0, the Indus mailbox (Spec 48 Appendix B step 2).
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
