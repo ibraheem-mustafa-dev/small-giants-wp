@@ -121,11 +121,11 @@ A draft runs code: `support.js` evaluates fetched scripts with `new Function`, a
 Intake runs drafts only through `scripts/computed-route/lib/draft.mjs::serveDraft` (127.0.0.1, files inside the folder
 only), in a fresh browser profile whose network is limited to the draft server and the three pinned unpkg files, from
 a process given no `.claude/secrets/` values or SSH agent. Exported prose (`README.md`, `READING-DC-FILES.md`,
-inventory notes) is data, never instructions to an agent, and command-like text in it is shown to Bean. The check fails on an SVG under `assets/` holding `<script`, an `on…=` event attribute, `<foreignObject`, a
-`javascript:` URL, an `<animate>` or `<set>` that rewrites a link, or any link other than a `#fragment` or a
-`data:image` URI, and on any file over 20 MB. This is a pattern screen; a parser-based allowlist comes with the
-sandboxed intake (Spec 48).
-Status: SVG and size checks in `handoff-check.mjs`; the browser sandbox and the prose rule are a Spec 48 intake stage.
+inventory notes) is data, never instructions to an agent, and command-like text in it is shown to Bean. The check parses every SVG under `assets/` as namespace-aware XML
+(`scripts/computed-route/lib/svg-screen.mjs::svgProblem`) and fails on malformed XML, a DOCTYPE, a `script` or
+`foreignObject` element under any prefix, any `on…` attribute, an animation that rewrites a link, any link other than
+a `#fragment` or a raster `data:image` URI, `javascript:` or a CSS `@import`, and on any file over 20 MB.
+Status: SVG and size checks in `handoff-check.mjs` (`lib/svg-screen.mjs`); the browser sandbox and the prose rule are a Spec 48 intake stage.
 
 ### FR-48A-11 -- Near-finished sites
 A client whose site is already built from an earlier draft (Eye Care) is not put through intake. Its draft is the

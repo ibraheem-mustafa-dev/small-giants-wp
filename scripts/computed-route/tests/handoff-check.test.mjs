@@ -182,12 +182,14 @@ test( 'MUST FAIL FR-48A-10: an SVG under assets/ holding a script, an event attr
 test( 'MUST FAIL FR-48A-10: SVG screen bypasses (slash-led event, javascript: URL, link-rewriting animate, external link)', () => {
 	const root = folder( { extra: {
 		'assets/d.svg': '<svg/onload=x()></svg>',
+		'assets/d2.svg': '<svg xmlns="http://www.w3.org/2000/svg" onload="x()"/>',
 		'assets/e.svg': '<svg><a href="javascript:x()"><rect/></a></svg>',
 		'assets/f.svg': '<svg><a><animate attributeName="href" to="#x"/></a></svg>',
-		'assets/g.svg': '<svg><use xlink:href="https://evil.example/s.svg#a"/></svg>',
+		'assets/g.svg': '<svg xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="https://evil.example/s.svg#a"/></svg>',
 	} } );
 	const r = check( root );
-	failsWith( r, /^FR-48A-10 assets\/d\.svg: SVG holds an on…= event attribute/ );
+	failsWith( r, /^FR-48A-10 assets\/d\.svg: SVG is not well-formed XML/ );
+	failsWith( r, /^FR-48A-10 assets\/d2\.svg: SVG holds an on…= event attribute/ );
 	failsWith( r, /^FR-48A-10 assets\/e\.svg: SVG holds a javascript: URL/ );
 	failsWith( r, /^FR-48A-10 assets\/f\.svg: SVG holds an <animate> or <set> that rewrites a link/ );
 	failsWith( r, /^FR-48A-10 assets\/g\.svg: SVG holds a link to https:\/\/evil\.example/ );
@@ -225,4 +227,22 @@ test( 'reference resolution: dc-import, href, src, script and x-import values', 
 	const refs = draftRefs( '<dc-import name="Site Header"></dc-import><a data-src="x.dc.html" href="P.dc.html"></a><script src="lib/s.js"></script><x-import from="./m.js"></x-import>' );
 	assert.deepEqual( refs.drafts.sort(), [ 'P.dc.html', 'Site Header.dc.html' ] );
 	assert.deepEqual( refs.scripts.sort(), [ 'lib/s.js', 'm.js' ] );
+} );
+
+test( 'MUST FAIL FR-48A-10: namespace prefixes, unquoted links, SVG data URIs, DOCTYPEs and malformed XML', () => {
+	const root = folder( { extra: {
+		'assets/i.svg': '<svg xmlns="http://www.w3.org/2000/svg" xmlns:s="http://www.w3.org/2000/svg"><s:script>x()</s:script></svg>',
+		'assets/j.svg': '<svg xmlns="http://www.w3.org/2000/svg" xmlns:q="http://www.w3.org/2000/svg"><q:foreignObject/></svg>',
+		'assets/k.svg': '<svg xmlns="http://www.w3.org/2000/svg" xmlns:z="http://www.w3.org/1999/xlink"><use z:href="https://evil.example/a.svg#b"/></svg>',
+		'assets/l.svg': '<svg xmlns="http://www.w3.org/2000/svg"><image href="data:image/svg+xml;base64,AA=="/></svg>',
+		'assets/m.svg': '<!DOCTYPE svg [<!ENTITY e "x">]><svg xmlns="http://www.w3.org/2000/svg"/>',
+		'assets/n.svg': '<svg><a href=evil.example>x</a></svg>',
+	} } );
+	const r = check( root );
+	failsWith( r, /^FR-48A-10 assets\/i\.svg: SVG holds a <script>/ );
+	failsWith( r, /^FR-48A-10 assets\/j\.svg: SVG holds a <foreignObject>/ );
+	failsWith( r, /^FR-48A-10 assets\/k\.svg: SVG holds a link to https:\/\/evil\.example/ );
+	failsWith( r, /^FR-48A-10 assets\/l\.svg: SVG holds a link to data:image\/svg\+xml/ );
+	failsWith( r, /^FR-48A-10 assets\/m\.svg: SVG holds a DOCTYPE/ );
+	failsWith( r, /^FR-48A-10 assets\/n\.svg: SVG is not well-formed XML/ );
 } );

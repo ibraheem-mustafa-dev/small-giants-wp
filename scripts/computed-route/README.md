@@ -61,6 +61,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/deploy-hash.mjs` | The deploy key: md5 of a block's front-end build files, locally and on the site. |
 | `lib/draft.mjs` | Serves a local draft folder on 127.0.0.1 at an ephemeral port: directory index, an explicit index file, content types, Range, no path escape, clean close. |
 | `lib/handoff.mjs` | Spec 48A's check: the required list, the folder walk (symlinks fail), draft and script reachability, Ajv 8 for the master schemas, the manifest builder, and `checkHandoff`, which returns every failure and warning naming the file and rule. |
+| `lib/svg-screen.mjs` | FR-48A-10's SVG safety screen: parses each SVG as namespace-aware XML (saxes from the nested copy under `plugins/sgs-blocks/node_modules/jsdom`) and refuses malformed XML, a DOCTYPE, script and foreignObject by local name whatever the prefix, on* attributes, animations that rewrite a link, links other than `#…` or a raster `data:image`, `javascript:` and CSS `@import`. |
 | `lib/runtime-probe.mjs` | FR-48A-5's probe (Playwright by path): renders the fixture with a build through `serveDraft`, reads both numberings, compares them with the record, splits builds into their `// src/<name>.ts` modules and records a passing build. |
 | `lib/fill-skeleton.mjs` | The skeleton contract: `draftRef` and `draftSlots` are walker finders, slot finders resolve inside their node's element; node indices, targets, problems, and the clean tree. |
 | `lib/skeleton-inventory.mjs` | Skeleton step 1: every `data-dc-tpl` element of a draft surface in a real browser at 1440, 375 and 768 (key, parent, tag, words, attributes, the draft's own code, loop membership, boxes, visibility, screenshots), through the page bridges `__dcAnnotatedTemplate` and `__dcRootName`. |
@@ -824,8 +825,12 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `loadAjv(anchor?)` → an Ajv 2020 instance (`strict: false`, `allErrors: true`, formats when ajv-formats loads); throws naming the anchor when Ajv 8 cannot be resolved.
 - `schemaProblems(ajv, schemaFile, data)` → readable problems, at most 20 and a remainder line.
 - `buildManifest(root, { project, entryDrafts, generated? })` → a MANIFEST.json object for the files now in `root`.
-- `blockMappingHeadings(markdown)` → level 1 to 3 headings naming SGS or block mapping. `svgProblem(text)` → why an SVG is unsafe, or null.
+- `blockMappingHeadings(markdown)` → level 1 to 3 headings naming SGS or block mapping.
 - `checkHandoff(root, { known?, schemas?, ajv? })` → `{ errors, warnings, sha }`, each line `FR-48A-<n> <file>: <reason>`.
+
+### `lib/svg-screen.mjs` (saxes from `plugins/sgs-blocks/node_modules/jsdom`)
+- `saxesParser(anchor?)` → the saxes `SaxesParser` class; throws a clear error when it cannot be resolved.
+- `svgProblem(text)` → why an SVG is unsafe to run, or null.
 
 ### `lib/runtime-probe.mjs` (Playwright by path, serves through `lib/draft.mjs`)
 - `PROBE_FIXTURE`, `PROBE_EXPECTED`, `RUNTIMES_DIR`: `data/runtime-probe.dc.html`, `data/runtime-probe.expected.json`, `data/runtimes/`. `runtimeCopyName(sha)` → `<first 12 hex>.support.js`.

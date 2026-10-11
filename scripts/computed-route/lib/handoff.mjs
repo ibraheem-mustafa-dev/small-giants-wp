@@ -6,6 +6,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
+import { svgProblem } from './svg-screen.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '../../..' );
@@ -215,34 +216,6 @@ export function readKnown( file = KNOWN_RUNTIMES ) {
 // The README headings (levels 1 to 3) that map the design to SGS blocks (FR-48A-8).
 export function blockMappingHeadings( markdown ) {
 	return [ ...markdown.matchAll( /^#{1,3}[ \t]+(.+?)[ \t#]*$/gm ) ].map( ( m ) => m[ 1 ] ).filter( ( h ) => /\bsgs\b|block[\s-]*mapping/i.test( h ) );
-}
-
-// Why an SVG's text is unsafe to run (FR-48A-10), or null. A pattern screen, not a parser: it refuses scripts, event
-// attributes (after whitespace, a slash or a quote), foreignObject, javascript: URLs, <animate>/<set> that rewrite a
-// link, and any href or xlink:href that is not a same-document #fragment or a data:image URI.
-export function svgProblem( text ) {
-	if ( /<script/i.test( text ) ) {
-		return 'holds a <script> element';
-	}
-	if ( /[\s/"']on[a-z]+\s*=/i.test( text ) ) {
-		return 'holds an on…= event attribute';
-	}
-	if ( /<foreignObject/i.test( text ) ) {
-		return 'holds a <foreignObject> element';
-	}
-	if ( /javascript\s*:/i.test( text ) ) {
-		return 'holds a javascript: URL';
-	}
-	if ( /<(?:animate|set)\b[^>]*attributeName\s*=\s*["'](?:xlink:)?href["']/i.test( text ) ) {
-		return 'holds an <animate> or <set> that rewrites a link';
-	}
-	for ( const m of text.matchAll( /(?:^|[\s/"'])(?:xlink:)?href\s*=\s*(["'])(.*?)\1/gis ) ) {
-		const v = m[ 2 ].trim();
-		if ( ! v.startsWith( '#' ) && ! /^data:image\//i.test( v ) ) {
-			return `holds a link to ${ v.slice( 0, 60 ) }`;
-		}
-	}
-	return null;
 }
 
 // The whole check. Returns { errors, warnings, sha } where sha is support.js's SHA-256 (null when it is missing).
