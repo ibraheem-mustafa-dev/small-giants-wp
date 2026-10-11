@@ -209,9 +209,27 @@ function tierWrite( attr, d, perWidth, at, same ) {
 	return Object.values( value ).some( ( v ) => '' !== v ) ? { writes: [ { attr, value, merge: 'deep' } ] } : null;
 }
 
+// The calibrated default paint of one element (calibration.elements, the site's default instance) for `prop` at each
+// calibrated width: { width: value }, holding only the widths the paint records. `same` compares two element paths.
+export function defaultPaint( calibration, slot, prop, same = ( a, b ) => a === b ) {
+	const elements = calibration?.elements || {};
+	const key = Object.keys( elements ).find( ( k ) => same( k, slot ) );
+	const out = {};
+	for ( const w of [ 375, 768, 1440 ] ) {
+		const v = undefined === key ? undefined : elements[ key ]?.[ w ]?.[ prop ];
+		if ( undefined !== v ) {
+			out[ w ] = v;
+		}
+	}
+	return out;
+}
+
 // A setting with no css_property that calibration showed paints `prop` on `slot` (calibration.discovered): the enum
 // value whose recorded effect equals the draft at every calibrated width. Ties go to the value that also matches most
-// of the element's other draft properties (`siblings`: { prop: { width: value } }). Returns a write, a gap, or null.
+// of the element's other draft properties (`siblings`: { prop: { width: value } }). For a sibling property the
+// setting's discovery records (for any of its values), a value recording no change to it leaves it at the element's
+// default paint, so that value is compared with the default instead: a row-direction draft fits `flex` (no recorded
+// flex-direction, so the default row) and not `stack` (recorded column). Returns a write, a gap, or null.
 // Slots compare under the same `loose` rule every other path comparison uses, taking `anyIndex` from the input, so a
 // setting discovered on a fixture's second repetition is found on a client's first. `state` must equal the state
 // discovery recorded for the entry (an entry recording no state answers rest rows only): a resting measurement can
@@ -240,7 +258,12 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 		}
 		for ( const [ value, values ] of Object.entries( d.values ) ) {
 			if ( fits( values, perWidth ) ) {
-				const score = Object.entries( siblings ).filter( ( [ p2, pw ] ) => p2 !== prop && props[ p2 ]?.values[ value ] && fits( props[ p2 ].values[ value ], pw ) ).length;
+				const score = Object.entries( siblings ).filter( ( [ p2, pw ] ) => {
+					if ( p2 === prop || ! props[ p2 ] ) {
+						return false;
+					}
+					return fits( props[ p2 ].values[ value ] || defaultPaint( calibration, slot, p2, ( a, b ) => lp( a ) === lp( b ) ), pw );
+				} ).length;
 				options.push( { attr, value, score } );
 			}
 		}
@@ -312,10 +335,24 @@ export function resolve( input, ctx ) {
 	if ( ! ctx.calibration ) {
 		return { gap: 'uncalibrated', detail: `${ block } has no calibration file` };
 	}
+	// A yes/no setting has one state besides its default, and calibration measured it: on its measured element the
+	// marker changed `prop` only at reachedAt, so at every other width that element keeps its default paint whatever
+	// the setting holds. Where the draft differs from the default paint at such a width, the setting cannot give the
+	// draft and is no candidate (a hide-on-desktop toggle cannot give display:flex at 375). Rest rows only: the default
+	// paint is the resting instance. Without a reachedAt or a default paint at a width, nothing is proven and it stays.
+	const schemaOf = blockSchema( block ) || {};
+	const canGive = ( r, c ) => {
+		const type = [].concat( r.attr_type ?? schemaOf[ r.attr_name ]?.type ?? [] );
+		if ( state || ! type.includes( 'boolean' ) || 1 !== type.length || r.tier_shape || ! Array.isArray( c.reachedAt ) || loose( c.slot ?? '' ) !== slot ) {
+			return true;
+		}
+		const paint = defaultPaint( ctx.calibration, slot, prop, ( a, b ) => loose( a ) === b );
+		return [ 375, 768, 1440 ].every( ( w ) => undefined === perWidth[ w ] || c.reachedAt.includes( w ) || undefined === paint[ w ] || sameMeasured( prop, paint[ w ], perWidth[ w ] ) );
+	};
 	// A setting painting the slot itself wins; otherwise one whose inherited value calibration saw reach the slot.
 	const tiedBy = ( paths ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || c.property === prop );
+		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || c.property === prop ) && canGive( r, c );
 	} );
 	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
 	const tied = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );

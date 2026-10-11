@@ -118,6 +118,49 @@ test( 'MUST FAIL TO WRITE: two values with the same effect and no deciding sibli
 	assert.equal( r.writes, undefined );
 } );
 
+// The real sgs/container layout entries (cache/container.json, calibrated 2026-10-11, and the indus-test default paint
+// cache/indus-test/container.paint.json), inlined. The three hide toggles paint display on the root at one width each;
+// layout is discovered (no css_property): flex and stack both give display flex, only stack records a flex-direction
+// (column), and the default instance paints display block, flex-direction row on both elements.
+const layoutPaint = { display: 'block', 'flex-direction': 'row', 'flex-wrap': 'nowrap' };
+const hide = ( w ) => ( { slot: '', slots: [ '' ], property: 'display', state: null, forms: [], transform: null, reachedAt: [ w ], effects: [ '|left', '|top', '|width', '|height' ], variants: [ 0, 1, 2, 3, 4 ] } );
+const allHides = { sgsHideOnDesktop: hide( 1440 ), sgsHideOnMobile: hide( 375 ), sgsHideOnTablet: hide( 768 ) };
+const layoutCal = ( settings = allHides ) => ( {
+	settings,
+	discovered: { layout: {
+		display: { slots: [ '.sgs-container__inner', '' ], values: { flex: { 375: 'flex', 768: 'flex', 1440: 'flex' }, stack: { 375: 'flex', 768: 'flex', 1440: 'flex' }, grid: { 375: 'grid', 768: 'grid', 1440: 'grid' } } },
+		'flex-wrap': { slots: [ '.sgs-container__inner' ], values: { flex: { 375: 'wrap', 768: 'wrap', 1440: 'wrap' } } },
+		'flex-direction': { slots: [ '' ], values: { stack: { 375: 'column', 768: 'column', 1440: 'column' } } },
+	} },
+	elements: { '': { 375: layoutPaint, 768: layoutPaint, 1440: layoutPaint }, '.sgs-container__inner': { 375: layoutPaint, 768: layoutPaint, 1440: layoutPaint } },
+} );
+const every = ( v ) => ( { 375: v, 768: v, 1440: v } );
+const layoutRow = ( slot, display, siblings = {} ) => resolve( { block: 'sgs/container', slot, prop: 'display', perWidth: every( display ), siblings, current: {} }, { db, snapshot, calibration: layoutCal() } );
+
+test( 'MUST FAIL WITHOUT EITHER FIX: a root flex-row draft writes layout=flex (hide toggles cannot give flex; stack would turn it to a column)', () => {
+	assert.deepEqual( layoutRow( '', 'flex', { 'flex-direction': every( 'row' ) } ).writes, [ { attr: 'layout', value: 'flex', merge: 'replace' } ] );
+} );
+
+test( 'MUST FAIL WITHOUT THE TOGGLE FILTER: a root grid draft writes layout=grid', () => {
+	assert.deepEqual( layoutRow( '', 'grid' ).writes, [ { attr: 'layout', value: 'grid', merge: 'replace' } ] );
+} );
+
+test( 'MUST FAIL WITHOUT THE DEFAULT-PAINT RULE: an inner flex-row draft writes layout=flex; a root column draft writes stack (it needs the toggle filter too)', () => {
+	assert.deepEqual( layoutRow( '.sgs-container__inner', 'flex', { 'flex-direction': every( 'row' ) } ).writes, [ { attr: 'layout', value: 'flex', merge: 'replace' } ] );
+	assert.deepEqual( layoutRow( '', 'flex', { 'flex-direction': every( 'column' ) } ).writes, [ { attr: 'layout', value: 'stack', merge: 'replace' } ] );
+	// No deciding sibling: still a tie, never a guess.
+	assert.equal( layoutRow( '', 'flex' ).gap, 'ambiguous' );
+} );
+
+test( 'negative control: a desktop-only display:none still reaches the desktop hide toggle, the other two dropped', () => {
+	const row = { block: 'sgs/container', slot: '', prop: 'display', perWidth: { 375: 'block', 768: 'block', 1440: 'none' }, current: {} };
+	const r = resolve( row, { db, snapshot, calibration: layoutCal() } );
+	// The toggle alone is tied, so the row reaches its value check (a yes/no setting never takes a measured keyword),
+	// exactly as when it is the only setting calibrated; an over-broad filter would leave no-setting.
+	assert.equal( r.gap, 'shape' );
+	assert.deepEqual( r, resolve( row, { db, snapshot, calibration: layoutCal( { sgsHideOnDesktop: allHides.sgsHideOnDesktop } ) } ) );
+} );
+
 // A padding or margin box prints only its set sides (sgs_box_object_longhands, CR6), so a side written into an empty
 // box is written alone: the others keep the stylesheet's value or a wider tier's. A border width prints 0 for every
 // unset side, so the first side written into an empty width box brings the others at their calibrated default paint.

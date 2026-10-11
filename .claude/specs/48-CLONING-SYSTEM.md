@@ -380,7 +380,10 @@ Done when: a stage-0 run on Indus writes the baseline file, refuses to report a 
 cache as calibrated, writes no default-paint file, and `container.gridTemplateColumns` is no longer `dead`.
 Status: not built as a command. `container.gridTemplateColumns` is no longer dead (2026-10-11: the marker wrote a
 number, which `SGS_Container_Wrapper` ignores as a template; the `repeat` probe writes a string, FR-48-2), and every
-`:count` setting is now calibrated (it was dropped for having no readable property). The baseline before that work, read from `scripts/computed-route/cache/*.json` (94 block files,
+`:count` setting is now calibrated (it was dropped for having no readable property). The two `container.layout` ties are fixed
+(`lib/resolve.mjs::resolve` drops a yes/no setting whose unreached widths keep a default paint the draft differs from;
+`lib/resolve.mjs::resolveDiscovered` compares a value with no recorded change against the default paint), so root and
+inner flex-row, column and grid drafts resolve to `flex`, `stack` and `grid` (`tests/resolve.test.mjs`). The baseline before that work, read from `scripts/computed-route/cache/*.json` (94 block files,
 excluding `*.tree.json`): 578 dead, 110 noMarker, 24 oneWidth, 47 untestedStates.
 The Indus mirror `local-indus` and the `indus-test` and `local-indus` calibration targets exist (page 15).
 

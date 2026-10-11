@@ -100,11 +100,17 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
 - [x] **6. Accepted value forms** (done 2026-10-11; also fixed `container.gridTemplateColumns`, step 7's first item). FR-48-2 done when recalibrating `sgs/heading` and `sgs/container` records `clamp` on
   a font-size setting that accepts it and `repeat` on the container's grid template setting, and a planted setting that
   strips `clamp()` records no `clamp`.
-- [ ] **7. Indus calibration fixes and the desktop tier.** FR-48-74 done when `resolve.test.mjs` writes 48px at 1440
+- [x] **7. Indus calibration fixes and the desktop tier** (done 2026-10-11). FR-48-74 done when `resolve.test.mjs` writes 48px at 1440
   and 52px at 1920 as desktop 48px with no gap, routes a declared `clamp()` with the same readings to the fluid path,
   and both cases fail with the 1920 merge restored (built 2026-10-11); plus `container.gridTemplateColumns` is not dead
   (done in step 6) and a flex row and a grid draft on the container's root resolve to `layout` `flex` and `grid`
   (the hide-on-device and `flex`/`stack` ties, FR-48-3).
+  Left open, for Phase 5 (the header slice is the first Solve run that needs them): `solve.mjs` builds a row's
+  `siblings` from difference rows only, so a flex-row draft whose live element is already a row stays `ambiguous` in
+  Solve (Fill passes every draft property and resolves); calibration does not record the value a marker painted
+  (`lib/calibrate.mjs::slotFor`), so a yes/no setting that reaches all three widths cannot be excluded by value; and
+  the stack discovery records `flex-direction: column` on the root only, though the wrapper also forces it on
+  `__inner`.
 - [ ] **8. Stage 0 command and run.** FR-48-3 done when a stage-0 run on Indus writes
   `sites/indus-foods/build/intake/calibration-baseline.json` (validating against its Appendix C schema), refuses to
   report a block whose deploy hash differs from its cache as calibrated, and writes no default-paint file. Stage 0's
