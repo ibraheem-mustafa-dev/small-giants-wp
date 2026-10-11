@@ -186,6 +186,9 @@ async function walk( walker, outDir, walkStates = null, liveOrigin = null ) {
 	return report;
 }
 
+// A resolve result's I-calibration note (lib/resolve.mjs::resolve, FR-48-74), carried on each write record it produced.
+const debtOf = ( r ) => ( r.instrumentDebt ? { instrumentDebt: r.instrumentDebt } : {} );
+
 // The leaves a write changes: [[dotted path, JSON value]] where after differs from before.
 function leafChanges( before, after, at = '' ) {
 	if ( after && 'object' === typeof after && ! Array.isArray( after ) ) {
@@ -309,7 +312,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 				{ db, snapshot, log, canvas: !! canvas, ancestors, measuredSlots: ancestors.flatMap( ( a ) => a.measured ) } );
 			const hopNode = hop?.writes ? nodeByRef( tree, hop.on.ref ) : null;
 			if ( hopNode ) {
-				r = { writes: hop.writes };
+				r = { writes: hop.writes, ...debtOf( hop ) };
 				target = { node: hopNode, ref: hop.on.ref, path: hop.on.path };
 			} else if ( hop?.cite ) {
 				r = { ...r, cite: hop.cite, canvasSettable: !! hop.gap };
@@ -337,12 +340,12 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 					( holds[ g.key ] ||= [] ).push( { ref: target.ref, block: target.node.name, attr: w.attr, value: w.value } );
 					continue;
 				}
-				writes.push( { round, group: g.key, ref: target.ref, block: target.node.name, path: target.path, prop: g.prop, state: g.state, attr: w.attr, before: setAttr( structuredClone( atStart ), w ).before, after: target.node.attributes?.[ w.attr ], rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ) } );
+				writes.push( { round, group: g.key, ref: target.ref, block: target.node.name, path: target.path, prop: g.prop, state: g.state, attr: w.attr, before: setAttr( structuredClone( atStart ), w ).before, after: target.node.attributes?.[ w.attr ], rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ), ...debtOf( r ) } );
 				continue;
 			}
 			leafChanges( target.node.attributes?.[ w.attr ], setAttr( structuredClone( target.node ), w ).after ).forEach( ( [ k, v ] ) => claimed.set( `${ target.ref }|${ w.attr }|${ k }`, v ) );
 			const { before, after } = setAttr( target.node, w );
-			writes.push( { round, group: g.key, ref: target.ref, block: target.node.name, path: target.path, prop: g.prop, state: g.state, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ) } );
+			writes.push( { round, group: g.key, ref: target.ref, block: target.node.name, path: target.path, prop: g.prop, state: g.state, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ), ...debtOf( r ) } );
 		}
 	}
 	// Content rows: the draft's words, an element's presence, a link. Each resolves through the block's calibrated `text`,

@@ -41,8 +41,8 @@ Two steps run side by side only when the files they write do not overlap.
 - Step 6 writes `lib/calibrate.mjs` (the `forms: union(…)` line) and the marker and instance planners
   (`lib/calibrate-markers.mjs::markersFor`, `lib/calibrate-instances.mjs`).
 - Step 7 writes the same planners (`gridTemplateColumns` is in `cache/container.json` `dead`),
-  `lib/resolve.mjs::TIER_OF` and `::tiersOf`, and `plugins/sgs-blocks/scripts/sgs-update-v2.py` (the DB row
-  `sgs/container` `layout` has a NULL `css_property`).
+  `lib/resolve.mjs` (`TIER_OF`, `tiersOf`, and the two ties that stop `container.layout`'s discovered values; its NULL
+  `css_property` is by design, proven 2026-10-11, so no seeder edit or reseed).
 - Overlaps: 3 and 5 share `calibrate.mjs`, 5 and 6 share `lib/calibrate.mjs`, 6 and 7 share the planners. So 3, 5, 6
   and 7 run strictly in sequence.
 - Step 4 writes `scripts/local-wp/sync-build.sh`, `scripts/local-wp/README.md`, `calibration-targets.json`, a gitignored
@@ -51,15 +51,14 @@ Two steps run side by side only when the files they write do not overlap.
   need step 3's `package.json` and must not edit it (a new dependency goes back to session A) and edit only their own
   rows of `scripts/computed-route/README.md`.
 - Steps 9 to 11 are framework files (`theme/`, `plugins/`). They run in sequence inside their lane until a grep proves
-  them disjoint (9 and 15 both add tokens to `theme/sgs-theme/theme.json` and every snapshot). Step 7 owns
-  `sgs-update-v2.py` until it is pushed; session B does not edit that file before then.
+  them disjoint (9 and 15 both add tokens to `theme/sgs-theme/theme.json` and every snapshot).
 
 ### The serial queue
 Deploys, DB reseeds, `local-indus` mirror refreshes, calibration runs and live-site writes run one at a time across
 every session (they write the shared DB, the shared mirror or the live test site). Before each: `ListAgents`, then
 `SendMessage` to every active peer naming the operation; after it lands, say so. Expected order: (a) step 4's
-calibration page and mirror fill; (b) step 7's reseed from a clean `HEAD`; (c) step 12's refresh loop; (d) step 8's
-stage-0 calibration run. If (c) lands after (d), (c)'s recalibration step refreshes the slot maps it made stale.
+calibration page and mirror fill (done); (b) step 6's recalibration of heading and container on `local-indus` (done);
+(c) step 12's refresh loop; (d) step 8's stage-0 calibration run. If (c) lands after (d), (c)'s recalibration step refreshes the slot maps it made stale.
 
 ### Model and QC per step
 Every diff is read on the main thread before its commit. Every commit keeps the guardrails green.
@@ -103,8 +102,9 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
   strips `clamp()` records no `clamp`.
 - [ ] **7. Indus calibration fixes and the desktop tier.** FR-48-74 done when `resolve.test.mjs` writes 48px at 1440
   and 52px at 1920 as desktop 48px with no gap, routes a declared `clamp()` with the same readings to the fluid path,
-  and both cases fail with the 1920 merge restored; plus `container.gridTemplateColumns` is not dead and
-  `container.layout` has a `css_property` after the reseed.
+  and both cases fail with the 1920 merge restored (built 2026-10-11); plus `container.gridTemplateColumns` is not dead
+  (done in step 6) and a flex row and a grid draft on the container's root resolve to `layout` `flex` and `grid`
+  (the hide-on-device and `flex`/`stack` ties, FR-48-3).
 - [ ] **8. Stage 0 command and run.** FR-48-3 done when a stage-0 run on Indus writes
   `sites/indus-foods/build/intake/calibration-baseline.json` (validating against its Appendix C schema), refuses to
   report a block whose deploy hash differs from its cache as calibrated, and writes no default-paint file. Stage 0's

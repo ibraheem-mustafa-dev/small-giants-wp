@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
-import { resolve, resolveDiscovered, resolveViaAncestor, blockContext, splitProperty, tiersOf, timeToMs } from '../lib/resolve.mjs';
+import { resolve, resolveDiscovered, resolveViaAncestor, blockContext, splitProperty, tiersOf, fluidForm, timeToMs } from '../lib/resolve.mjs';
 import { parseColour } from '../lib/normalise.mjs';
 
 const db = openDb();
@@ -35,12 +35,50 @@ test( 'a colour snaps to the palette slug', () => {
 	assert.deepEqual( r.writes, [ { attr: 'textColour', value: 'text-label', merge: 'replace' } ] );
 } );
 
-test( 'gaps: uncalibrated, wrong slot, shape (desktop differs at 1920), one-value setting differing by width', () => {
+test( 'gaps: uncalibrated, wrong slot, one-value setting differing by width', () => {
 	const base = { block: 'sgs/heading', slot: '', prop: 'line-height', perWidth: { 1440: '27px' }, fontPx: { 1440: 18 } };
 	assert.equal( resolve( base, { db, snapshot, calibration: null } ).gap, 'uncalibrated' );
 	assert.equal( resolve( { ...base, slot: '.sgs-heading__inner' }, { db, snapshot, calibration: cal( { lineHeight: { slot: '' } } ) } ).gap, 'no-setting' );
-	assert.equal( resolve( { ...base, perWidth: { 1440: '27px', 1920: '30px' } }, { db, snapshot, calibration: cal( { lineHeight: { slot: '' } } ) } ).gap, 'shape' );
 	assert.equal( resolve( { block: 'sgs/heading', slot: '', prop: 'text-transform', perWidth: { 1440: 'uppercase', 375: 'none' } }, { db, snapshot, calibration: cal( { textTransform: { slot: '' } } ) } ).gap, 'shape' );
+} );
+
+// Spec 48 FR-48-74: the desktop tier is read at 1440 alone; 1920 confirms. A heading font size reading 48px at 1440 and
+// 52px at 1920, on a setting whose calibration lists clamp and vw among its forms (as the live heading cache does).
+const FONT = { block: 'sgs/heading', slot: '', prop: 'font-size', perWidth: { 375: '32px', 768: '40px', 1440: '48px', 1920: '52px' } };
+const fontCal = ( forms ) => cal( { fontSize: { slot: '', property: 'font-size', forms } } );
+
+test( 'MUST FAIL WITH THE 1920 MERGE: a 1440/1920 difference writes desktop from 1440, no gap, with an I-calibration note', () => {
+	const r = resolve( FONT, { db, snapshot, calibration: fontCal( [ 'clamp', 'vw' ] ) } );
+	assert.equal( r.gap, undefined );
+	assert.deepEqual( r.writes, [ { attr: 'fontSize', value: { mobile: 32, tablet: 40, desktop: 48 }, merge: 'deep' } ] );
+	assert.deepEqual( { ...r.instrumentDebt, detail: undefined }, { class: 'I-calibration', property: 'font-size', at1440: '48px', at1920: '52px', detail: undefined } );
+	assert.equal( r.fluid, undefined );
+	// Negative control: 1920 agreeing with 1440 carries no note.
+	assert.equal( resolve( { ...FONT, perWidth: { ...FONT.perWidth, 1920: '48px' } }, { db, snapshot, calibration: fontCal( [ 'clamp', 'vw' ] ) } ).instrumentDebt, undefined );
+	assert.deepEqual( tiersOf( FONT.perWidth, 'font-size' ), { tiers: { mobile: '32px', tablet: '40px', desktop: '48px' }, confirm: { at1440: '48px', at1920: '52px' } } );
+} );
+
+test( 'MUST FAIL WITH THE 1920 MERGE: a declared clamp() with the same readings goes to the fluid path', () => {
+	const declared = 'clamp(32px, 2vw + 24px, 56px)';
+	const r = resolve( { ...FONT, declared }, { db, snapshot, calibration: fontCal( [ 'clamp', 'vw' ] ) } );
+	assert.equal( r.gap, undefined );
+	assert.deepEqual( r.writes, [ { attr: 'fontSize', value: { desktop: declared }, merge: 'deep' } ] );
+	assert.deepEqual( r.fluid, { declared, form: 'clamp', accepted: true } );
+	assert.equal( r.instrumentDebt, undefined );
+	// A declared value per width ({ width: value }) is read at 1440.
+	assert.deepEqual( resolve( { ...FONT, declared: { 375: declared, 1440: declared } }, { db, snapshot, calibration: fontCal( [ 'clamp' ] ) } ).writes, r.writes );
+	// Not over-broad: a setting whose calibration does not list clamp is written per tier from 375, 768 and 1440, as debt.
+	const per = resolve( { ...FONT, declared }, { db, snapshot, calibration: fontCal( [] ) } );
+	assert.deepEqual( per.writes, [ { attr: 'fontSize', value: { mobile: 32, tablet: 40, desktop: 48 }, merge: 'deep' } ] );
+	assert.equal( per.fluid.accepted, false );
+	assert.equal( per.instrumentDebt.class, 'I-calibration' );
+} );
+
+test( 'a shape gap stays for a value the setting cannot hold, 1920 aside', () => {
+	assert.equal( resolve( { block: 'sgs/heading', slot: '', prop: 'text-transform', perWidth: { 1440: 'uppercase', 1920: 'none', 375: 'none' } }, { db, snapshot, calibration: cal( { textTransform: { slot: '' } } ) } ).gap, 'shape' );
+	assert.equal( fluidForm( 'clamp(1rem, 2vw, 3rem)' ), 'clamp' );
+	assert.equal( fluidForm( '4vw' ), 'vw' );
+	assert.equal( fluidForm( '48px' ), null );
 } );
 
 test( 'a state setting with no calibration entry is uncalibrated, not a missing setting', () => {

@@ -196,8 +196,11 @@ genuinely cannot hold (a keyword the setting does not take, one value for every 
 across 375, 768 and 1440).
 Done when: `resolve.test.mjs` gains a font size of 48px at 1440 and 52px at 1920 written as desktop 48px with no gap,
 a declared `clamp()` with the same readings routed to the fluid path, and both cases fail with the 1920 merge restored.
-Status: not built. `lib/resolve.mjs::TIER_OF` maps both 1440 and 1920 to desktop, and `lib/resolve.mjs::tiersOf`
-returns an error when they differ, which `lib/resolve.mjs::resolve` turns into `gap: 'shape'`.
+Status: built (2026-10-11). `lib/resolve.mjs::TIER_OF` maps 375, 768 and 1440 only; `lib/resolve.mjs::tiersOf` returns
+the 1920 reading as `confirm`; `lib/resolve.mjs::resolve` writes desktop from 1440 and attaches `instrumentDebt`
+(`I-calibration`, both values), or takes the fluid path for a declared fluid form (`input.declared`, which no caller
+passes yet); `solve.mjs::writeRound` carries the note onto each write record (`tests/resolve.test.mjs`, two MUST FAIL
+cases red with the 1920 merge restored).
 
 ### 3.2 Block calibration: `lib/calibrate.mjs` and `calibrate.mjs` (FR-47-2)
 
@@ -365,7 +368,10 @@ needs, on an existing mirror of the client's test site (for Indus, `local-indus`
 baseline: per block, the counts of `dead`, `noMarker`, `oneWidth` and `untestedStates`, with the deploy hash
 (Appendix C, `calibration-baseline.json`). The baseline is the instrument-debt starting point for §14; a later run
 reports the change from it. For Indus this also means fixing `container.gridTemplateColumns` (in
-`cache/container.json` `dead`) and the unrouted `container.layout` (NULL `css_property` in the framework DB).
+`cache/container.json` `dead`) and the two resolver ties that stop `container.layout`'s discovered values. A layout mode has no `css_property` by
+design: calibration discovers what each value changes (`lib/db.mjs::enumSettings`, `discovered.layout` in
+`cache/container.json`). On the root the three hide-on-device toggles tie with it on `display`, and on a flex row draft
+`flex` ties with `stack` because a default `row` direction records no change.
 
 Default paint is not measured in stage 0, because stage 2 replaces the site's snapshot and stage 2's framework edits
 change what blocks paint. It is measured as stage 2's exit step (FR-48-18), after the snapshot push. A block that
@@ -1123,7 +1129,7 @@ are not route work; the destination named holds them.
 | Res 1 marquee rule | Skeleton rule from the loop record plus `getAnimations()`; off the framework list | ROUTE | §3.4 FR-48-6 |
 | Res 2 pill CTA | Skeleton rule | ROUTE | §3.4 FR-48-6 |
 | Res 3 grid column count | Calibration fault first (`container.gridTemplateColumns` dead, `columns` uncached), then the declared form | INSTRUMENT, then ROUTE | §3.2 FR-48-3, §3.1 FR-48-1, §10 row 6 |
-| Res 4 flex row | Declared `display`; `container.layout` routing | ROUTE + INSTRUMENT | §3.1 FR-48-1, §10 row 6 |
+| Res 4 flex row | Declared `display`; `container.layout` resolver ties | ROUTE + INSTRUMENT | §3.1 FR-48-1, §10 row 6 |
 | Res 5 Site Info from a draft | First real run in stage 2 | ROUTE | §12, §3.9 |
 | Res 6 advisory snapshot | Declared tokens are not advisory once Bean confirms roles | ROUTE | §11 |
 | Res 7 mis-tagged fixture rows (`responsive-logo.logoId`, `nav-bar-menu.featuredItemIds`, `nav-drawer.closeStyle`, `diagram-dimension.endX/endY`) | Handed off to the DB seeder (`sgs-update-v2.py` classifier) with a record | INSTRUMENT | §14 (`I-mistag`) |
@@ -2327,8 +2333,8 @@ Status: not built.
 #### FR-48-67 — The instrument-debt list
 Every I-class row is also written to `sites/<client>/build/qa/instrument-debt.json`, grouped by owner (the seeder or
 calibration), with the block, the attribute and the gate evidence. Known items today: `container.gridTemplateColumns`
-dead, `container.layout` NULL `css_property` (and `sgs/choice-flow`'s `skipAddsToBag` also has a NULL
-`css_property`), no accepted value forms recorded in any calibration cache, and the stale caches named in FR-48-16.
+dead, `sgs/choice-flow`'s `skipAddsToBag` NULL `css_property` (an enum setting calibration discovered, such as
+`container.layout`, is routed through discovery and is never I-unrouted), no accepted value forms recorded in any calibration cache, and the stale caches named in FR-48-16.
 Status: not built.
 
 #### FR-48-68 — The cross-client framework backlog
@@ -2393,13 +2399,13 @@ Items Spec 48 needs but does not own. "Blocks" says which client cannot finish w
 | Button lift written as `buttonPresets.default.hover-transform` (no new key; `button/style.css` already reads variant, then `default`); the extractor folds a shared lift into `default` (FR-33-4) | Spec 32 FR-32-19 (§14.3), Spec 48 §11 | Indus (Indus snapshot only) | partly built (the key is read; the extractor writes per variant only) |
 | Shadow role names (card, card-hover, button, panel, header, drawer, modal); migration surveying saved slugs including `raised`, `subtle`, `raisedish`, `hard-sm`; old slugs kept as aliases; dry run per client; FR-26-D3 waits for the O10 shadow-picker check | Spec 32 FR-32-18 (§14.2), §13.4 (FR-26-D3) | neither | not built |
 | One font-size vocabulary across snapshots (`sites/mamas-munches` excluded by name, its slugs kept as aliases) | Spec 32 FR-32-17 (§14.2) | neither | not built |
-| Indus calibration: `gridTemplateColumns` dead, `container.layout` unrouted, stale caches for card-grid, form, nav-drawer-menu, container, hero, trust-bar, nav-bar-menu, mega-panel | calibration (§3.2) | Indus | not built |
+| Indus calibration: `gridTemplateColumns` dead, `container.layout` resolver ties, stale caches for card-grid, form, nav-drawer-menu, container, hero, trust-bar, nav-bar-menu, mega-panel | calibration (§3.2) | Indus | not built |
 | Calibration records accepted value forms (`clamp()`, `vw`, `repeat()`, column count) | calibration (§3.2, FR-48-2) | Indus (fluid presets, grids) | built |
 | Indus local mirror `local-indus` and calibration targets `indus-test` and `local-indus` | Spec 48 Appendix A step 13 | Indus | not built |
 | Default paint stored per site (`cache/<site>/<block>.paint.json`) | calibration (§3.2, FR-48-3) | Indus (protects Eye Care's caches) | built |
 | The route's own pinned `package.json` | Spec 48 FR-48-75 | neither | built (G0's version check not built) |
 | `overriddenBy` with a rendered-box guard | calibration (§3.2) | neither | not built |
-| `container.layout` and `choice-flow.skipAddsToBag` `css_property` (NULL today) | `sgs-update-v2.py` | Indus (`layout`) | not built |
+| `choice-flow.skipAddsToBag` `css_property` (NULL today) | `sgs-update-v2.py` | neither | not built |
 | Extractor `border` vocabulary (`border-subtle` to `border`) | Spec 48 §11 (`palette.py`, `roles.py`) | Indus | not built |
 | Site-build script | Spec 48 §12 | Indus | not built |
 | Form submission path: recipient, validation copy, success state | Spec 42, Spec 04 | Indus | partly built (validation copy setting not built) |
@@ -2500,7 +2506,7 @@ One pass is about 10 minutes of agent time and 20 minutes of machine time.
 6. **Accepted value forms** (agent, 1 h). Calibration records `clamp`, `vw`, `repeat` and a column count per setting
    (FR-48-2). Needs 3.
 7. **Indus calibration fixes and the desktop tier** (agent, 45 min). The `container.gridTemplateColumns` marker, the
-   `container.layout` routing in `sgs-update-v2.py`, and the resolver reading desktop at 1440 with 1920 as a
+   two resolver ties on `container.layout`'s discovered values (FR-48-3), and the resolver reading desktop at 1440 with 1920 as a
    confirmation (FR-48-74). Needs 3.
 8. **Stage 0 command and run** (agent 30 min, machine 30 min). The handoff check plus the slot-map calibration of the
    fixed block set on `local-indus`, writing `calibration-baseline.json` (FR-48-3, FR-48-16). Needs 1, 4 to 7.

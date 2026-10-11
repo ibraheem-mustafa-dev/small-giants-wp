@@ -27,8 +27,6 @@ Close each step on its FR's done-when, including every negative control. Commit 
 explicit pathspec, `git branch --show-current` in the same command. Mark the step done in the plan's Phase 2.
 
 FENCES
-- Do not edit `plugins/sgs-blocks/scripts/sgs-update-v2.py` until session A has pushed Appendix B step 7 (it edits the
-  `container.layout` routing there). Check `git log --oneline -5 -- plugins/sgs-blocks/scripts/sgs-update-v2.py`.
 - Do not edit anything under `scripts/computed-route/` or `scripts/local-wp/`.
 - Serial queue: deploys, DB reseeds, `local-indus` mirror refreshes and calibration runs run one at a time across all
   sessions. Before each: `ListAgents`, then `SendMessage` to every active peer naming the operation; after it lands,

@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { candidates, siblings, isPseudoProperty } from './db.mjs';
 import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, round } from './normalise.mjs';
+import { applyClamp } from './fill-values.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const BLOCKS_DIR = path.resolve( HERE, '../../../plugins/sgs-blocks/src/blocks' );
@@ -14,7 +15,7 @@ export const BLOCKS_DIR = path.resolve( HERE, '../../../plugins/sgs-blocks/src/b
 // Gap reasons (§3.1), plus `uncalibrated` (the block has no calibration file yet, so no slot is proven).
 export const GAPS = [ 'no-setting', 'ambiguous', 'shape', 'uncalibrated' ];
 
-const TIER_OF = { 375: 'mobile', 768: 'tablet', 1440: 'desktop', 1920: 'desktop' };
+const TIER_OF = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 const COLOUR_PROPS = [ 'color', 'background-color', 'border-color' ];
 const TIME_PROPS = [ 'transition-duration', 'transition-delay', 'animation-duration', 'animation-delay' ];
@@ -79,20 +80,31 @@ export function splitProperty( prop ) {
 	return { short: prop, side: null };
 }
 
-// Measured widths grouped into tiers. 1440 and 1920 are both desktop: unequal, they cannot share one setting.
+// Measured widths grouped into tiers (Spec 48 FR-48-74). The desktop tier is read at 1440 alone; 1920 is never a
+// source. Where 1920 reads a different value from 1440, `confirm` carries both readings ({ at1440, at1920 }) so the
+// caller can route the difference to a declared fluid form or record it as instrument debt; otherwise `confirm` is null.
 export function tiersOf( perWidth, prop ) {
 	const tiers = {};
 	for ( const [ w, v ] of Object.entries( perWidth ) ) {
 		const t = TIER_OF[ w ];
-		if ( ! t ) {
-			continue;
+		if ( t ) {
+			tiers[ t ] = v;
 		}
-		if ( t in tiers && ! sameMeasured( prop, tiers[ t ], v ) ) {
-			return { error: `desktop differs between 1440 (${ tiers[ t ] }) and 1920 (${ v })` };
-		}
-		tiers[ t ] = v;
 	}
-	return { tiers };
+	const [ at1440, at1920 ] = [ perWidth[ 1440 ], perWidth[ 1920 ] ];
+	const confirm = undefined !== at1440 && undefined !== at1920 && ! sameMeasured( prop, at1440, at1920 ) ? { at1440, at1920 } : null;
+	return { tiers, confirm };
+}
+
+// The calibration form a declared fluid value takes (Spec 48 FR-48-1, row 8): 'clamp' for clamp(), 'min' or 'max' for
+// those functions, 'vw' for a plain viewport length; null for anything else (a fixed length, a keyword, absent).
+export function fluidForm( declared ) {
+	const s = String( declared ?? '' ).trim();
+	const fn = s.match( /^(clamp|min|max)\(/i );
+	if ( fn ) {
+		return fn[ 1 ].toLowerCase();
+	}
+	return /^-?(\d+(\.\d+)?|\.\d+)vw$/i.test( s ) ? 'vw' : null;
 }
 
 const sameMeasured = ( prop, a, b ) => {
@@ -206,7 +218,8 @@ function tierWrite( attr, d, perWidth, at, same ) {
 // never prove an open or hover value.
 export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyIndex = false, state = null }, calibration ) {
 	const lp = ( p ) => ( anyIndex ? LOOSE( p ) : String( p ?? '' ) );
-	const at = ( pw, w ) => pw[ w ] ?? ( 1440 === w ? pw[ 1920 ] : undefined );
+	// The desktop tier is read at 1440 alone (FR-48-74): 1920 never stands in for it.
+	const at = ( pw, w ) => pw[ w ];
 	const same = ( a, b ) => String( a ).replace( /\s+/g, '' ) === String( b ).replace( /\s+/g, '' );
 	const fits = ( values, pw ) => {
 		const ws = [ 375, 768, 1440 ].filter( ( w ) => undefined !== at( pw, w ) && undefined !== values[ w ] );
@@ -319,10 +332,7 @@ export function resolve( input, ctx ) {
 	if ( others.length + bases.size > 1 ) {
 		return { gap: 'ambiguous', detail: `${ [ ...others.map( ( r ) => r.attr_name ), ...bases ].join( ', ' ) } all paint ${ prop } on "${ slot }"` };
 	}
-	const { tiers, error } = tiersOf( perWidth, prop );
-	if ( error ) {
-		return { gap: 'shape', detail: error };
-	}
+	let { tiers, confirm } = tiersOf( perWidth, prop );
 	// Extension settings (source sgs-ext) are not in block.json: their database rows give type, default and enum.
 	const rowDef = ( r ) => ( { type: r.attr_type, default: r.default_value ?? undefined, ...( r.enum_values ? { enum: JSON.parse( r.enum_values ) } : {} ) } );
 	const schema = { ...Object.fromEntries( tied.filter( ( r ) => 'sgs-ext' === r.source ).map( ( r ) => [ r.attr_name, rowDef( r ) ] ) ), ...( blockSchema( block ) || {} ) };
@@ -344,11 +354,28 @@ export function resolve( input, ctx ) {
 	const unitAttr = schema[ `${ attr }Unit` ] ? `${ attr }Unit` : null;
 	const unit = unitAttr ? ( current[ unitAttr ] ?? schema[ unitAttr ].default ?? 'px' ) : undefined;
 	const forms = ctx.calibration.settings[ row.attr_name ]?.forms;
+	// A declared fluid value (input.declared: the draft code's value for prop, a string or { width: value }, read at
+	// 1440) is written whole where calibration lists its form among the setting's forms (FR-48-1, row 8); the per-tier
+	// values below are then reduced to desktop, the tier the fluid value is written into. A form the setting does not
+	// list is written per tier from 375, 768 and 1440, and the row is instrument debt (R-48-4).
+	const declaredRaw = input.declared && 'object' === typeof input.declared ? input.declared[ 1440 ] ?? input.declared[ 1920 ] : input.declared;
+	const form = fluidForm( declaredRaw );
+	const fluid = form ? { declared: String( declaredRaw ).trim(), form, accepted: !! forms?.includes( form ) } : null;
+	if ( fluid?.accepted && undefined !== tiers.desktop ) {
+		tiers = { desktop: tiers.desktop };
+	}
+	// FR-48-74: a 1440/1920 difference is never a shape gap. Explained by an accepted fluid form, it is that form;
+	// otherwise the desktop tier keeps the 1440 value and the row carries an I-calibration note with both readings.
+	const debt = ( detail ) => ( { class: 'I-calibration', property: prop, ...( confirm || {} ), detail } );
+	const instrumentDebt = fluid && ! fluid.accepted
+		? debt( `${ row.attr_name } forms do not list ${ form }: ${ fluid.declared } written per tier from 375, 768 and 1440` )
+		: ( confirm && ! fluid ? debt( `${ prop } reads ${ confirm.at1440 } at 1440 and ${ confirm.at1920 } at 1920 and the draft declares no fluid form: desktop written from 1440` ) : null );
+	const done = ( out ) => ( out.writes ? { ...out, ...( fluid ? { fluid } : {} ), ...( instrumentDebt ? { instrumentDebt } : {} ) } : out );
 	const tierPx = ( t ) => fontPx[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] || 16;
 	const fmt = ( t, raw, def ) => formatValue( { prop: short, raw, def, unit, fontPx: tierPx( t ), forms, prefer: typeof current[ attr ] === 'string' ? current[ attr ] : null,
 		snapshot: ctx.snapshot, log: ctx.log || [], where: `${ block } ${ slot } ${ prop }@${ t }` } );
 	if ( 'border-radius' === short && ( row.box_family || 'box_only' === row.tier_shape ) ) {
-		return radiusWrite( attr, tiers, schema[ attr ] );
+		return done( radiusWrite( attr, tiers, schema[ attr ] ) );
 	}
 	const out = {};
 	for ( const [ t, raw ] of Object.entries( tiers ) ) {
@@ -402,7 +429,7 @@ export function resolve( input, ctx ) {
 		}
 		writes.push( { attr, value: boxed( JSON.parse( vals[ 0 ] ), 'desktop' ), merge: isBox ? 'deep' : 'replace' } );
 	}
-	return { writes };
+	return done( { writes: fluid?.accepted ? applyClamp( writes, fluid.declared, side ) : writes } );
 }
 
 // The measured descendants one ancestor setting's paint reaches: the element paths the CALLER measured an open row of
@@ -470,7 +497,7 @@ export function resolveViaAncestor( input, ctx ) {
 				const out = resolve( { ...input, block: a.block, slot: a.path, anyIndex: true, tag: a.tag || null, current: a.attributes || {} },
 					{ ...ctx, calibration: a.calibration } );
 				if ( out.writes ) {
-					return { writes: out.writes, on: { ref: a.ref ?? null, block: a.block, path: a.path }, via, cite };
+					return { writes: out.writes, on: { ref: a.ref ?? null, block: a.block, path: a.path }, via, cite, ...( out.instrumentDebt ? { instrumentDebt: out.instrumentDebt } : {} ) };
 				}
 				cite.resolverGap = out.gap;
 			}
