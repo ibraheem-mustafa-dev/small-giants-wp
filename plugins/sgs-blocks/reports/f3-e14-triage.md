@@ -686,7 +686,7 @@ detects, and only for inherited properties), or because it out-specifies the con
 element (specificity — NOT detected). CLASS 1 assumes an SGS control always wins at `(0,2,0)` over a
 `(0,1,0)` base rule. A block stylesheet that uses an element+class selector breaks that assumption.
 
-**A proven live instance of the uncovered half exists**, found independently by the Spec 47 route
+**A proven live instance of the uncovered half exists**, found independently by the Spec 48 route
 session on 2026-10-06: `sgs/hero`'s `maxWidth` paints nothing, because the shared wrapper emits the
 base value as `.uid` `(0,1,0)` while `hero/style.css`'s `section.sgs-hero{max-width:none}` is
 `(0,1,1)` and wins. It was proven by inserting each selector into the page's CSSOM: `.uid` does not

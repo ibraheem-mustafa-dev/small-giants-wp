@@ -86,7 +86,7 @@ test( 'MUST FAIL: a visual row from an unmapped walker state is an issue (class 
 	assert.equal( aggregate( [ { surface: 'a', reportPath: 'r.json', report: rep } ] ).byClass[ 'unmapped-state' ], 1 );
 } );
 
-// Content rows (Spec 47 §3.3): text and presence rows are open issues on the page, filed under their own class because
+// Content rows (Spec 48 §3.3): text and presence rows are open issues on the page, filed under their own class because
 // "the surface maps no setting state" is false for them. Link coverage is kind auto, key prefix link-missing/link-extra.
 test( 'MUST FAIL: text and presence rows are issues of class content; a Solve class holding the key keeps it', async () => {
 	const { CONTENT_KINDS, VISUAL } = await import( '../lib/issue-classes.mjs' );

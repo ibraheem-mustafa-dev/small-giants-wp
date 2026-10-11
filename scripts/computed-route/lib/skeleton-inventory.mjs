@@ -1,4 +1,4 @@
-// Skeleton writer step 1 (Spec 47 §3.4): the inventory of a draft surface. Every element the draft runtime stamped
+// Skeleton writer step 1 (Spec 48 §3.4): the inventory of a draft surface. Every element the draft runtime stamped
 // (data-dc-tpl) under the surface root, read in a real browser at 1440, 375 and 768 through the page bridges
 // `window.__dcAnnotatedTemplate` and `window.__dcRootName`. The draft's code supplies identity and structure only (R-47-4):
 // the key, the parent, the source tag, the loop and condition membership. Every value is measured later by Fill.

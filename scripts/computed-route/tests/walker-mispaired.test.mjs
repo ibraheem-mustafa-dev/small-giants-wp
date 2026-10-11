@@ -1,4 +1,4 @@
-// Route-accuracy R4 (Spec 47 §3.6): a block whose two independent pairings disagree (the draft's own identity and the
+// Route-accuracy R4 (Spec 48 §3.6): a block whose two independent pairings disagree (the draft's own identity and the
 // word matcher) is listed in qa/pairs/<surface>.json `mispaired`. Its rows stay in the report, flagged, so a real
 // problem is never hidden; Solve never writes through them (lib/solve-rows.mjs::writableGroups) and triage labels them
 // W / mispaired. The 2026-10-09 header case: the draft's inner row compared with the live header root, three wrong writes.

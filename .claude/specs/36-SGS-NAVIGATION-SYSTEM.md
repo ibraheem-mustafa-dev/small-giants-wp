@@ -10,7 +10,7 @@ last_verified: 2026-10-09
 references:
   - .claude/specs/37-HEADER-FOOTER-BUILDER.md
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
-  - .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
+  - .claude/specs/48-CLONING-SYSTEM.md
   - .claude/plans/archive/2026-07-18-P2-builder-ux-design-gate.md
 ---
 
@@ -20,7 +20,7 @@ references:
 
 A set of blocks + a CPT that render a WordPress menu as a best-in-class navigation — a desktop bar with
 dropdowns + rich mega-menus, and an off-canvas drawer — meeting AND exceeding top WP-theme competitors +
-general web/UX, fully accessible + crawlable, decoupled inside the header (Spec 37), and writable by Spec 47's computed route
+general web/UX, fully accessible + crawlable, decoupled inside the header (Spec 37), and writable by Spec 48's computed route
 through its block attributes. Spec 36 is the SINGLE canonical home for the whole header/nav element set:
 the nav blocks AND the utility pieces the nav composes with (cart / search / social / logo / business-info
 — §4).
@@ -343,7 +343,7 @@ form is the default. **The pill's foreground is contrast-checked against the res
 `sgs_wcag_preferred_text_colour_for_bg()` helper — the operator's colour wins when it clears AA, else the
 guaranteed-safe binary fallback — so no client palette can render a featured item below AA. Both forms are
 operator-set from the block inspector (Featured panel). **Why this is spec-level, not an implementation
-detail:** a featured style a draft can author MUST have somewhere in the data model to land — otherwise Solve (Spec 47) has no attribute to write the draft's featured fill into and the text renders accent-on-surface below AA.
+detail:** a featured style a draft can author MUST have somewhere in the data model to land — otherwise Solve (Spec 48) has no attribute to write the draft's featured fill into and the text renders accent-on-surface below AA.
 
 **"Distinct hover+focus states" has a named mechanism — Part 14 of this spec
 (FR-36-28). The ARIA "active-trail" does NOT, and is NOT BUILT; ancestor-item Current styling is built in CSS (FR-41-20).** Part 14 supplies the concrete state model: exactly
@@ -827,7 +827,7 @@ Full record: `.claude/plans/archive/2026-07-29-spec36-37-merged-architecture-and
 5. **Controllability contract:** every reference-derived property has exactly one home — CPT content/attrs,
    inspector attrs (Spec 35-manifested), or theme tokens. A value with no home is a build defect.
 6. **Cloning is the FINAL PROOF GATE, not the next task:** fixture wave → capability wave (CPT + FR-36-27 +
-   FR-37-42 + harness fixes) → polish → cloning real references through Spec 47 (the acceptance proof is FR-37-23).
+   FR-37-42 + harness fixes) → polish → cloning real references through Spec 48 (the acceptance proof is FR-37-23).
 
 **Drawer settings surface — BUILT** (a "Drawer" inspector panel, per-device via the shared
 `ResponsiveControl`, never a new switcher; all emission through the shared responsive helpers into the
@@ -1112,7 +1112,7 @@ the failure that policy exists to prevent.
 > note and a phase line so a solo builder knows the sequence. The ONE a11y decision gate for every interactive
 > piece is FR-36-10's: does the open panel leave the page usable (**DISCLOSURE**) or dim/block it (**DIALOG**)?
 > — reuse that contract, never a second one. All bind the §10 constraints (no-inline, Spec 35A Part L controls,
-> attribute-writable by Spec 47, WCAG, perf, UK).
+> attribute-writable by Spec 48, WCAG, perf, UK).
 
 ### Spec maturity index — read this before dispatching any §4 FR
 
@@ -1185,7 +1185,7 @@ command-palette modes are a native `<dialog>` DIALOG on the shared `store('sgs/n
   Result count / no-results = a live region (WCAG 4.1.3), same as the cart.
 
 ### FR-36-21 — Social and contact row (`sgs/social-icons`, a wrapper of `sgs/icon` children)
-**Status:** BUILT: `plugins/sgs-blocks/src/blocks/social-icons/block.json::attributes.hiddenLinks`, `sgs/icon` children bound to Site Info (the block allows only `sgs/icon`), brand glyphs from `plugins/sgs-blocks/includes/data/brand-registry.json`, and `rel` set on external links by `plugins/sgs-blocks/src/blocks/icon/render.php`. A bound child shows the Site Info link first and its own typed link as the fallback, hides only when neither gives a link, and `linkSource: "custom"` makes the typed link win (`icon/render.php`, `includes/helpers-icon.php::sgs_icon_resolve_bound_link`). The clone route builds the row from one skeleton node (Spec 47 FR-47-9). Not built (NICE): explicit Follow-versus-Share components and optional `rel="me"`.
+**Status:** BUILT: `plugins/sgs-blocks/src/blocks/social-icons/block.json::attributes.hiddenLinks`, `sgs/icon` children bound to Site Info (the block allows only `sgs/icon`), brand glyphs from `plugins/sgs-blocks/includes/data/brand-registry.json`, and `rel` set on external links by `plugins/sgs-blocks/src/blocks/icon/render.php`. A bound child shows the Site Info link first and its own typed link as the fallback, hides only when neither gives a link, and `linkSource: "custom"` makes the typed link win (`icon/render.php`, `includes/helpers-icon.php::sgs_icon_resolve_bound_link`). The clone route builds the row from one skeleton node (Spec 48 FR-47-9). Not built (NICE): explicit Follow-versus-Share components and optional `rel="me"`.
 **Spec maturity: `OUTLINE`** — see the §4 index.
 
 **Built in** icon plan Phase B (`.claude/plans/archive/2026-10-08-icon-unification-and-spacing-control.md`).
@@ -1589,7 +1589,7 @@ status line is a dated claim (this version was verified 2026-10-09): re-run its 
 it, and update the line in the same change that changes the code. `.claude/LEDGER.md` carries only short notes
 on work in progress.
 
-**Specs 36+37 complete first; Spec 47's route then writes headers, footers and drawers through their block attributes.** FR-36-15 is blocked by nothing; FR-36-25 depends on FR-36-21/22/23; only the *branded* Indus header sliver of FR-36-18 waits for Spec 47. See Spec 37 §6.
+**Specs 36+37 complete first; Spec 48's route then writes headers, footers and drawers through their block attributes.** FR-36-15 is blocked by nothing; FR-36-25 depends on FR-36-21/22/23; only the *branded* Indus header sliver of FR-36-18 waits for Spec 48. See Spec 37 §6.
 
 ## 7. Phasing — MVP first, prove before the plumbing
 
@@ -1727,10 +1727,10 @@ grounds the owner's eye checks on drawer clones (`.claude/reports/2026-07-29-nav
    is unchanged: only the eye closes.
 
 ### FR-36-18 — Live production instances render from CPTs
-**Status:** BUILT: verified over SSH on 2026-10-09 (`wp option get sgs_active_header_cpt_id` and `sgs_active_footer_cpt_id`, then `wp post get`): the canary and the Indus test site each have a published `sgs_header` and `sgs_footer` as the active pair. The branded Indus header waits for Spec 47 and was not checked.
+**Status:** BUILT: verified over SSH on 2026-10-09 (`wp option get sgs_active_header_cpt_id` and `sgs_active_footer_cpt_id`, then `wp post get`): the canary and the Indus test site each have a published `sgs_header` and `sgs_footer` as the active pair. The branded Indus header waits for Spec 48 and was not checked.
 Every live site (the sandybrown canary and the Indus test site, `lavender-dinosaur-183533`, deploy target
 `indus-test`) renders its header and footer from CPTs (`sgs_header` / `sgs_footer`) built on the current nav
-blocks; both render generic proof headers; a branded header is produced through Spec 47's header surface. Any
+blocks; both render generic proof headers; a branded header is produced through Spec 48's header surface. Any
 re-authoring of a live header is done **via the editor** (never WP-CLI `post_content`), **canary-first**,
 with a before/after computed check that both menus render + collapse.
 
@@ -1750,7 +1750,7 @@ crawlable `<a href>`.
 A mega panel that references its own menu is stopped by a `do_blocks` recursion guard.
 
 ## 10. Constraints
-Spec 32 no-inline · Spec 35A Part L + the Responsive-Visibility ext · block attributes writable by Spec 47 · Spec 37
+Spec 32 no-inline · Spec 35A Part L + the Responsive-Visibility ext · block attributes writable by Spec 48 · Spec 37
 decoupling + published state surface · WCAG 2.1 AA (+2.2; 44 px; forced-colors survival) ·
 crawlable/no-AJAX/schema-friendly (FR-36-17) · `viewScriptModule` vanilla JS + honest no-JS scope, no jQuery
 · works in the header · transform-ancestor survival · perf budget (<100 KB CSS / <50 KB JS; no CLS;
@@ -2029,7 +2029,7 @@ The trio (`itemTextDecorationHover`, `itemTextTransformHover`, `itemFontWeightHo
 
 #### FR-41-8 — The item border's hover treatment: None / Swap / Sweep
 
-This FR owns the MECHANISM; FR-41-23 owns the control placement. **`itemBorderHoverTreatment`**, string, default `"swap"`, values `none` | `swap` | `sweep`, a `ToggleGroupControl` from `plugins/sgs-blocks/src/components/primitives`. ⛔ A plain `"type": "string"` validated in PHP, never a JSON `enum` (an off-enum value silently coerces to the default, which bites programmatic writers such as Spec 47's route). It animates the BOTTOM edge only; other edges swap. The direction is `sweepAngle` (FR-41-38).
+This FR owns the MECHANISM; FR-41-23 owns the control placement. **`itemBorderHoverTreatment`**, string, default `"swap"`, values `none` | `swap` | `sweep`, a `ToggleGroupControl` from `plugins/sgs-blocks/src/components/primitives`. ⛔ A plain `"type": "string"` validated in PHP, never a JSON `enum` (an off-enum value silently coerces to the default, which bites programmatic writers such as Spec 48's route). It animates the BOTTOM edge only; other edges swap. The direction is `sweepAngle` (FR-41-38).
 
 | `itemBorderHoverTreatment` | What `sgs_border_states_css()` receives |
 |---|---|
@@ -2073,7 +2073,7 @@ Both panel kinds (`.sgs-nav-bar-menu__submenu-wrap`, `.sgs-nav-bar-menu__mega-pa
 
 #### FR-41-12 — The burger has a mode + label. The close side is a `sgs/nav-drawer` companion.
 
-⛔ The panel is labelled **"Menu Button"**, with the help text "Controls the button that opens the mobile menu (the 'burger')." The label only: `triggerMode`, `triggerLabel`, `triggerIcon`, `triggerMagnet*` and the `burger*` family keep their names (a rename's blast radius includes Spec 47's route).
+⛔ The panel is labelled **"Menu Button"**, with the help text "Controls the button that opens the mobile menu (the 'burger')." The label only: `triggerMode`, `triggerLabel`, `triggerIcon`, `triggerMagnet*` and the `burger*` family keep their names (a rename's blast radius includes Spec 48's route).
 
 **OPEN side (`sgs/nav-bar-menu`),** built by `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_burger_toggle_markup`:
 - `triggerMode`: per-device tier object (`icon` | `text` | `icon-and-text`, default `{"desktop":"icon"}`), validated against `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php::$sgs_nm_allowed_trigger_modes` (no JSON enum); a flat string folds to `{desktop}`. The button renders the icon and label if any tier shows them; `plugins/sgs-blocks/includes/nav-menu-trigger-css.php` hides each per tier.
@@ -2247,7 +2247,7 @@ Owner-locked, a considered block-scoped exception to `SgsColourPanel`'s document
 
 ### 14.8 Attribute reconciliation
 
-Existing names WIN; new attributes extend the existing convention (`itemColourHover` → `itemColourCurrent`). ⛔ Zero renames in this Part: every attribute is additive (a rename's blast radius includes Spec 47's route). Names, types and defaults live in `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes` and `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes` (query: `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT attr_name, css_property FROM block_attributes WHERE block_slug IN ('sgs/nav-bar-menu','sgs/nav-drawer-menu')"`); the bar / drawer / both split is in `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md`.
+Existing names WIN; new attributes extend the existing convention (`itemColourHover` → `itemColourCurrent`). ⛔ Zero renames in this Part: every attribute is additive (a rename's blast radius includes Spec 48's route). Names, types and defaults live in `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes` and `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes` (query: `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT attr_name, css_property FROM block_attributes WHERE block_slug IN ('sgs/nav-bar-menu','sgs/nav-drawer-menu')"`); the bar / drawer / both split is in `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md`.
 
 #### 14.8.1 Colour-row attributes
 

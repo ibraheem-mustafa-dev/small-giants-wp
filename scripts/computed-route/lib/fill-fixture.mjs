@@ -1,4 +1,4 @@
-// A calibration fixture's styling preconditions, as Fill sees them (Spec 47 §3.4). Calibration renders a block's
+// A calibration fixture's styling preconditions, as Fill sees them (Spec 48 §3.4). Calibration renders a block's
 // default instance with its fixture's attributes, so a styling setting the fixture switches on to make another setting
 // measurable (sgs/social-icons: childIconShowBackground, a 1px childIconBorderWidth) paints in the calibrated rest
 // though the block's own defaults paint none of it. Fill compares the draft with the unstyled value of every property

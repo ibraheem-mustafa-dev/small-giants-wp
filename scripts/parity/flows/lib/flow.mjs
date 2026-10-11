@@ -1,5 +1,5 @@
 // The flow result shape, the per-flow JSON writer, the flows-only table and the shared command-line entry
-// (Spec 47 FR-47-7). Flow results are kept apart from parity rows on purpose: they are written under
+// (Spec 48 FR-47-7). Flow results are kept apart from parity rows on purpose: they are written under
 // sites/eye-care-ward-end/build/qa/flows/<timestamp>/<flow>.json and never into a walker report, solve-report.json
 // or triage.
 import fs from 'node:fs';

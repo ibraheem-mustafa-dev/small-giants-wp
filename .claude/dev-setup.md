@@ -45,7 +45,7 @@ small-giants-wp/
 │   ├── assets/          # frontend CSS/JS for extensions, media atoms, effects
 │   └── scripts/         # block build, deploy, gate and database tooling (build-deploy.py, run-gates.py, gates.json, sgs-update-v2.py, inspector-scan/)
 ├── plugins/             # also sgs-booking, client-notes, accessibility, configurator
-├── scripts/             # cloning and live-site tooling: computed-route/ (Spec 47), parity/, wp-build-page.js, local-wp/, repo-wide lints
+├── scripts/             # cloning and live-site tooling: computed-route/ (Spec 48), parity/, wp-build-page.js, local-wp/, repo-wide lints
 ├── sites/               # per-client content, mockups, theme-snapshot.json
 └── .claude/             # specs, ledger, plans, reports, catalogues; hooks/ holds the Claude-session and commit guards wired in settings.json
 ```

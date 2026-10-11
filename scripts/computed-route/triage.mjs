@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Triage command (Spec 47, Session B1): a candidate class (W, F, T, U, L) with its evidence for every distinct open issue
+// Triage command (Spec 48, Session B1): a candidate class (W, F, T, U, L) with its evidence for every distinct open issue
 // of a surface's Solve report (lib/triage.mjs).
 //   node scripts/computed-route/triage.mjs --client <slug> --surface <s> [--report <solve-report.json>] [--out <file>]
 // Reads sites/<client>/build/surfaces.json, every surface tree it names (refs from an embedding page resolve there),

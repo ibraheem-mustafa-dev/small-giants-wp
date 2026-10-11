@@ -1531,9 +1531,19 @@ shows nothing is a defect (Spec 35 Part A1: the client must be able to function)
 ### 4.7 Cloning contract (§11)
 
 Every effect maps to the **`data-sgs-fx-*`** draft grammar (first claimed by this spec).
-`data-sgs-scroll-*` is deliberately left UNCLAIMED (§11.1). Cloning is owned by Spec 47: it writes
-the sampled entrance duration, delay and distance to the `sgs-fx` settings
-(`scripts/computed-route/lib/entrance.mjs`). No route reads `data-sgs-fx-*` from a draft today.
+`data-sgs-scroll-*` is deliberately left UNCLAIMED (§11.1). Cloning is owned by Spec 48
+(`.claude/specs/48-CLONING-SYSTEM.md`): a Claude Design draft's motion arrives as `animations.json` records
+(Spec 48A), re-derived at intake, and Spec 48's value matrix maps each record to the `sgsAnimation*`
+settings (preset, start, trigger, duration, delay, distance, easing, stagger) or the hover effects
+(`scripts/computed-route/lib/entrance.mjs` writes the entrance values today). No route reads `data-sgs-fx-*`
+from a draft today.
+
+A new motion preset is added here only when a cloned draft holds a motion record no preset or setting
+expresses. Checked 2026-10-11: the `sgsAnimation` enum already offers `fade-*`, `slide-*`, `scale-in`,
+`blur-in` and `reveal-up` with per-block distance, duration, easing and stagger; the Indus and Mama's
+exports' entrances are opacity plus translate and their hovers are transform, shadow and colour, all expressible.
+A combined move-plus-blur or move-plus-scale entrance, or a rounded clip-path reveal, becomes a requirement
+here once a draft needs one (Spec 48 §16).
 
 ## 5. Functional requirements (with done-criteria)
 
@@ -1575,7 +1585,7 @@ taxonomy table, not in this list** — this section is infrastructure only:
 - **FR-38-21 — per-effect editor-canvas story (§9).**
   *Done when:* every roster effect has a row and its implemented story matches it.
 - **FR-38-22 — cloning contract defined (§11).**
-  *Done when:* the grammar is in-spec; cloning of entrances is owned by Spec 47.
+  *Done when:* the grammar is in-spec; cloning of entrances is owned by Spec 48.
 - **FR-38-23 — DB seeding (§6).**
   *Done when:* the seeder + reseed-guard exist and a full `/sgs-update` rebuild reproduces the
   seed byte-identically.
@@ -1932,7 +1942,7 @@ child's entrance, changing the choreography's feel in order to fix its ending. D
 `standard` = 33% of the pin. It applies to PINNING effects only (`fx_effects.pins = 1`); a
 non-pinning effect has no "afterwards" to hold.
 
-Cloning is owned by Spec 47 (computed route). Spec 47 writes the sampled entrance duration,
+Cloning is owned by Spec 48 (computed route). Spec 48 writes the sampled entrance duration,
 delay and distance to the `sgs-fx` settings (`scripts/computed-route/lib/entrance.mjs`); no
 surface reads explicit `data-sgs-fx-*` attributes from a draft today, so the grammar above is the
 draft-authoring contract only. **Skip-with-reason:** an unrecognised `data-sgs-fx` value, an fx on
@@ -1972,7 +1982,7 @@ reliably inferred from scraped JS — an inferred effect is a guess, and guesses
   is a one-line `wp:pattern` reference, so the rendered header comes from
   `theme/sgs-theme/patterns/framework-header-default.php`. Editing the stored template part does
   not change what renders.
-- **Spec 47** — the computed route owns cloning (§11.3); "Tier 1/2" naming collision avoided
+- **Spec 48** — the computed route owns cloning (§11.3); "Tier 1/2" naming collision avoided
   (§1.5). **Spec 32** — no-inline contract binds all fx CSS output. **Spec 35** — inspector
   standard (§7); `fx` settings-cluster registers alongside the `anim:*` pseudo-namespace in
   `css_property`. **Spec 37** — this spec proposes no change to the header system; Spec 37

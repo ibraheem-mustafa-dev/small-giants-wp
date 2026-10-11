@@ -402,7 +402,7 @@ export function wrongWrites( writes, reportAfter, stateMap ) {
 	} );
 }
 
-// Spec 47 §3.3's ratio: wrong settings (one attribute on one node, however many writes chained it) over every setting written.
+// Spec 48 §3.3's ratio: wrong settings (one attribute on one node, however many writes chained it) over every setting written.
 export function settingRatio( wrong, writes ) {
 	const key = ( w ) => `${ w.ref }|${ w.attr }`;
 	return { wrong: new Set( wrong.map( key ) ).size, total: new Set( writes.map( key ) ).size };

@@ -411,7 +411,7 @@ test( 'paint.mjs keeps groupBox, textRun, textCarrier and PAINT_SRC working for 
 } );
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Spec 47 W2-D: the hover point (P3a), icon reads (P2b3, P1) and loops (P3c), in a real browser on local HTML.
+// Spec 48 W2-D: the hover point (P3a), icon reads (P2b3, P1) and loops (P3c), in a real browser on local HTML.
 
 // A track far wider than the viewport, mid-translate: its raw centre is off-screen to the left. `overflow: clip` keeps the
 // wrapper from scrolling, as a marquee's does.

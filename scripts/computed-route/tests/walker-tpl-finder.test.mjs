@@ -1,4 +1,4 @@
-// The tpl finder (Spec 47 §3.4, R-47-4): the draft runtime restarts data-dc-tpl at 0 inside every template, so a bare
+// The tpl finder (Spec 48 §3.4, R-47-4): the draft runtime restarts data-dc-tpl at 0 inside every template, so a bare
 // [data-dc-tpl="N"] selector lands on whichever copy or nested import comes first. { tpl: "<chain>/<n>#<copy>" } names the
 // import-host chain, the number and the copy, and resolves the one element; collect.mjs::tplKeyOf writes the same key.
 import test, { after, before } from 'node:test';

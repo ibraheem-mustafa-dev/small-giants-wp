@@ -1,4 +1,4 @@
-// Runs the four functional flows in order against one site (Spec 47 FR-47-7).
+// Runs the four functional flows in order against one site (Spec 48 FR-47-7).
 //
 //   node scripts/parity/flows/run-all.mjs [--base <url>] [--only bag-two-products,filter-apply-clear] [--stamp <ts>]
 //

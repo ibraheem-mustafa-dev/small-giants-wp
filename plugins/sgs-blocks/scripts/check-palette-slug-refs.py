@@ -13,7 +13,7 @@ and what §3 requires ("per-client values flow through theme.json.settings.custo
 
 Found 2026-08-18: **72 references to 19 non-existent slugs** across 432 files. Most were WordPress
 CORE's default palette names (`base`, `foreground`, `contrast`, `contrast-2`) — blocks written
-against core's palette instead of the SGS one. The trigger was Spec 32 §12.5's `border-subtle`:
+against core's palette instead of the SGS one. The trigger was the extractor's `border-subtle` slug (client palette audit, now Spec 48 §11):
 `border` was the only colour family with variants and no base, so an author reasonably wrote
 `--wp--preset--color--border` by analogy with `primary`/`surface`/`text`, and it silently did
 nothing while a client hex hardcoded beside it won on every site.

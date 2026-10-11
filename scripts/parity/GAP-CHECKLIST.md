@@ -353,7 +353,7 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
 - **Reveal sweep:** before a `fullPage: true` shot the page is scrolled top to bottom a screen at a time, so every
   scroll reveal has fired on both sides (`revealSweep: false` turns it off). Reveal timing stays with `scrollIn` pairs.
 
-## 16. Ref tracing and the divergence ledger (Spec 47 FR-47-6 items 6 and 7)
+## 16. Ref tracing and the divergence ledger (Spec 48 FR-47-6 items 6 and 7)
 
 - **Gap:** a row names a pair, not the layout node a tool must change; and an intended difference lived only in a
   config's `accept` list, invisible to the tools that write settings.
@@ -363,7 +363,7 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   `lib/ref-trace.mjs::elementPath`). Text properties take the path of the element that paints the text. With
   `refPrefix` every pair also reads its full CSS: the default list, its own list, and margins, `width`, `max-width`, `flex-direction`, `flex-wrap`,
   `text-wrap` and `gap`. A config without it is unchanged.
-- **Divergence ledger (`divergences: '<path>'`):** entries in the site's `divergences.json` (Spec 47 §3.5) match a row
+- **Divergence ledger (`divergences: '<path>'`):** entries in the site's `divergences.json` (Spec 48 §3.5) match a row
   on node (ref, block slug or `*`), state (`hover` matches hover rows), property and width. A rule entry accepts the
   row; a value entry accepts it only while live shows that value, and otherwise shows the expected value as the row's
   draft side (`10px (D-2)`). Every report row carries an `id` for `scripts/computed-route/ledger.mjs accept`.
@@ -382,7 +382,7 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   pennies) and draft bugs (a filter returning 0) are accepts with Bean's dated decision in the reason.
   Anything "PROPOSED to Bean" is open work until answered.
 
-## 17. Where a pair sits in the page, and transforms that paint nothing (Spec 47 stage 3, F1 and F4)
+## 17. Where a pair sits in the page, and transforms that paint nothing (Spec 48 stage 3, F1 and F4)
 
 - **Gap:** box rows compared only a pair's size and its distance to a configured anchor, so a whole page sitting 57px
   low (a page container's 104px top padding against the draft's 48px) produced no row at all; and `transform:
@@ -396,7 +396,7 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   with the WhatsApp scale and the shop button's 3px lift still reported; About's eyebrow `y-in-main` 68 against 124 at 1440
   (28 against 56 at 375), and Contact's form fields 62 against 87 apart at 375. Configs without `refPrefix` are unchanged.
 
-## 18. Read where it paints: layout, hover text, icons, text runs and groups (Spec 47 stage 3, 2026-10-04)
+## 18. Read where it paints: layout, hover text, icons, text runs and groups (Spec 48 stage 3, 2026-10-04)
 
 - **Gap:** properties were read off an element that does not paint them, so a matching page showed rows and a
   differing one hid them: a container's gap off its wrapper (the flex band is its inner element), hover colour off a
@@ -429,7 +429,7 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
 - **Falsified by:** a gap or alignment row between a block stack and a flex column, a layout row read off an element with fewer than two items, a hover colour read off an element
   that paints no text, or a text-run or group pair reporting a style row.
 
-## 19. Read what DevTools reads: settled animations, forced hover, declared sizes, pseudo layers, timings, row spacing (Spec 47 A-1, 2026-10-05)
+## 19. Read what DevTools reads: settled animations, forced hover, declared sizes, pseudo layers, timings, row spacing (Spec 48 A-1, 2026-10-05)
 
 - **Gap:** a fixed wait read rows mid-entrance (container `transform` and `opacity` rows); hover was read only on pairs a
   hand config flagged; computed style gives a declared `168px` or `50%` width only as used pixels, so Solve could not
@@ -465,11 +465,11 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   declared width written where the draft declares none, a layer row on an element whose layers do not paint, or a
   `row-gap` row between lists with the same line-box spacing.
 
-The sections from 20 on are Session C lane L2 (Spec 47 FR-47-6). Every one has a planted fault in
+The sections from 20 on are Session C lane L2 (Spec 48 FR-47-6). Every one has a planted fault in
 `scripts/computed-route/tests/walker-l2.test.mjs` (headless Chromium on local HTML, never a site), red against the walker at
 the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/parity at the old commit>` shows it red).
 
-## 20. Two different kinds of element are one `tag` row (Spec 47 FR-47-6, L2.6)
+## 20. Two different kinds of element are one `tag` row (Spec 48 FR-47-6, L2.6)
 
 - **Gap:** four combos in Session B compared a draft `<div>` against a live `<img>`, or a `<span>` against an `<h1>`; every
   style, box and hover row between two elements of different kinds is false (`object-fit`, `max-width` and `display` of an
@@ -487,7 +487,7 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
   `font-size` row (negative control).
 - **Falsified by:** a style, box or hover row on a pair whose two elements are of different classes.
 
-## 21. Rows on blocks the pairing left unmatched are dropped, and listed (Spec 47 FR-47-6, L2.7)
+## 21. Rows on blocks the pairing left unmatched are dropped, and listed (Spec 48 FR-47-6, L2.7)
 
 - **Gap:** `qa/pairs/<surface>.json::left` names the blocks the pairing could not pair with a draft element, yet a row on
   one still reached triage (24 of one agent's 58 rows in Session B, and two medium-confidence `woocommerce/product-template`
@@ -511,7 +511,7 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
 - **Falsified by:** a dropped row whose ref is in `keptPairs` or `coveredByHand`, a dropped row with no entry in
   `unmatched`, or a width or image `left` entry whose rows were dropped.
 
-## 22. 1920 is in every standard run (Spec 47 FR-47-6 item 2, L2.1)
+## 22. 1920 is in every standard run (Spec 48 FR-47-6 item 2, L2.1)
 
 - **Gap:** a hand-run walk used `cfg.widths || [1440, 768, 375]`, so the 1920 layout was read only when `solve.mjs` asked
   for it.
@@ -521,7 +521,7 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
 - **Proof:** `walker-l2.test.mjs` reads the three strings.
 - **Falsified by:** a walk with no `--widths` and no `cfg.widths` that reads three widths.
 
-## 23. Focus and press feedback of every interactive element (Spec 47 FR-47-6 item 3, L2.2)
+## 23. Focus and press feedback of every interactive element (Spec 48 FR-47-6 item 3, L2.2)
 
 - **Gap:** focus rings were read only on pairs a config flagged (a real Tab), hover only through `forcedHover`, and
   `:active` never; an unflagged button with a focus ring or a press effect on one side only was invisible.
@@ -543,7 +543,7 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
   about 6s per side.
 - **Falsified by:** a focus ring or press effect that differs on a matched interactive element with no row.
 
-## 24. Link coverage: the same words must sit inside a link on both sides (Spec 47 FR-47-6 item 4, L2.3)
+## 24. Link coverage: the same words must sit inside a link on both sides (Spec 48 FR-47-6 item 4, L2.3)
 
 - **Gap:** `links.mjs::compareLinks` drops the draft's `#` links (`realDraftHref`), so a draft link whose live words are
   plain (or the reverse) was never caught.
@@ -557,7 +557,7 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
   `link-missing "shop now"` row; both linked and both plain give none; the reverse is one `link-extra` row.
 - **Falsified by:** matched words linked on one side only with no `link-missing` or `link-extra` row.
 
-## 25. Line counts during state transitions (Spec 47 FR-47-6 item 5, L2.4)
+## 25. Line counts during state transitions (Spec 48 FR-47-6 item 5, L2.4)
 
 - **Gap:** no line-count code existed: a header title that wraps to 2 lines for 300ms during a shrink (or a drawer's text
   that reflows as it opens) on one side only painted a different frame and produced no row.
@@ -572,7 +572,7 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
   3 lines here) and no settled `lines` row; both steady gives none; `lineRows` counts 1, a wrapped title and 0.
 - **Falsified by:** a pair whose text wraps to a different number of lines at the same instant of an action with no `lines@` row.
 
-## 26. Entrance motion of a region opened by an action (Spec 47 FR-47-6, L2.5)
+## 26. Entrance motion of a region opened by an action (Spec 48 FR-47-6, L2.5)
 
 - **Gap:** three, not one. (1) The walker sampled entrances only once, at page load, so a drawer or panel that staggers its
   items in after a click was never read; (2) `entrance` is not in `issue-classes.mjs::VISUAL`, so its rows are not counted as
@@ -592,7 +592,7 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
 - **Falsified by:** a drawer item that enters later on one side with no `entrance` row, or an `entrance` row of a ref-traced
   walk with no `ref`.
 
-## 27. A drawn line's weight and dash, and where a positioned element sits (Spec 47 FR-47-6, measured-diagram plan (`.claude/plans/archive/2026-10-07-measured-diagram-block.md`) §C)
+## 27. A drawn line's weight and dash, and where a positioned element sits (Spec 48 FR-47-6, measured-diagram plan (`.claude/plans/archive/2026-10-07-measured-diagram-block.md`) §C)
 
 - **Gap:** a measured diagram's dimension line (an svg stroke) was read for its colour only (`icon-stroke`), so a thicker or
   dashed line on one side produced no row; and `left`/`top` were never read, so a label placed at a different spot on a
@@ -610,7 +610,7 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
 - **Falsified by:** a pair whose svg stroke weight or dash differs, or whose positioned box sits at another declared
   offset, with no row.
 
-## 28. Rows on a block whose two pairings disagree stay, flagged, and are never written (Spec 47 route-accuracy R4)
+## 28. Rows on a block whose two pairings disagree stay, flagged, and are never written (Spec 48 route-accuracy R4)
 
 - **Gap:** Solve wrote through pairs that compared two different elements: on 2026-10-09 the header's draft inner row
   against the live header root (3 of 3 writes wrong, reverted) and mega-brands' label span against the whole card (5 of

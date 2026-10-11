@@ -11,7 +11,7 @@ title: SGS WordPress Framework — System Architecture
 SGS is an AI website-builder built by Small Giants Studio: a WordPress block theme
 (`sgs-theme`) + a Gutenberg blocks plugin (`sgs-blocks`, including forms) + a booking plugin
 (`sgs-booking`) + a client-notes plugin (`sgs-client-notes`), plus a draft-to-page route (§4): the
-computed route (Spec 47). It competes with Kadence, Spectra
+computed route (Spec 48). It competes with Kadence, Spectra
 and GenerateBlocks, so every block must be fully configurable by a non-technical client through the
 block editor alone (root `CLAUDE.md` "Non-negotiables"). The framework is client-agnostic: no client
 colour, copy, imagery or structure is hard-coded into the base theme or blocks plugin (root
@@ -49,7 +49,7 @@ small-giants-wp/
 │   ├── sgs-client-notes/      # Visual annotation system (own CLAUDE.md; deferred, Spec 05)
 │   ├── sgs-accessibility/     # A11y helpers (masonry, min-height, ARIA roles, form errors) — no own CLAUDE.md yet
 │   └── sgs-configurator-pro/  # Product-configurator plugin work (own CLAUDE.md)
-├── scripts/computed-route/    # Spec 47 computed route (README.md indexes its modules); scripts/parity/ holds the walker
+├── scripts/computed-route/    # Spec 48 computed route (README.md indexes its modules); scripts/parity/ holds the walker
 ├── sites/<client>/            # Per-client mockups, content, theme-snapshot.json, build/ trees (own CLAUDE.md per active client)
 ├── .claude/                   # Working area: specs/, archive/decisions.md, LEDGER.md, plans/, reports/ (own CLAUDE.md)
 └── CLAUDE.md                  # Root rules — the spine; read this first every session
@@ -58,16 +58,16 @@ small-giants-wp/
 `plugins/sgs-blocks/src/blocks/` holds one directory per block, each following the standard
 5-file pattern (`block.json`, `edit.js`, `render.php`, `style.css`, optionally `view.js`/
 `view-module.js`) — see `plugins/sgs-blocks/CLAUDE.md` "Block Pattern".
-`scripts/computed-route/` is the Spec 47 route (§4).
+`scripts/computed-route/` is the Spec 48 route (§4).
 
 ## 4. Draft → page routes
 
-A design draft reaches a WordPress page by the computed route (Spec 47): script-rendered and static classless drafts alike. It shares the framework DB (§5), the parity walker and the page builder with nothing else.
+A design draft reaches a WordPress page by the computed route (Spec 48): script-rendered and static classless drafts alike. It shares the framework DB (§5), the parity walker and the page builder with nothing else.
 
-### 4.1 Computed route (Spec 47)
+### 4.1 Computed route (Spec 48)
 
 **What it does.** Measures the rendered draft and writes block settings through the framework DB, never
-copying the draft's DOM or classes. Spec: `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`.
+copying the draft's DOM or classes. Spec: `.claude/specs/48-CLONING-SYSTEM.md`.
 
 - **Code:** `scripts/computed-route/` (its `README.md` is the module index, enforced by `lint.mjs`).
   Commands: `calibrate.mjs` (measures what each block setting paints), `fill.mjs` (skeleton plus
@@ -207,7 +207,7 @@ source. The decision log is `.claude/archive/decisions.md`.
    computed behaviour; `container_kind` gates which 3-layer panels a block exposes (§6.2).
 6. **Content-KIND composites may render block-private**; section/layout-KIND composites keep the
    shared wrapper (§6.2).
-7. **One cloning route**: Spec 47. The binding rules `R-31-N` (also cited as `R-22-N`) live in `.claude/rules/framework-principles.md`.
+7. **One cloning route**: Spec 48. The binding rules `R-31-N` (also cited as `R-22-N`) live in `.claude/rules/framework-principles.md`.
 8. **No fallback route.** Every draft takes the computed route (§4); there is no second route to fall back to.
 9. **Root-cause methodology is mandatory.** No fix without a proven cause; verify every dependency
    a theory rests on. Full statement: root `CLAUDE.md` "How to work here".
@@ -256,7 +256,7 @@ This file stays at system altitude. Follow the pointer for anything lower:
 | Structural defences / lessons | Claude Code auto memory (not a repo path) |
 | D-numbered decision log | `.claude/archive/decisions.md` (frozen) |
 | Open deferred work | relevant plan/spec + `.claude/LEDGER.md` |
-| Computed route full detail | `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`, `scripts/computed-route/README.md` |
+| Computed route full detail | `.claude/specs/48-CLONING-SYSTEM.md`, `scripts/computed-route/README.md` |
 | Styling/token contract full detail | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
 | Inspector-UX standard | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Motion system full detail | `.claude/specs/38-SGS-MOTION-SYSTEM.md` |

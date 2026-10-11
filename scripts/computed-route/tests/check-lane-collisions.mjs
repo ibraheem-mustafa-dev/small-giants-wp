@@ -1,4 +1,4 @@
-// Pre- and post-dispatch collision gate for the Spec 47 route cleanup's parallel lanes.
+// Pre- and post-dispatch collision gate for the Spec 48 route cleanup's parallel lanes.
 //
 // Why this exists: `subagent-driven-development` forbids parallel implementation subagents because they
 // collide on files. The route cleanup dispatches them anyway, which is only safe while the conflict set is

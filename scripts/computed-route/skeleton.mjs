@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Skeleton writer (Spec 47 §3.4): turns a Claude Design draft's own elements into an SGS block skeleton with exact draft
+// Skeleton writer (Spec 48 §3.4): turns a Claude Design draft's own elements into an SGS block skeleton with exact draft
 // links, plus a review table. Output folder: sites/<client>/build/skeleton/. The draft url is
 // sites/<client>/build/surfaces.json[surface].draftUrl.
 //   node scripts/computed-route/skeleton.mjs inventory --client <slug> --surface <name> --root <selector>

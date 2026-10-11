@@ -25,9 +25,9 @@ const llistOf = ( itemRe ) => `(r) => [...r.querySelectorAll('li, .sgs-process-s
 const config = {
 	name: 'lenses',
 	widths: [ 375, 768, 1440, 1920 ],
-	// Ref tracing (Spec 47 FR-47-6 item 7): every row names the tree node (cr-ref-<surface>-<n>) it was measured on.
+	// Ref tracing (Spec 48 FR-47-6 item 7): every row names the tree node (cr-ref-<surface>-<n>) it was measured on.
 	refPrefix: 'cr-ref-',
-	// Intended differences (Spec 47 FR-47-5), shared by every Eye Care surface.
+	// Intended differences (Spec 48 FR-47-5), shared by every Eye Care surface.
 	divergences: '../divergences.json',
 	// Nav-track chrome outside the header and footer on both sides: the draft's floating WhatsApp
 	// bubble and the "100% genuine" trust bar above the header (copied from shop.mjs/product.mjs:

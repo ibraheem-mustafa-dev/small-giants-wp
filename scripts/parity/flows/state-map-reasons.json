@@ -1,6 +1,6 @@
 {
 	"spec": "FR-47-7",
-	"plan": "Spec 47 FR-47-7; the walker-state maps were applied as Session C item C0.7",
+	"plan": "Spec 48 FR-47-7; the walker-state maps were applied as Session C item C0.7",
 	"mapping": "sites/<client>/build/surfaces.json, each surface's `states` object (walker state to setting state; null is rest)",
 	"stateless": [],
 	"statelessNote": "Every walker state a committed unmapped-state verdict names is mapped in surfaces.json, so no row is left without a mapped state and none needs a stated reason for having none. tests/state-map.test.mjs fails if one reappears.",

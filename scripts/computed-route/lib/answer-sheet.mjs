@@ -1,4 +1,4 @@
-// The answer sheet (Spec 47 route-accuracy R1): a frozen set of hand-labelled rows every route change is scored on.
+// The answer sheet (Spec 48 route-accuracy R1): a frozen set of hand-labelled rows every route change is scored on.
 // Each row is a false alarm (a difference the tool reports that is not real), a real problem (must stay open) or a wrong
 // write (a setting Solve wrote that moved the page away from the draft). A run is scored per surface from three of its
 // files: the walk (`round-N/report.json`), its triage (`qa/triage/<surface>.json`) and its `solve-report.json`.

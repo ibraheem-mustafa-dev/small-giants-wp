@@ -1,4 +1,4 @@
-// The bag, read and judged independently of how the drawer renders (Spec 47 FR-47-7).
+// The bag, read and judged independently of how the drawer renders (Spec 48 FR-47-7).
 //
 //   - readBag        GET /wp-json/wc/store/v1/cart, WooCommerce's own Store API, from inside the page so it carries
 //                    the shopper's cart cookie. The drawer's markup is never consulted.

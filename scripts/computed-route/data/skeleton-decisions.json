@@ -1,5 +1,5 @@
 {
-	"doc": "Standing, client-free decisions of the skeleton writer (Spec 47 §3.4). Everything a draft element can be asked that the framework database cannot answer: which text patterns are Site Info, which lines exist only because of the designer's brief, which structural shapes are a column label or a link list. A block named here must exist in the framework database (checked on every load by lib/skeleton-facts.mjs::decisionsProblems). Client-specific choices live in sites/<client>/build/skeleton/decisions.json, written by `skeleton.mjs decide`.",
+	"doc": "Standing, client-free decisions of the skeleton writer (Spec 48 §3.4). Everything a draft element can be asked that the framework database cannot answer: which text patterns are Site Info, which lines exist only because of the designer's brief, which structural shapes are a column label or a link list. A block named here must exist in the framework database (checked on every load by lib/skeleton-facts.mjs::decisionsProblems). Client-specific choices live in sites/<client>/build/skeleton/decisions.json, written by `skeleton.mjs decide`.",
 	"structural": {
 		"columnLabel": {
 			"block": "sgs/heading",

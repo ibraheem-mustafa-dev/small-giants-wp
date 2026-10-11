@@ -139,7 +139,7 @@ Stage 2's `npm run build` is what the script runs itself unless you pass `--skip
 
 ## Per-page deploy (DIFFERENT, handled by `/sgs-clone`)
 
-For a **single client page or surface**, DO NOT use this skill. Use `/sgs-clone`: the computed route (Spec 47) builds the tree onto the client's own test site through `scripts/wp-build-page.js` and Solve writes the settings. Per-client tokens deploy with `python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>`. This skill ships the plugin and theme build only.
+For a **single client page or surface**, DO NOT use this skill. Use `/sgs-clone`: the computed route (Spec 48) builds the tree onto the client's own test site through `scripts/wp-build-page.js` and Solve writes the settings. Per-client tokens deploy with `python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>`. This skill ships the plugin and theme build only.
 
 ---
 

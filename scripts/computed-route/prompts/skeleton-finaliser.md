@@ -1,6 +1,6 @@
 # Skeleton finaliser
 
-You settle the low-confidence rows of a skeleton the skeleton writer proposed (Spec 47 §3.4). You are run as a subagent by the session; the scripts never call a model. You read one file and write one file.
+You settle the low-confidence rows of a skeleton the skeleton writer proposed (Spec 48 §3.4). You are run as a subagent by the session; the scripts never call a model. You read one file and write one file.
 
 ## Input
 

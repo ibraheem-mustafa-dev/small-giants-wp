@@ -135,7 +135,7 @@ A block that *subsumes* the template-part/Site-Info/rules system remains forbidd
 
 Every element in `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-bar-menu`/`sgs/nav-drawer-menu` defaults from two theme-owned sources, so branding/contact data is entered once and stays consistent across header AND footer:
 
-1. **Global style tokens** — the framework `theme/sgs-theme/theme.json` settings and, for cloned sites, the Spec 32 Part D draft-extracted `sites/<client>/theme-snapshot.json`. Colours, typography, and spacing flow to header/footer elements as defaults; per-instance overrides remain available in the block inspector.
+1. **Global style tokens** — the framework `theme/sgs-theme/theme.json` settings and, for cloned sites, the Spec 48 §11 draft-extracted `sites/<client>/theme-snapshot.json`. Colours, typography, and spacing flow to header/footer elements as defaults; per-instance overrides remain available in the block inspector.
 2. **SGS Site Info store** (Spec 36, `sgs_site_info` `wp_options` via the `sgs/site-info` block-bindings source) — logo, phone, email, address, hours, socials, copyright, attribution link. Both header and footer bind to the same store.
 
 ### Responsive model (never-overflow) + the drawer a11y contract

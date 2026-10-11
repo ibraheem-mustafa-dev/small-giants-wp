@@ -9,7 +9,7 @@ paths:
 
 # Cloning rules
 
-Cloning runs on the computed route (Spec 47, `scripts/computed-route/`). The binding principles are in `.claude/rules/framework-principles.md`.
+Cloning runs on the computed route (Spec 48, `scripts/computed-route/`). The binding principles are in `.claude/rules/framework-principles.md`.
 
 - **Success:** the live page matches the draft on measured rendered values, with native block settings written through the framework DB and no cheats. Read the parity walker's output (`scripts/parity/GAP-CHECKLIST.md`) at 1440, 768 and 375.
 - **Fidelity is measured on text and layout rows**, matched by text content, never a source-declaration diff (blind to inherited values) or wrapper-class keying. Pixel-diff misleads: an empty section scores a false win.

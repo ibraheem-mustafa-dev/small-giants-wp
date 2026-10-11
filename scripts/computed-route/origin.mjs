@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Origin command (Spec 47 route-accuracy R4): the exact draft identity of a committed tree's blocks.
+// Origin command (Spec 48 route-accuracy R4): the exact draft identity of a committed tree's blocks.
 //   node scripts/computed-route/origin.mjs --client <slug> --surface <s> [--skeleton <file>] [--tree <file>]
 // Aligns the skeleton writer's skeleton (default `sites/<client>/build/skeleton/<surface>.skeleton.json`) with the
 // surface's committed tree (default its `surfaces.json` tree) by block names, level by level

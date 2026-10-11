@@ -1,4 +1,4 @@
-// Proves Spec 47 §5's gap typing: when an inherited setting paints a slot and a descendant's own rule overrides the
+// Proves Spec 48 §5's gap typing: when an inherited setting paints a slot and a descendant's own rule overrides the
 // value, calibration records that descendant in `overriddenBy`, so the route types the row as a hardcode and not as a
 // missing setting. Only an inherited property can be overridden by inheritance, so a non-inherited one records nothing.
 import test from 'node:test';

@@ -1,4 +1,4 @@
-// Try before write (Spec 47 route-accuracy R6): a Solve write is tried in the open live page before it is saved. The
+// Try before write (Spec 48 route-accuracy R6): a Solve write is tried in the open live page before it is saved. The
 // block is rendered twice through core's /wp/v2/block-renderer (its current attributes, then with the write); the
 // current render must reproduce the live element's style uid and the CSS the live page holds for it (the self-check),
 // else the block needs a rebuild. The CSS the write adds or removes is mapped onto the live uid, applied, the pairs in

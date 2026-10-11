@@ -79,9 +79,9 @@ const DEXCLUDE = [ 'a[aria-label^="Message Fatima"]', { js: '(r) => { const h = 
 export default {
 	name: 'shop',
 	widths: [ 375, 768, 1440, 1920 ],
-	// Ref tracing (Spec 47 FR-47-6 item 7): every row names the tree node (cr-ref-<surface>-<n>) it was measured on.
+	// Ref tracing (Spec 48 FR-47-6 item 7): every row names the tree node (cr-ref-<surface>-<n>) it was measured on.
 	refPrefix: 'cr-ref-',
-	// Intended differences (Spec 47 FR-47-5), shared by every Eye Care surface.
+	// Intended differences (Spec 48 FR-47-5), shared by every Eye Care surface.
 	divergences: '../divergences.json',
 	draft: { url: DRAFT, open: ( h ) => h.clickText( '^sunglasses$', { wait: 1200 } ) },
 	live: { url: LIVE },

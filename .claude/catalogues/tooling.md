@@ -1608,9 +1608,9 @@ for the verb you happen to have in mind.
 | `computed-route/lib/cache.mjs` | manifest+script-call | The calibration cache (§3.2): one library-wide folder, one file per block, whichever site measured it. A block calibrated on one site is never… |
 | `computed-route/lib/calibrate-chunk.mjs` | script-call | How calibration builds a block's page in pieces (FR-47-2): the child process that saves a calibration page, the size of each piece, and halving a… |
 | `computed-route/lib/calibrate-container.mjs` | script-call | What a block's source says about how it renders, for calibration to act on before any browser opens (FR-47-2): whether its tiers follow its… |
-| `computed-route/lib/calibrate-content.mjs` | script-call | The content side of calibration (FR-47-2, Spec 47 §3.2): which elements a setting makes appear or disappear |
+| `computed-route/lib/calibrate-content.mjs` | script-call | The content side of calibration (FR-47-2, Spec 48 §3.2): which elements a setting makes appear or disappear |
 | `computed-route/lib/calibrate-instances.mjs` | script-call | Which instances one block's calibration page holds (FR-47-2): a default per fixture variant, then one marked instance per setting and marker, each… |
-| `computed-route/lib/calibrate-markers.mjs` | script-call | The marker values calibration writes into one setting (Spec 47 §3.2 marker table). Each marker: { label, attrs, expect: { width: value } \| null… |
+| `computed-route/lib/calibrate-markers.mjs` | script-call | The marker values calibration writes into one setting (Spec 48 §3.2 marker table). Each marker: { label, attrs, expect: { width: value } \| null… |
 | `computed-route/lib/calibrate-props.mjs` | script-call | What calibration reads and how a setting's css_property maps onto it (FR-47-2). |
 | `computed-route/lib/calibrate-read.mjs` | script-call | The browser side of calibration: reads every element of each calibration instance at each width, at rest and under its state trigger. Element keys… |
 | `computed-route/lib/calibrate.mjs` | script-call+skill | Block calibration library (FR-47-2, R-47-6). Builds one calibration tree per block (a default instance plus one marked instance per setting and… |
@@ -1633,13 +1633,13 @@ for the verb you happen to have in mind.
 | `computed-route/lib/fill-spacing.mjs` | script-call | Spacing ownership (FR-47-4 step 3). Who owns the space between a parent's children is decided per tier from what rendered, never from the draft's… |
 | `computed-route/lib/fill-values.mjs` | script-call | The values FR-47-4 says need care. Fluid sizes: sampled at five widths, linear within 0.5px means fluid, written as clamp() only where calibration… |
 | `computed-route/lib/guard.mjs` | manifest+script-call | The regression guard (R-47-9): when a round makes rows worse, find the write that did it and revert only that. |
-| `computed-route/lib/issue-classes.mjs` | script-call | The one definition of what counts as a distinct open issue, and under which class (Spec 47 §3.3, FR-47-3). |
+| `computed-route/lib/issue-classes.mjs` | script-call | The one definition of what counts as a distinct open issue, and under which class (Spec 48 §3.3, FR-47-3). |
 | `computed-route/lib/ledger.mjs` | script-call+skill | Divergence ledger library (FR-47-5): the rules an entry may name, matching a row, finding stale entries, migrating walker accepts, and building a new… |
 | `computed-route/lib/normalise.mjs` | script-call | Value normalisation and token snapping (R-47-7). Measured values arrive as computed styles (px lengths, rgb() colours). Tokens come from the site's… |
 | `computed-route/lib/pair-scope.mjs` | script-call | Twin containment: whether a hand pair's two elements hold the same words (scripts/computed-route/pairs.mjs). |
 | `computed-route/lib/pairs-page.mjs` | script-call | In-page collectors for scripts/computed-route/pairs.mjs (block pairing, plan .claude/plans/2026-10-04-spec47-full-coverage.md). |
 | `computed-route/lib/pairs.mjs` | manifest+script-call | Block pairing for full coverage (plan .claude/plans/2026-10-04-spec47-full-coverage.md): every block of a surface is paired with its draft element… |
-| `computed-route/lib/references.mjs` | script-call+skill | Blocks that render another post (Spec 47 §3.3, reference blocks), found by reading each block's render.php, never listed by hand, so a new block is… |
+| `computed-route/lib/references.mjs` | script-call+skill | Blocks that render another post (Spec 48 §3.3, reference blocks), found by reading each block's render.php, never listed by hand, so a new block is… |
 | `computed-route/lib/register-sweep.mjs` | script-call | Register <-> sweep (A4): gives every fix-register item exactly one sweep status. |
 | `computed-route/lib/resolve.mjs` | manifest+script-call | The one property-to-setting engine (FR-47-1, R-47-3). Given a block, the rendered element (slot) a difference sits on, a CSS property, a state and… |
 | `computed-route/lib/solve-groups.mjs` | script-call | Two readings of Solve's surviving rows, built from the rows and never replacing them (the per-width tables stay). |
@@ -1648,14 +1648,14 @@ for the verb you happen to have in mind.
 | `computed-route/lib/sweep.mjs` | manifest+script-call+skill | The whole-site sweep (FR-47-3): every surface's latest Solve report as one row per distinct open issue. An issue is solve-report.mjs::wholePage's: a… |
 | `computed-route/lib/tree.mjs` | script-call | Layout trees: read, write, ref classes, setting writes, and the live-site safety guard (R-47-11). |
 | `computed-route/lib/triage-source.mjs` | script-call | Triage's source pass (B1), string search only (no PHP or CSS parsing): what a block's own render.php and style.css say about a row's property and… |
-| `computed-route/lib/triage.mjs` | script-call+skill | Triage (Spec 47, Session B1): one candidate class per distinct open issue of a Solve report, with the evidence that decided it. Classes: W (walker or… |
+| `computed-route/lib/triage.mjs` | script-call+skill | Triage (Spec 48, Session B1): one candidate class per distinct open issue of a Solve report, with the evidence that decided it. Classes: W (walker or… |
 | `computed-route/lib/winning-rule.mjs` | script-call | Names the CSS rule that wins for a row whose setting already holds the draft value (Hardcode rows the tree holds): the rule that paints the live… |
 | `computed-route/lint.mjs` | script-call+skill | The route's own gate (R-47-1, R-47-10). |
 | `computed-route/pairs.mjs` | manifest+script-call | Block pairing command (plan .claude/plans/2026-10-04-spec47-full-coverage.md). |
 | `computed-route/register-sweep.mjs` | script-call | Register <-> sweep command (A4). |
 | `computed-route/solve.mjs` | script-call+skill | Solve (FR-47-3): compare a built surface with its draft, turn each open style or hover difference into a setting write through the resolver, rebuild… |
 | `computed-route/sweep.mjs` | manifest+script-call+skill | Sweep command: reads every surface's latest Solve report (`<buildDir>/qa/solve/<surface>/<timestamp>/solve-report.json`) and writes… |
-| `computed-route/triage.mjs` | script-call+skill | Triage command (Spec 47, Session B1): a candidate class (W, F, T, U, L) with its evidence for every distinct open issue of a surface's Solve report… |
+| `computed-route/triage.mjs` | script-call+skill | Triage command (Spec 48, Session B1): a candidate class (W, F, T, U, L) with its evidence for every distinct open issue of a surface's Solve report… |
 | `css-pattern-audit.js` | — | CSS pattern audit — static analysis for risky patterns in deployed/built CSS. |
 | `font-source-audit.js` | manifest+npm | Font source audit — static analysis for external CDN URLs in theme.json fontFace declarations. |
 | `global-styles-reset.js` | — | wp_global_styles reset + reapply. |
@@ -1674,11 +1674,11 @@ for the verb you happen to have in mind.
 | `parity/flows/bag-two-products.mjs` | script-call | Flow 1: two different products in the bag (register N11(a)). |
 | `parity/flows/filter-apply-clear.mjs` | script-call | Flow 3: choose a shop filter, then clear it (register N25's own test). |
 | `parity/flows/lens-skip-to-bag.mjs` | script-call | Flow 4: the lens pop-up's "Skip the lenses" adds the frame straight to the bag (register N38). |
-| `parity/flows/lib/bag.mjs` | script-call | The bag, read and judged independently of how the drawer renders (Spec 47 FR-47-7). |
-| `parity/flows/lib/browser.mjs` | script-call | Playwright launch, base-URL resolution and env loading for the functional flows (Spec 47 FR-47-7). |
-| `parity/flows/lib/filters.mjs` | manifest+script-call | The shop filter panel, probed and judged (Spec 47 FR-47-7; register N25). |
+| `parity/flows/lib/bag.mjs` | script-call | The bag, read and judged independently of how the drawer renders (Spec 48 FR-47-7). |
+| `parity/flows/lib/browser.mjs` | script-call | Playwright launch, base-URL resolution and env loading for the functional flows (Spec 48 FR-47-7). |
+| `parity/flows/lib/filters.mjs` | manifest+script-call | The shop filter panel, probed and judged (Spec 48 FR-47-7; register N25). |
 | `parity/flows/lib/flow.mjs` | script-call | The flow result shape, the per-flow JSON writer, the flows-only table and the shared command-line entry |
-| `parity/flows/run-all.mjs` | script-call | Runs the four functional flows in order against one site (Spec 47 FR-47-7). |
+| `parity/flows/run-all.mjs` | script-call | Runs the four functional flows in order against one site (Spec 48 FR-47-7). |
 | `parity/flows/toast-added-to-bag.mjs` | — | Flow 5: the shared "Added to bag" toast actually speaks on an add (register 18). |
 | `parity/lib/auto-align.mjs` | script-call | Word and control alignment for the walker's automatic check (auto-compare.mjs). |
 | `parity/lib/auto-collect.mjs` | script-call | In-page collector for the walker's automatic check (GAP-CHECKLIST.md section 12): every painted word and every control or media item on the page, so… |
@@ -1690,8 +1690,8 @@ for the verb you happen to have in mind.
 | `parity/lib/collect.mjs` | script-call | In-page collectors for draft-live-walk.mjs. Every function here is passed to page.evaluate(), so each one is self-contained (no closures over module… |
 | `parity/lib/compare-state.mjs` | script-call | One state's comparison for draft-live-walk.mjs: every named pair, the drive log, the automatic check, load entrances and links, each difference… |
 | `parity/lib/compare.mjs` | manifest+script-call | Compares one pair's draft and live snapshots and returns the differences. |
-| `parity/lib/devtools.mjs` | script-call | What DevTools reads, through the Chrome DevTools Protocol, for draft-live-walk.mjs (Spec 47 A-1, GAP-CHECKLIST.md section 19): the page read once its… |
-| `parity/lib/divergences.mjs` | script-call | Divergence ledger (GAP-CHECKLIST.md section 16, Spec 47 FR-47-5). A config may name a site's divergences.json |
+| `parity/lib/devtools.mjs` | script-call | What DevTools reads, through the Chrome DevTools Protocol, for draft-live-walk.mjs (Spec 48 A-1, GAP-CHECKLIST.md section 19): the page read once its… |
+| `parity/lib/divergences.mjs` | script-call | Divergence ledger (GAP-CHECKLIST.md section 16, Spec 48 FR-47-5). A config may name a site's divergences.json |
 | `parity/lib/entrances.mjs` | script-call | The load-entrance check for draft-live-walk.mjs (GAP-CHECKLIST.md section 15). What moves or fades in as a page loads, judged by what paints, not by… |
 | `parity/lib/focus.mjs` | manifest+script-call+skill | The keyboard focus pass for draft-live-walk.mjs (GAP-CHECKLIST.md section 13). A scripted el.focus() after mouse clicks never matches :focus-visible… |
 | `parity/lib/helpers.mjs` | script-call+skill | The helpers handed to a config's open() and state actions, and the anchor-offset check, for draft-live-walk.mjs. |

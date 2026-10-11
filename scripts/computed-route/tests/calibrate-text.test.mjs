@@ -1,4 +1,4 @@
-// Proves Spec 47 §3.2's text read (FR-47-2): a setting whose role is content OR text-content is rendered with a
+// Proves Spec 48 §3.2's text read (FR-47-2): a setting whose role is content OR text-content is rendered with a
 // marker string and records the element whose text it prints. The printing element is the deepest one carrying the
 // marker, never the wrapper whose textContent only contains it.
 import test from 'node:test';

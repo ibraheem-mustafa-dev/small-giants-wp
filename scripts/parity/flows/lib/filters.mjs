@@ -1,4 +1,4 @@
-// The shop filter panel, probed and judged (Spec 47 FR-47-7; register N25).
+// The shop filter panel, probed and judged (Spec 48 FR-47-7; register N25).
 //
 // `sgs-shop-filters-accordion.js::build` wraps every `.sgs-shop-filters__group-heading` and the blocks after it in a
 // `<details class="sgs-shop-filters__group">`, and rebuilds them on `sgs-shop-filters:rebuilt` after WooCommerce

@@ -1,4 +1,4 @@
-// Skeleton writer step 3 (Spec 47 §3.4): the review table Bean reads. One row per draft element: its key, tag and
+// Skeleton writer step 3 (Spec 48 §3.4): the review table Bean reads. One row per draft element: its key, tag and
 // attributes, words, the draft's own code, its screenshot, the block proposed with the confidence and the reasons, and the
 // decision column filled from the decisions file (a client decision) or the finaliser's picks.
 const esc = ( s ) => String( s ?? '' ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' ).replace( /"/g, '&quot;' );

@@ -124,7 +124,7 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 
 	const words = [];
 	const styleCache = new Map();
-	// scope.tagEls (Spec 47 block pairing, scripts/computed-route/lib/pairs.mjs): each word also carries `e`, the index of
+	// scope.tagEls (Spec 48 block pairing, scripts/computed-route/lib/pairs.mjs): each word also carries `e`, the index of
 	// the element painting it in window.__crEls, so the pairing can find that element again. Off, the output is unchanged.
 	const els = scope.tagEls ? ( window.__crEls = [] ) : null;
 	const elIndex = new Map();

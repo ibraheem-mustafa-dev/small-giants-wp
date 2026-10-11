@@ -1,4 +1,4 @@
-// Skeleton writer step 2 (Spec 47 §3.4): the inventory (lib/skeleton-inventory.mjs) to a Fill skeleton and a proposal.
+// Skeleton writer step 2 (Spec 48 §3.4): the inventory (lib/skeleton-inventory.mjs) to a Fill skeleton and a proposal.
 // Blocks come from lib/skeleton-classify.mjs (database evidence and the standing decisions); this file shapes them into
 // nodes: units of siblings that are ONE block (a stacked run of text links is one list; a typed brand name is the logo),
 // each node's content attributes, its exact draft link (a tpl finder, R-47-4) and the proposal row the review shows.

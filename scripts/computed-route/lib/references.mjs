@@ -1,4 +1,4 @@
-// Blocks that render another post (Spec 47 §3.3, reference blocks), found by reading each block's render.php, never
+// Blocks that render another post (Spec 48 §3.3, reference blocks), found by reading each block's render.php, never
 // listed by hand, so a new block is covered when it is built.
 //   linked: the block is a whole placeholder once its `<x>IsLinked` flag is on; its own settings are not used and the
 //           referenced post's block renders instead (form/render.php: "this embed's own wrapper/attributes below are

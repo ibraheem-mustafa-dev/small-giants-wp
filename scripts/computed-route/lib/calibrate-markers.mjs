@@ -1,4 +1,4 @@
-// The marker values calibration writes into one setting (Spec 47 §3.2 marker table). Each marker:
+// The marker values calibration writes into one setting (Spec 48 §3.2 marker table). Each marker:
 // { label, attrs, expect: { width: value } | null, form?, base?, box? }. expect is the value the slot should compute at
 // each width when the setting works; null means "any change". base: attributes the marker's own baseline instance
 // carries too (a partner setting the marker needs before it can paint), so only the marker's own effect is measured.

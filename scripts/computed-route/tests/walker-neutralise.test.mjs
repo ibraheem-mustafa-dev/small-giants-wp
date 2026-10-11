@@ -1,4 +1,4 @@
-// "Does it paint?" (Spec 47 route-accuracy R5, GAP-CHECKLIST 8): a layout difference is accepted only when setting the
+// "Does it paint?" (Spec 48 route-accuracy R5, GAP-CHECKLIST 8): a layout difference is accepted only when setting the
 // draft value on the live element, on the element the walker read it from, moves no box and no line of text inside the
 // pair or after it. Replaces the INERT_LAYOUT rule of thumb (ba31e5157), which accepted these properties for any value
 // whenever the pair's own box matched, so children moving inside a same-size box went unreported.

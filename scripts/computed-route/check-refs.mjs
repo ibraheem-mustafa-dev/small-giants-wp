@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Checks that every draft link of a skeleton names exactly one draft element (Spec 47 §3.4, R-47-4).
+// Checks that every draft link of a skeleton names exactly one draft element (Spec 48 §3.4, R-47-4).
 //   node scripts/computed-route/check-refs.mjs --client <slug> --surface <name> [--skeleton <file>] [--draft-url <url>]
 // Opens the draft in a real browser at 1440px, resolves every `draftRef` and `draftSlots` finder (a Site Info row's
 // generated icons included) through the walker's own `resolveFinder`, and counts the elements the raw selector would match.

@@ -1,4 +1,4 @@
-// Divergence ledger (GAP-CHECKLIST.md section 16, Spec 47 FR-47-5). A config may name a site's divergences.json
+// Divergence ledger (GAP-CHECKLIST.md section 16, Spec 48 FR-47-5). A config may name a site's divergences.json
 // (`divergences: '<path>'`, relative to the config file). Each entry records an intended difference:
 //   { id, scope, node, state, property, widths, expected: { value } | { rule }, reason, register: [ register item ids ], decided }
 // A row matches an entry on node (its ref, its block, or '*'), state, property (or '*', every property) and width. A rule entry accepts the

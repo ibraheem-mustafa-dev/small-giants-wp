@@ -1,4 +1,4 @@
-// Proves the reference-block rule (Spec 47 §3.3): blocks that render another post are found from their render.php,
+// Proves the reference-block rule (Spec 48 §3.3): blocks that render another post are found from their render.php,
 // a linked placeholder is never written, and the surfaces lint fails a tree that prints a post no surface owns.
 import test from 'node:test';
 import assert from 'node:assert/strict';

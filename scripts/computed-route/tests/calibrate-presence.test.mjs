@@ -1,4 +1,4 @@
-// Proves Spec 47 §3.2's presence read (FR-47-2): a setting whose role is boolean-visibility or presence-boolean, and
+// Proves Spec 48 §3.2's presence read (FR-47-2): a setting whose role is boolean-visibility or presence-boolean, and
 // each value of a variant setting, records the elements that appear and disappear when it flips. Presence is existence
 // and display only, so a setting that merely restyles an element records nothing.
 import test from 'node:test';

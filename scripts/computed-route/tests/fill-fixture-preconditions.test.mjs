@@ -1,4 +1,4 @@
-// Proves Fill reads a calibration fixture's styling preconditions (Spec 47 §3.4, Bean's ruling 2026-10-10): the
+// Proves Fill reads a calibration fixture's styling preconditions (Spec 48 §3.4, Bean's ruling 2026-10-10): the
 // sgs/social-icons fixture switches the icon background on and sets a 1px border so those settings can be measured, so
 // the calibrated rest paint shows a 1px solid border and a blue background the block's real defaults do not have. On
 // the Eye Care footer row Fill must still write the border width, the border style and the background switch.

@@ -1,4 +1,4 @@
-// Skeleton writer step 2a (Spec 47 §3.4): which block each draft element becomes, as scored candidates with their evidence.
+// Skeleton writer step 2a (Spec 48 §3.4): which block each draft element becomes, as scored candidates with their evidence.
 // Evidence comes from the framework database (tag map, composition, capabilities, attribute enums), the brand registry, the
 // Site Info placeholder map and the standing decisions data; a candidate's confidence is
 // min(1, top) * top / (top + second), where a score is the sum of its evidence weights. A client decision or a finaliser

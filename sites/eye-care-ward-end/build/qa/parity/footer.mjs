@@ -34,9 +34,9 @@ const SOCIAL_PROPS = [ 'background-color', 'border-top-width', 'border-top-color
 export default {
 	name: 'footer',
 	widths: [ 375, 768, 1440, 1920 ],
-	// Ref tracing (Spec 47 FR-47-6 item 7): every row names the footer tree node (cr-ref-footer-<n>) it was measured on.
+	// Ref tracing (Spec 48 FR-47-6 item 7): every row names the footer tree node (cr-ref-footer-<n>) it was measured on.
 	refPrefix: 'cr-ref-',
-	// Intended differences (Spec 47 FR-47-5), shared by every Eye Care surface.
+	// Intended differences (Spec 48 FR-47-5), shared by every Eye Care surface.
 	divergences: '../divergences.json',
 	// The page above the footer is Home's (a moving brand strip): a scrolled state would compare it, not the footer.
 	autoScroll: false,

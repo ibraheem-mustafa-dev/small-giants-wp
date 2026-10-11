@@ -7,7 +7,7 @@ project: small-giants-wp
 status: draft
 last_verified: 2026-10-11
 authors: Bean + Claude
-parent_spec: Spec 48 (the cloning system; not yet written, replaces Spec 47)
+parent_spec: Spec 48 (`.claude/specs/48-CLONING-SYSTEM.md`, the cloning system)
 ---
 
 # Spec 48A: the Claude Design handoff folder

@@ -12,7 +12,7 @@ references:
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
   - .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md
   - .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md
-  - .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
+  - .claude/specs/48-CLONING-SYSTEM.md
   - .claude/plans/archive/2026-07-18-P2-builder-ux-design-gate.md
   - .claude/plans/archive/2026-07-18-P1-architecture-decision-header-footer-nav.md
   - .claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md
@@ -69,7 +69,7 @@ what exists and nobody assumes something works because a similar-sounding file e
 |---|---|
 | Everything inside the nav (menus, dropdowns, mega panels, drawer contents) | **Spec 36** |
 | The `sgs_form` and `sgs_choice_flow` CPTs | Specs 42 / 43 |
-| Header/footer drafts | Spec 47 (computed route) |
+| Header/footer drafts | Spec 48 (computed route) |
 | Site Info store (`sgs_site_info`) + the `sgs/site-info` binding source | **Spec 36** — FR-36-23 already names `sgs/business-info` "the Site-Info source of truth" |
 | The shared header/footer element blocks — cart, search, social, logo, business-info | **Spec 36** FR-36-19…23 |
 | Block styling/serialisation contract | Spec 32 |
@@ -160,7 +160,7 @@ short-circuit boundary must distinguish "I produced output" from "I tried".
 ### 3.1 Header — three named rows
 
 Three fixed, optional, named rows. Fixed-and-named (not arbitrary N) because it is
-predictable for a non-coder, and because a fixed shape gives Spec 47's route a deterministic target.
+predictable for a non-coder, and because a fixed shape gives Spec 48's route a deterministic target.
 
 | Slot | Purpose | Default layout |
 |---|---|---|
@@ -1007,8 +1007,8 @@ canary fresh-default).
 ### Pipeline
 
 #### FR-37-22 — Emittable by construction
-Every capability above is a block attribute, so Spec 47's route can set it; no capability lives outside the attribute layer (P1 DP6).
-**Status:** `PARTIAL` — the attribute layer is the contract and holds; Spec 47 owns the route's header, footer and drawer surfaces.
+Every capability above is a block attribute, so Spec 48's route can set it; no capability lives outside the attribute layer (P1 DP6).
+**Status:** `PARTIAL` — the attribute layer is the contract and holds; Spec 48 owns the route's header, footer and drawer surfaces.
 **Done when:** a header, footer or drawer for a draft is written through block attributes only, verified on the real homepage (R-31-11); the acceptance proof is FR-37-23.
 
 ### Further requirements
@@ -1124,7 +1124,7 @@ lint REPORTS a block as over the default — advisory, never a build blocker.
 
 #### FR-37-28 — Preset controls are permitted
 The inspector may expose composite preset controls (e.g. *Layout: Centred / Split / Minimal*)
-that write several attributes at once. Spec 47's route targets the attribute layer only —
+that write several attributes at once. Spec 48's route targets the attribute layer only —
 presets are an operator convenience, never a storage shape (P2 §2.6).
 **Status:** `BUILT + LIVE-VERIFIED`. A "Layout preset" `ToggleGroupControl` (Centred / Split /
 Minimal) sits on the `sgs/site-header` **Styles** tab. It is **derived, not stored**:
@@ -1142,7 +1142,7 @@ attributes such that the underlying attributes are unchanged. ✅ met.
 A reduced `wp sgs` command set covers the header/footer/drawer lifecycle non-interactively:
 `wp sgs header|footer|drawer set-active|clear-active|list|seed-starter`. **Explicitly not a
 client-facing surface** — clients use the admin screens exclusively (framework CLAUDE.md: "WP-CLI
-is a developer tool only; never something clients touch"). It exists so that Bean and scripts (Spec 47's header surface)
+is a developer tool only; never something clients touch"). It exists so that Bean and scripts (Spec 48's header surface)
 have a programmatic path.
 **Status:** `BUILT + LIVE-VERIFIED` — `Sgs_Header_Footer_Cli_Commands`
 (`plugins/sgs-blocks/includes/class-sgs-header-footer-cli-commands.php`), registered in `sgs-blocks.php` for the three
@@ -1176,7 +1176,7 @@ This spec closes only when: FR-37-1/2/3/5 are live on the canary; §3 audits (FR
 recorded per clause; the never-overflow gate (FR-37-12) passes on every live site **across the
 full sweep per §3.6** (not three fixed widths); no inline `style=""` on either container; and
 **Bean's eye** signs off (R-31-13 — measurement and eye are co-authoritative, neither closes alone).
-The acceptance proof is cloning real references through Spec 47 as SGS-native output (header, drawer and footer together). Anything a reference needs that SGS cannot express is a defect in the framework, never a reason to trim the reference.
+The acceptance proof is cloning real references through Spec 48 as SGS-native output (header, drawer and footer together). Anything a reference needs that SGS cannot express is a defect in the framework, never a reason to trim the reference.
 **Status:** `NOT-BUILT`.
 **Done when:** all of the above, each with evidence recorded, not asserted.
 

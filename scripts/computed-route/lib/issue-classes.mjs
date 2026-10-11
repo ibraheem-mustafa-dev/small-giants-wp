@@ -1,4 +1,4 @@
-// The one definition of what counts as a distinct open issue, and under which class (Spec 47 §3.3, FR-47-3).
+// The one definition of what counts as a distinct open issue, and under which class (Spec 48 §3.3, FR-47-3).
 // lib/sweep.mjs and lib/triage.mjs both read the same kinds, the same classes, in the same order, under the same key:
 // that is the whole reason a surface's triage count equals its sweep count, and why every delta against a recorded
 // total can be explained row for row. Both files held their own copy of these four values, so the identity was held

@@ -1,4 +1,4 @@
-// Proves Spec 47 §3.2's link read (FR-47-2): a setting whose role is link-href OR link-content records the element it
+// Proves Spec 48 §3.2's link read (FR-47-2): a setting whose role is link-href OR link-content records the element it
 // makes a link and the DOM attribute it writes. The element is the one carrying the marker in that attribute, however
 // deep inside the slot it sits.
 import test from 'node:test';

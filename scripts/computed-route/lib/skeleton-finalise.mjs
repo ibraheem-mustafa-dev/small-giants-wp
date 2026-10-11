@@ -1,4 +1,4 @@
-// Skeleton writer, decisions and the finaliser (Spec 47 §3.4). Two files beside a surface's inventory hold choices:
+// Skeleton writer, decisions and the finaliser (Spec 48 §3.4). Two files beside a surface's inventory hold choices:
 //   decisions.json          Bean's recorded choices per element (`skeleton.mjs decide`): top-priority evidence for propose.
 //   <surface>.picks.json    the finaliser subagent's picks for the low-confidence rows (`skeleton.mjs finalise --apply`).
 // A decision keeps the element's signature (tag and words), so a re-read draft whose element changed under the same key

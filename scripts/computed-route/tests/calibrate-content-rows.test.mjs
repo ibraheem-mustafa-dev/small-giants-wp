@@ -1,4 +1,4 @@
-// Proves the row path Spec 47 §3.2's presence, text and link reads need: a setting with no css_property is discarded
+// Proves the row path Spec 48 §3.2's presence, text and link reads need: a setting with no css_property is discarded
 // by lib/db.mjs::attrsFor, so the content reads query their rows by role instead, and plan an instance for each that
 // still carries the preconditions its element needs.
 import test from 'node:test';

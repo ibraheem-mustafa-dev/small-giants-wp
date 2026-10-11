@@ -1,4 +1,4 @@
-// check-refs (Spec 47 §3.4): the verdict logic, offline. A draft link must name exactly one draft element: a finder that
+// check-refs (Spec 48 §3.4): the verdict logic, offline. A draft link must name exactly one draft element: a finder that
 // resolves to nothing is missing; a selector matching several elements, or two targets resolving to one element, is
 // ambiguous; a slot outside its node is outside. A tpl finder is unique by construction, so its raw count is only information.
 import test from 'node:test';

@@ -1,5 +1,5 @@
 // Proves each calibration class the 2026-10-04 audit found dead or markerless now gets a marker, a precondition or a
-// read (Spec 47 FR-47-2; .claude/reports/2026-10-04-route-data-audit/README.md §3). Each test fails on the code before.
+// read (Spec 48 FR-47-2; .claude/reports/2026-10-04-route-data-audit/README.md §3). Each test fails on the code before.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { markersFor, longhands, slotFor, preconditionsFor, planInstances, layoutModes } from '../lib/calibrate.mjs';

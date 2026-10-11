@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Answer-sheet scorer (Spec 47 route-accuracy R1).
+// Answer-sheet scorer (Spec 48 route-accuracy R1).
 //   node scripts/computed-route/answer-sheet.mjs --client <slug> --surface <s>[,<s>...] [--report <round report.json>]
 //     [--triage <triage.json>] [--solve <solve-report.json>] [--sheet <answer-sheet.json>] [--baseline <file>]
 //     [--write-baseline] [--detail]

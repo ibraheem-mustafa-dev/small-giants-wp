@@ -1,4 +1,4 @@
-// Exact draft identity for pairing (Spec 47 route-accuracy R4). A block's draft element is named by the Claude Design
+// Exact draft identity for pairing (Spec 48 route-accuracy R4). A block's draft element is named by the Claude Design
 // runtime's own stamp (a `tpl` finder, scripts/parity/lib/collect.mjs::resolveFinder), recorded per cr-ref in
 // `<surface>.origin.json`. The word matcher (pairs.mjs) stays as an independent cross-check: when the element it chose is
 // neither the identity element nor a same-box wrapper of it, the block is mispaired, its rows are flagged by the walker

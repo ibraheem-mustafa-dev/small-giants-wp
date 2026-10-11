@@ -1,7 +1,7 @@
 ---
 doc_type: plan
-title: "Spec 47 F2: every block measured, paired by matched words"
-spec: .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
+title: "Spec 48 F2: every block measured, paired by matched words"
+spec: .claude/specs/48-CLONING-SYSTEM.md
 created: 2026-10-04
 status: in progress
 ---
@@ -25,7 +25,7 @@ per surface are in `sites/eye-care-ward-end/build/qa/triage/*.json`; read them t
   - **Fix lane:** everything else: Bean's decisions against the draft (S1 lift, S2 underline sweep, S3 no fade, S4
     WhatsApp; each also ledgered so Solve never writes the draft back), framework gaps and extensions, and rows the walker
     cannot measure (behaviour, content, functionality). Fixed directly and verified live.
-  A surface is at 100% when Spec 47's done line holds and every register row for it is closed with its evidence. Why: Solve
+  A surface is at 100% when Spec 48's done line holds and every register row for it is closed with its evidence. Why: Solve
   only closes what matches the draft, overwrites decided differences that are not ledgered, and cannot see the ~70
   "not walker-measurable" rows, so its score alone overstates progress.
 - **Ranking rule.** Site-wide fixes S1-S12 first (one change closes items on many surfaces), then surface by surface. Within
@@ -75,7 +75,7 @@ per surface are in `sites/eye-care-ward-end/build/qa/triage/*.json`; read them t
 - **Font-family values are preset slugs** (Bean, 2026-10-08). `85f07d38a` makes `heading/edit.js` paint a slug too. It is
   committed; `.claude/LEDGER.md` does not name it, so its deploy state is not recorded there. It ships with the next green
   `build-deploy.py`.
-- **`mega-group` discovery data is empty** (`cache/mega-group.json::discovered.sgsChildSizing` is `{}`), though Spec 47 L1.3
+- **`mega-group` discovery data is empty** (`cache/mega-group.json::discovered.sgsChildSizing` is `{}`), though Spec 48 L1.3
   resolves child sizing through discovery. It costs 9 `flex-grow` rows on the mega surfaces (triaged F `no-setting`). Ruled
   out: the render, the editor registration, `lib/calibrate.mjs::discoverEffects`, a panel rule overriding the flex, and
   two calibrations crossing on one page (a clean solo `--recalibrate` on `local-eye-care`, 2026-10-09, still records
@@ -147,7 +147,7 @@ false positives (random sample of 30, interval 39% to 73%).
    (Contact `-20` `form-card`), business-info `displayType`, repeated inner text pairing, layout never written, missed x
    rows, theme options Solve cannot write.
 
-**Owed to Bean:** Spec 47 §3.8 writes a parent attribute only where its paint reaches exactly one measured descendant
+**Owed to Bean:** Spec 48 §3.8 writes a parent attribute only where its paint reaches exactly one measured descendant
 (`lib/resolve.mjs::resolveViaAncestor`). The mega-panel tiles (40 rows on mega-lenses) and accordion headers need it
 relaxed to "every reached descendant wants the same value"; risk: with one measured tile the parent moves unmeasured ones.
 The draft's template identity (below) turns this into evidence: allow the parent write when every reached descendant is a
@@ -204,7 +204,7 @@ with a negative control; `node --test scripts/computed-route/tests/*.test.mjs` s
     the phone display. Both plans now share `instanceCtx`, and the business-info fixture names
     `addressLink: { displayType: address }`. It takes effect at the next business-info calibration.
   - `showIcon`, `hoursRowJustify` and `labelColour` get their evidence from the skeleton writer's `draftSlots`.
-  - `hoursLayout` is a Spec 47 §5 Residual: a shared calibration change, so Bean signs it off first.
+  - `hoursLayout` is a Spec 48 §5 Residual: a shared calibration change, so Bean signs it off first.
   - **Icon fixes, done 2026-10-10.** Fill on the real footer social row (hosted draft, scratch skeleton) writes
     `childIconBackground`, `childIconBorderColour`, `childIconTransitionDuration` 250, `childIconShapeSize` 44px and
     `childIconSize` 18px on the row once; the icons keep brand and link only; no UNMAPPED icon rows. Causes fixed:
@@ -427,9 +427,9 @@ Still open before it can run clean: the draft's select is not the inputs' 52px h
 select) moved the textarea 6px; decide the select's own height (a `fieldSelectMinHeight`, or the select measured against
 the inputs) at the framework, then re-run Solve.
 
-## Spec 47 build log
+## Spec 48 build log
 
-Results, run records and counts moved out of Spec 47 section 5. Spec 47 section 5 keeps the Success and Kill thresholds, the Bean rulings and the residual list; read counts fresh from `sites/eye-care-ward-end/build/qa/triage/*.json` and the fix register, never from this log.
+Results, run records and counts moved out of Spec 48 section 5. Spec 48 section 5 keeps the Success and Kill thresholds, the Bean rulings and the residual list; read counts fresh from `sites/eye-care-ward-end/build/qa/triage/*.json` and the fix register, never from this log.
 
 ### Steps 1 to 5 as recorded
 

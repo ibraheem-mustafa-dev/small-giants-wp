@@ -10,7 +10,7 @@ Two local copies of the Hostinger test sites, cloned on 2026-10-05 (database and
 Windows can read the files at `\\wsl.localhost\Ubuntu\var\www\local-<site>\wp-content\...` (Node also accepts `//wsl.localhost/Ubuntu/...`).
 Logins are the same as the live sites; the values are in `.claude/secrets/local-eye-care.env` and `.claude/secrets/local-sandybrown.env` (gitignored).
 
-Calibration (Spec 47) targets them as `local-eye-care` and `local-sandybrown` in `scripts/computed-route/calibration-targets.json`. Their `pluginDir` is read directly, so the deploy check needs no SSH. For the same build and snapshot they measure the same as the Hostinger sites (google-reviews: 228 settings and 5 dead on both, 2026-10-05).
+Calibration (Spec 48) targets them as `local-eye-care` and `local-sandybrown` in `scripts/computed-route/calibration-targets.json`. Their `pluginDir` is read directly, so the deploy check needs no SSH. For the same build and snapshot they measure the same as the Hostinger sites (google-reviews: 228 settings and 5 dead on both, 2026-10-05).
 
 Each docroot has WordPress's standard `.htaccess` rewrite rules. The clone copied only `wp-content`; without the rules `/wp-json/` answers 404 and editor saves fail with "not a valid JSON response".
 

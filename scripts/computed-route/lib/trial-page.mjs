@@ -1,4 +1,4 @@
-// Try before write, the page side (Spec 47 route-accuracy R6; the judgement is lib/trial.mjs). A logged-in admin page
+// Try before write, the page side (Spec 48 route-accuracy R6; the judgement is lib/trial.mjs). A logged-in admin page
 // renders blocks through core's /wp/v2/block-renderer; a live page receives a trial's CSS (added rules injected after
 // the page's own sheets, removed rules deleted where they sit) and gives it back exactly. Every in-page function here
 // is self-contained, so it can be passed to page.evaluate.

@@ -18,7 +18,7 @@ colour, a weight) which belong to the page trees and to Solve. This document hol
 change what the site can **do**: a feature that does not exist, a control that exists but paints nothing, or
 a behaviour that is broken. Every item is already decided in the register, which stays the source of truth;
 if an item below disagrees with its register row, the register wins. Page-tree values, content, pure styling
-and the Spec 47 measuring route are excluded.
+and the Spec 48 measuring route are excluded.
 
 CR6 (padding and margin longhands) is done, see `plans/archive/2026-10-07-cr6-box-longhand-migration.md`.
 

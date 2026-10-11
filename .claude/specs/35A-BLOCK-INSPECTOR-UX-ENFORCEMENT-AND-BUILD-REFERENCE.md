@@ -92,7 +92,7 @@ under `--check`. No `--fix` mode — a codemod silently injecting `layout` into 
 extensions would change a block's capability set as a lint side effect.
 
 **F.2.2 — there is no `supports.sgs.gridAreas` flag.** Cloning derives area names from the draft's computed layout
-(Spec 47) and routes onto the block's declared `<area>+<Suffix>` attrs, not on any block flag. "hero has areas content and
+(Spec 48) and routes onto the block's declared `<area>+<Suffix>` attrs, not on any block flag. "hero has areas content and
 media" is fully derivable from hero declaring `contentPadding`/`mediaPadding`.
 `check-wrapper-capability-preconditions.js` rule 2 FAILS the build on any declaration of
 `gridAreas` (including an empty array, which would otherwise silence the gate).
@@ -295,7 +295,7 @@ Gates for the fast/full tier split and `npm run gate:list`).
 | Gate | Enforces | Why it exists |
 |---|---|---|
 | `scripts/check-empty-inspector-containers.js` | **Part F** — an inspector container rendered with NO children is a dead control. An empty `<ToolsPanelItem>` still shows in the "+" menu and in `resetAll`, then displays nothing when opened; an empty `<PanelBody>` opens onto blank space. | No other gate covers this class. `check-dead-controls.js` checks the INVERSE (an attribute whose control nothing renders) — a container whose children were deleted still has valid wiring, so it reads clean. ⛔ AST walk, never a regex: regexes gave inconsistent answers to the same question. |
-| `scripts/check-wrapper-capability-preconditions.js` | **§F.2.1** (`gridItems` requires `layout`) and **§F.2.2** (`supports.sgs.gridAreas` — any declaration fails the build). | `GridItemDefaultsPanel`'s `layout !== 'grid'` bail is render-time, not a declaration guarantee. Rule 2 is a retirement guard: cloning derives area names from the draft's computed layout (Spec 47), so no reader is needed. No baseline (zero violations) and no `--fix` (a codemod adding `layout` would change a block's capability set as a lint side effect). |
+| `scripts/check-wrapper-capability-preconditions.js` | **§F.2.1** (`gridItems` requires `layout`) and **§F.2.2** (`supports.sgs.gridAreas` — any declaration fails the build). | `GridItemDefaultsPanel`'s `layout !== 'grid'` bail is render-time, not a declaration guarantee. Rule 2 is a retirement guard: cloning derives area names from the draft's computed layout (Spec 48), so no reader is needed. No baseline (zero violations) and no `--fix` (a codemod adding `layout` would change a block's capability set as a lint side effect). |
 
 **Gate enforcing the RENDER-side consolidation standard** — `scripts/remove-vacuous-style-engine-guard.py --check`,
 registered as a gate (with a `check:vacuous-guards` alias). This one guards Spec 32's contract rather

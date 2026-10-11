@@ -1,4 +1,4 @@
-// "Does it paint?" (Spec 47 route-accuracy R5, GAP-CHECKLIST 8): a layout difference is proven inert in the open live
+// "Does it paint?" (Spec 48 route-accuracy R5, GAP-CHECKLIST 8): a layout difference is proven inert in the open live
 // page instead of judged by a rule. For each tested property whose draft and live values differ on a pair, the draft
 // value is set on the live element the walker read the property from (collect.mjs::collectPair: a layout property from
 // paint.mjs::layoutElement, any other from the pair element), with transitions off, and every box and every line of

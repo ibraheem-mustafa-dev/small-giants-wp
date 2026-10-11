@@ -13,7 +13,7 @@
 //        [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"] [--inject-live-js "js"]
 //        [--headless] [--self draft|live] [--no-auto] [--dump-auto] [--lean] [--draft-cache file]
 // --lean reads only what a settings writer uses (styles, boxes, hover end states, structure, scroll-ins): no load
-// entrances, motion timelines, automatic check, links, reveal sweep, screenshots or focus pass (Spec 47 Solve rounds).
+// entrances, motion timelines, automatic check, links, reveal sweep, screenshots or focus pass (Spec 48 Solve rounds).
 // A state may name `region: { draft: '<selector>', live: '<selector>' }` (a drawer or panel its action opens): its entrance is
 // sampled as the action fires and compared as the pair "(region)" (GAP-CHECKLIST.md section 26). A pair may set `lines: true`
 // (line counts during the action, section 25) and `active: true` (the pressed state, section 23).

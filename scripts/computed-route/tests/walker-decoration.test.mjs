@@ -1,4 +1,4 @@
-// Proves the walker stamps an underline row with the element that paints the underline (Spec 47 Session D, brief check
+// Proves the walker stamps an underline row with the element that paints the underline (Spec 48 Session D, brief check
 // (c)). collect.mjs reads text-decoration-* as the decoration a visitor sees on the text (paint.mjs::paintedDecoration:
 // the nearest decorated element at or above the text carrier), but stampRefs gave those rows the pair element's own path,
 // so a footer link's underline (on the <a> inside an sgs/text <p>) read as the block root's and Solve wrote the root's

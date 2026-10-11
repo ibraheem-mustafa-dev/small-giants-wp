@@ -191,7 +191,7 @@ test( 'MUST FAIL TO COMPARE TECHNIQUES: animation timings compare only where bot
 	assert.deepEqual( keys( comparePair( { text: false, motion: false }, side( '0.5s', kf ), side( '0.8s', kf ), tol ) ), [ 'animation-duration' ], 'both keyframed: a different duration is a row' );
 } );
 
-// Spec 47 W2-D (P3c, P1): loops, and an icon that is a glyph on one side and an svg on the other, at the comparison.
+// Spec 48 W2-D (P3c, P1): loops, and an icon that is a glyph on one side and an svg on the other, at the comparison.
 test( 'MUST FAIL TO EXCLUDE: a property an infinite animation drives yields no style or hover row; a property beside it still does', () => {
 	const d = snap( { transform: 'matrix(1, 0, 0, 1, -12, 0)', 'background-color': 'rgb(1, 1, 1)' }, { loops: [ 'transform' ], hover: { transform: 'none', 'background-color': 'rgb(1, 1, 1)' } } );
 	const l = snap( { transform: 'matrix(1, 0, 0, 1, -90, 0)', 'background-color': 'rgb(9, 9, 9)' }, { loops: [ 'transform' ], hover: { transform: 'matrix(1, 0, 0, 1, -3, 0)', 'background-color': 'rgb(5, 5, 5)' } } );

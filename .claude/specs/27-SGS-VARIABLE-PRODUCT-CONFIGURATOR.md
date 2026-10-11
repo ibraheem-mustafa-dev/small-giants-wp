@@ -11,7 +11,7 @@ last_verified: 2026-10-09
 absorbs: [24, 25, 28, 30]
 absorbed_by: null
 related:
-  - specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
+  - specs/48-CLONING-SYSTEM.md
   - specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
   - specs/02-SGS-BLOCKS.md
   - plugins/sgs-blocks/src/blocks/product-card/
@@ -264,7 +264,7 @@ Each card field slot declares `allowedBindings`; a card registered as a synced p
 
 #### FR-24-9 -- Cloning
 
-Product cards and option pickers are produced by Spec 47's computed route from the framework DB; this spec adds no converter behaviour. The query-driven layer is additive and is an operator-authoring feature.
+Product cards and option pickers are produced by Spec 48's computed route from the framework DB; this spec adds no converter behaviour. The query-driven layer is additive and is an operator-authoring feature.
 
 #### FR-24-10 -- Curated-content blocks are dual-mode too (Bean-directed, 2026-06-01)
 
@@ -307,7 +307,7 @@ Source toggle (Typed/Bound) appears in both the block toolbar AND the inspector 
 | Phase | What | Status |
 |-------|------|--------|
 | count badge | Store API `GET /wc/store/v1/cart`; SSR count=0; WP Interactivity API re-hydrates on load; no jQuery; `cart-fragments` dequeued | built |
-| drawer | Slide-in mini-cart listing items + quantities + subtotal, driven by Store API (the core Mini-Cart drawer is used instead, Part 3 FR-30-4) | not built |
+| drawer | Slide-in panel listing items, quantities and subtotal, driven by the Store API (`displayMode`: `link`, `flyout` or `drawer`; live on Eye Care's header). Extras area: Part 3 FR-30-17 | built |
 | add-to-cart integration | Badge count increments when `sgs/product-card` fires `wc-blocks_added_to_cart` | built |
 
 Primary files: `plugins/sgs-blocks/src/blocks/cart/`.
@@ -518,7 +518,7 @@ Not a plugin for sale. This is the commerce engine of the SGS AI website builder
 
 ### Cross-references
 
-- **Aligns with:** Spec 47 (the computed route that clones product cards and option pickers), Spec 32 Part B (global styles / auto-contrast), Spec 11 (button presets).
+- **Aligns with:** Spec 48 (the computed route that clones product cards and option pickers), Spec 32 Part B (global styles / auto-contrast), Spec 11 (button presets).
 - **Key decisions:** D144 (option-picker ratification), D148 (cart + option-picker), D149 (dual-source architecture), D151 (wrapper + bridge model, add-to-cart), Option A ratified (WC source of truth; no mirror; clean slate; closed-loop moat; AI-builder = roadmap).
 - **Primary files:** `plugins/sgs-blocks/includes/class-product-bindings.php`, `plugins/sgs-blocks/src/blocks/product-card/`, `plugins/sgs-blocks/src/blocks/option-picker/`, `plugins/sgs-blocks/src/blocks/card-grid/`, `plugins/sgs-blocks/src/blocks/cart/`, `/sgs/v1/cart/add-item` (proxy endpoint).
 
@@ -783,7 +783,7 @@ Every page type (PDP, shop, cart, checkout) verified at 375/768/1440 via a **nam
 
 #### FR-30-12 -- Product-page clone target -- built
 
-A cloned product page targets the WC **single-product template on a real `product` post** (`is_product()`), never a WP Page, built by Spec 47's computed route from the FR-30-2 composition (core WC blocks plus the shipped SGS blocks). **Gate:** product-page cloning unblocks when **FR-30-0/1/2/7** ship (the PDP chassis + wiring). FR-30-5/6 (shop search/filter) are NOT dependencies of a single-product clone and do not gate it. **AI-path proof:** the clone is route-produced from the draft with no hand-composed template; a hand-composed page must not masquerade as pipeline output.
+A cloned product page targets the WC **single-product template on a real `product` post** (`is_product()`), never a WP Page, built by Spec 48's computed route from the FR-30-2 composition (core WC blocks plus the shipped SGS blocks). **Gate:** product-page cloning unblocks when **FR-30-0/1/2/7** ship (the PDP chassis + wiring). FR-30-5/6 (shop search/filter) are NOT dependencies of a single-product clone and do not gate it. **AI-path proof:** the clone is route-produced from the draft with no hand-composed template; a hand-composed page must not masquerade as pipeline output.
 **Done when:** the first product-page clone deploys to a product post, the live URL renders via the single-product template (template source verified) and the tree is route-produced with no hand-composed template.
 
 #### FR-30-13 -- Go-live checklist -- built (`.claude/specs/go-live-checklist.md`; Turnstile keys are the only operator action required before first real-money launch)
@@ -805,6 +805,16 @@ New installs get both pages through `woocommerce_create_pages`, each inside an `
 (a) **Price drops**: each saved item records `savedPrice` (minor units, the Store API basis) when saved (account user meta; a parallel browser key for guests; a merge records server prices only). The row shows "Price drop: now {now} ({saved} when you saved it)", never "was" and never a percentage (CMA209: it is the shopper's own history, not a trader reference price; FR-30-8 is unchanged). (b) **Alerts**: two separate unticked opt-ins (price drops; back in stock) with the privacy link, per shopper with a consent timestamp. A 12-hourly Action Scheduler job (`Wishlist_Alerts_Scan`, `plugins/sgs-blocks/includes/wishlist/class-wishlist-alerts-scan.php`) sends at most one saved-items alert email per shopper per run, only while the site switch AND the opt-in are on, and saves new baselines only after a successful send (a price only alerts again below the lowest price already alerted). The Notify me list (`plugins/sgs-blocks/includes/class-stock-notify.php`) is sent: a product or variation moving to in stock sends one back-in-stock email per subscriber and keeps only the subscribers whose send failed. Both are WooCommerce emails (`sgs_saved_items_alert`, `sgs_back_in_stock`, `plugins/sgs-blocks/includes/wishlist/emails/`, templates in `templates/emails/`) listed in WooCommerce > Settings > Emails with on/off, subject, heading and HTML/plain; one switched off counts as handled, so nothing queues forever. They go through `wp_mail()` over the site's SMTP (`.claude/dev-setup.md` section "Site email"). `Sgs_Webhook::send` still fires the `sgs_wishlist_alert` / `sgs_back_in_stock` events to `sgs_n8n_webhook_url` when a site sets one, for automations only. (c) **Share by link**: a revocable 32-hex token (`?sgs-list=` on the Saved items page), read-only view, noindexed, served by a rate-limited public route that returns only published, visible product ids and no personal data. **Client switches**: price alerts, stock alerts and sharing are the site setting `sgs_wishlist_features`, edited from the Saved items panel's inspector through the site entity.
 **Verified by:** `plugins/sgs-blocks/tests/php/run-wishlist-standalone.php`, `plugins/sgs-blocks/tests/php/run-wishlist-alerts-standalone.php`, `plugins/sgs-blocks/tests/php/run-account-standalone.php` and `plugins/sgs-blocks/scripts/tests/test-wishlist-panel.mjs`, each with negative controls; the live proof `plugins/sgs-blocks/scripts/qa/fr30-15-alerts-live-proof.php`, capturing mail with `pre_wp_mail` (one email for a drop, none on a second scan, none with the site switch off, a restock emailed once and cleared, a failed send keeps the subscriber queued) and restoring every value it touched.
 **Watch item:** WooCommerce 11.2 ships core back-in-stock notifications and experimental, logged-in-only shopper lists (wishlist, save for later). When the lists leave experimental, compare again and decide whether the logged-in tier should sit on them.
+
+#### FR-30-16 -- Buy box as parts -- not built
+
+A cloned client's product page is laid out from the draft, and buy boxes are heavily bespoke (Bean, 2026-10-11: "super awkward to code a block to enable all of that"). Today `sgs/buybox` is one block (274 attributes, `plugins/sgs-blocks/src/blocks/buybox/render.php`) with a single extras slot, so every new layout means more attributes. The buy box becomes parts: gallery, title, price, rating, pack-size picker, purchase type, quantity, add to basket, sticky add-to-basket bar, trust row and the existing extras. The parts share one live product state (one Interactivity API store keyed by an explicit `productId` context, since the buy box never reads ambient loop state) and are laid out with `sgs/container` inside the `sgs-pdp-buybox` template part, the way the shop filter already composes WooCommerce's filter parts (FR-30-3). `sgs/buybox` stays as a composite that renders the parts in today's arrangement, so existing product pages keep working with no deprecation path (`.claude/rules/block-authoring.md` bans `deprecated.js`). A visual detail no part's settings cover goes in the part's custom CSS input and is listed by the cloning route; the same pattern on two clients becomes a setting. Unique behaviour (Mama's subscribe and save) is a separate decision on the cloning gap list (Spec 48 §13).
+**Done when:** the composite renders today's buy box identically (computed styles and box geometry compared before and after at 375/768/1440 on an existing product page), and a product page built from the parts in a different arrangement adds to the basket, updates price per pack size and shows the sticky bar. Needed first by the Mama's Munches clone (Spec 48 §16).
+
+#### FR-30-17 -- Basket drawer extras slot -- not built
+
+The `sgs/cart` drawer (`displayMode: drawer`) is styled through its own settings: Eye Care's live header sets 135 of them (`sites/eye-care-ward-end/build/header.tree.json`) with no inner blocks, and that works. A draft can add contents to the drawer that the block has no place for (Mama's gift note and "complete the box" upsell). The drawer gains one extras area, placed above or below the totals, holding blocks such as a gift note field or an upsell row; the items, totals and checkout button stay as they are. The add-to-basket toast stays a shared page region with no controls (`plugins/sgs-blocks/includes/class-sgs-toast.php`), styled from the site tokens.
+**Done when:** a block placed in the extras area renders in the open drawer at 375/768/1440, survives add, quantity change and remove without a reload, and a drawer with an empty extras area renders exactly as today. Needed first by the Mama's Munches clone (Spec 48 §16).
 
 ### Open questions
 

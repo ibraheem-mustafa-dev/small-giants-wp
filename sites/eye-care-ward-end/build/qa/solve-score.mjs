@@ -1,4 +1,4 @@
-// Scores a Solve run (Spec 47 §5) against one surface's register items. Each item maps to (pair, properties[, walker
+// Scores a Solve run (Spec 48 §5) against one surface's register items. Each item maps to (pair, properties[, walker
 // states]) rows; an item is closed when none is open at any width, and handled when closed or when it is a register
 // framework item whose open rows Solve classified as a gap (Hardcode or Missing setting).
 // Usage: node sites/eye-care-ward-end/build/qa/solve-score.mjs <solve out dir> <score-items/<surface>.json>

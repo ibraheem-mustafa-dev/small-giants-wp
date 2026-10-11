@@ -1,4 +1,4 @@
-// Triage (Spec 47, Session B1): one candidate class per distinct open issue of a Solve report, with the evidence that
+// Triage (Spec 48, Session B1): one candidate class per distinct open issue of a Solve report, with the evidence that
 // decided it. Classes: W (walker or route gap: a measuring artefact, a consequence of another row, or a setting exists
 // that the route cannot find, calibrate or write), F (framework gap: nothing on the block, its enclosing blocks or its
 // extensions fits and the resolver finds no setting; or the setting already holds the draft value and paint still

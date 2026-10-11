@@ -29,7 +29,7 @@ status: BUILD IN PROGRESS (2026-10-08)
 - Every surface is built and live on `eye-care-test`, each applied from its tree in `sites/eye-care-ward-end/build/`.
 - The fix register (`plans/2026-10-02-eye-care-fix-register.md`) is the source of truth for fixes; its Sweep column was
   re-judged on the 2026-10-07 measure-only sweep.
-- Route and per-surface work (Spec 47, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`) lives in
+- Route and per-surface work (Spec 48, `specs/48-CLONING-SYSTEM.md`) lives in
   `plans/2026-10-04-spec47-full-coverage.md` (Session D).
 - Features and controls that change what the site can do live in `plans/2026-10-05-eye-care-functionality-backlog.md`.
 - CR6 phase 2 (box longhands) has its own plan, `plans/archive/2026-10-07-cr6-box-longhand-migration.md`.
@@ -103,7 +103,7 @@ status: BUILD IN PROGRESS (2026-10-08)
 `sites/eye-care-ward-end/build/qa/parity/` (one per Eye Care surface); divergence ledger in
 `sites/eye-care-ward-end/build/qa/divergences.json`. It compares what paints (computed styles, boxes, words, motion
 samples, focus, links), so a draft effect made with a script and ours made with CSS are judged on the result. The
-four shopping flows run as scripted tests from `scripts/parity/flows/` (Spec 47 §3.6 and §3.7).
+four shopping flows run as scripted tests from `scripts/parity/flows/` (Spec 48 §3.6 and §3.7).
 
 ## Surfaces
 
@@ -269,7 +269,7 @@ type and status. Bean's choices win over the draft where he chose (black link te
 every button, live icon sizes).
 
 **Build order:**
-1. Spec 47 stage 3: Solve on every built surface with full coverage, in the order of Spec 47 §5 stage 3; each
+1. Spec 48 stage 3: Solve on every built surface with full coverage, in the order of Spec 48 §5 stage 3; each
    surface's state is in `plans/2026-10-04-spec47-full-coverage.md`.
 2. Every framework repair and new setting in the register (S-fixes first), then one deploy, then rebuild every tree that
    uses a new setting.

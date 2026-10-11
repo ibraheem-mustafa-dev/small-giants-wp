@@ -251,7 +251,7 @@ export function writableGroups( report, stateMap ) {
 const looseOf = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
 // The walker reads at most this many characters of a text (parity/lib/collect.mjs), so a read this long may be cut short.
 export const TEXT_READ_CAP = 400;
-// Who edits content that lives outside the layout tree (Spec 47 §3.3): Site Info, product data, a page the draft links to
+// Who edits content that lives outside the layout tree (Spec 48 §3.3): Site Info, product data, a page the draft links to
 // but never shows, WooCommerce or core text, and behaviour the walker cannot drive.
 export { HANDOVER_OWNERS } from './issue-classes.mjs';
 
@@ -337,7 +337,7 @@ export function resolveContent( g, { calibration, report = { runs: [] } } ) {
 	return { writes: [ { attr, value, merge: 'replace' } ] };
 }
 
-// The handover list (Spec 47 §3.3): one entry per distinct issue among classified content rows filed as handover, and
+// The handover list (Spec 48 §3.3): one entry per distinct issue among classified content rows filed as handover, and
 // every behaviour row the walker could not drive (kind `drive`), each with its evidence row, the widths it was seen at and
 // its owner. classes: the output of classify.
 export function handoverOf( classes ) {

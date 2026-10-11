@@ -192,7 +192,7 @@ Full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUTTON-ARCHITECTURE.md). S
 
 ## Cloning
 
-Cloning a draft into SGS blocks is specified by [`47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`](47-COMPUTED-ROUTE-DRAFT-TO-TREE.md). The block-side contract: attribute roles, `css_property` and `css_element` live in the framework DB, seeded from each `block.json`; never hand-written.
+Cloning a draft into SGS blocks is specified by [`48-CLONING-SYSTEM.md`](48-CLONING-SYSTEM.md). The block-side contract: attribute roles, `css_property` and `css_element` live in the framework DB, seeded from each `block.json`; never hand-written.
 
 ## Block Specifications
 
@@ -1065,7 +1065,7 @@ SGS-BEM: `.sgs-icon` root + `__link` / `__svg` / `__emoji` / `__dashicon` + `--s
 
 **Shape backgrounds, clickable mode and hover effects:** shape backgrounds (circle / square / rounded-square variants with background colour and padding attrs), clickable mode (wraps the icon in `<a>` with `linkUrl` / `linkTarget` / `linkRel`), and hover effects (lift / scale / colour-shift via the universal hover extension).
 
-**Site Info link:** an icon whose `linkUrl` is bound to a Site Info key (`metadata.bindings.linkUrl`, source `sgs/site-info`) shows the Site Info link first and its own typed `linkUrl` as the fallback; it renders nothing for a visitor only when neither gives a link, and `linkSource: "custom"` makes the typed link win. The root carries `data-sgs-site-info-key` (`icon/render.php`, `includes/helpers-icon.php::sgs_icon_resolve_bound_link`). The clone route's rule is Spec 47 FR-47-9.
+**Site Info link:** an icon whose `linkUrl` is bound to a Site Info key (`metadata.bindings.linkUrl`, source `sgs/site-info`) shows the Site Info link first and its own typed `linkUrl` as the fallback; it renders nothing for a visitor only when neither gives a link, and `linkSource: "custom"` makes the typed link win. The root carries `data-sgs-site-info-key` (`icon/render.php`, `includes/helpers-icon.php::sgs_icon_resolve_bound_link`). The clone route's rule is Spec 48 FR-47-9.
 
 **Draft-style hover, motion, shadow and brand ground (`sgs/icon`, with row defaults on `sgs/social-icons`):** every value reads own, then the wrapping row's, then the default, as `--sgs-icon-*` / `--sgs-si-*` custom properties (`includes/helpers-icon-motion.php`; editor twin `src/blocks/icon/icon-motion.js`, parity-tested by `tests/js/icon-motion-parity.test.js`).
 

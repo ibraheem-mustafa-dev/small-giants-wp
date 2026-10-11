@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Try-before-write replay (Spec 47 route-accuracy R6).
+// Try-before-write replay (Spec 48 route-accuracy R6).
 //   node scripts/computed-route/trial.mjs --client <slug> --surface <s> --run <solve run dir> [--round 1]
 //     [--site <calibration target>] [--widths 375,768,1440] [--out <dir>]
 // Takes one round's writes from a Solve run's solve-report.json and tries each (one setting on one block) in the open

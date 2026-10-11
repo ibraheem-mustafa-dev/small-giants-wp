@@ -1,4 +1,4 @@
-// Proves the calibration fixtures plan the instances, parents and variants that the audit's dead classes need (Spec 47
+// Proves the calibration fixtures plan the instances, parents and variants that the audit's dead classes need (Spec 48
 // FR-47-2, L5.1/L5.2/L5.6). The real recalibration is a host run; these assert the planned tree, each piece cited to
 // the render source that requires it. Pure: reads the fixture file and the tracked block sources.
 import test from 'node:test';

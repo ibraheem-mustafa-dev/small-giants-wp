@@ -1,4 +1,4 @@
-// The skeleton writer's proposal (Spec 47 §3.4, R-47-4, R-47-10): offline over the committed footer inventory
+// The skeleton writer's proposal (Spec 48 §3.4, R-47-4, R-47-10): offline over the committed footer inventory
 // (sites/eye-care-ward-end/build/skeleton/footer.inventory.json), with a fixture slice for the two draft shapes the hosted
 // draft no longer has (a typed wordmark, a coming-soon line). Four generator rules, each from database queries and the
 // standing decisions data, then the 13 uncertain rows of the first prototype scored against the choices the committed

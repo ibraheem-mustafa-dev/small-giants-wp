@@ -1,4 +1,4 @@
-// Playwright launch, base-URL resolution and env loading for the functional flows (Spec 47 FR-47-7).
+// Playwright launch, base-URL resolution and env loading for the functional flows (Spec 48 FR-47-7).
 // Nothing here prints a secret: loadEnv returns values to the caller, which only ever uses the site URL.
 import fs from 'node:fs';
 import path from 'node:path';

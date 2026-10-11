@@ -177,7 +177,7 @@ test( 'negative control: a write whose own row is still open stays a suspect for
 	assert.deepEqual( t[ 0 ].attributes.padding, { mobile: { top: '56px', bottom: '56px' } } );
 } );
 
-// Walker state mapping (Spec 47 §5 stage 3): rows are written only from walker states the surface maps to a setting
+// Walker state mapping (Spec 48 §5 stage 3): rows are written only from walker states the surface maps to a setting
 // state; a scrolled run's values never land in rest settings, and draft values come only from the group's own states.
 import { writeRound } from '../solve.mjs';
 import { writableGroups, draftValues } from '../lib/solve-rows.mjs';

@@ -1,4 +1,4 @@
-// Try before write, one round (Spec 47 route-accuracy R6): opens a logged-in admin session and the live page of a
+// Try before write, one round (Spec 48 route-accuracy R6): opens a logged-in admin session and the live page of a
 // surface's site, and tries each candidate write of a round there (lib/trial.mjs judges, lib/trial-page.mjs acts in
 // the page). Used by solve.mjs between a write round and the rebuild, and by the replay CLI trial.mjs.
 import fs from 'fs';

@@ -296,7 +296,7 @@ a name alone.
 
 ## 7a. Known cross-cutting gap -- shared with Spec 42, not resolved here
 
-**FR-43-14.** Same gap as Spec 42 FR-42-10: the computed route does not yet create a saved `sgs_choice_flow` (or `sgs_form`) post (R-47-11 limits it to existing targets; Spec 47 section 7); until it does, a cloned flow or form is built into an existing post. One change fixes both CPTs. Tracked in `.claude/plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` section 1.
+**FR-43-14.** Same gap as Spec 42 FR-42-10: the cloning route does not yet create a saved `sgs_choice_flow` (or `sgs_form`) post; Spec 48's site-build script will create it from the confirmed page map (Spec 48 §12, FR-48-55, R-47-11). Until it does, a cloned flow or form is built into an existing post. One change fixes both CPTs. Tracked in `.claude/plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` section 1.
 
 ## 8. Recommendation matching, and what is deferred
 

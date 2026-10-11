@@ -1805,7 +1805,7 @@
   "liveValue": "0px",
   "label": "real-problem",
   "pattern": null,
-  "cause": "Must stay open: mega-group tile padding (26px vs 0) is a real difference blocked by Spec 47 section 3.8 (a parent setting reaching several identical children is never written).",
+  "cause": "Must stay open: mega-group tile padding (26px vs 0) is a real difference blocked by Spec 48 section 3.8 (a parent setting reaching several identical children is never written).",
   "proof": ".claude/reports/2026-10-09-session-d-local-baseline/B.md claim d (resolveViaAncestor writes only when exactly one descendant is reached); REPORT.md section 5 parent-settings finding; .claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md section C #9",
   "confidence": "proven",
   "kind": "style",

@@ -1,4 +1,4 @@
-// Proves the residual dead calibration classes that need a partner attribute before their setting can paint (Spec 47
+// Proves the residual dead calibration classes that need a partner attribute before their setting can paint (Spec 48
 // FR-47-2, L5.6): a background-size or -attachment setting needs a background image; a hover shadow colour needs a
 // shadow shape; a hover border gradient needs a resting border gradient and a border width. Each partner is stated by
 // the block's own code (cited per test), not guessed from the audit's label.

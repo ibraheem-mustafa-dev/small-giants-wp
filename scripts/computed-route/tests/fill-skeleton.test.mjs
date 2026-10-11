@@ -76,7 +76,7 @@ test( 'cleanTree removes draftRef, draftSlots and handover and never touches the
 	assert.deepEqual( lintSkeleton( t, openDb() ), [], 'the draft keys sit beside attributes, so R-47-10 still sees only attributes' );
 } );
 
-// The tpl finder (Spec 47 §3.4, R-47-4): the draft runtime's data-dc-tpl stamp, named by import-host chain, number and copy.
+// The tpl finder (Spec 48 §3.4, R-47-4): the draft runtime's data-dc-tpl stamp, named by import-host chain, number and copy.
 test( 'MUST FAIL: a tpl finder that is not chain/number#copy is a problem, a well-formed one never is', () => {
 	for ( const bad of [ { tpl: '' }, { tpl: 'Root/12' }, { tpl: 'Root/x#0' }, { tpl: '/12#0' }, { tpl: 'Root/12#-1' }, { tpl: 12 }, { tpl: 'Root/12#0', within: 5 }, { tpl: 'Root/12#0', nth: 1 }, { tpl: 'Root>/12#0' } ] ) {
 		assert.ok( finderProblem( bad ), `${ JSON.stringify( bad ) } should be refused` );

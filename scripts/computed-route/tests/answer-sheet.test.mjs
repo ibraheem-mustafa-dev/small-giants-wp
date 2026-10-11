@@ -1,4 +1,4 @@
-// Proves the answer sheet (Spec 47 route-accuracy R1): rows match a walk by element, not by pair name; triage artefact
+// Proves the answer sheet (Spec 48 route-accuracy R1): rows match a walk by element, not by pair name; triage artefact
 // labels drop a false alarm but `consequence` never drops a real problem; a real problem that passed in the baseline and
 // is gone now fails the gate. Built on the committed sheet's own footer rows, so it runs offline.
 import test from 'node:test';
