@@ -169,9 +169,9 @@ test( 'MUST FAIL FR-48A-7: an inventory recorded against an older draft is stale
 
 test( 'MUST FAIL FR-48A-10: an SVG under assets/ holding a script, an event attribute or foreignObject', () => {
 	const root = folder( { extra: {
-		'assets/a.svg': '<svg><SCRIPT>alert(1)</SCRIPT></svg>',
-		'assets/icons/b.svg': '<svg><rect onload="x()"/></svg>',
-		'assets/c.svg': '<svg><foreignobject></foreignobject></svg>',
+		'assets/a.svg': '<svg xmlns="http://www.w3.org/2000/svg"><SCRIPT>alert(1)</SCRIPT></svg>',
+		'assets/icons/b.svg': '<svg xmlns="http://www.w3.org/2000/svg"><rect onload="x()"/></svg>',
+		'assets/c.svg': '<svg xmlns="http://www.w3.org/2000/svg"><foreignobject></foreignobject></svg>',
 	} } );
 	const r = check( root );
 	failsWith( r, /^FR-48A-10 assets\/a\.svg: SVG holds a <script>/ );
@@ -183,9 +183,9 @@ test( 'MUST FAIL FR-48A-10: SVG screen bypasses (slash-led event, javascript: UR
 	const root = folder( { extra: {
 		'assets/d.svg': '<svg/onload=x()></svg>',
 		'assets/d2.svg': '<svg xmlns="http://www.w3.org/2000/svg" onload="x()"/>',
-		'assets/e.svg': '<svg><a href="javascript:x()"><rect/></a></svg>',
-		'assets/f.svg': '<svg><a><animate attributeName="href" to="#x"/></a></svg>',
-		'assets/g.svg': '<svg xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="https://evil.example/s.svg#a"/></svg>',
+		'assets/e.svg': '<svg xmlns="http://www.w3.org/2000/svg"><a href="javascript:x()"><rect/></a></svg>',
+		'assets/f.svg': '<svg xmlns="http://www.w3.org/2000/svg"><a><animate attributeName="href" to="#x"/></a></svg>',
+		'assets/g.svg': '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="https://evil.example/s.svg#a"/></svg>',
 	} } );
 	const r = check( root );
 	failsWith( r, /^FR-48A-10 assets\/d\.svg: SVG is not well-formed XML/ );
@@ -236,7 +236,7 @@ test( 'MUST FAIL FR-48A-10: namespace prefixes, unquoted links, SVG data URIs, D
 		'assets/k.svg': '<svg xmlns="http://www.w3.org/2000/svg" xmlns:z="http://www.w3.org/1999/xlink"><use z:href="https://evil.example/a.svg#b"/></svg>',
 		'assets/l.svg': '<svg xmlns="http://www.w3.org/2000/svg"><image href="data:image/svg+xml;base64,AA=="/></svg>',
 		'assets/m.svg': '<!DOCTYPE svg [<!ENTITY e "x">]><svg xmlns="http://www.w3.org/2000/svg"/>',
-		'assets/n.svg': '<svg><a href=evil.example>x</a></svg>',
+		'assets/n.svg': '<svg xmlns="http://www.w3.org/2000/svg"><a href=evil.example>x</a></svg>',
 	} } );
 	const r = check( root );
 	failsWith( r, /^FR-48A-10 assets\/i\.svg: SVG holds a <script>/ );
@@ -245,4 +245,26 @@ test( 'MUST FAIL FR-48A-10: namespace prefixes, unquoted links, SVG data URIs, D
 	failsWith( r, /^FR-48A-10 assets\/l\.svg: SVG holds a link to data:image\/svg\+xml/ );
 	failsWith( r, /^FR-48A-10 assets\/m\.svg: SVG holds a DOCTYPE/ );
 	failsWith( r, /^FR-48A-10 assets\/n\.svg: SVG is not well-formed XML/ );
+} );
+
+test( 'MUST FAIL FR-48A-10: foreign-namespace elements, other URL attributes and CSS url() targets', () => {
+	const root = folder( { extra: {
+		'assets/o.svg': '<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml"><h:iframe/></svg>',
+		'assets/p.svg': '<svg xmlns="http://www.w3.org/2000/svg"><image src="https://evil.example/x.png"/></svg>',
+		'assets/q.svg': '<svg xmlns="http://www.w3.org/2000/svg"><rect style="fill:url(https://evil.example/p)"/></svg>',
+		'assets/r.svg': '<svg xmlns="http://www.w3.org/2000/svg"><style>rect{fill:url("https://evil.example/p")}</style></svg>',
+	} } );
+	const r = check( root );
+	failsWith( r, /^FR-48A-10 assets\/o\.svg: SVG holds a <h:iframe> element outside the SVG namespace/ );
+	failsWith( r, /^FR-48A-10 assets\/p\.svg: SVG holds a link to https:\/\/evil\.example/ );
+	failsWith( r, /^FR-48A-10 assets\/q\.svg: SVG holds a CSS url\(\) to https:\/\/evil\.example/ );
+	failsWith( r, /^FR-48A-10 assets\/r\.svg: SVG holds a CSS url\(\) to https:\/\/evil\.example/ );
+} );
+
+test( 'FR-48A-10: editor metadata namespaces and fragment CSS url() targets pass', () => {
+	const root = folder( { extra: {
+		'assets/s.svg': '<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"><sodipodi:namedview/><inkscape:grid/><defs><linearGradient id="g"/></defs><rect style="fill:url(#g)"/><style>rect{fill:url( \'#g\' )}</style></svg>',
+	} } );
+	const r = check( root );
+	assert.ok( ! r.errors.some( ( e ) => e.includes( 'assets/s.svg' ) ), r.errors.join( '\n' ) );
 } );

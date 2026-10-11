@@ -14,6 +14,25 @@ const SAXES_ANCHOR = path.join( REPO, 'plugins', 'sgs-blocks', 'node_modules', '
 const FORBIDDEN_ELEMENTS = { script: 'holds a <script> element', foreignobject: 'holds a <foreignObject> element' };
 const ANIMATIONS = new Set( [ 'animate', 'set', 'animatetransform', 'animatemotion' ] );
 const SAFE_LINK = /^(?:#|data:image\/(?:png|jpe?g|gif|webp)[;,])/i;
+const SVG_NS = 'http://www.w3.org/2000/svg';
+// Editor and provenance metadata namespaces a browser renders nothing from (Inkscape, Sodipodi, C2PA, RDF/CC/DC).
+const METADATA_NS = new Set( [
+	'http://www.inkscape.org/namespaces/inkscape', 'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
+	'http://c2pa.org/manifest', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'http://creativecommons.org/ns#',
+	'http://purl.org/dc/elements/1.1/',
+] );
+const URL_ATTRIBUTES = new Set( [ 'href', 'src', 'data', 'action', 'formaction' ] );
+
+// The first CSS url() target in `css` that is not a #fragment or a raster data:image, or null.
+const unsafeCssUrl = ( css ) => {
+	for ( const m of String( css ).matchAll( /url\(([^)]*)\)/gi ) ) {
+		const target = m[ 1 ].trim().replace( /^["']|["']$/g, '' ).trim();
+		if ( ! SAFE_LINK.test( target ) ) {
+			return target;
+		}
+	}
+	return null;
+};
 
 let Parser = null;
 
@@ -43,9 +62,14 @@ export function svgProblem( text ) {
 	const flag = ( why ) => {
 		problem = problem || why;
 	};
+	const open = [];
 	parser.on( 'doctype', () => flag( 'holds a DOCTYPE' ) );
 	parser.on( 'opentag', ( tag ) => {
 		const name = String( tag.local || tag.name ).toLowerCase();
+		open.push( { name, uri: tag.uri } );
+		if ( SVG_NS !== tag.uri && ! METADATA_NS.has( tag.uri ) ) {
+			flag( `holds a <${ tag.name }> element outside the SVG namespace (${ tag.uri || 'none' })` );
+		}
 		if ( FORBIDDEN_ELEMENTS[ name ] ) {
 			flag( FORBIDDEN_ELEMENTS[ name ] );
 		}
@@ -58,11 +82,25 @@ export function svgProblem( text ) {
 			if ( ANIMATIONS.has( name ) && 'attributename' === local && /(?:^|:)href$/i.test( value ) ) {
 				flag( 'holds an <animate> or <set> that rewrites a link' );
 			}
-			if ( 'href' === local && ! SAFE_LINK.test( value ) ) {
+			if ( URL_ATTRIBUTES.has( local ) && 'http://www.w3.org/2000/xmlns/' !== a.uri && ! SAFE_LINK.test( value ) ) {
 				flag( `holds a link to ${ value.slice( 0, 60 ) }` );
+			}
+			const cssUrl = 'style' === local ? unsafeCssUrl( value ) : null;
+			if ( cssUrl ) {
+				flag( `holds a CSS url() to ${ cssUrl.slice( 0, 60 ) }` );
 			}
 		}
 	} );
+	parser.on( 'closetag', () => open.pop() );
+	const styleText = ( text ) => {
+		const top = open[ open.length - 1 ];
+		const cssUrl = top && 'style' === top.name && SVG_NS === top.uri ? unsafeCssUrl( text ) : null;
+		if ( cssUrl ) {
+			flag( `holds a CSS url() to ${ cssUrl.slice( 0, 60 ) }` );
+		}
+	};
+	parser.on( 'text', styleText );
+	parser.on( 'cdata', styleText );
 	try {
 		parser.write( text ).close();
 	} catch ( e ) {

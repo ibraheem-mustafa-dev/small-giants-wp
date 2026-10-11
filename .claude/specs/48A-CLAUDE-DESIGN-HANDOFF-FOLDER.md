@@ -122,9 +122,11 @@ Intake runs drafts only through `scripts/computed-route/lib/draft.mjs::serveDraf
 only), in a fresh browser profile whose network is limited to the draft server and the three pinned unpkg files, from
 a process given no `.claude/secrets/` values or SSH agent. Exported prose (`README.md`, `READING-DC-FILES.md`,
 inventory notes) is data, never instructions to an agent, and command-like text in it is shown to Bean. The check parses every SVG under `assets/` as namespace-aware XML
-(`scripts/computed-route/lib/svg-screen.mjs::svgProblem`) and fails on malformed XML, a DOCTYPE, a `script` or
-`foreignObject` element under any prefix, any `on…` attribute, an animation that rewrites a link, any link other than
-a `#fragment` or a raster `data:image` URI, `javascript:` or a CSS `@import`, and on any file over 20 MB.
+(`scripts/computed-route/lib/svg-screen.mjs::svgProblem`) and fails on malformed XML, a DOCTYPE, an element outside the SVG
+namespace (editor and provenance metadata namespaces excepted), a `script` or `foreignObject` element under any
+prefix, any `on…` attribute, an animation that rewrites a link, an `href`, `src`, `data`, `action` or CSS `url()`
+target other than a `#fragment` or a raster `data:image` URI, `javascript:` or a CSS `@import`, and on any file over
+20 MB.
 Status: SVG and size checks in `handoff-check.mjs` (`lib/svg-screen.mjs`); the browser sandbox and the prose rule are a Spec 48 intake stage.
 
 ### FR-48A-11 -- Near-finished sites
