@@ -231,7 +231,9 @@ The cache is `scripts/computed-route/cache/`, gitignored, and its two outputs ar
 - **Default paint:** one file per site and block, `cache/<site>/<block>.paint.json`, carrying its `paintKey`. A run on
   one site never reads or overwrites another site's default paint, so calibrating Indus leaves Eye Care's untouched.
   A default paint whose `paintKey` no longer matches (the site's snapshot changed) is stale and is re-measured on that
-  site; FR-48-18's exit step does this after the client's snapshot push.
+  site; FR-48-18's exit step does this after the client's snapshot push. A local mirror counts as the test site it
+  copies (`mirrorOf` in `calibration-targets.json`; same build, database and snapshot, so the same `paintKey`): its
+  paint is written to and read from that test site's folder (`lib/cache.mjs::paintSite`).
 
 **Steps:**
 1. Render one default instance and record every rendered element's computed style, with no element cap, and the
@@ -329,9 +331,8 @@ element at all three widths and `margin` maps as a box, the calibration page is 
 mismatch fails the run before any write. The planted mismatch is a local `build/blocks/heading/style-index.css`
 differing from the deployed one.
 Status: partly built (`calibrate.mjs`, `lib/calibrate*.mjs`, `lib/deploy-hash.mjs`, `lib/calibration-lock.mjs`; 94
-block caches in `scripts/computed-route/cache/`). The per-site default-paint files are not built: today one file per
-block holds both outputs and `lib/cache.mjs::skipReason` refuses a second site without `--recalibrate`, so a
-recalibration on one site overwrites another site's default paint. `overriddenBy`'s rendered-box guard not built;
+block caches in `scripts/computed-route/cache/`). The two outputs are stored apart (2026-10-11: `lib/cache.mjs`, readers take the
+site through `solve.mjs::calibrationFor`, `tests/cache.test.mjs`; existing caches split by `split-cache.mjs`). `overriddenBy`'s rendered-box guard not built;
 `layout` and `select-from-enum` presence reads not built.
 
 #### FR-48-2 -- Accepted value forms
@@ -2388,7 +2389,7 @@ Items Spec 48 needs but does not own. "Blocks" says which client cannot finish w
 | Indus calibration: `gridTemplateColumns` dead, `container.layout` unrouted, stale caches for card-grid, form, nav-drawer-menu, container, hero, trust-bar, nav-bar-menu, mega-panel | calibration (§3.2) | Indus | not built |
 | Calibration records accepted value forms (`clamp()`, `vw`, `repeat()`, column count) | calibration (§3.2, FR-48-2) | Indus (fluid presets, grids) | partly built (colour forms only) |
 | Indus local mirror `local-indus` and calibration targets `indus-test` and `local-indus` | Spec 48 Appendix A step 13 | Indus | not built |
-| Default paint stored per site (`cache/<site>/<block>.paint.json`) | calibration (§3.2, FR-48-3) | Indus (protects Eye Care's caches) | not built |
+| Default paint stored per site (`cache/<site>/<block>.paint.json`) | calibration (§3.2, FR-48-3) | Indus (protects Eye Care's caches) | built |
 | The route's own pinned `package.json` | Spec 48 FR-48-75 | neither | built (G0's version check not built) |
 | `overriddenBy` with a rendered-box guard | calibration (§3.2) | neither | not built |
 | `container.layout` and `choice-flow.skipAddsToBag` `css_property` (NULL today) | `sgs-update-v2.py` | Indus (`layout`) | not built |

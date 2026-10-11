@@ -3,7 +3,7 @@
 // and which rule wins on the page, not "Unresolved: not written". Negative controls keep each check from being vacuous.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { writeRound, heldGroups } from '../solve.mjs';
+import { writeRound, heldGroups, calibrationForSite } from '../solve.mjs';
 import { classify, widthPattern, heldReason } from '../lib/solve-rows.mjs';
 import { explainCascade, describeCascade, propertyFamily, rowSelector } from '../lib/winning-rule.mjs';
 import { openDb } from '../lib/db.mjs';
@@ -134,7 +134,8 @@ const rowTree = () => [ { name: 'sgs/site-footer-row', attributes: { className: 
 const gapDiff = ( key ) => ( { kind: 'style', key, draft: '10px', live: '32px', ref: 'cr-ref-r-1', path: '.sgs-container__inner' } );
 const gapRun = ( width, keys ) => ( { state: 'opening', width, pairs: { row: { draft: { styles: Object.fromEntries( keys.map( ( k ) => [ k, '10px' ] ) ) }, diffs: keys.map( gapDiff ) } } } );
 const gapReport = ( keys ) => ( { runs: [ 375, 768, 1440, 1920 ].map( ( w ) => gapRun( w, keys ) ) } );
-const gapOpts = { db, snapshot, log: [], stateMap: { opening: null } };
+// The real cache/site-footer-row.json slot map with the paint measured on local-eye-care.
+const gapOpts = { db, snapshot, log: [], stateMap: { opening: null }, calFor: calibrationForSite( 'local-eye-care' ) };
 
 test( 'two rows resolving to one setting: the tree holds neither, so nothing is held (P2-l)', () => {
 	const t = rowTree();

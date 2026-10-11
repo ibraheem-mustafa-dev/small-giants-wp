@@ -19,6 +19,7 @@ import { readInventory } from './lib/skeleton-inventory.mjs';
 import { loadFacts, decisionsProblems, REPO } from './lib/skeleton-facts.mjs';
 import { proposeSkeleton } from './lib/skeleton-propose.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
+import { loadCalibration } from './lib/cache.mjs';
 import { skeletonDir, readDecisions, readPicks, recordDecision, recordSiteName, finaliseRequest, applyPicks } from './lib/skeleton-finalise.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -35,11 +36,8 @@ export function skeletonPaths( { client, surface, repo = REPO } ) {
 	return { dir, draftUrl: surfaces[ surface ].draftUrl || null, inventory: f( 'inventory.json' ), skeleton: f( 'skeleton.json' ), proposal: f( 'proposal.json' ), review: f( 'review.html' ), request: f( 'finalise-request.json' ), picks: f( 'picks.json' ), decisions: path.join( dir, 'decisions.json' ), shots: path.join( dir, 'shots' ) };
 }
 
-// The calibration cache's element keys for a block (slot targets), or none when it was never calibrated.
-const calKeysOf = ( slug ) => {
-	const f = path.join( HERE, 'cache', `${ slug.replace( /^sgs\//, '' ) }.json` );
-	return fs.existsSync( f ) ? Object.keys( JSON.parse( fs.readFileSync( f, 'utf8' ) ).elements || {} ) : [];
-};
+// The calibration cache's element keys for a block on a site (slot targets), or none when it has no default paint there.
+const calKeysFor = ( site ) => ( slug ) => Object.keys( loadCalibration( path.join( HERE, 'cache' ), slug, site )?.elements || {} );
 
 const write = ( file, text ) => {
 	fs.mkdirSync( path.dirname( file ), { recursive: true } );
@@ -48,6 +46,8 @@ const write = ( file, text ) => {
 const json = ( file, value ) => write( file, `${ JSON.stringify( value, null, '\t' ) }\n` );
 
 // Runs propose from the files on disk and writes <surface>.skeleton.json and <surface>.proposal.json. Returns the result.
+const readSurface = ( repo, client, surface ) => JSON.parse( fs.readFileSync( path.join( repo, 'sites', client, 'build', 'surfaces.json' ), 'utf8' ) )[ surface ] || {};
+
 export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb() } ) {
 	const p = skeletonPaths( { client, surface, repo } );
 	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
@@ -57,7 +57,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	if ( bad.length ) {
 		throw new Error( `the decisions data is not sound:\n- ${ bad.join( '\n- ' ) }` );
 	}
-	const r = proposeSkeleton( { inventory, facts, surface, clientDecisions, picks: readPicks( p.picks ), calKeys: calKeysOf, db } );
+	const r = proposeSkeleton( { inventory, facts, surface, clientDecisions, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };

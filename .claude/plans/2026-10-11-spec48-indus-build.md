@@ -96,7 +96,7 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
   page 15 on both sites; overlay image attachment 18). Appendix A step 13 done: `local-indus` serves, its secrets file exists, the
   calibration page exists on `indus-test` and the mirror with one ID, and `calibration-targets.json` has `indus-test`
   and `local-indus`.
-- [ ] **5. Per-site default paint.** §3.2 done when a run on one site never reads or overwrites another site's
+- [x] **5. Per-site default paint** (done 2026-10-11; a mirror shares its test site's paint through `mirrorOf`). §3.2 done when a run on one site never reads or overwrites another site's
   `cache/<site>/<block>.paint.json`, and the slot map stays one library-wide `cache/<block>.json`.
 - [ ] **6. Accepted value forms.** FR-48-2 done when recalibrating `sgs/heading` and `sgs/container` records `clamp` on
   a font-size setting that accepts it and `repeat` on the container's grid template setting, and a planted setting that

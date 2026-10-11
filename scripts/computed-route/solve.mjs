@@ -11,6 +11,7 @@ import path from 'path';
 import { spawn, spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { openDb } from './lib/db.mjs';
+import { loadCalibration } from './lib/cache.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { resolve, resolveViaAncestor } from './lib/resolve.mjs';
 import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet } from './lib/tree.mjs';
@@ -31,11 +32,16 @@ const WIDTHS = '375,768,1440,1920';
 // A positioned element's left/top computes to pixels too; only a declared length or percentage is written.
 export const USED_VALUES = [ 'width', 'left', 'top' ];
 
-// The calibration file for a block, or null (the resolver then returns `uncalibrated`).
-export function calibrationFor( block ) {
-	const f = path.join( HERE, 'cache', `${ block.replace( /^sgs\//, '' ) }.json` );
-	return fs.existsSync( f ) ? withInnerRootAliases( JSON.parse( fs.readFileSync( f, 'utf8' ) ), block ) : null;
+// The calibration for a block on a site, or null (the resolver then returns `uncalibrated`): the library-wide slot map
+// with the site's own default paint as `elements` (lib/cache.mjs::loadCalibration). A site with no paint file gets
+// `paintMissing` and no elements, never another site's paint.
+export function calibrationFor( block, site, dir = path.join( HERE, 'cache' ) ) {
+	const cal = loadCalibration( dir, block, site );
+	return cal ? withInnerRootAliases( cal, block ) : null;
 }
+
+// The block-to-calibration function for one site, the shape every reader takes as `calFor`.
+export const calibrationForSite = ( site, dir = path.join( HERE, 'cache' ) ) => ( block ) => calibrationFor( block, site, dir );
 
 // A block that wraps its own root element only in some modes (icon-list adds a <div> or <nav> around its <ul> when it has
 // a heading or a landmark; business-info wraps its value) is calibrated in one mode and measured on a page in another. A
@@ -210,7 +216,7 @@ export function unpaintedBorder( report, g ) {
 	return { gap: 'not-painted', detail: `the draft has no ${ m[ 1 ] } border (${ measured.map( ( w ) => `${ widths[ w ] } ${ styles[ w ] || '' }`.trim() + '@' + w ).join( ', ' ) }): its ${ g.prop } is currentColor and paints nothing` };
 }
 
-export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor = calibrationFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null } ) {
+export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null } ) {
 	const { groups, stateConflict, content } = writableGroups( report, stateMap );
 	const writes = [];
 	const gaps = {};
@@ -382,7 +388,7 @@ export function heldGroups( report, tree, opts ) {
 
 // The regression guard (R-47-9) lives in lib/guard.mjs. This wrapper keeps the single-call form: the writes undone this
 // round (a calibration-named culprit, or the one suspect under trial).
-export function revertRegressions( prev, report, tree, lastWrites, blocked, calFor = calibrationFor, trials = new Map() ) {
+export function revertRegressions( prev, report, tree, lastWrites, blocked, calFor, trials = new Map() ) {
 	return guardRound( prev, report, tree, lastWrites, blocked, calFor, trials ).filter( ( w ) => w.reverted || w.trial );
 }
 
@@ -511,7 +517,13 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const calibrationTargets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) );
 	assertWritable( s.target, { calibrationTargets, surfaces } );
 	const refs = detectReferences();
-	const ctx = { db: openDb(), snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ), log: [] };
+	// The default paint is read from the site this surface is built on (--site, else the surface's own `site`).
+	if ( ! s.site ) {
+		console.error( `surface "${ surface }" names no site in surfaces.json and no --site was given, so there is no default paint to read` );
+		process.exit( 2 );
+	}
+	const calFor = calibrationForSite( s.site );
+	const ctx = { db: openDb(), snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ), log: [], calFor };
 	const tree = readTree( treeFile );
 	const added = addRefs( tree, surface );
 	writeTree( treeFile, tree );
@@ -549,9 +561,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 				return build( s, treeFile );
 			},
 			walk: ( round ) => walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates, site.liveOrigin ),
-			guard: ( prev, rep, lastWrites ) => guardRound( prev, rep, tree, lastWrites, blocked, calibrationFor, trials ),
+			guard: ( prev, rep, lastWrites ) => guardRound( prev, rep, tree, lastWrites, blocked, calFor, trials ),
 			// The settling walk only judges open trials: with no last writes the guard opens no new one.
-			settle: ( prev, rep ) => guardRound( prev, rep, tree, [], blocked, calibrationFor, trials ),
+			settle: ( prev, rep ) => guardRound( prev, rep, tree, [], blocked, calFor, trials ),
 			pending: () => [ ...trials.values() ].some( ( t ) => t.setting ),
 			write: writeStep,
 			save: () => writeTree( treeFile, tree ),

@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 // Block calibration command (FR-47-2).
 //   node scripts/computed-route/calibrate.mjs --site eye-care-test --client eye-care-ward-end --blocks sgs/heading,sgs/text
-//   [--recalibrate] replaces a block's file measured on another site (one library-wide cache; otherwise it is skipped).
+//   [--recalibrate] replaces a block's slot map measured on another site and re-measures this site's default paint.
 // For each block: refuses to run when the deployed build/blocks/<block>/ differs from the local build (before any
 // write), builds the block's calibration tree on the site's calibration page (calibration-targets.json), reads every
-// instance at 375, 768 and 1440 (hover settings under a real mouse), and writes cache/<block>.json: the slot map and
-// default paint, keyed by the deployed build's md5 and the site snapshot's md5. The page is emptied at the end.
+// instance at 375, 768 and 1440 (hover settings under a real mouse), and writes two files (lib/cache.mjs): the
+// site-independent slot map cache/<block>.json, keyed by the deployed build's md5, and this site's default paint
+// cache/<site>/<block>.paint.json, keyed by that md5 and the site snapshot's md5. Each is written only when due. The page
+// is emptied at the end.
 import fs from 'fs';
 import path from 'path';
 import { spawn, spawnSync } from 'child_process';
@@ -17,7 +19,7 @@ import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { acquireCalibrationLock } from './lib/calibration-lock.mjs';
-import { skipReason } from './lib/cache.mjs';
+import { slotMapSkip, paintSkip, splitCalibration, writeSlotMap, writePaint } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
@@ -100,7 +102,7 @@ function readEnv( file, key ) {
 	return { url: o[ `WP_URL_${ key }` ].replace( /\/+$/, '' ), user: o[ `WP_USER_${ key }` ], pwd: o[ `WP_PWD_${ key }` ] };
 }
 
-async function calibrateBlock( block, { site, target, env, shared, fixtures, snapshot, rawSnapshot, db, slotKey, paintKey, rejectedOut, image } ) {
+async function calibrateBlock( block, { site, target, env, shared, fixtures, snapshot, rawSnapshot, db, slotKey, paintKey, due, rejectedOut, image } ) {
 	const short = block.replace( /^sgs\//, '' );
 	const fixture = fixtures[ block ];
 	if ( ! fixture ) {
@@ -273,7 +275,10 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const playwrightVersion = createRequire( import.meta.url )( 'playwright/package.json' ).version;
 	const browserVersion = shared.context.browser()?.version() ?? null;
 	const file = { block, site, slotKey, paintKey, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
-	fs.writeFileSync( path.join( CACHE, `${ short }.json` ), JSON.stringify( file, null, 1 ) );
+	// The whole block is measured either way; only the output that is due is written.
+	const { slotMap, paint } = splitCalibration( file );
+	due.slotMap && writeSlotMap( CACHE, block, slotMap );
+	due.paint && writePaint( CACHE, site, block, paint );
 	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
 }
 
@@ -293,15 +298,6 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		console.error( 'Usage: calibrate.mjs --site <site> --client <client slug> --blocks sgs/a,sgs/b [--recalibrate]' );
 		process.exit( 2 );
 	}
-	// One library-wide cache: a block measured on another site keeps its file unless --recalibrate.
-	const blocks = asked.filter( ( b ) => {
-		const why = skipReason( path.join( CACHE, `${ b.replace( /^sgs\//, '' ) }.json` ), site, argv.includes( '--recalibrate' ) );
-		why && console.log( JSON.stringify( { block: b, skipped: why } ) );
-		return ! why;
-	} );
-	if ( ! blocks.length ) {
-		process.exit( 0 );
-	}
 	const targets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) );
 	const target = targets[ site ];
 	const surfacesFile = path.join( REPO, 'sites', client, 'build', 'surfaces.json' );
@@ -311,7 +307,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const paintSuffix = md5( fs.readFileSync( snapFile ) );
 	// A deploy mismatch stops the run before any write.
 	const keys = {};
-	for ( const b of blocks ) {
+	for ( const b of asked ) {
 		const short = b.replace( /^sgs\//, '' );
 		const local = localBlockHash( path.join( REPO, 'plugins/sgs-blocks/build/blocks', short ) );
 		// A local mirror (calibration-targets.json pluginDir, a WSL path Node reads directly) is hashed from its files.
@@ -321,6 +317,20 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			process.exit( 3 );
 		}
 		keys[ b ] = local;
+	}
+	// Two outputs, decided apart: the library-wide slot map (kept when current, or measured on another site without
+	// --recalibrate) and this site's own default paint (kept only when its file here carries the current key).
+	const recalibrate = argv.includes( '--recalibrate' );
+	const due = {};
+	for ( const b of asked ) {
+		const slotWhy = slotMapSkip( CACHE, b, site, keys[ b ], recalibrate );
+		const paintWhy = paintSkip( CACHE, b, site, `${ keys[ b ] }-${ paintSuffix }`, recalibrate );
+		due[ b ] = { slotMap: ! slotWhy, paint: ! paintWhy };
+		( slotWhy || paintWhy ) && console.log( JSON.stringify( { block: b, skipped: { slotMap: slotWhy, paint: paintWhy } } ) );
+	}
+	const blocks = asked.filter( ( b ) => due[ b ].slotMap || due[ b ].paint );
+	if ( ! blocks.length ) {
+		process.exit( 0 );
 	}
 	// A local mirror has no host deploy to wait for; this machine's deploy or reseed still blocks the run.
 	assertQuiet( target.pluginDir ? null : undefined );
@@ -337,7 +347,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			// One block's failure (a page that never renders its instance, a host time-out) is that block's error; the
 			// rest of the run continues.
 			try {
-				results.push( await calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: `${ keys[ b ] }-${ paintSuffix }` } ) );
+				results.push( await calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: `${ keys[ b ] }-${ paintSuffix }`, due: due[ b ] } ) );
 			} catch ( e ) {
 				results.push( { block: b, error: String( e.message || e ).split( /\r?\n/ )[ 0 ] } );
 			}

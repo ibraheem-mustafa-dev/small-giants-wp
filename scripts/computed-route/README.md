@@ -23,7 +23,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `package.json` | The route's own third-party packages at exact versions (FR-48-75): `playwright`, `ajv`, `ajv-formats`, `saxes`, `@babel/parser`. Route code imports them from `scripts/computed-route/node_modules` only (`npm ci` here installs them). |
 | `package-lock.json` | The lock file for `package.json`. |
 | `lint.mjs` | The route's gate: README index, plugins/sgs-blocks/scripts import ban, `plugins/sgs-blocks/node_modules` ban (FR-48-75), no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, every divergence-ledger entry beside that manifest citing register items its register holds (`--register`, else the `register` of `qa/ledger.config.json` beside the ledger; B4), client names. |
-| `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse and focus by keyboard on the styled element, its panel opened when hidden; a shrunk marker with its ancestor class; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
+| `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse and focus by keyboard on the styled element, its panel opened when hidden; a shrunk marker with its ancestor class; scrolled markers with the window scrolled, against a scrolled default), writes two files, each only when due (`cache/<block>.json`, the site-independent slot map: kept when its key is current or another site measured it, unless `--recalibrate`; `cache/<site>/<block>.paint.json`, that site's default paint: kept only when its own file carries the current `paintKey`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
 | `fill.mjs` | Fill command (FR-47-4): a skeleton tree plus a draft (a hosted url or a local folder) to a tree resolved root-down in one pass, before anything is built. Needs `--client`, `--surface`, `--skeleton`, `--live-url` and one of `--draft-url` / `--draft-dir`; `--serve <folder>` serves a draft until Ctrl-C. Reads `surfaces.json`, the snapshot and the ledger; writes only into `--out`: `filled.tree.json`, `fill-report.md`/`.json`, `unmapped.json`, `handover.json`, `breakpoints.json` and the generated walker config, plus `<build>/<surface>.origin.json` (cr-ref to `tpl` key and fingerprint) when the skeleton names its draft elements by `tpl` finder. |
 | `sweep.mjs` | Sweep command: `--surfaces <surfaces.json> [--date YYYY-MM-DD] [--out <file>]`; reads each surface's newest `solve-report.json` and writes `<build>/qa/sweep/<date>/sweep.json`: one row per distinct open issue across the site `{ surface, ref, pair, path, block, property, widths, state, kind, class, reason, values, report }` (`pair` names a block-less hand-pair row; `values` holds each distinct draft and live pair, at most 6), totals per surface and class, and the surfaces with no report. |
@@ -51,7 +51,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/normalise.mjs` | Value parsing and token snapping from `theme-snapshot.json`, with the snap log. |
 | `lib/resolve.mjs` | The one property-to-setting engine. |
 | `lib/tree.mjs` | Trees: read, write, refs, setting writes, live-site safety. |
-| `lib/cache.mjs` | The library-wide calibration cache: which site measured a block, and the cross-site guard. |
+| `lib/cache.mjs` | The calibration cache's two outputs: the library-wide slot map and each site's own default paint; reading, writing, the split of one into the other and the per-output skip rules. |
+| `split-cache.mjs` | One-off, idempotent migration: moves each pre-split `cache/<block>.json`'s default paint into `cache/<site>/<block>.paint.json` and rewrites the slot map without it, then moves mirror folders' paint into their test site's folder; `--dry-run` prints what it would do. |
 | `lib/calibrate.mjs` | Calibration library: calibration trees, slot detection, default paint; re-exports the calibration modules below. |
 | `lib/calibrate-props.mjs` | What calibration reads: the read and pseudo-layer properties and how a css_property maps onto them. |
 | `lib/calibrate-markers.mjs` | Marker values per setting shape (Spec 48 §3.2 marker table). |
@@ -114,6 +115,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/normalise.test.mjs` | R-47-7: tokens before literals. |
 | `tests/resolve.test.mjs` | FR-47-1: storage shapes and gaps; border-radius written as corners, never sides. |
 | `tests/tree.test.mjs` | R-47-11 and tree writes. |
+| `tests/cache.test.mjs` | FR-48-2 / §3.2: a run on one site leaves another site's default paint byte-identical, a slot map from another site is kept without `--recalibrate`, a stale `paintKey` is reported, a reader never returns another site's paint (MUST FAIL), and the split migration is idempotent. |
 | `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code; a run never replaces another site's cache file without `--recalibrate`; a border-style marker carries its companion width and maps against a width baseline (CR11). |
 | `tests/calibrate-classes.test.mjs` | FR-47-2: each dead or markerless class of the 2026-10-04 audit gets its marker, precondition or read (extension rows from the DB, gradients, keywords, media objects, transforms, wider lengths, non-length tiers, colour by role, box shapes, two weights, unit shapes, the silent drop, preconditions, layout modes, state targets, container-query tiers). |
 | `tests/calibrate-read.test.mjs` | FR-47-2 reader, in a local headless Chromium: elements past the 81st, `::after` and `::placeholder` layers, and an `aria-controls` panel outside the instance are read. |
@@ -188,7 +190,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/calibrate-size-box.test.mjs` | A per-device `{ width, height }` size setting gets a marker of that shape and Fill writes it in that shape; a setting's slots drop an element that changed in a variant without carrying the marker value (`sgs/icon`'s hugging root). |
 | `tests/fill-surface.test.mjs` | FR-47-4 step 5: `fillSurface` end to end over a local folder and a temp repo; an invalid skeleton is refused and only `--out` is written (MUST FAIL). |
 
-`cache/` (gitignored) holds calibration files: one per block for the whole library, each recording the `site` that measured it.
+`cache/` (gitignored) holds the calibration: one slot map per block for the whole library (`cache/<block>.json`, recording the `site` that measured it) and one default paint per site and block (`cache/<site>/<block>.paint.json`).
 
 ## Functions
 
@@ -285,8 +287,18 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `judgeIndependent(entries, diff, { state })` → `{ accepted }`, `{ drift: id }` or null for one difference of a site's `qa/independent-check.mjs`: its keys map to the ledger properties that cover them and entries match on `node`, as walker rows do.
 
 ### `lib/cache.mjs`
-- `cachedSite(file)` → the site a block's cache file was measured on, or null.
-- `skipReason(file, site, recalibrate?)` → why a run on `site` must leave the file alone (measured on another site, no `--recalibrate`), or null.
+- `PAINT_FIELDS`: the calibration fields that are default paint (`elements`); every other field is slot map.
+- `slotMapFile(dir, block)`, `paintFile(dir, site, block)` → the two file paths; `paintFile` throws on a missing or path-like site name.
+- `cachedSite(file)` → the site a slot map was measured on, or null. `readSlotMap(dir, block)` → the slot map or null. `readPaint(dir, site, block)` → that site's paint or null (a file naming another site is null).
+- `splitCalibration(file)` → `{ slotMap, paint }` from one combined calibration object. `writeSlotMap(dir, block, slotMap)`, `writePaint(dir, site, block, paint)`.
+- `paintSite(site)` → the site whose paint folder `site` uses: the test site a mirror copies (`mirrorOf` in `calibration-targets.json`), else the site itself.
+- `loadCalibration(dir, block, site)` → the slot map with the site's paint merged in as `elements`, or null without a slot map; a site with no paint gets `elements: {}` and `paintMissing`, never another site's paint.
+- `slotMapSkip(dir, block, site, slotKey, recalibrate?)` → why the slot map must be left alone (another site measured it, or its key is current), or null.
+- `paintSkip(dir, block, site, paintKey, recalibrate?)` → why the site's paint is kept (its own file carries the current key), or null. `paintStale(dir, block, site, paintKey)` → true when the site's paint exists with a different key.
+
+### `split-cache.mjs`
+- `splitCache(dir, { dryRun, log })` → `{ split, unchanged, problems }`: splits every combined cache file in `dir`; a file already split is left alone.
+- `placeMirrorPaint(dir, { dryRun, log })` → `{ moved, dropped }`: moves paint files out of a mirror's folder into its test site's, keeping the newer `measured`.
 
 ### `lib/calibrate-props.mjs` (imports `scripts/parity/lib/collect.mjs` and `ref-trace.mjs`)
 - `WIDTHS`: 375, 768, 1440. `MARKER_HEX`, `MARKER_RGB`: the colour marker. `MARKER_GRADIENT`: the gradient marker. `CAL_PREFIX`: `cr-ref-cal-`.
@@ -562,7 +574,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `mergeReports(parts)` → one report from the per-width walks (runs in width order, errors by width).
 - `WALK_FLAGS`: headless unless `SGS_HEADED=1` (Hostinger's edge 403s headless browsers after bursts of traffic; `pairs.mjs`, `calibrate.mjs` and `scripts/wp-build-page.js` honour the same switch, scrollbars hidden); every round's walk is lean (`--lean`: only the styles, boxes, hover end states and structure Solve reads) and reuses the run's draft reads (`--draft-cache <run dir>/draft-cache.json`).
 - `USED_VALUES`: computed properties that are used sizes (`width`), written only as the draft declares them (a plain length or percentage at every width, from the walker's `declared` read), otherwise a `used-value` gap naming what the draft declares.
-- `calibrationFor(block)` → the block's calibration file (through `withInnerRootAliases`) or null.
+- `calibrationFor(block, site, dir?)` → the block's slot map with `site`'s default paint (through `withInnerRootAliases`) or null; `calibrationForSite(site, dir?)` → the `calFor(block)` function for one site.
 - `withInnerRootAliases(cal, block)` → the calibration with every slot, reach and element path also answering to its form without a leading `.sgs-<slug>` step, when the cache holds that inner root as an element (a block calibrated with its optional wrapper on, measured on a page with it off); otherwise `cal` unchanged.
 - `blockRenderSource(name)` → a block's `render.php` source, or null.
 - `outsideOwner(node, { refs, source })` → who owns the content of a block whose words, elements or links come from outside the layout tree (`content-page`, `site-info`, `woocommerce-text`, `product-data`), read from the block's own source, or null. Evidence about the block, never a verdict on a row.
@@ -576,7 +588,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `envUrl(file, key)` → `WP_URL_<key>` from a secrets env file, or null.
 
 ### `fill.mjs` (runs Chromium, serves a local folder)
-- `calibrationLoader(dir)` → the block-to-calibration function: `solve.mjs::calibrationFor` when `dir` is null, else reads `<dir>/<block>.json`.
+- `calibrationLoader(site, dir?)` → the block-to-calibration function for `site`: `solve.mjs::calibrationFor` over the route's cache, or over the cache folder `dir`.
 - `parseMirrors(argv)` → `{ url: absolute file }` from repeated `--mirror <url> <file>`; throws on a lone url.
 - `fillSurface(options)` → the report object (and writes `--out`): lints the skeleton, serves or opens the draft, reads it, resolves root-down, samples entrances and the sweep, and writes every output.
 

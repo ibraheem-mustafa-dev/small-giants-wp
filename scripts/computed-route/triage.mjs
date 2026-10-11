@@ -19,7 +19,7 @@ import { latestReport } from './lib/sweep.mjs';
 import { triage, measuredReachFrom } from './lib/triage.mjs';
 import { helperIndex } from './lib/triage-source.mjs';
 import { load as loadLedger } from './lib/ledger.mjs';
-import { calibrationFor } from './solve.mjs';
+import { calibrationForSite } from './solve.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ROSTER = path.join( BLOCKS_DIR, 'extensions', 'extension-roster.json' );
@@ -156,7 +156,7 @@ export function surfaceContext( { client, surface, report: reportArg = null, mea
 		},
 		roster: JSON.parse( fs.readFileSync( ROSTER, 'utf8' ) ).extensions || [],
 		supportsFor: ( block ) => supports[ block ] || {},
-		calFor: calibrationFor,
+		calFor: calibrationForSite( s.site ),
 		// The client's divergence ledger: an entry accepting a node in full places every row positioned after it.
 		ledger: loadLedger( path.join( buildDir, 'qa', 'divergences.json' ) ),
 		measuredReach,

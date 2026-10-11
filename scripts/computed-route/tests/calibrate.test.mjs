@@ -45,24 +45,24 @@ test( 'MUST FAIL TO MATCH: a real code change still differs after normalising', 
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { skipReason, cachedSite } from '../lib/cache.mjs';
+import { slotMapSkip, cachedSite } from '../lib/cache.mjs';
 
-const cacheFile = ( site ) => {
-	const f = path.join( fs.mkdtempSync( path.join( os.tmpdir(), 'cr-cache-' ) ), 'heading.json' );
-	fs.writeFileSync( f, JSON.stringify( { block: 'sgs/heading', site } ) );
-	return f;
+const cacheDir = ( site ) => {
+	const d = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-cache-' ) );
+	fs.writeFileSync( path.join( d, 'heading.json' ), JSON.stringify( { block: 'sgs/heading', site, slotKey: 'old' } ) );
+	return d;
 };
 
-test( 'a block with no file, or a file from the same site, may be written', () => {
-	assert.equal( skipReason( path.join( os.tmpdir(), 'cr-cache-none', 'heading.json' ), 'sandybrown' ), null );
-	assert.equal( skipReason( cacheFile( 'sandybrown' ), 'sandybrown' ), null );
-	assert.equal( skipReason( cacheFile( 'eye-care-test' ), 'sandybrown', true ), null );
+test( 'a block with no slot map, or one from the same site with a changed key, may be written', () => {
+	assert.equal( slotMapSkip( path.join( os.tmpdir(), 'cr-cache-none' ), 'sgs/heading', 'sandybrown', 'k' ), null );
+	assert.equal( slotMapSkip( cacheDir( 'sandybrown' ), 'sgs/heading', 'sandybrown', 'k' ), null );
+	assert.equal( slotMapSkip( cacheDir( 'eye-care-test' ), 'sgs/heading', 'sandybrown', 'k', true ), null );
 } );
 
-test( 'MUST FAIL TO REPLACE: a sandybrown run never replaces an eye-care-test file without --recalibrate', () => {
-	const f = cacheFile( 'eye-care-test' );
-	assert.match( skipReason( f, 'sandybrown' ), /calibrated on eye-care-test/ );
-	assert.equal( cachedSite( f ), 'eye-care-test' );
+test( 'MUST FAIL TO REPLACE: a sandybrown run never replaces an eye-care-test slot map without --recalibrate', () => {
+	const d = cacheDir( 'eye-care-test' );
+	assert.match( slotMapSkip( d, 'sgs/heading', 'sandybrown', 'k' ), /calibrated on eye-care-test/ );
+	assert.equal( cachedSite( path.join( d, 'heading.json' ) ), 'eye-care-test' );
 } );
 
 // The deploy key reads local text files with LF endings (§3.2): the deploy builds from a clean LF checkout, so a CRLF

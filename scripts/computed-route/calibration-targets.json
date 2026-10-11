@@ -20,6 +20,7 @@
   "local-eye-care": {
     "envFile": ".claude/secrets/local-eye-care.env",
     "envKey": "LOCALEYECARE",
+    "mirrorOf": "eye-care-test",
     "postId": 668,
     "pluginDir": "//wsl.localhost/Ubuntu/var/www/local-eye-care/wp-content/plugins/sgs-blocks",
     "image": {
@@ -30,6 +31,7 @@
   "local-sandybrown": {
     "envFile": ".claude/secrets/local-sandybrown.env",
     "envKey": "LOCALSANDYBROWN",
+    "mirrorOf": "sandybrown",
     "postId": 4750,
     "pluginDir": "//wsl.localhost/Ubuntu/var/www/local-sandybrown/wp-content/plugins/sgs-blocks",
     "image": {
@@ -49,6 +51,7 @@
   "local-indus": {
     "envFile": ".claude/secrets/local-indus.env",
     "envKey": "LOCALINDUS",
+    "mirrorOf": "indus-test",
     "postId": 15,
     "pluginDir": "//wsl.localhost/Ubuntu/var/www/local-indus/wp-content/plugins/sgs-blocks",
     "image": {

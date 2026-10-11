@@ -8,6 +8,7 @@ import os from 'os';
 import path from 'path';
 import { pathToFileURL } from 'url';
 import { fillSurface, calibrationLoader } from '../fill.mjs';
+import { splitCalibration, writeSlotMap, writePaint } from '../lib/cache.mjs';
 import { lintConfig } from '../../parity/lib/lint.mjs';
 
 const DRAFT = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
@@ -53,7 +54,7 @@ before( async () => {
 	repo = path.join( work, 'repo' );
 	const build = path.join( repo, 'sites', 'acme', 'build' );
 	fs.mkdirSync( path.join( build, 'qa' ), { recursive: true } );
-	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { home: { tree: 'home.tree.json', states: { opening: null } } } ) );
+	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { home: { site: 'acme-test', tree: 'home.tree.json', states: { opening: null } } } ) );
 	treeFile = path.join( build, 'home.tree.json' );
 	fs.writeFileSync( treeFile, '[{"name":"sgs/container","attributes":{"committed":true}}]\n' );
 	fs.writeFileSync( path.join( build, 'qa', 'divergences.json' ), '[]\n' );
@@ -61,7 +62,9 @@ before( async () => {
 	const cache = path.join( work, 'cache' );
 	fs.mkdirSync( cache );
 	for ( const [ name, cal ] of Object.entries( CAL ) ) {
-		fs.writeFileSync( path.join( cache, `${ name }.json` ), JSON.stringify( cal ) );
+		const { slotMap, paint } = splitCalibration( { ...cal, site: 'acme-test' } );
+		writeSlotMap( cache, cal.block, slotMap );
+		writePaint( cache, 'acme-test', cal.block, paint );
 	}
 	const draft = path.join( work, 'draft' );
 	fs.mkdirSync( draft );
@@ -140,8 +143,10 @@ test( 'the report names its sections and the generated walker config is accepted
 } );
 
 test( 'calibrationLoader reads a cache directory and answers null for a block without a file', () => {
-	const load = calibrationLoader( path.join( work, 'cache' ) );
+	const load = calibrationLoader( 'acme-test', path.join( work, 'cache' ) );
 	assert.equal( load( 'sgs/text' ).block, 'sgs/text' );
+	assert.ok( Object.keys( load( 'sgs/text' ).elements ).length, 'the site own default paint is merged in' );
+	assert.deepEqual( calibrationLoader( 'other-site', path.join( work, 'cache' ) )( 'sgs/text' ).elements, {}, 'another site has no paint here' );
 	assert.equal( load( 'sgs/nothing' ), null );
 } );
 
@@ -151,7 +156,7 @@ test( 'a tpl-finder skeleton writes the origin map: cr-ref to tpl key, fingerpri
 	const repo2 = path.join( work, 'repo2' );
 	const build = path.join( repo2, 'sites', 'acme', 'build' );
 	fs.mkdirSync( path.join( build, 'qa' ), { recursive: true } );
-	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { about: { tree: 'about.tree.json', states: { opening: null } } } ) );
+	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { about: { site: 'acme-test', tree: 'about.tree.json', states: { opening: null } } } ) );
 	fs.writeFileSync( path.join( build, 'qa', 'divergences.json' ), '[]\n' );
 	fs.copyFileSync( path.join( repo, 'sites', 'acme', 'theme-snapshot.json' ), path.join( repo2, 'sites', 'acme', 'theme-snapshot.json' ) );
 	const draft = path.join( work, 'draft2' );

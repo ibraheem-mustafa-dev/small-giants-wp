@@ -26,21 +26,15 @@ import { sampleEntrances, shapeEntrance, entranceWrites } from './lib/fill-entra
 import { sweepSteps } from './lib/fill-values.mjs';
 import { walkerConfigs } from './lib/fill-config.mjs';
 import { fillReport, unmappedList } from './lib/fill-report.mjs';
-import { calibrationFor, withInnerRootAliases } from './solve.mjs';
+import { calibrationFor } from './solve.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
 
-// The calibration loader: the route's own cache (solve.mjs::calibrationFor), or the cache files in `dir` (a run against
-// another checkout's measured cache).
-export function calibrationLoader( dir = null ) {
-	if ( ! dir ) {
-		return calibrationFor;
-	}
-	return ( block ) => {
-		const f = path.join( path.resolve( dir ), `${ block.replace( /^sgs\//, '' ) }.json` );
-		return fs.existsSync( f ) ? withInnerRootAliases( JSON.parse( fs.readFileSync( f, 'utf8' ) ), block ) : null;
-	};
+// The calibration loader for one site: the route's own cache (solve.mjs::calibrationFor), or the cache files in `dir` (a
+// run against another checkout's measured cache). Default paint comes from `site`'s own file only.
+export function calibrationLoader( site, dir = null ) {
+	return ( block ) => calibrationFor( block, site, dir ? path.resolve( dir ) : undefined );
 }
 
 // `--mirror <url> <file>` (repeatable) as { url: absolute file path }.
@@ -79,6 +73,9 @@ export async function fillSurface( o ) {
 	if ( ! entry ) {
 		throw new Error( `no surface "${ o.surface }" in sites/${ o.client }/build/surfaces.json` );
 	}
+	if ( ! entry.site ) {
+		throw new Error( `surface "${ o.surface }" names no site in sites/${ o.client }/build/surfaces.json, so there is no default paint to read` );
+	}
 	const db = openDb();
 	const snapshotFile = path.join( repo, 'sites', o.client, 'theme-snapshot.json' );
 	const snapshot = loadSnapshot( snapshotFile );
@@ -108,7 +105,7 @@ export async function fillSurface( o ) {
 	const url = served ? served.url : o.draftUrl;
 	try {
 		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, log } );
-		const calFor = calibrationLoader( o.cache );
+		const calFor = calibrationLoader( entry.site, o.cache );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
