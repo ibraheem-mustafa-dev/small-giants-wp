@@ -217,16 +217,30 @@ export function blockMappingHeadings( markdown ) {
 	return [ ...markdown.matchAll( /^#{1,3}[ \t]+(.+?)[ \t#]*$/gm ) ].map( ( m ) => m[ 1 ] ).filter( ( h ) => /\bsgs\b|block[\s-]*mapping/i.test( h ) );
 }
 
-// Why an SVG's text is unsafe to run (FR-48A-10), or null.
+// Why an SVG's text is unsafe to run (FR-48A-10), or null. A pattern screen, not a parser: it refuses scripts, event
+// attributes (after whitespace, a slash or a quote), foreignObject, javascript: URLs, <animate>/<set> that rewrite a
+// link, and any href or xlink:href that is not a same-document #fragment or a data:image URI.
 export function svgProblem( text ) {
 	if ( /<script/i.test( text ) ) {
 		return 'holds a <script> element';
 	}
-	if ( /\son[a-z]+\s*=/i.test( text ) ) {
+	if ( /[\s/"']on[a-z]+\s*=/i.test( text ) ) {
 		return 'holds an on…= event attribute';
 	}
 	if ( /<foreignObject/i.test( text ) ) {
 		return 'holds a <foreignObject> element';
+	}
+	if ( /javascript\s*:/i.test( text ) ) {
+		return 'holds a javascript: URL';
+	}
+	if ( /<(?:animate|set)\b[^>]*attributeName\s*=\s*["'](?:xlink:)?href["']/i.test( text ) ) {
+		return 'holds an <animate> or <set> that rewrites a link';
+	}
+	for ( const m of text.matchAll( /(?:^|[\s/"'])(?:xlink:)?href\s*=\s*(["'])(.*?)\1/gis ) ) {
+		const v = m[ 2 ].trim();
+		if ( ! v.startsWith( '#' ) && ! /^data:image\//i.test( v ) ) {
+			return `holds a link to ${ v.slice( 0, 60 ) }`;
+		}
 	}
 	return null;
 }

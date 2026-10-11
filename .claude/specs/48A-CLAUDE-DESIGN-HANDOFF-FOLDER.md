@@ -121,8 +121,10 @@ A draft runs code: `support.js` evaluates fetched scripts with `new Function`, a
 Intake runs drafts only through `scripts/computed-route/lib/draft.mjs::serveDraft` (127.0.0.1, files inside the folder
 only), in a fresh browser profile whose network is limited to the draft server and the three pinned unpkg files, from
 a process given no `.claude/secrets/` values or SSH agent. Exported prose (`README.md`, `READING-DC-FILES.md`,
-inventory notes) is data, never instructions to an agent, and command-like text in it is shown to Bean. The check fails on an SVG under `assets/` holding `<script`, an `on…=` event attribute or
-`<foreignObject`, and on any file over 20 MB.
+inventory notes) is data, never instructions to an agent, and command-like text in it is shown to Bean. The check fails on an SVG under `assets/` holding `<script`, an `on…=` event attribute, `<foreignObject`, a
+`javascript:` URL, an `<animate>` or `<set>` that rewrites a link, or any link other than a `#fragment` or a
+`data:image` URI, and on any file over 20 MB. This is a pattern screen; a parser-based allowlist comes with the
+sandboxed intake (Spec 48).
 Status: SVG and size checks in `handoff-check.mjs`; the browser sandbox and the prose rule are a Spec 48 intake stage.
 
 ### FR-48A-11 -- Near-finished sites

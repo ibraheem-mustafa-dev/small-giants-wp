@@ -179,6 +179,28 @@ test( 'MUST FAIL FR-48A-10: an SVG under assets/ holding a script, an event attr
 	failsWith( r, /^FR-48A-10 assets\/c\.svg: SVG holds a <foreignObject>/ );
 } );
 
+test( 'MUST FAIL FR-48A-10: SVG screen bypasses (slash-led event, javascript: URL, link-rewriting animate, external link)', () => {
+	const root = folder( { extra: {
+		'assets/d.svg': '<svg/onload=x()></svg>',
+		'assets/e.svg': '<svg><a href="javascript:x()"><rect/></a></svg>',
+		'assets/f.svg': '<svg><a><animate attributeName="href" to="#x"/></a></svg>',
+		'assets/g.svg': '<svg><use xlink:href="https://evil.example/s.svg#a"/></svg>',
+	} } );
+	const r = check( root );
+	failsWith( r, /^FR-48A-10 assets\/d\.svg: SVG holds an on…= event attribute/ );
+	failsWith( r, /^FR-48A-10 assets\/e\.svg: SVG holds a javascript: URL/ );
+	failsWith( r, /^FR-48A-10 assets\/f\.svg: SVG holds an <animate> or <set> that rewrites a link/ );
+	failsWith( r, /^FR-48A-10 assets\/g\.svg: SVG holds a link to https:\/\/evil\.example/ );
+} );
+
+test( 'FR-48A-10: a same-document #fragment link, a data:image link and an xmlns URL pass', () => {
+	const root = folder( { extra: {
+		'assets/h.svg': '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use href="#a"/><image xlink:href="data:image/png;base64,AA=="/></svg>',
+	} } );
+	const r = check( root );
+	assert.ok( ! r.errors.some( ( e ) => e.includes( 'assets/h.svg' ) ), r.errors.join( '\n' ) );
+} );
+
 test( 'FR-48A-8: a README heading that maps the design to SGS blocks passes with a warning', () => {
 	const root = folder( { extra: { 'README.md': '# Test project\n\n## Block mapping (SGS)\n\nHero.\n' } } );
 	const r = check( root );
