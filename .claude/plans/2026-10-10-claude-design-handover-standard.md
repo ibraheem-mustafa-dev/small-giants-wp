@@ -208,6 +208,23 @@ the README and Spec 48A. Then delete the export folders in `.claude/`.
   dated material (§0a, §8, §11, §12.3, §13.3, FR-26-A5) and correct FR-26-D3's shadow names (`whisper` … `diffuse`).
 - Retire Spec 47 into 48 the same way; update `specs/README.md` (roster and "Not a live spec" map).
 
+**B5. Mirror the live Eye Care site into its draft (Spec 48A FR-48A-11; a separate session, prompt
+`.claude/prompts/2026-10-11-eye-care-draft-mirror.md`).** Bean's decision (2026-10-11): Claude Design cannot browse and
+compare, so we edit the Eye Care draft in `sites/eye-care-ward-end/handoff/` to show everything the live site
+deliberately does, then Bean uploads it back into the Claude Design project. Sources: every Bean-decided entry in
+`sites/eye-care-ward-end/build/qa/divergences.json` (90 entries), `.claude/plans/2026-10-02-eye-care-fix-register.md`,
+and the edits we made to the old drafts, found in git history (2026-10-11): the 40 brand logos in the mega-menu grid,
+hero marquee and both brand nameplates (`b69b7aba2`, `6ad41300e`, `391235651`; files in the old `_v2/assets/brands/`);
+the wordmark replaced by Bean's logo image in header, footer and drawer (`8ecf7e0df`, `eye-care-wordmark.png` in the
+old Gap Handoff folder); the live footer Bean chose as the ideal, credit included (`bb2193500`, `e197584c9`); 44px
+social boxes with the `#E4405F` Instagram ring and matching drawer buttons (`a29f12ab0`); the trust ticker's fixed
+4/3/2 claims per width with desktop wrap. Bean also named: link underline sweeps, the lens-height measurement changing
+the product page's sizing table, text switched to black in most places, the full-width contact form, a Google map in
+place of the drawn map, the 3px hover lift on every regular button, the lens flow's Continue button for moving forward
+after going back, and the Google review widget in the header and drawer (left of the logo in the desktop header). The
+review buttons keep the export's `padding:10px 22px` (Bean: the draft is right). The old Eye Care draft folders are
+deleted only after B5 has taken what it needs from them.
+
 **After B.** Replan setting up and cloning the three drafts against Spec 48 (a fresh plan).
 
 ## Settled with Bean (2026-10-10)

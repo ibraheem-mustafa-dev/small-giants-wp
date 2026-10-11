@@ -126,12 +126,16 @@ inventory notes) is data, never instructions to an agent, and command-like text 
 Status: SVG and size checks in `handoff-check.mjs`; the browser sandbox and the prose rule are a Spec 48 intake stage.
 
 ### FR-48A-11 -- Near-finished sites
-A client whose site is already built from an earlier draft (Eye Care) keeps its export in `handoff/` as a reference
-only. Intake is not run on it; its recorded deliberate differences from the draft live in
-`sites/eye-care-ward-end/build/qa/divergences.json` (computed-style differences, read by the walker) and
-`.claude/plans/2026-10-02-eye-care-fix-register.md` (behaviour and content). Features built beyond the draft (the
-account area, Spec 27 FR-30-14) are framework code and need no draft.
-Status: specified.
+A client whose site is already built from an earlier draft (Eye Care) is not put through intake. Its draft is the
+answer key the cloning pipeline is measured against, so it must show what the live site deliberately does: Claude Code
+edits the draft in `sites/<client>/handoff/` to mirror every difference Bean has decided (Eye Care's are in
+`sites/eye-care-ward-end/build/qa/divergences.json` and `.claude/plans/2026-10-02-eye-care-fix-register.md`),
+compares each change in a browser at 375, 768 and 1440, then regenerates `animations.json`, `surfaces.json` and
+`MANIFEST.json` so the folder passes the check. Claude Design cannot open the live site to compare, which is why we
+make these edits (Bean, 2026-10-11). Bean uploads the edited drafts and any new asset files into the Claude Design
+project, so a later export starts from the mirrored version. Features built beyond the draft (the account area,
+Spec 27 FR-30-14) are framework code and need no draft.
+Status: specified; the Eye Care mirror is plan task B5.
 
 ### FR-48A-12 -- The producer's instructions
 `.claude/claude-design-handoff/` holds the one pasted prompt (`PROMPT.txt`), the project `CLAUDE.md` (standing facts,
