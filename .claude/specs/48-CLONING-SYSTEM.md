@@ -999,7 +999,7 @@ full function index.
 | `tests/` | `node --test "scripts/computed-route/tests/*.test.mjs"` (Node 24 runs a glob, not a bare folder); each file names the rule it proves and has one case that must fail. `tests/check-lane-collisions.mjs` is a parallel-lane process gate, not route behaviour | all |
 | `intake.mjs` (not built) | The intake command: census, re-derived inventory, routing adapters, page map, palette roles, Site Info proposal, flags, missing-features list, the review page, and `--apply-review` | §9, FR-48-17 |
 | `lib/tokens.mjs` (not built) | Parses `tokens/*.css` into declared tokens with no render, for the palette role proposal | FR-48-31 |
-| `package.json`, `package-lock.json` (not built) | The route's own pinned dependencies | FR-48-75 |
+| `package.json`, `package-lock.json` | The route's own pinned dependencies (`npm ci` in `scripts/computed-route`; `node_modules` is gitignored, so a fresh worktree runs it first) | FR-48-75 |
 | Code readers (not built) | Declared values for every property, recorded motion, logic as data, the skeleton code reader | §3.4 FR-48-7, FR-48-8, §9 |
 | Site-build script (not built) | Pages, CPT posts, menus, pointers and options from the confirmed page map | §12, R-48-2 |
 
@@ -1029,10 +1029,11 @@ produced it, and G0 (FR-48-64) treats a version change as stale.
 Done when: `npm ci` in `scripts/computed-route` installs the pinned set; a planted import from
 `plugins/sgs-blocks/node_modules` fails `lint.mjs`; a cache file whose recorded browser version differs from the
 installed one fails G0.
-Status: not built. There is no route `package.json`. Playwright is loaded from
-`plugins/sgs-blocks/node_modules/playwright` (`calibrate.mjs`, `pairs.mjs`, `lib/fill-read.mjs`, `lib/trial-run.mjs`,
-`lib/winning-rule.mjs`), Ajv through `lib/handoff.mjs`'s `ajv-formats` anchor, and `saxes` through
-`lib/svg-screen.mjs::saxesParser`, all under `plugins/sgs-blocks/node_modules`.
+Status: built except G0's version check (2026-10-11). `scripts/computed-route/package.json` pins `playwright` 1.58.2,
+`ajv` 8.20.0, `ajv-formats` 2.1.1, `saxes` 6.0.0 and `@babel/parser` 7.29.9; route files import them by bare
+specifier; `lint.mjs::lintFolder` refuses any route file naming the plugin's `node_modules` (`tests/lint.test.mjs`, one
+MUST FAIL case); `calibrate.mjs` writes `playwrightVersion` and `browserVersion` into each cache file. G0 (FR-48-64)
+comparing them with the installed versions is not built.
 
 ## 5. Build order, proofs and residual
 
@@ -2388,7 +2389,7 @@ Items Spec 48 needs but does not own. "Blocks" says which client cannot finish w
 | Calibration records accepted value forms (`clamp()`, `vw`, `repeat()`, column count) | calibration (§3.2, FR-48-2) | Indus (fluid presets, grids) | partly built (colour forms only) |
 | Indus local mirror `local-indus` and calibration targets `indus-test` and `local-indus` | Spec 48 Appendix A step 13 | Indus | not built |
 | Default paint stored per site (`cache/<site>/<block>.paint.json`) | calibration (§3.2, FR-48-3) | Indus (protects Eye Care's caches) | not built |
-| The route's own pinned `package.json` | Spec 48 FR-48-75 | neither | not built |
+| The route's own pinned `package.json` | Spec 48 FR-48-75 | neither | built (G0's version check not built) |
 | `overriddenBy` with a rendered-box guard | calibration (§3.2) | neither | not built |
 | `container.layout` and `choice-flow.skipAddsToBag` `css_property` (NULL today) | `sgs-update-v2.py` | Indus (`layout`) | not built |
 | Extractor `border` vocabulary (`border-subtle` to `border`) | Spec 48 §11 (`palette.py`, `roles.py`) | Indus | not built |

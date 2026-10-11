@@ -12,9 +12,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const PARITY = process.env.L2_PARITY_DIR ? path.resolve( process.env.L2_PARITY_DIR ) : path.join( HERE, '../../parity' );
 const lib = ( f ) => import( pathToFileURL( path.join( PARITY, 'lib', f ) ).href );
-const PLAYWRIGHT = [ '../../../plugins/sgs-blocks/node_modules/playwright/index.mjs', '../../../../../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ]
-	.map( ( p ) => path.join( HERE, p ) ).find( ( p ) => fs.existsSync( p ) );
-const { chromium } = await import( pathToFileURL( PLAYWRIGHT ).href );
+const { chromium } = await import( 'playwright' );
 
 const { DEFAULT_PROPS, ACTIVE_PROPS, FOCUS_PROPS, resolveFinder, collectPair, centreOf, hoverPointOf } = await lib( 'collect.mjs' );
 const { PAINT_SRC, lineRows } = await lib( 'paint.mjs' );

@@ -20,7 +20,9 @@ file names the rule it proves and has one case marked MUST FAIL.
 | File | Job |
 |---|---|
 | `README.md` | This index. |
-| `lint.mjs` | The route's gate: README index, plugins/sgs-blocks/scripts import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, every divergence-ledger entry beside that manifest citing register items its register holds (`--register`, else the `register` of `qa/ledger.config.json` beside the ledger; B4), client names. |
+| `package.json` | The route's own third-party packages at exact versions (FR-48-75): `playwright`, `ajv`, `ajv-formats`, `saxes`, `@babel/parser`. Route code imports them from `scripts/computed-route/node_modules` only (`npm ci` here installs them). |
+| `package-lock.json` | The lock file for `package.json`. |
+| `lint.mjs` | The route's gate: README index, plugins/sgs-blocks/scripts import ban, `plugins/sgs-blocks/node_modules` ban (FR-48-75), no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, every divergence-ledger entry beside that manifest citing register items its register holds (`--register`, else the `register` of `qa/ledger.config.json` beside the ledger; B4), client names. |
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse and focus by keyboard on the styled element, its panel opened when hidden; a shrunk marker with its ancestor class; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
 | `fill.mjs` | Fill command (FR-47-4): a skeleton tree plus a draft (a hosted url or a local folder) to a tree resolved root-down in one pass, before anything is built. Needs `--client`, `--surface`, `--skeleton`, `--live-url` and one of `--draft-url` / `--draft-dir`; `--serve <folder>` serves a draft until Ctrl-C. Reads `surfaces.json`, the snapshot and the ledger; writes only into `--out`: `filled.tree.json`, `fill-report.md`/`.json`, `unmapped.json`, `handover.json`, `breakpoints.json` and the generated walker config, plus `<build>/<surface>.origin.json` (cr-ref to `tpl` key and fingerprint) when the skeleton names its draft elements by `tpl` finder. |
@@ -62,7 +64,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/deploy-hash.mjs` | The deploy key: md5 of a block's front-end build files, locally and on the site. |
 | `lib/draft.mjs` | Serves a local draft folder on 127.0.0.1 at an ephemeral port: directory index, an explicit index file, content types, Range, no path escape, clean close. |
 | `lib/handoff.mjs` | Spec 48A's check: the required list, the folder walk (symlinks fail), draft and script reachability, Ajv 8 for the master schemas, the manifest builder, and `checkHandoff`, which returns every failure and warning naming the file and rule. |
-| `lib/svg-screen.mjs` | FR-48A-10's SVG safety screen: parses each SVG as namespace-aware XML (saxes from the nested copy under `plugins/sgs-blocks/node_modules/jsdom`) and refuses malformed XML, a DOCTYPE, elements outside the SVG namespace (editor and provenance metadata excepted), script and foreignObject by local name whatever the prefix, on* attributes, animations that rewrite a link, `href`/`src`/`data`/`action` and CSS `url()` targets other than `#…` or a raster `data:image`, `javascript:` and CSS `@import`. |
+| `lib/svg-screen.mjs` | FR-48A-10's SVG safety screen: parses each SVG as namespace-aware XML (saxes from the route's own pinned install) and refuses malformed XML, a DOCTYPE, elements outside the SVG namespace (editor and provenance metadata excepted), script and foreignObject by local name whatever the prefix, on* attributes, animations that rewrite a link, `href`/`src`/`data`/`action` and CSS `url()` targets other than `#…` or a raster `data:image`, `javascript:` and CSS `@import`. |
 | `lib/runtime-probe.mjs` | FR-48A-5's probe (Playwright by path): renders the fixture with a build through `serveDraft`, reads both numberings, compares them with the record, splits builds into their `// src/<name>.ts` modules and records a passing build. |
 | `lib/fill-skeleton.mjs` | The skeleton contract: `draftRef` and `draftSlots` are walker finders, slot finders resolve inside their node's element; node indices, targets, problems, and the clean tree. |
 | `lib/skeleton-inventory.mjs` | Skeleton step 1: every `data-dc-tpl` element of a draft surface in a real browser at 1440, 375 and 768 (key, parent, tag, words, attributes, the draft's own code, loop membership, boxes, visibility, screenshots), through the page bridges `__dcAnnotatedTemplate` and `__dcRootName`. |
@@ -824,14 +826,14 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `resolveRef(value, fromDraft?)` → a folder-relative path (query and fragment removed, URL-decoded, leading `./` removed), or null for a templated value, an absolute URL, a bare fragment or a path leaving the folder.
 - `draftRefs(text, fromDraft?)` → `{ drafts, scripts }` one draft names: `dc-import` names as `X.dc.html`, `href`/`src` values ending in `.dc.html`, `<script src>` and `x-import from=` values.
 - `reachable(root, entries, files)` → `{ drafts, scripts }` reachable from the entry drafts (scripts: `.js` files on disk).
-- `loadAjv(anchor?)` → an Ajv 2020 instance (`strict: false`, `allErrors: true`, formats when ajv-formats loads); throws naming the anchor when Ajv 8 cannot be resolved.
+- `loadAjv()` → an Ajv 2020 instance (`strict: false`, `allErrors: true`, with ajv-formats), from the route's own pinned install.
 - `schemaProblems(ajv, schemaFile, data)` → readable problems, at most 20 and a remainder line.
 - `buildManifest(root, { project, entryDrafts, generated? })` → a MANIFEST.json object for the files now in `root`.
 - `blockMappingHeadings(markdown)` → level 1 to 3 headings naming SGS or block mapping.
 - `checkHandoff(root, { known?, schemas?, ajv? })` → `{ errors, warnings, sha }`, each line `FR-48A-<n> <file>: <reason>`.
 
-### `lib/svg-screen.mjs` (saxes from `plugins/sgs-blocks/node_modules/jsdom`)
-- `saxesParser(anchor?)` → the saxes `SaxesParser` class; throws a clear error when it cannot be resolved.
+### `lib/svg-screen.mjs` (saxes from the route's own pinned install)
+- `saxesParser()` → the saxes `SaxesParser` class, from the route's own pinned install.
 - `svgProblem(text)` → why an SVG is unsafe to run, or null.
 
 ### `lib/runtime-probe.mjs` (Playwright by path, serves through `lib/draft.mjs`)
@@ -854,7 +856,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lint.mjs`
 - `routeFiles(root)` → every route file, relative.
 - `exportsOf(src)` → exported names.
-- `lintFolder(root)` → problems (README index, scripts imports).
+- `lintFolder(root)` → problems (README index, scripts imports, a file naming the plugin's `node_modules`).
 - `lintTree(tree, db, label?)` → problems (core style, native_wp).
 - `lintSkeleton(tree, db, label?)` → problems (style values; and a brand `sgs/icon` that types its own brand's address in `linkUrl` with no `metadata.bindings.linkUrl`).
 - `registerIds(markdown)` → the item ids a fix register holds (table first cells, comma-split, and ids leading a bullet).

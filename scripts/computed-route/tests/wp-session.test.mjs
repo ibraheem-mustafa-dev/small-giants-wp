@@ -7,14 +7,14 @@ import os from 'os';
 import path from 'path';
 import fs from 'fs';
 import { createRequire } from 'module';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const require = createRequire( import.meta.url );
 const wpSession = require( path.join( REPO, 'scripts/lib/wp-session.js' ) );
 
 test( 'MUST FAIL (trust-bar dialog race, then ERR_ABORTED): both connections survive a dialog; a confirm is dismissed, a beforeunload left', async () => {
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const profileDir = fs.mkdtempSync( path.join( os.tmpdir(), 'wp-session-test-' ) );
 	const shared = await wpSession.launchShared( chromium, { profileDir, headless: true } );
 	const errors = [];

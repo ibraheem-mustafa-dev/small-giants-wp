@@ -34,7 +34,7 @@ test( 'importing independent-check.mjs does not run the check', async () => {
 
 test( 'MUST FAIL (PA-4): screen-reader-only text and a skip link parked at -9999px are not found; painted text is', async () => {
 	const { readPage } = await import( CHECK );
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage();
@@ -53,7 +53,7 @@ test( 'MUST FAIL (PA-4): screen-reader-only text and a skip link parked at -9999
 
 test( 'MUST FAIL (PA-4): text that exists only in a screen-reader-only box is not found', async () => {
 	const { readPage } = await import( CHECK );
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage();
@@ -68,7 +68,7 @@ test( 'MUST FAIL (PA-4): text that exists only in a screen-reader-only box is no
 
 test( 'MUST FAIL (Lenses eyebrow, 2026-10-07): text repeated in a trust bar outside main resolves to the page block in main', async () => {
 	const { readPage } = await import( CHECK );
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage( { viewport: { width: 375, height: 700 } } );
@@ -87,7 +87,7 @@ test( 'MUST FAIL (Lenses eyebrow, 2026-10-07): text repeated in a trust bar outs
 
 test( 'MUST FAIL (Lenses button, 2026-10-07): a block whose own text another block\'s text starts with resolves to the exact match, not the earlier container of the words', async () => {
 	const { readPage } = await import( CHECK );
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );
@@ -117,7 +117,7 @@ test( 'MUST FAIL (Lenses gap, 2026-10-08): a block with no gap and a flex gap of
 // the hours container fell back to its label, which pushed the "Hours" label onto a social card holding "hours".
 test( 'MUST FAIL (Contact hours, 2026-10-08): a <br> separates words, so text after it is found', async () => {
 	const { readPage } = await import( CHECK );
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );
@@ -139,7 +139,7 @@ test( 'MUST FAIL (Contact hours, 2026-10-08): a <br> separates words, so text af
 // sees (Contact page containers read padding-left -9979px).
 test( 'MUST FAIL (Contact page inset, 2026-10-08): text parked off the page does not count in a container\'s inset', async () => {
 	const { readPage } = await import( CHECK );
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );
@@ -157,7 +157,7 @@ test( 'MUST FAIL (Contact page inset, 2026-10-08): text parked off the page does
 // as their own text run (the walker's paint.mjs::textRun), never reported as not found.
 test( 'MUST FAIL (Contact cards, 2026-10-08): own words that are bare text inside a claimed element are measured as a text run', async () => {
 	const { readPage } = await import( CHECK );
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );
@@ -188,7 +188,7 @@ test( 'a text run against an element compares where the words paint and their ty
 // to the first. A7: text inside an element with display:contents (no box of its own) still paints and counts.
 test( 'MUST FAIL (QC A5): two blocks with the same bare words take different occurrences', async () => {
 	const { readPage } = await import( CHECK );
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );
@@ -208,7 +208,7 @@ test( 'MUST FAIL (QC A5): two blocks with the same bare words take different occ
 
 test( 'MUST FAIL (QC A7): text inside display:contents counts in the inset', async () => {
 	const { readPage } = await import( CHECK );
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );

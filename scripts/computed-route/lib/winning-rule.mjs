@@ -2,12 +2,9 @@
 // the rule that paints the live value, and the rule that carries the draft's value but loses. Chrome DevTools'
 // matched-rules read (the same one parity/lib/devtools.mjs::cascadeWinner uses), once per distinct element and width.
 // Read-only: nothing on the page is changed. A row that cannot be read keeps its own reason and gains a `note`.
-import { pathToFileURL } from 'url';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { openDevtools } from '../../parity/lib/devtools.mjs';
 
-const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const SIDES = { top: 'block-start', bottom: 'block-end', left: 'inline-start', right: 'inline-end' };
 
 // Every property name that can set `prop`: itself, the logical longhand, and the shorthands covering it.
@@ -85,7 +82,7 @@ export async function readWinningRules( rows, { liveUrl, restState = 'opening', 
 		todo.forEach( ( r ) => out.set( r, { note: 'winning rule not read: no live URL' } ) );
 		return out;
 	}
-	const { chromium } = await import( pathToFileURL( path.join( HERE, '../../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
 	try {
 		for ( const width of [ ...new Set( todo.map( ( r ) => r.width ) ) ].sort( ( a, b ) => a - b ) ) {

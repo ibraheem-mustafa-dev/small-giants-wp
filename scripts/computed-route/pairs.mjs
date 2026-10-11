@@ -339,7 +339,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const runs = pairingStates( cfg, flag( '--state' ) );
 	const width = Number( flag( '--width' ) || 1440 );
 	const recheck = 'none' === flag( '--recheck' ) ? [] : ( flag( '--recheck' )?.split( ',' ).map( Number ) || RECHECK_WIDTHS.filter( ( w ) => w !== width ) );
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load); scrollbars hidden as the walker hides them,
 	// or a headed window lays the page out about 15px narrower than its viewport.
 	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars' ] } );

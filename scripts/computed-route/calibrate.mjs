@@ -11,7 +11,7 @@ import path from 'path';
 import { spawn, spawnSync } from 'child_process';
 import v8 from 'v8';
 import { createRequire } from 'module';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
 import { openDb, attrsFor, enumSettings, variantInfo } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
@@ -70,7 +70,7 @@ async function openBrowser( site, env ) {
 	const require = createRequire( import.meta.url );
 	const wpSession = require( '../lib/wp-session.js' );
 	const closeOnExit = require( '../lib/close-browser-on-exit.js' );
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	if ( process.env.SGS_CDP_URL ) {
 		const attached = await wpSession.connectShared( chromium );
 		await wpSession.ensureLoggedIn( attached.page, env, EDITOR_TIMEOUT_MS );
@@ -269,7 +269,10 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const deadNames = [ ...new Set( dead ) ].filter( ( n ) => ! settings[ n ] );
 	// text, presence and link are omitted entirely when the block has nothing of that kind.
 	const content = collectContent( instances.filter( ( i ) => i.content && i.contentRead ) );
-	const file = { block, site, slotKey, paintKey, measured: new Date().toISOString(), settings, discovered, elements, ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
+	// FR-48-75: the Playwright and browser builds that produced this file; G0 treats a change in either as stale.
+	const playwrightVersion = createRequire( import.meta.url )( 'playwright/package.json' ).version;
+	const browserVersion = shared.context.browser()?.version() ?? null;
+	const file = { block, site, slotKey, paintKey, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
 	fs.writeFileSync( path.join( CACHE, `${ short }.json` ), JSON.stringify( file, null, 1 ) );
 	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
 }

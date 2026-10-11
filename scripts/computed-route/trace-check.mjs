@@ -4,10 +4,10 @@
 // (mechanism, element, duration) is matched to an animations.json record by template_tpl_id or nearest_tpl_id and
 // duration_ms; a record whose duration is a formula string matches any non-integer duration.
 // Negative control: --shift=7 adds 7ms to every record's duration, so a sound match count drops to 0.
-import { pathToFileURL, fileURLToPath } from 'node:url'; import fs from 'node:fs'; import path from 'node:path';
+import { fileURLToPath } from 'node:url'; import fs from 'node:fs'; import path from 'node:path';
 import { serveDraft } from './lib/draft.mjs';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const { chromium } = await import(pathToFileURL(path.join(REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs')).href);
+const { chromium } = await import( 'playwright' );
 
 const args = process.argv.slice(2);
 const folder = args.find((a) => !a.startsWith('--'));

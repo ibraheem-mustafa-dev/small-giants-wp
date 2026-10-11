@@ -4,13 +4,11 @@
 import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
 import { resolveFinder, collectPair, DEFAULT_PROPS } from '../../parity/lib/collect.mjs';
 import { textCarrier, textRun, PAINT_SRC } from '../../parity/lib/paint.mjs';
 import { inventory } from '../../parity/lib/chrome.mjs';
 
-const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const { chromium } = await import( pathToFileURL( path.join( HERE, '../../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+const { chromium } = await import( 'playwright' );
 const RESOLVE = resolveFinder.toString();
 let browser;
 before( async () => {

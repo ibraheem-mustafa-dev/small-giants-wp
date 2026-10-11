@@ -1,0 +1,14 @@
+{
+	"name": "sgs-computed-route",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"description": "The computed-route's own pinned third-party packages (Spec 48 FR-48-75). Route code imports them from this folder's node_modules only.",
+	"dependencies": {
+		"@babel/parser": "7.29.9",
+		"ajv": "8.20.0",
+		"ajv-formats": "2.1.1",
+		"playwright": "1.58.2",
+		"saxes": "6.0.0"
+	}
+}

@@ -3,7 +3,7 @@
 // the page). Used by solve.mjs between a write round and the rebuild, and by the replay CLI trial.mjs.
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
 import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { uidsIn, mapUids, ruleDiff, selfCheck, untriable, withWrite, judgeTrial, savedBlock } from './trial.mjs';
 import { readEnv, adminSession, renderBlock, styleOf, rootClassOf, rulesInPage, parseInPage, cssOf, applyTrialInPage, undoTrialInPage, measureInPage, scopeInPage } from './trial-page.mjs';
@@ -135,7 +135,7 @@ async function tryOne( { cand, attrs, session, pageOf, finders, widths, draft } 
 export async function openTrial( { envFile, envKey, walkerCfg, target, log = console.log } ) {
 	const env = readEnv( path.join( REPO, envFile ) );
 	const finders = Object.fromEntries( walkerCfg.pairs.filter( ( p ) => p?.name && p.live && 'function' !== typeof p.live ).map( ( p ) => [ p.name, p.live ] ) );
-	const { chromium, devices } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium, devices } = await import( 'playwright' );
 	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars' ] } );
 	try {
 		const session = await adminSession( await browser.newContext(), env, envKey );

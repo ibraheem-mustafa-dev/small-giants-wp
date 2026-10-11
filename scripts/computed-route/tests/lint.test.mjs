@@ -1,4 +1,5 @@
-// Proves R-47-1 and R-47-10 through lint.mjs: an unlisted file or export, a converter import, a core style or
+// Proves R-47-1, FR-48-75 and R-47-10 through lint.mjs: an unlisted file or export, a converter import, an import from the
+// plugin's node_modules, a core style or
 // native_wp write in a tree, and a style value in a Fill skeleton each fail.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -30,6 +31,25 @@ test( 'MUST FAIL: a planted unlisted export and a converter import fail the fold
 	const p = lintFolder( d );
 	assert.ok( p.some( ( x ) => /exports planted/.test( x ) ) );
 	assert.ok( p.some( ( x ) => /R-47-1/.test( x ) ) );
+} );
+
+test( 'a route file that imports a package from its own node_modules passes (FR-48-75)', () => {
+	const d = tmp();
+	fs.writeFileSync( path.join( d, 'a.mjs' ), "import { chromium } from 'playwright';\nexport function alpha() {}\n" );
+	fs.writeFileSync( path.join( d, 'README.md' ), '`a.mjs`: `alpha`\n' );
+	assert.deepEqual( lintFolder( d ), [] );
+} );
+
+test( 'MUST FAIL: a planted import from the plugin node_modules fails the folder, as a path and as path.join pieces (FR-48-75)', () => {
+	const d = tmp();
+	// The planted names are split so this test file itself carries no reference to that folder.
+	const plugin = 'plugins/sgs-blocks/' + 'node_modules';
+	fs.writeFileSync( path.join( d, 'a.mjs' ), `import x from '../../../${ plugin }/playwright/index.mjs';\nexport function alpha() {}\n` );
+	fs.writeFileSync( path.join( d, 'b.mjs' ), `const f = path.join( REPO, 'plugins', 'sgs-blocks', ${ "'node_" + "modules'" }, 'ajv' );\nexport function beta() {}\n` );
+	fs.writeFileSync( path.join( d, 'README.md' ), '`a.mjs`: `alpha`\n`b.mjs`: `beta`\n' );
+	const p = lintFolder( d );
+	assert.ok( p.some( ( x ) => /^a\.mjs names the plugin's node_modules.*FR-48-75/.test( x ) ) );
+	assert.ok( p.some( ( x ) => /^b\.mjs names the plugin's node_modules/.test( x ) ) );
 } );
 
 test( 'trees: a core style attribute fails; sgs settings pass', () => {

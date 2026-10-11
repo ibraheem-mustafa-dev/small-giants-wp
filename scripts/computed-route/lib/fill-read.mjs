@@ -3,7 +3,6 @@
 // exactly what a later walk of the built page will compare against.
 import fs from 'fs';
 import path from 'path';
-import { pathToFileURL, fileURLToPath } from 'url';
 import { DEFAULT_PROPS, PSEUDO_PROPS, resolveFinder, collectPair } from '../../parity/lib/collect.mjs';
 import { REF_PROPS } from '../../parity/lib/ref-trace.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
@@ -13,7 +12,6 @@ import { SCOPE_ATTR, scopeFinder, scopeSelector } from './fill-skeleton.mjs';
 import { contentType } from './draft.mjs';
 import { FLUID_WIDTHS, SWEEP_WIDTHS, LENGTH_PROPS } from './fill-values.mjs';
 
-const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
 
@@ -30,14 +28,13 @@ export const PRESENT = '(rendered)';
 const SIDE_STYLES = [ 'border-right-style', 'border-bottom-style', 'border-left-style' ];
 export const PROPS = [ ...new Set( [ ...DEFAULT_PROPS, ...REF_PROPS, ...SIDE_STYLES ] ) ].filter( ( p ) => ! /^(animation-|icon-)/.test( p ) && 'gap' !== p );
 
-// Playwright, loaded the way the route's other browser code loads it: by path, so a worktree and the main checkout
-// behave the same (plugins/sgs-blocks/node_modules is the one installation).
+// Playwright, from the route's own pinned install (scripts/computed-route/node_modules, FR-48-75).
 export async function loadChromium() {
-	const f = path.resolve( HERE, '../../../plugins/sgs-blocks/node_modules/playwright/index.mjs' );
-	if ( ! fs.existsSync( f ) ) {
-		throw new Error( `playwright is not installed at ${ f } (run npm install in plugins/sgs-blocks, or link its node_modules into this worktree)` );
+	try {
+		return await import( 'playwright' );
+	} catch ( e ) {
+		throw new Error( `playwright is not installed for the route (run npm ci in scripts/computed-route): ${ e.message }` );
 	}
-	return import( pathToFileURL( f ).href );
 }
 
 // Whether the draft page may load a URL: its own origin, inline data, or anything when `external` is set. Blocking the rest

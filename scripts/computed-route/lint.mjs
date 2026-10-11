@@ -5,6 +5,8 @@
 // Fails (exit 1) when:
 //   - a file or an exported name under the route folder is missing from its README.md (R-47-1);
 //   - a route file imports from plugins/sgs-blocks/scripts/ (the converter; its db_lookup.py migrates the shared DB);
+//   - a route file (tests included) names the plugin's node_modules folder; the route imports its third-party packages
+//     from its own pinned install (FR-48-75);
 //   - a --tree carries a core `style` attribute or a native_wp setting (both serialise as inline style, Spec 32);
 //   - a --skeleton carries any attribute whose css_property is not null (Fill skeletons hold no style values);
 //   - a --surfaces manifest has a tree printing another post (a linked block, a modal or drawer reference, a template
@@ -26,6 +28,8 @@ import { brandBySlug, brandOwnsAddress } from './lib/brand-registry.mjs';
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
 const IGNORED = [ 'cache', 'node_modules' ];
+// FR-48-75: the plugin's node_modules, written as a path or as path.join() pieces.
+const PLUGIN_MODULES = /plugins[\\/'"`,\s]+sgs-blocks[\\/'"`,\s]+node_modules/;
 
 // Every file under the route folder, relative and with forward slashes.
 export function routeFiles( root ) {
@@ -55,7 +59,7 @@ export function exportsOf( src ) {
 	return names;
 }
 
-// R-47-1: README lists every file and every export; no converter imports.
+// R-47-1: README lists every file and every export; no converter imports. FR-48-75: no reach into the plugin's node_modules.
 export function lintFolder( root ) {
 	const problems = [];
 	const readmePath = path.join( root, 'README.md' );
@@ -71,6 +75,9 @@ export function lintFolder( root ) {
 			continue;
 		}
 		const src = fs.readFileSync( path.join( root, f ), 'utf8' );
+		if ( PLUGIN_MODULES.test( src ) ) {
+			problems.push( `${ f } names the plugin's node_modules folder (FR-48-75: import third-party packages from scripts/computed-route/node_modules)` );
+		}
 		for ( const name of exportsOf( src ) ) {
 			// Listed as `name` or `name(...)`.
 			if ( ! readme.includes( `\`${ name }\`` ) && ! readme.includes( `\`${ name }(` ) ) {

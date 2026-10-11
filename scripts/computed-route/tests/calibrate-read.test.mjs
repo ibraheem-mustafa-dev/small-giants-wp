@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
 import { readInstancesInPage, openToggle, markTargetInPage } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from '../lib/calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
@@ -26,7 +26,7 @@ const HTML = `<style>
 <dialog id="panel-0" class="sgs-x__panel"><h2 class="sgs-x__panel-title">Your bag</h2></dialog>`;
 
 test( 'MUST FAIL (dead: read cap, pseudo layer, controlled panel): the reader sees every element, layer and panel', async () => {
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage();
@@ -42,7 +42,7 @@ test( 'MUST FAIL (dead: read cap, pseudo layer, controlled panel): the reader se
 } );
 
 test( 'MUST FAIL (nav-bar-menu "Element is not visible"): a panel toggle hidden at this width still opens its panel', async () => {
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage();
@@ -57,7 +57,7 @@ test( 'MUST FAIL (nav-bar-menu "Element is not visible"): a panel toggle hidden 
 } );
 
 test( 'MUST FAIL (51 untested hover states): an opener outside the instance that controls it (aria-controls) is found and opens the hidden target', async () => {
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage();
@@ -76,7 +76,7 @@ test( 'MUST FAIL (51 untested hover states): an opener outside the instance that
 } );
 
 test( 'MUST FAIL (triggerDetachBackgroundHover): a companion printed outside the root is targeted by its BEM prefix and shown through the fixture\'s companion class', async () => {
-	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage();

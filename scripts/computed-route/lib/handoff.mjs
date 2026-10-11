@@ -4,7 +4,8 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { createRequire } from 'module';
+import Ajv2020 from 'ajv/dist/2020.js';
+import addFormats from 'ajv-formats';
 import { fileURLToPath } from 'url';
 import { svgProblem } from './svg-screen.mjs';
 
@@ -12,7 +13,6 @@ const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '../../..' );
 export const MASTER_SCHEMAS = path.join( REPO, '.claude', 'claude-design-handoff', 'handoff-schema' );
 export const KNOWN_RUNTIMES = path.join( REPO, 'scripts', 'computed-route', 'data', 'known-runtimes.json' );
-const AJV_ANCHOR = path.join( REPO, 'plugins', 'sgs-blocks', 'node_modules', 'ajv-formats', 'package.json' );
 
 // FR-48A-2: every file a handoff folder must hold, besides at least one draft `.dc.html` at its root.
 export const REQUIRED_FILES = [
@@ -138,28 +138,10 @@ export function reachable( root, entries, files ) {
 	return { drafts, scripts };
 }
 
-// Ajv 8 for draft 2020-12 (with ajv-formats when present), resolved from the nested copy under plugins/sgs-blocks.
-// Throws a readable error when it cannot be resolved.
-export function loadAjv( anchor = AJV_ANCHOR ) {
-	let Ajv;
-	let addFormats = null;
-	try {
-		const req = createRequire( anchor );
-		const mod = req( 'ajv/dist/2020' );
-		Ajv = mod.default || mod;
-		try {
-			const f = req( 'ajv-formats' );
-			addFormats = f.default || f;
-		} catch {
-			addFormats = null;
-		}
-	} catch ( e ) {
-		throw new Error( `ajv 8 could not be resolved from ${ anchor } (run npm install in plugins/sgs-blocks): ${ e.message }` );
-	}
-	const ajv = new Ajv( { strict: false, allErrors: true } );
-	if ( addFormats ) {
-		addFormats( ajv );
-	}
+// Ajv 8 for draft 2020-12 with ajv-formats, from the route's own pinned install (FR-48-75).
+export function loadAjv() {
+	const ajv = new ( Ajv2020.default || Ajv2020 )( { strict: false, allErrors: true } );
+	( addFormats.default || addFormats )( ajv );
 	return ajv;
 }
 

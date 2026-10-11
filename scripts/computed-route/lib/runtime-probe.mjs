@@ -5,7 +5,6 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { pathToFileURL } from 'url';
 import { serveDraft } from './draft.mjs';
 import { REPO, sha256 } from './handoff.mjs';
 
@@ -13,7 +12,6 @@ const DATA = path.join( REPO, 'scripts', 'computed-route', 'data' );
 export const PROBE_FIXTURE = path.join( DATA, 'runtime-probe.dc.html' );
 export const PROBE_EXPECTED = path.join( DATA, 'runtime-probe.expected.json' );
 export const RUNTIMES_DIR = path.join( DATA, 'runtimes' );
-const PLAYWRIGHT = path.join( REPO, 'plugins', 'sgs-blocks', 'node_modules', 'playwright', 'index.mjs' );
 const PAGE = 'runtime-probe.dc.html';
 
 // The local copy of a build: data/runtimes/<first 12 hex of its sha256>.support.js.
@@ -27,7 +25,7 @@ export async function probeRuntime( supportFile, { fixture = PROBE_FIXTURE, time
 	fs.copyFileSync( fixture, path.join( dir, PAGE ) );
 	fs.copyFileSync( supportFile, path.join( dir, 'support.js' ) );
 	const srv = await serveDraft( dir, { index: PAGE } );
-	const { chromium } = await import( pathToFileURL( PLAYWRIGHT ).href );
+	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();
 	try {
 		const page = await browser.newPage( { viewport: { width: 1440, height: 900 } } );

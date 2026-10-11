@@ -89,7 +89,7 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
 - [x] **1. Current export.** Passes `handoff-check.mjs` (2026-10-11).
 - [ ] **2. Mailbox** (Bean). The Indus mailbox in hPanel and its password under a new key in the email secrets file
   (Appendix A step 6, `.claude/dev-setup.md` §Site email). Done when `provision-site-mail.py --check` can read the key.
-- [ ] **3. Route dependencies.** FR-48-75 done when: `npm ci` in `scripts/computed-route` installs the pinned set; a
+- [x] **3. Route dependencies** (done 2026-10-11; route suite 867/870, the 3 known failures). FR-48-75 done when: `npm ci` in `scripts/computed-route` installs the pinned set; a
   planted import from `plugins/sgs-blocks/node_modules` fails `lint.mjs`. (The G0 browser-version case lands with G0,
   Phase 6.)
 - [x] **4. Indus mirror and targets** (done 2026-10-11: `local-indus` on port 8083, database `wp_indus`; calibration
