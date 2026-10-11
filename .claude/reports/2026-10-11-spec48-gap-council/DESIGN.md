@@ -46,12 +46,12 @@ brief the Spec 48 and slim Spec 32 writers work from; the specs, not this file, 
      FR-26-D3 is pending the O10 canary shadow-picker check.
    - Per-tier section padding and gutter tokens: build. Bean: "most of the pages didn't have that issue, it was just a
      few of them but I'm happy for you to test it out." Proven on Indus pages; Eye Care re-tested after B5.
-   - Fluid headings: the large font presets become fluid through core (`fluid: {min, max}` per client from the draft's
-     `clamp()` or tiers); when a preset's resolved size misses the draft by more than R-47-7's length tolerance at
-     375/768/1440, that heading gets per-device values instead. "Built" only after calibration records accepted value
-     forms. One font-size vocabulary across snapshots (two exist today: small/regular/large/x-large/xx-large/hero and
-     small/medium/large/x-large/xx-large/xxx-large); `sites/mamas-munches` is excluded by name and its slugs stay as
-     aliases.
+   - Fluid headings, zoom-safe. Found after writing: the framework's earlier ruling D1007 (no fluid type) rested on
+     WCAG 1.4.4, and the Indus h1 `clamp(36px, 5vw, 62px)` shows it: at 200% zoom it grows only about 1.16 times. Bean:
+     "Does the previous decision even matter? Its old context, who cares if that solution is going to be beneficial for
+     us?", then chose zoom-safe fluid: core `fluid: {min, max}` (a `rem` term that grows with zoom) from the draft's
+     bounds, checked at 200% zoom, per-device values when a preset fails; never a verbatim pure-`vw` size (Spec 32
+     §14.2, FR-32-16). One font-size vocabulary across snapshots, with `sites/mamas-munches`'s extra slugs allowed.
    - Button lift in the button style presets (Bean: "Would this work if we just build it into the button style
      presets?" Yes). Found while writing Spec 32: the presets already carry `hover-transform` per variant with a
      site-wide `default` fallback (`button/style.css`), so no new key; the extractor writes the draft's lift there

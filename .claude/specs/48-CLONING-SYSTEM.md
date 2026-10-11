@@ -1781,7 +1781,8 @@ not emitted. Roles (which slug a token fills) are proposed from the token's name
 confirms them once at intake (FR-48-31). The proposal comes from the route's own token reader
 (`scripts/computed-route/lib/tokens.mjs`) with no render; the extractor runs later, in stage 2, and reads the token
 files together with Bean's confirmed role map. Every colour outside the tokens stays a one-off hex on the block that uses
-it. Fluid `clamp()` is kept verbatim. `rem` resolves against the draft's computed root font size.
+it. A fluid font size follows Spec 32 §14.2's zoom-safe rule (core `fluid: {min, max}` from the draft's bounds, never a
+verbatim pure-`vw` `clamp()`); a `clamp()` on another length is kept verbatim. `rem` resolves against the draft's computed root font size.
 
 **Asking Bean (replaces Spec 32 §3's last row).** The pipeline extracts token values from the draft; it never
 hand-authors them and never asks Bean for a value. It asks Bean once, at intake, to confirm the proposed roles, the
@@ -1905,14 +1906,16 @@ line heights and letter spacing; spacing to `settings.spacing.spacingSizes`; rad
 shadow to `settings.shadow.presets`; buttons to `settings.custom.buttonPresets.{primary,secondary,outline}`, plus an
 optional `buttonPresets.default` entry for the site-wide button hover (`hover-transform`, for example
 `matrix(1, 0, 0, 1, 0, -3)`, and `hover-transition`, for example `0.25s`). `contentSize` and `wideSize` come from
-the rendered layout (FR-33-19). `clamp()`, `calc()` and `min()` are emitted verbatim. Button presets are an open
+the rendered layout (FR-33-19). A fluid font size becomes core `fluid: {min, max}` under Spec 32 §14.2's zoom-safe rule;
+`clamp()`, `calc()` and `min()` on other lengths are emitted verbatim. Button presets are an open
 property bag: the difference between rest and hover declarations, kept whole, with `!important` stripped. A lift that
 every regular button shares is written once as `buttonPresets.default.hover-transform` (Spec 32 FR-32-19; no new
 key), and a variant keeps its own `hover-transform` only where it lifts differently. When Spec 32 adds the shadow role
 names (FR-32-18, §16), the extractor fills them from the draft.
 *Done when:* spacing tokens, a content size, a button radius and both hover shapes (colour invert, transform lift)
 each land in the right slot with no `!important`; a draft whose buttons all lift 3px gives
-`buttonPresets.default.hover-transform` and no per-variant copy; a declared `clamp()` size is emitted verbatim.
+`buttonPresets.default.hover-transform` and no per-variant copy; a pure-`vw` `clamp()` font size becomes a fluid preset
+that passes the 200% zoom check, and a `clamp()` gap is emitted verbatim.
 Status: partly built. Per-variant `hover-transform` is built (`presets.py::_hover_diff`); folding a shared lift into
 `buttonPresets.default` is not built, and shadow role names are not built (Spec 32).
 
