@@ -46,7 +46,9 @@ existed (one carrying `MANIFEST.md`) may be brought to the current format by
 `MANIFEST.md` recorded (and stops on any mismatch), then removes `MANIFEST.md` and `handoff-schema/trace/`, copies the
 master schema files the folder lacks, and writes `MANIFEST.json`. No byte Claude Design produced changes.
 Status: the Indus and Mama's exports sit in `sites/indus-foods/handoff/` and `sites/mamas-munches-redesign/handoff/`,
-repackaged 2026-10-11 and passing the check; Eye Care moves in at plan task B5.
+repackaged 2026-10-11 and passing the check. Eye Care's sits in `sites/eye-care-ward-end/handoff/`, repackaged the
+same day; it fails FR-48A-7 only because Bean removed the planning draft `WP Build Gap Map.dc.html` that
+`animations.json` still lists, until plan task B5 regenerates the inventory.
 
 ### FR-48A-2 -- Required files
 `MANIFEST.json`, `README.md`, at least one draft `.dc.html`, `support.js`, `tokens/colors.css`,
@@ -79,8 +81,8 @@ POSIX separators, NFC, case-sensitive, with no `./`, `..`, leading slash or back
 check passes only when the listed paths equal the files on disk in both directions, every size and hash matches, and
 `runtime_sha256` matches `support.js`. A design change after export means pasting the handoff prompt again and
 downloading the whole folder; files are never moved in or out by hand.
-Status: checked by `handoff-check.mjs`; the prompt asks for it from 2026-10-11. The Indus and Mama's exports, made
-before that, were repackaged (FR-48A-1); the Eye Care export still carries `MANIFEST.md` until B5.
+Status: checked by `handoff-check.mjs`; the prompt asks for it from 2026-10-11. The three current exports (Indus, Mama's,
+Eye Care), made before that, were repackaged (FR-48A-1).
 
 ### FR-48A-5 -- Runtime versions
 `scripts/computed-route/data/known-runtimes.json` lists every accepted `support.js` build by SHA-256, with the date it

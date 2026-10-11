@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-11",
+  "project": "Ward End Eye Care",
+  "entry_drafts": [
+    "Eye Care Birmingham.dc.html"
+  ],
+  "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
+  "files": [
+    {
+      "path": "Eye Care Birmingham.dc.html",
+      "bytes": 287429,
+      "sha256": "2f2096a8c7a8c9ff8d40824b14d32f0374f84eda07a3c51c64d9a43a9315da3a"
+    },
+    {
+      "path": "Frame Card.dc.html",
+      "bytes": 5321,
+      "sha256": "4c139189317abfd2d49c4851624fd8e1e3043fc002bfaddb474a0a645b8b8db4"
+    },
+    {
+      "path": "READING-DC-FILES.md",
+      "bytes": 19779,
+      "sha256": "259c12c037b80fb7c8cac3ca074645f658e907bdea72d296bc68581006a3f0ca"
+    },
+    {
+      "path": "README.md",
+      "bytes": 24343,
+      "sha256": "0b063b7a239855d748cfeb9ac9ce978cb0bf6a9a38c41a04f81a858d30afbfe8"
+    },
+    {
+      "path": "animations.json",
+      "bytes": 370862,
+      "sha256": "9bb8147e3782808f2faba89f92b879c33dfd52fc58163e6bca79187c0db16baf"
+    },
+    {
+      "path": "assets/ec-logo.png",
+      "bytes": 52924,
+      "sha256": "a8533911367a930ee85e83bd163e4c1e195ad9cfea9d9189757f32415fade27f"
+    },
+    {
+      "path": "assets/google-g.svg",
+      "bytes": 8492,
+      "sha256": "a38b9299dc4f1d1c96079ac7c6c84b7d0c5a36e6521845056b4351387fb45875"
+    },
+    {
+      "path": "assets/instagram.svg",
+      "bytes": 8389,
+      "sha256": "2e63f047e9cce71a4c7a38eb22327a758ae31c6418197cebfde2ddf3eff77c38"
+    },
+    {
+      "path": "assets/whatsapp-deep.svg",
+      "bytes": 8309,
+      "sha256": "d4f59fdf92f70685a75ef3fa920d96aad53c7e7fc37c3179d1809de9ba4ac7a0"
+    },
+    {
+      "path": "assets/whatsapp-green.svg",
+      "bytes": 8309,
+      "sha256": "7c831ad55d0f49fd715d55723062faa212fe3fafcbb0a7d63d1dd0261f716c4a"
+    },
+    {
+      "path": "assets/whatsapp-ink.svg",
+      "bytes": 8309,
+      "sha256": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d"
+    },
+    {
+      "path": "assets/whatsapp-white.svg",
+      "bytes": 8309,
+      "sha256": "97f0612934fac011b54359c333998c3712581c2d9d7359acd2e51d0c78032699"
+    },
+    {
+      "path": "handoff-schema/METHOD.md",
+      "bytes": 10989,
+      "sha256": "55c24d306cc86674d660db25603f24e17cf07911c11a904abbde43e747a12c2b"
+    },
+    {
+      "path": "handoff-schema/READING-DC-FILES.example.md",
+      "bytes": 16262,
+      "sha256": "6c1e7aca3d954ec2c08fcad41ed9d6e29c25b78699126392d43f24f10d7142f2"
+    },
+    {
+      "path": "handoff-schema/README.template.md",
+      "bytes": 1324,
+      "sha256": "2bdb1121154c1992e4878ebd959ab5c7859438f63747a0511769d6296cfc5555"
+    },
+    {
+      "path": "handoff-schema/animations.schema.json",
+      "bytes": 9005,
+      "sha256": "c75880917b381f81477d7c63684eea76d3744d4cc20dd96462f19b6f4f1b8c6c"
+    },
+    {
+      "path": "handoff-schema/manifest.schema.json",
+      "bytes": 2069,
+      "sha256": "901b95ccc2cfc0cf1f6ebffeec530191c197d08df616e24e1c5cd477fdefdcf1"
+    },
+    {
+      "path": "handoff-schema/surfaces.schema.json",
+      "bytes": 3969,
+      "sha256": "ed29da1e8076cb902967a8befeec4c2d25eded85d88197de36e0e17f6ae0943d"
+    },
+    {
+      "path": "support.js",
+      "bytes": 69150,
+      "sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe"
+    },
+    {
+      "path": "surfaces.json",
+      "bytes": 77567,
+      "sha256": "e0ddf5410ad40408f885d07ad1e34fc22fd30fa5c8b256639a6ab3092d5447b2"
+    },
+    {
+      "path": "tokens/colors.css",
+      "bytes": 1901,
+      "sha256": "9473a276fdb556d59fc1850805e80210dbc4dac9d1264eff03fb8f2b4b487977"
+    },
+    {
+      "path": "tokens/spacing.css",
+      "bytes": 1879,
+      "sha256": "d2ec7bbe305cce06d1124d4d03b1f507694bd6c0812210d67e879540b126a4fa"
+    },
+    {
+      "path": "tokens/typography.css",
+      "bytes": 1783,
+      "sha256": "10afddb7990718dee4942ef9abbd139dc2b38d26ae4416415cab54901cba3eff"
+    }
+  ]
+}

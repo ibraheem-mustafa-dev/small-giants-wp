@@ -1,0 +1,25 @@
+/* Ward End Eye Care — typography. Font URL as loaded by the drafts: */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Roboto:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap');
+:root{
+  --font-display:'Playfair Display',serif;           /* headings, wordmark, brand names on cards. Never below 500. */
+  --font-body:'Outfit',system-ui,sans-serif;         /* everything else */
+  --font-google:'Roboto',Arial,sans-serif;           /* Google reviews panel only */
+  --weight-light:300; --weight-regular:400; --weight-medium:500; --weight-semibold:600; --weight-bold:700;
+  /* display scale (mobile < 768 → desktop) */
+  --size-hero:clamp(42px,4.4vw,72px); --size-hero-mobile:40px;
+  --size-h1:48px; --size-h1-mobile:34px;
+  --size-h2:46px; --size-h2-mobile:32px;
+  --size-lens-h2:38px; --size-lens-h2-mobile:28px;
+  --size-display-34:34px; --size-display-30:30px; --size-display-28:28px; --size-display-24:24px; --size-display-22:22px;
+  /* body scale */
+  --size-18:18px; --size-17:17px; --size-16-5:16.5px; --size-16:16px; --size-15-5:15.5px; --size-15:15px;
+  --size-14-5:14.5px; --size-14:14px; --size-13-5:13.5px; --size-13:13px; --size-12-5:12.5px; --size-12:12px;
+  --size-11-5:11.5px; --size-11:11px; --size-10-5:10.5px; --size-9-5:9.5px;
+  --text-base:16px; --hero-sub:18px; --hero-sub-mobile:15.5px;
+  /* line heights */
+  --lh-tight:1; --lh-display:1.02; --lh-heading:1.05; --lh-snug:1.1; --lh-card:1.25; --lh-body:1.5;
+  /* tracking */
+  --track-tight:-.015em; --track-04:.04em; --track-06:.06em; --track-08:.08em; --track-button:.1em;
+  --track-12:.12em; --track-wordmark:.14em; --track-16:.16em; --track-18:.18em; --track-kicker:.2em;
+  --track-24:.24em; --track-brand:.26em; --track-sub-wordmark:.32em;
+}

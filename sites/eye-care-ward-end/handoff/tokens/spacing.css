@@ -1,0 +1,32 @@
+/* Ward End Eye Care — spacing, layout, radii, shadows, motion. */
+:root{
+  /* spacing scale (gaps and paddings in the drafts) */
+  --space-1:1px; --space-2:2px; --space-4:4px; --space-5:5px; --space-6:6px; --space-8:8px; --space-9:9px; --space-10:10px;
+  --space-12:12px; --space-14:14px; --space-16:16px; --space-18:18px; --space-20:20px; --space-22:22px; --space-24:24px;
+  --space-28:28px; --space-32:32px; --space-36:36px; --space-40:40px; --space-44:44px; --space-48:48px; --space-56:56px; --space-60:60px; --space-64:64px;
+  --hairline-grid-gap:1px;      /* cells sit on --hairline with a 1px gap instead of borders */
+  /* layout */
+  --container-max:1440px; --container-checkout:1200px; --container-content:1100px; --container-narrow:720px;
+  --gutter:52px; --gutter-mobile:20px;
+  --section-pad:104px 52px; --section-pad-mobile:56px 20px;
+  --page-pad:48px 52px 90px; --page-pad-mobile:28px 20px 60px;
+  --panel-pad:68px 60px; --panel-pad-mobile:36px 24px;
+  --grid-gap:18px; --grid-gap-mobile:10px;
+  --filter-rail:270px;
+  --bp-mobile-max:767px; --bp-desktop:1024px; --bp-nav-full:1060px; --bp-grid-wide:1280px;
+  /* hit targets */
+  --hit-min:44px; --button-h:52px; --button-h-compact:48px; --button-h-cta:56px;
+  /* radii: square by default */
+  --radius-0:0; --radius-pill:999px; --radius-circle:50%;
+  /* shadows */
+  --shadow-card-hover:0 18px 44px rgba(20,20,20,.09);
+  --shadow-option-hover:0 14px 32px rgba(20,20,20,.09);
+  --shadow-mega:0 24px 48px rgba(20,20,20,.12);
+  --shadow-modal:0 30px 70px rgba(0,0,0,.3);
+  --shadow-drawer:-20px 0 60px rgba(0,0,0,.2);
+  --shadow-wa-fab:0 10px 30px rgba(13,110,53,.32);
+  /* motion */
+  --ease-out:cubic-bezier(.2,.7,.2,1);
+  --dur-200:.2s; --dur-250:.25s; --dur-300:.3s; --dur-350:.35s; --dur-400:.4s; --dur-500:.5s; --dur-600:.6s; --dur-900:.9s;
+  --lift-button:translateY(-3px); --lift-card:translateY(-4px);
+}

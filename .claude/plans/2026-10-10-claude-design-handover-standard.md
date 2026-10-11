@@ -120,8 +120,8 @@ in B3.
 - The inventory is produced in Claude Code at intake by following `handoff-schema/METHOD.md` (deterministic, validated,
   fails loudly); anything Claude Design writes is cross-checked against it, never trusted alone.
 
-**B1. Compare the three exports (done 2026-10-11).** The Indus and Mama's exports now sit in `sites/<client>/handoff/`;
-Eye Care's is still local at `.claude/design_handoff_ward_end_eye_care/` until B5. Every A1 row above is confirmed
+**B1. Compare the three exports (done 2026-10-11).** All three exports now sit in `sites/<client>/handoff/`
+(Eye Care's since 2026-10-11, repackaged; its inventory is regenerated at B5). Every A1 row above is confirmed
 or amended for all three. Consistent: the file set (README, READING-DC-FILES, MANIFEST, both inventories, `support.js`,
 `assets/`, `tokens/`, `handoff-schema/`), the schemas, valid inventories and matching hashes. Motion technique differs
 by designer (Indus Web Animations, 35 `.animate(` calls; Eye Care CSS only, 0 calls, 8 `@keyframes`; Mama's mixed, 10

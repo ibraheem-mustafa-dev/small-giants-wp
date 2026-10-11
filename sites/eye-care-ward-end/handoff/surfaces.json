@@ -1,0 +1,2767 @@
+{
+  "schema_version": "1.0",
+  "project": "Ward End Eye Care",
+  "generated": "2026-10-11",
+  "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
+  "records": [
+    {
+      "id": "S-01",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": true,
+        "reason": "measure() polls container width every 120ms for 40 ticks, then every 800ms; ResizeObserver also updates state.w."
+      },
+      "parent": null,
+      "kind": "global",
+      "name": "Storefront shell",
+      "template_tpl_id": "0",
+      "route": "*",
+      "opened_by": "Always rendered",
+      "closed_by": "Never",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "mobile",
+          "state_keys": {
+            "w": "< 768"
+          },
+          "how_to_reach": "Resize the container below 768px, or L = dcLogic('Eye Care Birmingham'); L.setState({w:375})"
+        },
+        {
+          "name": "tablet",
+          "state_keys": {
+            "w": "768–1023"
+          },
+          "how_to_reach": "L.setState({w:800})"
+        },
+        {
+          "name": "desktop",
+          "state_keys": {
+            "w": ">= 1024"
+          },
+          "how_to_reach": "L.setState({w:1400})"
+        }
+      ],
+      "source": "measure(), renderVals() breakpoint flags",
+      "notes": "Breakpoints are measured on the root container width (state.w), not the viewport. Extra steps: 620 (lens options one-up), 1060 (nav compact, filter drawer), 1100 (lens aside), 1160 (header phone), 1280 (four-up product grid). Accounts: state.user (null when signed out), auth, acct, addr, subs, placed, lastOrder."
+    },
+    {
+      "id": "S-02",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "global",
+      "name": "Trust ticker",
+      "template_tpl_id": "7",
+      "route": "*",
+      "opened_by": "Always rendered",
+      "closed_by": "Never",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "static row (fits as many claims as the width allows)",
+          "state_keys": {
+            "w": ">= 768"
+          },
+          "how_to_reach": "L.setState({w:1400})",
+          "animation_ids": [
+            "PS-01"
+          ]
+        },
+        {
+          "name": "marquee",
+          "state_keys": {
+            "w": "< 768"
+          },
+          "how_to_reach": "L.setState({w:375})",
+          "animation_ids": [
+            "CA-01"
+          ]
+        }
+      ],
+      "source": "renderVals().ticker"
+    },
+    {
+      "id": "S-03",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "header",
+      "name": "Header",
+      "template_tpl_id": "13",
+      "route": "*",
+      "opened_by": "Always rendered (position:sticky; top:0)",
+      "closed_by": "Never",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "top",
+          "state_keys": {
+            "scrolled": false
+          },
+          "how_to_reach": "Scroll to the top; L.setState({scrolled:false})"
+        },
+        {
+          "name": "scrolled (shrunk)",
+          "state_keys": {
+            "scrolled": true
+          },
+          "how_to_reach": "Scroll window past 40px; L.setState({scrolled:true})",
+          "animation_ids": [
+            "TR-02",
+            "TR-06",
+            "TR-07"
+          ]
+        },
+        {
+          "name": "full nav",
+          "state_keys": {
+            "w": ">= 1060"
+          },
+          "how_to_reach": "L.setState({w:1400})",
+          "sc_if_tpl_ids": [
+            "22",
+            "34"
+          ]
+        },
+        {
+          "name": "compact nav (Menu button)",
+          "state_keys": {
+            "w": "< 1060"
+          },
+          "how_to_reach": "L.setState({w:900})",
+          "sc_if_tpl_ids": [
+            "16"
+          ]
+        },
+        {
+          "name": "signed out (account icon goes to sign-in)",
+          "state_keys": {
+            "user": null
+          },
+          "how_to_reach": "L.setState({user:null})"
+        },
+        {
+          "name": "signed in (taupe dot on the account icon)",
+          "state_keys": {
+            "user": "{first,last,email,mobile}"
+          },
+          "how_to_reach": "Sign in on /my-account; L.setState({user:{first:\"Aisha\",last:\"Khan\",email:\"aisha.khan@example.com\",mobile:\"\"}})",
+          "sc_if_tpl_ids": [
+            "44"
+          ]
+        }
+      ],
+      "source": "navPad, logoW/H, wordmarkSize, navFull/navCompact, phoneDisplay (>= 1160); account button (openAccount, signedIn); bag shows an icon with an overlapping count below 768"
+    },
+    {
+      "id": "S-04",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-03",
+      "kind": "menu",
+      "name": "Mega menu",
+      "template_tpl_id": "53",
+      "route": "*",
+      "opened_by": "Hover or keyboard focus on Sunglasses / Brands / Lenses / Help after 150ms (instant when switching panels); click on touch devices (hover: none); click on Brands toggles; footer \"All brands\" toggles Brands",
+      "closed_by": "Escape; pointerdown outside the header; pointer leaving the header; mouseenter on About, phone or \"Glasses\"; picking an item; go()",
+      "breakpoints": [
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "closed",
+          "state_keys": {
+            "mega": null
+          },
+          "how_to_reach": "L.setState({mega:null})"
+        },
+        {
+          "name": "Sunglasses",
+          "state_keys": {
+            "mega": "sun"
+          },
+          "how_to_reach": "Hover Sunglasses; L.setState({mega:\"sun\"})",
+          "sc_if_tpl_ids": [
+            "52",
+            "55"
+          ],
+          "animation_ids": [
+            "TR-03",
+            "CA-03"
+          ]
+        },
+        {
+          "name": "Brands",
+          "state_keys": {
+            "mega": "brands"
+          },
+          "how_to_reach": "Hover or click Brands; L.setState({mega:\"brands\"})",
+          "sc_if_tpl_ids": [
+            "52",
+            "73"
+          ],
+          "animation_ids": [
+            "TR-04",
+            "CA-03",
+            "TR-09",
+            "PS-04"
+          ]
+        },
+        {
+          "name": "Lenses",
+          "state_keys": {
+            "mega": "lenses"
+          },
+          "how_to_reach": "Hover Lenses; L.setState({mega:\"lenses\"})",
+          "sc_if_tpl_ids": [
+            "52",
+            "85"
+          ],
+          "animation_ids": [
+            "TR-05",
+            "CA-03",
+            "TR-10"
+          ]
+        },
+        {
+          "name": "Help",
+          "state_keys": {
+            "mega": "help"
+          },
+          "how_to_reach": "Hover Help; L.setState({mega:\"help\"})",
+          "sc_if_tpl_ids": [
+            "52",
+            "92"
+          ],
+          "animation_ids": [
+            "CA-03"
+          ]
+        }
+      ],
+      "source": "state.mega, megaSun/megaBrands/megaLenses/megaHelp"
+    },
+    {
+      "id": "S-05",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-03",
+      "kind": "drawer",
+      "name": "Mobile menu",
+      "template_tpl_id": "1165",
+      "route": "*",
+      "opened_by": "Menu button (below 1060px)",
+      "closed_by": "× button; any link (go() sets menuOpen:false)",
+      "breakpoints": [
+        "mobile",
+        "tablet"
+      ],
+      "states": [
+        {
+          "name": "closed",
+          "state_keys": {
+            "menuOpen": false
+          },
+          "how_to_reach": "L.setState({menuOpen:false})"
+        },
+        {
+          "name": "open",
+          "state_keys": {
+            "menuOpen": true
+          },
+          "how_to_reach": "Tap Menu; L.setState({menuOpen:true})",
+          "sc_if_tpl_ids": [
+            "1164"
+          ],
+          "animation_ids": [
+            "CA-45",
+            "CA-46",
+            "CA-47",
+            "CA-48",
+            "CA-49",
+            "CA-50",
+            "CA-51"
+          ]
+        }
+      ],
+      "source": "toggleMenu",
+      "notes": "Page scroll is locked while open (J-08)."
+    },
+    {
+      "id": "S-06",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "footer",
+      "name": "Footer",
+      "template_tpl_id": "1124",
+      "route": "*",
+      "opened_by": "Always rendered",
+      "closed_by": "Never",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {},
+          "how_to_reach": "Scroll to the bottom of any page",
+          "animation_ids": [
+            "TR-49",
+            "TR-50",
+            "TR-51"
+          ]
+        }
+      ],
+      "source": "template"
+    },
+    {
+      "id": "S-07",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "global",
+      "name": "WhatsApp button (floating)",
+      "template_tpl_id": "1161",
+      "route": "*",
+      "opened_by": "Always rendered (fixed, bottom right)",
+      "closed_by": "Never",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "icon + \"Ask me anything\"",
+          "state_keys": {
+            "w": ">= 768"
+          },
+          "how_to_reach": "L.setState({w:1400})",
+          "animation_ids": [
+            "TR-52"
+          ]
+        },
+        {
+          "name": "icon only",
+          "state_keys": {
+            "w": "< 768"
+          },
+          "how_to_reach": "L.setState({w:375})"
+        }
+      ],
+      "source": "hideOnMobile"
+    },
+    {
+      "id": "S-08",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "page",
+      "name": "Home",
+      "template_tpl_id": "113",
+      "route": "home",
+      "page_key": "home",
+      "opened_by": "go('home') from nav, links or buttons",
+      "closed_by": "go() to another page",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "home"
+          },
+          "how_to_reach": "L.setState({page:'home'})",
+          "sc_if_tpl_ids": [
+            "112"
+          ],
+          "animation_ids": [
+            "CA-04",
+            "CA-05",
+            "CA-06",
+            "CA-07",
+            "CA-08",
+            "CA-09",
+            "J-05"
+          ]
+        },
+        {
+          "name": "reviews rail scrolled",
+          "state_keys": {},
+          "how_to_reach": "Click the review arrows (J-07)",
+          "animation_ids": [
+            "J-07"
+          ]
+        }
+      ],
+      "source": "state.page; isHome … isDone"
+    },
+    {
+      "id": "S-09",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "page",
+      "name": "Shop",
+      "template_tpl_id": "248",
+      "route": "shop",
+      "page_key": "shop",
+      "opened_by": "go('shop') from nav, links or buttons",
+      "closed_by": "go() to another page",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "shop"
+          },
+          "how_to_reach": "L.setState({page:'shop'})",
+          "sc_if_tpl_ids": [
+            "247"
+          ],
+          "animation_ids": [
+            "CA-10"
+          ]
+        }
+      ],
+      "source": "state.page; isHome … isDone"
+    },
+    {
+      "id": "S-10",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "page",
+      "name": "Product",
+      "template_tpl_id": "335",
+      "route": "product",
+      "page_key": "product",
+      "opened_by": "go('product') from nav, links or buttons",
+      "closed_by": "go() to another page",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "product"
+          },
+          "how_to_reach": "L.setState({page:'product'}) with curId set, e.g. L.setState({page:'product', curId:5})",
+          "sc_if_tpl_ids": [
+            "334"
+          ],
+          "animation_ids": [
+            "CA-15"
+          ]
+        }
+      ],
+      "source": "state.page; isHome … isDone"
+    },
+    {
+      "id": "S-11",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "page",
+      "name": "Lenses",
+      "template_tpl_id": "552",
+      "route": "lenses",
+      "page_key": "lenses",
+      "opened_by": "go('lenses') from nav, links or buttons",
+      "closed_by": "go() to another page",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "lenses"
+          },
+          "how_to_reach": "L.setState({page:'lenses'})",
+          "sc_if_tpl_ids": [
+            "551"
+          ],
+          "animation_ids": [
+            "CA-20",
+            "CA-21",
+            "CA-22"
+          ]
+        }
+      ],
+      "source": "state.page; isHome … isDone"
+    },
+    {
+      "id": "S-12",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "page",
+      "name": "About",
+      "template_tpl_id": "601",
+      "route": "about",
+      "page_key": "about",
+      "opened_by": "go('about') from nav, links or buttons",
+      "closed_by": "go() to another page",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "about"
+          },
+          "how_to_reach": "L.setState({page:'about'})",
+          "sc_if_tpl_ids": [
+            "600"
+          ],
+          "animation_ids": [
+            "CA-23",
+            "CA-24",
+            "CA-25",
+            "CA-26",
+            "CA-27",
+            "CA-28",
+            "CA-29",
+            "CA-30"
+          ]
+        }
+      ],
+      "source": "state.page; isHome … isDone"
+    },
+    {
+      "id": "S-13",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "page",
+      "name": "Help",
+      "template_tpl_id": "628",
+      "route": "help",
+      "page_key": "help",
+      "opened_by": "go('help') from nav, links or buttons",
+      "closed_by": "go() to another page",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "help"
+          },
+          "how_to_reach": "L.setState({page:'help'})",
+          "sc_if_tpl_ids": [
+            "627"
+          ]
+        }
+      ],
+      "source": "state.page; isHome … isDone"
+    },
+    {
+      "id": "S-14",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "page",
+      "name": "Contact",
+      "template_tpl_id": "662",
+      "route": "contact",
+      "page_key": "contact",
+      "opened_by": "go('contact') from nav, links or buttons",
+      "closed_by": "go() to another page",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "contact"
+          },
+          "how_to_reach": "L.setState({page:'contact'})",
+          "sc_if_tpl_ids": [
+            "661"
+          ]
+        }
+      ],
+      "source": "state.page; isHome … isDone"
+    },
+    {
+      "id": "S-15",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "page",
+      "name": "Checkout",
+      "template_tpl_id": "739",
+      "route": "checkout",
+      "page_key": "checkout",
+      "opened_by": "go('checkout') from nav, links or buttons",
+      "closed_by": "go() to another page",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "checkout"
+          },
+          "how_to_reach": "L.setState({page:'checkout'})",
+          "sc_if_tpl_ids": [
+            "738"
+          ],
+          "animation_ids": [
+            "CA-33",
+            "CA-34",
+            "CA-35",
+            "CA-39",
+            "CA-40"
+          ]
+        }
+      ],
+      "source": "state.page; isHome … isDone",
+      "notes": "Express pay buttons, contact (with the optional Create an account checkbox, S-52), delivery (prefilled from the saved address when signed in), prescription (only when the bag has lenses) and payment sections; Pay now records the order in state.placed, creates an account if ticked, empties the bag and calls go(\"done\")."
+    },
+    {
+      "id": "S-16",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "page",
+      "name": "Order confirmed",
+      "template_tpl_id": "845",
+      "route": "done",
+      "page_key": "done",
+      "opened_by": "go('done') from nav, links or buttons",
+      "closed_by": "go() to another page",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "done"
+          },
+          "how_to_reach": "L.setState({page:'done'})",
+          "sc_if_tpl_ids": [
+            "844"
+          ],
+          "animation_ids": [
+            "CA-41",
+            "CA-42",
+            "CA-43",
+            "CA-44"
+          ]
+        },
+        {
+          "name": "with account (note and View my orders)",
+          "state_keys": {
+            "lastOrder": "{created or signedIn: true}"
+          },
+          "how_to_reach": "Place an order while signed in, or with Create an account ticked; L.setState({page:\"done\", lastOrder:{created:true, signedIn:false}})",
+          "sc_if_tpl_ids": [
+            "849",
+            "853"
+          ],
+          "animation_ids": [
+            "CA-71",
+            "CA-72",
+            "TR-77"
+          ]
+        }
+      ],
+      "source": "state.page; isHome … isDone",
+      "notes": "Order number EC-10482 is hard-coded."
+    },
+    {
+      "id": "S-17",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-09",
+      "kind": "drawer",
+      "name": "Shop filter rail / drawer",
+      "template_tpl_id": "271",
+      "route": "shop",
+      "opened_by": "Always visible as a sticky rail at >= 1060px; below that the Filter button (toggleFilters)",
+      "closed_by": "× or \"Show N frames\" (toggleFilters); go()",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "sticky rail",
+          "state_keys": {
+            "w": ">= 1060"
+          },
+          "how_to_reach": "L.setState({page:'shop', w:1400})",
+          "sc_if_tpl_ids": [
+            "270"
+          ]
+        },
+        {
+          "name": "drawer closed",
+          "state_keys": {
+            "w": "< 1060",
+            "filtersOpen": false
+          },
+          "how_to_reach": "L.setState({page:'shop', w:900, filtersOpen:false})",
+          "sc_if_tpl_ids": [
+            "255"
+          ]
+        },
+        {
+          "name": "drawer open (full screen)",
+          "state_keys": {
+            "w": "< 1060",
+            "filtersOpen": true
+          },
+          "how_to_reach": "Tap Filter; L.setState({page:'shop', w:900, filtersOpen:true})",
+          "sc_if_tpl_ids": [
+            "270",
+            "272",
+            "319"
+          ],
+          "animation_ids": [
+            "CA-12"
+          ]
+        }
+      ],
+      "source": "drawerFilters, showRail, filtersFull",
+      "notes": "The drawer behaves like the mobile menu: full-screen fade-in, × top right, page scroll locked (J-08), sticky Clear / Show N frames footer."
+    },
+    {
+      "id": "S-18",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-09",
+      "kind": "accordion",
+      "name": "Filter groups (10)",
+      "template_tpl_id": "285",
+      "route": "shop",
+      "opened_by": "Click a group heading",
+      "closed_by": "Click it again",
+      "states": [
+        {
+          "name": "group open",
+          "state_keys": {
+            "fgOpen": "{key: 1}"
+          },
+          "how_to_reach": "L.setState({fgOpen:{...L.state.fgOpen, size:1}})",
+          "sc_if_tpl_ids": [
+            "285"
+          ],
+          "animation_ids": [
+            "TR-24",
+            "CA-13"
+          ]
+        },
+        {
+          "name": "group closed",
+          "state_keys": {
+            "fgOpen": "{key: 0}"
+          },
+          "how_to_reach": "L.setState({fgOpen:{...L.state.fgOpen, size:0}})"
+        }
+      ],
+      "source": "fgOpen; defaults gender, colour, price, brand, style open",
+      "notes": "Group kinds (content variants): seg, chip, swatch, range, check (sc-ifs 280–299)."
+    },
+    {
+      "id": "S-19",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-09",
+      "kind": "panel",
+      "name": "Active filter chips",
+      "template_tpl_id": "263",
+      "route": "shop",
+      "opened_by": "Any filter set",
+      "closed_by": "Remove each chip or Clear all",
+      "states": [
+        {
+          "name": "chips shown",
+          "state_keys": {
+            "f": "any filter set"
+          },
+          "how_to_reach": "L.setState({f:{...L.state.f, pol:true}})",
+          "sc_if_tpl_ids": [
+            "263"
+          ],
+          "animation_ids": [
+            "CA-11"
+          ]
+        }
+      ],
+      "source": "activeChips"
+    },
+    {
+      "id": "S-20",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-09",
+      "kind": "result",
+      "name": "No results",
+      "template_tpl_id": "328",
+      "route": "shop",
+      "opened_by": "Filters that match nothing",
+      "closed_by": "Clear filters",
+      "states": [
+        {
+          "name": "no results",
+          "state_keys": {
+            "results": "[]"
+          },
+          "how_to_reach": "L.setState({page:'shop', f:{...L.state.f, price:60, brands:['Gucci']}})",
+          "sc_if_tpl_ids": [
+            "328"
+          ]
+        }
+      ],
+      "source": "noResults"
+    },
+    {
+      "id": "S-21",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-10",
+      "kind": "panel",
+      "name": "Product tabs",
+      "template_tpl_id": "416",
+      "route": "product",
+      "opened_by": "Click Description / Details / Sizing",
+      "closed_by": "Another tab",
+      "states": [
+        {
+          "name": "Description",
+          "state_keys": {
+            "pdpTab": "desc"
+          },
+          "how_to_reach": "L.setState({pdpTab:'desc'})",
+          "sc_if_tpl_ids": [
+            "421"
+          ],
+          "animation_ids": [
+            "TR-37",
+            "CA-16"
+          ]
+        },
+        {
+          "name": "Details",
+          "state_keys": {
+            "pdpTab": "details"
+          },
+          "how_to_reach": "L.setState({pdpTab:'details'})",
+          "sc_if_tpl_ids": [
+            "429"
+          ],
+          "animation_ids": [
+            "TR-37",
+            "CA-17"
+          ]
+        },
+        {
+          "name": "Sizing",
+          "state_keys": {
+            "pdpTab": "sizing"
+          },
+          "how_to_reach": "L.setState({pdpTab:'sizing'})",
+          "sc_if_tpl_ids": [
+            "435"
+          ],
+          "animation_ids": [
+            "TR-37",
+            "CA-18"
+          ]
+        }
+      ],
+      "source": "pdpTab (default desc)"
+    },
+    {
+      "id": "S-22",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-10",
+      "kind": "accordion",
+      "name": "Product questions accordion (4)",
+      "template_tpl_id": "494",
+      "route": "product",
+      "opened_by": "Click a question",
+      "closed_by": "Click it again (each item independent)",
+      "states": [
+        {
+          "name": "item open",
+          "state_keys": {
+            "acc": "{i: true}"
+          },
+          "how_to_reach": "L.setState({acc:{0:true}})",
+          "sc_if_tpl_ids": [
+            "499"
+          ],
+          "animation_ids": [
+            "TR-38",
+            "CA-19"
+          ]
+        },
+        {
+          "name": "all closed",
+          "state_keys": {
+            "acc": "{}"
+          },
+          "how_to_reach": "L.setState({acc:{}})"
+        }
+      ],
+      "source": "acc"
+    },
+    {
+      "id": "S-23",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-10",
+      "kind": "panel",
+      "name": "Product reviews / no-reviews strip",
+      "template_tpl_id": [
+        "502",
+        "528"
+      ],
+      "route": "product",
+      "opened_by": "Product data: revs > 0 shows reviews; revs = 0 shows the Google strip",
+      "closed_by": "n/a (content variant)",
+      "states": [
+        {
+          "name": "has reviews",
+          "state_keys": {
+            "curId": "product with revs > 0, e.g. 5"
+          },
+          "how_to_reach": "L.setState({page:'product', curId:5})",
+          "animation_ids": [
+            "TR-39"
+          ]
+        },
+        {
+          "name": "no reviews (Google strip)",
+          "state_keys": {
+            "curId": "product with revs = 0, e.g. 10"
+          },
+          "how_to_reach": "L.setState({page:'product', curId:10})"
+        }
+      ],
+      "source": "hasPdpReviews / noPdpReviews",
+      "notes": "Content variant, not interactive; listed because it is the launch-default state."
+    },
+    {
+      "id": "S-24",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "drawer",
+      "name": "Bag drawer",
+      "template_tpl_id": "1196",
+      "route": "*",
+      "opened_by": "Bag button; \"View bag\" in the toast",
+      "closed_by": "Backdrop click, × , Checkout, Add lenses",
+      "states": [
+        {
+          "name": "closed",
+          "state_keys": {
+            "bagOpen": false
+          },
+          "how_to_reach": "L.setState({bagOpen:false})"
+        },
+        {
+          "name": "open, empty",
+          "state_keys": {
+            "bagOpen": true,
+            "bag": "[]"
+          },
+          "how_to_reach": "L.setState({bagOpen:true, bag:[]})",
+          "sc_if_tpl_ids": [
+            "1195",
+            "1204"
+          ],
+          "animation_ids": [
+            "CA-52",
+            "CA-53"
+          ]
+        },
+        {
+          "name": "open, with items",
+          "state_keys": {
+            "bagOpen": true,
+            "bag": "[{pid,size,lens}]"
+          },
+          "how_to_reach": "L.setState({bagOpen:true, bag:[{pid:5,size:'M',lens:null}]})",
+          "sc_if_tpl_ids": [
+            "1195",
+            "1224",
+            "1221"
+          ],
+          "animation_ids": [
+            "CA-52",
+            "CA-53",
+            "CA-54",
+            "TR-53",
+            "TR-54"
+          ]
+        }
+      ],
+      "source": "openBag/closeBag, bagItems"
+    },
+    {
+      "id": "S-25",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "modal",
+      "name": "Size guide",
+      "template_tpl_id": "1235",
+      "route": "*",
+      "opened_by": "Size guide links (product page, footer, mobile menu)",
+      "closed_by": "Backdrop click or ×",
+      "states": [
+        {
+          "name": "open",
+          "state_keys": {
+            "modal": "size"
+          },
+          "how_to_reach": "L.setState({modal:'size'})",
+          "sc_if_tpl_ids": [
+            "1234"
+          ],
+          "animation_ids": [
+            "CA-55",
+            "CA-56",
+            "TR-55"
+          ]
+        }
+      ],
+      "source": "openSizeGuide / closeModal"
+    },
+    {
+      "id": "S-26",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": true,
+        "reason": "Cleared by setTimeout 3300ms in toast()."
+      },
+      "parent": "S-01",
+      "kind": "result",
+      "name": "Toast",
+      "template_tpl_id": "1278",
+      "route": "*",
+      "opened_by": "addToBag() (\"Added to bag\" / \"Added with prescription lenses\")",
+      "closed_by": "Timeout 3300ms; opening the bag",
+      "states": [
+        {
+          "name": "visible",
+          "state_keys": {
+            "toast": "string",
+            "toastKey": "n"
+          },
+          "how_to_reach": "L.toast('Added to bag')",
+          "sc_if_tpl_ids": [
+            "1277"
+          ],
+          "animation_ids": [
+            "CA-57"
+          ]
+        }
+      ],
+      "source": "toast()"
+    },
+    {
+      "id": "S-27",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-01",
+      "kind": "modal",
+      "name": "Lens configurator",
+      "template_tpl_id": "1283",
+      "route": "*",
+      "opened_by": "\"Add my prescription\" on the product page; lens links on /lenses; \"Add lenses\" on a bag item",
+      "closed_by": "Close ×; \"No prescription\"; Add to bag",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "open, side-by-side",
+          "state_keys": {
+            "lens": "{open:true}",
+            "w": ">= 768"
+          },
+          "how_to_reach": "L.setState({lens:{...L.state.lens, open:true, step:0}, w:1400})",
+          "sc_if_tpl_ids": [
+            "1282",
+            "1305",
+            "1314"
+          ],
+          "animation_ids": [
+            "CA-58",
+            "TR-57",
+            "TR-58",
+            "CA-59"
+          ]
+        },
+        {
+          "name": "open, stacked (mobile)",
+          "state_keys": {
+            "lens": "{open:true}",
+            "w": "< 768"
+          },
+          "how_to_reach": "L.setState({lens:{...L.state.lens, open:true}, w:375})",
+          "sc_if_tpl_ids": [
+            "1282",
+            "1431"
+          ]
+        }
+      ],
+      "source": "openLens, closeLens, setL"
+    },
+    {
+      "id": "S-28",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-27",
+      "kind": "form-step",
+      "name": "Lens step: Q1 What they are for",
+      "template_tpl_id": "1322",
+      "route": "*",
+      "opened_by": "Opening the configurator",
+      "closed_by": "Back, or picking an option",
+      "states": [
+        {
+          "name": "step 0",
+          "state_keys": {
+            "lens.step": 0
+          },
+          "how_to_reach": "L.setState({lens:{...L.state.lens, open:true, step:0}})",
+          "sc_if_tpl_ids": [
+            "1321",
+            "1440"
+          ],
+          "animation_ids": [
+            "CA-60",
+            "TR-60"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-29",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-27",
+      "kind": "form-step",
+      "name": "Lens step: Q2 How thin",
+      "template_tpl_id": "1345",
+      "route": "*",
+      "opened_by": "Picking an option on the previous step, or Continue",
+      "closed_by": "Back, or picking an option",
+      "states": [
+        {
+          "name": "step 1",
+          "state_keys": {
+            "lens.step": 1
+          },
+          "how_to_reach": "L.setState({lens:{...L.state.lens, open:true, step:1, use:'distance'}})",
+          "sc_if_tpl_ids": [
+            "1344",
+            "1438",
+            "1444"
+          ],
+          "animation_ids": [
+            "CA-62",
+            "TR-62",
+            "TR-69",
+            "TR-70"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-30",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-27",
+      "kind": "form-step",
+      "name": "Lens step: Q3 Finish",
+      "template_tpl_id": "1369",
+      "route": "*",
+      "opened_by": "Picking an option on the previous step, or Continue",
+      "closed_by": "Back, or picking an option",
+      "states": [
+        {
+          "name": "step 2",
+          "state_keys": {
+            "lens.step": 2
+          },
+          "how_to_reach": "L.setState({lens:{...L.state.lens, open:true, step:2, use:'distance', thick:'std'}})",
+          "sc_if_tpl_ids": [
+            "1368",
+            "1438",
+            "1444"
+          ],
+          "animation_ids": [
+            "CA-64",
+            "TR-64",
+            "TR-69",
+            "TR-70"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-31",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-27",
+      "kind": "form-step",
+      "name": "Lens step: Prescription",
+      "template_tpl_id": "1389",
+      "route": "*",
+      "opened_by": "Picking an option on the previous step, or Continue",
+      "closed_by": "Back, or picking an option",
+      "states": [
+        {
+          "name": "step 3",
+          "state_keys": {
+            "lens.step": 3
+          },
+          "how_to_reach": "L.setState({lens:{...L.state.lens, open:true, step:3, use:'distance', thick:'std', finish:'tint'}})",
+          "sc_if_tpl_ids": [
+            "1388",
+            "1438",
+            "1446"
+          ],
+          "animation_ids": [
+            "CA-66",
+            "TR-66",
+            "TR-69",
+            "TR-71"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-32",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-27",
+      "kind": "accordion",
+      "name": "Lens option help",
+      "template_tpl_id": [
+        "1343",
+        "1367",
+        "1387"
+      ],
+      "route": "*",
+      "opened_by": "\"?\" on an option card",
+      "closed_by": "\"?\" again; picking an option",
+      "states": [
+        {
+          "name": "help open",
+          "state_keys": {
+            "lens.help": "'u'|'t'|'f' + option key"
+          },
+          "how_to_reach": "L.setState({lens:{...L.state.lens, open:true, step:0, help:'udistance'}})",
+          "sc_if_tpl_ids": [
+            "1342",
+            "1366",
+            "1386"
+          ],
+          "animation_ids": [
+            "TR-61",
+            "CA-61",
+            "TR-63",
+            "CA-63",
+            "TR-65",
+            "CA-65"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-33",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-27",
+      "kind": "panel",
+      "name": "Lens prescription mode",
+      "template_tpl_id": [
+        "1402",
+        "1406",
+        "1412"
+      ],
+      "route": "*",
+      "opened_by": "Choose Send later / Upload / Type it in",
+      "closed_by": "Another mode",
+      "states": [
+        {
+          "name": "later",
+          "state_keys": {
+            "lens.rxMode": "later"
+          },
+          "how_to_reach": "L.setState({lens:{...L.state.lens, open:true, step:3, use:'distance', rxMode:'later'}})",
+          "sc_if_tpl_ids": [
+            "1401"
+          ],
+          "animation_ids": [
+            "CA-67"
+          ]
+        },
+        {
+          "name": "upload",
+          "state_keys": {
+            "lens.rxMode": "upload"
+          },
+          "how_to_reach": "L.setState({lens:{...L.state.lens, open:true, step:3, use:'distance', rxMode:'upload'}})",
+          "sc_if_tpl_ids": [
+            "1405"
+          ],
+          "animation_ids": [
+            "TR-67",
+            "CA-68"
+          ]
+        },
+        {
+          "name": "type",
+          "state_keys": {
+            "lens.rxMode": "type"
+          },
+          "how_to_reach": "L.setState({lens:{...L.state.lens, open:true, step:3, use:'distance', rxMode:'type'}})",
+          "sc_if_tpl_ids": [
+            "1411"
+          ],
+          "animation_ids": [
+            "CA-69"
+          ]
+        }
+      ],
+      "notes": "Default rxMode is later. Upload is a file input (image/*, .pdf) with no handler; Type-it-in has six controlled inputs (SPH/CYL/AXIS × R/L), no validation."
+    },
+    {
+      "id": "S-34",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-14",
+      "kind": "form",
+      "name": "Contact form",
+      "template_tpl_id": "682",
+      "route": "contact",
+      "opened_by": "Contact page",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "idle",
+          "state_keys": {
+            "contactSent": false
+          },
+          "how_to_reach": "L.setState({page:'contact', contactSent:false})"
+        },
+        {
+          "name": "sent",
+          "state_keys": {
+            "contactSent": true
+          },
+          "how_to_reach": "Submit with name and email filled (native required validation); L.setState({contactSent:true})",
+          "sc_if_tpl_ids": [
+            "699"
+          ],
+          "animation_ids": [
+            "TR-44",
+            "CA-32"
+          ]
+        }
+      ],
+      "source": "submitContact",
+      "notes": "Fields: name (required), email (required, type=email), phone, topic select (6 options), message. Only the native required/email checks; submit sets contactSent, nothing is sent."
+    },
+    {
+      "id": "S-35",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-15",
+      "kind": "form-step",
+      "name": "Checkout delivery method",
+      "template_tpl_id": "770",
+      "route": "checkout",
+      "opened_by": "Checkout page",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "Post it to me",
+          "state_keys": {
+            "co.method": "delivery"
+          },
+          "how_to_reach": "L.setState({page:'checkout', co:{...L.state.co, method:'delivery'}})",
+          "sc_if_tpl_ids": [
+            "784"
+          ],
+          "animation_ids": [
+            "TR-45",
+            "CA-36"
+          ]
+        },
+        {
+          "name": "Collect in Birmingham",
+          "state_keys": {
+            "co.method": "collect"
+          },
+          "how_to_reach": "L.setState({page:'checkout', co:{...L.state.co, method:'collect'}})",
+          "animation_ids": [
+            "TR-46"
+          ]
+        }
+      ],
+      "source": "setDelivery / setCollect",
+      "notes": "Shipping £3.95 under £75, free over £75 or for collection."
+    },
+    {
+      "id": "S-36",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-15",
+      "kind": "form-step",
+      "name": "Checkout prescription",
+      "template_tpl_id": "792",
+      "route": "checkout",
+      "opened_by": "Bag contains an item with lenses",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "upload",
+          "state_keys": {
+            "co.rxMode": "upload",
+            "bag": "contains lens item"
+          },
+          "how_to_reach": "L.setState({page:'checkout', bag:[{pid:5,size:'M',lens:{use:'distance',thick:'std',finish:'tint',rxMode:'later'}}], co:{...L.state.co, rxMode:'upload'}})",
+          "sc_if_tpl_ids": [
+            "791",
+            "799"
+          ],
+          "animation_ids": [
+            "CA-37",
+            "TR-47",
+            "PS-13"
+          ]
+        },
+        {
+          "name": "type",
+          "state_keys": {
+            "co.rxMode": "type",
+            "bag": "contains lens item"
+          },
+          "how_to_reach": "L.setState({page:'checkout', bag:[{pid:5,size:'M',lens:{use:'distance',thick:'std',finish:'tint',rxMode:'later'}}], co:{...L.state.co, rxMode:'type'}})",
+          "sc_if_tpl_ids": [
+            "791"
+          ],
+          "animation_ids": [
+            "CA-37",
+            "TR-47"
+          ]
+        },
+        {
+          "name": "later",
+          "state_keys": {
+            "co.rxMode": "later",
+            "bag": "contains lens item"
+          },
+          "how_to_reach": "L.setState({page:'checkout', bag:[{pid:5,size:'M',lens:{use:'distance',thick:'std',finish:'tint',rxMode:'later'}}], co:{...L.state.co, rxMode:'later'}})",
+          "sc_if_tpl_ids": [
+            "791",
+            "804"
+          ],
+          "animation_ids": [
+            "CA-37",
+            "TR-47",
+            "CA-38"
+          ]
+        }
+      ],
+      "notes": "Type-it-in has no fields at checkout; only the mode button changes. Payment step number becomes 4 (payStepNo)."
+    },
+    {
+      "id": "S-37",
+      "kind": "panel",
+      "name": "Frame Card (product card)",
+      "dc": "Frame Card",
+      "template_tpl_id": "0",
+      "route": null,
+      "parent": null,
+      "opened_by": "Mounted by dc-import in best sellers, shop grid, more-from-brand, similar and the account wishlist",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {},
+          "how_to_reach": "Rendered with prop p (a decorated product)",
+          "animation_ids": [
+            "TR-72",
+            "TR-73",
+            "TR-74",
+            "TR-75"
+          ]
+        },
+        {
+          "name": "saved (wishlist)",
+          "state_keys": {
+            "favs": "includes p.id"
+          },
+          "how_to_reach": "Click the heart; on the storefront logic L.setState({favs:[5]})"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "notes": "Content variants only (photo / no photo, save badge, polarised tag, rating / no reviews, +N colours). Saved frames are listed in My account → Wishlist (S-50); also mounted there."
+    },
+    {
+      "id": "S-38",
+      "kind": "page",
+      "name": "WP Build Gap Map (report)",
+      "dc": "WP Build Gap Map",
+      "template_tpl_id": "0",
+      "route": null,
+      "parent": null,
+      "opened_by": "Open the file directly",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "all rows",
+          "state_keys": {
+            "lv": null,
+            "area": null
+          },
+          "how_to_reach": "dcLogic('WP Build Gap Map').setState({lv:null, area:null})"
+        },
+        {
+          "name": "filtered",
+          "state_keys": {
+            "lv": "0–5",
+            "area": "area name"
+          },
+          "how_to_reach": "…setState({lv:4})"
+        },
+        {
+          "name": "nothing matches",
+          "state_keys": {
+            "noneShown": true
+          },
+          "how_to_reach": "Pick a level and area with no rows, e.g. setState({lv:0, area:\"Lens configurator\"}) if empty",
+          "sc_if_tpl_ids": [
+            "73"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "notes": "Build report, not part of the site. 110 rows."
+    },
+    {
+      "id": "S-39",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-13",
+      "kind": "accordion",
+      "name": "FAQ accordion (8)",
+      "template_tpl_id": "647",
+      "route": "help",
+      "opened_by": "Click a question",
+      "closed_by": "Click it again, or open another (one at a time)",
+      "states": [
+        {
+          "name": "item open",
+          "state_keys": {
+            "faqOpen": "index (default 0)"
+          },
+          "how_to_reach": "L.setState({faqOpen:2})",
+          "sc_if_tpl_ids": [
+            "652"
+          ],
+          "animation_ids": [
+            "TR-42",
+            "CA-31"
+          ]
+        },
+        {
+          "name": "all closed",
+          "state_keys": {
+            "faqOpen": null
+          },
+          "how_to_reach": "L.setState({faqOpen:null})"
+        }
+      ]
+    },
+    {
+      "id": "S-40",
+      "dc": "Eye Care Birmingham",
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "parent": "S-27",
+      "kind": "panel",
+      "name": "Lens preview finish label",
+      "template_tpl_id": "1299",
+      "route": "*",
+      "opened_by": "Choosing a finish (step 3)",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "finish chosen",
+          "state_keys": {
+            "lens.finish": "tint|pol|photo|clear"
+          },
+          "how_to_reach": "L.setState({lens:{...L.state.lens, open:true, finish:'pol'}})",
+          "sc_if_tpl_ids": [
+            "1299"
+          ],
+          "animation_ids": [
+            "TR-58"
+          ]
+        }
+      ]
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-41",
+      "kind": "page",
+      "name": "Sign in / register",
+      "template_tpl_id": "856",
+      "route": "signin",
+      "page_key": "signin",
+      "parent": "S-01",
+      "opened_by": "Account icon while signed out; \"Sign in\" link at checkout; go('account') while signed out also renders this page",
+      "closed_by": "Signing in or registering (go to account, or back to checkout); go() to another page",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "source": "isSignin; auth.view",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "signin",
+            "auth.view": "signin"
+          },
+          "how_to_reach": "L.setState({page:'signin', auth:{view:'signin', email:'', note:null, mismatch:false, returnTo:null}})",
+          "sc_if_tpl_ids": [
+            "855"
+          ],
+          "animation_ids": [
+            "CA-73",
+            "CA-74",
+            "CA-75",
+            "CA-76",
+            "CA-77",
+            "CA-78",
+            "CA-79",
+            "TR-78",
+            "TR-79",
+            "TR-80",
+            "TR-81",
+            "TR-82"
+          ]
+        }
+      ],
+      "notes": "WooCommerce /my-account (signed-out view). The prototype accepts any email and password."
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-42",
+      "kind": "page",
+      "name": "My account",
+      "template_tpl_id": "919",
+      "route": "account",
+      "page_key": "account",
+      "parent": "S-01",
+      "opened_by": "Account icon while signed in; signing in or registering; View my orders on the confirmation page",
+      "closed_by": "Sign out (clears user, go home); go() to another page",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Formats fixed dates with Date (toLocaleDateString en-GB); reads no current time, Math.random, localStorage or timers."
+      },
+      "source": "isAccount; acct",
+      "states": [
+        {
+          "name": "signed in",
+          "state_keys": {
+            "page": "account",
+            "user": "{…}"
+          },
+          "how_to_reach": "Sign in, or L.setState({page:'account', user:{first:'Aisha',last:'Khan',email:'aisha.khan@example.com',mobile:''}})",
+          "sc_if_tpl_ids": [
+            "918"
+          ],
+          "animation_ids": [
+            "CA-80",
+            "CA-81",
+            "CA-82",
+            "CA-83",
+            "CA-84",
+            "CA-85",
+            "CA-86",
+            "CA-87",
+            "CA-88",
+            "CA-89",
+            "CA-90",
+            "TR-83",
+            "TR-84",
+            "TR-85",
+            "TR-86",
+            "TR-87",
+            "TR-88",
+            "TR-89",
+            "TR-90",
+            "TR-91",
+            "TR-92",
+            "TR-93",
+            "TR-94",
+            "TR-95",
+            "TR-96",
+            "TR-97",
+            "TR-98"
+          ]
+        }
+      ],
+      "notes": "Greeting \"Hello, {first}\" (or \"Your account\" when no first name). Below 1024 the side nav becomes a horizontal tab row."
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-43",
+      "kind": "form",
+      "name": "Sign-in and register forms",
+      "template_tpl_id": "857",
+      "route": "signin",
+      "parent": "S-41",
+      "opened_by": "Default view of the sign-in page",
+      "closed_by": "Forgotten your password? (S-44); submitting either form",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "source": "signIn, register (FormData)",
+      "states": [
+        {
+          "name": "sign in + register side by side",
+          "state_keys": {
+            "auth.view": "signin",
+            "auth.note": null
+          },
+          "how_to_reach": "L.setState({page:'signin', auth:{view:'signin', note:null}})",
+          "sc_if_tpl_ids": [
+            "857"
+          ],
+          "animation_ids": [
+            "CA-73",
+            "CA-74",
+            "CA-75",
+            "TR-78",
+            "TR-79"
+          ]
+        },
+        {
+          "name": "with notice",
+          "state_keys": {
+            "auth.note": "'Password changed…' or 'Sign in and you will go straight back to checkout.'"
+          },
+          "how_to_reach": "After a password reset, or from checkout's Sign in link; L.setState({page:'signin', auth:{view:'signin', note:'Password changed. Sign in with your new one.'}})",
+          "sc_if_tpl_ids": [
+            "857",
+            "862"
+          ],
+          "animation_ids": [
+            "CA-73",
+            "CA-74",
+            "CA-75",
+            "TR-78",
+            "TR-79"
+          ]
+        }
+      ],
+      "notes": "Browser validation only (required, type=email, minLength 8 on the register password). Sign in loads demo data (3 orders, 2 subscriptions, a saved address). Register creates an empty account. Stacked below 1024."
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-44",
+      "kind": "form-step",
+      "name": "Forgotten-password flow",
+      "template_tpl_id": "886",
+      "route": "signin",
+      "parent": "S-41",
+      "opened_by": "\"Forgotten your password?\" on the sign-in form",
+      "closed_by": "\"Back to sign in\"; saving a new password",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "source": "goForgot, sendReset, openReset, saveReset",
+      "states": [
+        {
+          "name": "request link",
+          "state_keys": {
+            "auth.view": "forgot"
+          },
+          "how_to_reach": "L.setState({page:'signin', auth:{view:'forgot'}})",
+          "sc_if_tpl_ids": [
+            "886"
+          ],
+          "animation_ids": [
+            "CA-76",
+            "TR-80"
+          ]
+        },
+        {
+          "name": "email sent",
+          "state_keys": {
+            "auth.view": "sent",
+            "auth.email": "entered email"
+          },
+          "how_to_reach": "Submit the email; L.setState({page:'signin', auth:{view:'sent', email:'aisha.khan@example.com'}})",
+          "sc_if_tpl_ids": [
+            "896"
+          ],
+          "animation_ids": [
+            "CA-77",
+            "TR-81"
+          ]
+        },
+        {
+          "name": "choose new password",
+          "state_keys": {
+            "auth.view": "reset"
+          },
+          "how_to_reach": "Prototype link 'open the reset link'; L.setState({page:'signin', auth:{view:'reset', mismatch:false}})",
+          "sc_if_tpl_ids": [
+            "905"
+          ],
+          "animation_ids": [
+            "CA-78",
+            "CA-79",
+            "TR-82"
+          ]
+        },
+        {
+          "name": "passwords do not match",
+          "state_keys": {
+            "auth.view": "reset",
+            "auth.mismatch": true
+          },
+          "how_to_reach": "Enter two different passwords; L.setState({page:'signin', auth:{view:'reset', mismatch:true}})",
+          "sc_if_tpl_ids": [
+            "905",
+            "915"
+          ],
+          "animation_ids": [
+            "CA-78",
+            "CA-79",
+            "TR-82"
+          ]
+        }
+      ],
+      "notes": "Saving a matching pair returns to sign-in with the \"Password changed\" notice. In production the reset view is reached from the emailed link (/my-account/lost-password/?key=…), not the prototype-only link."
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-45",
+      "kind": "panel",
+      "name": "Account navigation (tabs)",
+      "template_tpl_id": "926",
+      "route": "account",
+      "parent": "S-42",
+      "opened_by": "Always shown on My account",
+      "closed_by": "n/a",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "source": "acctTabs, acct.tab",
+      "states": [
+        {
+          "name": "Orders",
+          "state_keys": {
+            "acct.tab": "orders",
+            "acct.orderId": null
+          },
+          "how_to_reach": "L.setState({page:'account', acct:{tab:'orders', orderId:null}})",
+          "sc_if_tpl_ids": [
+            "933"
+          ],
+          "animation_ids": [
+            "CA-81",
+            "TR-85",
+            "TR-86"
+          ]
+        },
+        {
+          "name": "Subscriptions",
+          "state_keys": {
+            "acct.tab": "subs"
+          },
+          "how_to_reach": "L.setState({acct:{tab:'subs'}})",
+          "sc_if_tpl_ids": [
+            "1004"
+          ],
+          "animation_ids": [
+            "CA-83",
+            "CA-84",
+            "CA-85",
+            "TR-89",
+            "TR-90",
+            "TR-91",
+            "TR-92",
+            "TR-93",
+            "TR-94"
+          ]
+        },
+        {
+          "name": "Addresses",
+          "state_keys": {
+            "acct.tab": "addr"
+          },
+          "how_to_reach": "L.setState({acct:{tab:'addr', editAddr:null}})",
+          "sc_if_tpl_ids": [
+            "1057"
+          ],
+          "animation_ids": [
+            "CA-86",
+            "CA-87",
+            "TR-95",
+            "TR-96"
+          ]
+        },
+        {
+          "name": "Wishlist",
+          "state_keys": {
+            "acct.tab": "wish"
+          },
+          "how_to_reach": "L.setState({acct:{tab:'wish'}})",
+          "sc_if_tpl_ids": [
+            "1081"
+          ],
+          "animation_ids": [
+            "CA-88",
+            "TR-97"
+          ]
+        },
+        {
+          "name": "Account details",
+          "state_keys": {
+            "acct.tab": "details"
+          },
+          "how_to_reach": "L.setState({acct:{tab:'details', saved:false}})",
+          "sc_if_tpl_ids": [
+            "1097"
+          ],
+          "animation_ids": [
+            "CA-89",
+            "CA-90",
+            "TR-98"
+          ]
+        }
+      ],
+      "notes": "Vertical list with a 2px ink inset line on the active item at >= 1024; a horizontal scrolling row with an underline below. Counts beside Orders, Subscriptions (not cancelled) and Wishlist. Sign out at the end."
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-46",
+      "kind": "panel",
+      "name": "Orders list",
+      "template_tpl_id": "933",
+      "route": "account",
+      "parent": "S-45",
+      "opened_by": "Orders tab",
+      "closed_by": "Clicking an order (S-47); another tab",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Formats fixed dates with Date (toLocaleDateString en-GB); reads no current time, Math.random, localStorage or timers."
+      },
+      "source": "orders (placed this session + Component.ORDERS for the demo account)",
+      "states": [
+        {
+          "name": "with orders",
+          "state_keys": {
+            "orders": "non-empty"
+          },
+          "how_to_reach": "Sign in (demo data)",
+          "sc_if_tpl_ids": [
+            "936"
+          ],
+          "animation_ids": [
+            "TR-85"
+          ]
+        },
+        {
+          "name": "no orders",
+          "state_keys": {
+            "user.isNew": true,
+            "placed": "[]"
+          },
+          "how_to_reach": "Register a new account; L.setState({user:{first:'Sam', email:'sam@example.com', isNew:true}, placed:[], acct:{tab:'orders'}})",
+          "sc_if_tpl_ids": [
+            "949"
+          ],
+          "animation_ids": [
+            "TR-86"
+          ]
+        }
+      ],
+      "notes": "Status pill: taupe while in progress, green when delivered or collected."
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-47",
+      "kind": "panel",
+      "name": "Order detail",
+      "template_tpl_id": "954",
+      "route": "account",
+      "parent": "S-45",
+      "opened_by": "Clicking an order row",
+      "closed_by": "\"All orders\"; another tab",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Formats fixed dates with Date (toLocaleDateString en-GB); reads no current time, Math.random, localStorage or timers."
+      },
+      "source": "od (orders.find by acct.orderId)",
+      "states": [
+        {
+          "name": "open",
+          "state_keys": {
+            "acct.orderId": "EC-10471"
+          },
+          "how_to_reach": "L.setState({page:'account', acct:{tab:'orders', orderId:'EC-10471'}})",
+          "sc_if_tpl_ids": [
+            "954"
+          ],
+          "animation_ids": [
+            "CA-82",
+            "TR-87",
+            "TR-88"
+          ]
+        }
+      ],
+      "notes": "Progress steps depend on method and lenses: Order placed → (Prescription checked → Lenses being made) → Posted → Delivered, or → Ready to collect → Collected. Items, delivery or collection address, payment, totals, WhatsApp card quoting the order number."
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-48",
+      "kind": "panel",
+      "name": "Subscriptions",
+      "template_tpl_id": "1004",
+      "route": "account",
+      "parent": "S-45",
+      "opened_by": "Subscriptions tab",
+      "closed_by": "Another tab",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Formats fixed dates with Date (toLocaleDateString en-GB); reads no current time, Math.random, localStorage or timers."
+      },
+      "source": "state.subs, subConfirm; subs[] handlers",
+      "states": [
+        {
+          "name": "active",
+          "state_keys": {
+            "subs[i].status": "active"
+          },
+          "how_to_reach": "Sign in (demo data)",
+          "sc_if_tpl_ids": [
+            "1008",
+            "1028",
+            "1035",
+            "1037"
+          ],
+          "animation_ids": [
+            "CA-84",
+            "CA-85",
+            "TR-89",
+            "TR-90",
+            "TR-91",
+            "TR-92",
+            "TR-93",
+            "TR-94"
+          ]
+        },
+        {
+          "name": "next delivery skipped",
+          "state_keys": {
+            "subs[i].skipped": ">= 1"
+          },
+          "how_to_reach": "Skip next delivery (moves the date on by the frequency); Undo reverses one skip",
+          "sc_if_tpl_ids": [
+            "1025"
+          ],
+          "animation_ids": [
+            "CA-84"
+          ]
+        },
+        {
+          "name": "frequency changed",
+          "state_keys": {
+            "subs[i].freq": "1 | 2 | 3 | 6"
+          },
+          "how_to_reach": "Pick from How often",
+          "sc_if_tpl_ids": [
+            "1028"
+          ]
+        },
+        {
+          "name": "paused",
+          "state_keys": {
+            "subs[i].status": "paused"
+          },
+          "how_to_reach": "Pause; Resume returns to active",
+          "sc_if_tpl_ids": [
+            "1040"
+          ],
+          "animation_ids": [
+            "TR-91"
+          ]
+        },
+        {
+          "name": "confirm cancel",
+          "state_keys": {
+            "subConfirm": "subs[i].id"
+          },
+          "how_to_reach": "Cancel subscription; L.setState({subConfirm:'SUB-2031'})",
+          "sc_if_tpl_ids": [
+            "1043"
+          ],
+          "animation_ids": [
+            "CA-85",
+            "TR-93",
+            "TR-94"
+          ]
+        },
+        {
+          "name": "cancelled",
+          "state_keys": {
+            "subs[i].status": "cancelled"
+          },
+          "how_to_reach": "Yes, cancel it; Start it again returns to active",
+          "sc_if_tpl_ids": [
+            "1050"
+          ]
+        },
+        {
+          "name": "none",
+          "state_keys": {
+            "subs": "[]"
+          },
+          "how_to_reach": "Register a new account",
+          "sc_if_tpl_ids": [
+            "1053"
+          ]
+        }
+      ],
+      "notes": "Placeholder products (lens care kit, anti-fog wipes) until the clinic confirms what is sold on subscription. Maps to WooCommerce Subscriptions actions: skip renewal, suspend/reactivate, change billing period, cancel."
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-49",
+      "kind": "form",
+      "name": "Addresses",
+      "template_tpl_id": "1057",
+      "route": "account",
+      "parent": "S-45",
+      "opened_by": "Addresses tab",
+      "closed_by": "Another tab",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "source": "addrCards; state.addr, acct.editAddr",
+      "states": [
+        {
+          "name": "viewing",
+          "state_keys": {
+            "acct.editAddr": null
+          },
+          "how_to_reach": "L.setState({acct:{tab:'addr', editAddr:null}})",
+          "sc_if_tpl_ids": [
+            "1065",
+            "1067"
+          ]
+        },
+        {
+          "name": "editing delivery or billing",
+          "state_keys": {
+            "acct.editAddr": "'delivery' | 'billing'"
+          },
+          "how_to_reach": "Edit / Add; L.setState({acct:{tab:'addr', editAddr:'delivery'}})",
+          "sc_if_tpl_ids": [
+            "1069"
+          ],
+          "animation_ids": [
+            "CA-87",
+            "TR-95",
+            "TR-96"
+          ]
+        }
+      ],
+      "notes": "Billing shows \"Same as delivery address\" until one is saved. The saved delivery address prefills the checkout fields while signed in."
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-50",
+      "kind": "panel",
+      "name": "Wishlist",
+      "template_tpl_id": "1081",
+      "route": "account",
+      "parent": "S-45",
+      "opened_by": "Wishlist tab",
+      "closed_by": "Another tab",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "source": "wishItems (favs)",
+      "states": [
+        {
+          "name": "with frames",
+          "state_keys": {
+            "favs": "[ids]"
+          },
+          "how_to_reach": "Heart a frame; L.setState({favs:[5,2]})",
+          "sc_if_tpl_ids": [
+            "1086"
+          ]
+        },
+        {
+          "name": "empty",
+          "state_keys": {
+            "favs": "[]"
+          },
+          "how_to_reach": "L.setState({favs:[]})",
+          "sc_if_tpl_ids": [
+            "1092"
+          ],
+          "animation_ids": [
+            "TR-97"
+          ]
+        }
+      ],
+      "notes": "Frame Cards (S-37); un-hearting removes the card."
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-51",
+      "kind": "form",
+      "name": "Account details",
+      "template_tpl_id": "1097",
+      "route": "account",
+      "parent": "S-45",
+      "opened_by": "Account details tab",
+      "closed_by": "Another tab",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "source": "saveDetails (FormData)",
+      "states": [
+        {
+          "name": "editing",
+          "state_keys": {
+            "acct.saved": false
+          },
+          "how_to_reach": "L.setState({acct:{tab:'details', saved:false}})",
+          "sc_if_tpl_ids": [
+            "1097"
+          ],
+          "animation_ids": [
+            "CA-89",
+            "CA-90",
+            "TR-98"
+          ]
+        },
+        {
+          "name": "saved",
+          "state_keys": {
+            "acct.saved": true
+          },
+          "how_to_reach": "Save changes",
+          "sc_if_tpl_ids": [
+            "1122"
+          ],
+          "animation_ids": [
+            "CA-90"
+          ]
+        }
+      ],
+      "notes": "Name, email, mobile; change password (current, new, again) left blank to keep. No password check in the prototype."
+    },
+    {
+      "dc": "Eye Care Birmingham",
+      "id": "S-52",
+      "kind": "form-step",
+      "name": "Checkout account option",
+      "template_tpl_id": "758",
+      "route": "checkout",
+      "parent": "S-15",
+      "opened_by": "Contact step of checkout",
+      "closed_by": "n/a",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no Date, Math.random, localStorage or timers."
+      },
+      "source": "coGuest, coAccount, coSignedIn",
+      "states": [
+        {
+          "name": "guest",
+          "state_keys": {
+            "user": null,
+            "co.account": false
+          },
+          "how_to_reach": "L.setState({page:'checkout', user:null, co:{method:'delivery', rxMode:'upload', account:false, email:''}})",
+          "sc_if_tpl_ids": [
+            "758"
+          ],
+          "animation_ids": [
+            "CA-70"
+          ]
+        },
+        {
+          "name": "guest, Create an account ticked",
+          "state_keys": {
+            "user": null,
+            "co.account": true
+          },
+          "how_to_reach": "Tick Create an account (a password field appears)",
+          "sc_if_tpl_ids": [
+            "758",
+            "764"
+          ],
+          "animation_ids": [
+            "CA-70"
+          ]
+        },
+        {
+          "name": "signed in",
+          "state_keys": {
+            "user": "{…}"
+          },
+          "how_to_reach": "Sign in first; email, mobile and delivery address prefill",
+          "sc_if_tpl_ids": [
+            "768"
+          ]
+        }
+      ],
+      "notes": "Optional and unticked by default. \"Sign in\" returns to checkout after signing in (auth.returnTo)."
+    }
+  ],
+  "counts": {
+    "routes": {
+      "by_dc": {
+        "Eye Care Birmingham": 11,
+        "Frame Card": 0,
+        "WP Build Gap Map": 0
+      },
+      "total": 11,
+      "covered_by": {
+        "home": "S-08",
+        "shop": "S-09",
+        "product": "S-10",
+        "lenses": "S-11",
+        "about": "S-12",
+        "help": "S-13",
+        "contact": "S-14",
+        "checkout": "S-15",
+        "done": "S-16",
+        "signin": "S-41",
+        "account": "S-42"
+      },
+      "note": "Routes are values of state.page (go(page)); there is no URL router or hash routing in the draft. Unknown values render no page; page \"account\" renders the sign-in page while signed out. WordPress slugs are in the draft manifest."
+    },
+    "toggling_sc_ifs": {
+      "by_dc": {
+        "Eye Care Birmingham": 79,
+        "Frame Card": 0,
+        "WP Build Gap Map": 1
+      },
+      "total": 80,
+      "covered_by": {
+        "Eye Care Birmingham #52": "S-04",
+        "Eye Care Birmingham #55": "S-04",
+        "Eye Care Birmingham #73": "S-04",
+        "Eye Care Birmingham #85": "S-04",
+        "Eye Care Birmingham #92": "S-04",
+        "Eye Care Birmingham #263": "S-19",
+        "Eye Care Birmingham #270": "S-17",
+        "Eye Care Birmingham #272": "S-17",
+        "Eye Care Birmingham #319": "S-17",
+        "Eye Care Birmingham #285": "S-18",
+        "Eye Care Birmingham #328": "S-20",
+        "Eye Care Birmingham #421": "S-21",
+        "Eye Care Birmingham #429": "S-21",
+        "Eye Care Birmingham #435": "S-21",
+        "Eye Care Birmingham #499": "S-22",
+        "Eye Care Birmingham #652": "S-39",
+        "Eye Care Birmingham #699": "S-34",
+        "Eye Care Birmingham #784": "S-35",
+        "Eye Care Birmingham #791": "S-36",
+        "Eye Care Birmingham #799": "S-36",
+        "Eye Care Birmingham #804": "S-36",
+        "Eye Care Birmingham #1164": "S-05",
+        "Eye Care Birmingham #1195": "S-24",
+        "Eye Care Birmingham #1204": "S-24",
+        "Eye Care Birmingham #1221": "S-24",
+        "Eye Care Birmingham #1224": "S-24",
+        "Eye Care Birmingham #1234": "S-25",
+        "Eye Care Birmingham #1277": "S-26",
+        "Eye Care Birmingham #1282": "S-27",
+        "Eye Care Birmingham #1299": "S-40",
+        "Eye Care Birmingham #1321": "S-28",
+        "Eye Care Birmingham #1344": "S-29",
+        "Eye Care Birmingham #1368": "S-30",
+        "Eye Care Birmingham #1388": "S-31",
+        "Eye Care Birmingham #1342": "S-32",
+        "Eye Care Birmingham #1366": "S-32",
+        "Eye Care Birmingham #1386": "S-32",
+        "Eye Care Birmingham #1401": "S-33",
+        "Eye Care Birmingham #1405": "S-33",
+        "Eye Care Birmingham #1411": "S-33",
+        "Eye Care Birmingham #1438": "S-29",
+        "Eye Care Birmingham #1440": "S-28",
+        "Eye Care Birmingham #1444": "S-29",
+        "Eye Care Birmingham #1446": "S-31",
+        "WP Build Gap Map #73": "S-38",
+        "Eye Care Birmingham #44": "S-03",
+        "Eye Care Birmingham #758": "S-52",
+        "Eye Care Birmingham #764": "S-52",
+        "Eye Care Birmingham #768": "S-52",
+        "Eye Care Birmingham #849": "S-16",
+        "Eye Care Birmingham #853": "S-16",
+        "Eye Care Birmingham #857": "S-43",
+        "Eye Care Birmingham #862": "S-43",
+        "Eye Care Birmingham #886": "S-44",
+        "Eye Care Birmingham #896": "S-44",
+        "Eye Care Birmingham #905": "S-44",
+        "Eye Care Birmingham #915": "S-44",
+        "Eye Care Birmingham #933": "S-45",
+        "Eye Care Birmingham #936": "S-46",
+        "Eye Care Birmingham #949": "S-46",
+        "Eye Care Birmingham #954": "S-47",
+        "Eye Care Birmingham #1004": "S-45",
+        "Eye Care Birmingham #1008": "S-48",
+        "Eye Care Birmingham #1025": "S-48",
+        "Eye Care Birmingham #1028": "S-48",
+        "Eye Care Birmingham #1035": "S-48",
+        "Eye Care Birmingham #1037": "S-48",
+        "Eye Care Birmingham #1040": "S-48",
+        "Eye Care Birmingham #1043": "S-48",
+        "Eye Care Birmingham #1050": "S-48",
+        "Eye Care Birmingham #1053": "S-48",
+        "Eye Care Birmingham #1057": "S-45",
+        "Eye Care Birmingham #1065": "S-49",
+        "Eye Care Birmingham #1067": "S-49",
+        "Eye Care Birmingham #1069": "S-49",
+        "Eye Care Birmingham #1081": "S-45",
+        "Eye Care Birmingham #1086": "S-50",
+        "Eye Care Birmingham #1092": "S-50",
+        "Eye Care Birmingham #1097": "S-45",
+        "Eye Care Birmingham #1122": "S-51"
+      },
+      "note": "sc-ifs whose value depends on interactive or input state (menus, drawers, accordions, tabs, steps, modes, results, cart, account state)."
+    },
+    "other_sc_ifs": {
+      "Eye Care Birmingham": {
+        "route": [
+          "112",
+          "247",
+          "334",
+          "551",
+          "600",
+          "627",
+          "661",
+          "738",
+          "844",
+          "855",
+          "918"
+        ],
+        "breakpoint": [
+          "16",
+          "22",
+          "34",
+          "255",
+          "1305",
+          "1314",
+          "1431"
+        ],
+        "content_variant": [
+          "162",
+          "165",
+          "205",
+          "287",
+          "291",
+          "295",
+          "297",
+          "301",
+          "306",
+          "345",
+          "347",
+          "352",
+          "357",
+          "359",
+          "369",
+          "501",
+          "527",
+          "536",
+          "825",
+          "827",
+          "1211",
+          "1213",
+          "1295",
+          "1297",
+          "1363",
+          "1378",
+          "1398",
+          "973",
+          "975"
+        ],
+        "total": 126
+      },
+      "Frame Card": {
+        "content_variant": [
+          "2",
+          "4",
+          "8",
+          "16",
+          "19",
+          "22",
+          "27",
+          "32"
+        ],
+        "total": 8
+      },
+      "WP Build Gap Map": {
+        "content_variant": [
+          "65"
+        ],
+        "total": 2
+      },
+      "note": "Totals reconcile: Eye Care Birmingham: 79 toggling + 11 route + 7 breakpoint + 29 content_variant = 126; Frame Card: 0 toggling + 8 content_variant = 8; WP Build Gap Map: 1 toggling + 1 content_variant = 2."
+    }
+  },
+  "unresolved": [
+    {
+      "item": "Routes are state, not URLs",
+      "reason": "state.page is not reflected in the URL; back/forward and deep links do not work in the prototype. Production routes come from the draft manifest."
+    },
+    {
+      "item": "Lens Q1 \"No prescription\" closes the configurator",
+      "reason": "Picking it adds the frame to the bag and closes the modal immediately, skipping steps 2–4."
+    },
+    {
+      "item": "Account state is in memory",
+      "reason": "Signing in accepts any email and password and loads demo data; registering creates an empty account; the reset link is reached through a prototype-only link. Nothing persists across reloads."
+    }
+  ]
+}

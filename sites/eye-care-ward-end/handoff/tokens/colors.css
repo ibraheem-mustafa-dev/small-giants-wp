@@ -1,0 +1,44 @@
+/* Ward End Eye Care — brand palette. Values lifted from Eye Care Birmingham.dc.html (Oct 2026).
+   Colours used once or twice in a draft stay hex in the draft (CLAUDE.md). The Google reviews panel
+   (#1A73E8, #DADCE0, #5F6368, #202124, #F1F6FE, reviewer avatar colours) is deliberately off-brand and has no tokens. */
+:root{
+  /* core */
+  --ink:#141414;              /* text, buttons, selected borders */
+  --ink-hover:#2A2A2A;        /* primary button hover */
+  --paper:#FAF8F5;            /* page background, text on ink */
+  --white:#FFFFFF;            /* cards, inputs */
+  --surface-alt:#F3F0EB;      /* image wells, selected option, outline-button hover */
+  --surface-soft:#F0EBE3;
+  --hairline:#E6E1DA;         /* borders and the 1px hairline grid ground */
+  --border-strong:#D8D2C8;    /* swatch rings, small tags */
+  --border-warm:#D5CCBD;
+  --control-off:#C9C2B8;      /* toggle track off */
+  /* text */
+  --text-strong:#4A453E;
+  --text-2:#5E584F;           /* body copy on paper */
+  --text-muted:#6B655E;
+  --text-3:#77716A;           /* kickers, meta, RRP */
+  --text-4:#8B8478;           /* disabled / "soon" */
+  --text-faint:#A39C90;       /* "Photo to come", no-reviews */
+  /* accent (taupe, the only accent) */
+  --acc:#9C8B78;              /* badges, focus ring, ticker icons, selection */
+  --acc-ink:#6F6152;          /* kicker text, link hover */
+  --acc-soft:#EFEAE2;         /* "SOON" chip, soft fills */
+  /* WhatsApp channel */
+  --wa:#25D366;
+  --wa-hover:#1EBE5A;
+  --wa-ink:#0B2B17;
+  --wa-ink-deep:#12301E;
+  --wa-soft:#E9F9EF;
+  --wa-border:#B7E5C7;
+  /* status */
+  --success:#1B7F43;          /* in stock */
+  /* semantic aliases */
+  --text-body:var(--ink);
+  --surface-page:var(--paper);
+  --surface-card:var(--white);
+  --border-default:var(--hairline);
+  --button-primary-bg:var(--ink);
+  --button-primary-fg:var(--paper);
+  --focus-ring:var(--acc);
+}
