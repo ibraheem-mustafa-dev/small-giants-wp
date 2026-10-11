@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+.probe-note { font-style: italic; }
+</style>
+</helmet>
+<main style="font-family:system-ui,sans-serif;padding:24px;color:#222">
+  <header style="display:flex;gap:12px;align-items:center">
+    <h1 style="margin:0;font-size:24px">{{ title }}</h1>
+    <a href="#top" style="color:#225;text-decoration:none;transition:color .2s" style-hover="color:#c33;text-decoration:underline">Top</a>
+  </header>
+  <section style="margin-top:16px">
+    <div style="display:grid;gap:8px">
+      <div style="padding:8px;border:1px solid #ccc">
+        <p class="probe-note" style="margin:0">Nested <strong>three <em>deep</em></strong></p>
+      </div>
+    </div>
+    <sc-if value="{{ showYes }}" hint-placeholder-val="{{ true }}">
+      <p data-probe="yes" style="color:#060">Shown branch</p>
+    </sc-if>
+    <sc-if value="{{ showNo }}" hint-placeholder-val="{{ false }}">
+      <p data-probe="no" style="color:#600">Hidden branch</p>
+    </sc-if>
+    <ul style="padding-left:20px">
+      <sc-for list="{{ items }}" as="item" hint-placeholder-count="3">
+        <li style="margin:2px 0"><span>{{ item.label }}</span></li>
+      </sc-for>
+    </ul>
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#c33"></circle></svg>
+    <button type="button" tabIndex="0" onClick="{{ toggle }}" style="padding:8px 12px;border:1px solid #333;background:#fff" style-hover="background:#eee">{{ buttonLabel }}</button>
+  </section>
+  <table style="margin-top:16px;border-collapse:collapse">
+    <tr><th style="text-align:left;padding:4px">Name</th><th style="text-align:left;padding:4px">Value</th></tr>
+    <tr><td style="padding:4px">Alpha</td><td style="padding:4px">1</td></tr>
+  </table>
+  <label style="display:block;margin-top:16px">Choice
+    <select style="margin-left:8px">
+      <option value="a">First</option>
+      <option value="b">Second</option>
+    </select>
+  </label>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;600px&quot;}}">
+class Component extends DCLogic {
+  state = { on: false };
+  renderVals() {
+    return {
+      title: 'Runtime probe',
+      showYes: true,
+      showNo: false,
+      items: [ { label: 'One' }, { label: 'Two' }, { label: 'Three' } ],
+      buttonLabel: this.state.on ? 'On' : 'Off',
+      toggle: () => this.setState( { on: ! this.state.on } ),
+    };
+  }
+}
+</script>
+</body>
+</html>

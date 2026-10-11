@@ -15,7 +15,7 @@ The runtime trace is optional. It only confirms what the source already says.
 
 - SHA-256 every file you read: drafts, `support.js`, external scripts.
 - `support.js` has no version string, so its hash *is* the runtime version.
-- Put the hashes in the output files and in MANIFEST.md. A record is only valid for the revision whose hashes it carries.
+- Put the hashes in the output files and in MANIFEST.json. A record is only valid for the revision whose hashes it carries.
 
 ## 1. Find the inputs
 
@@ -151,5 +151,5 @@ It cannot produce real `:hover`/`:focus` or emulate `prefers-reduced-motion`, an
 ## 10. What not to do
 
 - Don't change the draft while inventorying. Report bugs (unguarded motion, dead paths, effects that look unintended) in `unresolved` and ask before fixing.
-- After any fix, regenerate both files and MANIFEST.md.
+- After any fix, regenerate both files and MANIFEST.json.
 - Don't rely on screenshots or measured layout for anything the code states.

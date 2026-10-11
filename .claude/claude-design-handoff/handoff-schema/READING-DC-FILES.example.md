@@ -1,6 +1,6 @@
 # Reading and running a `.dc.html` draft
 
-Written against the `support.js` in this bundle (SHA-256 in `MANIFEST.md`). Section 7 says which parts are fixed and which are per-project choices.
+Written against the `support.js` in this bundle (SHA-256 in `MANIFEST.json`). Section 7 says which parts are fixed and which are per-project choices.
 
 ## 1. File architecture
 

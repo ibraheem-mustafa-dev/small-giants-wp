@@ -46,6 +46,7 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 42 | [42-SGS-FORM-CPT-AND-PRICING.md](42-SGS-FORM-CPT-AND-PRICING.md) | `sgs_form` CPT (slug-keyed identity), the `requireLogin` fix, and the reference-lifecycle contract shared with Spec 43 | active |
 | 43 | [43-SGS-CHOICE-FLOW.md](43-SGS-CHOICE-FLOW.md) | `sgs/choice-flow`: the step-wizard block family for qualification quizzes, priced configurators and WooCommerce option-picking, and the `sgs_choice_flow` CPT | active |
 | 47 | [47-COMPUTED-ROUTE-DRAFT-TO-TREE.md](47-COMPUTED-ROUTE-DRAFT-TO-TREE.md) | **THE cloning route.** Measures the rendered draft and writes block settings through the framework DB in two directions sharing one resolver: Solve and Fill; block calibration, a per-site divergence ledger, the walker, and the sweep, triage and register tools. Own folder `scripts/computed-route/`. Open route work is its section 5 Residual; per-surface Solve work is in `plans/2026-10-04-spec47-full-coverage.md` | active |
+| 48A | [48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md](48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md) | The Claude Design handoff folder: required and allowed files, reachability, `MANIFEST.json`, known runtimes, placement in `sites/<client>/handoff/`, safe running, and each file's reader. Checked by `scripts/computed-route/handoff-check.mjs`. Version 1.0 after plan task B0; Spec 48 (the cloning system) follows | draft |
 
 ## Not a live spec
 

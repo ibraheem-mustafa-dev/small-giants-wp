@@ -247,10 +247,10 @@ client target is one `TARGETS` entry with `explicit_opt_in_required: True` (enfo
 "Handoff to Claude Code" skill and its design-system skill, run by pasting the standard prompt
 `.claude/claude-design-handoff/PROMPT.txt` after uploading that folder's `CLAUDE.md` (runtime traps, rules and the
 expected file map) and `handoff-schema/` into the project once. The
-result is one `design_handoff_<project>/` folder with its README, `animations.json`, `surfaces.json`, `MANIFEST.md`,
-`READING-DC-FILES.md`, `tokens/` and `handoff-schema/`; never the zip or standalone download, which carry no README.
-The recipe and the folder standard being designed:
-`plans/2026-10-10-claude-design-handover-standard.md`. Each Claude Design draft is a folder of `.dc.html` pages
+result is one `design_handoff_<project>/` folder (Spec 48A: drafts, `support.js`, `assets/`, `tokens/`, README,
+`animations.json`, `surfaces.json`, `READING-DC-FILES.md`, `handoff-schema/`, `MANIFEST.json`); never the zip or
+standalone download, which carry no README. It is copied unchanged to `sites/<client>/handoff/` and must pass
+`node scripts/computed-route/handoff-check.mjs <folder>` before use. Plan: `plans/2026-10-10-claude-design-handover-standard.md`. Each Claude Design draft is a folder of `.dc.html` pages
 served locally by `scripts/computed-route/lib/draft.mjs::serveDraft`. `node scripts/computed-route/fill.mjs --serve
 <folder> --draft-index <entry>` serves it until Ctrl-C on a new port each run, and a surface on another page of the draft
 is `<served url>/<Page>.dc.html`. Fill takes the folder as `--draft-dir <folder> --draft-index <entry>` (or the served

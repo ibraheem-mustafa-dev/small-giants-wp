@@ -2,14 +2,14 @@ Prepare this project for handoff to Claude Code. Work through every step without
 
 1. Run "Handoff to Claude Code" for the current drafts.
 2. Run the design-system skill, so the project's design system and its tokens/ folder (colors.css, typography.css, spacing.css) match the current drafts.
-3. Check the handoff README against the drafts' code and correct anything it states wrongly (routes, header, footer, forms, assets, animations).
+3. Rewrite the handoff README.md from handoff-schema/README.template.md, keeping its headings, and check every statement against the drafts' code (routes, header, footer, forms, assets, animations). Don't map the design to WordPress or SGS blocks.
 4. Inventory the drafts by following handoff-schema/METHOD.md exactly. Write animations.json and surfaces.json into the handoff folder and validate both against the schemas in handoff-schema/. Leave the runtime trace out.
 5. Write READING-DC-FILES.md into the handoff folder for this project's drafts, modelled on handoff-schema/READING-DC-FILES.example.md. The example was written for another project: keep its structure and every runtime, template and logic fact that still holds; replace its examples, hook names, routes and data model with this project's.
 6. Check every draft for the runtime traps listed in CLAUDE.md and list each hit under "unresolved" in animations.json.
 7. Copy tokens/ and handoff-schema/ into the handoff folder, so the handoff folder is the only thing I download.
-8. Last, write MANIFEST.md in the handoff folder as CLAUDE.md describes.
-9. Compare the handoff folder with the file map in CLAUDE.md and fix any difference before replying.
+8. Compare the handoff folder with the file map in CLAUDE.md. Remove anything the map doesn't allow (planning documents, earlier page versions, notes, skill folders, the trace harness) and add anything missing.
+9. Last, write MANIFEST.json in the handoff folder, valid against handoff-schema/manifest.schema.json: every file in the folder except MANIFEST.json, with its size and SHA-256, and entry_drafts naming the draft(s) a visitor starts from.
 
-Follow the rules in CLAUDE.md throughout.
+Follow the rules in CLAUDE.md throughout. If I ask for any change after this, run this whole prompt again and I'll download the whole folder again.
 
-When done, reply briefly: record counts; the reconciled totals (.animate( sites, transitions, pseudo rules, routes, toggling sc-ifs); each unresolved item, phrased as a question when it needs my decision; and confirm the folder matches the file map (or name what differs and why). Don't paste the JSON.
+When done, reply briefly: record counts; the reconciled totals (.animate( sites, transitions, pseudo rules, routes, toggling sc-ifs); each unresolved item, phrased as a question when it needs my decision; and, last, the full list of file paths in the handoff folder. Don't paste the JSON.

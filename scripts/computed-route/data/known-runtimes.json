@@ -1,0 +1,18 @@
+{
+	"runtimes": [
+		{
+			"sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+			"added": "2026-10-11",
+			"source": "Wholesale food client export, 2026-10-11",
+			"probe": "pass",
+			"path": "scripts/computed-route/data/runtimes/c60c49083997.support.js"
+		},
+		{
+			"sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
+			"added": "2026-10-11",
+			"source": "Opticians and home-bakery client exports, 2026-10-11",
+			"probe": "pass",
+			"path": "scripts/computed-route/data/runtimes/8fe7df74405f.support.js"
+		}
+	]
+}

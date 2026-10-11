@@ -1,20 +1,20 @@
-// node trace-check.mjs <handoff folder> [entry .dc.html] [--shift=<ms>]
+// node scripts/computed-route/trace-check.mjs <handoff folder> [entry .dc.html] [--shift=<ms>]
 // Loads the entry page at 1440, scrolls it, and logs every Web Animations call, CSS animation start and CSS
 // transition run with the element's data-dc-tpl id (or its nearest stamped ancestor's). Each distinct
 // (mechanism, element, duration) is matched to an animations.json record by template_tpl_id or nearest_tpl_id and
 // duration_ms; a record whose duration is a formula string matches any non-integer duration.
 // Negative control: --shift=7 adds 7ms to every record's duration, so a sound match count drops to 0.
-import { pathToFileURL } from 'node:url'; import fs from 'node:fs';
-const REPO = 'C:/Users/Bean/Projects/small-giants-wp';
-const { serveDraft } = await import(pathToFileURL(REPO + '/scripts/computed-route/lib/draft.mjs').href);
-const { chromium } = await import(pathToFileURL(REPO + '/plugins/sgs-blocks/node_modules/playwright/index.mjs').href);
+import { pathToFileURL, fileURLToPath } from 'node:url'; import fs from 'node:fs'; import path from 'node:path';
+import { serveDraft } from './lib/draft.mjs';
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const { chromium } = await import(pathToFileURL(path.join(REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs')).href);
 
 const args = process.argv.slice(2);
 const folder = args.find((a) => !a.startsWith('--'));
 const shift = Number((args.find((a) => a.startsWith('--shift=')) || '--shift=0').split('=')[1]);
 const index = args.filter((a) => !a.startsWith('--'))[1]
   || fs.readdirSync(folder).find((f) => f.endsWith('.dc.html') && /website|home|birmingham/i.test(f));
-if (!folder || !index) { console.error('usage: node trace-check.mjs <handoff folder> [entry .dc.html] [--shift=<ms>]'); process.exit(2); }
+if (!folder || !index) { console.error('usage: node scripts/computed-route/trace-check.mjs <handoff folder> [entry .dc.html] [--shift=<ms>]'); process.exit(2); }
 
 const recs = JSON.parse(fs.readFileSync(folder + '/animations.json', 'utf8')).records;
 const srv = await serveDraft(folder, { index });

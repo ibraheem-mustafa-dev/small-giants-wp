@@ -13,7 +13,7 @@ verified conclusions; these ledgers are the evidence behind them.
 | `R5-eyecare-gaps.md` | 29 recorded Eye Care cloning problems, each judged against reading the draft source and against a Claude Design export change |
 | `R6-dc-format.md` | the `.dc.html` format, what is readable without rendering, why Spec 47 rule R-47-4 exists, our animation tooling |
 | `crash15.mjs` | `node crash15.mjs <handoff folder> 15`: cold headless loads, counts `data-dc-tpl` elements and `removeChild` errors |
-| `trace-check.mjs` | `node trace-check.mjs <handoff folder> [entry .dc.html] [--shift=7]`: loads a single-file draft's entry page at 1440, records every Web Animations call, CSS animation start and CSS transition run, and matches each to an `animations.json` record; `--shift=7` is the negative control (a sound run drops to 0 matches) |
+| `trace-check.mjs` | Moved to `scripts/computed-route/trace-check.mjs` (run `node scripts/computed-route/trace-check.mjs <handoff folder> [entry .dc.html] [--shift=7]`): loads a single-file draft's entry page at 1440, records every Web Animations call, CSS animation start and CSS transition run, and matches each to an `animations.json` record; `--shift=7` is the negative control (a sound run drops to 0 matches) |
 
 ## Claims in these ledgers that are wrong (corrected after the council)
 

@@ -57,7 +57,7 @@ against all three exports in B1, 2026-10-11).
 | The draft file(s) | The source of truth: template (inline styles, `style-hover`, `style-focus`) and the `DCLogic` class (`state`, routes, `renderVals()` responsive values, motion code). One file with hash routes and a `pages` getter (Indus, 29 routes); one file with `state.page` and `go()` (Eye Care, 11 routes, plus an embedded `<script type="application/json" data-sgs-manifest>` mapping pages to WordPress slugs, overlays, sections and open items); or one file per page plus mounted components (Mama's: 11 pages, `SiteHeader`, `SiteFooter`, `ProductCard`, plain `X.dc.html?id=` links). |
 | Form definitions | Essential: steps, fields, conditions, validation. Separate form DCs on Indus (`TradeApplication`, `EnquiryForm`); inline in the page drafts on Eye Care and Mama's (Checkout, Contact, SignIn, Account). |
 | `support.js` (runtime), project scripts, `assets/` | Essential to run. Project scripts vary: Indus `image-slot.js` and `indus-logo.js` (which loads only the `-anim.svg` logos; the static `logo-*.svg` pair is byte-identical and unused); Mama's `store.js` (`window.MM`: catalogue, basket, account and orders in `localStorage`); Eye Care none. Two runtime builds are in use: Indus `c60c4908…` (66,404 bytes), Eye Care and Mama's `8fe7df74…` (69,150 bytes). The newer build only adds slide-deck handling in `compile.ts`; the encoder, `__dcAnnotatedTemplate` and `data-dc-tpl` are unchanged, so tooling keeps a list of known runtime hashes. |
-| `animations.json`, `surfaces.json` | Essential: written by Claude Design from the code by `handoff-schema/METHOD.md`. All three validate with 0 errors (jsonschema, Draft 2020-12). Indus 217 animation / 61 surface records (29 routes), Eye Care 213 / 52 (11), Mama's 195 / 58 (11). Home-page trace (`.claude/reports/2026-10-10-handover-council/trace-check.mjs`, Web Animations plus CSS animation and transition events, `--shift=7` negative control): Eye Care 12 of 12 distinct effects match a record, control 0; Indus 33 of 45, control 0, the 12 misses all being the logo records' wrong element ids (Claude Design question 1). "Every code count reconciled" cannot be checked from the files: `counts.*.record_ids` is not one-to-one with occurrences (Indus `.animate(` 49 → 50 ids, pseudo rules 103 → 102; Eye Care JS writers 17 → 9; Mama's pseudo rules 149 → 146, CSS animations 15 → 4, JS writers 16 → 12) and the surface counts carry no ids, so intake re-derives the counts. Free text varies too (`duration_ms` "per property" vs "per-property"; `nearest_tpl_id` a string, list or null). |
+| `animations.json`, `surfaces.json` | Essential: written by Claude Design from the code by `handoff-schema/METHOD.md`. All three validate with 0 errors (jsonschema, Draft 2020-12). Indus 217 animation / 61 surface records (29 routes), Eye Care 213 / 52 (11), Mama's 195 / 58 (11). Home-page trace (`scripts/computed-route/trace-check.mjs`, Web Animations plus CSS animation and transition events, `--shift=7` negative control): Eye Care 12 of 12 distinct effects match a record, control 0; Indus 33 of 45, control 0, the 12 misses all being the logo records' wrong element ids (Claude Design question 1). "Every code count reconciled" cannot be checked from the files: `counts.*.record_ids` is not one-to-one with occurrences (Indus `.animate(` 49 → 50 ids, pseudo rules 103 → 102; Eye Care JS writers 17 → 9; Mama's pseudo rules 149 → 146, CSS animations 15 → 4, JS writers 16 → 12) and the surface counts carry no ids, so intake re-derives the counts. Free text varies too (`duration_ms` "per property" vs "per-property"; `nearest_tpl_id` a string, list or null). |
 | `MANIFEST.md` | Essential: date, runtime version (`support.js` SHA-256) and a hash per file; a copy is current only if its hash matches. All 84 listed hashes match across the three exports, but each export wrote its own layout because we gave only a one-line description, not a template (our gap; Spec 48A fixes the format). The Indus manifest predates Bean's 2026-10-11 re-download and still lists `REVIEW-ANSWERS.md` and four `skills/dc-handoff-inventory/…` files that are gone, and omits `tokens/`. |
 | `READING-DC-FILES.md` | Essential: how to read and run a draft (boot, template language, logic API, reaching the live logic instance to `setState` any menu, drawer or form step, every element-to-code marker, a determinism recipe for headless runs). Eye Care's and Mama's are written for their own drafts (hooks, routes, `store.js`, `mm:ready`). |
 | `handoff-schema/` (two JSON Schemas, `METHOD.md`, `READING-DC-FILES.example.md`, optional `trace/trace-harness.html`) | Essential: the fixed format and the method to reproduce the inventory. Byte-identical in all three exports; only Indus carries the optional trace harness. |
@@ -68,13 +68,16 @@ against all three exports in B1, 2026-10-11).
 
 **A4. Export recipe (per project, in Claude Design).** Everything lives in `.claude/claude-design-handoff/` (a copy sits
 in `Claude Design handoff` on Bean's desktop; the repo copy is the one that gets edited).
-1. Once per project, upload `CLAUDE.md` to the project root and the `handoff-schema/` folder (`METHOD.md`, the two JSON
-   Schemas and `READING-DC-FILES.example.md`, the Indus reading guide used as a model).
-2. Paste `PROMPT.txt` into the chat. It runs "Handoff to Claude Code" and the design-system skill, corrects the README
-   against the code, writes the inventory by `METHOD.md`, writes the project's own `READING-DC-FILES.md`, flags the
-   runtime traps, copies `tokens/` and `handoff-schema/` into the handoff folder, writes `MANIFEST.md` last and checks
-   the folder against the file map.
-3. Download only the handoff folder.
+1. Once per project, upload `CLAUDE.md` to the project root and the `handoff-schema/` folder (`METHOD.md`, the three
+   JSON Schemas for the inventories and the manifest, `README.template.md` and `READING-DC-FILES.example.md`, the Indus
+   reading guide used as a model). Re-upload `handoff-schema/` whenever it changes here.
+2. Paste `PROMPT.txt` into the chat. It runs "Handoff to Claude Code" and the design-system skill, rewrites the README
+   from the template and checks it against the code, writes the inventory by `METHOD.md`, writes the project's own
+   `READING-DC-FILES.md`, flags the runtime traps, copies `tokens/` and `handoff-schema/` into the handoff folder,
+   removes anything the file map doesn't allow, and writes `MANIFEST.json` last. Any later design change means pasting
+   the prompt again and downloading the whole folder; files are never moved in or out by hand.
+3. Download only the handoff folder, copy it unchanged to `sites/<client>/handoff/` and run
+   `node scripts/computed-route/handoff-check.mjs sites/<client>/handoff` (Spec 48A).
 
 The split: the prompt carries the steps, because a pasted prompt is a direct instruction (Claude Design never registers
 uploaded skills and treats a `CLAUDE.md` as advisory) and it also works in the artifact-based Claude Design. The
@@ -90,8 +93,15 @@ drawer entrances, testimonial slide, drawer scroll lock). Mama's keeps its own `
 SiteHeader); Eye Care's `componentDidUpdate()` never reads previous state. Both are unaffected. A custom element in `<helmet>` that fills itself caused Indus's intermittent headless `removeChild` crash
 (fixed in `indus-logo.js`; `crash15.mjs` 0 of 15).
 
-**A5 (open, after Task B).** Trim the Indus folder to the final architecture and write Spec 48A (what each folder and
-file is for, and which tool or step reads it). Waits for B1 so the architecture is not fitted to Indus alone.
+**A5 (done 2026-10-11).** Spec 48A written (`.claude/specs/48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md`, version 0.1, draft
+until B0), after a design walk-through with Bean and an adversarial council
+(`.claude/reports/2026-10-11-48a-council/`: `DESIGN.md`, `REPORT.md`). Bean's decisions: unknown files are refused, with
+"reachable" covering `dc-import`, scripts and plain page links; Claude Design writes `MANIFEST.json` to a schema and our
+check validates it before use; the README is a human guide from a template, sections not enforced (cloning reads the
+code); an unknown runtime stops intake, is probed against a fixture and added by one command; the WordPress page map is
+proposed at intake and confirmed by Bean (no required site file; image credits ignored, stock photos are previews); the
+export lives unchanged in `sites/<client>/handoff/`. The check is `scripts/computed-route/handoff-check.mjs`; the Indus
+folder is trimmed by re-exporting with the new prompt, not by hand.
 
 **Old-site logos (local only).** `sites/indus-foods/old-site-logos/` holds the real Sanam, Shan, Green Leaf and Lemon Tree
 logos, the Indus square logo and the favicon, downloaded from the old Indus site's uploads on lightsalmon-tarsier (now
@@ -105,9 +115,9 @@ in B3.
   Mama's Munches redesign and any others) and migrates design systems from the Artifacts page; standalone projects are
   deleted after that date.
 - Test the new artifact-based Claude Design once (~15 min): make or open a small design, run "Handoff to Claude Code"
-  (it produces a `.dc.html` draft), and check whether it runs on the same runtime (compare the `support.js` hash with Indus's
-  `MANIFEST.md`), whether a README and the inventory files come with it, and whether account-level Skills load there.
-  Spec 48A targets whichever format new client designs will use, so this settles B1's scope.
+  (it produces a `.dc.html` draft), and check whether it runs on the same runtime (`handoff-check.mjs` reports an
+  unknown `support.js` and `--probe-runtime` tests it), whether a README and the inventory files come with it, and
+  whether account-level Skills load there. Spec 48A becomes version 1.0 once this confirms the format.
 - The inventory is produced in Claude Code at intake by following `handoff-schema/METHOD.md` (deterministic, validated,
   fails loudly); anything Claude Design writes is cross-checked against it, never trusted alone.
 
@@ -118,12 +128,13 @@ or amended for all three. Consistent: the file set (README, READING-DC-FILES, MA
 by designer (Indus Web Animations, 35 `.animate(` calls; Eye Care CSS only, 0 calls, 8 `@keyframes`; Mama's mixed, 10
 calls), which is why the tracer now records CSS events too. Differences that would lose information, each answered in
 Spec 48A or by Claude Design:
-1. No fixed MANIFEST format (our gap): a template ships in `handoff-schema/`; the Indus and Eye Care manifests are
-   regenerated with it.
-2. Two runtime builds: tooling checks the `support.js` hash against a list of known builds, not one.
-3. Inventory reconciliation is not provable from the files: intake re-derives the counts (B0's stance).
-4. Three routing models and Eye Care's embedded `data-sgs-manifest`: intake reads all three; the README gets a
-   required section list so routes, forms and business details are never missing.
+1. No fixed MANIFEST format (our gap): `MANIFEST.json` and its schema (Spec 48A FR-48A-4); every export is
+   regenerated with the new prompt.
+2. Two runtime builds: the check reads a list of known builds (FR-48A-5).
+3. Inventory reconciliation is not provable from the files: intake re-derives the inventory (FR-48A-7, a Spec 48
+   stage); until then the trace check cross-checks Claude Design's.
+4. Three routing models and Eye Care's embedded `data-sgs-manifest`: reachability covers all three (FR-48A-3); the
+   page map is proposed at intake, from the embedded block when present (FR-48A-9).
 5. Eye Care is a nearly finished live build, not a fresh clone (Bean, 2026-10-11): the draft still holds things the
    live site deliberately does differently, and the account area (Spec 27 FR-30-14, framework code) has no draft. Its
    export is a reference beside the build; recorded differences live in `sites/eye-care-ward-end/build/qa/divergences.json`
@@ -135,21 +146,50 @@ Spec 48A or by Claude Design:
    the `indus-logo` elements are 43, 114 and 684 (`__dcAnnotatedTemplate`). Please correct and regenerate.
 2. `counts.*.record_ids` is not one-to-one with the counted occurrences in any export, and the surface counts carry no
    ids: can each occurrence map to its record id, so the reconciliation is checkable?
-3. Regenerate the Indus and Eye Care `MANIFEST.md` (and the Eye Care README and READING-DC-FILES lines that still name
-   `WP Build Gap Map.dc.html`) once the manifest template ships.
+3. Re-export all three projects with the 2026-10-11 `PROMPT.txt` after re-uploading `handoff-schema/` (adds
+   `MANIFEST.json`, the README template, and drops the Eye Care Gap Map lines from its README and READING-DC-FILES).
 
 **B2. Cull proposal per client folder.** For `sites/indus-foods/`, `sites/mamas-munches-redesign/`,
 `sites/eye-care-ward-end/`: list every file and folder, propose each file worth keeping with its reason (assets missing
 from the new export; Eye Care's build files, because that site is nearly finished in SGS), everything else deleted. Bean
 reviews; be ruthless. Do not touch `sites/mamas-munches/` (the canary's separate project).
 
-**B3. Replace.** Each `sites/<client>/` becomes the new clean export plus Bean's approved keepers (Indus: the
-old-site logos). A client `CLAUDE.md` is kept only if it earns its place (it auto-loads when an agent works in the
-folder; a README does not): at most a few lines pointing at the README and Spec 48A. Then delete the export folders in
-`.claude/`.
+Proposal (2026-10-11; inventory by a read-only subagent, sha256 against the exports; Bean reviews before any deletion):
+- **`sites/indus-foods/`.** Keep: `old-site-logos/` (real partner logos, local only), `theme-snapshot.json` (read by
+  `push-theme-snapshot.py`), `assets/notes/` (client research), `assets/indus-logo.svg`, `assets/indus-logo-stacked.svg`
+  and `assets/logos/` (logo masters the export lacks), `assets/decorative-foods/optimised/` (8 web-sized food images the
+  export lacks), `CLAUDE.md` cut to a few lines. Delete: every `.dc.html` (the export supersedes v2; v1, both mega-menu
+  prototypes and `_feature` are explorations), `support.js`, `image-slot.js`, `indus-logo.js`, the 8 duplicated SVGs,
+  `assets/decorative-foods/` originals (1.2-1.8 MB each), `assets/theme-overrides/` (client styling in the theme layer,
+  which the framework forbids), `uploads/`, `.thumbnail`, `theme-extract-trace.json` (regenerated). `Mega Menu.dc.html`
+  is read by `plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-indus.mjs` and cited by Spec 36, so that script and
+  citation move with it.
+- **`sites/mamas-munches-redesign/`.** Keep: `theme-snapshot.json`, `media/photography/wp-media-library/` (15 real
+  product photos the export lacks), `media/brand/` (logo originals; the export's PNG is a different version),
+  `CLAUDE.md` cut to a few lines. Delete: every `.dc.html` and `Mamas Draft Standalone.html` (the export supersedes the
+  14 site drafts; Home-Gift, Home-Night, Home-Table, Homepage Directions and Wireframes are explorations), `support.js`,
+  `store.js`, `assets/` (identical to the export), `uploads/` (including a second, unreferenced `theme-snapshot.json`),
+  `build/` (the stage-5 run on a zip export, not resumed), `Theme Mapping.md`, `github.md`, `.thumbnail`,
+  `theme-extract-trace.json`, `theme-snapshot-backups/`.
+- **`sites/eye-care-ward-end/`** (near-finished, FR-48A-11). Keep everything the live build uses: `build/` tracked files
+  (page trees, builders, `surfaces.json`, `qa/divergences.json`, QA scripts and JSON), `woo-seed/`, `content/`,
+  `assets/`, `reference/`, `theme-snapshot*.json`, `site-info-placeholder-map.json` (read by
+  `scripts/computed-route/lib/skeleton-classify.mjs`), `sc-var-hints.json`, `theme-snapshot-backups/`, `CLAUDE.md`.
+  Delete: the untracked regenerated output in `build/qa/solve/` (4.0 GB), `build/qa/parity/out/` (about 400 MB) and
+  `build/skeleton/shots/`; `measure/` (two `.pyc` files); the empty `Ward End Eye Care shop site/`; the loose
+  `support.js`; the three superseded draft folders `design_handoff_ward_end_eye_care/`, `design_handoff_ward_end_eye_care_v2/`
+  and `Ward End Eye Care - SGS Gap Handoff/` once the new export sits in `handoff/` (first keep the Gap Handoff's
+  `eye-care-wordmark.png` and any of v2's 37 `assets/brands/` logos missing from `reference/`, and repoint
+  `plugins/sgs-blocks/scripts/tests/test_sync_business_info.py`, which reads v1).
 
-**B4. Spec 48 and 48A, and slim Spec 32.**
-- Spec 48A: the handover folder architecture from A1/A5/B1.
+**B3. Replace.** Each client's re-export goes unchanged into `sites/<client>/handoff/` (FR-48A-1) and passes
+`handoff-check.mjs`; the rest of `sites/<client>/` keeps only Bean's approved keepers (Indus: the old-site logos;
+Eye Care: its build, content, seed data and divergence ledger, FR-48A-11). A client `CLAUDE.md` is kept only if it
+earns its place (it auto-loads when an agent works in the folder; a README does not): at most a few lines pointing at
+the README and Spec 48A. Then delete the export folders in `.claude/`.
+
+**B4. Spec 48, finish 48A, and slim Spec 32.**
+- Spec 48A: version 0.1 written 2026-10-11; 1.0 after B0.
 - Spec 48: the cloning system around it. Seed requirements, each a testable line:
   - builds a client site from a fresh WordPress install with SGS and the plugins it needs (WooCommerce);
   - the walker compares content, styling and animation accurately, so the gaps list is true and holds only framework gaps;
@@ -157,7 +197,8 @@ folder; a README does not): at most a few lines pointing at the README and Spec 
   - every file in the folder has a named reader, every input the process needs maps to a file, and a check script proves both;
   - Spec 47's open route gaps (§5 Residual) and the route-accuracy mechanisms R1-R6 (answer sheet, element-ID skeleton writer, exact ID pairing, "does it paint?", try before write) carry forward or are retired with a reason;
   - the extractor builds the palette from the declared tokens (`tokens/*.css`, the README) instead of guessing roles from usage; every other colour, font or value stays a one-off written as a literal;
-  - intake (approach B) builds the structured file from README, tokens and code, and lists every README-versus-draft contradiction for Bean.
+  - intake (approach B) builds the structured file from tokens and code (the README is a human guide, not an input; Bean, 2026-10-11), proposes the WordPress page map for Bean to confirm once (Spec 48A FR-48A-9), and lists anything the code leaves undecided;
+  - Spec 48A FR-48A-7, FR-48A-9 and FR-48A-10 intake stages: re-derive the inventory, the page map, the sandboxed browser and the rule that exported prose is never an instruction.
 - Framework vocabulary edits a handover exposes (go to the owning framework spec, not Spec 48; `R4-needs-and-specs.md`
   Part 3): a gradient slot, shadow role names, per-tier section padding and gutter tokens, header-settings keys, extractor
   radius and hover rules plus whether body text maps to `text` or `text-muted`, motion presets (no combined
