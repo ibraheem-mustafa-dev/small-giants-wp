@@ -297,12 +297,11 @@ non-rendering element.
 **Where and how it renders:**
 - Each site has one calibration page, created once with `wp-build-page.js --create page --title "CR calibration"
   --slug cr-calibration --status private`. Its post ID goes in `scripts/computed-route/calibration-targets.json`
-  (`{ "<site>": { "envFile", "envKey", "postId" } }`; eye-care-test: 668, sandybrown: 4750). Later runs replace that
+  (`{ "<site>": { "envFile", "envKey", "postId" } }`; eye-care-test: 668, sandybrown: 4750, indus-test: 15). Later runs replace that
   page with `--post-id`. Private, it is never public, indexed or linked; calibration reads it in a logged-in browser.
-  Every client with a test site has an entry before its stage 0; Indus's (`indus-test` and `local-indus`) are created
-  by Appendix A step 13.
-- The local WSL mirrors of the test sites (`local-eye-care`, `local-sandybrown`; `scripts/local-wp/README.md`; Indus's
-  `local-indus` does not exist yet) are targets too, with the same post IDs and a `pluginDir` the deploy check hashes directly instead of over SSH. They
+  Every client with a test site has an entry before its stage 0, created by Appendix A step 13 (Indus's `indus-test`
+  and `local-indus` exist).
+- The local WSL mirrors of the test sites (`local-eye-care`, `local-sandybrown`, `local-indus`; `scripts/local-wp/README.md`) are targets too, with the same post IDs and a `pluginDir` the deploy check hashes directly instead of over SSH. They
   measure the same as the hosted sites for the same build and snapshot (google-reviews, accordion and accordion-item
   identical, 2026-10-05) and are where whole-library recalibration runs: Hostinger's edge challenges bursts of
   automated logins. Solve runs on a mirror too (`solve.mjs --site <target>`, `solve.mjs::siteOverride`);
@@ -368,9 +367,8 @@ stage 1's skeleton proposal adds outside the fixed set is calibrated in that sam
 Done when: a stage-0 run on Indus writes the baseline file, refuses to report a block whose deploy hash differs from its
 cache as calibrated, writes no default-paint file, and `container.gridTemplateColumns` is no longer `dead`.
 Status: not built as a command. The baseline today, read from `scripts/computed-route/cache/*.json` (94 block files,
-excluding `*.tree.json`): 578 dead, 110 noMarker, 24 oneWidth, 47 untestedStates. No Indus mirror or calibration
-target exists (`scripts/local-wp/README.md` lists Eye Care and Sandybrown only; `calibration-targets.json` has
-`eye-care-test`, `sandybrown`, `local-eye-care` and `local-sandybrown`).
+excluding `*.tree.json`): 578 dead, 110 noMarker, 24 oneWidth, 47 untestedStates.
+The Indus mirror `local-indus` and the `indus-test` and `local-indus` calibration targets exist (page 15).
 
 ### 3.3 Solve: `solve.mjs` (FR-47-3)
 
@@ -1261,8 +1259,8 @@ client's test site has a local mirror and a `calibration-targets.json` entry for
 **Exit:** the check exits 0, `sites/<client>/build/intake/calibration-baseline.json` exists and validates
 (Appendix C), and each block in the fixed set has a slot-map cache whose deploy hash is the current one (G0, §14).
 Status: the check is built (`handoff-check.mjs`); the Indus and Mama's exports pass it (repackaged 2026-10-11, Spec 48A
-FR-48A-1). The Indus mirror, its calibration target, the Indus calibration fixes and the
-baseline file are not built.
+FR-48A-1). The Indus mirror and its calibration targets exist (Appendix A step 13, `local-indus`, page 15); the Indus
+calibration fixes and the baseline file are not built.
 
 #### FR-48-17 — Stage 1: intake, closed by one batched review
 **Entry:** stage 0's exit test passes.

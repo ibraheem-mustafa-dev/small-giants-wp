@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copies the repo's built plugins and theme into the local WSL mirror sites.
-# Usage (from Windows): wsl -d Ubuntu -u root -- bash /mnt/c/Users/Bean/Projects/small-giants-wp/scripts/local-wp/sync-build.sh <local-eye-care|local-sandybrown|all>
+# Usage (from Windows): wsl -d Ubuntu -u root -- bash /mnt/c/Users/Bean/Projects/small-giants-wp/scripts/local-wp/sync-build.sh <local-eye-care|local-sandybrown|local-indus|all>
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -33,7 +33,7 @@ sync_site() {
 }
 
 case "$TARGET" in
-  local-eye-care|local-sandybrown) sync_site "$TARGET" ;;
-  all) sync_site local-eye-care; sync_site local-sandybrown ;;
-  *) echo "Usage: $0 <local-eye-care|local-sandybrown|all>" >&2; exit 2 ;;
+  local-eye-care|local-sandybrown|local-indus) sync_site "$TARGET" ;;
+  all) sync_site local-eye-care; sync_site local-sandybrown; sync_site local-indus ;;
+  *) echo "Usage: $0 <local-eye-care|local-sandybrown|local-indus|all>" >&2; exit 2 ;;
 esac

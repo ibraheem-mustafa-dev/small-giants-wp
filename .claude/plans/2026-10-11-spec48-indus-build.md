@@ -92,7 +92,8 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
 - [ ] **3. Route dependencies.** FR-48-75 done when: `npm ci` in `scripts/computed-route` installs the pinned set; a
   planted import from `plugins/sgs-blocks/node_modules` fails `lint.mjs`. (The G0 browser-version case lands with G0,
   Phase 6.)
-- [ ] **4. Indus mirror and targets.** Appendix A step 13 done: `local-indus` serves, its secrets file exists, the
+- [x] **4. Indus mirror and targets** (done 2026-10-11: `local-indus` on port 8083, database `wp_indus`; calibration
+  page 15 on both sites; overlay image attachment 18). Appendix A step 13 done: `local-indus` serves, its secrets file exists, the
   calibration page exists on `indus-test` and the mirror with one ID, and `calibration-targets.json` has `indus-test`
   and `local-indus`.
 - [ ] **5. Per-site default paint.** §3.2 done when a run on one site never reads or overwrites another site's

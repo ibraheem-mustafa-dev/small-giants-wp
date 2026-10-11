@@ -36,5 +36,24 @@
       "id": 3459,
       "url": "http://localhost:8082/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
     }
+  },
+  "indus-test": {
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "postId": 15,
+    "image": {
+      "id": 18,
+      "url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/cr-overlay.png"
+    }
+  },
+  "local-indus": {
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "postId": 15,
+    "pluginDir": "//wsl.localhost/Ubuntu/var/www/local-indus/wp-content/plugins/sgs-blocks",
+    "image": {
+      "id": 18,
+      "url": "http://localhost:8083/wp-content/uploads/2026/10/cr-overlay.png"
+    }
   }
 }
