@@ -48,22 +48,23 @@ the zip; not in git).
 
 ## Task A: what a handover must contain (Indus), done 2026-10-10 except A5
 
-**A1-A3. Verdict per file** (verified in the main thread; Claude Design's corrections applied).
+**A1-A3. Verdict per file** (verified in the main thread; Claude Design's corrections applied; every row re-checked
+against all three exports in B1, 2026-10-11).
 
 | Source | Verdict |
 |---|---|
-| Handoff `README.md` | Essential human guide: routes, global layout, breakpoints, state, animations, business details, assets, open items. Prose bullets: `theme-extractor/declared_sources.py::read_readme_tokens` returns `{"found": false}` on it. Claude Design corrected its footer, block types, forms and assets on 2026-10-10. |
-| `<draft>.dc.html` (v2) | The source of truth: template (inline styles, `style-hover`, `style-focus`) and the `DCLogic` class (`state`, `pages` with 29 routes, `renderVals()` responsive values, motion code). |
-| Form DCs (`TradeApplication`, `EnquiryForm`) | Essential: the only form definitions (steps, fields, conditions, validation). |
-| `support.js` (runtime), `image-slot.js`, `indus-logo.js`, `assets/` | Essential to run. `indus-logo.js` loads only the `-anim.svg` logos; the static `logo-*.svg` pair is unused. |
-| `animations.json`, `surfaces.json` | Essential: written by Claude Design's `dc-handoff-inventory` skill from the code. Indus: 183 animation records, 60 surface records, 0 schema errors, every code count reconciled, and 43 of 43 traced home animations match a record (negative control 0 of 43; `.claude/reports/2026-10-10-handover-council/trace-check.mjs`). |
-| `MANIFEST.md` | Essential: date, runtime version (`support.js` SHA-256) and a hash per file; a copy is current only if its hash matches. |
-| `READING-DC-FILES.md` | Essential: how to read and run a draft (boot, template language, logic API, reaching the live logic instance to `setState` any menu, drawer or form step, every element-to-code marker, a determinism recipe for headless runs). |
-| `handoff-schema/` (two JSON Schemas, `METHOD.md`, `trace/trace-harness.html`) | Essential: the fixed format and the method to reproduce the inventory (the optional trace harness is written for Indus). Claude Design's `dc-handoff-inventory/` skill wrapper adds nothing beyond `METHOD.md`; the A4 prompt replaces it. |
-| Design-system `tokens/colors.css`, `typography.css`, `spacing.css` | Essential: the only machine-readable tokens (34 colour properties, fonts with the Google Fonts URL, radii, shadows, gap scale, per-device gutters and section padding, four easings). The tokens are the brand palette; the draft's other 33 colours are one-offs by design and are written as hex, never added as palette tokens (`memory: one-off-colours-are-hex-not-presets`), so the colour picker shows only the real palette. The draft wins on conflict (body text #1E2A3C). |
+| Handoff `README.md` | Essential human guide: routes, global layout, breakpoints, state, animations, business details, assets, open items. Prose bullets: `theme-extractor/declared_sources.py::read_readme_tokens` returns `{"found": false}` on it. Claude Design corrected the Indus footer, block types, forms and assets on 2026-10-10. Its section list differs per export (Eye Care and Mama's add Routes, Forms, Business details and an SGS mapping section; only Indus has Revision), so Spec 48A fixes the required sections. |
+| The draft file(s) | The source of truth: template (inline styles, `style-hover`, `style-focus`) and the `DCLogic` class (`state`, routes, `renderVals()` responsive values, motion code). One file with hash routes and a `pages` getter (Indus, 29 routes); one file with `state.page` and `go()` (Eye Care, 11 routes, plus an embedded `<script type="application/json" data-sgs-manifest>` mapping pages to WordPress slugs, overlays, sections and open items); or one file per page plus mounted components (Mama's: 11 pages, `SiteHeader`, `SiteFooter`, `ProductCard`, plain `X.dc.html?id=` links). |
+| Form definitions | Essential: steps, fields, conditions, validation. Separate form DCs on Indus (`TradeApplication`, `EnquiryForm`); inline in the page drafts on Eye Care and Mama's (Checkout, Contact, SignIn, Account). |
+| `support.js` (runtime), project scripts, `assets/` | Essential to run. Project scripts vary: Indus `image-slot.js` and `indus-logo.js` (which loads only the `-anim.svg` logos; the static `logo-*.svg` pair is byte-identical and unused); Mama's `store.js` (`window.MM`: catalogue, basket, account and orders in `localStorage`); Eye Care none. Two runtime builds are in use: Indus `c60c4908…` (66,404 bytes), Eye Care and Mama's `8fe7df74…` (69,150 bytes). The newer build only adds slide-deck handling in `compile.ts`; the encoder, `__dcAnnotatedTemplate` and `data-dc-tpl` are unchanged, so tooling keeps a list of known runtime hashes. |
+| `animations.json`, `surfaces.json` | Essential: written by Claude Design from the code by `handoff-schema/METHOD.md`. All three validate with 0 errors (jsonschema, Draft 2020-12). Indus 217 animation / 61 surface records (29 routes), Eye Care 213 / 52 (11), Mama's 195 / 58 (11). Home-page trace (`.claude/reports/2026-10-10-handover-council/trace-check.mjs`, Web Animations plus CSS animation and transition events, `--shift=7` negative control): Eye Care 12 of 12 distinct effects match a record, control 0; Indus 33 of 45, control 0, the 12 misses all being the logo records' wrong element ids (Claude Design question 1). "Every code count reconciled" cannot be checked from the files: `counts.*.record_ids` is not one-to-one with occurrences (Indus `.animate(` 49 → 50 ids, pseudo rules 103 → 102; Eye Care JS writers 17 → 9; Mama's pseudo rules 149 → 146, CSS animations 15 → 4, JS writers 16 → 12) and the surface counts carry no ids, so intake re-derives the counts. Free text varies too (`duration_ms` "per property" vs "per-property"; `nearest_tpl_id` a string, list or null). |
+| `MANIFEST.md` | Essential: date, runtime version (`support.js` SHA-256) and a hash per file; a copy is current only if its hash matches. All 84 listed hashes match across the three exports, but each export wrote its own layout because we gave only a one-line description, not a template (our gap; Spec 48A fixes the format). The Indus manifest predates Bean's 2026-10-11 re-download and still lists `REVIEW-ANSWERS.md` and four `skills/dc-handoff-inventory/…` files that are gone, and omits `tokens/`. |
+| `READING-DC-FILES.md` | Essential: how to read and run a draft (boot, template language, logic API, reaching the live logic instance to `setState` any menu, drawer or form step, every element-to-code marker, a determinism recipe for headless runs). Eye Care's and Mama's are written for their own drafts (hooks, routes, `store.js`, `mm:ready`). |
+| `handoff-schema/` (two JSON Schemas, `METHOD.md`, `READING-DC-FILES.example.md`, optional `trace/trace-harness.html`) | Essential: the fixed format and the method to reproduce the inventory. Byte-identical in all three exports; only Indus carries the optional trace harness. |
+| Design-system `tokens/colors.css`, `typography.css`, `spacing.css` | Essential: the only machine-readable tokens, present in all three with a Google Fonts URL. Colour sets: Indus 19 colours, 3 gradients, 12 role aliases; Eye Care 26 colours, 7 aliases; Mama's 22 colours, 1 gradient, 15 aliases. Fonts, radii, shadows, gap scale, per-device gutters and section padding, easings. The tokens are the brand palette; the draft's other colours are one-offs by design and are written as hex, never added as palette tokens (`memory: one-off-colours-are-hex-not-presets`), so the colour picker shows only the real palette. The draft wins on conflict (Indus body text #1E2A3C). |
 | Design-system `readme.md` | Useful for content tone and iconography only. |
 | `components/` (Button, Chip, card), `guidelines/*.html`, `styles.css`, `SKILL.md` | Not needed: variant names at most; values come from the draft. |
-| Everything else in the full zip (v1 page, mega-menu prototypes, `_feature.dc.html`, `screenshots/`, `uploads/`, root duplicates) | Not needed and hazardous: earlier explorations with different hooks. Never export the full zip for cloning. |
+| Everything else in the full zip (v1 page, mega-menu prototypes, `_feature.dc.html`, `screenshots/`, `uploads/`, root duplicates) | Not needed and hazardous: earlier explorations with different hooks. Never export the full zip for cloning. Same for planning documents saved as drafts: Eye Care's export shipped `WP Build Gap Map.dc.html` (graded against `main` on 24 Sep, mounted by nothing), removed by Bean's decision on 2026-10-11. |
 
 **A4. Export recipe (per project, in Claude Design).** Everything lives in `.claude/claude-design-handoff/` (a copy sits
 in `Claude Design handoff` on Bean's desktop; the repo copy is the one that gets edited).
@@ -85,8 +86,8 @@ inventory remains a cross-check; Claude Code re-derives it at intake.
 
 **Draft fixes Claude Design made (2026-10-10), relevant to every draft.** The runtime passes `componentDidUpdate` only
 `prevProps`; drafts written as `(pp, ps)` never ran their update behaviour (Indus: route-change entrance, mega-menu and
-drawer entrances, testimonial slide, drawer scroll lock). Eye Care and Mama's keep their own `this._prev` snapshot and are
-unaffected. A custom element in `<helmet>` that fills itself caused Indus's intermittent headless `removeChild` crash
+drawer entrances, testimonial slide, drawer scroll lock). Mama's keeps its own `this._prev` snapshot (Home,
+SiteHeader); Eye Care's `componentDidUpdate()` never reads previous state. Both are unaffected. A custom element in `<helmet>` that fills itself caused Indus's intermittent headless `removeChild` crash
 (fixed in `indus-logo.js`; `crash15.mjs` 0 of 15).
 
 **A5 (open, after Task B).** Trim the Indus folder to the final architecture and write Spec 48A (what each folder and
@@ -110,12 +111,32 @@ in B3.
 - The inventory is produced in Claude Code at intake by following `handoff-schema/METHOD.md` (deterministic, validated,
   fails loudly); anything Claude Design writes is cross-checked against it, never trusted alone.
 
-**B1. Compare the three exports.** Bean exports Eye Care and the Mama's Munches redesign with the A4 recipe into
-`.claude/`. Compare equivalent files across Indus, Eye Care and Mama's: README sections, `animations.json` and
-`surfaces.json` against the schema and their counts, tokens, MANIFEST, draft structure (Indus: one file with hash routes
-and a `pages` getter; Eye Care: one file with a manifest; Mama's: one file per page; hook names and animation techniques
-differ per designer: `READING-DC-FILES.md` §7). Output: what is consistent, what differs, and whether any difference
-loses information Task A or the cloning process needs. Done when every A1 row is confirmed or amended for all three.
+**B1. Compare the three exports (done 2026-10-11).** Exports in `.claude/design_handoff_indus_foods`,
+`design_handoff_mamas_munches`, `design_handoff_ward_end_eye_care` (local, not in git). Every A1 row above is confirmed
+or amended for all three. Consistent: the file set (README, READING-DC-FILES, MANIFEST, both inventories, `support.js`,
+`assets/`, `tokens/`, `handoff-schema/`), the schemas, valid inventories and matching hashes. Motion technique differs
+by designer (Indus Web Animations, 35 `.animate(` calls; Eye Care CSS only, 0 calls, 8 `@keyframes`; Mama's mixed, 10
+calls), which is why the tracer now records CSS events too. Differences that would lose information, each answered in
+Spec 48A or by Claude Design:
+1. No fixed MANIFEST format (our gap): a template ships in `handoff-schema/`; the Indus and Eye Care manifests are
+   regenerated with it.
+2. Two runtime builds: tooling checks the `support.js` hash against a list of known builds, not one.
+3. Inventory reconciliation is not provable from the files: intake re-derives the counts (B0's stance).
+4. Three routing models and Eye Care's embedded `data-sgs-manifest`: intake reads all three; the README gets a
+   required section list so routes, forms and business details are never missing.
+5. Eye Care is a nearly finished live build, not a fresh clone (Bean, 2026-10-11): the draft still holds things the
+   live site deliberately does differently, and the account area (Spec 27 FR-30-14, framework code) has no draft. Its
+   export is a reference beside the build; recorded differences live in `sites/eye-care-ward-end/build/qa/divergences.json`
+   (computed-style only) and `.claude/plans/2026-10-02-eye-care-fix-register.md` (behaviour and content). Spec 48 reads
+   a per-client deliberate-differences list so recorded exceptions never show as gaps.
+
+**Questions for Claude Design (2026-10-11).**
+1. Indus records L-01 to L-10 give `nearest_tpl_id` 40, 108 and 632 (the header bar, the drawer and a quote `sc-if`);
+   the `indus-logo` elements are 43, 114 and 684 (`__dcAnnotatedTemplate`). Please correct and regenerate.
+2. `counts.*.record_ids` is not one-to-one with the counted occurrences in any export, and the surface counts carry no
+   ids: can each occurrence map to its record id, so the reconciliation is checkable?
+3. Regenerate the Indus and Eye Care `MANIFEST.md` (and the Eye Care README and READING-DC-FILES lines that still name
+   `WP Build Gap Map.dc.html`) once the manifest template ships.
 
 **B2. Cull proposal per client folder.** For `sites/indus-foods/`, `sites/mamas-munches-redesign/`,
 `sites/eye-care-ward-end/`: list every file and folder, propose each file worth keeping with its reason (assets missing
