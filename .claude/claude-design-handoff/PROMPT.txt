@@ -1,4 +1,4 @@
-Prepare this project for handoff to Claude Code. Work through every step without asking me anything first. Stop and tell me only if the project has no .dc.html draft, or if CLAUDE.md or handoff-schema/ is missing from the project root.
+Prepare this project for handoff to Claude Code. Work through every step without asking me anything first. Stop and tell me only if CLAUDE.md or handoff-schema/ is missing from the project root.
 
 1. Run "Handoff to Claude Code" for the current drafts.
 2. Run the design-system skill, so the project's design system and its tokens/ folder (colors.css, typography.css, spacing.css) match the current drafts.

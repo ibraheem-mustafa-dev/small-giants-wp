@@ -17,8 +17,7 @@ the tools read almost nothing from a draft beyond its rendered pixels.
 (claude.ai/design) closes on **14 December 2026** and its projects are then deleted; only design systems migrate.
 Each project must be downloaded by hand before then: open it, Share > "Project HTML" > keep "Project archive" > Export
 (a .zip with every file). Claude Design now lives in Claude chat as an artifact template, with `/design` and
-`/design-sync` in Claude Code and "Handoff to Claude Code" in its Export menu. Whether new artifact-based designs are
-still `.dc.html` files on the same `support.js` runtime is untested. Custom skills uploaded into a Claude Design project
+`/design-sync` in Claude Code and "Handoff to Claude Code" in its Export menu. In the new Claude Design, "Handoff to Claude Code" generates a standalone `.dc.html` draft by design (Bean, 2026-10-11); whether it runs on the same `support.js` runtime is untested. Custom skills uploaded into a Claude Design project
 are never registered (its skills are a fixed built-in list); a root `CLAUDE.md` is injected into every conversation and
 can name a procedure file, but only advisorily. Research record:
 `~/.claude/memory/research/2026-10-10-claude-design-custom-skills-and-sunset.md`.
@@ -104,8 +103,8 @@ in B3.
 - Bean downloads a "Project archive" of every standalone Claude Design project worth keeping (Indus, Eye Care, the
   Mama's Munches redesign and any others) and migrates design systems from the Artifacts page; standalone projects are
   deleted after that date.
-- Test the new artifact-based Claude Design once (~15 min): make or open a small design, run "Handoff to Claude Code",
-  and check whether the result is still `.dc.html` on the same runtime (compare the `support.js` hash with Indus's
+- Test the new artifact-based Claude Design once (~15 min): make or open a small design, run "Handoff to Claude Code"
+  (it produces a `.dc.html` draft), and check whether it runs on the same runtime (compare the `support.js` hash with Indus's
   `MANIFEST.md`), whether a README and the inventory files come with it, and whether account-level Skills load there.
   Spec 48A targets whichever format new client designs will use, so this settles B1's scope.
 - The inventory is produced in Claude Code at intake by following `handoff-schema/METHOD.md` (deterministic, validated,
