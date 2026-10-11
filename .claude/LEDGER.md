@@ -69,8 +69,9 @@ pass it (repackaged 2026-10-11 by `handoff-repackage.mjs`; no design change sinc
 **Blockers:** none for Indus stage 0 beyond the mailbox. **Time-critical:** the standalone Claude
 Design site deletes its projects on 14 December 2026; export every project as a "Project archive" and test the
 artifact-based Claude Design once before then (plan B0; Spec 48A goes to 1.0 after it).
-**Resume from:** `plans/2026-10-10-claude-design-handover-standard.md` "After B" (a build plan from Spec 48 Appendix B,
-Indus first) and, as a separate session, B5 (mirror the live Eye Care site into its draft).
+**Resume from:** `plans/2026-10-11-spec48-indus-build.md` (Spec 48 Appendix B as phases in three lanes: route and mirror,
+framework, intake; each extra lane has a prompt in `.claude/prompts/`) and, as a separate session, B5 (mirror the live
+Eye Care site into its draft).
 **Bean-only tasks:** B0, the Indus mailbox (Spec 48 Appendix B step 2).
 
 ### Front N: Nav / header / footer (Specs 36 and 37)

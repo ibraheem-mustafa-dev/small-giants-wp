@@ -2466,7 +2466,7 @@ task, summed per step; "machine" is unattended run time.
 blocks or DB-seeded facts):
 1. deploy: `python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test` (it builds, gates, deploys,
    verifies and purges caches);
-2. reseed: `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-update-v2.py` from a clean `HEAD`, serialised with any
+2. reseed: `python plugins/sgs-blocks/scripts/sgs-update-v2.py` from a clean `HEAD`, serialised with any
    other session's deploy or reseed;
 3. mirror refresh: `bash scripts/local-wp/refresh-from-remote.sh local-indus indus-test`, then
    `scripts/local-wp/sync-build.sh local-indus`;

@@ -232,9 +232,10 @@ after going back, and the Google review widget in the header and drawer (left of
 review buttons keep the export's `padding:10px 22px` (Bean: the draft is right). The old Eye Care draft folders are
 deleted only after B5 has taken what it needs from them.
 
-**After B.** A fresh plan turns Spec 48 Appendix B (the Indus critical path) into build phases: stage 0 and stage 1 for
-Indus first, a header vertical slice through stage 5, then the rest of Indus, then Mama's (shop surfaces, after Spec 27
-FR-30-16/17 and fixture products).
+**After B (started 2026-10-11).** `.claude/plans/2026-10-11-spec48-indus-build.md` turns Spec 48 Appendix B (the Indus
+critical path) into phases with lanes, sessions and a serial queue: stage 0 and stage 1 for Indus first, a header
+vertical slice through stage 5, then the rest of Indus, then Mama's (shop surfaces, after Spec 27 FR-30-16/17 and
+fixture products).
 
 ## Settled with Bean (2026-10-10)
 
