@@ -236,37 +236,6 @@ deleted only after B5 has taken what it needs from them.
 Indus first, a header vertical slice through stage 5, then the rest of Indus, then Mama's (shop surfaces, after Spec 27
 FR-30-16/17 and fixture products).
 
-That plan ends with an **orchestration pass** (Bean, 2026-10-11) before any step runs. The pass sets the best order,
-what runs in parallel (subagents in one session, or separate sessions), and which model each step uses. Quality and
-reliability come first; a speed or cost gain is taken only when it adds no risk. The pass records, per step: its
-dependencies, the files it writes, its lane, its model, and its QC. It applies these rules:
-- **No file overlap.** Two steps run in parallel only when the files they write do not overlap. Steps 5, 6 and 7 all
-  touch `scripts/computed-route/lib/cache.mjs` or the `lib/calibrate-*.mjs` family, so they run in sequence unless the
-  pass proves otherwise.
-- **Serialised shared resources.** Every deploy, DB reseed, `local-indus` mirror refresh and calibration run happens
-  in one queue across all sessions. These steps write the shared DB, the shared mirror or the live test site.
-- **Parallel sessions only by area.** Separate sessions run in parallel only on disjoint areas, and each commits with
-  explicit pathspecs. The route (`scripts/computed-route/`) and the framework (`theme/`, `plugins/`) are disjoint. A
-  session that needs a deploy or reseed messages its peers first.
-- **Model per step.** Mechanical steps go to Sonnet subagents: 3, 4, 16, the refresh loop, and the schema files. Design
-  and judgement steps stay on Opus: 13, 14, 20, and the check verdicts. Every diff is QC'd in the main thread. No step
-  is downgraded below the model its QC needs.
-- **Re-estimate.** When a step finishes three times faster than its estimate, the remaining estimates are revised down.
-
-Draft lane map from Appendix B (the pass confirms or corrects it):
-
-| Lane | Steps | Needs |
-|---|---|---|
-| Bean | 1 re-export, 2 mailbox | nothing; do first |
-| Route | 3, then 5, 6, 7 (in sequence unless proven disjoint), then 8 | 1 and 4 for step 8 |
-| Mirror | 4, then 16 | nothing |
-| Framework (own session) | 9, 10, 11, then 12 (the refresh loop, queued) | nothing |
-| Intake (own session after 3) | 13, then 14 | 3 |
-
-Lanes join at step 15 (intake run and Bean's review). Running the framework and intake lanes as their own sessions
-shortens the critical path. Run in a row, the agent work in steps 3 to 14 takes about 12 h. Run in lanes, it takes as
-long as the longest lane, intake: about 5 h 45 min (steps 3, 13 and 14).
-
 ## Settled with Bean (2026-10-10)
 
 - Indus footer logo: the square logo's wordmark rises as one piece (its SVG has one letter group); acceptable, no change.
