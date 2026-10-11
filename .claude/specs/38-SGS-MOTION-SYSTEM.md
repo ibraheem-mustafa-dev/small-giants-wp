@@ -1530,17 +1530,23 @@ shows nothing is a defect (Spec 35 Part A1: the client must be able to function)
 
 ### 4.7 Cloning contract (§11)
 
-Every effect maps to the **`data-sgs-fx-*`** draft grammar (first claimed by this spec).
-`data-sgs-scroll-*` is deliberately left UNCLAIMED (§11.1). Cloning is owned by Spec 48
-(`.claude/specs/48-CLONING-SYSTEM.md`): a Claude Design draft's motion arrives as `animations.json` records
-(Spec 48A), re-derived at intake, and Spec 48's value matrix maps each record to the `sgsAnimation*`
-settings (preset, start, trigger, duration, delay, distance, easing, stagger) or the hover effects
-(`scripts/computed-route/lib/entrance.mjs` writes the entrance values today). No route reads `data-sgs-fx-*`
-from a draft today.
+**`data-sgs-fx-*`** is the draft grammar for drafts that carry it (first claimed by this spec); every
+effect has one. `data-sgs-scroll-*` is deliberately left UNCLAIMED (§11.1). Claude Design drafts do not carry
+it: their motion arrives as `animations.json` records (Spec 48A). Cloning is owned by Spec 48
+(`.claude/specs/48-CLONING-SYSTEM.md`): the records are re-derived at intake, and Spec 48's value matrix maps
+each to the `sgsAnimation*` settings (preset, start, trigger, duration, delay, distance, easing, stagger) or the
+hover effects. Today `scripts/computed-route/lib/fill-entrance.mjs::entranceWrites` writes the measured entrance
+values (opacity, transform, translate, duration, delay) through the resolver, and
+`scripts/computed-route/lib/entrance.mjs::entranceStart` sets `sgsAnimationStart`. No route reads
+`data-sgs-fx-*` from a draft today.
 
 A new motion preset is added here only when a cloned draft holds a motion record no preset or setting
-expresses. Checked 2026-10-11: the `sgsAnimation` enum already offers `fade-*`, `slide-*`, `scale-in`,
-`blur-in` and `reveal-up` with per-block distance, duration, easing and stagger; the Indus and Mama's
+expresses. Check the presets against the `sgsAnimation` values in
+`plugins/sgs-blocks/src/blocks/extensions/animation.js::ANIMATION_LABELS` (mirrored in
+`plugins/sgs-blocks/src/components/AnimationControl.js`), never the framework DB's `animation_tokens` table,
+which lacks `blur-in`, `reveal-up` and `scale-in`. Checked 2026-10-11: the `sgsAnimation` values already
+offer `fade-*`, `slide-*`, `scale-in`, `blur-in` and `reveal-up` with per-block distance, duration, easing
+and stagger; the Indus and Mama's
 exports' entrances are opacity plus translate and their hovers are transform, shadow and colour, all expressible.
 A combined move-plus-blur or move-plus-scale entrance, or a rounded clip-path reveal, becomes a requirement
 here once a draft needs one (Spec 48 §16).

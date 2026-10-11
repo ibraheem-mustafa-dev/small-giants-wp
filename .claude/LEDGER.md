@@ -9,10 +9,10 @@ last_updated: 2026-10-10
 ## Summary for Bean
 
 - **Eye Care is built by hand first (D1149).** Every surface is built and live on eye-care-test; the finished site becomes the cloning pipeline's answer key. The fix register is the work list and every decision in it is taken.
-- **Spec 47's "Solve" tool** measures the draft against the live site and writes block settings itself. The About page is at 100%. Current counts live in the triage files, never in this document.
+- **The cloning route's "Solve" tool** (Spec 48 §3.3) measures the draft against the live site and writes block settings itself. The About page is at 100%. Current counts live in the triage files, never in this document.
 - **Nav / header / footer** (Specs 36 and 37): Waves 1 to 3C are live on sandybrown; Waves 4 and 5 have not started. You deferred the last mile of Gate 3C.
-- **The Claude Design handover is being standardised (Front H).** Drafts now come from Claude Design's "Handoff to Claude Code" and design-system skills, run by one standard pasted prompt (`.claude/claude-design-handoff/PROMPT.txt`), never a zip. The handoff folder standard (Spec 48A) and its check are built; the exports land unchanged in `sites/<client>/handoff/`. Next: Spec 48 (the cloning system) is designed with Bean, Spec 32 is slimmed to framework only, and Eye Care's draft is edited to mirror the live site. Indus and the Mama's redesign keep their fresh test sites (`indus-test`, `mamas-test`); the redesign is independent of the canary's `sites/mamas-munches/`.
-- **Specs** are tidied to current truth (24 live specs; the generated block reference is separate). Cloning is Spec 47 only: Specs 31, 44, 45, 20 and 19 are gone, and the roster's "Not a live spec" table maps every old number to its home. The old cloning converter and its scripts, gates and database tables are deleted; git history holds them.
+- **The Claude Design handover is standardised and the cloning system is specified (Front H).** Drafts come from Claude Design's "Handoff to Claude Code" run by one pasted prompt, land unchanged in `sites/<client>/handoff/` and are checked by Spec 48A. Spec 48 (the cloning system, replacing Spec 47) is written: accuracy designed in from the start, Indus first then Mama's. Next: your re-exports, then a build plan from its Appendix B; Eye Care's draft is edited to mirror the live site (B5). Indus and the Mama's redesign keep their fresh test sites (`indus-test`, `mamas-test`).
+- **Specs** are tidied to current truth (24 live specs; the generated block reference is separate). Cloning is Spec 48 only (Spec 47 is archived inside it): Specs 31, 44, 45, 20 and 19 are gone, and the roster's "Not a live spec" table maps every old number to its home. The old cloning converter and its scripts, gates and database tables are deleted; git history holds them.
 - **Need you directly:** the drawer-burger click retest, the mega-motion eye check, and the Eye Care rulings listed under Parked.
 
 ## Blockers
@@ -57,10 +57,22 @@ Open owed items:
 
 ### Front H: Claude Design handover standard and the unified cloning spec
 
-**State:** B1 done (2026-10-11): the Indus, Eye Care and Mama's Munches exports compared (inventories 217/61, 213/52, 195/58 records, 0 schema errors; all manifest hashes match; two runtime builds differing only in slide-deck code). Spec 48A written (`specs/48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md`, v0.1, draft until B0) after an adversarial council (`.claude/reports/2026-10-11-48a-council/`), with its check `scripts/computed-route/handoff-check.mjs` (tests pass; route suite 853/856, the 3 known `lint.test.mjs` brandName failures) and the updated Claude Design prompt files in `.claude/claude-design-handoff/` (`MANIFEST.json` and a README template). The Indus and Mama's exports sit in `sites/<client>/handoff/` and both client folders are culled to Bean's keepers; they fail the check only on what the re-export adds. Spec 32 and 47 section ledgers are in `.claude/reports/2026-10-11-spec-ledgers/`, recommendations accepted. Main at the handoff commit; nothing deployed.
-**Blockers:** the Indus and Mama's re-exports (Bean: re-upload `.claude/claude-design-handoff/handoff-schema/` and `CLAUDE.md`, paste `PROMPT.txt`, download the folder) block finishing B3. **Time-critical:** the standalone Claude Design site deletes its projects on 14 December 2026; every project must be exported as a "Project archive" before then, and the artifact-based Claude Design tested once (plan B0; Spec 48A goes to 1.0 after it).
-**Resume from:** `plans/2026-10-10-claude-design-handover-standard.md`, B4 (design Spec 48 with a gap-analysis council and /brainstorming) and, as a separate session, B5 (mirror the live Eye Care site into its draft).
-**Bean-only tasks:** B0, and the Indus and Mama's re-exports.
+**State:** B4 done (2026-10-11). Spec 48, the cloning system (`specs/48-CLONING-SYSTEM.md`, 0.2.0), replaces Spec 47
+(archived byte-identical; FR-47-n, R-47-n, walker items and §2-§7 kept), designed with Bean after a gap-analysis council
+and hardened by a final five-persona council (`.claude/reports/2026-10-11-spec48-gap-council/`). Accuracy is built in
+from stage 1: a value matrix gives every kind of value a read, write, check and gap rule, checked code to code with the
+render confirming; a gap reaches the framework list only through gates G0-G7. Spec 32 is slim (3.1.0: styling contract
+and snapshot format, new FR-32-14 to FR-32-20); Spec 27 gains FR-30-16/17. `scripts/check-spec-id-landing.py` proves
+every kept ID lands. Nothing built or deployed: Spec 48 is mostly "not built"; its Appendix B is the Indus critical path
+(about 20 h agent, 2 h Bean). Spec 48A v0.1 with `handoff-check.mjs`; Indus and Mama's exports in `sites/<client>/handoff/`
+fail it only on what the re-export adds.
+**Blockers:** the Indus and Mama's re-exports (Bean: re-upload `.claude/claude-design-handoff/handoff-schema/` and
+`CLAUDE.md`, paste `PROMPT.txt`, download the folder) block Spec 48 stage 0. **Time-critical:** the standalone Claude
+Design site deletes its projects on 14 December 2026; export every project as a "Project archive" and test the
+artifact-based Claude Design once before then (plan B0; Spec 48A goes to 1.0 after it).
+**Resume from:** `plans/2026-10-10-claude-design-handover-standard.md` "After B" (a build plan from Spec 48 Appendix B,
+Indus first) and, as a separate session, B5 (mirror the live Eye Care site into its draft).
+**Bean-only tasks:** B0, the Indus and Mama's re-exports, the Indus mailbox (Spec 48 Appendix B step 2).
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
@@ -79,7 +91,6 @@ Open owed items:
 - Mama's Munches needs a site copy of the shop template for its Flavour and Size groups (`plans/2026-10-02-eye-care-plan.md`).
 - Card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id` (`plans/2026-10-05-eye-care-functionality-backlog.md`).
 - google-reviews icons and `autoScroll` from the manifest route, and the Business Profile sync (`plans/2026-10-05-eye-care-functionality-backlog.md`).
-- Nothing creates a client's empty pages and templates before `surfaces.json` names them (`specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md` §7).
 - Form CPT cloning-pipeline gap and analytics: `plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`.
 - Snooza product configurator, planned and not started: `plans/2026-08-03-snooza-configurator-build-plan.md`.
 - Gate 3C item 4's G8 foundational gap (lamalama), parked in `plans/2026-10-01-header-nav-thread-plan.md`.

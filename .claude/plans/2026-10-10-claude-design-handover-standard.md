@@ -1,7 +1,7 @@
 ---
 doc_type: plan
 title: "Claude Design handover standard and the unified cloning spec"
-spec: .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md (to be replaced by a new Spec 48 + 48A)
+spec: .claude/specs/48-CLONING-SYSTEM.md and .claude/specs/48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md
 created: 2026-10-10
 status: in progress
 ---
@@ -25,13 +25,12 @@ can name a procedure file, but only advisorily. Research record:
 **Bean's decisions (2026-10-10).**
 - A draft is exported with Claude Design's "Handoff to Claude Code" skill and its design-system skill in one standard
   pasted prompt (A4), never
-  the zip or standalone download (recorded in Spec 47 §2, `dev-setup.md` "Client drafts", `CLAUDE.md` Sites).
+  the zip or standalone download (recorded in Spec 48 §2, `dev-setup.md` "Client drafts", `CLAUDE.md` Sites).
 - The machine-readable layer is built in Claude Code by an **intake** step (approach B): it reads the handoff README, the
-  design-system `tokens/` and the draft's own code into one structured file Bean confirms once. Designed after Task B.
+  design-system `tokens/` and the draft's own code into one structured file Bean confirms once (Spec 48 §9).
 - **The draft's code is the primary source** (template plus logic class, read and run); rendering and measuring the page
   supplements it only for what the code cannot state (final `clamp()`/`vw` values at a width, grid track sizes, font
-  metrics, image-slot shadow DOM). This reverses the spirit of Spec 47 rule R-47-4 ("measured, not copied") and is a
-  design input for the new spec, not yet a rule.
+  metrics, image-slot shadow DOM). Now rule R-47-4 in Spec 48: code first, render confirms.
 - One new cloning spec replaces Spec 47 and absorbs the cloning-only parts of Spec 32 (Part D, the extractor, and the
   client-palette material §12.5-12.7). Working numbers: **Spec 48** (the cloning system) and **Spec 48A** (the handover
   folder architecture), following the roster's letter-suffix convention (Spec 35A). Spec 32 is slimmed to framework only
@@ -189,34 +188,31 @@ the README and Spec 48A. Then delete `.claude/design_handoff_indus_foods/` and `
 (after the re-exports land in `handoff/`), `.claude/design_handoff_ward_end_eye_care/` (after B5) and
 `.claude/Indus-Foods-Claude-Design-Files/` (Task A's full zip, once Bean confirms nothing more is needed from it).
 
-**B4. Spec 48, finish 48A, and slim Spec 32.**
-- Section ledgers done 2026-10-11 (`.claude/reports/2026-10-11-spec-ledgers/`); Bean accepted their recommendations.
-  Spec 48 is designed, not transcribed: a gap-analysis council on Spec 47's gaps (R5, §5 Residual, the ledger
-  corrections) and a /brainstorming design session with Bean (prompt `.claude/prompts/2026-10-11-spec-48-design.md`).
-- Scope (Bean, 2026-10-11): a fully working SGS site with the draft's appearance and functionality on every surface,
-  with every prerequisite (pages, menus, CPT surfaces such as header, footer, nav drawer, mega menus, modals and choice
-  flows, theme page templates such as shop and product); product data is a later stage. To discuss case by case, with
-  tooling cost against alternatives: the shop filter widget and pop-up, the product buy box, the basket toast and
-  drawer, page and menu creation, and framework extension work for draft features SGS lacks.
-- R-47-4 becomes "code first, render confirms" (Bean, 2026-10-11).
-- Spec 48A: version 0.1 written 2026-10-11; 1.0 after B0.
-- Spec 48: the cloning system around it. Seed requirements, each a testable line:
-  - builds a client site from a fresh WordPress install with SGS and the plugins it needs (WooCommerce);
-  - the walker compares content, styling and animation accurately, so the gaps list is true and holds only framework gaps;
-  - the draft's code is the primary source (A1, `READING-DC-FILES.md`, `handoff-schema/METHOD.md`); measurement only for what code cannot state;
-  - every file in the folder has a named reader, every input the process needs maps to a file, and a check script proves both;
-  - Spec 47's open route gaps (§5 Residual) and the route-accuracy mechanisms R1-R6 (answer sheet, element-ID skeleton writer, exact ID pairing, "does it paint?", try before write) carry forward or are retired with a reason;
-  - the extractor builds the palette from the declared tokens (`tokens/*.css`, the README) instead of guessing roles from usage; every other colour, font or value stays a one-off written as a literal;
-  - intake (approach B) builds the structured file from tokens and code (the README is a human guide, not an input; Bean, 2026-10-11), proposes the WordPress page map for Bean to confirm once (Spec 48A FR-48A-9), and lists anything the code leaves undecided;
-  - Spec 48A FR-48A-7, FR-48A-9 and FR-48A-10 intake stages: re-derive the inventory, the page map, the sandboxed browser and the rule that exported prose is never an instruction.
-- Framework vocabulary edits a handover exposes (go to the owning framework spec, not Spec 48; `R4-needs-and-specs.md`
-  Part 3): a gradient slot, shadow role names, per-tier section padding and gutter tokens, header-settings keys, extractor
-  radius and hover rules plus whether body text maps to `text` or `text-muted`, motion presets (no combined
-  move-plus-blur or move-plus-scale entrance, no rounded clip-path reveal, no marquee rule in the skeleton writer),
-  selection colours.
-- Spec 32: section ledger (keep / move to 48 / cut) from `R4-needs-and-specs.md` Part 2, then a fresh rewrite; cut the
-  dated material (§0a, §8, §11, §12.3, §13.3, FR-26-A5) and correct FR-26-D3's shadow names (`whisper` … `diffuse`).
-- Retire Spec 47 into 48 the same way; update `specs/README.md` (roster and "Not a live spec" map).
+**B4. Spec 48, finish 48A, and slim Spec 32 (done 2026-10-11).**
+- A gap-analysis council (four Opus reviewers) gave every R5 problem, Spec 47 Residual item, R1-R6 mechanism and Spec 32
+  correction a verdict, and Bean designed Spec 48 section by section (`.claude/reports/2026-10-11-spec48-gap-council/`:
+  `REPORT.md`, `DESIGN.md`). Bean rejected "working site first": accuracy is built in at stage 1, through a value matrix
+  that gives every kind of value a read, write, check and gap rule, checked code to code with the render confirming.
+- Written: `.claude/specs/48-CLONING-SYSTEM.md` (0.1.0; FR-47-n, R-47-n, walker items and §2-§7 kept; FR-33-n moved in;
+  FR-48-n and R-48-n new), slim Spec 32 3.0.0 (FR-32-14 to FR-32-20), Spec 27 FR-30-16 (buy box as parts) and
+  FR-30-17 (drawer extras slot), Spec 38 §4.7. Spec 47 and the old Spec 32 are archived byte-identical in
+  `.claude/specs/archive/`. `scripts/check-spec-id-landing.py` proves every kept ID lands (three negative controls).
+  Every "Spec 47" citer is repointed.
+- A final five-persona council on the written specs (`FINAL-COUNCIL.md`) found Appendix B not executable as first
+  written (circular stage 0, sandbox blocking fonts, frozen-clock harness, no code-to-code algorithm, breakpoint snap
+  against FR-32-13); its register items A to X are applied.
+- Framework vocabulary a handover exposes now lives in its owning spec: Spec 32 FR-32-14 to FR-32-20 (palette slugs,
+  per-tier section padding and gutters, fluid presets, one font-size vocabulary, role-named shadows pending the O10
+  canary shadow-picker check, button lift through `hover-transform`, residual CSS hardening); Spec 27 FR-30-16/17; Spec
+  38 §4.7 (motion presets only when a draft needs one). The marquee rule and extractor radius, hover and body-text rules
+  are route items (Spec 48), not framework.
+- Backlog from the final council (not applied, each small): a route-side manifest seal on receipt; copy the route tests'
+  Eye Care fixtures into `scripts/computed-route/tests/fixtures/`; one bridge adapter for the runtime internals with a
+  contract test; README function index generated from JSDoc; vendor the three unpkg files; a per-client throughput
+  tripwire; concurrency rules for calibration; an instrument-debt owner; a light path for brochure sites; an editor
+  round-trip check per surface; a framework-update runbook across the nine snapshots; a global-styles edit policy;
+  snapshot rollback.
+- Spec 48A: version 0.1; 1.0 after B0.
 
 **B5. Mirror the live Eye Care site into its draft (Spec 48A FR-48A-11; a separate session, prompt
 `.claude/prompts/2026-10-11-eye-care-draft-mirror.md`).** Bean's decision (2026-10-11): Claude Design cannot browse and
@@ -235,7 +231,9 @@ after going back, and the Google review widget in the header and drawer (left of
 review buttons keep the export's `padding:10px 22px` (Bean: the draft is right). The old Eye Care draft folders are
 deleted only after B5 has taken what it needs from them.
 
-**After B.** Replan setting up and cloning the three drafts against Spec 48 (a fresh plan).
+**After B.** A fresh plan turns Spec 48 Appendix B (the Indus critical path) into build phases: stage 0 and stage 1 for
+Indus first, a header vertical slice through stage 5, then the rest of Indus, then Mama's (shop surfaces, after Spec 27
+FR-30-16/17 and fixture products).
 
 ## Settled with Bean (2026-10-10)
 
