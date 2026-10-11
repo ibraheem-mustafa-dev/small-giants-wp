@@ -768,18 +768,16 @@ Results, run records and counts moved out of Spec 47 section 5. Spec 47 section 
 5. **A second draft** from a different designer, to test generality. **Unblocked 2026-10-10:** two Claude Design
    drafts are set up as local references, each with a fresh WordPress test site: Mama's Munches redesign
    (`sites/mamas-munches-redesign/`, one file per surface, `mamas-test`) and Indus Foods (`sites/indus-foods/`, `indus-test`).
-   Both local folders are the old zip exports, replaced in the handover plan's Task B3; the Indus v2 headless crash they
-   carry is fixed in Claude Design's new handoff (0 of 15 cold loads). Both drafts carry the
-   `data-dc-tpl` stamps the skeleton writer uses. The redesign's `Theme Mapping.md` is a candidate answer key for the
-   skeleton writer once reviewed (its core-block and plugin picks replaced through `blocks.replaces`).
+   Each folder now holds its Claude Design handoff export in `handoff/` (Spec 48A; handover plan B3, 2026-10-11); the
+   Indus v2 headless crash is fixed there (0 of 15 cold loads). Both drafts carry the `data-dc-tpl` stamps the skeleton
+   writer uses.
    **Stage 5 is replanned (Bean, 2026-10-10):** all three drafts (Indus, Mama's, Eye Care) are re-exported through
    Claude Design's "Handoff to Claude Code" skill, the handover folder is standardised and the cloning system is
    rewritten as one spec first (`plans/2026-10-10-claude-design-handover-standard.md`); setting up and cloning the three
    drafts is replanned after it. The run below was on a zip export with no README and is not resumed.
-   **First surface run 2026-10-10: Mama's footer (`SiteFooter.dc.html`), not yet at the done line.** Setup:
-   `sites/mamas-munches-redesign/build/surfaces.json` (footer = `sgs_footer` post 19 on mamas-test, made the active
-   footer through `sgs_active_footer_cpt_id` as Eye Care's 182 is, `canvas: true`); the draft served by
-   `fill.mjs --serve` (its `draftUrl` is that session's port). Route: inventory 68 elements, proposal 46 nodes,
+   **First surface run 2026-10-10: Mama's footer (`SiteFooter.dc.html`), not resumed.** Setup: a surface manifest
+   (footer = `sgs_footer` post 19 on mamas-test, made the active footer through `sgs_active_footer_cpt_id` as Eye
+   Care's 182 is, `canvas: true`), removed with the old zip export on 2026-10-11; the draft served by `fill.mjs --serve`. Route: inventory 68 elements, proposal 46 nodes,
    check-refs 52/52 unique, Fill 229 written, 158 UNMAPPED, 5 handover; build clean; walk 2170 open, 68 accepted at
    1440/768/375 (headed). What differed from Eye Care, each a route or setup defect:
    - **Draft runtime.** A Claude Design draft loads React and Babel from unpkg.com, so Fill without `--allow-external`
