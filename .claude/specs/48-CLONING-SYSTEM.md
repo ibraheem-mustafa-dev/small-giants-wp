@@ -182,8 +182,9 @@ sizes the code does not state are taken from the render. The written form is the
 Done when: `resolve.test.mjs` gains a `repeat(3, 1fr)` container row written as three columns, a declared
 `display: flex` two-child row written as a flex row, a `clamp()` font size written whole on a setting whose calibration
 lists `clamp` and per tier on one that does not; and the per-tier case fails if the form check is removed.
-Status: not built (`lib/resolve.mjs` takes rendered values only; no cache file lists `clamp` among a setting's `forms`:
-`grep -l clamp scripts/computed-route/cache/*` returns nothing).
+Status: not built (`lib/resolve.mjs` takes rendered values only). Calibration now records the forms it needs (FR-48-2);
+`container.columns` is cached with `property` `grid-template-columns` while `lib/resolve.mjs::candidates` matches the
+DB's `grid-template-columns:count`, so the resolver cannot reach it yet.
 
 #### FR-48-74 -- The desktop tier is read at 1440; 1920 confirms
 
@@ -344,8 +345,12 @@ cache. A setting is "built" for a fluid or grid form only once its `forms` list 
 resolver writes per tier (FR-48-1) and the row is instrument debt (R-48-4).
 Done when: recalibrating `sgs/heading` and `sgs/container` records `clamp` on a font-size setting that accepts it and
 `repeat` on the container's grid template setting, and a planted setting that strips `clamp()` records no `clamp`.
-Status: partly built: colour forms are recorded (`cache/container.json` `settings.borderColour.forms` holds `hex` and
-`slug`); no cache file records `clamp` or `repeat`.
+Status: built (2026-10-11). `lib/calibrate-markers.mjs` adds `clamp` (`clamp(13px, 9px + 3vw, 71px)`), `vw` (`4vw`),
+`repeat` (`repeat(3, 1fr)`) and `count` probes; a form is recorded only when one element carries the expected value at
+375, 768 and 1440 (0.5px tolerance for lengths), and a probe that misses never makes a setting dead
+(`tests/calibrate-forms.test.mjs`, MUST FAIL: a planted stripped `clamp()`). Recalibrated on `local-indus`: heading
+`fontSize` records `clamp` and `vw`, container `gridTemplateColumns` records `repeat`. The live planted-strip block is
+not built (the case is proven on synthetic readings). Colour `hex` and `slug` keep the earlier, looser reach rule.
 
 #### FR-48-3 -- Stage-0 calibration of the client's block set
 
@@ -367,7 +372,9 @@ change what blocks paint. It is measured as stage 2's exit step (FR-48-18), afte
 stage 1's skeleton proposal adds outside the fixed set is calibrated in that same exit step.
 Done when: a stage-0 run on Indus writes the baseline file, refuses to report a block whose deploy hash differs from its
 cache as calibrated, writes no default-paint file, and `container.gridTemplateColumns` is no longer `dead`.
-Status: not built as a command. The baseline today, read from `scripts/computed-route/cache/*.json` (94 block files,
+Status: not built as a command. `container.gridTemplateColumns` is no longer dead (2026-10-11: the marker wrote a
+number, which `SGS_Container_Wrapper` ignores as a template; the `repeat` probe writes a string, FR-48-2), and every
+`:count` setting is now calibrated (it was dropped for having no readable property). The baseline before that work, read from `scripts/computed-route/cache/*.json` (94 block files,
 excluding `*.tree.json`): 578 dead, 110 noMarker, 24 oneWidth, 47 untestedStates.
 The Indus mirror `local-indus` and the `indus-test` and `local-indus` calibration targets exist (page 15).
 
@@ -2387,7 +2394,7 @@ Items Spec 48 needs but does not own. "Blocks" says which client cannot finish w
 | Shadow role names (card, card-hover, button, panel, header, drawer, modal); migration surveying saved slugs including `raised`, `subtle`, `raisedish`, `hard-sm`; old slugs kept as aliases; dry run per client; FR-26-D3 waits for the O10 shadow-picker check | Spec 32 FR-32-18 (§14.2), §13.4 (FR-26-D3) | neither | not built |
 | One font-size vocabulary across snapshots (`sites/mamas-munches` excluded by name, its slugs kept as aliases) | Spec 32 FR-32-17 (§14.2) | neither | not built |
 | Indus calibration: `gridTemplateColumns` dead, `container.layout` unrouted, stale caches for card-grid, form, nav-drawer-menu, container, hero, trust-bar, nav-bar-menu, mega-panel | calibration (§3.2) | Indus | not built |
-| Calibration records accepted value forms (`clamp()`, `vw`, `repeat()`, column count) | calibration (§3.2, FR-48-2) | Indus (fluid presets, grids) | partly built (colour forms only) |
+| Calibration records accepted value forms (`clamp()`, `vw`, `repeat()`, column count) | calibration (§3.2, FR-48-2) | Indus (fluid presets, grids) | built |
 | Indus local mirror `local-indus` and calibration targets `indus-test` and `local-indus` | Spec 48 Appendix A step 13 | Indus | not built |
 | Default paint stored per site (`cache/<site>/<block>.paint.json`) | calibration (§3.2, FR-48-3) | Indus (protects Eye Care's caches) | built |
 | The route's own pinned `package.json` | Spec 48 FR-48-75 | neither | built (G0's version check not built) |

@@ -23,7 +23,7 @@ import { slotMapSkip, paintSkip, splitCalibration, writeSlotMap, writePaint } fr
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
-import { WIDTHS, buildTree, slotFor, mergeSetting, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, readAll } from './lib/calibrate.mjs';
+import { WIDTHS, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, readAll } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 
 export { REMOTE_PLUGIN, EDITOR_ONLY, BUNDLE_TEXT, normaliseBundle, TEXT_FILE, lfText, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
@@ -258,14 +258,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		const s = 'scroll' === inst.trigger
 			? slotFor( inst.row, inst.marker, inst.defScrolled, inst.readScrolled, { containerQuery } )
 			: slotFor( inst.row, inst.marker, inst.def, inst.read, { containerQuery } );
-		if ( s.dead ) {
-			dead.push( name );
-			return;
-		}
-		settings[ name ] = mergeSetting( settings[ name ], s, { state: inst.row.css_state, form: inst.marker.form, variant: inst.variant } );
-		if ( s.oneWidth ) {
-			oneWidth.push( { key: inst.key, reachedAt: s.reachedAt } );
-		}
+		foldReading( { settings, dead, oneWidth }, inst, s );
 	} );
 	// Dead: no marker of the setting changed anything (a setting with one live marker is not dead).
 	const deadNames = [ ...new Set( dead ) ].filter( ( n ) => ! settings[ n ] );

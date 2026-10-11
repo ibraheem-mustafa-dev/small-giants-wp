@@ -4,6 +4,9 @@
 // carries too (a partner setting the marker needs before it can paint), so only the marker's own effect is measured.
 import { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT } from './calibrate-props.mjs';
 import { CORNERS, isSizeBox } from './resolve.mjs';
+import { modifierOf } from './db.mjs';
+import { LENGTH_PROPS, FLUID_TOL } from './fill-values.mjs';
+import { longhands } from './calibrate-props.mjs';
 
 // The duration marker is a whole number of milliseconds, never a CSS time: helpers-tokens.php::sgs_transition_vars
 // refuses anything that is not a non-negative integer. 437 reads unmistakably as 0.437s in a computed style.
@@ -138,6 +141,26 @@ export function shadowPartners( attr, prop, schema ) {
 	return shape !== attr && schema[ shape ] && types( schema[ shape ] ).includes( 'string' ) ? { [ shape ]: SHADOW_SHAPE } : {};
 }
 
+// Value-form markers (Spec 48 FR-48-2). A fluid length is a formula of the viewport width, so each marker's expected
+// value differs at 375, 768 and 1440 and from the 37/23/7px length markers; a pure px + vw formula keeps the
+// expectation independent of the page's root font size. clamp(13px, 9px + 3vw, 71px) computes 9 + 0.03w px inside its
+// bounds: 20.25px at 375, 32.04px at 768, 52.2px at 1440. 4vw computes 0.04w px: 15px, 30.72px, 57.6px. A minimum size
+// floored at the 44px touch target takes formulas above it: clamp(113px, 109px + 3vw, 171px) gives 120.25px, 132.04px,
+// 152.2px; 12vw gives 45px, 92.16px, 172.8px.
+export const FLUID_MARKERS = {
+	clamp: { value: 'clamp(13px, 9px + 3vw, 71px)', at: ( w ) => Math.min( 71, Math.max( 13, 9 + ( 0.03 * w ) ) ) },
+	vw: { value: '4vw', at: ( w ) => 0.04 * w },
+};
+const FLUID_FLOORED = {
+	clamp: { value: 'clamp(113px, 109px + 3vw, 171px)', at: ( w ) => Math.min( 171, Math.max( 113, 109 + ( 0.03 * w ) ) ) },
+	vw: { value: '12vw', at: ( w ) => 0.12 * w },
+};
+// The template-form marker for a setting holding a grid-template-columns value: three equal tracks.
+export const MARKER_REPEAT = 'repeat(3, 1fr)';
+export const MARKER_REPEAT_TRACKS = 3;
+const GRID = 'grid-template-columns';
+const pxText = ( n ) => `${ Math.round( n * 100 ) / 100 }px`;
+
 // One value per device tier for a non-length per-device setting (columns, alignment), each differing from the
 // default at that tier, or null when the setting has no such shape.
 function nonLengthTiers( prop, def ) {
@@ -181,11 +204,65 @@ function transitionMarker( row, def, t, prop ) {
 	return null;
 }
 
-// The markers for one setting. `ctx.image` is a media object that exists on the calibration site.
+// The markers for one setting: its plain markers, then its value-form probes (formMarkers) when it has a plain one.
+// `ctx.image` is a media object that exists on the calibration site.
 export function markersFor( row, schema, snapshot, current = {}, ctx = {} ) {
+	const plain = plainMarkers( row, schema, snapshot, current, ctx );
+	return plain.length ? [ ...plain, ...formMarkers( row, schema ) ] : plain;
+}
+
+// The value-form probes for one setting (Spec 48 FR-48-2), each `probe: true` with its `form`. A probe that does not
+// take records no form and never makes its setting dead (lib/calibrate.mjs::foldReading).
+// - clamp and vw: a length setting the route may write fluid (fill-values.mjs::LENGTH_PROPS) whose value can be a
+//   string. A tier object holds the fluid value in its desktop tier only, the shape fill-values.mjs::applyClamp writes
+//   (helpers-responsive.php::sgs_emit_responsive_css carries an unset tablet and mobile tier down from desktop), so the
+//   probe is accepted only when the formula's value computes at all three widths. A flat string holds it whole. A
+//   number holds no formula, and a flat_sibling tablet or mobile attribute is never written fluid (applyClamp keeps
+//   only the base one), so neither gets a probe.
+// - repeat: a per-device setting holding a grid-template-columns value gets the template in every tier, accepted when
+//   the element computes three tracks at all three widths. A `grid-template-columns:count` setting holds a count, never
+//   a template, so its plain count marker carries the `count` form instead (plainMarkers).
+export function formMarkers( row, schema ) {
 	const def = defOf( row, schema );
 	const t = types( def );
-	const prop = row.css_property.split( ',' )[ 0 ].trim();
+	const first = row.css_property.split( ',' )[ 0 ].trim();
+	const tiered = 'tier_object' === row.tier_shape;
+	const out = [];
+	if ( GRID === first && tiered ) {
+		const value = Object.fromEntries( TIERS.map( ( tier ) => [ tier, MARKER_REPEAT ] ) );
+		out.push( { label: 'repeat', form: 'repeat', probe: true, attrs: { [ row.attr_name ]: value }, expect: null, tracks: Object.fromEntries( WIDTHS.map( ( w ) => [ w, MARKER_REPEAT_TRACKS ] ) ) } );
+	}
+	const fluidProp = longhands( row.css_property ).some( ( p ) => LENGTH_PROPS.includes( p ) );
+	const box = !! row.box_family || 'box_only' === row.tier_shape || isSizeBox( def ) || /\{x, y\}/.test( def.description ?? '' );
+	const holdsString = tiered ? t.includes( 'object' ) : t.includes( 'string' );
+	const sibling = 'flat_sibling' === row.tier_shape && /(Tablet|Mobile)$/.test( row.attr_name );
+	if ( ! fluidProp || box || ! holdsString || sibling || FLOORED_ATTR.test( row.attr_name ) ) {
+		return out;
+	}
+	const unitAttr = schema[ `${ row.attr_name }Unit` ] ? `${ row.attr_name }Unit` : null;
+	const unitDef = unitAttr ? schema[ unitAttr ] : null;
+	const unitVal = unitDef && types( unitDef ).includes( 'object' ) ? { desktop: 'px', tablet: 'px', mobile: 'px' } : 'px';
+	const forms = FLOORED.test( first ) ? FLUID_FLOORED : FLUID_MARKERS;
+	for ( const [ form, m ] of Object.entries( forms ) ) {
+		out.push( {
+			label: form,
+			form,
+			probe: true,
+			attrs: { [ row.attr_name ]: tiered ? { desktop: m.value } : m.value, ...( unitAttr ? { [ unitAttr ]: unitVal } : {} ) },
+			expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, pxText( m.at( w ) ) ] ) ),
+			tolerance: FLUID_TOL,
+		} );
+	}
+	return out;
+}
+
+// The plain markers for one setting (the §3.2 marker table).
+function plainMarkers( row, schema, snapshot, current, ctx ) {
+	const def = defOf( row, schema );
+	const t = types( def );
+	// A modifier row (`grid-template-columns:count`) is marked as the property it modifies (lib/db.mjs::modifierOf).
+	const listed = row.css_property.split( ',' )[ 0 ].trim();
+	const prop = modifierOf( listed ) || listed;
 	const unitAttr = schema[ `${ row.attr_name }Unit` ] ? `${ row.attr_name }Unit` : null;
 	// The unit companion in its own shape: a per-device unit object gets px at every tier.
 	const unitDef = unitAttr ? schema[ unitAttr ] : null;
@@ -268,7 +345,10 @@ export function markersFor( row, schema, snapshot, current = {}, ctx = {} ) {
 		}
 		const tiers = nonLengthTiers( prop, def );
 		if ( tiers ) {
-			return [ { label: 'tiers-value', attrs: set( tiers ), expect: null } ];
+			// A per-device column count on a grid carries the `count` form: accepted where every width whose track list
+			// it changed computes that many tracks (lib/calibrate.mjs::formAccepted).
+			const count = GRID === prop ? { form: 'count', tracks: Object.fromEntries( WIDTHS.map( ( w ) => [ w, Number( tiers[ WIDTH_TIER[ w ] ] ) ] ) ) } : {};
+			return [ { label: 'tiers-value', attrs: set( tiers ), expect: null, ...count } ];
 		}
 		if ( ! LENGTH.test( prop ) && 'line-height' !== prop ) {
 			return [];

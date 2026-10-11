@@ -7,7 +7,7 @@ import { splitProperty } from './resolve.mjs';
 import { timingSet } from '../../parity/lib/compare.mjs';
 
 export { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT, CAL_PREFIX, READ_PROPS, INHERITED, longhands } from './calibrate-props.mjs';
-export { markersFor, MARKER_DURATION_MS, MARKER_EASING, companionWidth, borderPartners, shadowPartners, SHADOW_SHAPE, KEYWORDS } from './calibrate-markers.mjs';
+export { markersFor, formMarkers, FLUID_MARKERS, MARKER_REPEAT, MARKER_REPEAT_TRACKS, MARKER_DURATION_MS, MARKER_EASING, companionWidth, borderPartners, shadowPartners, SHADOW_SHAPE, KEYWORDS } from './calibrate-markers.mjs';
 export { STATE_TRIGGERS, triggerFor, planInstances, preconditionsFor, layoutModes, stateTarget, instanceCtx } from './calibrate-instances.mjs';
 export { readInstancesInPage, readAll, SCROLL_Y } from './calibrate-read.mjs';
 export { MARKER_TEXT, MARKER_NUMBER, MARKER_SLUG, MARKER_URL, MARKER_PHONE, LINK_ATTRS, PRESENCE_ROLES, TEXT_ROLES, LINK_ROLES, contentRowsFor, contentMarkerFor, variantPresenceValues, planContentInstances, needlesOf, readContentInPage, readContentAll, presenceFrom, textFrom, linkFrom, collectContent } from './calibrate-content.mjs';
@@ -34,6 +34,57 @@ const sameVal = ( a, b ) => String( a ).replace( /\s+/g, '' ) === String( b ).re
 // values match, whatever the order or repetition (the parity comparer's own rule).
 const TIMING_PROPS = [ 'transition-duration', 'transition-timing-function' ];
 const sameFor = ( prop, a, b ) => ( TIMING_PROPS.includes( prop ) && 'string' === typeof a && 'string' === typeof b ? timingSet( a ) === timingSet( b ) : sameVal( a, b ) );
+const pxOf = ( v ) => {
+	const m = /^(-?\d*\.?\d+)px$/.exec( String( v ?? '' ).trim() );
+	return m ? Number( m[ 1 ] ) : null;
+};
+
+// The number of tracks in a computed grid-template-columns, or null when the value is not a resolved track list (a
+// grid container computes px tracks; an element that is not a grid echoes the declared template, `none` when unset).
+// Line names in brackets are not tracks.
+export function trackCount( value ) {
+	const tokens = String( value ?? '' ).replace( /\[[^\]]*\]/g, ' ' ).trim().split( /\s+/ ).filter( Boolean );
+	return tokens.length > 0 && tokens.every( ( x ) => null !== pxOf( x ) ) ? tokens.length : null;
+}
+
+// Whether a reading carries the marker's value at a width: the track count for a marker with `tracks` (only on
+// grid-template-columns), within `tolerance` px for a marker that has one, else the expected value exactly; any
+// change for a marker with neither.
+function hitOf( prop, value, marker, w ) {
+	if ( marker.tracks ) {
+		return 'grid-template-columns' === prop && trackCount( value ) === marker.tracks[ w ];
+	}
+	if ( ! marker.expect ) {
+		return true;
+	}
+	if ( marker.tolerance ) {
+		const a = pxOf( value );
+		const b = pxOf( marker.expect[ w ] );
+		if ( null !== a && null !== b ) {
+			return Math.abs( a - b ) <= marker.tolerance;
+		}
+	}
+	return sameFor( prop, value, marker.expect[ w ] );
+}
+
+// How each value form is accepted (Spec 48 FR-48-2). clamp, vw and repeat: one element carries the marker's value at
+// all three widths. count: one element whose track list the marker changed computes the marker's count at every width
+// where it changed (a block that caps its columns by the room it has, sgs/container's intrinsic columns, leaves the
+// track list at its default where the count does not fit). hex and slug keep their recording on any reading.
+export const FORM_ACCEPT = { clamp: 'every-width', vw: 'every-width', repeat: 'every-width', count: 'changed-widths' };
+
+// Whether a strict form marker's changes prove its form (FORM_ACCEPT).
+function formAccepted( marker, changes ) {
+	const rule = FORM_ACCEPT[ marker.form ];
+	const paths = [ ...new Set( changes.map( ( c ) => c.path ) ) ];
+	if ( 'every-width' === rule ) {
+		return paths.some( ( p ) => WIDTHS.every( ( w ) => changes.some( ( c ) => c.path === p && c.w === w && c.hit ) ) );
+	}
+	return paths.some( ( p ) => {
+		const tracked = changes.filter( ( c ) => c.path === p && 'grid-template-columns' === c.prop );
+		return tracked.length > 0 && tracked.every( ( c ) => c.hit );
+	} );
+}
 
 // Works out one setting's slot from the default and marked readings ({ width: { path: { prop: value } } }).
 // Returns { slot, slots, property, transform, reachedAt, oneWidth, effects } or { dead }. containerQuery: the block's
@@ -54,7 +105,7 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 					continue;
 				}
 				if ( props.includes( prop ) ) {
-					changes.push( { w, path: p, prop, value: v, hit: marker.expect ? sameFor( prop, v, marker.expect[ w ] ) : true } );
+					changes.push( { w, path: p, prop, value: v, hit: hitOf( prop, v, marker, w ) } );
 				} else {
 					side.add( `${ p }|${ prop }` );
 				}
@@ -84,7 +135,9 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 	// another variant only follows a size there (a root hugging its glyph), so mergeSetting drops it from the slots.
 	const hitPaths = new Set( pool.filter( ( c ) => c.hit ).map( ( c ) => c.path ) );
 	const misses = marker.expect && hitPaths.size ? [ ...new Set( changes.filter( ( c ) => ! hitPaths.has( c.path ) ).map( ( c ) => c.path ) ) ] : [];
-	return { slot: best.path, slots, ...( misses.length ? { misses } : {} ), ...( reaches ? { reaches } : {} ), ...( overriddenBy.length ? { overriddenBy } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
+	// formAccepted: only for a marker whose form has an acceptance rule (FORM_ACCEPT).
+	const accepted = FORM_ACCEPT[ marker.form ] ? { formAccepted: formAccepted( marker, changes ) } : {};
+	return { slot: best.path, slots, ...accepted, ...( misses.length ? { misses } : {} ), ...( reaches ? { reaches } : {} ), ...( overriddenBy.length ? { overriddenBy } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
 }
 
 const pathDepth = ( p ) => ( '' === p ? 0 : p.split( ' > ' ).length );
@@ -142,6 +195,36 @@ export function mergeSetting( prev, s, { state = null, form = null, variant = 0 
 		// A container-query tier reaching fewer page widths by design (slotFor) keeps saying so in the cache.
 		...( s.containerTier || prev?.containerTier ? { containerTier: true } : {} ),
 	};
+}
+
+// Folds one marker's reading into the block's results (calibrate.mjs). acc: { settings, dead, oneWidth }; inst:
+// { key, row, marker, variant }; s: its slotFor reading. A form marker with an acceptance rule (FORM_ACCEPT) records
+// its form only when its reading proves it. A probe (`marker.probe`, lib/calibrate-markers.mjs::formMarkers) exists
+// only to test its form: when it does not take, the setting is untouched (never dead, never oneWidth); when it takes
+// on a setting a plain marker already located, only the form is added, so the plain markers' slot, reach and transform
+// stand; on a setting no plain marker reached, it locates the setting itself.
+export function foldReading( acc, inst, s ) {
+	const name = inst.row.attr_name;
+	const marker = inst.marker || {};
+	const strict = !! FORM_ACCEPT[ marker.form ];
+	if ( marker.probe && ( s.dead || ! s.formAccepted ) ) {
+		return acc;
+	}
+	if ( s.dead ) {
+		acc.dead.push( name );
+		return acc;
+	}
+	const form = ! marker.form || ( strict && ! s.formAccepted ) ? null : marker.form;
+	const prev = acc.settings[ name ];
+	if ( marker.probe && prev ) {
+		acc.settings[ name ] = { ...prev, forms: [ ...new Set( [ ...( prev.forms || [] ), form ] ) ] };
+		return acc;
+	}
+	acc.settings[ name ] = mergeSetting( prev, s, { state: inst.row.css_state, form, variant: inst.variant } );
+	if ( s.oneWidth ) {
+		acc.oneWidth.push( { key: inst.key, reachedAt: s.reachedAt } );
+	}
+	return acc;
 }
 
 // What one enum value of a setting with no css_property changes: every read property that differs from the default

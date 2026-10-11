@@ -98,7 +98,7 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
   and `local-indus`.
 - [x] **5. Per-site default paint** (done 2026-10-11; a mirror shares its test site's paint through `mirrorOf`). §3.2 done when a run on one site never reads or overwrites another site's
   `cache/<site>/<block>.paint.json`, and the slot map stays one library-wide `cache/<block>.json`.
-- [ ] **6. Accepted value forms.** FR-48-2 done when recalibrating `sgs/heading` and `sgs/container` records `clamp` on
+- [x] **6. Accepted value forms** (done 2026-10-11; also fixed `container.gridTemplateColumns`, step 7's first item). FR-48-2 done when recalibrating `sgs/heading` and `sgs/container` records `clamp` on
   a font-size setting that accepts it and `repeat` on the container's grid template setting, and a planted setting that
   strips `clamp()` records no `clamp`.
 - [ ] **7. Indus calibration fixes and the desktop tier.** FR-48-74 done when `resolve.test.mjs` writes 48px at 1440

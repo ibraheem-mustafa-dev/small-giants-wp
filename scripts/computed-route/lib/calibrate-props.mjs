@@ -1,6 +1,7 @@
 // What calibration reads and how a setting's css_property maps onto it (FR-47-2).
 import { DEFAULT_PROPS, HOVER_PROPS, PSEUDO_PROPS } from '../../parity/lib/collect.mjs';
 import { REF_PROPS } from '../../parity/lib/ref-trace.mjs';
+import { modifierOf } from './db.mjs';
 
 export const WIDTHS = [ 375, 768, 1440 ];
 export const MARKER_HEX = '#13579b';
@@ -39,9 +40,10 @@ const ALIASES = {
 	inset: [ 'top', 'right', 'bottom', 'left' ],
 };
 
-// The longhand properties a setting's css_property covers, as calibration reads them.
+// The longhand properties a setting's css_property covers, as calibration reads them. A modifier row
+// (`grid-template-columns:count`, a track count) is read under the property it modifies (lib/db.mjs::modifierOf).
 export function longhands( cssProperty ) {
-	return [ ...new Set( cssProperty.split( ',' ).map( ( s ) => s.trim() ).flatMap( ( p ) => {
+	return [ ...new Set( cssProperty.split( ',' ).map( ( s ) => s.trim() ).map( ( p ) => modifierOf( p ) || p ).flatMap( ( p ) => {
 		if ( ALIASES[ p ] ) {
 			return ALIASES[ p ];
 		}

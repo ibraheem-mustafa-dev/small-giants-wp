@@ -2,6 +2,7 @@
 // instance per setting and marker, each carrying the preconditions its element needs to render, plus one instance
 // per enum value of a setting with no css_property (discovery). Pure: no browser, no site.
 import { markersFor, borderPartners, shadowPartners, defOf, types } from './calibrate-markers.mjs';
+import { modifierOf } from './db.mjs';
 
 // How each setting state is reached before a marker is read (§3.2): 'hover' under a real mouse on the styled element;
 // 'focus' by keyboard-visible focus on it; 'scroll' by scrolling the window past the header offset (the header script
@@ -130,7 +131,9 @@ export function planInstances( block, { rows, enumRows = [], schema, snapshot, f
 				noMarker.add( row.attr_name );
 			}
 			const pre = preconditionsFor( row, schema, vattrs, ctx );
-			const prop = row.css_property.split( ',' )[ 0 ].trim();
+			// A modifier row (`grid-template-columns:count`) is a layout property like the one it modifies.
+			const listed = row.css_property.split( ',' )[ 0 ].trim();
+			const prop = modifierOf( listed ) || listed;
 			const modes = LAYOUT_PROPS.test( prop ) ? layoutModes( schema, vattrs ) : [];
 			// Each marker as written, then once more under each other layout mode of the block.
 			const runs = [ { suffix: '', extra: {} }, ...modes.flatMap( ( m ) => m.values.map( ( v ) => ( { suffix: `-${ m.name }-${ v }`, extra: { [ m.name ]: v } } ) ) ) ];
