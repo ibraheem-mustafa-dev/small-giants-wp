@@ -2,6 +2,7 @@
 // Block calibration command (FR-47-2).
 //   node scripts/computed-route/calibrate.mjs --site eye-care-test --client eye-care-ward-end --blocks sgs/heading,sgs/text
 //   [--recalibrate] replaces a block's slot map measured on another site and re-measures this site's default paint.
+//   [--slot-map-only] writes no default paint, even when one is due (stage 0, FR-48-3).
 // For each block: refuses to run when the deployed build/blocks/<block>/ differs from the local build (before any
 // write), builds the block's calibration tree on the site's calibration page (calibration-targets.json), reads every
 // instance at 375, 768 and 1440 (hover settings under a real mouse), and writes two files (lib/cache.mjs): the
@@ -19,7 +20,7 @@ import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { acquireCalibrationLock } from './lib/calibration-lock.mjs';
-import { slotMapSkip, paintSkip, splitCalibration, writeSlotMap, writePaint } from './lib/cache.mjs';
+import { slotMapSkip, paintSkip, dueOutputs, splitCalibration, writeSlotMap, writePaint } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
@@ -288,7 +289,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const client = flag( '--client' );
 	const asked = ( flag( '--blocks' ) || '' ).split( ',' ).filter( Boolean );
 	if ( ! site || ! client || ! asked.length ) {
-		console.error( 'Usage: calibrate.mjs --site <site> --client <client slug> --blocks sgs/a,sgs/b [--recalibrate]' );
+		console.error( 'Usage: calibrate.mjs --site <site> --client <client slug> --blocks sgs/a,sgs/b [--recalibrate] [--slot-map-only]' );
 		process.exit( 2 );
 	}
 	const targets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) );
@@ -314,11 +315,12 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	// Two outputs, decided apart: the library-wide slot map (kept when current, or measured on another site without
 	// --recalibrate) and this site's own default paint (kept only when its file here carries the current key).
 	const recalibrate = argv.includes( '--recalibrate' );
+	const slotMapOnly = argv.includes( '--slot-map-only' );
 	const due = {};
 	for ( const b of asked ) {
 		const slotWhy = slotMapSkip( CACHE, b, site, keys[ b ], recalibrate );
 		const paintWhy = paintSkip( CACHE, b, site, `${ keys[ b ] }-${ paintSuffix }`, recalibrate );
-		due[ b ] = { slotMap: ! slotWhy, paint: ! paintWhy };
+		due[ b ] = dueOutputs( slotWhy, paintWhy, slotMapOnly );
 		( slotWhy || paintWhy ) && console.log( JSON.stringify( { block: b, skipped: { slotMap: slotWhy, paint: paintWhy } } ) );
 	}
 	const blocks = asked.filter( ( b ) => due[ b ].slotMap || due[ b ].paint );

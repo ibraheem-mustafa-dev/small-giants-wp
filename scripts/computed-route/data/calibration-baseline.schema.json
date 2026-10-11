@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Calibration baseline (Spec 48 Appendix C, FR-48-3)",
+  "type": "object",
+  "required": ["client", "site", "takenOn", "playwright", "browser", "blockSet", "blocks"],
+  "properties": {
+    "client": { "type": "string" },
+    "site": { "type": "string" },
+    "takenOn": { "type": "string", "format": "date-time" },
+    "playwright": { "type": "string" },
+    "browser": { "type": "string" },
+    "blockSet": { "type": "array", "items": { "type": "string", "pattern": "^sgs/" } },
+    "blocks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["deployHash", "dead", "noMarker", "oneWidth", "untestedStates"],
+        "properties": {
+          "deployHash": { "type": "string" },
+          "dead": { "type": "integer" },
+          "noMarker": { "type": "integer" },
+          "oneWidth": { "type": "integer" },
+          "untestedStates": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

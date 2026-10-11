@@ -126,6 +126,12 @@ export function paintSkip( dir, block, site, paintKey, recalibrate = false ) {
 	return have && have.paintKey === paintKey ? `default paint current for ${ site }` : null;
 }
 
+// Which outputs a run writes for one block, from the reasons to skip each (null = due). `slotMapOnly` (stage 0, FR-48-3)
+// never writes a default paint, whatever its state.
+export function dueOutputs( slotWhy, paintWhy, slotMapOnly = false ) {
+	return { slotMap: ! slotWhy, paint: ! slotMapOnly && ! paintWhy };
+}
+
 // True when this site's paint file exists but its key no longer matches (so it is re-measured on that site).
 export function paintStale( dir, block, site, paintKey ) {
 	const have = readPaint( dir, site, block );

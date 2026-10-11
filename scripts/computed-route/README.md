@@ -35,9 +35,11 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `skeleton.mjs` | Skeleton writer command (Spec 48 §3.4): `inventory|propose|review|finalise|decide --client <slug> --surface <s>` into `sites/<client>/build/skeleton/`. `inventory --root <selector>` reads the hosted draft (`surfaces.json[surface].draftUrl`) at 1440, 375 and 768 and writes `<s>.inventory.json` and `shots/`; `propose [--site-name <text>]` writes `<s>.skeleton.json` (a Fill skeleton whose every draft link is a `tpl` finder) and `<s>.proposal.json` (per element: candidates, evidence, confidence, low = below 0.7); `review` writes `<s>.review.html`; `finalise` writes `<s>.finalise-request.json` for the low rows and `finalise --apply <picks.json>` merges the picks and re-proposes; `decide --key <k> (--block <slug> [--attrs <json>] | --remove)` and `decide --site-name <text>` record into `decisions.json`. Never calls a model, builds a page or writes outside that folder. |
 | `check-refs.mjs` | Draft-link check: `--client <slug> --surface <s> [--skeleton <file>] [--draft-url <url>]`; opens the draft, resolves every `draftRef` and `draftSlots` finder (a Site Info row's generated icons included) through the walker's `resolveFinder`, counts what the raw selector would match, prints resolved / unique / missing per node, and exits 1 on any target that is missing, ambiguous or outside its node. |
 | `handoff-check.mjs` | Spec 48A handoff folder check: `<handoff folder> [--known <file>] [--schemas <dir>] [--json]` runs FR-48A-2 to FR-48A-8 and FR-48A-10 (exit 0 pass, warnings allowed; 1 a failure naming the file and rule; 2 usage). `--probe-runtime` renders `data/runtime-probe.dc.html` with the folder's `support.js` and prints the module difference from the nearest other known build; `--add-runtime [--source "<text>"]` records the build only when the probe passes. |
+| `stage0.mjs` | Stage 0 command (FR-48-3, FR-48-16): `--client <slug> --site <mirror target> [--plan] [--recalibrate]`; runs the handoff check, derives the fixed block set (layout and content blocks plus the blocks the surface kinds call for), recalibrates each stale or missing slot map with `calibrate.mjs --slot-map-only` (no default paint), and writes `sites/<client>/build/intake/calibration-baseline.json` only when every block's slot map is current and the baseline validates. `--plan` prints the set and what would run and touches nothing. Exit 0 only on a full pass. |
 | `handoff-repackage.mjs` | Brings an export made before `MANIFEST.json` existed to the Spec 48A format (FR-48A-1): `<handoff folder> --project "<name>" --entry <draft> [--entry ...] --generated YYYY-MM-DD [--dry-run]`. Proves every file still matches its old `MANIFEST.md` size and SHA-256 and stops on any mismatch before writing; then removes `MANIFEST.md` and `handoff-schema/trace/`, copies missing master schema files, writes `MANIFEST.json` and runs the handoff check (exit 0 pass, 1 refused or check failure, 2 usage). |
 | `trace-check.mjs` | `<handoff folder> [entry .dc.html] [--shift=7]` (FR-48A-7 cross-check): loads a single-file draft's entry page at 1440, scrolls it, records every Web Animations call, CSS animation start and CSS transition run with its `data-dc-tpl`, and matches each to an `animations.json` record; `--shift=7` is the negative control (a sound run drops to 0 matches). |
 | `data/skeleton-decisions.json` | The skeleton writer's standing, client-free decisions: the column-label block, the list rule (minimum links, stacked), brief-only line patterns, Site Info text patterns (copyright, hours, address, attribution), the maps-link and logo-image patterns, and element decisions. Every block named is checked against the framework database on load. |
+| `data/calibration-baseline.schema.json` | Appendix C: the JSON Schema (draft 2020-12) of `calibration-baseline.json`, validated with the route's pinned Ajv. |
 | `data/known-runtimes.json` | FR-48A-5: every accepted `support.js` build by SHA-256 (`{ runtimes: [ { sha256, added, source, probe, path } ] }`), `path` naming its local copy. `c60c49083997…` came from the Indus Foods export, `8fe7df74405f…` from the Eye Care and Mama's Munches exports (all 2026-10-11, probe pass). |
 | `data/runtime-probe.dc.html` | FR-48A-5: the fixture draft the runtime probe renders: nesting, `sc-if` both ways, `sc-for`, camelCase attributes (`viewBox`, `tabIndex`, `onClick`), a helmet `<style>`, `style-hover`, a table and a select, so the encoder's renames are numbered. No external scripts. |
 | `data/runtime-probe.expected.json` | FR-48A-5: the fixture's recorded numbering from both known builds (identical): `live`, the rendered page's `[tag, data-dc-tpl]` list in document order, and `annotated`, the same from `__dcAnnotatedTemplate`. |
@@ -60,6 +62,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/calibrate-read.mjs` | The in-page reader and the per-width read under each state trigger. |
 | `lib/calibrate-chunk.mjs` | How calibration builds a block's page in pieces: the child process's heap, the fixture's own chunk size, and halving a chunk whose build timed out. |
 | `lib/calibration-lock.mjs` | One calibration per calibration page: a per-site lock in the machine's temp folder that `calibrate.mjs` takes before building. |
+| `lib/stage0.mjs` | Stage 0 library: the fixed block set, per-block slot-map state against the deployed hash, the baseline and its validation, the orchestrator `runStage0` with injected effects. |
 | `lib/calibrate-container.mjs` | What a block's source says before any browser opens: whether its tiers follow its container's width (an `@container` rule in the built CSS, or a render passing `container_queries`/`container` true), and whether its render returns early on this site. |
 | `lib/calibrate-content.mjs` | The content side of calibration: which elements a setting makes appear or disappear, whose text it prints and which it makes a link — the settings that paint no CSS property, queried by framework-database `role` because `attrsFor` never returns them. |
 | `lib/deploy-hash.mjs` | The deploy key: md5 of a block's front-end build files, locally and on the site. |
@@ -116,6 +119,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/resolve.test.mjs` | FR-47-1: storage shapes and gaps; border-radius written as corners, never sides. |
 | `tests/tree.test.mjs` | R-47-11 and tree writes. |
 | `tests/cache.test.mjs` | FR-48-2 / §3.2: a run on one site leaves another site's default paint byte-identical, a slot map from another site is kept without `--recalibrate`, a stale `paintKey` is reported, a reader never returns another site's paint (MUST FAIL), and the split migration is idempotent. |
+| `tests/stage0.test.mjs` | FR-48-3 / FR-48-16: the baseline validates and a planted invalid one is refused, a block whose deploy hash differs from its cache after the run is not calibrated (MUST FAIL), stage 0 writes no default paint (MUST FAIL), a failed handoff check stops it (MUST FAIL), `--plan` touches nothing. |
 | `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code; a run never replaces another site's cache file without `--recalibrate`; a border-style marker carries its companion width and maps against a width baseline (CR11). |
 | `tests/calibrate-classes.test.mjs` | FR-47-2: each dead or markerless class of the 2026-10-04 audit gets its marker, precondition or read (extension rows from the DB, gradients, keywords, media objects, transforms, wider lengths, non-length tiers, colour by role, box shapes, two weights, unit shapes, the silent drop, preconditions, layout modes, state targets, container-query tiers). |
 | `tests/calibrate-read.test.mjs` | FR-47-2 reader, in a local headless Chromium: elements past the 81st, `::after` and `::placeholder` layers, and an `aria-controls` panel outside the instance are read. |
@@ -296,6 +300,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `paintSite(site)` → the site whose paint folder `site` uses: the test site a mirror copies (`mirrorOf` in `calibration-targets.json`), else the site itself.
 - `loadCalibration(dir, block, site)` → the slot map with the site's paint merged in as `elements`, or null without a slot map; a site with no paint gets `elements: {}` and `paintMissing`, never another site's paint.
 - `slotMapSkip(dir, block, site, slotKey, recalibrate?)` → why the slot map must be left alone (another site measured it, or its key is current), or null.
+- `dueOutputs(slotWhy, paintWhy, slotMapOnly?)` → `{ slotMap, paint }`: which outputs a run writes; `slotMapOnly` (`calibrate.mjs --slot-map-only`, stage 0) never makes the paint due.
 - `paintSkip(dir, block, site, paintKey, recalibrate?)` → why the site's paint is kept (its own file carries the current key), or null. `paintStale(dir, block, site, paintKey)` → true when the site's paint exists with a different key.
 
 ### `split-cache.mjs`
@@ -865,6 +870,19 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `handoff-check.mjs`
 - `parseArgs(argv)` → `{ folder, known, schemas, source, json, probe, add }` or `{ error }`. `main(argv, log?)` → the exit code.
+
+### `stage0.mjs`
+- `parseArgs(argv)` → `{ client, site, plan, recalibrate }` or `{ error }`. Runs `lib/stage0.mjs::runStage0` with the real handoff check, framework DB, deploy hashes and `calibrate.mjs`.
+
+### `lib/stage0.mjs`
+- `BASELINE_SCHEMA`: path of `data/calibration-baseline.schema.json`. `FIXED_BLOCKS`: the layout and content blocks every surface uses (the spec's fixed rule).
+- `surfaceKinds(surfaces)` → the sorted distinct `kind` values of a `surfaces.json`.
+- `blocksForKinds(kinds, rows)` → `{ byKind, unmapped }`: `block_composition` holds no kind column, so a kind maps to the `sgs/` blocks whose slug is the kind or ends in `-<kind>`; a kind with none is `unmapped`, never guessed. `blockSetFor(kinds, rows)` → `{ blocks, byKind, unmapped }` with `FIXED_BLOCKS` first.
+- `blockState({ cacheDir, block, hashes, fixtures })` → `{ block, state, deployHash, cachedKey, why }`; `state` is `current`, `stale`, `missing`, `undeployed`, `no-fixture` or `no-build`.
+- `paintSnapshot(cacheDir)` → every `.paint.json` with size and mtime; `paintChanges(before, after)` → the paint files added or changed.
+- `buildBaseline({ client, site, takenOn, playwright, cacheDir, blocks, hashes })` → the Appendix C object; `baselineProblems(baseline, ajv?)` → readable problems (empty when valid and a browser is named).
+- `calibrateArgs({ site, client, blocks, recalibrate })` → the `calibrate.mjs` argument list, always with `--slot-map-only`. `installedPlaywright()` → the installed Playwright version.
+- `runStage0(o, deps)` → `{ code, lines, baseline }`; `o` is `{ repo, client, site, cacheDir, plan, recalibrate }`, `deps` the injected effects.
 
 ### `handoff-repackage.mjs`
 - `parseArgs(argv)` → `{ folder, project, entries, generated, dryRun }` or `{ error }`. `main(argv, log?)` → the exit code.
