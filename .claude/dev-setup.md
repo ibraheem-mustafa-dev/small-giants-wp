@@ -260,8 +260,8 @@ unpkg.com (`support.js`), so Fill needs `--allow-external` or it renders nothing
 
 | Client | Draft folder | Entry |
 |---|---|---|
-| Indus Foods | `sites/indus-foods/` | `Indus Foods Website v2.dc.html` |
-| Mama's Munches redesign | `sites/mamas-munches-redesign/` | `Home.dc.html` (one file per surface; list in its `CLAUDE.md`) |
+| Indus Foods | `sites/indus-foods/handoff/` | `Indus Foods Website v2.dc.html` |
+| Mama's Munches redesign | `sites/mamas-munches-redesign/handoff/` | `Home.dc.html` (one file per page, linked by file name) |
 | Eye Care Birmingham | `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/` | `Eye Care Birmingham.dc.html`; also hosted at `https://mintcream-lyrebird-224487.hostingersite.com`, which now serves a newer single-file bundle (footer links 44px) than the local folder |
 
 `sites/mamas-munches/` is the canary's folder (its live catalogue and trees); the redesign lives only in

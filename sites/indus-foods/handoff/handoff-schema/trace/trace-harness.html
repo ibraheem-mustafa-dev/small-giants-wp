@@ -1,0 +1,204 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Indus Foods runtime trace harness</title>
+<style>html,body{margin:0;background:#f3f3f1;font:13px/1.4 ui-monospace,monospace;color:#1E2A3C}#st{position:fixed;right:8px;bottom:8px;z-index:9;background:#fff;border:2px solid #0A7EA8;padding:8px 10px;max-width:60ch;white-space:pre-wrap}iframe{position:fixed;left:0;top:0;border:0;transform-origin:0 0;background:#fff}</style>
+</head><body>
+<div id="st">starting…</div>
+<script>
+/* Runtime trace for animations.json / surfaces.json (READING-DC-FILES.md §5).
+   Loads the v2 draft in a same-origin iframe, patches Element.prototype.animate, inline-style setters
+   and transitionrun before the runtime boots, drives every surface through its states, then writes
+   trace.state.json next to this file (via the host's writeFile; falls back to a download link). */
+const SRC = '../../design_handoff_indus_foods_website/Indus%20Foods%20Website%20v2.dc.html';
+const VW = 1400, VH = 900;
+const st = document.getElementById('st');
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const anims = [], writes = new Map(), trans = new Map(), styleDiffs = new Map(), notes = [];
+let phase = 'boot', t0 = performance.now(), W = null, patchedEarly = null;
+const say = (s) => { st.textContent = s; };
+
+function frameOf(stack) {
+  const L = String(stack).split('\n').slice(1);
+  for (const l of L) {
+    if (/trace-harness\.html/.test(l)) continue;
+    const name = (l.match(/at\s+([^\s(]+)\s+\(/) || [])[1] || '(anonymous)';
+    const ev = l.match(/<anonymous>:(\d+):(\d+)/);
+    if (/eval at/.test(l) && ev) return { fn: name, src: 'logic', line: +ev[1] - 2 };
+    const f = l.match(/\/([^\/]+\.js)(?:\?[^:]*)?:(\d+):(\d+)/);
+    if (f) return { fn: name, src: decodeURIComponent(f[1]), line: +f[2] };
+    return { fn: name, src: l.trim().slice(0, 80), line: 0 };
+  }
+  return { fn: '?', src: '?', line: 0 };
+}
+function who(el) {
+  if (!el || !el.closest) return { dc: null, tpl: null, nearestTpl: null, tag: el && el.nodeName };
+  const host = el.closest('[data-sc-name]'), near = el.closest('[data-dc-tpl]');
+  return { dc: host && host.getAttribute('data-sc-name'), tpl: el.getAttribute && el.getAttribute('data-dc-tpl'),
+    nearestTpl: near && near.getAttribute('data-dc-tpl'), tag: el.nodeName.toLowerCase(), id: el.id || null };
+}
+function patch(w) {
+  if (w.__traced) return; w.__traced = true;
+  patchedEarly = !w.__dcRegistry;
+  const elOf = new WeakMap();
+  for (const P of [w.HTMLElement.prototype, w.SVGElement.prototype]) {
+    const d = Object.getOwnPropertyDescriptor(P, 'style'); if (!d || !d.get) continue;
+    Object.defineProperty(P, 'style', { configurable: true, enumerable: d.enumerable, set: d.set,
+      get() { const s = d.get.call(this); elOf.set(s, this); return s; } });
+  }
+  const rec = (decl, prop, val, stack) => {
+    const f = frameOf(stack); if (/react-dom/.test(f.src)) return;
+    const el = elOf.get(decl), o = who(el);
+    const k = [o.dc, o.tpl, o.nearestTpl, o.tag, prop, f.src, f.fn, f.line].join('|');
+    let r = writes.get(k);
+    if (!r) writes.set(k, r = { ...o, prop, ...f, count: 0, firstPhase: phase, phases: [], samples: [] });
+    r.count++; if (!r.phases.includes(phase)) r.phases.push(phase);
+    const sv = String(val).slice(0, 140); if (r.samples.length < 3 && !r.samples.includes(sv)) r.samples.push(sv);
+  };
+  // CSS property accessors live on CSSStyleProperties.prototype in current Chrome, CSSStyleDeclaration.prototype elsewhere.
+  let SP = Object.getPrototypeOf(w.document.documentElement.style);
+  while (SP && !Object.getOwnPropertyDescriptor(SP, 'transform')) SP = Object.getPrototypeOf(SP);
+  if (!SP) { notes.push('no style accessor prototype found'); SP = w.CSSStyleDeclaration.prototype; }
+  const SPD = w.CSSStyleDeclaration.prototype;
+  const props = ['transform','translate','rotate','scale','opacity','boxShadow','color','webkitTextStrokeColor','transition','overflow','position','isolation','strokeDashoffset','fill','transformBox','transformOrigin','display','filter','clipPath','left','top','width','height'];
+  for (const p of props) {
+    const d = Object.getOwnPropertyDescriptor(SP, p);
+    if (!d || !d.set) { notes.push('no accessor for style.' + p); continue; }
+    Object.defineProperty(SP, p, { configurable: true, enumerable: d.enumerable, get: d.get,
+      set(v) { rec(this, p, v, new Error().stack); return d.set.call(this, v); } });
+  }
+  for (const p of ['cssText']) {
+    const d = Object.getOwnPropertyDescriptor(SPD, p);
+    if (d && d.set) Object.defineProperty(SPD, p, { configurable: true, enumerable: d.enumerable, get: d.get, set(v) { rec(this, p, v, new Error().stack); return d.set.call(this, v); } });
+  }
+  const sp = SPD.setProperty;
+  SPD.setProperty = function (n, v, pr) { rec(this, n, v, new Error().stack); return sp.call(this, n, v, pr); };
+  const EA = w.Element.prototype.animate;
+  w.Element.prototype.animate = function (kf, opt) {
+    const f = frameOf(new Error().stack), o = who(this);
+    anims.push({ t: Math.round(performance.now() - t0), phase, ...o, ...f,
+      keyframes: JSON.stringify(kf).slice(0, 400), options: typeof opt === 'number' ? String(opt) : JSON.stringify(opt) });
+    return EA.call(this, kf, opt);
+  };
+}
+function watchDoc(d) {
+  if (d.__tw) return; d.__tw = true;
+  d.addEventListener('transitionrun', (e) => {
+    const o = who(e.target), k = [o.dc, o.tpl, o.tag, e.propertyName].join('|');
+    let r = trans.get(k); if (!r) trans.set(k, r = { ...o, property: e.propertyName, count: 0, phases: [] });
+    r.count++; if (!r.phases.includes(phase)) r.phases.push(phase);
+  }, true);
+  d.addEventListener('animationstart', (e) => notes.push('css animationstart ' + e.animationName + ' on ' + JSON.stringify(who(e.target))), true);
+  // Inline style changes. CSS property setters are not patchable in this browser, so diff the style attribute instead.
+  const parse = (s) => { const o = {}; let dp = 0, cur = ''; for (const c of s + ';') { if (c === '(') dp++; if (c === ')') dp--; if (c === ';' && !dp) { const i = cur.indexOf(':'); if (i > 0) o[cur.slice(0, i).trim()] = cur.slice(i + 1).trim(); cur = ''; } else cur += c; } return o; };
+  new d.defaultView.MutationObserver((ms) => {
+    for (const m of ms) {
+      const a = parse(m.oldValue || ''), b = parse(m.target.getAttribute('style') || '');
+      for (const p of new Set([...Object.keys(a), ...Object.keys(b)])) {
+        if (a[p] === b[p]) continue;
+        const o = who(m.target), k = [o.dc, o.tpl, o.nearestTpl, o.tag, p].join('|');
+        let r = styleDiffs.get(k); if (!r) styleDiffs.set(k, r = { ...o, prop: p, count: 0, phases: [], samples: [] });
+        r.count++; if (!r.phases.includes(phase)) r.phases.push(phase);
+        const sv = String(b[p] ?? '(removed)').slice(0, 100); if (r.samples.length < 3 && !r.samples.includes(sv)) r.samples.push(sv);
+      }
+    }
+  }).observe(d, { subtree: true, attributes: true, attributeFilter: ['style'], attributeOldValue: true });
+}
+const fr = document.createElement('iframe');
+const s = Math.min(1, innerWidth / VW, innerHeight / VH);
+fr.style.width = VW + 'px'; fr.style.height = VH + 'px'; fr.style.transform = 'scale(' + s + ')';
+document.body.appendChild(fr);
+try { patch(fr.contentWindow); } catch (e) { notes.push('initial patch failed ' + e.message); }
+const poll = setInterval(() => {
+  try {
+    const w = fr.contentWindow, d = fr.contentDocument;
+    if (d && /Website%20v2|Website v2/.test(d.URL)) { if (!w.__traced) patch(w); watchDoc(d); }
+  } catch (e) {}
+}, 0);
+fr.src = SRC;
+
+function logic(name, w) {
+  const host = w.document.querySelector('[data-sc-name="' + name + '"]'); if (!host) return null;
+  const k = Object.keys(host).find((k) => k.startsWith('__reactFiber$')); let f = host[k];
+  while (f && !(f.stateNode && f.stateNode.logic)) f = f.return;
+  return f && f.stateNode.logic;
+}
+async function scrollThrough(w, step = 320, pause = 80) {
+  const H = w.document.documentElement.scrollHeight;
+  for (let y = 0; y < H; y += step) { w.scrollTo(0, y); await sleep(pause); }
+  w.scrollTo(0, H); await sleep(300);
+}
+function ptr(w, el, type, fx = 0.5, fy = 0.5) {
+  const r = el.getBoundingClientRect();
+  el.dispatchEvent(new w.PointerEvent(type, { bubbles: true, composed: true, pointerType: 'mouse', clientX: r.left + r.width * fx, clientY: r.top + r.height * fy }));
+}
+async function run() {
+  say('loading draft…');
+  for (let i = 0; i < 200 && !(fr.contentWindow && fr.contentWindow.__dcRegistry && fr.contentDocument.querySelector('[data-sc-name]')); i++) await sleep(50);
+  W = fr.contentWindow; const D = W.document;
+  const V = 'Indus Foods Website v2';
+  phase = 'load:home'; await sleep(4500);
+  const L = logic(V, W); if (!L) { notes.push('logic instance not found'); }
+  phase = 'scroll:home'; say(phase); await scrollThrough(W); W.scrollTo(0, 0); await sleep(400);
+  phase = 'hover:data-mag'; say(phase);
+  for (const m of D.querySelectorAll('[data-mag]')) { ptr(W, m, 'pointermove', .2, .3); await sleep(60); ptr(W, m, 'pointermove', .8, .7); ptr(W, m, 'pointerdown'); await sleep(120); }
+  ptr(W, D.body, 'pointermove', .01, .01); await sleep(300);
+  phase = 'hover:data-tilt'; say(phase);
+  for (const t of D.querySelectorAll('[data-tilt]')) { ptr(W, t, 'pointermove', .15, .2); await sleep(80); ptr(W, t, 'pointermove', .85, .8); await sleep(80); }
+  ptr(W, D.body, 'pointermove', .01, .01); await sleep(700);
+  phase = 'hover:indus-logo'; say(phase);
+  for (const g of D.querySelectorAll('indus-logo')) { g.dispatchEvent(new W.MouseEvent('mouseenter')); await sleep(150); }
+  await sleep(1500);
+  phase = 'hover:nav-label'; say(phase);
+  for (const b of D.querySelectorAll('header nav button')) { const r = b.getBoundingClientRect(); b.dispatchEvent(new W.MouseEvent('mousemove', { bubbles: true, clientX: r.left + 4, clientY: r.top + 4 })); await sleep(40); b.dispatchEvent(new W.MouseEvent('mouseout', { bubbles: true, relatedTarget: D.body })); }
+  await sleep(300);
+  phase = 'state:tIdx'; say(phase); L.setState({ tIdx: (L.state.tIdx + 1) % 4 }); await sleep(800);
+  for (const i of [1, 2, 3, 4]) { phase = 'state:active=' + i; say(phase); L.setState({ active: i }); await sleep(900); L.setState({ active: null }); await sleep(400); }
+  phase = 'state:drawer'; say(phase);
+  L.setState({ w: 800 }); await sleep(300); L.setState({ mobileOpen: true }); await sleep(1000);
+  for (const a of [1, 2, 3, 4]) { phase = 'state:drawer acc=' + a; L.setState({ acc: a }); await sleep(500); }
+  phase = 'state:drawer close'; L.setState({ mobileOpen: false, acc: null }); await sleep(500); L.setState({ w: VW }); await sleep(500);
+  const routes = Object.keys(L.pages);
+  for (const r of routes) {
+    if (r === 'home') continue;
+    phase = 'route:' + r; say(phase + ' (' + (routes.indexOf(r) + 1) + '/' + routes.length + ')');
+    W.location.hash = '#/' + r; await sleep(r === 'about' ? 4800 : 1300);
+    phase = 'scroll:' + r; await scrollThrough(W, 360, 70); W.scrollTo(0, 0); await sleep(250);
+    if (r === 'faqs') { phase = 'state:faqOpen'; L.setState({ faqOpen: { 'faqs-0-0-0': true } }); await sleep(600); L.setState({ faqOpen: {} }); await sleep(400); }
+    if (r === 'blog') { phase = 'state:blogCat'; const cats = (L.pages.blog.blocks.find((b) => b.cats) || {}).cats || []; L.setState({ blogCat: cats[1] || 'All' }); await sleep(600); L.setState({ blogCat: 'All' }); await sleep(300); }
+    if (r === 'careers') { phase = 'state:form sent'; const bi = L.pages.careers.blocks.findIndex((b) => b.type === 'form'); L.setState({ sent: { ['careers-' + bi]: true } }); await sleep(600); L.setState({ sent: {} }); await sleep(300); }
+    if (r === 'apply') {
+      const T = logic('TradeApplication', W);
+      if (!T) notes.push('TradeApplication logic not found'); else {
+        try { W.localStorage.removeItem('indus-trade-application'); } catch (e) {}
+        phase = 'TradeApplication:invalid next'; T.setState({ step: 0, v: {}, errs: {} }); await sleep(300); T.next(); await sleep(600);
+        phase = 'TradeApplication:step forward'; T.setState({ step: 1, errs: {} }); await sleep(700);
+        phase = 'TradeApplication:step back'; T.setState({ step: 0 }); await sleep(700);
+        phase = 'TradeApplication:submit'; T.setState({ step: 4 }); await sleep(600); T.next(); await sleep(1000);
+        phase = 'TradeApplication:restart'; T.restart(); await sleep(500);
+        try { W.localStorage.removeItem('indus-trade-application'); } catch (e) {}
+      }
+    }
+    if (r === 'contact') {
+      const Q = logic('EnquiryForm', W);
+      if (!Q) notes.push('EnquiryForm logic not found'); else {
+        phase = 'EnquiryForm:invalid submit'; Q.submit({ preventDefault() {} }); await sleep(600);
+        phase = 'EnquiryForm:sent'; Q.setState({ sent: true, errs: {} }); await sleep(900);
+        phase = 'EnquiryForm:reset'; Q.reset(); await sleep(400);
+      }
+    }
+  }
+  phase = 'route:home again'; W.location.hash = '#/'; await sleep(2000);
+  phase = 'idle:testimonial interval'; say(phase); await sleep(7000);
+  phase = 'done';
+  const out = { generated: new Date().toISOString(), viewport: { width: VW, height: VH, scale: s, iframeInnerWidth: W.innerWidth },
+    patchedBeforeBoot: patchedEarly, reducedMotion: W.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    routesVisited: routes, notes, animateCalls: anims, styleWrites: [...writes.values()], styleDiffs: [...styleDiffs.values()], transitionRuns: [...trans.values()] };
+  const json = JSON.stringify(out);
+  let ok = false;
+  try { if (window.omelette && window.omelette.writeFile) { await window.omelette.writeFile('trace.state.json', json); ok = true; } } catch (e) { notes.push('writeFile failed ' + e.message); }
+  if (!ok) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' })); a.download = 'trace.state.json'; a.textContent = 'download trace.state.json'; st.appendChild(document.createElement('br')); st.appendChild(a); }
+  say('DONE · animate ' + anims.length + ' · style-write keys ' + writes.size + ' · transitionrun keys ' + trans.size + ' · written ' + ok + ' · early ' + patchedEarly);
+  window.__trace = out;
+}
+run().catch((e) => say('ERROR ' + e.message + '\n' + e.stack));
+</script>
+</body></html>

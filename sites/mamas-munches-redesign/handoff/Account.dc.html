@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>My account · Mama's Munches</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="store.js"></script>
+<style>body{margin:0;background:#FBF3DC;color:#3A2A22;font-family:'Karla',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}*{box-sizing:border-box}a{color:#A8404F}a:hover{color:#3A2A22}button,input{font-family:inherit;color:inherit}img{display:block;max-width:100%}:focus-visible{outline:3px solid #3A2A22;outline-offset:3px}</style>
+</helmet>
+<div data-screen-label="My account" style="background:#FBF3DC;min-height:100vh">
+<dc-import name="SiteHeader" current="account" hint-size="100%,96px" style="position:sticky;top:-32px;z-index:50;display:block"></dc-import>
+<main>
+<section style="background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }}">
+  <div style="max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:12px">
+    <div style="font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1;transform:rotate(-2deg);transform-origin:left">{{ eyebrow }}</div>
+    <h1 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.025em">{{ hello }}</h1>
+    <sc-if value="{{ hasNextBake }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:{{ L.lead }};line-height:1.55;color:#4E3C31">Your next subscription bake is <b style="color:#3A2A22">{{ nextBake }}</b>.</p></sc-if>
+  </div>
+</section>
+
+<section style="padding:{{ L.secPad }}">
+  <div style="max-width:1240px;margin:0 auto">
+
+    <sc-if value="{{ notSigned }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:640px;background:#F9D5D3;border:2px solid #3A2A22;border-radius:32px;padding:{{ L.cardPad }};box-shadow:8px 8px 0 #3A2A22;display:flex;flex-direction:column;align-items:flex-start;gap:14px">
+        <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Sign in to see your orders</h2>
+        <p style="margin:0;font-size:16px;line-height:1.55;color:#4E3C31">Your orders, bake dates, subscriptions and saved addresses live here.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <a href="SignIn.dc.html" style="height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22">Sign in →</a>
+          <a href="SignIn.dc.html?mode=register" style="height:60px;padding:0 26px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#F9CF6E;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22">Create an account</a>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ signed }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start">
+        <nav aria-label="My account" style="position:{{ L.navPos }};top:{{ L.navTop }};display:flex;flex-direction:{{ L.navDir }};gap:8px;overflow-x:{{ L.navOv }};scrollbar-width:none;margin:{{ L.navM }};padding:{{ L.navP }}">
+          <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+            <button onClick="{{ t.pick }}" aria-current="{{ t.cur }}" style="flex:none;min-height:52px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ t.bg }};font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;white-space:nowrap;box-shadow:{{ t.shadow }};transform:{{ t.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)">{{ t.label }}<span style="min-width:24px;height:24px;border-radius:999px;background:#3A2A22;color:#FFFAF0;font-size:12px;display:flex;align-items:center;justify-content:center;padding:0 7px">{{ t.n }}</span></button>
+          </sc-for>
+          <button onClick="{{ signOut }}" style="flex:none;min-height:48px;padding:0 18px;border:0;background:transparent;font-size:15px;font-weight:700;text-decoration:underline;cursor:pointer;text-align:left;white-space:nowrap">Sign out</button>
+        </nav>
+
+        <div style="min-width:0;display:flex;flex-direction:column;gap:18px">
+
+          <sc-if value="{{ showOrders }}" hint-placeholder-val="{{ true }}">
+            <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Your orders</h2>
+            <sc-for list="{{ orders }}" as="o" hint-placeholder-count="2">
+              <div style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;padding:{{ L.cardPad }};display:grid;grid-template-columns:{{ L.orderCols }};gap:16px;align-items:center;transition:transform .25s, box-shadow .25s" style-hover="transform:translate(-2px,-2px);box-shadow:6px 6px 0 #3A2A22">
+                <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px"><span style="font-family:'Young Serif',serif;font-size:22px">{{ o.no }}</span><span style="font-size:13px;font-weight:700;padding:3px 12px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.chipBg }}">{{ o.statusLabel }}</span></div>
+                  <div style="font-size:14px;color:#5E4A3D">Placed {{ o.placed }} · {{ o.count }}</div>
+                  <div style="font-size:15px;font-weight:700">{{ o.bakeLine }}</div>
+                  <div style="display:flex;gap:8px;margin-top:4px"><sc-for list="{{ o.thumbs }}" as="th" hint-placeholder-count="0"><span style="width:48px;height:48px;border-radius:12px;border:2px solid #3A2A22;background-color:#F9D5D3;background-image:{{ th }};background-size:cover;background-position:center"></span></sc-for></div>
+                </div>
+                <div style="display:flex;flex-direction:{{ L.orderEndDir }};align-items:{{ L.orderEndAlign }};justify-content:space-between;gap:10px">
+                  <span style="font-family:'Young Serif',serif;font-size:22px">{{ o.totalText }}</span>
+                  <button onClick="{{ o.open }}" style="height:48px;padding:0 20px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:15px;cursor:pointer;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#F9CF6E;transform:translate(-2px,-2px);box-shadow:5px 5px 0 #3A2A22">View order →</button>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noOrders }}" hint-placeholder-val="{{ false }}">
+              <div style="border:2px dashed #3A2A22;border-radius:24px;padding:28px;text-align:center;font-size:17px;display:flex;flex-direction:column;align-items:center;gap:10px">No orders yet. <a href="Shop.dc.html" style="font-weight:700;color:#3A2A22">Have a look in the shop →</a></div>
+            </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ showOrder }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ backToOrders }}" style="align-self:flex-start;border:0;background:none;font-weight:700;font-size:15px;cursor:pointer;padding:6px 0">← All orders</button>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px"><h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Order {{ od.no }}</h2><span style="font-size:13px;font-weight:700;padding:3px 12px;border-radius:999px;border:2px solid #3A2A22;background:{{ od.chipBg }}">{{ od.statusLabel }}</span></div>
+            <div style="font-size:15px;color:#5E4A3D;margin-top:-8px">Placed {{ od.placed }}</div>
+            <div style="background:#FCEBBE;border:2px solid #3A2A22;border-radius:24px;padding:{{ L.cardPad }};display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;box-shadow:6px 6px 0 #3A2A22">
+              <div style="width:72px;height:72px;border-radius:20px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-4deg)"><span style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">{{ od.bakeDow }}</span><span style="font-family:'Young Serif',serif;font-size:28px;line-height:1">{{ od.bakeDay }}</span><span style="font-size:12px;font-weight:700">{{ od.bakeMon }}</span></div>
+              <div><div style="font-family:'Caveat',cursive;font-size:26px;color:#7A5A12;line-height:1">{{ od.bakeEyebrow }}</div><div style="font-family:'Young Serif',serif;font-size:24px;line-height:1.15">{{ od.bakeTitle }}</div><div style="font-size:15px;margin-top:4px">{{ od.bakeSub }}</div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:{{ L.steps }};gap:12px">
+              <sc-for list="{{ od.steps }}" as="s" hint-placeholder-count="4">
+                <div style="background:{{ s.bg }};border:2px solid #3A2A22;border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:6px;box-shadow:{{ s.shadow }}">
+                  <span style="width:34px;height:34px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-weight:700">{{ s.icon }}</span>
+                  <b style="font-family:'Young Serif',serif;font-weight:400;font-size:18px">{{ s.t }}</b>
+                  <span style="font-size:13px;line-height:1.4">{{ s.d }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:{{ L.two }};gap:18px;align-items:start">
+              <div style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:12px">
+                <div style="font-family:'Young Serif',serif;font-size:21px">What you ordered</div>
+                <sc-for list="{{ od.items }}" as="it" hint-placeholder-count="1"><div style="display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center"><div style="width:52px;height:52px;border-radius:12px;border:2px solid #3A2A22;background-color:#F9D5D3;background-image:{{ it.bg }};background-size:cover;background-position:center"></div><div style="min-width:0"><div style="font-weight:700;font-size:15px">{{ it.qty }} × {{ it.name }}</div><div style="font-size:13px;color:#5E4A3D">{{ it.variant }}</div></div><b>{{ it.total }}</b></div></sc-for>
+                <div style="display:flex;justify-content:space-between;padding-top:10px;border-top:2px dashed rgba(58,42,34,.3);font-size:15px"><span>Delivery</span><b>{{ od.delText }}</b></div>
+                <div style="display:flex;justify-content:space-between;align-items:baseline"><b>Total</b><span style="font-family:'Young Serif',serif;font-size:26px">{{ od.totalText }}</span></div>
+                <button onClick="{{ orderAgain }}" style="height:52px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22" style-active="transform:translate(3px,3px);box-shadow:0 0 0 #3A2A22">{{ againLabel }}</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:18px">
+                <div style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;padding:20px">
+                  <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Delivered to</div>
+                  <sc-for list="{{ od.addrLines }}" as="l" hint-placeholder-count="3"><div style="font-size:16px;line-height:1.5">{{ l }}</div></sc-for>
+                </div>
+                <sc-if value="{{ od.hasNote }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:6px;padding:28px 22px 20px;transform:rotate(1.5deg);box-shadow:6px 6px 0 #3A2A22">
+                    <span aria-hidden="true" style="position:absolute;top:-12px;left:50%;width:84px;height:24px;background:rgba(249,207,110,.85);transform:translateX(-50%) rotate(-3deg)"></span>
+                    <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Gift note</div>
+                    <div style="font-family:'Caveat',cursive;font-size:26px;line-height:1.2">{{ od.note }}</div>
+                  </div>
+                </sc-if>
+                <a href="Contact.dc.html" style="font-weight:700;color:#3A2A22;font-size:15px">Something not right? Message Zainab →</a>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showSubs }}" hint-placeholder-val="{{ false }}">
+            <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Your subscriptions</h2>
+            <sc-for list="{{ subs }}" as="s" hint-placeholder-count="1">
+              <div style="background:{{ s.bg }};border:2px {{ s.borderStyle }} #3A2A22;border-radius:28px;padding:{{ L.cardPad }};display:flex;flex-direction:column;gap:16px">
+                <div style="display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center">
+                  <div style="width:64px;height:64px;border-radius:16px;border:2px solid #3A2A22;background-color:#F9D5D3;background-image:{{ s.thumb }};background-size:cover;background-position:center"></div>
+                  <div style="min-width:0">
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px"><span style="font-family:'Young Serif',serif;font-size:22px;line-height:1.15">{{ s.name }}</span><span style="font-size:13px;font-weight:700;padding:3px 12px;border-radius:999px;border:2px solid #3A2A22;background:{{ s.chipBg }}">{{ s.statusLabel }}</span></div>
+                    <div style="font-size:14px;color:#5E4A3D;margin-top:2px">{{ s.variant }}</div>
+                    <div style="font-size:15px;font-weight:700;margin-top:4px">{{ s.priceText }} a box · 10% off</div>
+                  </div>
+                </div>
+                <div style="background:#FBF3DC;border:2px dashed #3A2A22;border-radius:18px;padding:12px 16px;font-size:15px;line-height:1.5">
+                  <div style="font-weight:700">{{ s.nextLine }}</div>
+                  <sc-if value="{{ s.skipped }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px">{{ s.skipLine }}<button onClick="{{ s.undoSkip }}" style="border:0;background:none;font-weight:700;text-decoration:underline;cursor:pointer;font-size:15px;padding:6px 0">Undo</button></div></sc-if>
+                </div>
+                <sc-if value="{{ s.live }}" hint-placeholder-val="{{ true }}">
+                  <div>
+                    <div style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">How often</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ s.freqs }}" as="f" hint-placeholder-count="2"><button onClick="{{ f.pick }}" aria-pressed="{{ f.on }}" style="min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ f.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ f.shadow }};transform:{{ f.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="transform:translate(-2px,-2px)">{{ f.label }}</button></sc-for></div>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:10px">
+                    <sc-if value="{{ s.canSkip }}" hint-placeholder-val="{{ true }}"><button onClick="{{ s.skip }}" style="height:48px;padding:0 20px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:15px;cursor:pointer;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s" style-hover="transform:translate(-2px,-2px);box-shadow:5px 5px 0 #3A2A22">Skip next delivery</button></sc-if>
+                    <button onClick="{{ s.togglePause }}" style="height:48px;padding:0 20px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:15px;cursor:pointer;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s" style-hover="transform:translate(-2px,-2px);box-shadow:5px 5px 0 #3A2A22">{{ s.pauseLabel }}</button>
+                    <button onClick="{{ s.askCancel }}" style="height:48px;padding:0 6px;border:0;background:none;font-weight:700;font-size:15px;text-decoration:underline;cursor:pointer;color:#A8404F">Cancel subscription</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ s.confirming }}" hint-placeholder-val="{{ false }}">
+                  <div role="alertdialog" aria-label="Cancel this subscription?" style="background:#F9D5D3;border:2px solid #3A2A22;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+                    <div style="font-family:'Young Serif',serif;font-size:20px">Cancel this subscription?</div>
+                    <div style="font-size:15px;line-height:1.5">You’ll lose 10% off and your guaranteed slot in every bake. Pausing keeps both.</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px">
+                      <button onClick="{{ s.keep }}" style="height:48px;padding:0 20px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:15px;cursor:pointer;box-shadow:3px 3px 0 #3A2A22">Keep it</button>
+                      <button onClick="{{ s.confirmCancel }}" style="height:48px;padding:0 20px;border-radius:999px;border:2px solid #3A2A22;background:#3A2A22;color:#FFFAF0;font-weight:700;font-size:15px;cursor:pointer">Yes, cancel</button>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ s.isCancelled }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ s.restart }}" style="align-self:flex-start;height:48px;padding:0 20px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:15px;cursor:pointer;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s" style-hover="transform:translate(-2px,-2px);box-shadow:5px 5px 0 #3A2A22">Restart subscription</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noSubs }}" hint-placeholder-val="{{ false }}">
+              <a href="Product.dc.html?id=zookies&amp;sub=1" style="background:#FCEBBE;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.cardPad }};text-decoration:none;color:#3A2A22;display:flex;flex-direction:column;gap:8px;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s" style-hover="transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22"><span style="font-family:'Caveat',cursive;font-size:26px;color:#7A5A12;line-height:1">never run out</span><span style="font-family:'Young Serif',serif;font-size:24px">No subscriptions yet. Subscribe &amp; save 10% →</span></a>
+            </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ showAddr }}" hint-placeholder-val="{{ false }}">
+            <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Addresses</h2>
+            <sc-if value="{{ notEditing }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;grid-template-columns:{{ L.two }};gap:16px">
+                <sc-for list="{{ addresses }}" as="ad" hint-placeholder-count="2">
+                  <div style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:4px;box-shadow:{{ ad.shadow }}">
+                    <sc-if value="{{ ad.def }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;margin-bottom:6px">Default delivery</span></sc-if>
+                    <b style="font-size:16px">{{ ad.name }}</b>
+                    <sc-for list="{{ ad.lines }}" as="l" hint-placeholder-count="2"><span style="font-size:15px;line-height:1.5">{{ l }}</span></sc-for>
+                    <div style="display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px">
+                      <button onClick="{{ ad.edit }}" style="border:0;background:none;font-weight:700;font-size:15px;text-decoration:underline;cursor:pointer;padding:8px 0">Edit</button>
+                      <sc-if value="{{ ad.notDef }}" hint-placeholder-val="{{ true }}"><button onClick="{{ ad.makeDef }}" style="border:0;background:none;font-weight:700;font-size:15px;text-decoration:underline;cursor:pointer;padding:8px 0">Make default</button></sc-if>
+                      <button onClick="{{ ad.remove }}" style="border:0;background:none;font-weight:700;font-size:15px;text-decoration:underline;cursor:pointer;padding:8px 0;color:#A8404F">Remove</button>
+                    </div>
+                  </div>
+                </sc-for>
+                <button onClick="{{ addAddress }}" style="min-height:160px;border:2px dashed #3A2A22;border-radius:24px;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-weight:700;font-size:16px;transition:background .2s" style-hover="background:#FFFAF0"><span style="width:44px;height:44px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;display:flex;align-items:center;justify-content:center;font-size:24px">+</span>Add an address</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ editing }}" hint-placeholder-val="{{ false }}">
+              <form noValidate="{{ true }}" onSubmit="{{ saveAddress }}" style="background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.cardPad }};display:flex;flex-direction:column;gap:14px;box-shadow:8px 8px 0 #3A2A22">
+                <div style="font-family:'Young Serif',serif;font-size:24px">{{ formTitle }}</div>
+                <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Full name<input autocomplete="name" value="{{ form.name }}" onChange="{{ onForm.name }}" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Address line 1<input autocomplete="address-line1" value="{{ form.line1 }}" onChange="{{ onForm.line1 }}" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Address line 2 (optional)<input autocomplete="address-line2" value="{{ form.line2 }}" onChange="{{ onForm.line2 }}" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0"></label>
+                <div style="display:grid;grid-template-columns:{{ L.two }};gap:14px">
+                  <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Town or city<input autocomplete="address-level2" value="{{ form.town }}" onChange="{{ onForm.town }}" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0"></label>
+                  <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Postcode<input autocomplete="postal-code" value="{{ form.postcode }}" onChange="{{ onForm.postcode }}" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;text-transform:uppercase;width:100%;min-width:0"></label>
+                </div>
+                <sc-if value="{{ formErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="font-size:14px;font-weight:700;color:#A8404F">{{ formErr }}</div></sc-if>
+                <div style="display:flex;flex-wrap:wrap;gap:12px">
+                  <button type="submit" style="height:56px;padding:0 28px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22" style-active="transform:translate(3px,3px);box-shadow:0 0 0 #3A2A22">Save address</button>
+                  <button type="button" onClick="{{ cancelEdit }}" style="border:0;background:none;font-weight:700;font-size:15px;text-decoration:underline;cursor:pointer;padding:10px">Cancel</button>
+                </div>
+              </form>
+            </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ showDetails }}" hint-placeholder-val="{{ false }}">
+            <h2 style="margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05">Account details</h2>
+            <form noValidate="{{ true }}" onSubmit="{{ saveDetails }}" style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.cardPad }};display:flex;flex-direction:column;gap:14px">
+              <div style="display:grid;grid-template-columns:{{ L.two }};gap:14px">
+                <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">First name<input autocomplete="given-name" value="{{ det.first }}" onChange="{{ onDet.first }}" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Last name<input autocomplete="family-name" value="{{ det.last }}" onChange="{{ onDet.last }}" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Email<input type="email" autocomplete="email" value="{{ det.email }}" onChange="{{ onDet.email }}" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Mobile (optional)<input type="tel" autocomplete="tel" value="{{ det.phone }}" onChange="{{ onDet.phone }}" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+              </div>
+              <label style="display:flex;align-items:center;gap:12px;cursor:pointer;min-height:48px;font-size:15px"><input type="checkbox" checked="{{ det.marketing }}" onChange="{{ onMarketing }}" style="width:24px;height:24px;accent-color:#EE8088;flex:none">Email me about new flavours and bake days</label>
+              <sc-if value="{{ detErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="font-size:14px;font-weight:700;color:#A8404F">{{ detErr }}</div></sc-if>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px">
+                <button type="submit" style="height:56px;padding:0 28px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22" style-active="transform:translate(3px,3px);box-shadow:0 0 0 #3A2A22">Save changes</button>
+                <sc-if value="{{ saved }}" hint-placeholder-val="{{ false }}"><span role="status" style="font-weight:700">Saved ✓</span></sc-if>
+              </div>
+            </form>
+            <form noValidate="{{ true }}" onSubmit="{{ savePw }}" style="background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.cardPad }};display:flex;flex-direction:column;gap:14px">
+              <div style="font-family:'Young Serif',serif;font-size:22px">Change password</div>
+              <div style="display:grid;grid-template-columns:{{ L.two }};gap:14px">
+                <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">Current password<input type="password" autocomplete="current-password" value="{{ pwCur }}" onChange="{{ onPwCur }}" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px">New password<input type="password" autocomplete="new-password" placeholder="At least 8 characters" value="{{ pwNew }}" onChange="{{ onPwNew }}" style="height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFFFF;width:100%;min-width:0"></label>
+              </div>
+              <sc-if value="{{ pwErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="font-size:14px;font-weight:700;color:#A8404F">{{ pwErr }}</div></sc-if>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px">
+                <button type="submit" style="height:56px;padding:0 28px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;font-weight:700;font-size:16px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s" style-hover="background:#F9CF6E;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22">Update password</button>
+                <sc-if value="{{ pwSaved }}" hint-placeholder-val="{{ false }}"><span role="status" style="font-weight:700">Password updated ✓</span></sc-if>
+              </div>
+            </form>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</section>
+</main>
+<dc-import name="SiteFooter" hint-size="100%,1100px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { bp: this.bpOf(), tick: 0, tab: 'orders', orderNo: null, confirm: null, editing: null, form: {}, formErr: '', det: null, detErr: '', saved: false, pwCur: '', pwNew: '', pwErr: '', pwSaved: false, again: false };
+  bpOf() { const w = window.innerWidth; return w < 768 ? 'm' : w < 1024 ? 't' : 'd'; }
+  componentDidMount() {
+    this.onR = () => { const b = this.bpOf(); if (b !== this.state.bp) this.setState({ bp: b }); };
+    window.addEventListener('resize', this.onR);
+    const q = new URLSearchParams(location.search), tab = q.get('tab'), no = q.get('order');
+    if (no) this.setState({ tab: 'orders', orderNo: no }); else if (['orders', 'subs', 'addresses', 'details'].includes(tab)) this.setState({ tab });
+    const go = () => { this.off = MM.on(() => this.setState(s => ({ tick: s.tick + 1 }))); this.setState(s => ({ tick: s.tick + 1 })); };
+    if (window.MM) go(); else window.addEventListener('mm:ready', go, { once: true });
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); this.off && this.off(); clearTimeout(this.t1); clearTimeout(this.t2); }
+  flash(k) { this.setState({ [k]: true }); clearTimeout(this[k]); this[k] = setTimeout(() => this.setState({ [k]: false }), 2400); }
+  renderVals() {
+    const S = this.state, m = S.bp === 'm', t = S.bp === 't', M = window.MM;
+    const v = (a, b, c) => (m ? a : t ? b : c);
+    const money = n => '£' + (+n).toFixed(2);
+    const pill = on => ({ on, bg: on ? '#F9CF6E' : '#FFFAF0', shadow: on ? '3px 3px 0 #3A2A22' : '0 0 0 #3A2A22', tf: on ? 'translate(-2px,-2px)' : 'none' });
+    const a = M && M.account.signedIn() ? M.account.get() : null;
+    const orders = a ? M.account.orders() : [], subs = a ? a.subs : [], addrs = a ? a.addresses : [];
+    const det = S.det || (a ? { first: a.first, last: a.last, email: a.email, phone: a.phone, marketing: !!a.marketing } : { first: '', last: '', email: '', phone: '', marketing: false });
+    const ST = { placed: ['Baking soon', '#F9CF6E', 1], posted: ['Posted', '#FCEBBE', 3], delivered: ['Delivered', '#FFFAF0', 4] };
+    const st = o => ST[o.status] || ST.placed;
+    const active = subs.filter(s => s.status === 'active').sort((x, y) => x.nextIso < y.nextIso ? -1 : 1)[0];
+    const setSub = (id, p) => M.account.setSub(id, p);
+    const od = S.orderNo && a ? M.account.order(S.orderNo) : null;
+    const odVals = od ? (() => {
+      const [label, chip, step] = st(od), b = od.bake;
+      const ad = od.address || {};
+      return {
+        no: od.no, placed: od.placed, statusLabel: label, chipBg: chip,
+        bakeDow: b.dow, bakeDay: b.day, bakeMon: b.mon,
+        bakeEyebrow: step >= 2 ? 'baked with love' : 'in Zainab’s diary',
+        bakeTitle: (step >= 2 ? 'Baked on ' : 'Baking on ') + b.date,
+        bakeSub: (od.method === 't24' ? 'Royal Mail Tracked 24' : 'Royal Mail Tracked 48') + (step >= 4 ? ' · delivered' : ' · with you from ' + b.arrive),
+        steps: [['✓', 'Order placed', od.placed], ['✦', 'Baking', b.date], ['→', 'Posted', 'Tracking link by email'], ['♥', 'With you', step >= 4 ? 'Delivered' : 'From ' + b.arrive]].map(([icon, tt, d], i) => ({ icon, t: tt, d, bg: i < step ? '#F9CF6E' : '#FFFAF0', shadow: i === step - 1 ? '4px 4px 0 #3A2A22' : 'none' })),
+        items: (od.items || []).map(it => ({ ...it, bg: 'url(' + it.img + ')', total: money(it.price * it.qty) })),
+        delText: od.delivery ? money(od.delivery) : 'Free', totalText: money(od.total || 0),
+        addrLines: [ad.name, ad.line1, ad.line2, ad.town, (ad.postcode || '').toUpperCase()].filter(Boolean).length ? [ad.name, ad.line1, ad.line2, ad.town, (ad.postcode || '').toUpperCase()].filter(Boolean) : ['Address as entered at checkout'],
+        hasNote: !!(od.gift && od.gift.on && od.gift.message), note: (od.gift && od.gift.to ? 'Dear ' + od.gift.to + ', ' : '') + ((od.gift && od.gift.message) || '')
+      };
+    })() : { steps: [], items: [], addrLines: [] };
+    const editAddr = S.editing;
+    const tabsDef = [['orders', 'Orders', orders.length], ['subs', 'Subscriptions', subs.filter(s => s.status !== 'cancelled').length], ['addresses', 'Addresses', addrs.length], ['details', 'Account details', '✓']];
+    return {
+      L: { heroPad: v('32px 20px 28px', '48px 32px 36px', '64px 40px 44px'), h1: v('44px', '54px', '68px'), lead: v('17px', '18px', '19px'), secPad: v('24px 20px 64px', '40px 32px 80px', '56px 40px 104px'), cols: v('minmax(0, 1fr)', 'minmax(0, 1fr)', '260px minmax(0, 1fr)'), gap: v('20px', '28px', '40px'), navPos: v('static', 'static', 'sticky'), navTop: v('auto', 'auto', '108px'), navDir: v('row', 'row', 'column'), navOv: v('auto', 'auto', 'visible'), navM: v('0 -20px', '0', '0'), navP: v('4px 20px 8px', '4px 0 8px', '0'), h2: v('30px', '36px', '40px'), cardPad: v('18px', '22px 24px', '24px 28px'), orderCols: v('1fr', '1fr auto', '1fr auto'), orderEndDir: v('row', 'column', 'column'), orderEndAlign: v('center', 'flex-end', 'flex-end'), steps: v('1fr 1fr', 'repeat(4, 1fr)', 'repeat(4, 1fr)'), two: v('1fr', '1fr 1fr', '1fr 1fr') },
+      signed: !!a, notSigned: M ? !a : false,
+      eyebrow: a ? 'your account' : 'my account', hello: a ? 'Hello, ' + (a.first || 'lovely') : 'My account',
+      hasNextBake: !!active, nextBake: active ? M.fmtIso(active.nextIso) : '',
+      tabs: tabsDef.map(([id, label, n]) => { const on = S.tab === id; return { label, n, cur: on ? 'page' : undefined, ...pill(on), pick: () => this.setState({ tab: id, orderNo: null, editing: null, confirm: null }) }; }),
+      signOut: () => { M.account.signOut(); location.href = 'SignIn.dc.html'; },
+      showOrders: S.tab === 'orders' && !od, showOrder: S.tab === 'orders' && !!od,
+      orders: orders.map(o => { const [label, chip, step] = st(o); return { no: o.no, placed: o.placed, statusLabel: label, chipBg: chip, count: o.items.reduce((x, i) => x + i.qty, 0) + ' items', bakeLine: (step >= 2 ? 'Baked ' : 'Baking ') + o.bake.date, totalText: money(o.total || 0), thumbs: o.items.slice(0, 3).map(i => 'url(' + i.img + ')'), open: () => { this.setState({ orderNo: o.no, again: false }); window.scrollTo({ top: 0 }); } }; }),
+      noOrders: !!a && orders.length === 0,
+      od: odVals, backToOrders: () => this.setState({ orderNo: null }),
+      againLabel: S.again ? 'In your basket ✓' : 'Order this again',
+      orderAgain: () => { if (!od) return; od.items.forEach(it => M.cart.add({ ...it, qty: it.qty })); this.setState({ again: true }); M.openBasket(); },
+      showSubs: S.tab === 'subs',
+      subs: subs.map(s => {
+        const live = s.status !== 'cancelled', paused = s.status === 'paused';
+        return {
+          ...s, live, isCancelled: !live, skipped: s.status === 'active' && !!s.skippedIso, canSkip: s.status === 'active' && !s.skippedIso,
+          thumb: 'url(' + s.img + ')', priceText: money(s.price),
+          bg: live ? '#FFFAF0' : '#FBF3DC', borderStyle: live ? 'solid' : 'dashed',
+          statusLabel: { active: 'Active', paused: 'Paused', cancelled: 'Cancelled' }[s.status], chipBg: { active: '#F9CF6E', paused: '#FCEBBE', cancelled: '#FFFAF0' }[s.status],
+          nextLine: s.status === 'active' ? 'Next bake ' + M.fmtIso(s.nextIso) + ' · with you from ' + M.bakeOn(s.nextIso).arrive : paused ? 'Paused. Nothing is baked until you resume.' : 'Cancelled. No more boxes will be sent.',
+          skipLine: s.skippedIso ? 'You’ve skipped the ' + M.fmtIso(s.skippedIso) + ' bake.' : '',
+          freqs: [2, 4].map(w => ({ label: 'Every ' + w + ' weeks', ...pill(s.freq === w), pick: () => setSub(s.id, { freq: w }) })),
+          skip: () => setSub(s.id, { skippedIso: s.nextIso, nextIso: M.addWeeksIso(s.nextIso, s.freq) }),
+          undoSkip: () => setSub(s.id, { nextIso: s.skippedIso, skippedIso: null }),
+          pauseLabel: paused ? 'Resume' : 'Pause',
+          togglePause: () => setSub(s.id, paused ? { status: 'active', nextIso: M.bakes(1)[0].iso, skippedIso: null } : { status: 'paused', skippedIso: null }),
+          confirming: S.confirm === s.id, askCancel: () => this.setState({ confirm: s.id }), keep: () => this.setState({ confirm: null }),
+          confirmCancel: () => { setSub(s.id, { status: 'cancelled', skippedIso: null }); this.setState({ confirm: null }); },
+          restart: () => setSub(s.id, { status: 'active', nextIso: M.bakes(1)[0].iso })
+        };
+      }),
+      noSubs: !!a && subs.length === 0,
+      showAddr: S.tab === 'addresses', editing: !!editAddr, notEditing: !editAddr,
+      addresses: addrs.map(ad => ({ ...ad, notDef: !ad.def, shadow: ad.def ? '6px 6px 0 #3A2A22' : 'none', lines: [ad.line1, ad.line2, ad.town, (ad.postcode || '').toUpperCase()].filter(Boolean),
+        edit: () => this.setState({ editing: ad.id, form: { ...ad }, formErr: '' }),
+        makeDef: () => M.account.update({ addresses: addrs.map(x => ({ ...x, def: x.id === ad.id })) }),
+        remove: () => { let rest = addrs.filter(x => x.id !== ad.id); if (ad.def && rest.length) rest = rest.map((x, i) => ({ ...x, def: i === 0 })); M.account.update({ addresses: rest }); } })),
+      addAddress: () => this.setState({ editing: 'new', form: { name: a ? (a.first + ' ' + a.last).trim() : '', line1: '', line2: '', town: '', postcode: '' }, formErr: '' }),
+      formTitle: editAddr === 'new' ? 'Add an address' : 'Edit address',
+      form: S.form, formErr: S.formErr,
+      onForm: Object.fromEntries(['name', 'line1', 'line2', 'town', 'postcode'].map(k => [k, e => this.setState({ form: { ...this.state.form, [k]: e.target.value }, formErr: '' })])),
+      cancelEdit: () => this.setState({ editing: null }),
+      saveAddress: e => {
+        e.preventDefault(); const f = S.form;
+        if (!['name', 'line1', 'town', 'postcode'].every(k => (f[k] || '').trim())) { this.setState({ formErr: 'Fill in name, address line 1, town and postcode' }); return; }
+        const list = editAddr === 'new' ? [...addrs, { ...f, id: 'a' + Date.now(), def: addrs.length === 0 }] : addrs.map(x => (x.id === editAddr ? { ...x, ...f } : x));
+        M.account.update({ addresses: list }); this.setState({ editing: null });
+      },
+      showDetails: S.tab === 'details', det,
+      onDet: Object.fromEntries(['first', 'last', 'email', 'phone'].map(k => [k, e => this.setState({ det: { ...det, [k]: e.target.value }, detErr: '', saved: false })])),
+      onMarketing: e => this.setState({ det: { ...det, marketing: e.target.checked }, saved: false }),
+      detErr: S.detErr, saved: S.saved,
+      saveDetails: e => { e.preventDefault(); if (!det.first.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(det.email.trim())) { this.setState({ detErr: 'Add your first name and a valid email' }); return; } M.account.update(det); this.setState({ det: null }); this.flash('saved'); },
+      pwCur: S.pwCur, pwNew: S.pwNew, pwErr: S.pwErr, pwSaved: S.pwSaved,
+      onPwCur: e => this.setState({ pwCur: e.target.value, pwErr: '' }), onPwNew: e => this.setState({ pwNew: e.target.value, pwErr: '' }),
+      savePw: e => { e.preventDefault(); if (!S.pwCur) { this.setState({ pwErr: 'Enter your current password' }); return; } if (S.pwNew.length < 8) { this.setState({ pwErr: 'New passwords need at least 8 characters' }); return; } this.setState({ pwCur: '', pwNew: '' }); this.flash('pwSaved'); }
+    };
+  }
+}
+</script>
+</body>
+</html>

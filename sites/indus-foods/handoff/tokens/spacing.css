@@ -1,0 +1,8 @@
+:root{
+--radius-tag:3px;--radius-tile:12px;--radius-card:22px;--radius-panel:12px;--radius-pill:999px;
+--shadow-button:0 8px 18px -8px rgba(0,0,0,.45);--shadow-card:0 20px 34px -20px rgba(44,62,80,.55);--shadow-panel:0 30px 80px -30px rgba(20,25,35,.28);--shadow-header:0 10px 30px -18px rgba(20,40,60,.35);
+--gap-1:8px;--gap-2:10px;--gap-3:14px;--gap-4:18px;--gap-5:22px;--gap-6:28px;--gap-7:40px;--gap-8:64px;
+--gutter-mobile:20px;--gutter-tablet:32px;--gutter-desktop:40px;
+--section-mobile:64px;--section-tablet:88px;--section-desktop:108px;
+--ease-out:cubic-bezier(.16,.84,.32,1);--ease-button:cubic-bezier(.2,.8,.2,1);--ease-spring:cubic-bezier(.34,1.56,.64,1);--ease-in-out:cubic-bezier(.65,0,.35,1);
+}

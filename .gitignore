@@ -98,9 +98,10 @@ studio/
 !theme/sgs-theme/**/*.png
 !theme/sgs-theme/**/*.jpg
 !theme/sgs-theme/**/*.webp
-# Images a client draft renders (sites/<client>/assets) travel with the draft.
-!sites/mamas-munches-redesign/assets/*.png
-!sites/mamas-munches-redesign/assets/*.jpg
+# Images a client draft renders travel with its handoff folder (Spec 48A).
+!sites/*/handoff/**/*.png
+!sites/*/handoff/**/*.jpg
+!sites/*/handoff/**/*.webp
 !sites/indus-foods/assets/decorative-foods/**/*.png
 !sites/indus-foods/assets/decorative-foods/**/*.webp
 sites/snooza-chair/assets/Snooza Video.mp4

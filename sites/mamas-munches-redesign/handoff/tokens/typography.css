@@ -1,0 +1,60 @@
+/* Mama's Munches type, taken from the current drafts.
+   Font URL (every draft loads this in <helmet>):
+   https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap
+   (SiteHeader requests Caveat 500;600 only.) Webfonts are served by Google Fonts; no font files are in assets/. */
+@import url("https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap");
+
+:root {
+  /* Families */
+  --mm-font-display: 'Young Serif', Georgia, serif;   /* headings, prices, card titles; always weight 400 */
+  --mm-font-body: 'Karla', system-ui, sans-serif;     /* body and UI; 400 / 600 / 700 */
+  --mm-font-script: 'Caveat', cursive;                /* handwritten eyebrows, notes, captions; 600 for emphasis */
+
+  /* Weights */
+  --mm-weight-regular: 400;
+  --mm-weight-semibold: 600;
+  --mm-weight-bold: 700;
+
+  /* Display scale (Home values; mobile / tablet / desktop). Other pages use their own L.h1 / L.h2, see README. */
+  --mm-h1-m: 46px;  --mm-h1-t: 54px;  --mm-h1-d: 82px;
+  --mm-h2-m: 34px;  --mm-h2-t: 44px;  --mm-h2-d: 58px;
+  --mm-h3-m: 26px;  --mm-h3-t: 28px;  --mm-h3-d: 32px;
+  --mm-lead-m: 17px; --mm-lead-t: 18px; --mm-lead-d: 20px;
+
+  /* Fixed sizes (by frequency in the drafts) */
+  --mm-size-11: 11px;   /* pack-size tag chip */
+  --mm-size-12: 12px;   /* badges, counts, small labels */
+  --mm-size-13: 13px;   /* captions, per-unit prices */
+  --mm-size-14: 14px;   /* step labels (uppercase), secondary lines */
+  --mm-size-15: 15px;   /* pills, card text, form labels */
+  --mm-size-16: 16px;   /* body, buttons */
+  --mm-size-17: 17px;   /* lead body, primary buttons */
+  --mm-size-18: 18px;
+  --mm-size-20: 20px;
+  --mm-size-22: 22px;   /* card titles, legends, prices */
+  --mm-size-24: 24px;   /* Caveat column headings, mobile tagline */
+  --mm-size-26: 26px;   /* pack counts, Caveat summary */
+  --mm-size-28: 28px;   /* Caveat eyebrow (default) */
+  --mm-size-30: 30px;   /* summary total */
+
+  /* Line heights */
+  --mm-leading-tight: 1;      /* display and eyebrows */
+  --mm-leading-heading: 1.05;
+  --mm-leading-h1: 1.02;
+  --mm-leading-snug: 1.2;
+  --mm-leading-body: 1.55;
+  --mm-leading-relaxed: 1.6;
+
+  /* Letter spacing */
+  --mm-track-h1: -0.025em;
+  --mm-track-h2: -0.015em;
+  --mm-track-tight: -0.02em;
+  --mm-track-label: .06em;    /* 14px/700 uppercase step labels */
+  --mm-track-stars: 2px;      /* ★★★★★ */
+
+  /* Semantic aliases */
+  --mm-text-eyebrow-family: var(--mm-font-script);
+  --mm-text-eyebrow-size: var(--mm-size-28);
+  --mm-text-label-size: var(--mm-size-14);
+  --mm-text-body-size: var(--mm-size-16);
+}

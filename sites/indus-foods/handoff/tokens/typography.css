@@ -1,0 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap");
+:root{
+--font-heading:"Montserrat",sans-serif;--font-body:"Source Sans 3",sans-serif;--font-mono:"Geist Mono",monospace;
+--fs-body:19px;--lh-body:1.55;--fs-h1:clamp(36px,5vw,62px);--fs-h2:clamp(28px,3.4vw,40px);--fs-card-title:22px;--fs-eyebrow:13px;--fs-nav:17px;--fs-mono:12px;
+--tracking-eyebrow:.14em;--tracking-mono:.14em;
+}
+body{font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-body)}
+h1,h2,h3{font-family:var(--font-heading);color:var(--text-heading)}
+::selection{background:var(--selection-bg);color:var(--selection-fg)}
+a{color:var(--text-link)}a:hover{color:var(--text-link-hover)}

@@ -1,0 +1,2793 @@
+{
+  "schema_version": "1.0",
+  "project": "Mama's Munches ecommerce",
+  "generated": "2026-10-11",
+  "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
+  "records": [
+    {
+      "kind": "header",
+      "name": "Site header (announcement strip + bar)",
+      "dc": "SiteHeader",
+      "template_tpl_id": "13",
+      "route": "*",
+      "parent": null,
+      "opened_by": "Mounted by every page except Checkout via <dc-import name=\"SiteHeader\" current=\"…\">, sticky at top:-32px so the 32px yellow strip scrolls away",
+      "closed_by": "Always present",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "states": [
+        {
+          "name": "mobile/tablet bar: menu button, centred logo, account icon, basket icon",
+          "state_keys": {
+            "bp": "m|t"
+          },
+          "sc_if_tpl_ids": [
+            "14"
+          ],
+          "how_to_reach": "Below 1024px, or dcLogic('SiteHeader').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "desktop bar: logo, nav (Shop, Gifts, Subscribe & save, Help, Contact), account icon, basket pill with count",
+          "state_keys": {
+            "bp": "d"
+          },
+          "sc_if_tpl_ids": [
+            "8",
+            "34"
+          ],
+          "how_to_reach": "1024px+, or setState({ bp: \"d\" })"
+        },
+        {
+          "name": "count badge on the mobile basket icon",
+          "state_keys": {
+            "hasCount": "MM.cart.count() > 0"
+          },
+          "sc_if_tpl_ids": [
+            "32"
+          ],
+          "how_to_reach": "Add any item (MM.cart.add(...)); hidden when the basket is empty"
+        },
+        {
+          "name": "active nav item",
+          "state_keys": {
+            "props.current": "shop | gifts | sub | help | contact | account"
+          },
+          "how_to_reach": "Pages pass current; Product passes sub when ?sub=1, else shop (Zookies) or gifts. Desktop: #F9D5D3 pill + aria-current=\"page\"; drawer: link text #A8404F"
+        },
+        {
+          "name": "account link: signed out → SignIn.dc.html (\"Sign in or create an account\")",
+          "state_keys": {
+            "signed": false
+          },
+          "how_to_reach": "MM.account.signOut()"
+        },
+        {
+          "name": "account link: signed in → Account.dc.html (\"My account\")",
+          "state_keys": {
+            "signed": true
+          },
+          "how_to_reach": "MM.account.signIn()"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Basket count and account state read localStorage (mm_cart_v2, mm_account_v1) and re-render on mm:cart / storage events."
+      },
+      "source": "SiteHeader renderVals()",
+      "id": "S-01"
+    },
+    {
+      "kind": "drawer",
+      "name": "Nav drawer (left)",
+      "dc": "SiteHeader",
+      "template_tpl_id": "56",
+      "route": "*",
+      "parent": "S-01",
+      "breakpoints": [
+        "mobile",
+        "tablet"
+      ],
+      "opened_by": "Menu button (openNav) → setState({ nav: true })",
+      "closed_by": "× button, scrim click, Escape key (close)",
+      "states": [
+        {
+          "name": "closed",
+          "state_keys": {
+            "nav": false
+          },
+          "how_to_reach": "Default",
+          "animation_ids": [
+            "TR-102"
+          ]
+        },
+        {
+          "name": "open: drawer slides in, contents stagger in from the left",
+          "state_keys": {
+            "nav": true
+          },
+          "how_to_reach": "dcLogic('SiteHeader').setState({ nav: true })",
+          "animation_ids": [
+            "TR-102",
+            "A-10",
+            "J-01"
+          ]
+        },
+        {
+          "name": "account block, signed out: Sign in + Create account pills",
+          "state_keys": {
+            "signed": false
+          },
+          "sc_if_tpl_ids": [
+            "90"
+          ],
+          "how_to_reach": "MM.account.signOut(), then open"
+        },
+        {
+          "name": "account block, signed in: \"Hello, <first> · My account\" pill",
+          "state_keys": {
+            "signed": true
+          },
+          "sc_if_tpl_ids": [
+            "94"
+          ],
+          "how_to_reach": "MM.account.signIn(), then open"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Account block reads mm_account_v1."
+      },
+      "source": "navX, openNav, close, navIn()",
+      "notes": "Not breakpoint-gated; only the opener is (desktop has no menu button). Tiles, links, account pills, the three \"say hello\" tiles and the Trustpilot card all have hover states.",
+      "id": "S-02"
+    },
+    {
+      "kind": "backdrop",
+      "name": "Drawer scrim",
+      "dc": "SiteHeader",
+      "template_tpl_id": "55",
+      "route": "*",
+      "parent": "S-01",
+      "opened_by": "Either drawer opening",
+      "closed_by": "Click (close) or Escape",
+      "states": [
+        {
+          "name": "hidden",
+          "state_keys": {
+            "nav": false,
+            "basket": false
+          },
+          "how_to_reach": "Default"
+        },
+        {
+          "name": "visible",
+          "state_keys": {
+            "nav || basket": true
+          },
+          "how_to_reach": "setState({ nav: true }) or setState({ basket: true })",
+          "animation_ids": [
+            "TR-101"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "source": "scrimOp, scrimPe",
+      "id": "S-03"
+    },
+    {
+      "kind": "drawer",
+      "name": "Basket drawer (right)",
+      "dc": "SiteHeader",
+      "template_tpl_id": "128",
+      "route": "*",
+      "parent": "S-01",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "opened_by": "Basket button (openBasket), or any page calling MM.openBasket() (mm:open-basket event) after Add to basket",
+      "closed_by": "× button, scrim, Escape",
+      "states": [
+        {
+          "name": "closed",
+          "state_keys": {
+            "basket": false
+          },
+          "how_to_reach": "Default",
+          "animation_ids": [
+            "TR-119"
+          ]
+        },
+        {
+          "name": "open, empty",
+          "state_keys": {
+            "basket": true,
+            "isEmpty": true
+          },
+          "sc_if_tpl_ids": [
+            "175"
+          ],
+          "how_to_reach": "MM.cart.clear(); dcLogic('SiteHeader').setState({ basket: true })"
+        },
+        {
+          "name": "open, with items",
+          "state_keys": {
+            "basket": true,
+            "hasItems": true
+          },
+          "sc_if_tpl_ids": [
+            "133"
+          ],
+          "how_to_reach": "Add an item, then open",
+          "animation_ids": [
+            "TR-120",
+            "J-01"
+          ]
+        },
+        {
+          "name": "gift note textarea shown",
+          "state_keys": {
+            "gift.on": true
+          },
+          "sc_if_tpl_ids": [
+            "158"
+          ],
+          "how_to_reach": "Tick \"This is a gift\" (MM.cart.setGift({ on: true }))"
+        },
+        {
+          "name": "Taster Trio upsell shown",
+          "state_keys": {
+            "showUpsell": "no trial item"
+          },
+          "sc_if_tpl_ids": [
+            "161"
+          ],
+          "how_to_reach": "Basket without a Taster Trio line"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Contents come from localStorage mm_cart_v2 / mm_gift_v2."
+      },
+      "source": "basketX, items, gift",
+      "id": "S-04"
+    },
+    {
+      "kind": "footer",
+      "name": "Site footer",
+      "dc": "SiteFooter",
+      "template_tpl_id": "2",
+      "route": "*",
+      "parent": null,
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "opened_by": "Mounted by every page except Checkout",
+      "closed_by": "Always present",
+      "states": [
+        {
+          "name": "mobile (<768px)",
+          "state_keys": {
+            "bp": "m"
+          },
+          "how_to_reach": "Resize below 768px, or dcLogic('SiteFooter').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "tablet (768–1023px)",
+          "state_keys": {
+            "bp": "t"
+          },
+          "how_to_reach": "Resize to 768–1023px, or dcLogic('SiteFooter').setState({ bp: \"t\" })"
+        },
+        {
+          "name": "desktop (≥1024px)",
+          "state_keys": {
+            "bp": "d"
+          },
+          "how_to_reach": "Resize to 1024px+, or dcLogic('SiteFooter').setState({ bp: \"d\" })"
+        },
+        {
+          "name": "tagline marquee paused",
+          "state_keys": {
+            "tagHover || tagFocus": true
+          },
+          "how_to_reach": "Hover the yellow band, or Tab to any footer link; dcLogic('SiteFooter').setState({ tagHover: true })",
+          "animation_ids": [
+            "CA-02"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "source": "SiteFooter renderVals()",
+      "notes": "No sc-ifs.",
+      "id": "S-05"
+    },
+    {
+      "kind": "panel",
+      "name": "Product card",
+      "dc": "ProductCard",
+      "template_tpl_id": "0",
+      "route": null,
+      "parent": null,
+      "opened_by": "Mounted by Shop, Gifts and Product (related) with product={…} size=\"sm|md\"",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "md (desc shown)",
+          "state_keys": {
+            "props.size": "md"
+          },
+          "sc_if_tpl_ids": [
+            "6"
+          ],
+          "how_to_reach": "size=\"md\""
+        },
+        {
+          "name": "sm",
+          "state_keys": {
+            "props.size": "sm"
+          },
+          "how_to_reach": "size=\"sm\" (mobile)"
+        },
+        {
+          "name": "badge shown",
+          "state_keys": {
+            "product.badge": "truthy"
+          },
+          "sc_if_tpl_ids": [
+            "2"
+          ],
+          "how_to_reach": "Every catalogue product has a badge"
+        },
+        {
+          "name": "added (\"Added ✓\" for 1600ms)",
+          "state_keys": {
+            "added": true
+          },
+          "how_to_reach": "Click on a simple product; others navigate to Product.dc.html?id=…"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "setTimeout 1600ms resets added."
+      },
+      "source": "act",
+      "id": "S-06"
+    },
+    {
+      "kind": "page",
+      "name": "Home",
+      "dc": "Home",
+      "template_tpl_id": "6",
+      "route": "Home.dc.html",
+      "page_key": "Home",
+      "blocks": [
+        "hero + trust bar",
+        "who are we baking for",
+        "#build",
+        "#gifts",
+        "recipe card",
+        "#story",
+        "#reviews",
+        "FAQ"
+      ],
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "Navigate to Home.dc.html",
+      "closed_by": "Navigate away",
+      "states": [
+        {
+          "name": "mobile (<768px)",
+          "state_keys": {
+            "bp": "m"
+          },
+          "how_to_reach": "Resize below 768px, or dcLogic('Home').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "tablet (768–1023px)",
+          "state_keys": {
+            "bp": "t"
+          },
+          "how_to_reach": "Resize to 768–1023px, or dcLogic('Home').setState({ bp: \"t\" })"
+        },
+        {
+          "name": "desktop (≥1024px)",
+          "state_keys": {
+            "bp": "d"
+          },
+          "how_to_reach": "Resize to 1024px+, or dcLogic('Home').setState({ bp: \"d\" })"
+        },
+        {
+          "name": "greeting variant",
+          "state_keys": {
+            "hour": "<5 night feed · <12 morning · <17 afternoon · <21 evening · else up late"
+          },
+          "how_to_reach": "Stub Date before boot"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Greeting reads new Date().getHours(); review autoplay setInterval 6000ms (not under reduced motion)."
+      },
+      "id": "S-07"
+    },
+    {
+      "kind": "form",
+      "name": "Build your Zookie",
+      "dc": "Home",
+      "template_tpl_id": "63",
+      "route": "Home.dc.html#build",
+      "parent": "S-07",
+      "opened_by": "Scroll, or a link to Home.dc.html#build",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "base": "oat",
+            "chip": "milk",
+            "flav": [
+              "strawberry",
+              "mango"
+            ],
+            "size": 20,
+            "sub": true,
+            "freq": 4
+          },
+          "how_to_reach": "Load",
+          "animation_ids": [
+            "A-01"
+          ]
+        },
+        {
+          "name": "subscribe: frequency row",
+          "state_keys": {
+            "sub": true
+          },
+          "sc_if_tpl_ids": [
+            "115"
+          ],
+          "how_to_reach": "dcLogic('Home').setState({ sub: true })"
+        },
+        {
+          "name": "one-off",
+          "state_keys": {
+            "sub": false
+          },
+          "how_to_reach": "setState({ sub: false })"
+        },
+        {
+          "name": "pack-size tag chip",
+          "state_keys": {
+            "o.tag": "20 and 40"
+          },
+          "sc_if_tpl_ids": [
+            "98"
+          ],
+          "how_to_reach": "Content variant"
+        },
+        {
+          "name": "added",
+          "state_keys": {
+            "added": true
+          },
+          "how_to_reach": "CTA: adds to MM.cart and opens the basket drawer"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-08"
+    },
+    {
+      "kind": "panel",
+      "name": "Gifts carousel",
+      "dc": "Home",
+      "template_tpl_id": "132",
+      "route": "Home.dc.html#gifts",
+      "parent": "S-07",
+      "opened_by": "Scroll",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "mobile carousel with dots + arrows",
+          "state_keys": {
+            "bp": "m",
+            "gift": "0–3"
+          },
+          "sc_if_tpl_ids": [
+            "144"
+          ],
+          "how_to_reach": "Below 768px; swipe, drag or dots",
+          "animation_ids": [
+            "J-02",
+            "J-03",
+            "J-04",
+            "J-05",
+            "J-06"
+          ]
+        },
+        {
+          "name": "grid (2 cols tablet, 4 desktop)",
+          "state_keys": {
+            "bp": "t|d"
+          },
+          "how_to_reach": "768px+"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-09"
+    },
+    {
+      "kind": "panel",
+      "name": "Review slider",
+      "dc": "Home",
+      "template_tpl_id": "222",
+      "route": "Home.dc.html#reviews",
+      "parent": "S-07",
+      "opened_by": "Scroll",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "card i in view",
+          "state_keys": {
+            "rev": "0 … reviews − perView"
+          },
+          "how_to_reach": "Arrows, dots, drag or autoplay",
+          "animation_ids": [
+            "J-05",
+            "J-07",
+            "J-10"
+          ]
+        },
+        {
+          "name": "autoplay held",
+          "state_keys": {
+            "holds.hover || holds.touch || holds.focus": true
+          },
+          "how_to_reach": "Hover the track, touch it, or Tab into #reviews; resumes on release"
+        },
+        {
+          "name": "no autoplay (reduced motion)",
+          "state_keys": {
+            "rm": true
+          },
+          "how_to_reach": "prefers-reduced-motion: reduce at load"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "setInterval 6000ms autoplay."
+      },
+      "id": "S-10"
+    },
+    {
+      "kind": "accordion",
+      "name": "Home FAQ",
+      "dc": "Home",
+      "template_tpl_id": [
+        "248"
+      ],
+      "route": "Home.dc.html",
+      "parent": "S-07",
+      "opened_by": "Question button",
+      "closed_by": "Same button",
+      "states": [
+        {
+          "name": "item i open",
+          "state_keys": {
+            "faq": "0–3 (default 0)"
+          },
+          "sc_if_tpl_ids": [
+            "248"
+          ],
+          "how_to_reach": "dcLogic('Home').setState({ faq: i })",
+          "animation_ids": [
+            "TR-024"
+          ]
+        },
+        {
+          "name": "all closed",
+          "state_keys": {
+            "faq": -1
+          },
+          "how_to_reach": "Click the open item"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-11"
+    },
+    {
+      "kind": "page",
+      "name": "Shop",
+      "dc": "Shop",
+      "template_tpl_id": "6",
+      "route": "Shop.dc.html",
+      "page_key": "Shop",
+      "blocks": [
+        "heading band, sort, filter chips",
+        "product grid",
+        "banners"
+      ],
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "Navigate to Shop.dc.html",
+      "closed_by": "Navigate away",
+      "states": [
+        {
+          "name": "mobile (<768px)",
+          "state_keys": {
+            "bp": "m"
+          },
+          "how_to_reach": "Resize below 768px, or dcLogic('Shop').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "tablet (768–1023px)",
+          "state_keys": {
+            "bp": "t"
+          },
+          "how_to_reach": "Resize to 768–1023px, or dcLogic('Shop').setState({ bp: \"t\" })"
+        },
+        {
+          "name": "desktop (≥1024px)",
+          "state_keys": {
+            "bp": "d"
+          },
+          "how_to_reach": "Resize to 1024px+, or dcLogic('Shop').setState({ bp: \"d\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-12"
+    },
+    {
+      "kind": "form",
+      "name": "Shop filter + sort",
+      "dc": "Shop",
+      "template_tpl_id": "21",
+      "route": "Shop.dc.html?filter=…",
+      "parent": "S-12",
+      "opened_by": "Load; ?filter= preselects",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "filter",
+          "state_keys": {
+            "filter": "all|zookies|gifts|subscribe|trial|bundles|vegan"
+          },
+          "how_to_reach": "dcLogic('Shop').setState({ filter })"
+        },
+        {
+          "name": "sort",
+          "state_keys": {
+            "sort": "featured|low|high"
+          },
+          "how_to_reach": "setState({ sort })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-13"
+    },
+    {
+      "kind": "page",
+      "name": "Product",
+      "dc": "Product",
+      "template_tpl_id": "5",
+      "route": "Product.dc.html?id=zookies",
+      "page_key": "Product",
+      "blocks": [
+        "breadcrumb",
+        "gallery",
+        "buy box",
+        "assurance row",
+        "accordion",
+        "reviews",
+        "related"
+      ],
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "Navigate to Product.dc.html?id=zookies",
+      "closed_by": "Navigate away",
+      "states": [
+        {
+          "name": "mobile (<768px)",
+          "state_keys": {
+            "bp": "m"
+          },
+          "how_to_reach": "Resize below 768px, or dcLogic('Product').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "tablet (768–1023px)",
+          "state_keys": {
+            "bp": "t"
+          },
+          "how_to_reach": "Resize to 768–1023px, or dcLogic('Product').setState({ bp: \"t\" })"
+        },
+        {
+          "name": "desktop (≥1024px)",
+          "state_keys": {
+            "bp": "d"
+          },
+          "how_to_reach": "Resize to 1024px+, or dcLogic('Product').setState({ bp: \"d\" })"
+        },
+        {
+          "name": "kind: zookies",
+          "state_keys": {
+            "p.kind": "zookies"
+          },
+          "sc_if_tpl_ids": [
+            "31"
+          ],
+          "how_to_reach": "?id=zookies"
+        },
+        {
+          "name": "kind: card",
+          "state_keys": {
+            "p.kind": "card"
+          },
+          "sc_if_tpl_ids": [
+            "78"
+          ],
+          "how_to_reach": "?id=giftcard"
+        },
+        {
+          "name": "kind: simple",
+          "state_keys": {
+            "p.kind": "simple"
+          },
+          "sc_if_tpl_ids": [
+            "85",
+            "103"
+          ],
+          "how_to_reach": "?id=trial | giftbox | care40"
+        },
+        {
+          "name": "gift toggle available",
+          "state_keys": {
+            "giftable": "kind !== card"
+          },
+          "sc_if_tpl_ids": [
+            "92"
+          ],
+          "how_to_reach": "Any non-card product"
+        },
+        {
+          "name": "badge",
+          "state_keys": {
+            "p.badge": "truthy"
+          },
+          "sc_if_tpl_ids": [
+            "18"
+          ],
+          "how_to_reach": "All products"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "notes": "?id=zookies|trial|giftbox|care40|giftcard; ?sub=1 preselects subscribe and highlights Subscribe & save in the header; ?flavour=<id>. document.title = \"<product name> · Mama’s Munches\" (J-11).",
+      "id": "S-14"
+    },
+    {
+      "kind": "form",
+      "name": "Product buy box",
+      "dc": "Product",
+      "template_tpl_id": "108",
+      "route": "Product.dc.html",
+      "parent": "S-14",
+      "opened_by": "Load",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "one-off",
+          "state_keys": {
+            "sub": false
+          },
+          "how_to_reach": "Default unless ?sub=1"
+        },
+        {
+          "name": "subscribe: frequency row",
+          "state_keys": {
+            "sub": true
+          },
+          "sc_if_tpl_ids": [
+            "71"
+          ],
+          "how_to_reach": "dcLogic('Product').setState({ sub: true })"
+        },
+        {
+          "name": "pack-size tag chip",
+          "state_keys": {
+            "o.tag": "20 / 40"
+          },
+          "sc_if_tpl_ids": [
+            "41"
+          ],
+          "how_to_reach": "Content variant"
+        },
+        {
+          "name": "added",
+          "state_keys": {
+            "added": true
+          },
+          "how_to_reach": "Add to basket"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-15"
+    },
+    {
+      "kind": "form",
+      "name": "Product gift note",
+      "dc": "Product",
+      "template_tpl_id": [
+        "99"
+      ],
+      "route": "Product.dc.html",
+      "parent": "S-14",
+      "opened_by": "Tick \"Send it as a gift\"",
+      "closed_by": "Untick",
+      "states": [
+        {
+          "name": "note open",
+          "state_keys": {
+            "giftOn": true
+          },
+          "sc_if_tpl_ids": [
+            "99"
+          ],
+          "how_to_reach": "dcLogic('Product').setState({ giftOn: true })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-16"
+    },
+    {
+      "kind": "accordion",
+      "name": "Product info accordion",
+      "dc": "Product",
+      "template_tpl_id": [
+        "121"
+      ],
+      "route": "Product.dc.html",
+      "parent": "S-14",
+      "opened_by": "Row button",
+      "closed_by": "Same button",
+      "states": [
+        {
+          "name": "row i open",
+          "state_keys": {
+            "acc": "0–3"
+          },
+          "sc_if_tpl_ids": [
+            "121"
+          ],
+          "how_to_reach": "setState({ acc: i })",
+          "animation_ids": [
+            "TR-039"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-17"
+    },
+    {
+      "kind": "panel",
+      "name": "Sticky mobile add-to-basket bar",
+      "dc": "Product",
+      "template_tpl_id": [
+        "140",
+        "147"
+      ],
+      "route": "Product.dc.html",
+      "parent": "S-14",
+      "breakpoints": [
+        "mobile"
+      ],
+      "opened_by": "Main Add button leaves the viewport (IntersectionObserver → barOn)",
+      "closed_by": "Main button back in view",
+      "states": [
+        {
+          "name": "hidden",
+          "state_keys": {
+            "bp": "m",
+            "barOn": false
+          },
+          "sc_if_tpl_ids": [
+            "140",
+            "147"
+          ],
+          "how_to_reach": "Mobile, top of page"
+        },
+        {
+          "name": "shown",
+          "state_keys": {
+            "bp": "m",
+            "barOn": true
+          },
+          "how_to_reach": "dcLogic('Product').setState({ barOn: true })",
+          "animation_ids": [
+            "TR-042"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-18"
+    },
+    {
+      "kind": "page",
+      "name": "Gifts",
+      "dc": "Gifts",
+      "template_tpl_id": "6",
+      "route": "Gifts.dc.html",
+      "page_key": "Gifts",
+      "blocks": [
+        "hero with finder",
+        "#results",
+        "how gifting works",
+        "note preview",
+        "gift card band"
+      ],
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "Navigate to Gifts.dc.html",
+      "closed_by": "Navigate away",
+      "states": [
+        {
+          "name": "mobile (<768px)",
+          "state_keys": {
+            "bp": "m"
+          },
+          "how_to_reach": "Resize below 768px, or dcLogic('Gifts').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "tablet (768–1023px)",
+          "state_keys": {
+            "bp": "t"
+          },
+          "how_to_reach": "Resize to 768–1023px, or dcLogic('Gifts').setState({ bp: \"t\" })"
+        },
+        {
+          "name": "desktop (≥1024px)",
+          "state_keys": {
+            "bp": "d"
+          },
+          "how_to_reach": "Resize to 1024px+, or dcLogic('Gifts').setState({ bp: \"d\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "notes": "?occasion= preselects the moment.",
+      "id": "S-19"
+    },
+    {
+      "kind": "form",
+      "name": "Gift finder",
+      "dc": "Gifts",
+      "template_tpl_id": "24",
+      "route": "Gifts.dc.html",
+      "parent": "S-19",
+      "opened_by": "Load",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "moment × budget",
+          "state_keys": {
+            "occ": "born|shower|far|forty",
+            "budget": "any|u20|o20"
+          },
+          "how_to_reach": "dcLogic('Gifts').setState({ occ, budget })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-20"
+    },
+    {
+      "kind": "result",
+      "name": "Gift results",
+      "dc": "Gifts",
+      "template_tpl_id": "34",
+      "route": "Gifts.dc.html#results",
+      "parent": "S-19",
+      "opened_by": "Finder state",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "matches",
+          "state_keys": {
+            "results": "≥1"
+          },
+          "how_to_reach": "Default"
+        },
+        {
+          "name": "no matches",
+          "state_keys": {
+            "none": true
+          },
+          "sc_if_tpl_ids": [
+            "41"
+          ],
+          "how_to_reach": "setState({ occ: \"shower\", budget: \"o20\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-21"
+    },
+    {
+      "kind": "form",
+      "name": "Gift note preview",
+      "dc": "Gifts",
+      "template_tpl_id": "61",
+      "route": "Gifts.dc.html",
+      "parent": "S-19",
+      "opened_by": "Load",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "live preview",
+          "state_keys": {
+            "to": "Aisha",
+            "note": "…",
+            "from": "Sara"
+          },
+          "how_to_reach": "Type in the fields"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "notes": "Local state only.",
+      "id": "S-22"
+    },
+    {
+      "kind": "page",
+      "name": "Basket",
+      "dc": "Basket",
+      "template_tpl_id": "6",
+      "route": "Basket.dc.html",
+      "page_key": "Basket",
+      "blocks": [
+        "heading",
+        "free-delivery bar",
+        "line items",
+        "gift toggle",
+        "upsell",
+        "summary"
+      ],
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "Navigate to Basket.dc.html",
+      "closed_by": "Navigate away",
+      "states": [
+        {
+          "name": "mobile (<768px)",
+          "state_keys": {
+            "bp": "m"
+          },
+          "how_to_reach": "Resize below 768px, or dcLogic('Basket').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "tablet (768–1023px)",
+          "state_keys": {
+            "bp": "t"
+          },
+          "how_to_reach": "Resize to 768–1023px, or dcLogic('Basket').setState({ bp: \"t\" })"
+        },
+        {
+          "name": "desktop (≥1024px)",
+          "state_keys": {
+            "bp": "d"
+          },
+          "how_to_reach": "Resize to 1024px+, or dcLogic('Basket').setState({ bp: \"d\" })"
+        },
+        {
+          "name": "empty",
+          "state_keys": {
+            "empty": true
+          },
+          "sc_if_tpl_ids": [
+            "13"
+          ],
+          "how_to_reach": "MM.cart.clear()"
+        },
+        {
+          "name": "has items",
+          "state_keys": {
+            "hasItems": true
+          },
+          "sc_if_tpl_ids": [
+            "21"
+          ],
+          "how_to_reach": "Any line",
+          "animation_ids": [
+            "TR-051"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "localStorage cart; MM.cart.seed() adds two demo lines once per browser."
+      },
+      "id": "S-23"
+    },
+    {
+      "kind": "form",
+      "name": "Basket gift note + upsell",
+      "dc": "Basket",
+      "template_tpl_id": [
+        "47"
+      ],
+      "route": "Basket.dc.html",
+      "parent": "S-23",
+      "opened_by": "Tick \"This is a gift\"",
+      "closed_by": "Untick",
+      "states": [
+        {
+          "name": "gift note open",
+          "state_keys": {
+            "gift.on": true
+          },
+          "sc_if_tpl_ids": [
+            "47"
+          ],
+          "how_to_reach": "MM.cart.setGift({ on: true })"
+        },
+        {
+          "name": "upsell shown",
+          "state_keys": {
+            "showUpsell": true
+          },
+          "sc_if_tpl_ids": [
+            "49"
+          ],
+          "how_to_reach": "No Taster Trio line"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "localStorage mm_gift_v2."
+      },
+      "id": "S-24"
+    },
+    {
+      "kind": "page",
+      "name": "Checkout",
+      "dc": "Checkout",
+      "template_tpl_id": "6",
+      "route": "Checkout.dc.html",
+      "page_key": "Checkout",
+      "blocks": [
+        "own header",
+        "express pay",
+        "1 details (+ optional account)",
+        "2 who’s it for",
+        "3 delivery",
+        "4 payment",
+        "pay",
+        "summary"
+      ],
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "Navigate to Checkout.dc.html",
+      "closed_by": "Navigate away",
+      "states": [
+        {
+          "name": "mobile (<768px)",
+          "state_keys": {
+            "bp": "m"
+          },
+          "how_to_reach": "Resize below 768px, or dcLogic('Checkout').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "tablet (768–1023px)",
+          "state_keys": {
+            "bp": "t"
+          },
+          "how_to_reach": "Resize to 768–1023px, or dcLogic('Checkout').setState({ bp: \"t\" })"
+        },
+        {
+          "name": "desktop (≥1024px)",
+          "state_keys": {
+            "bp": "d"
+          },
+          "how_to_reach": "Resize to 1024px+, or dcLogic('Checkout').setState({ bp: \"d\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "localStorage cart/gift/account; placeOrder() uses Math.random and Date."
+      },
+      "notes": "No SiteHeader or SiteFooter. Open to guests.",
+      "id": "S-25"
+    },
+    {
+      "kind": "form",
+      "name": "Checkout form",
+      "dc": "Checkout",
+      "template_tpl_id": "31",
+      "route": "Checkout.dc.html",
+      "parent": "S-25",
+      "opened_by": "Load",
+      "closed_by": "Submit → MM.placeOrder({ total, delivery, method, email, address, createAccount }), cart cleared, → Confirmation.dc.html",
+      "states": [
+        {
+          "name": "filling",
+          "state_keys": {},
+          "how_to_reach": "Default; required fields use browser validation"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-26"
+    },
+    {
+      "kind": "form-step",
+      "name": "1 · Your details (+ optional account)",
+      "dc": "Checkout",
+      "template_tpl_id": "42",
+      "route": "Checkout.dc.html",
+      "parent": "S-26",
+      "opened_by": "Always visible",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "guest: \"Have an account? Sign in\" + unticked \"Create an account (optional)\"",
+          "state_keys": {
+            "signedIn": false,
+            "makeAcct": false
+          },
+          "sc_if_tpl_ids": [
+            "49",
+            "56"
+          ],
+          "how_to_reach": "Signed out (default)"
+        },
+        {
+          "name": "guest, create account ticked: first name + password (8+)",
+          "state_keys": {
+            "makeAcct": true
+          },
+          "sc_if_tpl_ids": [
+            "65"
+          ],
+          "how_to_reach": "dcLogic('Checkout').setState({ makeAcct: true })"
+        },
+        {
+          "name": "subscription hint under the checkbox",
+          "state_keys": {
+            "subNote": "basket has a -subN line"
+          },
+          "sc_if_tpl_ids": [
+            "63"
+          ],
+          "how_to_reach": "Add a Zookies subscription, then open Checkout signed out"
+        },
+        {
+          "name": "signed in: \"Signed in as …\", email and default address prefilled",
+          "state_keys": {
+            "signedIn": true
+          },
+          "sc_if_tpl_ids": [
+            "44"
+          ],
+          "how_to_reach": "MM.account.signIn() before loading"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reads mm_account_v1."
+      },
+      "id": "S-27"
+    },
+    {
+      "kind": "form-step",
+      "name": "2 · Who’s it for?",
+      "dc": "Checkout",
+      "template_tpl_id": "71",
+      "route": "Checkout.dc.html",
+      "parent": "S-26",
+      "opened_by": "Always visible",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "for me",
+          "state_keys": {
+            "gift": false
+          },
+          "how_to_reach": "dcLogic('Checkout').setState({ gift: false })"
+        },
+        {
+          "name": "gift: her name (saved as gift.to), note, prices-off line",
+          "state_keys": {
+            "gift": true
+          },
+          "sc_if_tpl_ids": [
+            "78"
+          ],
+          "how_to_reach": "Click \"it’s a gift ♥\"; the gift goes to the delivery address in step 3"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-28"
+    },
+    {
+      "kind": "form-step",
+      "name": "3 · Delivery (\"Her address & delivery\" for gifts)",
+      "dc": "Checkout",
+      "template_tpl_id": "85",
+      "route": "Checkout.dc.html",
+      "parent": "S-26",
+      "opened_by": "Always visible",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "Tracked 48",
+          "state_keys": {
+            "method": "t48"
+          },
+          "how_to_reach": "Default"
+        },
+        {
+          "name": "Tracked 24",
+          "state_keys": {
+            "method": "t24"
+          },
+          "how_to_reach": "setState({ method: \"t24\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-29"
+    },
+    {
+      "kind": "form-step",
+      "name": "4 · Payment",
+      "dc": "Checkout",
+      "template_tpl_id": "106",
+      "route": "Checkout.dc.html",
+      "parent": "S-26",
+      "opened_by": "Always visible",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {},
+          "how_to_reach": "Load"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-30"
+    },
+    {
+      "kind": "accordion",
+      "name": "Mobile order summary",
+      "dc": "Checkout",
+      "template_tpl_id": [
+        "18"
+      ],
+      "route": "Checkout.dc.html",
+      "parent": "S-25",
+      "breakpoints": [
+        "mobile"
+      ],
+      "opened_by": "\"Show order summary ▾\"",
+      "closed_by": "Same button",
+      "states": [
+        {
+          "name": "collapsed",
+          "state_keys": {
+            "bp": "m",
+            "sumOpen": false
+          },
+          "sc_if_tpl_ids": [
+            "18"
+          ],
+          "how_to_reach": "Mobile default"
+        },
+        {
+          "name": "expanded",
+          "state_keys": {
+            "bp": "m",
+            "sumOpen": true
+          },
+          "sc_if_tpl_ids": [
+            "22"
+          ],
+          "how_to_reach": "dcLogic('Checkout').setState({ sumOpen: true })"
+        },
+        {
+          "name": "sticky side summary",
+          "state_keys": {
+            "bp": "t|d"
+          },
+          "sc_if_tpl_ids": [
+            "120"
+          ],
+          "how_to_reach": "768px+"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-31"
+    },
+    {
+      "kind": "result",
+      "name": "Order confirmation",
+      "dc": "Confirmation",
+      "template_tpl_id": "6",
+      "route": "Confirmation.dc.html",
+      "page_key": "Confirmation",
+      "parent": null,
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "opened_by": "Checkout submit",
+      "closed_by": "Navigate away",
+      "states": [
+        {
+          "name": "bake date pill (\"Baking on Mon 13 Oct · with you from Wed 15 Oct\")",
+          "state_keys": {
+            "o.bake": "from MM.placeOrder"
+          },
+          "how_to_reach": "Always shown",
+          "animation_ids": [
+            "A-09"
+          ]
+        },
+        {
+          "name": "with gift note",
+          "state_keys": {
+            "hasNote": true
+          },
+          "sc_if_tpl_ids": [
+            "41"
+          ],
+          "how_to_reach": "Order placed with gift on and a message"
+        },
+        {
+          "name": "gift note addressed to her name",
+          "state_keys": {
+            "hasTo": true
+          },
+          "sc_if_tpl_ids": [
+            "45"
+          ],
+          "how_to_reach": "Gift with \"Her name\" filled"
+        },
+        {
+          "name": "no note: Taster Trio prompt",
+          "state_keys": {
+            "noNote": true
+          },
+          "sc_if_tpl_ids": [
+            "48"
+          ],
+          "how_to_reach": "Order without a gift note, or the demo fallback order MM-1042"
+        },
+        {
+          "name": "account order: \"Follow this order in your account\" → Account.dc.html?order=…",
+          "state_keys": {
+            "hasAcct": true
+          },
+          "sc_if_tpl_ids": [
+            "54"
+          ],
+          "how_to_reach": "Order placed signed in, or with \"Create an account\" ticked (eyebrow \"your account is ready\")"
+        },
+        {
+          "name": "guest order: \"Create an account\" prompt",
+          "state_keys": {
+            "noAcct": true
+          },
+          "sc_if_tpl_ids": [
+            "60"
+          ],
+          "how_to_reach": "Guest order"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reads localStorage mm_order_v2."
+      },
+      "id": "S-32"
+    },
+    {
+      "kind": "page",
+      "name": "Contact",
+      "dc": "Contact",
+      "template_tpl_id": "6",
+      "route": "Contact.dc.html",
+      "page_key": "Contact",
+      "blocks": [
+        "hero",
+        "channel cards",
+        "message form",
+        "quick answers"
+      ],
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "Navigate to Contact.dc.html",
+      "closed_by": "Navigate away",
+      "states": [
+        {
+          "name": "mobile (<768px)",
+          "state_keys": {
+            "bp": "m"
+          },
+          "how_to_reach": "Resize below 768px, or dcLogic('Contact').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "tablet (768–1023px)",
+          "state_keys": {
+            "bp": "t"
+          },
+          "how_to_reach": "Resize to 768–1023px, or dcLogic('Contact').setState({ bp: \"t\" })"
+        },
+        {
+          "name": "desktop (≥1024px)",
+          "state_keys": {
+            "bp": "d"
+          },
+          "how_to_reach": "Resize to 1024px+, or dcLogic('Contact').setState({ bp: \"d\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-33"
+    },
+    {
+      "kind": "form",
+      "name": "Contact form",
+      "dc": "Contact",
+      "template_tpl_id": [
+        "43"
+      ],
+      "route": "Contact.dc.html",
+      "parent": "S-33",
+      "opened_by": "Load",
+      "closed_by": "Submit → sent",
+      "states": [
+        {
+          "name": "topic: My order",
+          "state_keys": {
+            "topic": "order"
+          },
+          "sc_if_tpl_ids": [
+            "56"
+          ],
+          "how_to_reach": "Default"
+        },
+        {
+          "name": "topic: Baby shower or event",
+          "state_keys": {
+            "topic": "bulk"
+          },
+          "sc_if_tpl_ids": [
+            "59"
+          ],
+          "how_to_reach": "dcLogic('Contact').setState({ topic: \"bulk\" })"
+        },
+        {
+          "name": "other topics",
+          "state_keys": {
+            "topic": "gift|allergens|other"
+          },
+          "how_to_reach": "setState({ topic })"
+        },
+        {
+          "name": "editing",
+          "state_keys": {
+            "sent": false
+          },
+          "sc_if_tpl_ids": [
+            "43"
+          ],
+          "how_to_reach": "Default"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-34"
+    },
+    {
+      "kind": "result",
+      "name": "Contact sent",
+      "dc": "Contact",
+      "template_tpl_id": [
+        "68"
+      ],
+      "route": "Contact.dc.html",
+      "parent": "S-34",
+      "opened_by": "Submit",
+      "closed_by": "\"Send another\"",
+      "states": [
+        {
+          "name": "sent",
+          "state_keys": {
+            "sent": true
+          },
+          "sc_if_tpl_ids": [
+            "68"
+          ],
+          "how_to_reach": "dcLogic('Contact').setState({ sent: true })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-35"
+    },
+    {
+      "kind": "page",
+      "name": "Help",
+      "dc": "Help",
+      "template_tpl_id": "6",
+      "route": "Help.dc.html",
+      "page_key": "Help",
+      "blocks": [
+        "hero search + chips",
+        "FAQ list",
+        "#delivery",
+        "#allergens",
+        "#legal"
+      ],
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "Navigate to Help.dc.html",
+      "closed_by": "Navigate away",
+      "states": [
+        {
+          "name": "mobile (<768px)",
+          "state_keys": {
+            "bp": "m"
+          },
+          "how_to_reach": "Resize below 768px, or dcLogic('Help').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "tablet (768–1023px)",
+          "state_keys": {
+            "bp": "t"
+          },
+          "how_to_reach": "Resize to 768–1023px, or dcLogic('Help').setState({ bp: \"t\" })"
+        },
+        {
+          "name": "desktop (≥1024px)",
+          "state_keys": {
+            "bp": "d"
+          },
+          "how_to_reach": "Resize to 1024px+, or dcLogic('Help').setState({ bp: \"d\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "notes": "Hash deep links scroll after 400ms (J-09).",
+      "id": "S-36"
+    },
+    {
+      "kind": "form",
+      "name": "Help search + category chips",
+      "dc": "Help",
+      "template_tpl_id": "18",
+      "route": "Help.dc.html",
+      "parent": "S-36",
+      "opened_by": "Load",
+      "closed_by": "n/a",
+      "states": [
+        {
+          "name": "query/category",
+          "state_keys": {
+            "q": "string",
+            "cat": "all|order|ing|feed|gift|sub"
+          },
+          "how_to_reach": "dcLogic('Help').setState({ q, cat, open: -1 })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-37"
+    },
+    {
+      "kind": "accordion",
+      "name": "Help FAQ list",
+      "dc": "Help",
+      "template_tpl_id": [
+        "32"
+      ],
+      "route": "Help.dc.html",
+      "parent": "S-36",
+      "opened_by": "Question button",
+      "closed_by": "Same button",
+      "states": [
+        {
+          "name": "item i open",
+          "state_keys": {
+            "open": "0 default"
+          },
+          "sc_if_tpl_ids": [
+            "32"
+          ],
+          "how_to_reach": "setState({ open: i })",
+          "animation_ids": [
+            "TR-072"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-38"
+    },
+    {
+      "kind": "result",
+      "name": "Help no results",
+      "dc": "Help",
+      "template_tpl_id": [
+        "34"
+      ],
+      "route": "Help.dc.html",
+      "parent": "S-36",
+      "opened_by": "Search with no match",
+      "closed_by": "Change query",
+      "states": [
+        {
+          "name": "no answers",
+          "state_keys": {
+            "none": true
+          },
+          "sc_if_tpl_ids": [
+            "34"
+          ],
+          "how_to_reach": "setState({ q: \"zzz\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-39"
+    },
+    {
+      "kind": "page",
+      "name": "Sign in / register",
+      "dc": "SignIn",
+      "template_tpl_id": "6",
+      "route": "SignIn.dc.html",
+      "page_key": "SignIn",
+      "blocks": [
+        "pink hero (eyebrow + title by mode)",
+        "form card",
+        "why have an account + guest note"
+      ],
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "Navigate to SignIn.dc.html",
+      "closed_by": "Navigate away",
+      "states": [
+        {
+          "name": "mobile (<768px)",
+          "state_keys": {
+            "bp": "m"
+          },
+          "how_to_reach": "Resize below 768px, or dcLogic('SignIn').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "tablet (768–1023px)",
+          "state_keys": {
+            "bp": "t"
+          },
+          "how_to_reach": "Resize to 768–1023px, or dcLogic('SignIn').setState({ bp: \"t\" })"
+        },
+        {
+          "name": "desktop (≥1024px)",
+          "state_keys": {
+            "bp": "d"
+          },
+          "how_to_reach": "Resize to 1024px+, or dcLogic('SignIn').setState({ bp: \"d\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reads localStorage mm_account_v1 / mm_orders_v1 through MM.account; demo data is seeded on first sign-in with dates relative to today."
+      },
+      "notes": "?mode=register|forgot opens that mode; ?next=checkout returns to Checkout after signing in or registering.",
+      "id": "S-40"
+    },
+    {
+      "kind": "result",
+      "name": "Already signed in",
+      "dc": "SignIn",
+      "template_tpl_id": [
+        "16"
+      ],
+      "route": "SignIn.dc.html",
+      "parent": "S-40",
+      "opened_by": "Visiting while signed in",
+      "closed_by": "Sign out",
+      "states": [
+        {
+          "name": "signed in",
+          "state_keys": {
+            "signed": true
+          },
+          "sc_if_tpl_ids": [
+            "16"
+          ],
+          "how_to_reach": "MM.account.signIn() then load"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reads localStorage mm_account_v1 / mm_orders_v1 through MM.account; demo data is seeded on first sign-in with dates relative to today."
+      },
+      "id": "S-41"
+    },
+    {
+      "kind": "form",
+      "name": "Sign in",
+      "dc": "SignIn",
+      "template_tpl_id": [
+        "26"
+      ],
+      "route": "SignIn.dc.html",
+      "parent": "S-40",
+      "opened_by": "Default mode, or the \"Sign in\" tab",
+      "closed_by": "Submit → MM.account.signIn(email) → Account.dc.html (or Checkout with ?next=checkout)",
+      "states": [
+        {
+          "name": "tabs shown (sign in / create account)",
+          "state_keys": {
+            "mode": "signin|register"
+          },
+          "sc_if_tpl_ids": [
+            "22"
+          ],
+          "how_to_reach": "Default"
+        },
+        {
+          "name": "editing",
+          "state_keys": {
+            "mode": "signin"
+          },
+          "sc_if_tpl_ids": [
+            "26"
+          ],
+          "how_to_reach": "dcLogic('SignIn').setState({ mode: \"signin\" })"
+        },
+        {
+          "name": "validation: email / password errors",
+          "state_keys": {
+            "err.email": "Enter an email address like name@example.com",
+            "err.pw": "Enter your password"
+          },
+          "sc_if_tpl_ids": [
+            "30",
+            "50",
+            "66",
+            "34",
+            "54",
+            "82"
+          ],
+          "how_to_reach": "Submit empty"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-42"
+    },
+    {
+      "kind": "form",
+      "name": "Create account",
+      "dc": "SignIn",
+      "template_tpl_id": [
+        "39"
+      ],
+      "route": "SignIn.dc.html?mode=register",
+      "parent": "S-40",
+      "opened_by": "\"Create account\" tab or ?mode=register",
+      "closed_by": "Submit → MM.account.register(...) → Account.dc.html",
+      "states": [
+        {
+          "name": "editing",
+          "state_keys": {
+            "mode": "register"
+          },
+          "sc_if_tpl_ids": [
+            "39"
+          ],
+          "how_to_reach": "dcLogic('SignIn').setState({ mode: \"register\" })"
+        },
+        {
+          "name": "validation: first name, email, password 8+",
+          "state_keys": {
+            "err.first": "Enter your first name"
+          },
+          "sc_if_tpl_ids": [
+            "46"
+          ],
+          "how_to_reach": "Submit empty"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-43"
+    },
+    {
+      "kind": "form",
+      "name": "Forgotten password flow",
+      "dc": "SignIn",
+      "template_tpl_id": [
+        "59"
+      ],
+      "route": "SignIn.dc.html?mode=forgot",
+      "parent": "S-40",
+      "opened_by": "\"Forgotten your password?\" or ?mode=forgot",
+      "closed_by": "\"← Back to sign in\", or the done step’s \"Sign in →\"",
+      "states": [
+        {
+          "name": "flow",
+          "state_keys": {
+            "mode": "forgot → sent → reset → done"
+          },
+          "how_to_reach": "See the steps"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-44"
+    },
+    {
+      "kind": "form-step",
+      "name": "Forgot: enter email",
+      "dc": "SignIn",
+      "template_tpl_id": [
+        "59"
+      ],
+      "route": "SignIn.dc.html?mode=forgot",
+      "parent": "S-44",
+      "opened_by": "mode forgot",
+      "closed_by": "Send reset link (valid email) → sent",
+      "states": [
+        {
+          "name": "enter email",
+          "state_keys": {
+            "mode": "forgot"
+          },
+          "sc_if_tpl_ids": [
+            "59"
+          ],
+          "how_to_reach": "dcLogic('SignIn').setState({ mode: \"forgot\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-45"
+    },
+    {
+      "kind": "result",
+      "name": "Forgot: check your inbox",
+      "dc": "SignIn",
+      "template_tpl_id": [
+        "69"
+      ],
+      "route": "SignIn.dc.html",
+      "parent": "S-44",
+      "opened_by": "Send reset link",
+      "closed_by": "\"Open the reset link (prototype)\" → reset; \"Try again\" → forgot",
+      "states": [
+        {
+          "name": "sent",
+          "state_keys": {
+            "mode": "sent"
+          },
+          "sc_if_tpl_ids": [
+            "69"
+          ],
+          "how_to_reach": "setState({ mode: \"sent\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "notes": "In production the email link opens the reset step with a token.",
+      "id": "S-46"
+    },
+    {
+      "kind": "form-step",
+      "name": "Forgot: choose a new password",
+      "dc": "SignIn",
+      "template_tpl_id": [
+        "77"
+      ],
+      "route": "SignIn.dc.html",
+      "parent": "S-44",
+      "opened_by": "Reset link",
+      "closed_by": "Save new password (8+, both match) → done",
+      "states": [
+        {
+          "name": "reset",
+          "state_keys": {
+            "mode": "reset"
+          },
+          "sc_if_tpl_ids": [
+            "77"
+          ],
+          "how_to_reach": "setState({ mode: \"reset\" })"
+        },
+        {
+          "name": "validation: too short / mismatch",
+          "state_keys": {
+            "err.pw2": "The two passwords don’t match"
+          },
+          "sc_if_tpl_ids": [
+            "86"
+          ],
+          "how_to_reach": "Submit with different passwords"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-47"
+    },
+    {
+      "kind": "result",
+      "name": "Forgot: password updated",
+      "dc": "SignIn",
+      "template_tpl_id": [
+        "89"
+      ],
+      "route": "SignIn.dc.html",
+      "parent": "S-44",
+      "opened_by": "Save new password",
+      "closed_by": "\"Sign in →\"",
+      "states": [
+        {
+          "name": "done",
+          "state_keys": {
+            "mode": "done"
+          },
+          "sc_if_tpl_ids": [
+            "89"
+          ],
+          "how_to_reach": "setState({ mode: \"done\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-48"
+    },
+    {
+      "kind": "page",
+      "name": "My account",
+      "dc": "Account",
+      "template_tpl_id": "6",
+      "route": "Account.dc.html",
+      "page_key": "Account",
+      "blocks": [
+        "pink hero (\"Hello, <first>\", next subscription bake)",
+        "side nav (tabs) + Sign out",
+        "tab content"
+      ],
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "Navigate to Account.dc.html",
+      "closed_by": "Navigate away",
+      "states": [
+        {
+          "name": "mobile (<768px)",
+          "state_keys": {
+            "bp": "m"
+          },
+          "how_to_reach": "Resize below 768px, or dcLogic('Account').setState({ bp: \"m\" })"
+        },
+        {
+          "name": "tablet (768–1023px)",
+          "state_keys": {
+            "bp": "t"
+          },
+          "how_to_reach": "Resize to 768–1023px, or dcLogic('Account').setState({ bp: \"t\" })"
+        },
+        {
+          "name": "desktop (≥1024px)",
+          "state_keys": {
+            "bp": "d"
+          },
+          "how_to_reach": "Resize to 1024px+, or dcLogic('Account').setState({ bp: \"d\" })"
+        },
+        {
+          "name": "next bake line in hero",
+          "state_keys": {
+            "hasNextBake": "an active subscription exists"
+          },
+          "sc_if_tpl_ids": [
+            "13"
+          ],
+          "how_to_reach": "Signed in with an active subscription"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reads localStorage mm_account_v1 / mm_orders_v1 through MM.account; demo data is seeded on first sign-in with dates relative to today."
+      },
+      "notes": "?tab=orders|subs|addresses|details; ?order=MM-#### opens an order.",
+      "id": "S-49"
+    },
+    {
+      "kind": "result",
+      "name": "Signed-out prompt",
+      "dc": "Account",
+      "template_tpl_id": [
+        "18"
+      ],
+      "route": "Account.dc.html",
+      "parent": "S-49",
+      "opened_by": "Visiting signed out",
+      "closed_by": "Sign in",
+      "states": [
+        {
+          "name": "signed out",
+          "state_keys": {
+            "signed": false
+          },
+          "sc_if_tpl_ids": [
+            "18"
+          ],
+          "how_to_reach": "MM.account.signOut()"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reads localStorage mm_account_v1 / mm_orders_v1 through MM.account; demo data is seeded on first sign-in with dates relative to today."
+      },
+      "id": "S-50"
+    },
+    {
+      "kind": "panel",
+      "name": "Account navigation",
+      "dc": "Account",
+      "template_tpl_id": "27",
+      "route": "Account.dc.html",
+      "parent": "S-49",
+      "opened_by": "Signed in",
+      "closed_by": "Sign out → SignIn.dc.html",
+      "states": [
+        {
+          "name": "signed in, tab selected",
+          "state_keys": {
+            "signed": true,
+            "tab": "orders|subs|addresses|details"
+          },
+          "sc_if_tpl_ids": [
+            "25"
+          ],
+          "how_to_reach": "dcLogic('Account').setState({ tab })"
+        },
+        {
+          "name": "mobile/tablet: horizontal chip row (static); desktop: sticky vertical list at top 108px",
+          "state_keys": {
+            "bp": "m|t|d"
+          },
+          "how_to_reach": "Resize"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reads localStorage mm_account_v1 / mm_orders_v1 through MM.account; demo data is seeded on first sign-in with dates relative to today."
+      },
+      "id": "S-51"
+    },
+    {
+      "kind": "panel",
+      "name": "Orders list",
+      "dc": "Account",
+      "template_tpl_id": [
+        "33"
+      ],
+      "route": "Account.dc.html?tab=orders",
+      "parent": "S-49",
+      "opened_by": "Orders tab (default)",
+      "closed_by": "Another tab, or View order",
+      "states": [
+        {
+          "name": "list (order no, status chip, placed date, bake date, thumbs, total)",
+          "state_keys": {
+            "tab": "orders",
+            "orderNo": null
+          },
+          "sc_if_tpl_ids": [
+            "33"
+          ],
+          "how_to_reach": "setState({ tab: \"orders\", orderNo: null })"
+        },
+        {
+          "name": "no orders",
+          "state_keys": {
+            "orders": 0
+          },
+          "sc_if_tpl_ids": [
+            "49"
+          ],
+          "how_to_reach": "A newly registered account"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reads localStorage mm_account_v1 / mm_orders_v1 through MM.account; demo data is seeded on first sign-in with dates relative to today."
+      },
+      "id": "S-52"
+    },
+    {
+      "kind": "panel",
+      "name": "Order detail",
+      "dc": "Account",
+      "template_tpl_id": [
+        "52"
+      ],
+      "route": "Account.dc.html?order=MM-####",
+      "parent": "S-49",
+      "opened_by": "\"View order →\", or ?order=",
+      "closed_by": "\"← All orders\"",
+      "states": [
+        {
+          "name": "detail: bake date card, 4-step timeline, items, delivered-to, totals, Order this again",
+          "state_keys": {
+            "orderNo": "MM-####"
+          },
+          "sc_if_tpl_ids": [
+            "52"
+          ],
+          "how_to_reach": "setState({ orderNo: \"MM-1031\" }) after sign-in",
+          "animation_ids": [
+            "J-12"
+          ]
+        },
+        {
+          "name": "gift note shown",
+          "state_keys": {
+            "od.hasNote": true
+          },
+          "sc_if_tpl_ids": [
+            "95"
+          ],
+          "how_to_reach": "An order placed as a gift with a message"
+        },
+        {
+          "name": "status placed (Baking soon) vs delivered",
+          "state_keys": {
+            "order.status": "placed|delivered"
+          },
+          "how_to_reach": "New orders are placed; demo orders are delivered"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reads localStorage mm_account_v1 / mm_orders_v1 through MM.account; demo data is seeded on first sign-in with dates relative to today."
+      },
+      "id": "S-53"
+    },
+    {
+      "kind": "panel",
+      "name": "Subscriptions",
+      "dc": "Account",
+      "template_tpl_id": [
+        "101"
+      ],
+      "route": "Account.dc.html?tab=subs",
+      "parent": "S-49",
+      "opened_by": "Subscriptions tab",
+      "closed_by": "Another tab",
+      "states": [
+        {
+          "name": "active: next bake, frequency pills, Skip / Pause / Cancel",
+          "state_keys": {
+            "sub.status": "active"
+          },
+          "sc_if_tpl_ids": [
+            "101",
+            "118",
+            "125"
+          ],
+          "how_to_reach": "Subscriptions tab with the demo subscription"
+        },
+        {
+          "name": "next delivery skipped (Undo)",
+          "state_keys": {
+            "sub.skippedIso": "date"
+          },
+          "sc_if_tpl_ids": [
+            "115"
+          ],
+          "how_to_reach": "Skip next delivery: nextIso moves on by freq weeks"
+        },
+        {
+          "name": "paused (Resume)",
+          "state_keys": {
+            "sub.status": "paused"
+          },
+          "how_to_reach": "Pause; Resume sets nextIso to the next Monday bake"
+        },
+        {
+          "name": "frequency changed",
+          "state_keys": {
+            "sub.freq": "2|4"
+          },
+          "how_to_reach": "Every 2 / Every 4 weeks pills"
+        },
+        {
+          "name": "cancelled (Restart)",
+          "state_keys": {
+            "sub.status": "cancelled"
+          },
+          "sc_if_tpl_ids": [
+            "136"
+          ],
+          "how_to_reach": "Cancel → Yes, cancel"
+        },
+        {
+          "name": "no subscriptions",
+          "state_keys": {
+            "subs": 0
+          },
+          "sc_if_tpl_ids": [
+            "138"
+          ],
+          "how_to_reach": "A newly registered account"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reads localStorage mm_account_v1 / mm_orders_v1 through MM.account; demo data is seeded on first sign-in with dates relative to today."
+      },
+      "id": "S-54"
+    },
+    {
+      "kind": "modal",
+      "name": "Cancel subscription confirm",
+      "dc": "Account",
+      "template_tpl_id": [
+        "129"
+      ],
+      "route": "Account.dc.html?tab=subs",
+      "parent": "S-54",
+      "opened_by": "\"Cancel subscription\"",
+      "closed_by": "\"Keep it\", or \"Yes, cancel\" (→ cancelled)",
+      "states": [
+        {
+          "name": "confirming",
+          "state_keys": {
+            "confirm": "<sub id>"
+          },
+          "sc_if_tpl_ids": [
+            "129"
+          ],
+          "how_to_reach": "dcLogic('Account').setState({ tab: \"subs\", confirm: \"s1\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "notes": "Inline role=\"alertdialog\" panel inside the card, not an overlay.",
+      "id": "S-55"
+    },
+    {
+      "kind": "panel",
+      "name": "Addresses",
+      "dc": "Account",
+      "template_tpl_id": [
+        "142"
+      ],
+      "route": "Account.dc.html?tab=addresses",
+      "parent": "S-49",
+      "opened_by": "Addresses tab",
+      "closed_by": "Another tab",
+      "states": [
+        {
+          "name": "list with default badge, Edit / Make default / Remove, Add an address",
+          "state_keys": {
+            "tab": "addresses",
+            "editing": null
+          },
+          "sc_if_tpl_ids": [
+            "142",
+            "144",
+            "148",
+            "155"
+          ],
+          "how_to_reach": "setState({ tab: \"addresses\" })"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reads localStorage mm_account_v1 / mm_orders_v1 through MM.account; demo data is seeded on first sign-in with dates relative to today."
+      },
+      "id": "S-56"
+    },
+    {
+      "kind": "form",
+      "name": "Address form (add / edit)",
+      "dc": "Account",
+      "template_tpl_id": [
+        "160"
+      ],
+      "route": "Account.dc.html?tab=addresses",
+      "parent": "S-56",
+      "opened_by": "\"Add an address\" or Edit",
+      "closed_by": "Save address (name, line 1, town, postcode required) or Cancel",
+      "states": [
+        {
+          "name": "editing",
+          "state_keys": {
+            "editing": "new|<address id>"
+          },
+          "sc_if_tpl_ids": [
+            "160"
+          ],
+          "how_to_reach": "dcLogic('Account').setState({ tab: \"addresses\", editing: \"new\", form: {} })"
+        },
+        {
+          "name": "validation",
+          "state_keys": {
+            "formErr": "Fill in name, address line 1, town and postcode"
+          },
+          "sc_if_tpl_ids": [
+            "174"
+          ],
+          "how_to_reach": "Save empty"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": "Reads no clock, random value, storage or timer."
+      },
+      "id": "S-57"
+    },
+    {
+      "kind": "form",
+      "name": "Account details + change password",
+      "dc": "Account",
+      "template_tpl_id": [
+        "179"
+      ],
+      "route": "Account.dc.html?tab=details",
+      "parent": "S-49",
+      "opened_by": "Account details tab",
+      "closed_by": "Another tab",
+      "states": [
+        {
+          "name": "details form",
+          "state_keys": {
+            "tab": "details"
+          },
+          "sc_if_tpl_ids": [
+            "179"
+          ],
+          "how_to_reach": "setState({ tab: \"details\" })"
+        },
+        {
+          "name": "details error / saved ✓ (2.4s)",
+          "state_keys": {
+            "detErr": "Add your first name and a valid email",
+            "saved": true
+          },
+          "sc_if_tpl_ids": [
+            "193",
+            "197"
+          ],
+          "how_to_reach": "Save with an empty name, or a valid save"
+        },
+        {
+          "name": "password error / updated ✓ (2.4s)",
+          "state_keys": {
+            "pwErr": "…",
+            "pwSaved": true
+          },
+          "sc_if_tpl_ids": [
+            "206",
+            "210"
+          ],
+          "how_to_reach": "Update with a short password, or a valid one"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "setTimeout 2400ms hides the saved messages."
+      },
+      "id": "S-58"
+    }
+  ],
+  "counts": {
+    "routes": {
+      "by_dc": {
+        "Home": 1,
+        "Shop": 1,
+        "Product": 1,
+        "Gifts": 1,
+        "Basket": 1,
+        "Checkout": 1,
+        "Confirmation": 1,
+        "Contact": 1,
+        "Help": 1,
+        "SignIn": 1,
+        "Account": 1
+      },
+      "total": 11,
+      "covered_by": {
+        "Home.dc.html": "S-07",
+        "Shop.dc.html": "S-12",
+        "Product.dc.html": "S-14",
+        "Gifts.dc.html": "S-19",
+        "Basket.dc.html": "S-23",
+        "Checkout.dc.html": "S-25",
+        "Confirmation.dc.html": "S-32",
+        "Contact.dc.html": "S-33",
+        "Help.dc.html": "S-36",
+        "SignIn.dc.html": "S-40",
+        "Account.dc.html": "S-49"
+      },
+      "note": "Multi-file prototype: each page is its own .dc.html; no hash router. Query variants: Product ?id= ?sub=1 ?flavour=; Shop ?filter=; Gifts ?occasion=; SignIn ?mode=register|forgot ?next=checkout; Account ?tab= ?order=."
+    },
+    "toggling_sc_ifs": {
+      "by_dc": {
+        "Home": 2,
+        "Product": 3,
+        "Gifts": 1,
+        "Basket": 4,
+        "Checkout": 3,
+        "Contact": 4,
+        "Help": 2,
+        "SignIn": 15,
+        "Account": 19,
+        "SiteHeader": 5
+      },
+      "total": 58,
+      "covered_by": {
+        "Home:115 isSub": "S-08",
+        "Home:248 f.open": "S-11",
+        "Product:71 isSub": "S-15",
+        "Product:99 giftOn": "S-16",
+        "Product:121 a.open": "S-17",
+        "Gifts:41 none": "S-21",
+        "Basket:13 empty": "S-23",
+        "Basket:21 hasItems": "S-23",
+        "Basket:47 gift.on": "S-24",
+        "Basket:49 showUpsell": "S-24",
+        "Checkout:22 showSumTop": "S-31",
+        "Checkout:78 isGift": "S-28",
+        "Checkout:65 makeAcct": "S-27",
+        "Contact:43 notSent": "S-34",
+        "Contact:56 showOrder": "S-34",
+        "Contact:59 showBulk": "S-34",
+        "Contact:68 sent": "S-35",
+        "Help:32 f.open": "S-38",
+        "Help:34 none": "S-39",
+        "SignIn:22 showTabs": "S-42",
+        "SignIn:26 isSignin": "S-42",
+        "SignIn:39 isRegister": "S-43",
+        "SignIn:59 isForgot": "S-45",
+        "SignIn:69 isSent": "S-46",
+        "SignIn:77 isReset": "S-47",
+        "SignIn:89 isDone": "S-48",
+        "SignIn:30 err.email": "S-42",
+        "SignIn:50 err.email": "S-42",
+        "SignIn:66 err.email": "S-42",
+        "SignIn:34 err.pw": "S-42",
+        "SignIn:54 err.pw": "S-42",
+        "SignIn:82 err.pw": "S-42",
+        "SignIn:46 err.first": "S-43",
+        "SignIn:86 err.pw2": "S-47",
+        "Account:33 showOrders": "S-52",
+        "Account:52 showOrder": "S-53",
+        "Account:101 showSubs": "S-54",
+        "Account:142 showAddr": "S-56",
+        "Account:179 showDetails": "S-58",
+        "Account:115 s.skipped": "S-54",
+        "Account:118 s.live": "S-54",
+        "Account:125 s.canSkip": "S-54",
+        "Account:129 s.confirming": "S-55",
+        "Account:136 s.isCancelled": "S-54",
+        "Account:144 notEditing": "S-56",
+        "Account:160 editing": "S-57",
+        "Account:148 ad.def": "S-56",
+        "Account:155 ad.notDef": "S-56",
+        "Account:174 formErr": "S-57",
+        "Account:193 detErr": "S-58",
+        "Account:197 saved": "S-58",
+        "Account:206 pwErr": "S-58",
+        "Account:210 pwSaved": "S-58",
+        "SiteHeader:32 hasCount": "S-01",
+        "SiteHeader:133 hasItems": "S-04",
+        "SiteHeader:158 gift.on": "S-04",
+        "SiteHeader:161 showUpsell": "S-04",
+        "SiteHeader:175 isEmpty": "S-04"
+      }
+    },
+    "other_sc_ifs": {
+      "breakpoint": {
+        "Home:144": "isM",
+        "Product:140": "showBar",
+        "Product:147": "showBar",
+        "Checkout:18": "isM",
+        "Checkout:120": "notM",
+        "SiteHeader:8": "isD",
+        "SiteHeader:34": "isD",
+        "SiteHeader:14": "notD"
+      },
+      "route": {
+        "Product:31": "isZ",
+        "Product:78": "isCard",
+        "Product:85": "isSimple",
+        "Product:92": "giftable",
+        "Product:103": "showQty"
+      },
+      "content": {
+        "Home:98": "o.tag",
+        "Product:18": "hasBadge",
+        "Product:41": "o.tag",
+        "Confirmation:41": "hasNote",
+        "Confirmation:45": "hasTo",
+        "Confirmation:48": "noNote",
+        "Confirmation:54": "hasAcct",
+        "Confirmation:60": "noAcct",
+        "ProductCard:2": "hasBadge",
+        "ProductCard:6": "showShort",
+        "Checkout:63": "subNote",
+        "Account:13": "hasNextBake",
+        "Account:49": "noOrders",
+        "Account:138": "noSubs",
+        "Account:95": "od.hasNote"
+      },
+      "session": {
+        "Checkout:44": "signedIn",
+        "Checkout:49": "isGuest",
+        "Checkout:56": "isGuest",
+        "SignIn:16": "already",
+        "Account:25": "signed",
+        "Account:18": "notSigned",
+        "SiteHeader:94": "signedIn",
+        "SiteHeader:90": "signedOut"
+      },
+      "totals": {
+        "breakpoint": 8,
+        "route": 5,
+        "content": 15,
+        "session": 8
+      },
+      "all_sc_ifs": 94,
+      "check": "58 toggling + 8 breakpoint + 5 route + 15 content + 8 session = 94",
+      "note": "session = depends on whether the visitor is signed in (MM.account), set on another page; content = stored data variants."
+    }
+  },
+  "unresolved": [
+    {
+      "item": "Inert controls (kept inert by decision)",
+      "reason": "Express pay, Find address, discount Apply and the WhatsApp card stay inert in the draft; README states what each becomes."
+    },
+    {
+      "item": "Password checks are prototype-only",
+      "reason": "SignIn accepts any password for an existing or demo account, and the reset link is simulated. WooCommerce My Account handles real authentication and reset tokens."
+    }
+  ]
+}

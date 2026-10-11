@@ -1,0 +1,79 @@
+/* Mama's Munches spacing, radii, shadows, layout and motion, taken from the current drafts. */
+:root {
+  /* Spacing scale (gap values by frequency) */
+  --mm-space-2: 2px;
+  --mm-space-4: 4px;
+  --mm-space-6: 6px;
+  --mm-space-8: 8px;
+  --mm-space-10: 10px;
+  --mm-space-12: 12px;
+  --mm-space-14: 14px;
+  --mm-space-16: 16px;
+  --mm-space-18: 18px;
+  --mm-space-20: 20px;
+  --mm-space-22: 22px;
+  --mm-space-24: 24px;
+  --mm-space-28: 28px;
+
+  /* Layout */
+  --mm-max-width: 1240px;            /* content max width, centred */
+  --mm-max-width-checkout: 1160px;
+  --mm-max-width-narrow: 900px;      /* Help, Confirmation hero */
+  --mm-gutter-m: 20px;  --mm-gutter-t: 32px;  --mm-gutter-d: 40px;
+  --mm-section-m: 64px; --mm-section-t: 80px; --mm-section-d: 112px;   /* Home section padding (top/bottom) */
+  --mm-bp-tablet: 768px;   /* bp 'm' < 768 */
+  --mm-bp-desktop: 1024px; /* bp 't' < 1024 ≤ 'd' */
+  --mm-header-strip: 32px; /* announcement strip; header is sticky at top:-32px */
+  --mm-header-bar-m: 64px;
+  --mm-header-bar-d: 84px;
+
+  /* Radii */
+  --mm-radius-4: 4px;     /* photo inside a polaroid */
+  --mm-radius-6: 6px;     /* paper notes */
+  --mm-radius-8: 8px;     /* polaroid frame */
+  --mm-radius-12: 12px;
+  --mm-radius-14: 14px;   /* inputs, thumbnails */
+  --mm-radius-16: 16px;
+  --mm-radius-18: 18px;
+  --mm-radius-20: 20px;   /* pack-size cards, purchase-type cards, accordions */
+  --mm-radius-22: 22px;
+  --mm-radius-24: 24px;   /* product / gift / review cards */
+  --mm-radius-26: 26px;   /* fieldsets, channel cards */
+  --mm-radius-28: 28px;   /* feature cards, summary */
+  --mm-radius-32: 32px;
+  --mm-radius-36: 36px;   /* Build your Zookie panel */
+  --mm-radius-pill: 999px;
+
+  /* Outline */
+  --mm-outline-width: 2px;
+  --mm-outline-style: 2px solid #3A2A22;
+  --mm-dashed: 2px dashed #3A2A22;
+
+  /* Hard offset shadows (cocoa, no blur) */
+  --mm-shadow-0: 0 0 0 #3A2A22;   /* unselected / pressed */
+  --mm-shadow-3: 3px 3px 0 #3A2A22;
+  --mm-shadow-4: 4px 4px 0 #3A2A22;   /* default button */
+  --mm-shadow-5: 5px 5px 0 #3A2A22;
+  --mm-shadow-6: 6px 6px 0 #3A2A22;
+  --mm-shadow-7: 7px 7px 0 #3A2A22;   /* primary button hover */
+  --mm-shadow-8: 8px 8px 0 #3A2A22;   /* card hover, panels */
+
+  /* Focus */
+  --mm-focus-ring: 3px solid #3A2A22;
+  --mm-focus-offset: 3px;
+
+  /* Motion */
+  --mm-ease-spring: cubic-bezier(.3,1.6,.5,1);   /* buttons, pills, accordion + icon */
+  --mm-ease-spring-soft: cubic-bezier(.3,1.4,.5,1); /* card lifts, polaroids */
+  --mm-ease-drawer: cubic-bezier(.2,.8,.2,1);    /* drawers, sticky bar, progress bar */
+  --mm-ease-reveal: cubic-bezier(.2,.7,.2,1);    /* scroll reveal */
+  --mm-dur-press: .2s;
+  --mm-dur-accordion: .25s;
+  --mm-dur-card: .3s;
+  --mm-dur-drawer: .32s;
+  --mm-dur-tilt: .35s;
+  --mm-dur-polaroid: .45s;
+  --mm-dur-logo: .6s;
+  --mm-reveal-distance: 28px;   /* Home uses 32px */
+  --mm-reveal-duration: 750ms;  /* Home uses 800ms with a 90ms stagger, capped at 4 */
+}

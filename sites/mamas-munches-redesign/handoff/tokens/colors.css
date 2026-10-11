@@ -1,0 +1,51 @@
+/* Mama's Munches brand palette, taken from the current drafts.
+   Only colours used three or more times across the drafts are tokens.
+   One- and two-off colours (cookie illustration shades, flavour dots, WhatsApp #25D366,
+   Apple Pay #000000, PayPal #FFC439, placeholder #8A7666, star gold #D9981C, …) stay as hex in the drafts. */
+:root {
+  /* Base */
+  --mm-cocoa: #3A2A22;          /* text, every 2px outline, every hard shadow (491 uses) */
+  --mm-paper: #FFFAF0;          /* cards, inputs, secondary buttons */
+  --mm-cream: #FBF3DC;          /* page background, header, drawers */
+  --mm-white: #FFFFFF;          /* card inputs, checkout field fill, ticks on dark dots */
+  --mm-pink: #EE8088;           /* logo pink: count badges, tag chips, sticker, drawer checkout CTA */
+  --mm-pink-dark: #A8404F;      /* default link colour, drawer eyebrow, Remove link */
+  --mm-pink-band: #F5C2C8;      /* hero bands, footer, checkout header */
+  --mm-pink-soft: #F9D5D3;      /* builder panel, cards, hover fill on ghost buttons */
+  --mm-yellow: #F9CF6E;         /* logo yellow: primary CTA fill, selected pills, announcement strip */
+  --mm-yellow-soft: #FCEBBE;    /* secondary panels, open accordion, gift-card band */
+  --mm-body: #4E3C31;           /* long-form body copy */
+  --mm-muted: #5E4A3D;          /* captions, secondary lines */
+  --mm-muted-2: #6B5646;        /* drawer captions, struck-through prices */
+  --mm-script: #8E3444;         /* Caveat eyebrows on pink/cream */
+  --mm-script-gold: #7A5A12;    /* Caveat eyebrows on yellow */
+  --mm-sparkle: #E86A75;        /* ✦ in the tagline, review quote mark, footer email underline */
+  --mm-image-bg: #F3E6CC;       /* image placeholder behind product photos */
+  --mm-line: #EADBC0;           /* header/drawer hairlines */
+  --mm-line-dashed: #E6D4B4;    /* drawer dashed dividers */
+
+  /* Alpha */
+  --mm-rule: rgba(58, 42, 34, .3);      /* 2px dashed dividers in cards and summaries */
+  --mm-rule-soft: rgba(58, 42, 34, .28); /* dashed dividers on pink bands */
+  --mm-tape: rgba(249, 207, 110, .85);   /* yellow tape strips on notes and polaroids */
+
+  /* Third-party (used 3×: footer, contact, confirmation) */
+  --mm-instagram: radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);
+
+  /* Semantic aliases */
+  --mm-text: var(--mm-cocoa);
+  --mm-text-body: var(--mm-body);
+  --mm-text-muted: var(--mm-muted);
+  --mm-link: var(--mm-pink-dark);
+  --mm-link-hover: var(--mm-cocoa);
+  --mm-surface-page: var(--mm-cream);
+  --mm-surface-card: var(--mm-paper);
+  --mm-surface-band: var(--mm-pink-band);
+  --mm-surface-panel: var(--mm-pink-soft);
+  --mm-surface-panel-alt: var(--mm-yellow-soft);
+  --mm-outline: var(--mm-cocoa);
+  --mm-cta: var(--mm-yellow);
+  --mm-selected: var(--mm-yellow);
+  --mm-badge: var(--mm-pink);
+  --mm-focus: var(--mm-cocoa);
+}

@@ -154,16 +154,15 @@ Spec 48A or by Claude Design:
 from the new export; Eye Care's build files, because that site is nearly finished in SGS), everything else deleted. Bean
 reviews; be ruthless. Do not touch `sites/mamas-munches/` (the canary's separate project).
 
-Proposal (2026-10-11; inventory by a read-only subagent, sha256 against the exports; Bean reviews before any deletion):
+Approved by Bean and done 2026-10-11 for Indus and Mama's; Eye Care's regenerated output, `measure/` and the empty folder done, its old draft folders and loose `support.js` wait for B5 (inventory by a read-only subagent, sha256 against the exports):
 - **`sites/indus-foods/`.** Keep: `old-site-logos/` (real partner logos, local only), `theme-snapshot.json` (read by
   `push-theme-snapshot.py`), `assets/notes/` (client research), `assets/indus-logo.svg`, `assets/indus-logo-stacked.svg`
   and `assets/logos/` (logo masters the export lacks), `assets/decorative-foods/optimised/` (8 web-sized food images the
   export lacks), `CLAUDE.md` cut to a few lines. Delete: every `.dc.html` (the export supersedes v2; v1, both mega-menu
   prototypes and `_feature` are explorations), `support.js`, `image-slot.js`, `indus-logo.js`, the 8 duplicated SVGs,
   `assets/decorative-foods/` originals (1.2-1.8 MB each), `assets/theme-overrides/` (client styling in the theme layer,
-  which the framework forbids), `uploads/`, `.thumbnail`, `theme-extract-trace.json` (regenerated). `Mega Menu.dc.html`
-  is read by `plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-indus.mjs` and cited by Spec 36, so that script and
-  citation move with it.
+  which the framework forbids), `uploads/`, `.thumbnail`, `theme-extract-trace.json` (regenerated). (`nav-qa/gate3c/parity-indus.mjs` reads a different folder,
+  `sites/Indus Foods Mega Menu Design/`, so it is unaffected.)
 - **`sites/mamas-munches-redesign/`.** Keep: `theme-snapshot.json`, `media/photography/wp-media-library/` (15 real
   product photos the export lacks), `media/brand/` (logo originals; the export's PNG is a different version),
   `CLAUDE.md` cut to a few lines. Delete: every `.dc.html` and `Mamas Draft Standalone.html` (the export supersedes the
@@ -182,7 +181,7 @@ Proposal (2026-10-11; inventory by a read-only subagent, sha256 against the expo
   `eye-care-wordmark.png` and any of v2's 37 `assets/brands/` logos missing from `reference/`, and repoint
   `plugins/sgs-blocks/scripts/tests/test_sync_business_info.py`, which reads v1).
 
-**B3. Replace.** Each client's re-export goes unchanged into `sites/<client>/handoff/` (FR-48A-1) and passes
+**B3. Replace (started 2026-10-11).** The current Indus and Mama's exports sit in `sites/<client>/handoff/` and fail `handoff-check.mjs` only on what the re-export adds (`MANIFEST.json`, the two new schema files, the removed `MANIFEST.md` and Indus's trace harness); client `CLAUDE.md` files cut to a few lines; images under any `handoff/` are tracked (`.gitignore`). Each client's re-export goes unchanged into `sites/<client>/handoff/` (FR-48A-1) and passes
 `handoff-check.mjs`; the rest of `sites/<client>/` keeps only Bean's approved keepers (Indus: the old-site logos;
 Eye Care: its build, content, seed data and divergence ledger, FR-48A-11). A client `CLAUDE.md` is kept only if it
 earns its place (it auto-loads when an agent works in the folder; a README does not): at most a few lines pointing at

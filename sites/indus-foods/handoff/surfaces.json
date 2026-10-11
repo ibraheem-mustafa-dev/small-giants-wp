@@ -1,0 +1,3238 @@
+{
+  "schema_version": "1.0",
+  "project": "Indus Foods website (v2 draft)",
+  "generated": "2026-10-11",
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "records": [
+    {
+      "id": "S-01",
+      "kind": "global",
+      "name": "Top bar",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "9",
+      "route": "*",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "always rendered",
+      "closed_by": "never",
+      "source": "template; renderVals isM, showEmailPill",
+      "states": [
+        {
+          "name": "mobile (< 768)",
+          "state_keys": {
+            "isM": true,
+            "showEmailPill": false
+          },
+          "how_to_reach": "state.w < 768 (resize, or setState({ w: 375 }))",
+          "sc_if_tpl_ids": [
+            "12",
+            "15",
+            "17",
+            "19",
+            "21"
+          ]
+        },
+        {
+          "name": "tablet / desktop",
+          "state_keys": {
+            "isM": false,
+            "showEmailPill": true
+          },
+          "how_to_reach": "state.w ≥ 768",
+          "sc_if_tpl_ids": [
+            "12",
+            "15",
+            "17",
+            "19",
+            "21"
+          ]
+        },
+        {
+          "name": "pill hover",
+          "state_keys": {},
+          "how_to_reach": "pointer over a pill or social icon (CSS :hover)",
+          "animation_ids": []
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      }
+    },
+    {
+      "id": "S-02",
+      "kind": "global",
+      "name": "Scroll progress bar",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "38",
+      "route": "*",
+      "parent": null,
+      "opened_by": "always rendered",
+      "closed_by": "never",
+      "source": "ref setProgEl, updateHeader()",
+      "states": [
+        {
+          "name": "scrollY / scrollable height",
+          "state_keys": {},
+          "how_to_reach": "scroll",
+          "animation_ids": [
+            "J-02"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      }
+    },
+    {
+      "id": "S-03",
+      "kind": "header",
+      "name": "Sticky header",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "39",
+      "route": "*",
+      "breakpoints": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "parent": null,
+      "opened_by": "always rendered",
+      "closed_by": "never",
+      "source": "template; renderVals items, isDesktop, isCompact, isTablet, showHeaderCta; updateHeader()",
+      "states": [
+        {
+          "name": "desktop nav (≥ 1024)",
+          "state_keys": {
+            "isDesktop": true
+          },
+          "how_to_reach": "state.w ≥ 1024",
+          "sc_if_tpl_ids": [
+            "44",
+            "49",
+            "51"
+          ]
+        },
+        {
+          "name": "desktop with CTA pill (≥ 1260)",
+          "state_keys": {
+            "showHeaderCta": true
+          },
+          "how_to_reach": "state.w ≥ 1260",
+          "sc_if_tpl_ids": [
+            "53"
+          ]
+        },
+        {
+          "name": "compact (< 1024): hamburger",
+          "state_keys": {
+            "isCompact": true
+          },
+          "how_to_reach": "state.w < 1024",
+          "sc_if_tpl_ids": [
+            "55"
+          ]
+        },
+        {
+          "name": "tablet CTA pill (768–1023)",
+          "state_keys": {
+            "isTablet": true
+          },
+          "how_to_reach": "768 ≤ state.w < 1024",
+          "sc_if_tpl_ids": [
+            "57"
+          ]
+        },
+        {
+          "name": "current section",
+          "state_keys": {
+            "item.current": true
+          },
+          "how_to_reach": "route whose page.section matches the item: gold 2px underline + blue text",
+          "sc_if_tpl_ids": [
+            "51"
+          ]
+        },
+        {
+          "name": "scrolled (> 8px)",
+          "state_keys": {},
+          "how_to_reach": "window.scrollY > 8 → box-shadow",
+          "animation_ids": [
+            "J-01"
+          ]
+        },
+        {
+          "name": "nav label magnet",
+          "state_keys": {},
+          "how_to_reach": "pointer moving over a nav button (desktop)",
+          "animation_ids": [
+            "J-11"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      }
+    },
+    {
+      "id": "S-04",
+      "kind": "menu",
+      "name": "About mega menu",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": [
+        "63",
+        "66"
+      ],
+      "route": "*",
+      "breakpoints": [
+        "desktop"
+      ],
+      "parent": "S-03",
+      "opened_by": "mouseenter or focus on the \"About\" nav button (openItem(1)); setState({ active: 1 })",
+      "closed_by": "pointer leaving the header (scheduleClose: 170ms timer, cancelled on re-enter), Esc (window keydown), backdrop click, logo click (closeAll), any link (route change resets active), or hovering a nav item without a panel (Home, Contact)",
+      "source": "_menus[1] (kind simple); renderVals activePanel; animatePanel()",
+      "states": [
+        {
+          "name": "closed",
+          "state_keys": {
+            "active": null
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "open",
+          "state_keys": {
+            "active": 1
+          },
+          "how_to_reach": "setState({ active: 1 })",
+          "sc_if_tpl_ids": [
+            "63",
+            "66",
+            "75"
+          ],
+          "animation_ids": [
+            "A-12",
+            "A-13"
+          ]
+        },
+        {
+          "name": "link hover",
+          "state_keys": {},
+          "how_to_reach": "CSS :hover on a link: padding-left 12px"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Our Story, Certifications, Community & Charity, Sustainability, Careers, News & Blog + dark-blue feature card \"Six decades of heritage\". Panel width: 620px (with feature card). No exit animation."
+    },
+    {
+      "id": "S-05",
+      "kind": "menu",
+      "name": "Sectors mega menu",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": [
+        "63",
+        "84"
+      ],
+      "route": "*",
+      "breakpoints": [
+        "desktop"
+      ],
+      "parent": "S-03",
+      "opened_by": "mouseenter or focus on the \"Sectors\" nav button (openItem(2)); setState({ active: 2 })",
+      "closed_by": "pointer leaving the header (scheduleClose: 170ms timer, cancelled on re-enter), Esc (window keydown), backdrop click, logo click (closeAll), any link (route change resets active), or hovering a nav item without a panel (Home, Contact)",
+      "source": "_menus[2] (kind cards); renderVals activePanel; animatePanel()",
+      "states": [
+        {
+          "name": "closed",
+          "state_keys": {
+            "active": null
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "open",
+          "state_keys": {
+            "active": 2
+          },
+          "how_to_reach": "setState({ active: 2 })",
+          "sc_if_tpl_ids": [
+            "63",
+            "84"
+          ],
+          "animation_ids": [
+            "A-12",
+            "A-13"
+          ]
+        },
+        {
+          "name": "card hover",
+          "state_keys": {},
+          "how_to_reach": "CSS :hover: lift 6px"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Four sector cards on the brand-gradient panel. Panel width: 1080px. No exit animation."
+    },
+    {
+      "id": "S-06",
+      "kind": "menu",
+      "name": "Brands mega menu",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": [
+        "63",
+        "94"
+      ],
+      "route": "*",
+      "breakpoints": [
+        "desktop"
+      ],
+      "parent": "S-03",
+      "opened_by": "mouseenter or focus on the \"Brands\" nav button (openItem(3)); setState({ active: 3 })",
+      "closed_by": "pointer leaving the header (scheduleClose: 170ms timer, cancelled on re-enter), Esc (window keydown), backdrop click, logo click (closeAll), any link (route change resets active), or hovering a nav item without a panel (Home, Contact)",
+      "source": "_menus[3] (kind brands); renderVals activePanel; animatePanel()",
+      "states": [
+        {
+          "name": "closed",
+          "state_keys": {
+            "active": null
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "open",
+          "state_keys": {
+            "active": 3
+          },
+          "how_to_reach": "setState({ active: 3 })",
+          "sc_if_tpl_ids": [
+            "63",
+            "94"
+          ],
+          "animation_ids": [
+            "A-12",
+            "A-13"
+          ]
+        },
+        {
+          "name": "tile hover",
+          "state_keys": {},
+          "how_to_reach": "CSS :hover: scale 1.05, gold border"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Logo tile grid + dark-blue \"Own Brands\" block. Panel width: 1080px. No exit animation."
+    },
+    {
+      "id": "S-07",
+      "kind": "menu",
+      "name": "Trade mega menu",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": [
+        "63",
+        "66"
+      ],
+      "route": "*",
+      "breakpoints": [
+        "desktop"
+      ],
+      "parent": "S-03",
+      "opened_by": "mouseenter or focus on the \"Trade\" nav button (openItem(4)); setState({ active: 4 })",
+      "closed_by": "pointer leaving the header (scheduleClose: 170ms timer, cancelled on re-enter), Esc (window keydown), backdrop click, logo click (closeAll), any link (route change resets active), or hovering a nav item without a panel (Home, Contact)",
+      "source": "_menus[4] (kind simple); renderVals activePanel; animatePanel()",
+      "states": [
+        {
+          "name": "closed",
+          "state_keys": {
+            "active": null
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "open",
+          "state_keys": {
+            "active": 4
+          },
+          "how_to_reach": "setState({ active: 4 })",
+          "sc_if_tpl_ids": [
+            "63",
+            "66",
+            "75"
+          ],
+          "animation_ids": [
+            "A-12",
+            "A-13"
+          ]
+        },
+        {
+          "name": "link hover",
+          "state_keys": {},
+          "how_to_reach": "CSS :hover on a link: padding-left 12px"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Apply for Trade Account, Request Catalogue, Delivery & Logistics, FAQs, Terms & Conditions + feature card \"Trade with Indus Foods\". Panel width: 620px (with feature card). No exit animation."
+    },
+    {
+      "id": "S-08",
+      "kind": "backdrop",
+      "name": "Menu / drawer backdrop",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "106",
+      "route": "*",
+      "parent": null,
+      "opened_by": "a mega menu opens (desktop) or the drawer opens on tablet",
+      "closed_by": "click (closeBackdrop: active null, mobileOpen false) or the menu/drawer closing",
+      "source": "renderVals backdropO, backdropPE",
+      "states": [
+        {
+          "name": "hidden",
+          "state_keys": {
+            "backdropO": 0,
+            "backdropPE": "none"
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "visible",
+          "state_keys": {
+            "backdropO": 1,
+            "backdropPE": "auto"
+          },
+          "how_to_reach": "setState({ active: 1 }) on desktop, or setState({ w: 800, mobileOpen: true })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Always in the DOM; opacity transition .3s. Not shown behind the full-width mobile drawer."
+    },
+    {
+      "id": "S-09",
+      "kind": "drawer",
+      "name": "Mobile / tablet drawer",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "108",
+      "route": "*",
+      "breakpoints": [
+        "mobile",
+        "tablet"
+      ],
+      "parent": null,
+      "opened_by": "Burger button (toggleMobile) on tablet and mobile",
+      "closed_by": "Close button, burger toggle, backdrop (tablet), Escape, route change or any in-page link inside the drawer → closeMobile (A-38 slide-out, then setState({ mobileOpen: false, acc: null }))",
+      "source": "renderVals mobileVisible; closeMobile; animateMobile",
+      "states": [
+        {
+          "name": "closed",
+          "state_keys": {
+            "mobileOpen": false
+          },
+          "sc_if_tpl_ids": [
+            "107"
+          ],
+          "how_to_reach": "default"
+        },
+        {
+          "name": "open",
+          "state_keys": {
+            "mobileOpen": true,
+            "acc": null
+          },
+          "sc_if_tpl_ids": [
+            "107"
+          ],
+          "how_to_reach": "Tap the burger; setState({ w: 375, mobileOpen: true })",
+          "animation_ids": [
+            "A-36",
+            "A-37",
+            "A-14",
+            "A-40",
+            "J-13"
+          ]
+        },
+        {
+          "name": "closing",
+          "state_keys": {
+            "mobileOpen": true,
+            "_closing": true
+          },
+          "how_to_reach": "Tap Close; call closeMobile() on the logic instance",
+          "animation_ids": [
+            "A-38"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Redesigned 2026-10-11: blue gradient panel with drifting rings; header row has the logo, call and email circles and a gold round close button; numbered nav rows with 40px caret circles; mega-menu content inline in each section (About gold panel, Sectors gradient cards, Brands gold logo panel, Trade gold panel); pinned Become A Trade Customer bar at the bottom; thin gold scrollbar. Hover transitions: TR-021, TR-022, TR-023, TR-024, TR-025, TR-026, TR-027, TR-028, TR-029, TR-030, TR-031, TR-032, TR-033, TR-034, TR-035, TR-036, TR-037, TR-038, TR-039, TR-040, TR-041, TR-042, TR-043, TR-044."
+    },
+    {
+      "id": "S-10",
+      "kind": "accordion",
+      "name": "Drawer accordion: About",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "134",
+      "route": "*",
+      "breakpoints": [
+        "mobile",
+        "tablet"
+      ],
+      "parent": "S-09",
+      "opened_by": "Tap the About row (toggleAcc(1))",
+      "closed_by": "Tap the row again, open another section, or close the drawer",
+      "source": "renderVals items[i].accRows / accVis; animateAcc",
+      "states": [
+        {
+          "name": "collapsed",
+          "state_keys": {
+            "acc": null
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "expanded",
+          "state_keys": {
+            "acc": 1
+          },
+          "how_to_reach": "Tap About; setState({ w: 375, mobileOpen: true, acc: 1 })",
+          "animation_ids": [
+            "TR-028",
+            "A-39",
+            "J-20"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Always mounted since 2026-10-11 so it can animate: grid-template-rows 0fr → 1fr (.55s) with visibility hidden → visible. Panel: gold gradient with feature card and numbered links."
+    },
+    {
+      "id": "S-11",
+      "kind": "accordion",
+      "name": "Drawer accordion: Sectors",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "134",
+      "route": "*",
+      "breakpoints": [
+        "mobile",
+        "tablet"
+      ],
+      "parent": "S-09",
+      "opened_by": "Tap the Sectors row (toggleAcc(2))",
+      "closed_by": "Tap the row again, open another section, or close the drawer",
+      "source": "renderVals items[i].accRows / accVis; animateAcc",
+      "states": [
+        {
+          "name": "collapsed",
+          "state_keys": {
+            "acc": null
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "expanded",
+          "state_keys": {
+            "acc": 2
+          },
+          "how_to_reach": "Tap Sectors; setState({ w: 375, mobileOpen: true, acc: 2 })",
+          "animation_ids": [
+            "TR-028",
+            "A-39",
+            "J-20"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Always mounted since 2026-10-11 so it can animate: grid-template-rows 0fr → 1fr (.55s) with visibility hidden → visible. Panel: sector gradient with 2-column photo cards."
+    },
+    {
+      "id": "S-12",
+      "kind": "accordion",
+      "name": "Drawer accordion: Brands",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "134",
+      "route": "*",
+      "breakpoints": [
+        "mobile",
+        "tablet"
+      ],
+      "parent": "S-09",
+      "opened_by": "Tap the Brands row (toggleAcc(3))",
+      "closed_by": "Tap the row again, open another section, or close the drawer",
+      "source": "renderVals items[i].accRows / accVis; animateAcc",
+      "states": [
+        {
+          "name": "collapsed",
+          "state_keys": {
+            "acc": null
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "expanded",
+          "state_keys": {
+            "acc": 3
+          },
+          "how_to_reach": "Tap Brands; setState({ w: 375, mobileOpen: true, acc: 3 })",
+          "animation_ids": [
+            "TR-028",
+            "A-39",
+            "J-20"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Always mounted since 2026-10-11 so it can animate: grid-template-rows 0fr → 1fr (.55s) with visibility hidden → visible. Panel: gold panel with 9 white logo tiles and the blue own-brand box."
+    },
+    {
+      "id": "S-13",
+      "kind": "accordion",
+      "name": "Drawer accordion: Trade",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "134",
+      "route": "*",
+      "breakpoints": [
+        "mobile",
+        "tablet"
+      ],
+      "parent": "S-09",
+      "opened_by": "Tap the Trade row (toggleAcc(4))",
+      "closed_by": "Tap the row again, open another section, or close the drawer",
+      "source": "renderVals items[i].accRows / accVis; animateAcc",
+      "states": [
+        {
+          "name": "collapsed",
+          "state_keys": {
+            "acc": null
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "expanded",
+          "state_keys": {
+            "acc": 4
+          },
+          "how_to_reach": "Tap Trade; setState({ w: 375, mobileOpen: true, acc: 4 })",
+          "animation_ids": [
+            "TR-028",
+            "A-39",
+            "J-20"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Always mounted since 2026-10-11 so it can animate: grid-template-rows 0fr → 1fr (.55s) with visibility hidden → visible. Panel: gold panel with navy feature card and numbered links."
+    },
+    {
+      "id": "S-14",
+      "kind": "footer",
+      "name": "Footer",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "653",
+      "route": "*",
+      "parent": null,
+      "opened_by": "always rendered",
+      "closed_by": "never",
+      "source": "template; homeVals footerQuick, hours, hoursNow; setPulseEl",
+      "states": [
+        {
+          "name": "open now",
+          "state_keys": {
+            "hoursNow.label": "Open now"
+          },
+          "how_to_reach": "Europe/London time inside Mon–Thu 9:30–17:00, Fri 9:30–12:00 or 14:30–17:00, Sat 10:00–15:00 (stub Date to reach)",
+          "animation_ids": [
+            "A-02"
+          ]
+        },
+        {
+          "name": "closed",
+          "state_keys": {
+            "hoursNow.label": "Closed"
+          },
+          "how_to_reach": "any other time; sub-text \"Opens at / tomorrow at / <Day> at …\"",
+          "animation_ids": [
+            "A-02"
+          ]
+        },
+        {
+          "name": "today row highlighted",
+          "state_keys": {},
+          "how_to_reach": "row for the current London weekday is gold and bold"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Opening-hours badge, row highlight and \"Closes at / Opens …\" text are computed from Europe/London time at render (hoursNow, hoursRows)."
+      }
+    },
+    {
+      "id": "S-15",
+      "kind": "global",
+      "name": "WhatsApp button",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "728",
+      "route": "*",
+      "parent": null,
+      "opened_by": "always rendered (fixed bottom-right)",
+      "closed_by": "never",
+      "source": "template; showEmailPill",
+      "states": [
+        {
+          "name": "label shown (≥ 768)",
+          "state_keys": {
+            "showEmailPill": true
+          },
+          "how_to_reach": "state.w ≥ 768",
+          "sc_if_tpl_ids": [
+            "730"
+          ]
+        },
+        {
+          "name": "icon only (< 768)",
+          "state_keys": {
+            "showEmailPill": false
+          },
+          "how_to_reach": "state.w < 768",
+          "sc_if_tpl_ids": [
+            "730"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      }
+    },
+    {
+      "id": "S-16",
+      "kind": "page",
+      "name": "home",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "202",
+      "route": "/",
+      "page_key": "home",
+      "blocks": [],
+      "parent": null,
+      "opened_by": "hash route / (also any unknown hash)",
+      "closed_by": "navigating to another route",
+      "source": "pages['home'], homeVals()",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "home"
+          },
+          "how_to_reach": "location.hash = '#/'",
+          "sc_if_tpl_ids": [
+            "202"
+          ],
+          "animation_ids": [
+            "A-21",
+            "A-22",
+            "A-23",
+            "A-16",
+            "A-15",
+            "J-03"
+          ]
+        },
+        {
+          "name": "testimonial 1 of 4",
+          "state_keys": {
+            "tIdx": 0
+          },
+          "how_to_reach": "prev/next/dot buttons or setState({ tIdx: 0 }); auto-advances every 6.5s",
+          "animation_ids": [
+            "A-01"
+          ]
+        },
+        {
+          "name": "testimonial 2 of 4",
+          "state_keys": {
+            "tIdx": 1
+          },
+          "how_to_reach": "prev/next/dot buttons or setState({ tIdx: 1 }); auto-advances every 6.5s",
+          "animation_ids": [
+            "A-01"
+          ]
+        },
+        {
+          "name": "testimonial 3 of 4",
+          "state_keys": {
+            "tIdx": 2
+          },
+          "how_to_reach": "prev/next/dot buttons or setState({ tIdx: 2 }); auto-advances every 6.5s",
+          "animation_ids": [
+            "A-01"
+          ]
+        },
+        {
+          "name": "testimonial 4 of 4",
+          "state_keys": {
+            "tIdx": 3
+          },
+          "how_to_reach": "prev/next/dot buttons or setState({ tIdx: 3 }); auto-advances every 6.5s",
+          "animation_ids": [
+            "A-01"
+          ]
+        },
+        {
+          "name": "desktop heritage line",
+          "state_keys": {
+            "lineOn": true
+          },
+          "how_to_reach": "state.w ≥ 1024",
+          "sc_if_tpl_ids": [
+            "256"
+          ]
+        },
+        {
+          "name": "steps connector (≥ 768)",
+          "state_keys": {
+            "notM": true
+          },
+          "how_to_reach": "state.w ≥ 768",
+          "sc_if_tpl_ids": [
+            "296"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Testimonial index auto-advances every 6.5s while visible."
+      },
+      "notes": "section: Home, crumb: Home"
+    },
+    {
+      "id": "S-17",
+      "kind": "page",
+      "name": "A family business feeding the UK since 1962.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/about",
+      "page_key": "about",
+      "blocks": [
+        "stats",
+        "hscroll",
+        "cards",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /about",
+      "closed_by": "navigating to another route",
+      "source": "pages['about']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "about"
+          },
+          "how_to_reach": "location.hash = '#/about'",
+          "sc_if_tpl_ids": [
+            "315",
+            "320",
+            "335",
+            "357",
+            "435",
+            "478",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-24",
+            "A-25",
+            "A-26",
+            "A-27",
+            "A-28",
+            "A-29",
+            "A-30",
+            "A-07",
+            "A-09"
+          ]
+        },
+        {
+          "name": "pinned timeline (desktop)",
+          "state_keys": {
+            "R.pin": true
+          },
+          "how_to_reach": "state.w ≥ 1024; scroll through the pin",
+          "sc_if_tpl_ids": [
+            "436"
+          ],
+          "animation_ids": [
+            "J-04",
+            "J-05",
+            "J-06",
+            "J-07",
+            "J-08"
+          ]
+        },
+        {
+          "name": "swipe timeline (< 1024)",
+          "state_keys": {
+            "R.noPin": true
+          },
+          "how_to_reach": "state.w < 1024",
+          "sc_if_tpl_ids": [
+            "453"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: About Us"
+    },
+    {
+      "id": "S-18",
+      "kind": "page",
+      "name": "Three generations, one family, since 1962.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/our-story",
+      "page_key": "our-story",
+      "blocks": [
+        "hscroll",
+        "split",
+        "stats",
+        "split",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /our-story",
+      "closed_by": "navigating to another route",
+      "source": "pages['our-story']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "our-story"
+          },
+          "how_to_reach": "location.hash = '#/our-story'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "435",
+            "378",
+            "357",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        },
+        {
+          "name": "pinned timeline (desktop)",
+          "state_keys": {
+            "R.pin": true
+          },
+          "how_to_reach": "state.w ≥ 1024; scroll through the pin",
+          "sc_if_tpl_ids": [
+            "436"
+          ],
+          "animation_ids": [
+            "J-04",
+            "J-05",
+            "J-06",
+            "J-07",
+            "J-08"
+          ]
+        },
+        {
+          "name": "swipe timeline (< 1024)",
+          "state_keys": {
+            "R.noPin": true
+          },
+          "how_to_reach": "state.w < 1024",
+          "sc_if_tpl_ids": [
+            "453"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Our Story"
+    },
+    {
+      "id": "S-19",
+      "kind": "page",
+      "name": "Quality and safety, independently checked.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/certifications",
+      "page_key": "certifications",
+      "blocks": [
+        "cards",
+        "rows",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /certifications",
+      "closed_by": "navigating to another route",
+      "source": "pages['certifications']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "certifications"
+          },
+          "how_to_reach": "location.hash = '#/certifications'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "478",
+            "397",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Certifications"
+    },
+    {
+      "id": "S-20",
+      "kind": "page",
+      "name": "Rooted in Sparkbrook for over 60 years.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/community",
+      "page_key": "community",
+      "blocks": [
+        "cards",
+        "split",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /community",
+      "closed_by": "navigating to another route",
+      "source": "pages['community']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "community"
+          },
+          "how_to_reach": "location.hash = '#/community'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "478",
+            "378",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Community & Charity"
+    },
+    {
+      "id": "S-21",
+      "kind": "page",
+      "name": "Sourcing responsibly from over 150 countries.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/sustainability",
+      "page_key": "sustainability",
+      "blocks": [
+        "rows",
+        "split",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /sustainability",
+      "closed_by": "navigating to another route",
+      "source": "pages['sustainability']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "sustainability"
+          },
+          "how_to_reach": "location.hash = '#/sustainability'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "397",
+            "378",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Sustainability"
+    },
+    {
+      "id": "S-22",
+      "kind": "page",
+      "name": "Grow with a family business.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/careers",
+      "page_key": "careers",
+      "blocks": [
+        "cards",
+        "roles",
+        "rows",
+        "form"
+      ],
+      "parent": null,
+      "opened_by": "hash route /careers",
+      "closed_by": "navigating to another route",
+      "source": "pages['careers']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "careers"
+          },
+          "how_to_reach": "location.hash = '#/careers'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "478",
+            "397",
+            "540"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Careers 2026-10-11: added the Open roles block (example data) and made the Teams rows clickable."
+    },
+    {
+      "id": "S-23",
+      "kind": "page",
+      "name": "Food service supply for kitchens that never stop.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/food-service",
+      "page_key": "food-service",
+      "blocks": [
+        "split",
+        "cards",
+        "rows",
+        "gradients",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /food-service",
+      "closed_by": "navigating to another route",
+      "source": "pages['food-service']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "food-service"
+          },
+          "how_to_reach": "location.hash = '#/food-service'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "335",
+            "339",
+            "378",
+            "478",
+            "397",
+            "364",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Sectors, crumb: Food Service"
+    },
+    {
+      "id": "S-24",
+      "kind": "page",
+      "name": "Bulk ingredients for food manufacturers.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/manufacturing",
+      "page_key": "manufacturing",
+      "blocks": [
+        "split",
+        "cards",
+        "rows",
+        "gradients",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /manufacturing",
+      "closed_by": "navigating to another route",
+      "source": "pages['manufacturing']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "manufacturing"
+          },
+          "how_to_reach": "location.hash = '#/manufacturing'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "335",
+            "339",
+            "378",
+            "478",
+            "397",
+            "364",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Sectors, crumb: Manufacturing"
+    },
+    {
+      "id": "S-25",
+      "kind": "page",
+      "name": "Retail-ready ranges your customers look for.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/retail",
+      "page_key": "retail",
+      "blocks": [
+        "split",
+        "split",
+        "rows",
+        "gradients",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /retail",
+      "closed_by": "navigating to another route",
+      "source": "pages['retail']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "retail"
+          },
+          "how_to_reach": "location.hash = '#/retail'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "335",
+            "339",
+            "378",
+            "397",
+            "364",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Sectors, crumb: Retail"
+    },
+    {
+      "id": "S-26",
+      "kind": "page",
+      "name": "Pallet volumes for wholesalers and cash & carries.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/wholesale",
+      "page_key": "wholesale",
+      "blocks": [
+        "split",
+        "rows",
+        "gradients",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /wholesale",
+      "closed_by": "navigating to another route",
+      "source": "pages['wholesale']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "wholesale"
+          },
+          "how_to_reach": "location.hash = '#/wholesale'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "335",
+            "339",
+            "378",
+            "397",
+            "364",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Sectors, crumb: Wholesale"
+    },
+    {
+      "id": "S-27",
+      "kind": "page",
+      "name": "Our own brand, and the brands we distribute.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/brands",
+      "page_key": "brands",
+      "blocks": [
+        "logos",
+        "split",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /brands",
+      "closed_by": "navigating to another route",
+      "source": "pages['brands']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "brands"
+          },
+          "how_to_reach": "location.hash = '#/brands'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "498",
+            "378",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Brands, crumb: All Brands"
+    },
+    {
+      "id": "S-28",
+      "kind": "page",
+      "name": "Sanam: quality ingredients for restaurants.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/brand-sanam",
+      "page_key": "brand-sanam",
+      "blocks": [
+        "split",
+        "cards",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /brand-sanam",
+      "closed_by": "navigating to another route",
+      "source": "pages['brand-sanam']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "brand-sanam"
+          },
+          "how_to_reach": "location.hash = '#/brand-sanam'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "335",
+            "339",
+            "378",
+            "478",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Brands, crumb: Sanam"
+    },
+    {
+      "id": "S-29",
+      "kind": "page",
+      "name": "Shan: halal Asian food at great prices.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/brand-shan",
+      "page_key": "brand-shan",
+      "blocks": [
+        "split",
+        "cards",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /brand-shan",
+      "closed_by": "navigating to another route",
+      "source": "pages['brand-shan']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "brand-shan"
+          },
+          "how_to_reach": "location.hash = '#/brand-shan'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "335",
+            "339",
+            "378",
+            "478",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Brands, crumb: Shan"
+    },
+    {
+      "id": "S-30",
+      "kind": "page",
+      "name": "Green Leaf: herbs, pulses and pantry staples.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/brand-green-leaf",
+      "page_key": "brand-green-leaf",
+      "blocks": [
+        "split",
+        "cards",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /brand-green-leaf",
+      "closed_by": "navigating to another route",
+      "source": "pages['brand-green-leaf']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "brand-green-leaf"
+          },
+          "how_to_reach": "location.hash = '#/brand-green-leaf'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "335",
+            "339",
+            "378",
+            "478",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Brands, crumb: Green Leaf"
+    },
+    {
+      "id": "S-31",
+      "kind": "page",
+      "name": "The Lemon Tree: delicious local baked goods.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/brand-lemon-tree",
+      "page_key": "brand-lemon-tree",
+      "blocks": [
+        "split",
+        "cards",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /brand-lemon-tree",
+      "closed_by": "navigating to another route",
+      "source": "pages['brand-lemon-tree']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "brand-lemon-tree"
+          },
+          "how_to_reach": "location.hash = '#/brand-lemon-tree'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "335",
+            "339",
+            "378",
+            "478",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Brands, crumb: The Lemon Tree"
+    },
+    {
+      "id": "S-32",
+      "kind": "page",
+      "name": "Apply for a trade account.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/apply",
+      "page_key": "apply",
+      "blocks": [
+        "wizard"
+      ],
+      "parent": null,
+      "opened_by": "hash route /apply",
+      "closed_by": "navigating to another route",
+      "source": "pages['apply']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "apply"
+          },
+          "how_to_reach": "location.hash = '#/apply'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "465"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "TradeApplication restores a saved draft from localStorage and generates a random IND-###### reference on submit."
+      },
+      "notes": "section: Trade, crumb: Apply for Trade Account"
+    },
+    {
+      "id": "S-33",
+      "kind": "page",
+      "name": "Request our product catalogue.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/catalogue",
+      "page_key": "catalogue",
+      "blocks": [
+        "cards",
+        "form"
+      ],
+      "parent": null,
+      "opened_by": "hash route /catalogue",
+      "closed_by": "navigating to another route",
+      "source": "pages['catalogue']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "catalogue"
+          },
+          "how_to_reach": "location.hash = '#/catalogue'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "478",
+            "540"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Trade, crumb: Request Catalogue"
+    },
+    {
+      "id": "S-34",
+      "kind": "page",
+      "name": "Delivered from our Birmingham hub.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/delivery",
+      "page_key": "delivery",
+      "blocks": [
+        "rows",
+        "split",
+        "faq",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /delivery",
+      "closed_by": "navigating to another route",
+      "source": "pages['delivery']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "delivery"
+          },
+          "how_to_reach": "location.hash = '#/delivery'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "397",
+            "378",
+            "585",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Trade, crumb: Delivery & Logistics"
+    },
+    {
+      "id": "S-35",
+      "kind": "page",
+      "name": "Trade terms and conditions.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/terms",
+      "page_key": "terms",
+      "blocks": [
+        "prose"
+      ],
+      "parent": null,
+      "opened_by": "hash route /terms",
+      "closed_by": "navigating to another route",
+      "source": "pages['terms']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "terms"
+          },
+          "how_to_reach": "location.hash = '#/terms'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "640"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Trade, crumb: Terms & Conditions"
+    },
+    {
+      "id": "S-36",
+      "kind": "page",
+      "name": "News and insight from the trade.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/blog",
+      "page_key": "blog",
+      "blocks": [
+        "posts",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /blog",
+      "closed_by": "navigating to another route",
+      "source": "pages['blog']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "blog"
+          },
+          "how_to_reach": "location.hash = '#/blog'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "599",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Blog"
+    },
+    {
+      "id": "S-37",
+      "kind": "page",
+      "name": "Talk to our team.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/contact",
+      "page_key": "contact",
+      "blocks": [
+        "contact",
+        "enquiry"
+      ],
+      "parent": null,
+      "opened_by": "hash route /contact",
+      "closed_by": "navigating to another route",
+      "source": "pages['contact']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "contact"
+          },
+          "how_to_reach": "location.hash = '#/contact'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "527",
+            "467"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Contact, crumb: Contact Us"
+    },
+    {
+      "id": "S-38",
+      "kind": "page",
+      "name": "Frequently asked questions.",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/faqs",
+      "page_key": "faqs",
+      "blocks": [
+        "faq",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /faqs",
+      "closed_by": "navigating to another route",
+      "source": "pages['faqs']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "faqs"
+          },
+          "how_to_reach": "location.hash = '#/faqs'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "585",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: Trade, crumb: FAQs"
+    },
+    {
+      "id": "S-39",
+      "kind": "page",
+      "name": "Supporting the trade through Ramadan",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/post-post-1",
+      "page_key": "post-post-1",
+      "blocks": [
+        "article",
+        "posts",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /post-post-1",
+      "closed_by": "navigating to another route",
+      "source": "pages['post-post-1']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "post-post-1"
+          },
+          "how_to_reach": "location.hash = '#/post-post-1'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "616",
+            "599",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Article"
+    },
+    {
+      "id": "S-40",
+      "kind": "page",
+      "name": "Falak rice: exclusive UK distribution",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/post-post-2",
+      "page_key": "post-post-2",
+      "blocks": [
+        "article",
+        "posts",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /post-post-2",
+      "closed_by": "navigating to another route",
+      "source": "pages['post-post-2']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "post-post-2"
+          },
+          "how_to_reach": "location.hash = '#/post-post-2'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "616",
+            "599",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Article"
+    },
+    {
+      "id": "S-41",
+      "kind": "page",
+      "name": "Inside our Birmingham packing line",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/post-post-3",
+      "page_key": "post-post-3",
+      "blocks": [
+        "article",
+        "posts",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /post-post-3",
+      "closed_by": "navigating to another route",
+      "source": "pages['post-post-3']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "post-post-3"
+          },
+          "how_to_reach": "location.hash = '#/post-post-3'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "616",
+            "599",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Article"
+    },
+    {
+      "id": "S-42",
+      "kind": "page",
+      "name": "Sixty years in the Balti Triangle",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/post-post-4",
+      "page_key": "post-post-4",
+      "blocks": [
+        "article",
+        "posts",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /post-post-4",
+      "closed_by": "navigating to another route",
+      "source": "pages['post-post-4']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "post-post-4"
+          },
+          "how_to_reach": "location.hash = '#/post-post-4'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "616",
+            "599",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Article"
+    },
+    {
+      "id": "S-43",
+      "kind": "page",
+      "name": "Ordering ahead for Eid",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/post-post-5",
+      "page_key": "post-post-5",
+      "blocks": [
+        "article",
+        "posts",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /post-post-5",
+      "closed_by": "navigating to another route",
+      "source": "pages['post-post-5']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "post-post-5"
+          },
+          "how_to_reach": "location.hash = '#/post-post-5'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "616",
+            "599",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Article"
+    },
+    {
+      "id": "S-44",
+      "kind": "page",
+      "name": "Why independents still matter",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "315",
+      "route": "/post-post-6",
+      "page_key": "post-post-6",
+      "blocks": [
+        "article",
+        "posts",
+        "cta"
+      ],
+      "parent": null,
+      "opened_by": "hash route /post-post-6",
+      "closed_by": "navigating to another route",
+      "source": "pages['post-post-6']",
+      "states": [
+        {
+          "name": "default",
+          "state_keys": {
+            "page": "post-post-6"
+          },
+          "how_to_reach": "location.hash = '#/post-post-6'",
+          "sc_if_tpl_ids": [
+            "315",
+            "317",
+            "339",
+            "616",
+            "599",
+            "514"
+          ],
+          "animation_ids": [
+            "A-10",
+            "A-21",
+            "A-22",
+            "A-23",
+            "J-03",
+            "A-07",
+            "A-09"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "section: About, crumb: Article"
+    },
+    {
+      "id": "S-45",
+      "kind": "accordion",
+      "name": "FAQ accordion (delivery)",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": [
+        "585",
+        "597"
+      ],
+      "route": "/delivery",
+      "page_key": "delivery",
+      "parent": "S-34",
+      "opened_by": "click a question (toggle); setState({ faqOpen: { [\"delivery-<blockIndex>-<group>-<item>\"]: true } })",
+      "closed_by": "click again; several can be open at once",
+      "source": "renderVals faq groups, state.faqOpen",
+      "states": [
+        {
+          "name": "all closed",
+          "state_keys": {
+            "faqOpen": {}
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "item open",
+          "state_keys": {
+            "faqOpen": {
+              "<page>-<bi>-<gi>-<qi>": true
+            }
+          },
+          "how_to_reach": "click",
+          "sc_if_tpl_ids": [
+            "597"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Answer appears instantly; the + icon rotates 45deg and turns blue (transition .3s)."
+    },
+    {
+      "id": "S-46",
+      "kind": "accordion",
+      "name": "FAQ accordion (faqs)",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": [
+        "585",
+        "597"
+      ],
+      "route": "/faqs",
+      "page_key": "faqs",
+      "parent": "S-38",
+      "opened_by": "click a question (toggle); setState({ faqOpen: { [\"faqs-<blockIndex>-<group>-<item>\"]: true } })",
+      "closed_by": "click again; several can be open at once",
+      "source": "renderVals faq groups, state.faqOpen",
+      "states": [
+        {
+          "name": "all closed",
+          "state_keys": {
+            "faqOpen": {}
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "item open",
+          "state_keys": {
+            "faqOpen": {
+              "<page>-<bi>-<gi>-<qi>": true
+            }
+          },
+          "how_to_reach": "click",
+          "sc_if_tpl_ids": [
+            "597"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Answer appears instantly; the + icon rotates 45deg and turns blue (transition .3s)."
+    },
+    {
+      "id": "S-47",
+      "kind": "panel",
+      "name": "Blog category filter",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": [
+        "599",
+        "600"
+      ],
+      "route": "/blog",
+      "page_key": "blog",
+      "parent": "S-36",
+      "opened_by": "click a category chip",
+      "closed_by": "click \"All\"",
+      "source": "state.blogCat",
+      "states": [
+        {
+          "name": "All",
+          "state_keys": {
+            "blogCat": "All"
+          },
+          "how_to_reach": "default"
+        },
+        {
+          "name": "category selected",
+          "state_keys": {
+            "blogCat": "<category>"
+          },
+          "how_to_reach": "setState({ blogCat: 'Seasonal' })"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Post cards re-render filtered; the reveal for new cards runs only after the next route change (setupReveal is not re-run on filter)."
+    },
+    {
+      "id": "S-48",
+      "kind": "form",
+      "name": "Inline form (careers)",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": [
+        "540",
+        "549"
+      ],
+      "route": "/careers",
+      "page_key": "careers",
+      "parent": "S-22",
+      "opened_by": "route",
+      "closed_by": "submit (client-side only)",
+      "source": "renderVals form block (key 'careers-2')",
+      "states": [
+        {
+          "name": "editing",
+          "state_keys": {
+            "sent.careers-2": false
+          },
+          "how_to_reach": "default",
+          "sc_if_tpl_ids": [
+            "549",
+            "557",
+            "559",
+            "561",
+            "565",
+            "567"
+          ]
+        },
+        {
+          "name": "submit hover",
+          "state_keys": {},
+          "how_to_reach": "pointer over submit",
+          "animation_ids": [
+            "J-12"
+          ]
+        },
+        {
+          "name": "prefilled from a role or team",
+          "state_keys": {
+            "select[name=role]": "role title",
+            "select[name=team]": "team"
+          },
+          "how_to_reach": "Click Apply for this role or a Teams row; call toForm({ role: \"Warehouse Operative\", team: \"Warehouse & logistics\" })",
+          "animation_ids": [
+            "J-21",
+            "A-41"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Native required attributes only; no custom validation."
+    },
+    {
+      "id": "S-49",
+      "kind": "result",
+      "name": "Inline form thank-you (careers)",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "543",
+      "route": "/careers",
+      "page_key": "careers",
+      "parent": "S-48",
+      "opened_by": "submit (onSubmit preventDefault → sent[key] = true)",
+      "closed_by": "\"Send another\" (reset)",
+      "source": "state.sent",
+      "states": [
+        {
+          "name": "sent",
+          "state_keys": {
+            "sent.careers-2": true
+          },
+          "how_to_reach": "setState({ sent: { 'careers-2': true } })",
+          "sc_if_tpl_ids": [
+            "543"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "No entrance animation."
+    },
+    {
+      "id": "S-50",
+      "kind": "form",
+      "name": "Inline form (catalogue)",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": [
+        "540",
+        "549"
+      ],
+      "route": "/catalogue",
+      "page_key": "catalogue",
+      "parent": "S-33",
+      "opened_by": "route",
+      "closed_by": "submit (client-side only)",
+      "source": "renderVals form block (key 'catalogue-1')",
+      "states": [
+        {
+          "name": "editing",
+          "state_keys": {
+            "sent.catalogue-1": false
+          },
+          "how_to_reach": "default",
+          "sc_if_tpl_ids": [
+            "549",
+            "557",
+            "559",
+            "561",
+            "565",
+            "567"
+          ]
+        },
+        {
+          "name": "submit hover",
+          "state_keys": {},
+          "how_to_reach": "pointer over submit",
+          "animation_ids": [
+            "J-12"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Native required attributes only; no custom validation."
+    },
+    {
+      "id": "S-51",
+      "kind": "result",
+      "name": "Inline form thank-you (catalogue)",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "543",
+      "route": "/catalogue",
+      "page_key": "catalogue",
+      "parent": "S-50",
+      "opened_by": "submit (onSubmit preventDefault → sent[key] = true)",
+      "closed_by": "\"Send another\" (reset)",
+      "source": "state.sent",
+      "states": [
+        {
+          "name": "sent",
+          "state_keys": {
+            "sent.catalogue-1": true
+          },
+          "how_to_reach": "setState({ sent: { 'catalogue-1': true } })",
+          "sc_if_tpl_ids": [
+            "543"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "No entrance animation."
+    },
+    {
+      "id": "S-52",
+      "kind": "form",
+      "name": "Trade account application",
+      "dc": "TradeApplication",
+      "template_tpl_id": [
+        "5"
+      ],
+      "route": "/apply",
+      "page_key": "apply",
+      "parent": "S-32",
+      "opened_by": "route /apply (dc-import in the wizard block)",
+      "closed_by": "submit on Review → result",
+      "source": "TradeApplication: schema getter, next(), back(), go(), validate()",
+      "states": [
+        {
+          "name": "in progress",
+          "state_keys": {
+            "done": false
+          },
+          "how_to_reach": "default",
+          "sc_if_tpl_ids": [
+            "5"
+          ]
+        },
+        {
+          "name": "draft restored",
+          "state_keys": {
+            "saved": true
+          },
+          "how_to_reach": "localStorage['indus-trade-application'] = {v, step} before mount"
+        },
+        {
+          "name": "validation errors",
+          "state_keys": {
+            "errs": {
+              "<field>": "<message>"
+            }
+          },
+          "how_to_reach": "Continue with missing/invalid fields",
+          "sc_if_tpl_ids": [
+            "65"
+          ],
+          "animation_ids": [
+            "A-33"
+          ]
+        },
+        {
+          "name": "checklist open (< 1024)",
+          "state_keys": {
+            "ckOpen": true
+          },
+          "how_to_reach": "toggle \"What you need\" (toggleCk); always open on desktop",
+          "sc_if_tpl_ids": [
+            "92"
+          ]
+        },
+        {
+          "name": "stepper labels (≥ 768)",
+          "state_keys": {
+            "L.labels": true
+          },
+          "how_to_reach": "state.w ≥ 768",
+          "sc_if_tpl_ids": [
+            "11",
+            "20",
+            "90"
+          ]
+        },
+        {
+          "name": "side help: desktop / compact",
+          "state_keys": {
+            "L.desk": true
+          },
+          "how_to_reach": "state.w ≥ 1024 vs < 1024",
+          "sc_if_tpl_ids": [
+            "97",
+            "102"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Restores a saved draft from localStorage on mount; random reference on submit."
+      }
+    },
+    {
+      "id": "S-53",
+      "kind": "form-step",
+      "name": "Step 1: Tell us about your business",
+      "dc": "TradeApplication",
+      "template_tpl_id": [
+        "25"
+      ],
+      "route": "/apply",
+      "page_key": "apply",
+      "parent": "S-52",
+      "opened_by": "default; Back from step 2; Edit on Review",
+      "closed_by": "Continue (validated) or Back",
+      "source": "schema[0] (key 'business')",
+      "states": [
+        {
+          "name": "active",
+          "state_keys": {
+            "step": 0
+          },
+          "how_to_reach": "setState({ step: 0 })",
+          "sc_if_tpl_ids": [
+            "25",
+            "83"
+          ],
+          "animation_ids": [
+            "A-31",
+            "J-17"
+          ]
+        },
+        {
+          "name": "invalid",
+          "state_keys": {
+            "step": 0,
+            "errs": "{…}"
+          },
+          "how_to_reach": "Continue with errors",
+          "sc_if_tpl_ids": [
+            "65"
+          ],
+          "animation_ids": [
+            "A-33"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Conditional fields: Companies House number shown and required only for Limited company / LLP. Hidden fields are filtered in renderVals (show: false), not by sc-if."
+    },
+    {
+      "id": "S-54",
+      "kind": "form-step",
+      "name": "Step 2: Where are you based?",
+      "dc": "TradeApplication",
+      "template_tpl_id": [
+        "25"
+      ],
+      "route": "/apply",
+      "page_key": "apply",
+      "parent": "S-52",
+      "opened_by": "Continue on step 1 when valid (next → go(1)); Edit on Review",
+      "closed_by": "Continue (validated) or Back",
+      "source": "schema[1] (key 'premises')",
+      "states": [
+        {
+          "name": "active",
+          "state_keys": {
+            "step": 1
+          },
+          "how_to_reach": "setState({ step: 1 })",
+          "sc_if_tpl_ids": [
+            "25",
+            "80"
+          ],
+          "animation_ids": [
+            "A-31",
+            "J-17"
+          ]
+        },
+        {
+          "name": "invalid",
+          "state_keys": {
+            "step": 1,
+            "errs": "{…}"
+          },
+          "how_to_reach": "Continue with errors",
+          "sc_if_tpl_ids": [
+            "65"
+          ],
+          "animation_ids": [
+            "A-33"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Conditional fields: Delivery address heading, address and postcode shown and required when \"Deliver to this address\" is unticked. Hidden fields are filtered in renderVals (show: false), not by sc-if."
+    },
+    {
+      "id": "S-55",
+      "kind": "form-step",
+      "name": "Step 3: Who should we speak to?",
+      "dc": "TradeApplication",
+      "template_tpl_id": [
+        "25"
+      ],
+      "route": "/apply",
+      "page_key": "apply",
+      "parent": "S-52",
+      "opened_by": "Continue on step 2 when valid (next → go(2)); Edit on Review",
+      "closed_by": "Continue (validated) or Back",
+      "source": "schema[2] (key 'contact')",
+      "states": [
+        {
+          "name": "active",
+          "state_keys": {
+            "step": 2
+          },
+          "how_to_reach": "setState({ step: 2 })",
+          "sc_if_tpl_ids": [
+            "25",
+            "80"
+          ],
+          "animation_ids": [
+            "A-31",
+            "J-17"
+          ]
+        },
+        {
+          "name": "invalid",
+          "state_keys": {
+            "step": 2,
+            "errs": "{…}"
+          },
+          "how_to_reach": "Continue with errors",
+          "sc_if_tpl_ids": [
+            "65"
+          ],
+          "animation_ids": [
+            "A-33"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Conditional fields: Home postcode required (else \"Optional\") when payment is Credit account. Hidden fields are filtered in renderVals (show: false), not by sc-if."
+    },
+    {
+      "id": "S-56",
+      "kind": "form-step",
+      "name": "Step 4: How will you order?",
+      "dc": "TradeApplication",
+      "template_tpl_id": [
+        "25"
+      ],
+      "route": "/apply",
+      "page_key": "apply",
+      "parent": "S-52",
+      "opened_by": "Continue on step 3 when valid (next → go(3)); Edit on Review",
+      "closed_by": "Continue (validated) or Back",
+      "source": "schema[3] (key 'ordering')",
+      "states": [
+        {
+          "name": "active",
+          "state_keys": {
+            "step": 3
+          },
+          "how_to_reach": "setState({ step: 3 })",
+          "sc_if_tpl_ids": [
+            "25",
+            "80"
+          ],
+          "animation_ids": [
+            "A-31",
+            "J-17"
+          ]
+        },
+        {
+          "name": "invalid",
+          "state_keys": {
+            "step": 3,
+            "errs": "{…}"
+          },
+          "how_to_reach": "Continue with errors",
+          "sc_if_tpl_ids": [
+            "65"
+          ],
+          "animation_ids": [
+            "A-33"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Conditional fields: Credit limit, two trade references and credit-check consent shown when payment is \"Credit account (30 days)\". Hidden fields are filtered in renderVals (show: false), not by sc-if."
+    },
+    {
+      "id": "S-57",
+      "kind": "form-step",
+      "name": "Step 5: Check and submit",
+      "dc": "TradeApplication",
+      "template_tpl_id": [
+        "67"
+      ],
+      "route": "/apply",
+      "page_key": "apply",
+      "parent": "S-52",
+      "opened_by": "Continue on step 4 when valid (next → go(4)); Edit on Review",
+      "closed_by": "Continue (validated) or Back",
+      "source": "schema[4] (key 'review')",
+      "states": [
+        {
+          "name": "active",
+          "state_keys": {
+            "step": 4
+          },
+          "how_to_reach": "setState({ step: 4 })",
+          "sc_if_tpl_ids": [
+            "67"
+          ],
+          "animation_ids": [
+            "A-31",
+            "J-17"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Conditional fields: Read-only summary of every visible field with Edit links per section. Hidden fields are filtered in renderVals (show: false), not by sc-if."
+    },
+    {
+      "id": "S-58",
+      "kind": "result",
+      "name": "Application received",
+      "dc": "TradeApplication",
+      "template_tpl_id": "106",
+      "route": "/apply",
+      "page_key": "apply",
+      "parent": "S-52",
+      "opened_by": "Submit on Review (next on the last step): done = true, ref = IND-<6 random digits>, draft cleared",
+      "closed_by": "restart (Start a new application)",
+      "source": "next(), restart()",
+      "states": [
+        {
+          "name": "done",
+          "state_keys": {
+            "done": true,
+            "ref": "IND-######"
+          },
+          "how_to_reach": "setState({ done: true, ref: 'IND-123456' })",
+          "sc_if_tpl_ids": [
+            "106"
+          ],
+          "animation_ids": [
+            "A-32"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "Reference number is Math.random()."
+      }
+    },
+    {
+      "id": "S-59",
+      "kind": "form",
+      "name": "Contact enquiry",
+      "dc": "EnquiryForm",
+      "template_tpl_id": [
+        "5"
+      ],
+      "route": "/contact",
+      "page_key": "contact",
+      "parent": "S-37",
+      "opened_by": "route /contact (dc-import in the enquiry block)",
+      "closed_by": "valid submit → result",
+      "source": "EnquiryForm: submit(), reset(), float()",
+      "states": [
+        {
+          "name": "editing",
+          "state_keys": {
+            "sent": false
+          },
+          "how_to_reach": "default",
+          "sc_if_tpl_ids": [
+            "5"
+          ]
+        },
+        {
+          "name": "topic selected",
+          "state_keys": {
+            "topic": [
+              "<label>"
+            ]
+          },
+          "how_to_reach": "click topic cards (multi-select)",
+          "sc_if_tpl_ids": [
+            "16"
+          ]
+        },
+        {
+          "name": "field focused",
+          "state_keys": {
+            "focus": "<name>"
+          },
+          "how_to_reach": "focus a field: label floats to 9px/13px and turns blue"
+        },
+        {
+          "name": "validation errors",
+          "state_keys": {
+            "errs": "{topic, name, email, msg}"
+          },
+          "how_to_reach": "submit with errors",
+          "sc_if_tpl_ids": [
+            "18",
+            "28",
+            "34"
+          ],
+          "animation_ids": [
+            "A-35"
+          ]
+        },
+        {
+          "name": "sending",
+          "state_keys": {
+            "sending": true
+          },
+          "how_to_reach": "valid submit; lasts 900ms"
+        }
+      ],
+      "time_dependent": {
+        "value": true,
+        "reason": "sending → sent after a 900ms setTimeout."
+      }
+    },
+    {
+      "id": "S-60",
+      "kind": "result",
+      "name": "Message sent",
+      "dc": "EnquiryForm",
+      "template_tpl_id": "43",
+      "route": "/contact",
+      "page_key": "contact",
+      "parent": "S-59",
+      "opened_by": "valid submit + 900ms",
+      "closed_by": "reset (\"Send another message\")",
+      "source": "submit(), reset()",
+      "states": [
+        {
+          "name": "sent",
+          "state_keys": {
+            "sent": true
+          },
+          "how_to_reach": "setState({ sent: true })",
+          "sc_if_tpl_ids": [
+            "43"
+          ],
+          "animation_ids": [
+            "A-34"
+          ]
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      }
+    },
+    {
+      "id": "S-61",
+      "kind": "panel",
+      "name": "Careers open roles",
+      "dc": "Indus Foods Website v2",
+      "template_tpl_id": "421",
+      "route": "/careers",
+      "page_key": "careers",
+      "parent": "S-22",
+      "opened_by": "Route /careers",
+      "closed_by": "Route change",
+      "source": "pages.careers roles block; renderVals b.roles, b.noRoles",
+      "states": [
+        {
+          "name": "roles listed",
+          "state_keys": {
+            "roles.length": "> 0"
+          },
+          "how_to_reach": "default (3 example roles)"
+        },
+        {
+          "name": "no open roles",
+          "state_keys": {
+            "roles.length": 0
+          },
+          "sc_if_tpl_ids": [
+            "433"
+          ],
+          "how_to_reach": "Empty the roles const in the pages getter"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      },
+      "notes": "Each card: team, hours and location chips, title, summary and an Apply for this role button (toForm, J-21)."
+    }
+  ],
+  "counts": {
+    "routes": {
+      "by_dc": {
+        "Indus Foods Website v2": 29
+      },
+      "total": 29,
+      "covered_by": {
+        "/": "S-16",
+        "/about": "S-17",
+        "/our-story": "S-18",
+        "/certifications": "S-19",
+        "/community": "S-20",
+        "/sustainability": "S-21",
+        "/careers": "S-22",
+        "/food-service": "S-23",
+        "/manufacturing": "S-24",
+        "/retail": "S-25",
+        "/wholesale": "S-26",
+        "/brands": "S-27",
+        "/brand-sanam": "S-28",
+        "/brand-shan": "S-29",
+        "/brand-green-leaf": "S-30",
+        "/brand-lemon-tree": "S-31",
+        "/apply": "S-32",
+        "/catalogue": "S-33",
+        "/delivery": "S-34",
+        "/terms": "S-35",
+        "/blog": "S-36",
+        "/contact": "S-37",
+        "/faqs": "S-38",
+        "/post-post-1": "S-39",
+        "/post-post-2": "S-40",
+        "/post-post-3": "S-41",
+        "/post-post-4": "S-42",
+        "/post-post-5": "S-43",
+        "/post-post-6": "S-44"
+      },
+      "note": "Keys of the pages getter. The hash router falls back to home for unknown keys. Blog posts are post-post-1…6."
+    },
+    "toggling_sc_ifs": {
+      "by_dc": {
+        "Indus Foods Website v2": 8,
+        "TradeApplication": 8,
+        "EnquiryForm": 5
+      },
+      "total": 21,
+      "covered_by": {
+        "Indus Foods Website v2#63": "S-04",
+        "Indus Foods Website v2#66": "S-04",
+        "Indus Foods Website v2#84": "S-05",
+        "Indus Foods Website v2#94": "S-06",
+        "Indus Foods Website v2#107": "S-09",
+        "Indus Foods Website v2#543": "S-49",
+        "Indus Foods Website v2#549": "S-48",
+        "Indus Foods Website v2#597": "S-45",
+        "TradeApplication#5": "S-52",
+        "TradeApplication#25": "S-53",
+        "TradeApplication#65": "S-52",
+        "TradeApplication#67": "S-57",
+        "TradeApplication#80": "S-54",
+        "TradeApplication#83": "S-53",
+        "TradeApplication#92": "S-52",
+        "TradeApplication#106": "S-58",
+        "EnquiryForm#5": "S-59",
+        "EnquiryForm#18": "S-59",
+        "EnquiryForm#28": "S-59",
+        "EnquiryForm#34": "S-59",
+        "EnquiryForm#43": "S-60"
+      },
+      "note": "sc-ifs whose value depends on interactive state. 2026-10-11: the drawer accordion sc-if (accOpen) was removed; accordions now animate grid-template-rows (S-10…S-13)."
+    },
+    "other_sc_ifs": {
+      "totals_by_dc": {
+        "Indus Foods Website v2": 76,
+        "TradeApplication": 25,
+        "EnquiryForm": 6
+      },
+      "breakpoint": [
+        "Indus Foods Website v2#12 {{ isM }}",
+        "Indus Foods Website v2#15 {{ showEmailPill }}",
+        "Indus Foods Website v2#17 {{ isM }}",
+        "Indus Foods Website v2#19 {{ showEmailPill }}",
+        "Indus Foods Website v2#21 {{ showEmailPill }}",
+        "Indus Foods Website v2#44 {{ isDesktop }}",
+        "Indus Foods Website v2#53 {{ showHeaderCta }}",
+        "Indus Foods Website v2#55 {{ isCompact }}",
+        "Indus Foods Website v2#57 {{ isTablet }}",
+        "Indus Foods Website v2#256 {{ lineOn }}",
+        "Indus Foods Website v2#296 {{ notM }}",
+        "Indus Foods Website v2#436 {{ R.pin }}",
+        "Indus Foods Website v2#453 {{ R.noPin }}",
+        "Indus Foods Website v2#730 {{ showEmailPill }}",
+        "TradeApplication#11 {{ L.noLabels }}",
+        "TradeApplication#20 {{ L.labels }}",
+        "TradeApplication#90 {{ L.noLabels2 }}",
+        "TradeApplication#97 {{ L.desk }}",
+        "TradeApplication#102 {{ L.notDesk }}"
+      ],
+      "route": [
+        "Indus Foods Website v2#51 {{ item.current }}",
+        "Indus Foods Website v2#202 {{ isHome }}",
+        "Indus Foods Website v2#315 {{ isInner }}"
+      ],
+      "input_state": [
+        "TradeApplication#50 {{ c.on }}",
+        "EnquiryForm#16 {{ tp.on }}"
+      ],
+      "content_variant": [
+        "Indus Foods Website v2#49 {{ item.hasPanel }}",
+        "Indus Foods Website v2#75 {{ activePanel.hasFeature }}",
+        "Indus Foods Website v2#129 {{ item.hasPanel }}",
+        "Indus Foods Website v2#136 {{ item.isSimple }}",
+        "Indus Foods Website v2#138 {{ item.hasMobileFeature }}",
+        "Indus Foods Website v2#157 {{ item.isCards }}",
+        "Indus Foods Website v2#166 {{ item.isBrands }}",
+        "Indus Foods Website v2#317 {{ hero.isGrad }}",
+        "Indus Foods Website v2#320 {{ hero.hasAnim }}",
+        "Indus Foods Website v2#335 {{ hero.hasCtas }}",
+        "Indus Foods Website v2#339 {{ hero.hasImg }}",
+        "Indus Foods Website v2#346 {{ b.hasHead }}",
+        "Indus Foods Website v2#349 {{ b.hasEyebrow }}",
+        "Indus Foods Website v2#353 {{ b.hasIntro }}",
+        "Indus Foods Website v2#355 {{ b.hasHeadLink }}",
+        "Indus Foods Website v2#357 {{ b.isStats }}",
+        "Indus Foods Website v2#364 {{ b.isGradients }}",
+        "Indus Foods Website v2#378 {{ b.isSplit }}",
+        "Indus Foods Website v2#381 {{ b.hasEyebrow }}",
+        "Indus Foods Website v2#387 {{ b.hasPoints }}",
+        "Indus Foods Website v2#392 {{ b.hasLink }}",
+        "Indus Foods Website v2#397 {{ b.isRows }}",
+        "Indus Foods Website v2#400 {{ b.hasEyebrow }}",
+        "Indus Foods Website v2#404 {{ b.hasIntro }}",
+        "Indus Foods Website v2#406 {{ b.hasHeadLink }}",
+        "Indus Foods Website v2#415 {{ r.hasMeta }}",
+        "Indus Foods Website v2#435 {{ b.isHscroll }}",
+        "Indus Foods Website v2#465 {{ b.isWizard }}",
+        "Indus Foods Website v2#467 {{ b.isEnquiry }}",
+        "Indus Foods Website v2#469 {{ b.isTimeline }}",
+        "Indus Foods Website v2#478 {{ b.isCards }}",
+        "Indus Foods Website v2#482 {{ c.hasImg }}",
+        "Indus Foods Website v2#488 {{ c.hasTag }}",
+        "Indus Foods Website v2#492 {{ c.hasHref }}",
+        "Indus Foods Website v2#498 {{ b.isLogos }}",
+        "Indus Foods Website v2#507 {{ b.isQuotes }}",
+        "Indus Foods Website v2#514 {{ b.isCta }}",
+        "Indus Foods Website v2#527 {{ b.isContact }}",
+        "Indus Foods Website v2#540 {{ b.isForm }}",
+        "Indus Foods Website v2#557 {{ fd.req }}",
+        "Indus Foods Website v2#559 {{ fd.isInput }}",
+        "Indus Foods Website v2#561 {{ fd.isSelect }}",
+        "Indus Foods Website v2#565 {{ fd.isArea }}",
+        "Indus Foods Website v2#567 {{ fd.isFile }}",
+        "Indus Foods Website v2#585 {{ b.isFaq }}",
+        "Indus Foods Website v2#599 {{ b.isPosts }}",
+        "Indus Foods Website v2#600 {{ b.hasChips }}",
+        "Indus Foods Website v2#616 {{ b.isArticle }}",
+        "Indus Foods Website v2#626 {{ c.isLead }}",
+        "Indus Foods Website v2#628 {{ c.isP }}",
+        "Indus Foods Website v2#630 {{ c.isH }}",
+        "Indus Foods Website v2#632 {{ c.isQ }}",
+        "Indus Foods Website v2#640 {{ b.isProse }}",
+        "TradeApplication#29 {{ f.isHeading }}",
+        "TradeApplication#32 {{ f.hasLabel }}",
+        "TradeApplication#34 {{ f.req }}",
+        "TradeApplication#36 {{ f.opt }}",
+        "TradeApplication#38 {{ f.isInput }}",
+        "TradeApplication#40 {{ f.isSelect }}",
+        "TradeApplication#44 {{ f.isArea }}",
+        "TradeApplication#46 {{ f.isChips }}",
+        "TradeApplication#52 {{ f.isCheck }}",
+        "TradeApplication#56 {{ f.isFile }}",
+        "TradeApplication#63 {{ f.hasHint }}",
+        "Indus Foods Website v2#131 {{ item.noPanel }}",
+        "Indus Foods Website v2#132 {{ item.hasPanel }}",
+        "Indus Foods Website v2#417 {{ r.hasCta }}",
+        "Indus Foods Website v2#421 {{ b.isRoles }}",
+        "Indus Foods Website v2#433 {{ b.noRoles }}",
+        "Indus Foods Website v2#494 {{ c.hasPeek }}"
+      ]
+    }
+  },
+  "unresolved": [
+    {
+      "item": "Opening hours",
+      "reason": "Open/closed state follows the Europe/London clock at render. The trace did not stub Date, so it saw whichever state applied at run time. There is no timer: the badge updates on the next render."
+    },
+    {
+      "item": "Breakpoint states",
+      "reason": "Reached by setting state.w, not by resizing the window; CSS clamp()/vw values still follow the real viewport."
+    },
+    {
+      "item": "TradeApplication conditional fields",
+      "reason": "The credit-account, Ltd/LLP and separate-delivery field sets are defined in the schema getter and filtered in renderVals; the trace did not drive them."
+    },
+    {
+      "item": "Inline form validation",
+      "reason": "Careers and Catalogue rely on native required attributes; the browser validation bubble is not part of the draft."
+    }
+  ]
+}
