@@ -54,7 +54,8 @@ export function cutDraft( text ) {
 }
 
 // In-page: the stamped template parsed in a <template>; one record per element in document order:
-// { n, tag, attrs: [[name, value]], texts: [string], inFor, inHelmet, body?, css? } (css: the rules of a <style>,
+// { n, parent (the nearest enclosing element's n, null at the top), tag, attrs: [[name, value]], texts: [string], inFor,
+// inHelmet, body?, css? } (css: the rules of a <style>,
 // parsed by the browser: { type: keyframes|font-face|import|style, name?, selector?, decls?, cssText? }; a style rule
 // is kept only when it sets a transition or animation property).
 // The runtime strips `name`, `component` and `style` from a dc-import (and `style` from an x-import) while compiling,
@@ -109,7 +110,7 @@ function readStamped( [ html, source ] ) {
 		for ( const c of node.childNodes ) {
 			if ( 1 === c.nodeType ) {
 				const tag = c.tagName.toLowerCase();
-				const rec = { n: c.getAttribute( 'data-dc-tpl' ), tag, attrs: [ ...c.attributes ].filter( ( a ) => 'data-dc-tpl' !== a.name ).map( ( a ) => [ a.name, a.value ] ), texts: [], inFor: ctx.inFor, inHelmet: ctx.inHelmet };
+				const rec = { n: c.getAttribute( 'data-dc-tpl' ), parent: ctx.rec?.n ?? null, tag, attrs: [ ...c.attributes ].filter( ( a ) => 'data-dc-tpl' !== a.name ).map( ( a ) => [ a.name, a.value ] ), texts: [], inFor: ctx.inFor, inHelmet: ctx.inHelmet };
 				if ( restored.get( c )?.length ) {
 					rec.attrs.push( ...restored.get( c ) );
 					rec.restored = restored.get( c ).map( ( [ n ] ) => n );

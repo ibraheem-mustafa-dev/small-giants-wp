@@ -381,6 +381,13 @@
               "prop-variant"
             ]
           },
+          "deadKind": {
+            "enum": [
+              "unwired",
+              "constant-guard",
+              "data-gated"
+            ]
+          },
           "note": {
             "type": "string"
           }

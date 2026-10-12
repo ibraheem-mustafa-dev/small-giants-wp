@@ -18,7 +18,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { isUnwired } from './intake-defects-static.mjs';
+import { isUnwiredEntry } from './intake-defects-static.mjs';
 
 export const ROW_TYPES = [ 'page-map', 'palette-role', 'site-info', 'flag', 'draft-defect', 'not-a-defect', 'missing-feature', 'skeleton-block', 'inventory-diff', 'notice' ];
 export const SECTION_TITLES = {
@@ -124,17 +124,24 @@ const skeletonNote = ( r ) => ( 'agent' === r.finalisedBy
 	? `agent pick ${ r.confidence ?? '?' }: ${ r.reason ?? '' }; was ${ proposalText( r.original || {} ) } ${ r.original?.confidence ?? '' }`.trim()
 	: [ r.confidence, r.reason ].filter( ( x ) => null != x && '' !== x ).join( ': ' ) );
 
-// The not-a-defect entries (FR-48-34) listed one per review row: dead code of the unwired kind
-// (lib/intake-defects-static.mjs::isUnwired), each with a stable `not-defect:<censusId>` row ID.
-export const unwiredRows = ( intake ) => unique( ( intake.notDefects || [] ).filter( ( r ) => 'dead-code' === r.why && isUnwired( r.note ) )
+// The not-a-defect entries (FR-48-34) listed one per review row: dead code of the unwired kind (its `deadKind`, or for
+// an older record without one lib/intake-defects-static.mjs::isUnwired over its note), each with a stable
+// `not-defect:<censusId>` row ID.
+export const unwiredRows = ( intake ) => unique( ( intake.notDefects || [] ).filter( isUnwiredEntry )
 	.map( ( r ) => ( { ...r, rowId: `not-defect:${ r.censusId ?? r.draftId }` } ) ) );
 
-// One header line counting every other not-a-defect entry per reason (constant-guard dead code, prop variants,
-// prototype-only and the rest), which review.md does not list row by row.
+// The reason cell of every not-a-defect row: what unwired code is, for handlers, ref callbacks, timers and fields alike.
+export const UNWIRED_NOTE = 'unwired: nothing live reaches it (a handler, ref callback, timer or observer under a renderVals key no template binding names, or a guard field nothing live writes); a misspelled binding or field name reads the same';
+
+// The counted label of a dead-code kind other than unwired.
+const DEAD_LABEL = { 'constant-guard': 'dead-code (constant guard)', 'data-gated': 'dead-code (data-gated)' };
+
+// One header line counting every other not-a-defect entry per reason (constant-guard and data-gated dead code, prop
+// variants, prototype-only and the rest), which review.md does not list row by row.
 export function notDefectLine( intake ) {
 	const counts = new Map();
 	( intake.notDefects || [] ).forEach( ( r ) => {
-		const key = 'dead-code' === r.why ? ( isUnwired( r.note ) ? null : 'dead-code (constant guard)' ) : r.why;
+		const key = 'dead-code' === r.why ? ( isUnwiredEntry( r ) ? null : DEAD_LABEL[ r.deadKind ] ?? DEAD_LABEL[ 'constant-guard' ] ) : r.why;
 		key && counts.set( key, ( counts.get( key ) || 0 ) + 1 );
 	} );
 	const list = [ ...counts ].sort( ( a, b ) => ( a[ 0 ] < b[ 0 ] ? -1 : 1 ) ).map( ( [ k, n ] ) => `${ k } ${ n }` );
@@ -173,7 +180,7 @@ export function reviewRows( intake ) {
 	( intake.siteInfo?.rows || [] ).forEach( ( r ) => add( 'site-info', r, r.key, `${ r.key }: ${ text( r.value ) }`, text( r.normalised ), ( r.sources || [] ).map( ( s ) => s.draftId || s.location ).filter( Boolean ).join( ', ' ) ) );
 	( intake.flags || [] ).forEach( ( r ) => add( 'flag', r, r.draftId, `${ r.kind }: ${ r.text ?? r.url ?? '' }`, 'accept-flagged', r.why || '' ) );
 	( intake.draftDefects || [] ).forEach( ( r ) => add( 'draft-defect', r, r.draftId, describe( r ), text( r.proposed ?? r.intent ?? 'build the code\'s intent' ), text( r.why ?? r.reason ) ) );
-	unwiredRows( intake ).forEach( ( r ) => add( 'not-a-defect', r, r.draftId, `${ r.censusId ?? r.draftId } ${ text( r.note ) }`, 'not-a-defect', 'a handler or ref callback no template binding names; a misspelled binding reads the same' ) );
+	unwiredRows( intake ).forEach( ( r ) => add( 'not-a-defect', r, r.draftId, `${ r.censusId ?? r.draftId } ${ text( r.note ) }`, 'not-a-defect', UNWIRED_NOTE ) );
 	( intake.missingFeatures || [] ).forEach( ( r ) => {
 		const block = r.block ?? r.proposedBlock ?? null;
 		const acceptAll = block && BLOCK.test( block ) ? `map:${ block }` : null;

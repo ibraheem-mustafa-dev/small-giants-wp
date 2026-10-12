@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
 import { reviewRows, renderReview, parseReview, applyReview, carryOver, markProblem, notDefectLine, MARKS, ROW_TYPES } from '../lib/intake-review.mjs';
 import { deadCodeWhy } from '../lib/intake-defects-static.mjs';
+import { deadFieldVerdict } from '../lib/intake-defects-deadfield.mjs';
 import { diffAnimations } from '../lib/intake-inventory-diff.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -239,6 +240,26 @@ test( 'MUST FAIL (FR-48-34): constant-guard dead code and the other reasons are 
 	assert.equal( notDefectLine( fixture() ), 'Not defects counted, not listed: dead-code (constant guard) 1, prop-variant 1.' );
 	assert.ok( renderReview( fixture() ).includes( 'Not defects counted, not listed: dead-code (constant guard) 1, prop-variant 1.' ) );
 	assert.equal( notDefectLine( fixture( { notDefects: [] } ) ), 'Not defects counted, not listed: none.' );
+} );
+
+test( 'MUST FAIL (FR-48-34): a dead field written only behind a constant guard is counted by its kind, never listed; the old note-reading stays the fallback', () => {
+	// arm() writes this._el behind a constant guard; setRef() writes it and nothing references setRef. The note names
+	// both reasons, so its wording alone would list it as unwired.
+	const logic = 'class Component { componentDidMount() { this.arm(); this.go(); } go() { if ( this._el ) { this._el.animate( [], 300 ); } } arm() { const on = false; if ( ! on ) { return; } this._el = document.body; } setRef( el ) { this._el = el; } }';
+	const v = deadFieldVerdict( { logic }, logic.indexOf( '.animate(' ), { rows: [] } );
+	assert.equal( v.kind, 'constant-guard' );
+	assert.match( v.note, /exits at a constant guard/ );
+	assert.match( v.note, /setRef is never referenced/ );
+	const entry = { draftId: 'Home:js:1:1', censusId: 'waapi@Home:js:1:1', why: 'dead-code', deadKind: v.kind, note: v.note };
+	const intake = fixture( { notDefects: [ entry ] } );
+	assert.deepEqual( reviewRows( intake ).filter( ( r ) => 'not-a-defect' === r.rowType ), [] );
+	assert.equal( notDefectLine( intake ), 'Not defects counted, not listed: dead-code (constant guard) 1.' );
+	assert.equal( notDefectLine( fixture( { notDefects: [ { ...entry, deadKind: 'data-gated' } ] } ) ), 'Not defects counted, not listed: dead-code (data-gated) 1.' );
+	const { deadKind, ...old } = entry;
+	assert.ok( deadKind );
+	assert.equal( reviewRows( fixture( { notDefects: [ old ] } ) ).filter( ( r ) => 'not-a-defect' === r.rowType ).length, 1, 'a record without deadKind falls back to the note\'s wording' );
+	const only = 'class Component { componentDidMount() { this.go(); } go() { if ( this._el ) { this._el.animate( [], 300 ); } } setRef( el ) { this._el = el; } }';
+	assert.equal( deadFieldVerdict( { logic: only }, only.indexOf( '.animate(' ), { rows: [] } )?.kind, 'unwired', 'with only the unreferenced writer it is unwired, so listed' );
 } );
 
 test( 'MUST FAIL a row ID holding a pipe, a backtick, CR or LF renders, parses back and keeps its own mark', () => {

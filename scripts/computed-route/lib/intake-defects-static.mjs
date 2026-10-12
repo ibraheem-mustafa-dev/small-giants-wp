@@ -92,17 +92,29 @@ function templateNames( census, comp ) {
 	return out;
 }
 
-// The endings of the "unwired" dead-code reasons: a member handed to the template under a key no binding names, a
-// member nothing references (deadCodeWhy), or a guard field nothing writes (lib/intake-defects-deadfield.mjs). A
-// misspelled binding or field name produces the same reasons, so review.md lists these entries one by one
-// (FR-48-34); a constant guard is the code's own "off" and stays a count.
+// The kinds of dead code a verdict carries (intake.json notDefects `deadKind`): `unwired`, a member handed to the
+// template under a key no binding names, a member nothing references, or a guard field nothing live writes (a
+// misspelled binding or field name reads the same, so review.md lists these one by one, FR-48-34); `constant-guard`,
+// the code's own "off" (a constant test, or a guard field written only behind one); `data-gated`, an sc-if false for
+// every item of the draft's own data (lib/intake-defects-datagate.mjs). Only `unwired` is listed; the rest are counted.
+export const DEAD_KINDS = Object.freeze( [ 'unwired', 'constant-guard', 'data-gated' ] );
+
+// The endings of the unwired reasons' notes, read only for an entry recorded without `deadKind`.
 export const UNWIRED_PHRASES = Object.freeze( [ ', which no template binding references', ' is never referenced', ', which nothing writes' ] );
 
-// True when a dead-code note (deadCodeWhy's, or a dead-field note quoting it) names an unwired member.
+// True when a dead-code note names an unwired member: the fallback for an entry recorded without `deadKind`.
 export const isUnwired = ( note ) => UNWIRED_PHRASES.some( ( p ) => String( note ?? '' ).includes( p ) );
 
+// True when a not-a-defect entry is unwired dead code: its `deadKind`, else (an older record) its note's wording.
+export const isUnwiredEntry = ( r ) => 'dead-code' === r.why && ( r.deadKind ? 'unwired' === r.deadKind : isUnwired( r.note ) );
+
+export { dataGatedWhy } from './intake-defects-datagate.mjs';
+
 // Why the code row at logic offset `off` of `source` is dead code, or null when that is not provable.
-export function deadCodeWhy( source, off, census ) {
+export const deadCodeWhy = ( source, off, census ) => deadCodeVerdict( source, off, census )?.note ?? null;
+
+// deadCodeWhy's verdict with its kind: { note, kind: 'constant-guard' | 'unwired' }, or null.
+export function deadCodeVerdict( source, off, census ) {
 	const m = logicModel( source );
 	if ( m.error ) {
 		return null;
@@ -116,7 +128,7 @@ export function deadCodeWhy( source, off, census ) {
 	if ( fn && 'BlockStatement' === fn.body.type ) {
 		const why = deadIn( fn.body.body, off, m.text );
 		if ( why ) {
-			return `${ name }: ${ why }`;
+			return { note: `${ name }: ${ why }`, kind: 'constant-guard' };
 		}
 	}
 	if ( LIFECYCLE.has( name ) ) {
@@ -151,7 +163,7 @@ export function deadCodeWhy( source, off, census ) {
 	if ( refs.every( viaKey ) ) {
 		const keys = refs.map( ( r ) => r.parent.key.name ?? r.parent.key.value );
 		if ( keys.every( ( k ) => ! roots.has( k ) ) ) {
-			return keys.length ? `${ name } is reached only through renderVals key${ keys.length > 1 ? 's' : '' } ${ keys.join( ', ' ) }${ UNWIRED_PHRASES[ 0 ] }` : `${ name }${ UNWIRED_PHRASES[ 1 ] }`;
+			return { note: keys.length ? `${ name } is reached only through renderVals key${ keys.length > 1 ? 's' : '' } ${ keys.join( ', ' ) }${ UNWIRED_PHRASES[ 0 ] }` : `${ name }${ UNWIRED_PHRASES[ 1 ] }`, kind: 'unwired' };
 		}
 	}
 	return null;

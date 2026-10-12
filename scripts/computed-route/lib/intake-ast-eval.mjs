@@ -6,6 +6,11 @@
 // called local function or method returns its result with that call's arguments bound. Results are refs
 // { node, env } (env: a Map from a function node to the argument refs of one known call), so an element and its
 // fields stay paired. Nothing here matches constructs with regular expressions over the logic (R-47-4).
+//
+// Writes after creation are followed only on an index passed through trackWrites: `o.k = v`, `o[k] = v`, push,
+// unshift, splice and Object.assign into an object or array literal the resolver reaches add their values to what
+// that literal's properties or elements can hold. Without it (the page map's use) a literal holds only what it
+// declares.
 import { resolveName, fnBinding, callsOf, keyName, isThisMember, propName, isFn, subtree, enclosingFn } from './intake-ast.mjs';
 
 const ITER = new Set( [ 'map', 'flatMap', 'forEach', 'filter', 'find', 'findLast', 'some', 'every' ] );
@@ -77,6 +82,59 @@ function thisRefs( idx, name, env, depth, stack ) {
 
 const staticKey = ( n ) => ( 'StringLiteral' === n.type || 'NumericLiteral' === n.type ? String( n.value ) : null );
 
+// The index with `writes` (Map literal node → [{ key (null: unknown), value } | { merge } | { element, spread }]) and
+// `unknownWrites` ([{ key, node }]: writes whose target the resolver cannot reach), built once. `this.x = v` is left
+// to the class-member reading above.
+export function trackWrites( idx ) {
+	if ( idx.writes ) {
+		return idx;
+	}
+	const writes = new Map();
+	const unknownWrites = [];
+	for ( const n of idx.all ) {
+		let target = null;
+		let entries = [];
+		if ( 'AssignmentExpression' === n.type && 'MemberExpression' === n.left.type && ! isThisMember( n.left ) ) {
+			target = n.left.object;
+			entries = [ { key: n.left.computed ? staticKey( n.left.property ) : n.left.property.name, value: n.right } ];
+		} else if ( 'CallExpression' === n.type && 'MemberExpression' === n.callee.type && ! n.callee.computed ) {
+			const m = n.callee.property.name;
+			if ( 'push' === m || 'unshift' === m || 'splice' === m ) {
+				target = n.callee.object;
+				entries = n.arguments.slice( 'splice' === m ? 2 : 0 ).map( ( a ) => ( 'SpreadElement' === a.type ? { element: a.argument, spread: true } : { element: a } ) );
+			} else if ( 'assign' === m && 'Object' === n.callee.object.name && n.arguments[ 0 ] ) {
+				target = n.arguments[ 0 ];
+				entries = n.arguments.slice( 1 ).map( ( a ) => ( 'SpreadElement' === a.type ? { merge: a.argument, all: true } : { merge: a } ) );
+			}
+		}
+		if ( ! target || ! entries.length ) {
+			continue;
+		}
+		const terms = resolveRefs( idx, ref( target ) ).filter( ( t ) => [ 'ObjectExpression', 'ArrayExpression' ].includes( t.node?.type ) );
+		if ( ! terms.length ) {
+			entries.forEach( ( e ) => unknownWrites.push( { key: e.merge || e.element ? null : e.key, node: n } ) );
+		}
+		terms.forEach( ( t ) => writes.set( t.node, [ ...( writes.get( t.node ) || [] ), ...entries ] ) );
+	}
+	idx.writes = writes;
+	idx.unknownWrites = unknownWrites;
+	return idx;
+}
+
+// The refs a tracked write adds to property `name` of a literal (null name: every property).
+function writtenRefs( idx, node, name, depth, stack ) {
+	return ( idx.writes?.get( node ) || [] ).flatMap( ( w ) => {
+		if ( w.merge ) {
+			const objs = resolveRefs( idx, ref( w.merge ), depth + 1, stack );
+			return null === name ? allValues( idx, objs, depth + 1, stack ) : propRefs( idx, objs, name, depth + 1, stack );
+		}
+		if ( w.element ) {
+			return w.spread ? elementsOf( idx, ref( w.element ), depth + 1, stack ) : resolveRefs( idx, ref( w.element ), depth + 1, stack );
+		}
+		return null === name || null === w.key || name === w.key ? resolveRefs( idx, ref( w.value ), depth + 1, stack ) : [];
+	} );
+}
+
 // The refs property `name` holds across terminal refs `objs` (object literals, Object.assign merges, array indexes).
 export function propRefs( idx, objs, name, depth = 0, stack = new Map() ) {
 	const out = [];
@@ -90,6 +148,7 @@ export function propRefs( idx, objs, name, depth = 0, stack = new Map() ) {
 				}
 			}
 		} else if ( 'ObjectExpression' === t.node?.type ) {
+			out.push( ...writtenRefs( idx, t.node, name, depth, stack ) );
 			const p = [ ...t.node.properties ].reverse().find( ( x ) => 'SpreadElement' !== x.type && keyName( x ) === name );
 			if ( 'ObjectProperty' === p?.type ) {
 				out.push( ...resolveRefs( idx, ref( p.value, t.env ), depth + 1, stack ) );
@@ -118,8 +177,8 @@ export function propRefs( idx, objs, name, depth = 0, stack = new Map() ) {
 // that cannot be read statically.
 function allValues( idx, objs, depth, stack ) {
 	return objs.flatMap( ( t ) => ( 'ObjectExpression' === t.node?.type
-		? t.node.properties.flatMap( ( p ) => ( 'ObjectProperty' === p.type ? resolveRefs( idx, ref( p.value, t.env ), depth + 1, stack )
-			: 'SpreadElement' === p.type ? allValues( idx, resolveRefs( idx, ref( p.argument, t.env ), depth + 1, stack ), depth + 1, stack ) : [] ) )
+		? [ ...t.node.properties.flatMap( ( p ) => ( 'ObjectProperty' === p.type ? resolveRefs( idx, ref( p.value, t.env ), depth + 1, stack )
+			: 'SpreadElement' === p.type ? allValues( idx, resolveRefs( idx, ref( p.argument, t.env ), depth + 1, stack ), depth + 1, stack ) : [] ) ), ...writtenRefs( idx, t.node, null, depth, stack ) ]
 		: elementsOf( idx, t, depth + 1, stack ) ) );
 }
 
@@ -264,8 +323,8 @@ export function elementsOf( idx, r, depth = 0, stack = new Map() ) {
 		if ( 'ArrayExpression' !== t.node?.type ) {
 			return [];
 		}
-		return t.node.elements.filter( Boolean ).flatMap( ( el ) => ( 'SpreadElement' === el.type ? elementsOf( idx, ref( el.argument, t.env ), depth + 1, stack )
-			: resolveRefs( idx, ref( el, t.env ), depth + 1, stack ) ) );
+		return [ ...t.node.elements.filter( Boolean ).flatMap( ( el ) => ( 'SpreadElement' === el.type ? elementsOf( idx, ref( el.argument, t.env ), depth + 1, stack )
+			: resolveRefs( idx, ref( el, t.env ), depth + 1, stack ) ) ), ...writtenRefs( idx, t.node, null, depth, stack ) ];
 	} );
 }
 

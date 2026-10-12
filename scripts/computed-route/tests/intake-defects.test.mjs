@@ -8,7 +8,8 @@
 //   - sc-if Home:7 `{{ secret }}` (state.secret, which no code sets): reached when forced, not a defect.
 //   - style-hover Home:8 (inside Home:7): its :hover rule matches only with hover forced through CDP.
 //   - sc-if Home:9 `{{ impossible }}` (state.mode === 'a' && state.mode === 'b'): unreached under every forcing, a defect.
-//   - sc-if Home:14 `{{ item.open }}` (a loop item field): no state key to set, so forcing is impossible: a gap row.
+//   - sc-if Home:14 `{{ item.open }}` (a loop item field the draft's own data sets false on its one item): data-gated
+//     dead code; with the dead-code rules off there is no state key to set, so forcing is impossible: a gap row.
 //   - handler Home:16 onClick → toggle: reached once its click is dispatched.
 //   - Card (imported by Home with promo="{{ promoOn }}", always false): sc-if Card:2 `{{ glow }}` and the timer behind
 //     `if ( this.props.glow )` read a prop no parent mounts Card with (prop variants, FR-48-29); sc-if Card:4
@@ -128,8 +129,9 @@ test( 'test 2: unreached under every forcing at every width is a draft defect; i
 	assert.deepEqual( [ d.rowId, d.test, d.kind, d.widths ], [ 'defect:Home:9', 'unreached', 'sc-if', [ 375, 768, 1440 ] ] );
 	assert.deepEqual( d.evidence.forced.state, [ { mode: 'a' }, { mode: 'b' } ] );
 	assert.equal( defect( fx.res, 'sc-if@Home:14' ), undefined );
-	const gap = fx.res.gaps.find( ( g ) => 'Home:14' === g.draftId );
-	assert.match( gap.error, /item is not a key of renderVals/ );
+	assert.deepEqual( [ notDefect( fx.res, 'sc-if@Home:14' )?.why, notDefect( fx.res, 'sc-if@Home:14' )?.deadKind ], [ 'dead-code', 'data-gated' ], 'item.open is false for the one item the draft fixes' );
+	const gap = fx.noPseudo.gaps.find( ( g ) => 'Home:14' === g.draftId );
+	assert.match( gap.error, /item is not a key of renderVals/, 'with the dead-code rules off, forcing a loop item is impossible: a gap row' );
 	assert.equal( notDefect( fx.res, 'template-element@Home:9' ).why, 'render-wins', 'an unreached element is not a state' );
 	assert.deepEqual( fx.res.rows.map( ( r ) => r.rowId ), [ 'defect:Home:2', 'defect:Home:3', 'defect:Home:9', 'defect:Card:4' ] );
 } );
