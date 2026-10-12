@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
 import { reviewRows, renderReview, parseReview, applyReview, carryOver, markProblem, notDefectLine, MARKS, ROW_TYPES } from '../lib/intake-review.mjs';
 import { deadCodeWhy } from '../lib/intake-defects-static.mjs';
+import { diffAnimations } from '../lib/intake-inventory-diff.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const SCHEMA = path.join( HERE, '..', 'data', 'intake.schema.json' );
@@ -238,4 +239,45 @@ test( 'MUST FAIL (FR-48-34): constant-guard dead code and the other reasons are 
 	assert.equal( notDefectLine( fixture() ), 'Not defects counted, not listed: dead-code (constant guard) 1, prop-variant 1.' );
 	assert.ok( renderReview( fixture() ).includes( 'Not defects counted, not listed: dead-code (constant guard) 1, prop-variant 1.' ) );
 	assert.equal( notDefectLine( fixture( { notDefects: [] } ) ), 'Not defects counted, not listed: none.' );
+} );
+
+test( 'MUST FAIL a row ID holding a pipe, a backtick, CR or LF renders, parses back and keeps its own mark', () => {
+	const intake = fixture( {
+		notDefects: [ { draftId: 'C', censusId: 'C|1', why: 'dead-code', note: 'q is reached only through renderVals key q, which no template binding references' } ],
+		inventory: { animations: [], surfaces: [], diff: [
+			{ rowId: 'inventory:surface:route:a|b:only-theirs', draftId: 'a|b', field: 'route', ours: null, theirs: 'a|b' },
+			{ rowId: 'inventory:tick`x`\r\ny', draftId: 'y', field: 'f', ours: '1', theirs: '2' },
+			{ draftId: 'same', field: 'f1', ours: '1', theirs: '2' }, { draftId: 'same', field: 'f2', ours: '1', theirs: '2' },
+		] },
+	} );
+	const ids = reviewRows( intake ).map( ( r ) => r.rowId );
+	assert.ok( ids.includes( 'not-defect:C%7C1' ) && ids.includes( 'inventory:surface:route:a%7Cb:only-theirs' ) && ids.includes( 'inventory:tick%60x%60%0D%0Ay' ) );
+	assert.ok( ids.includes( 'inventory:same' ) && ids.includes( 'inventory:same#2' ), 'two rows falling back to one ID stay apart' );
+	assert.equal( new Set( ids ).size, ids.length );
+	const md = mark( renderReview( intake ), { accept: ROW_TYPES, rows: { 'inventory:surface:route:a%7Cb:only-theirs': 'theirs', 'not-defect:C%7C1': 'defect', 'missing:Quiz:1': 'difference' } } );
+	assert.deepEqual( parseReview( md ).problems, [] );
+	const r = applyReview( intake, md, { today: TODAY } );
+	assert.deepEqual( [ r.problems, r.missing ], [ [], [] ] );
+	assert.equal( r.intake.review.find( ( x ) => 'inventory:surface:route:a%7Cb:only-theirs' === x.rowId ).mark, 'theirs' );
+	assert.equal( r.intake.review.find( ( x ) => 'not-defect:C%7C1' === x.rowId ).mark, 'defect' );
+} );
+
+test( 'MUST FAIL (Appendix C "the default") a not-a-defect row left blank is not-a-defect, never missing; it shows its draft ID when it has no census ID', () => {
+	const intake = fixture( { notDefects: [ { draftId: 'B:js:4', why: 'dead-code', note: 'baz is reached only through renderVals key baz, which no template binding references' } ] } );
+	const r = applyReview( intake, mark( renderReview( intake ), { accept: ROW_TYPES.filter( ( t ) => 'not-a-defect' !== t ), rows: { 'missing:Quiz:1': 'difference' } } ), { today: TODAY } );
+	assert.deepEqual( r.missing, [] );
+	assert.equal( r.intake.review.find( ( x ) => 'not-a-defect' === x.rowType ).mark, 'not-a-defect' );
+	assert.match( reviewRows( intake ).find( ( x ) => 'not-a-defect' === x.rowType ).shows, /^B:js:4 baz/ );
+} );
+
+test( 'MUST FAIL (FR-48-25) a re-export that inserts one record keeps every other inventory-diff row\'s ID, hash and mark', () => {
+	const rec = ( id, line, ms ) => ( { id, mechanism: 'waapi', name: 'n', source: { file: 'a.js', line }, trigger: { type: 'load' }, duration_ms: ms, properties: [] } );
+	const run = ( ours, theirs ) => fixture( { inventory: { animations: [], surfaces: [], diff: diffAnimations( { records: ours, counts: {} }, { records: theirs, counts: {} } ) } } );
+	const v1 = run( [ rec( 'A-01', 10, 500 ), rec( 'A-02', 20, 500 ) ], [ rec( 'A-1', 10, 999 ), rec( 'A-2', 20, 999 ) ] );
+	// Ours gains an effect at line 5 and both sides renumber their own IDs.
+	const v2 = run( [ rec( 'A-01', 5, 500 ), rec( 'A-02', 10, 500 ), rec( 'A-03', 20, 500 ) ], [ rec( 'A-1', 10, 999 ), rec( 'A-2', 20, 999 ) ] );
+	v1.review = reviewRows( v1 ).map( ( r ) => ( { rowId: r.rowId, rowType: r.rowType, contentHash: r.contentHash, mark: 'inventory-diff' === r.rowType ? 'theirs' : null, markedOn: TODAY, carriedFrom: null } ) );
+	const diffRows = carryOver( v1, v2 ).review.filter( ( r ) => 'inventory-diff' === r.rowType );
+	assert.deepEqual( diffRows.map( ( r ) => [ r.rowId, r.mark ] ).sort(), [
+		[ 'inventory:anim:a.js%7C10%7Cwaapi:duration_ms', 'theirs' ], [ 'inventory:anim:a.js%7C20%7Cwaapi:duration_ms', 'theirs' ], [ 'inventory:anim:a.js%7C5%7Cwaapi:only-ours', null ] ] );
 } );

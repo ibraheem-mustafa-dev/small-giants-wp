@@ -1,14 +1,17 @@
 // Bean's one batched intake review (Spec 48 FR-48-17, Appendix C "Intake record" `review` and "Review marks").
 // review.md is generated from intake.json; Bean ticks a section's "Accept all" box and writes a mark only in the Mark
-// cell of a row he wants changed. A row's own mark beats Accept all; a flag row left blank is `accept-flagged`; every
-// other row needs Accept all or its own mark, notices included: FR-48-17 says "A placeholder, stock or prototype-only
-// flag row is accepted as flagged unless Bean marks otherwise; every other row needs a mark from its section or its
-// own", and Appendix C gives notices the one value `noted`, so a notice is acknowledged, never defaulted.
+// cell of a row he wants changed. A row's own mark beats Accept all; a flag row left blank is `accept-flagged` and a
+// not-a-defect row left blank is `not-a-defect` (Appendix C calls each "the default"); every other row needs Accept all
+// or its own mark, notices included: Appendix C gives notices the one value `noted`, so a notice is acknowledged,
+// never defaulted.
 //
 // Content hash: SHA-256 of a canonical (sorted-key) JSON of HASH_FIELDS[rowType] plus `draftId`, so a mark carries
 // across an identical re-export and is dropped when what the row shows changes. Proposal noise (confidence, scores,
-// "why" text, source locations, screenshots) is never hashed. Defect, missing-feature and inventory-diff rows hash
-// every field except VOLATILE ones.
+// "why" text, source locations, screenshots) is never hashed. Defect and missing-feature rows hash every field except
+// VOLATILE ones.
+//
+// Row IDs: `|`, a backtick, CR and LF would break the review table, so each is written as %7C, %60, %0D or %0A, and
+// a row ID that is still not unique gains `#<n>`; review.md and intake.review both hold the written form.
 //
 // Notices come from `intake.notices` ({ prose: commandLikeLines rows, blockedHosts: sandbox blocked rows }).
 import crypto from 'crypto';
@@ -52,7 +55,10 @@ export const MARKS = {
 	notice: [ { value: 'noted' } ],
 };
 
-export const markShapes = ( rowType ) => MARKS[ rowType ].map( ( m ) => m.value ?? m.shape );
+// Row types whose blank Mark cell takes the first value (Appendix C calls it "the default" for both).
+export const DEFAULTED = [ 'flag', 'not-a-defect' ];
+
+export const markShapes =( rowType ) => MARKS[ rowType ].map( ( m ) => m.value ?? m.shape );
 
 // null when `mark` is one of the row type's values, else why it is refused.
 export function markProblem( rowType, mark ) {
@@ -74,6 +80,8 @@ export const HASH_FIELDS = {
 	'site-info': [ 'key', 'value', 'normalised' ],
 	flag: [ 'kind', 'text', 'url' ],
 	'not-a-defect': [ 'censusId', 'why', 'note' ],
+	// What a diff row states, never its `text` or row ID (both name record IDs, which renumber across a re-export).
+	'inventory-diff': [ 'draftId', 'field', 'ours', 'theirs' ],
 	'skeleton-block': [ 'surface', 'key', 'tag', 'words', 'block', 'action' ], // action only when it removes or absorbs
 	notice: [ 'kind', 'file', 'text', 'host', 'reasons' ],
 };
@@ -137,10 +145,25 @@ export function notDefectLine( intake ) {
 // proposed, note, acceptAll, needs } where `acceptAll` is the mark the section's Accept all gives the row (null when
 // the first value needs a block the row does not propose) and `needs` is skeletonNeeds' or the missing-feature reason
 // (undefined for the other row types, whose every row is read).
+const ID_ESCAPES = { '|': '%7C', '`': '%60', '\r': '%0D', '\n': '%0A' };
+export const safeRowId = ( id ) => String( id ).replace( /[|`\r\n]/g, ( c ) => ID_ESCAPES[ c ] );
+
 export function reviewRows( intake ) {
 	const out = [];
+	const taken = new Set();
+	const rowIdOf = ( id ) => {
+		const base = safeRowId( id );
+		let n = 1;
+		let next = base;
+		while ( taken.has( next ) ) {
+			n++;
+			next = `${ base }#${ n }`;
+		}
+		taken.add( next );
+		return next;
+	};
 	const add = ( rowType, row, draftId, shows, proposed = '', note = '', acceptAll = MARKS[ rowType ][ 0 ].value, needs = undefined ) => out.push( {
-		rowId: row.rowId, rowType, draftId: String( draftId ?? '' ), contentHash: contentHash( rowType, row, draftId ), shows, proposed, note, acceptAll, ...( undefined === needs ? {} : { needs } ),
+		rowId: rowIdOf( row.rowId ), rowType, draftId: String( draftId ?? '' ), contentHash: contentHash( rowType, row, draftId ), shows, proposed, note, acceptAll, ...( undefined === needs ? {} : { needs } ),
 	} );
 	unique( ( intake.pageMap || [] ).map( ( r ) => ( { ...r, rowId: `page:${ r.postType }:${ r.slug }` } ) ) ).forEach( ( r ) => add( 'page-map', r, r.route ?? r.slug,
 		`${ r.route ?? '(no route)' } → ${ r.title } (${ r.postType }, ${ r.collection }${ r.template ? `, ${ r.template }` : '' })`,
@@ -150,7 +173,7 @@ export function reviewRows( intake ) {
 	( intake.siteInfo?.rows || [] ).forEach( ( r ) => add( 'site-info', r, r.key, `${ r.key }: ${ text( r.value ) }`, text( r.normalised ), ( r.sources || [] ).map( ( s ) => s.draftId || s.location ).filter( Boolean ).join( ', ' ) ) );
 	( intake.flags || [] ).forEach( ( r ) => add( 'flag', r, r.draftId, `${ r.kind }: ${ r.text ?? r.url ?? '' }`, 'accept-flagged', r.why || '' ) );
 	( intake.draftDefects || [] ).forEach( ( r ) => add( 'draft-defect', r, r.draftId, describe( r ), text( r.proposed ?? r.intent ?? 'build the code\'s intent' ), text( r.why ?? r.reason ) ) );
-	unwiredRows( intake ).forEach( ( r ) => add( 'not-a-defect', r, r.draftId, `${ r.censusId } ${ text( r.note ) }`, 'not-a-defect', 'a handler or ref callback no template binding names; a misspelled binding reads the same' ) );
+	unwiredRows( intake ).forEach( ( r ) => add( 'not-a-defect', r, r.draftId, `${ r.censusId ?? r.draftId } ${ text( r.note ) }`, 'not-a-defect', 'a handler or ref callback no template binding names; a misspelled binding reads the same' ) );
 	( intake.missingFeatures || [] ).forEach( ( r ) => {
 		const block = r.block ?? r.proposedBlock ?? null;
 		const acceptAll = block && BLOCK.test( block ) ? `map:${ block }` : null;
@@ -213,7 +236,7 @@ export function renderReview( intake, { changed = ( intake.review || [] ).filter
 	const out = [ `# Intake review: ${ intake.client }`, '', `Taken on ${ intake.takenOn }; manifest ${ intake.manifest?.schema_version ?? '?' }, files hash ${ manifestHash( intake.manifest ) }.`, '',
 		'How to mark: put x in a section\'s `Accept all: [ ]` box to give every row the section\'s first mark; to mark one row',
 		'differently, write its mark in that row\'s Mark cell (a row\'s own mark always beats Accept all). Flag rows left blank',
-		'are accepted as flagged; every other row needs Accept all or its own mark. Rows marked **changed** differ from the',
+		'are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the',
 		'last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review ' + intake.client + '`.', '',
 		readingLine( readingCounts( intake, changed ) ), '',
 		notDefectLine( intake ), '',
@@ -335,7 +358,7 @@ export function parseReview( markdown ) {
 export const isoDay = () => new Date().toISOString().slice( 0, 10 );
 
 // Applies Bean's marks to the intake record. Per row: its own Mark cell, else the section's Accept all (the first
-// value), else `accept-flagged` for a flag row, else no mark. A mark kept unchanged on a row with an unchanged hash
+// value), else the first value for a DEFAULTED row type (flag, not-a-defect), else no mark. A mark kept unchanged on a row with an unchanged hash
 // keeps its markedOn and carriedFrom; any other new mark is dated `today`. Returns { intake (review rebuilt from the
 // record's rows), problems, missing: [{ rowId, rowType, why }] }; non-empty problems or missing means the review fails.
 export function applyReview( intake, markdown, { today = isoDay() } = {} ) {
@@ -369,8 +392,8 @@ export function applyReview( intake, markdown, { today = isoDay() } = {} ) {
 		} else if ( parsed.sections[ r.rowType ]?.acceptAll ) {
 			mark = r.acceptAll;
 			why = 'Accept all cannot mark it: it proposes no block; mark map:<block>, difference or build';
-		} else if ( 'flag' === r.rowType ) {
-			mark = 'accept-flagged';
+		} else if ( DEFAULTED.includes( r.rowType ) ) {
+			mark = MARKS[ r.rowType ][ 0 ].value;
 		}
 		const old = prior.get( r.rowId );
 		const keep = old && old.contentHash === r.contentHash && null !== mark && old.mark === mark;

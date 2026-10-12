@@ -3,7 +3,9 @@
 // mechanism; a template record by its draft and template element; a stylesheet record by its draft and selector. A
 // paired record whose compared field differs is one row per field; a record only one side has is one row; a count total,
 // a route or a toggling sc-if only one side lists is one row. Rows: { rowId, draftId, text, field, ours, theirs, why }
-// with the default mark `ours` (lib/intake-review.mjs renders them).
+// with the default mark `ours` (lib/intake-review.mjs renders them). A row ID, and a record row's `ours` or `theirs`,
+// is built from the pairing key, never from either side's record IDs (both renumber when a record is inserted), so a
+// re-export that adds one record leaves every other row's ID and content hash, and Bean's mark on it, unchanged.
 
 // Values compared alike: times in ms, lower-case, whitespace removed, `auto` fill as `none`.
 export function norm( v ) {
@@ -87,12 +89,12 @@ export function diffAnimations( ours, theirs ) {
 		const b = fields( t );
 		for ( const f of [ ...new Set( [ ...Object.keys( a ), ...Object.keys( b ) ] ) ] ) {
 			if ( ! same( a[ f ], b[ f ] ) ) {
-				rows.push( { rowId: `inventory:anim:${ o.id }:${ t.id }:${ f }`, draftId: draftOf( o ), text: `${ o.id } (theirs ${ t.id }) ${ f }: ours ${ show( a[ f ] ) }, theirs ${ show( b[ f ] ) }`, field: f, ours: show( a[ f ] ), theirs: show( b[ f ] ), why: 'the re-derived record and Claude Design\'s disagree on this field' } );
+				rows.push( { rowId: `inventory:anim:${ pairKey( o ) }:${ f }`, draftId: draftOf( o ), text: `${ o.id } (theirs ${ t.id }) ${ f }: ours ${ show( a[ f ] ) }, theirs ${ show( b[ f ] ) }`, field: f, ours: show( a[ f ] ), theirs: show( b[ f ] ), why: 'the re-derived record and Claude Design\'s disagree on this field' } );
 			}
 		}
 	}
-	onlyOurs.forEach( ( o ) => rows.push( { rowId: `inventory:anim:${ o.id }:only-ours`, draftId: draftOf( o ), text: `${ o.id } ${ o.mechanism } ${ o.name } is not in Claude Design's animations.json`, field: 'record', ours: o.id, theirs: null, why: 'only the re-derived inventory has this effect' } ) );
-	onlyTheirs.forEach( ( t ) => rows.push( { rowId: `inventory:anim:theirs:${ t.id }:only-theirs`, draftId: draftOf( t ), text: `Claude Design's ${ t.id } ${ t.mechanism } ${ t.name } has no re-derived record`, field: 'record', ours: null, theirs: t.id, why: 'only Claude Design\'s inventory has this effect' } ) );
+	onlyOurs.forEach( ( o ) => rows.push( { rowId: `inventory:anim:${ pairKey( o ) }:only-ours`, draftId: draftOf( o ), text: `${ o.id } ${ o.mechanism } ${ o.name } is not in Claude Design's animations.json`, field: 'record', ours: pairKey( o ), theirs: null, why: 'only the re-derived inventory has this effect' } ) );
+	onlyTheirs.forEach( ( t ) => rows.push( { rowId: `inventory:anim:theirs:${ pairKey( t ) }:only-theirs`, draftId: draftOf( t ), text: `Claude Design's ${ t.id } ${ t.mechanism } ${ t.name } has no re-derived record`, field: 'record', ours: null, theirs: pairKey( t ), why: 'only Claude Design\'s inventory has this effect' } ) );
 	for ( const cat of Object.keys( { ...ours.counts, ...theirs.counts } ) ) {
 		const a = ours.counts?.[ cat ]?.total ?? null;
 		const b = theirs.counts?.[ cat ]?.total ?? null;
@@ -136,10 +138,10 @@ export function diffSurfaces( ours, theirs ) {
 	const { pairs } = pairUp( ours.records || [], theirs.records || [], keyOf );
 	for ( const [ o, t ] of pairs ) {
 		if ( o.kind !== t.kind ) {
-			rows.push( { rowId: `inventory:surface:${ o.id }:${ t.id }:kind`, draftId: keyOf( o ), text: `${ o.id } (theirs ${ t.id }) kind: ours ${ o.kind }, theirs ${ t.kind }`, field: 'kind', ours: o.kind, theirs: t.kind, why: 'the re-derived surface and Claude Design\'s disagree on its kind' } );
+			rows.push( { rowId: `inventory:surface:${ keyOf( o ) }:kind`, draftId: keyOf( o ), text: `${ o.id } (theirs ${ t.id }) kind: ours ${ o.kind }, theirs ${ t.kind }`, field: 'kind', ours: o.kind, theirs: t.kind, why: 'the re-derived surface and Claude Design\'s disagree on its kind' } );
 		}
 		if ( o.states.length !== t.states.length ) {
-			rows.push( { rowId: `inventory:surface:${ o.id }:${ t.id }:states`, draftId: keyOf( o ), text: `${ o.id } (theirs ${ t.id }) states: ours ${ o.states.length }, theirs ${ t.states.length }`, field: 'states', ours: String( o.states.length ), theirs: String( t.states.length ), why: 'the re-derived surface and Claude Design\'s list a different number of states' } );
+			rows.push( { rowId: `inventory:surface:${ keyOf( o ) }:states`, draftId: keyOf( o ), text: `${ o.id } (theirs ${ t.id }) states: ours ${ o.states.length }, theirs ${ t.states.length }`, field: 'states', ours: String( o.states.length ), theirs: String( t.states.length ), why: 'the re-derived surface and Claude Design\'s list a different number of states' } );
 		}
 	}
 	return rows;
