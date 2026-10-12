@@ -1,0 +1,8 @@
+:root{
+  --gap-1:8px; --radius-card:12px;
+  --space-fluid:clamp(16px, calc(1rem + 2vw), 48px);
+  --shadow-card:0 8px 18px -8px rgba(0,0,0,.45);
+  --ease-out:cubic-bezier(.16,.84,.32,1);
+  --font-body:"Source Sans 3", sans-serif; --fs-h1:clamp(36px,5vw,62px); --lh-body:1.55;
+  --label:"a;b}c";
+}

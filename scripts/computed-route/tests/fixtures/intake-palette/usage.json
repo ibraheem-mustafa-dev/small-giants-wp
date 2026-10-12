@@ -1,0 +1,16 @@
+[
+  { "hex": "#1F7A7A", "property": "color", "draftId": "a1", "count": 10, "tag": "a" },
+  { "hex": "#1f7a7a", "property": "background-color", "draftId": "btn1", "count": 5, "tag": "button" },
+  { "hex": "rgb(31, 122, 122)", "property": "background-color", "draftId": "s1", "count": 3, "tag": "section" },
+  { "hex": "#F1F5F9", "property": "color", "draftId": "s1", "count": 3, "tag": "section" },
+  { "hex": "#0F4C4C", "property": "color", "draftId": "a2", "count": 2, "tag": "a" },
+  { "hex": "#F59E0B", "property": "background-color", "draftId": "btn2", "count": 2, "tag": "button" },
+  { "hex": "#1A202C", "property": "color", "draftId": "h1", "count": 8, "tag": "h2" },
+  { "hex": "#1B212D", "property": "color", "draftId": "h3", "count": 1, "tag": "h3" },
+  { "hex": "hsl(215 26% 30%)", "property": "color", "draftId": "p1", "count": 20, "tag": "p" },
+  { "hex": "#FFFFFF", "property": "background-color", "draftId": "body", "count": 1, "tag": "body" },
+  { "hex": "#F7F7F7", "property": "background-color", "draftId": "card1", "count": 4, "tag": "div" },
+  { "hex": "#123456", "property": "color", "draftId": "span1", "count": 1, "tag": "span" },
+  { "hex": "rgba(31,122,122,0.5)", "property": "border-color", "draftId": "card1", "count": 1, "tag": "div" },
+  { "hex": "not-a-colour", "property": "color", "draftId": "x1", "count": 1, "tag": "p" }
+]

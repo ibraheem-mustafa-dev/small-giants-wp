@@ -1,0 +1,18 @@
+/* Fixture palette (Spec 48 FR-48-31). A comment holding braces and semicolons { --not-a-token: #000; } must be skipped. */
+@import url("https://fonts.example.test/css2?family=Inter:wght@400;700&display=swap");
+:root{
+  --brand-teal:#1F7A7A; --brand-teal-hover:#0F4C4C;
+  --brand-orange: rgb(245 158 11);
+  --ink:#1A202C; --near-ink:#1B212D; --grey-body:hsl(215, 26%, 30%);
+  --surface-page:#FFFFFF; --surface-card:#F7F7F7;
+  --text-heading:var(--ink); --text-body:var(--grey-body);
+  --text-link:var(--brand-teal); --text-link-hover:var(--brand-teal-hover);
+  --surface-section-teal:var(--brand-teal); --text-on-teal:#F1F5F9;
+  --planted-unused:#7B2CBF;
+  --loop-a:var(--loop-b); --loop-b:var(--loop-a);
+  --orphan:var(--does-not-exist);
+  --with-fallback:var(--does-not-exist, var(--also-missing, #ABCDEF));
+  --gradient-hero:linear-gradient(90deg,var(--brand-teal) 0%,var(--brand-orange) 100%);
+}
+@media (prefers-color-scheme: dark){ :root{ --surface-page:#111111 !important; } }
+.card,.panel{ --card-ground:var(--surface-card); }
