@@ -8,14 +8,16 @@
 //      some widths only is a breakpoint; reached when forced is not a defect; forcing that is impossible is a gap row
 //      (R-48-3). Unreached but not a defect: `prop-variant` (gated by a prop no parent mounts, FR-48-29), `dead-code` and
 //      `prototype-only` (FR-48-33), both proved statically (lib/intake-defects-static.mjs; a construct whose guard needs a
-//      field only dead code writes is dead code too, lib/intake-defects-deadfield.mjs).
+//      field only dead code writes is dead code too, lib/intake-defects-deadfield.mjs, and so is one inside an sc-if
+//      false for every item of the draft's own data, lib/intake-defects-datagate.mjs). A dead-code entry carries its
+//      `deadKind` (lib/intake-defects-static.mjs::DEAD_KINDS).
 import { boundStyleRows, readPageBindings, bindingVerdicts } from './intake-defects-binding.mjs';
 import { groupVisits } from './intake-census-runtime.mjs';
 import { openForcedPage } from './intake-defects-force.mjs';
 import { conditionKeys, patchesOf, propsGating, defectGroups, mountedProps } from './intake-defects-keys.mjs';
 import { buildModel, codeTarget, countAt } from './intake-census-map.mjs';
-import { deadCodeWhy, prototypeOnlyWhy } from './intake-defects-static.mjs';
-import { deadFieldWhy } from './intake-defects-deadfield.mjs';
+import { deadCodeVerdict, prototypeOnlyWhy, dataGatedWhy } from './intake-defects-static.mjs';
+import { deadFieldVerdict } from './intake-defects-deadfield.mjs';
 import { chainPass } from './intake-defects-chain.mjs';
 import { mapPool, poolSize } from './intake-pool.mjs';
 
@@ -38,7 +40,7 @@ export const motionModifier = ( r ) => [ 'transition', 'keyframes' ].includes( r
 // `onPage(session, { width, visit }, into)` runs on each visit after the rest settle, before any forcing, writing what
 // it reads into the Map `into`: `reads` itself when the widths run one at a time, else one Map per width, each appended
 // to `reads` in width order (an `onPage` given without `reads` runs the widths one at a time). `force` switches a
-// forcing off ({ pseudo, state, events, props, deadCode, deadField, reducedMotion, drag, coords, chain }: false); it
+// forcing off ({ pseudo, state, events, props, deadCode, deadField, dataGate, reducedMotion, drag, coords, chain }: false); it
 // exists only for the tests' negative
 // controls. `only` (a Set of census row IDs) limits the candidates, for a second pass over more visits. `flags`
 // (lib/intake-flags.mjs::proposeFlags rows, optional) lets a construct be prototype-only (FR-48-33). Returns { rows,
@@ -64,7 +66,8 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 		const props = new Set( target && ! target.gap && source.get( target.comp ) ? propsGating( source.get( target.comp ), target.off ) : [] );
 		const ok = target && ! target.gap;
 		const src = ok && false !== force.deadCode && ! files.has( target.comp ) ? source.get( target.comp ) : null;
-		const dead = src ? deadCodeWhy( src, target.off, census ) || ( false !== force.deadField ? deadFieldWhy( src, target.off, census ) : null ) : null;
+		const gated = false !== force.deadCode && false !== force.dataGate ? dataGatedWhy( census, { row: r, target: ok ? target : null } ) : null;
+		const dead = ( src ? deadCodeVerdict( src, target.off, census ) || ( false !== force.deadField ? deadFieldVerdict( src, target.off, census ) : null ) : null ) || gated;
 		const proto = ok ? prototypeOnlyWhy( { target, flags, census, files, model, sources: source } ) : null;
 		return [ r.id, { row: r, patches: [], gaps: [], props, dead, proto, at: new Map(), ready: false, target } ];
 	} ) );
@@ -369,7 +372,7 @@ function decideRow( p, widths, out, failed = new Set(), mountedWith = new Map() 
 	} else if ( reached.length ) {
 		out.notDefects.push( { draftId: r.draftId, censusId: r.id, why: 'breakpoint', widths: reached, note: `reached at ${ reached.join( ', ' ) } only` } );
 	} else if ( p.dead ) {
-		out.notDefects.push( { draftId: r.draftId, censusId: r.id, why: 'dead-code', note: p.dead } );
+		out.notDefects.push( { draftId: r.draftId, censusId: r.id, why: 'dead-code', deadKind: p.dead.kind, note: p.dead.note } );
 	} else if ( p.proto ) {
 		out.notDefects.push( { draftId: r.draftId, censusId: r.id, why: 'prototype-only', note: `${ p.proto } (FR-48-33)` } );
 	} else if ( mountedWith && p.props.size && ! [ ...p.props ].some( ( x ) => mountedWith.get( r.component )?.has( x ) ) ) {

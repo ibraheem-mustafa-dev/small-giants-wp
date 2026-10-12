@@ -96,6 +96,18 @@ export function nodeAt( p, off, re ) {
 	return p.nodes.filter( ( n ) => n.start === off && re.test( n.type ) ).sort( ( a, b ) => ( a.end - a.start ) - ( b.end - b.start ) )[ 0 ] || null;
 }
 
+// A parsed program's initialised `name = …` declarators per name, in its node order: Map(name → [VariableDeclarator]),
+// built once per program (any object with `nodes`, a codeModel program or a lib/intake-defects-keys.mjs logic model).
+const declaratorIndex = new WeakMap();
+export function declaratorsOf( p ) {
+	if ( ! declaratorIndex.has( p ) ) {
+		const byName = new Map();
+		p.nodes.filter( ( x ) => 'VariableDeclarator' === x.type && 'Identifier' === x.id.type && x.init ).forEach( ( x ) => byName.set( x.id.name, [ ...( byName.get( x.id.name ) || [] ), x ] ) );
+		declaratorIndex.set( p, byName );
+	}
+	return declaratorIndex.get( p );
+}
+
 // The ancestors of a node, nearest first.
 export function ancestors( p, n ) {
 	const out = [];

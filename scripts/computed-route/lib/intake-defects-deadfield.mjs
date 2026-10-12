@@ -16,7 +16,7 @@
 //     source that cannot be read (`this[k] = …`, `Object.assign(this, …)`, a non-literal defineProperty name).
 import { walkAst } from './intake-census-logic.mjs';
 import { logicModel } from './intake-defects-keys.mjs';
-import { deadCodeWhy } from './intake-defects-static.mjs';
+import { deadCodeVerdict } from './intake-defects-static.mjs';
 
 const holds = ( n, off ) => n && n.start <= off && off < n.end;
 const isThis = ( n ) => 'MemberExpression' === n?.type && ! n.computed && 'ThisExpression' === n.object.type;
@@ -123,8 +123,13 @@ function guardFields( member, off ) {
 }
 
 // Why the code row at logic offset `off` of `source` never runs because a field it needs is set only in dead code,
-// or null when that is not provable. `census` is passed through to deadCodeWhy.
-export function deadFieldWhy( source, off, census ) {
+// or null when that is not provable. `census` is passed through to deadCodeVerdict.
+export const deadFieldWhy = ( source, off, census ) => deadFieldVerdict( source, off, census )?.note ?? null;
+
+// deadFieldWhy's verdict with its kind: { note, kind }, or null. The kind is `unwired` when nothing writes the field
+// or any write is unwired dead code (a misspelled wiring would set it, so the owner must see it, Bean 2026-10-12), and
+// `constant-guard` when every write sits behind a constant guard: the code itself turns that field's setting off.
+export function deadFieldVerdict( source, off, census ) {
 	const m = logicModel( source );
 	if ( m.error ) {
 		return null;
@@ -146,9 +151,11 @@ export function deadFieldWhy( source, off, census ) {
 			continue;
 		}
 		const at = writes.get( field ) || [];
-		const whys = at.map( ( w ) => deadCodeWhy( source, w, census ) );
+		const whys = at.map( ( w ) => deadCodeVerdict( source, w, census ) );
 		if ( whys.every( Boolean ) ) {
-			return at.length ? `${ entry[ 0 ] } needs this.${ field }, which is written only in dead code (${ [ ...new Set( whys ) ].join( '; ' ) })` : `${ entry[ 0 ] } needs this.${ field }, which nothing writes`;
+			return at.length
+				? { note: `${ entry[ 0 ] } needs this.${ field }, which is written only in dead code (${ [ ...new Set( whys.map( ( w ) => w.note ) ) ].join( '; ' ) })`, kind: whys.some( ( w ) => 'unwired' === w.kind ) ? 'unwired' : 'constant-guard' }
+				: { note: `${ entry[ 0 ] } needs this.${ field }, which nothing writes`, kind: 'unwired' };
 		}
 	}
 	return null;

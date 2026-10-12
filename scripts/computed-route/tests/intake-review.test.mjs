@@ -8,6 +8,8 @@ import { fileURLToPath } from 'url';
 import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
 import { reviewRows, renderReview, parseReview, applyReview, carryOver, markProblem, notDefectLine, MARKS, ROW_TYPES } from '../lib/intake-review.mjs';
 import { deadCodeWhy } from '../lib/intake-defects-static.mjs';
+import { deadFieldVerdict } from '../lib/intake-defects-deadfield.mjs';
+import { diffAnimations } from '../lib/intake-inventory-diff.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const SCHEMA = path.join( HERE, '..', 'data', 'intake.schema.json' );
@@ -238,4 +240,70 @@ test( 'MUST FAIL (FR-48-34): constant-guard dead code and the other reasons are 
 	assert.equal( notDefectLine( fixture() ), 'Not defects counted, not listed: dead-code (constant guard) 1, prop-variant 1.' );
 	assert.ok( renderReview( fixture() ).includes( 'Not defects counted, not listed: dead-code (constant guard) 1, prop-variant 1.' ) );
 	assert.equal( notDefectLine( fixture( { notDefects: [] } ) ), 'Not defects counted, not listed: none.' );
+} );
+
+test( 'MUST FAIL (FR-48-34): a dead field written only behind a constant guard is counted by its kind; one also written by an unwired member is listed; the old note-reading stays the fallback', () => {
+	// guarded: arm() writes this._el only behind a constant guard, so the code itself turns the field off.
+	const guarded = 'class Component { componentDidMount() { this.arm(); this.go(); } go() { if ( this._el ) { this._el.animate( [], 300 ); } } arm() { const on = false; if ( ! on ) { return; } this._el = document.body; } }';
+	const g = deadFieldVerdict( { logic: guarded }, guarded.indexOf( '.animate(' ), { rows: [] } );
+	assert.equal( g.kind, 'constant-guard' );
+	assert.match( g.note, /exits at a constant guard/ );
+	const entry = { draftId: 'Home:js:1:1', censusId: 'waapi@Home:js:1:1', why: 'dead-code', deadKind: g.kind, note: g.note };
+	const intake = fixture( { notDefects: [ entry ] } );
+	assert.deepEqual( reviewRows( intake ).filter( ( r ) => 'not-a-defect' === r.rowType ), [] );
+	assert.equal( notDefectLine( intake ), 'Not defects counted, not listed: dead-code (constant guard) 1.' );
+	assert.equal( notDefectLine( fixture( { notDefects: [ { ...entry, deadKind: 'data-gated' } ] } ) ), 'Not defects counted, not listed: dead-code (data-gated) 1.' );
+	// mixed: setRef() also writes this._el and nothing references it. A misspelled wiring would set the field, so the
+	// owner must see it (Bean, 2026-10-12): unwired, listed.
+	const mixed = 'class Component { componentDidMount() { this.arm(); this.go(); } go() { if ( this._el ) { this._el.animate( [], 300 ); } } arm() { const on = false; if ( ! on ) { return; } this._el = document.body; } setRef( el ) { this._el = el; } }';
+	const m = deadFieldVerdict( { logic: mixed }, mixed.indexOf( '.animate(' ), { rows: [] } );
+	assert.match( m.note, /setRef is never referenced/ );
+	assert.equal( m.kind, 'unwired', 'one unwired writer is enough to list it' );
+	assert.equal( reviewRows( fixture( { notDefects: [ { ...entry, deadKind: m.kind, note: m.note } ] } ) ).filter( ( r ) => 'not-a-defect' === r.rowType ).length, 1 );
+	const { deadKind, ...old } = { ...entry, note: m.note };
+	assert.ok( deadKind );
+	assert.equal( reviewRows( fixture( { notDefects: [ old ] } ) ).filter( ( r ) => 'not-a-defect' === r.rowType ).length, 1, 'a record without deadKind falls back to the wording of its note' );
+	const only = 'class Component { componentDidMount() { this.go(); } go() { if ( this._el ) { this._el.animate( [], 300 ); } } setRef( el ) { this._el = el; } }';
+	assert.equal( deadFieldVerdict( { logic: only }, only.indexOf( '.animate(' ), { rows: [] } )?.kind, 'unwired', 'with only the unreferenced writer it is unwired, so listed' );
+} );
+
+test( 'MUST FAIL a row ID holding a pipe, a backtick, CR or LF renders, parses back and keeps its own mark', () => {
+	const intake = fixture( {
+		notDefects: [ { draftId: 'C', censusId: 'C|1', why: 'dead-code', note: 'q is reached only through renderVals key q, which no template binding references' } ],
+		inventory: { animations: [], surfaces: [], diff: [
+			{ rowId: 'inventory:surface:route:a|b:only-theirs', draftId: 'a|b', field: 'route', ours: null, theirs: 'a|b' },
+			{ rowId: 'inventory:tick`x`\r\ny', draftId: 'y', field: 'f', ours: '1', theirs: '2' },
+			{ draftId: 'same', field: 'f1', ours: '1', theirs: '2' }, { draftId: 'same', field: 'f2', ours: '1', theirs: '2' },
+		] },
+	} );
+	const ids = reviewRows( intake ).map( ( r ) => r.rowId );
+	assert.ok( ids.includes( 'not-defect:C%7C1' ) && ids.includes( 'inventory:surface:route:a%7Cb:only-theirs' ) && ids.includes( 'inventory:tick%60x%60%0D%0Ay' ) );
+	assert.ok( ids.includes( 'inventory:same' ) && ids.includes( 'inventory:same#2' ), 'two rows falling back to one ID stay apart' );
+	assert.equal( new Set( ids ).size, ids.length );
+	const md = mark( renderReview( intake ), { accept: ROW_TYPES, rows: { 'inventory:surface:route:a%7Cb:only-theirs': 'theirs', 'not-defect:C%7C1': 'defect', 'missing:Quiz:1': 'difference' } } );
+	assert.deepEqual( parseReview( md ).problems, [] );
+	const r = applyReview( intake, md, { today: TODAY } );
+	assert.deepEqual( [ r.problems, r.missing ], [ [], [] ] );
+	assert.equal( r.intake.review.find( ( x ) => 'inventory:surface:route:a%7Cb:only-theirs' === x.rowId ).mark, 'theirs' );
+	assert.equal( r.intake.review.find( ( x ) => 'not-defect:C%7C1' === x.rowId ).mark, 'defect' );
+} );
+
+test( 'MUST FAIL (Appendix C "the default") a not-a-defect row left blank is not-a-defect, never missing; it shows its draft ID when it has no census ID', () => {
+	const intake = fixture( { notDefects: [ { draftId: 'B:js:4', why: 'dead-code', note: 'baz is reached only through renderVals key baz, which no template binding references' } ] } );
+	const r = applyReview( intake, mark( renderReview( intake ), { accept: ROW_TYPES.filter( ( t ) => 'not-a-defect' !== t ), rows: { 'missing:Quiz:1': 'difference' } } ), { today: TODAY } );
+	assert.deepEqual( r.missing, [] );
+	assert.equal( r.intake.review.find( ( x ) => 'not-a-defect' === x.rowType ).mark, 'not-a-defect' );
+	assert.match( reviewRows( intake ).find( ( x ) => 'not-a-defect' === x.rowType ).shows, /^B:js:4 baz/ );
+} );
+
+test( 'MUST FAIL (FR-48-25) a re-export that inserts one record keeps every other inventory-diff row\'s ID, hash and mark', () => {
+	const rec = ( id, line, ms ) => ( { id, mechanism: 'waapi', name: 'n', source: { file: 'a.js', line }, trigger: { type: 'load' }, duration_ms: ms, properties: [] } );
+	const run = ( ours, theirs ) => fixture( { inventory: { animations: [], surfaces: [], diff: diffAnimations( { records: ours, counts: {} }, { records: theirs, counts: {} } ) } } );
+	const v1 = run( [ rec( 'A-01', 10, 500 ), rec( 'A-02', 20, 500 ) ], [ rec( 'A-1', 10, 999 ), rec( 'A-2', 20, 999 ) ] );
+	// Ours gains an effect at line 5 and both sides renumber their own IDs.
+	const v2 = run( [ rec( 'A-01', 5, 500 ), rec( 'A-02', 10, 500 ), rec( 'A-03', 20, 500 ) ], [ rec( 'A-1', 10, 999 ), rec( 'A-2', 20, 999 ) ] );
+	v1.review = reviewRows( v1 ).map( ( r ) => ( { rowId: r.rowId, rowType: r.rowType, contentHash: r.contentHash, mark: 'inventory-diff' === r.rowType ? 'theirs' : null, markedOn: TODAY, carriedFrom: null } ) );
+	const diffRows = carryOver( v1, v2 ).review.filter( ( r ) => 'inventory-diff' === r.rowType );
+	assert.deepEqual( diffRows.map( ( r ) => [ r.rowId, r.mark ] ).sort(), [
+		[ 'inventory:anim:a.js%7C10%7Cwaapi:duration_ms', 'theirs' ], [ 'inventory:anim:a.js%7C20%7Cwaapi:duration_ms', 'theirs' ], [ 'inventory:anim:a.js%7C5%7Cwaapi:only-ours', null ] ] );
 } );

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-12",
+  "project": "Draft defects data-gate fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 2427,
+      "sha256": "516baa63b91afbe2e1668d41ebe9f92d8168ad784c59694b94de1776da7c4c48"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    }
+  ]
+}

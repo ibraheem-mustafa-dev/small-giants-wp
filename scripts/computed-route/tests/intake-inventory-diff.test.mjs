@@ -35,13 +35,13 @@ test( 'MUST FAIL: a changed field of a paired record is one row naming the field
 	const theirs = structuredClone( ours );
 	theirs.animations.records[ 1 ].duration_ms = 520;
 	const rows = diffInventory( ours, theirs );
-	assert.deepEqual( rows.map( ( r ) => [ r.rowId, r.field, r.ours, r.theirs, r.draftId ] ), [ [ 'inventory:anim:A-01:A-01:duration_ms', 'duration_ms', '300', '520', 'Home.dc.html:56' ] ] );
+	assert.deepEqual( rows.map( ( r ) => [ r.rowId, r.field, r.ours, r.theirs, r.draftId ] ), [ [ 'inventory:anim:Home.dc.html|56|waapi:duration_ms', 'duration_ms', '300', '520', 'Home.dc.html:56' ] ] );
 	assert.ok( rows[ 0 ].why );
 } );
 
 test( 'MUST FAIL: a record only one side has is a row; a count total that differs is a row', () => {
 	const rows = diffAnimations( ours.animations, anims( [ record( 'TR-001' ), record( 'PS-001', { mechanism: 'css-pseudo', element: { dc: 'Home', template_tpl_id: '4', selector: 'x', description: 'y' } } ) ] ) );
-	assert.deepEqual( rows.map( ( r ) => r.rowId ), [ 'inventory:anim:A-01:only-ours', 'inventory:anim:theirs:PS-001:only-theirs', 'inventory:count:animate_calls' ] );
+	assert.deepEqual( rows.map( ( r ) => r.rowId ), [ 'inventory:anim:Home.dc.html|56|waapi:only-ours', 'inventory:anim:theirs:Home|tpl|4|css:only-theirs', 'inventory:count:animate_calls' ] );
 } );
 
 test( 'MUST FAIL: a route or a toggling sc-if only one side lists, a surface kind or state count that differs, each is a row', () => {
@@ -49,7 +49,7 @@ test( 'MUST FAIL: a route or a toggling sc-if only one side lists, a surface kin
 	theirs.records[ 0 ] = { ...theirs.records[ 0 ], kind: 'menu', states: [ ...theirs.records[ 0 ].states, { name: 'closed', state_keys: { open: false }, how_to_reach: 'click' } ] };
 	assert.deepEqual( diffSurfaces( ours.surfaces, theirs ).map( ( r ) => r.rowId ), [
 		'inventory:surface:route:contact:only-theirs', 'inventory:surface:toggling-sc-if:Home:7:only-ours', 'inventory:surface:toggling-sc-if:Home:9:only-theirs',
-		'inventory:surface-count:routes', 'inventory:surface:S-01:S-01:kind', 'inventory:surface:S-01:S-01:states' ] );
+		'inventory:surface-count:routes', 'inventory:surface:Home|7:kind', 'inventory:surface:Home|7:states' ] );
 } );
 
 test( 'a missing or unreadable Claude Design copy is one row each, never a silent pass', () => {

@@ -2,7 +2,7 @@
 // lib/intake-inventory-code.mjs::codeModel: the keys each class member's setState writes, the keys a router or the
 // viewport writes, and what makes a program's output time-dependent.
 import { walkAst } from './intake-census-logic.mjs';
-import { isFn, isThis, prop, ancestors } from './intake-inventory-code.mjs';
+import { isFn, isThis, prop, ancestors, declaratorsOf } from './intake-inventory-code.mjs';
 
 // Per class member, the state keys its setState calls write: Map(member → Set(keys)).
 export function stateWriters( p ) {
@@ -29,8 +29,10 @@ export function stateWriters( p ) {
 // setState object.
 function keysReading( p, test ) {
 	const out = new Set();
+	const declarators = p ? declaratorsOf( p ) : new Map();
 	const reads = ( node, depth = 0 ) => {
 		let hit = false;
+		let fn;
 		walkAst( node, ( x ) => {
 			if ( hit || depth > 3 ) {
 				return;
@@ -41,8 +43,8 @@ function keysReading( p, test ) {
 				const m = p.members.get( prop( x.callee ) );
 				hit = reads( m.body ?? m.value, depth + 1 );
 			} else if ( 'Identifier' === x.type ) {
-				const fn = ancestors( p, node ).find( isFn );
-				const decl = fn && p.nodes.find( ( d ) => 'VariableDeclarator' === d.type && 'Identifier' === d.id.type && d.id.name === x.name && d.init && fn.start <= d.start && d.end <= fn.end );
+				fn = undefined === fn ? ancestors( p, node ).find( isFn ) ?? null : fn;
+				const decl = fn && declarators.get( x.name )?.find( ( d ) => fn.start <= d.start && d.end <= fn.end );
 				hit = Boolean( decl && decl.init !== node && reads( decl.init, depth + 1 ) );
 			}
 		} );

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<main style="min-height:900px;padding:24px;font-family:system-ui,sans-serif;color:#222">
+  <h1>Data gate fixture</h1>
+  <sc-for list="{{ blocks }}" as="b">
+    <section>
+      <h2>{{ b.title }}</h2>
+      <sc-if value="{{ b.isTimeline }}">
+        <div class="timeline" style="position:relative;transition:color .2s" style-hover="color:#c00">
+          <span data-draw-y="" style="display:block;width:2px;height:40px;background:#888"></span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ b.isBanner }}">
+        <div class="banner">Banner</div>
+      </sc-if>
+      <sc-if value="{{ b.isOpen }}">
+        <p class="open-note">Open</p>
+      </sc-if>
+      <button type="button" onClick="{{ b.onToggle }}">Toggle</button>
+    </section>
+  </sc-for>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home', openKey: null };
+
+  componentDidMount() {
+    this.reveal();
+  }
+
+  get pages() {
+    const cta = ( o ) => Object.assign( { type: 'cta', title: 'Get in touch' }, o || {} );
+    return {
+      home: { blocks: [ { type: 'text', title: 'Welcome', key: 'welcome' }, cta( { title: 'Order now' } ) ] },
+      about: { blocks: [ { type: 'banner', title: 'Our story', key: 'story' }, cta() ] },
+    };
+  }
+
+  reveal() {
+    const targets = [];
+    document.querySelectorAll( '[data-draw-y]' ).forEach( ( el ) => {
+      el._rv = { kind: 'drawy' };
+      targets.push( el );
+    } );
+    document.querySelectorAll( 'h2' ).forEach( ( el ) => {
+      el._rv = { kind: 'head' };
+      targets.push( el );
+    } );
+    targets.forEach( ( el ) => {
+      if ( el._rv.kind === 'drawy' ) {
+        el.animate( [ { transform: 'scaleY(0)' }, { transform: 'scaleY(1)' } ], { duration: 10 } );
+      } else {
+        el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 10 } );
+      }
+    } );
+  }
+
+  renderVals() {
+    const page = this.pages[ this.state.page ];
+    return {
+      blocks: page.blocks.map( ( b ) => ( {
+        ...b,
+        isTimeline: b.type === 'timeline',
+        isBanner: b.type === 'banner',
+        isOpen: this.state.openKey === b.key,
+        onToggle: () => this.setState( { openKey: b.key } ),
+      } ) ),
+    };
+  }
+}
+</script>
+</body>
+</html>
