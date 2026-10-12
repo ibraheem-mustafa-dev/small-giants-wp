@@ -1,0 +1,37 @@
+{
+	"description": "\u00a75.2: split reveal and scramble both in entrance.text on one part.",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Split reveal and Scramble both rewrite this text; keep one of them."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"title": {
+				"entrance": {
+					"text": [
+						{
+							"id": "t1",
+							"effect": "split-reveal",
+							"trigger": "scroll",
+							"values": {
+								"unit": "words"
+							}
+						},
+						{
+							"id": "t2",
+							"effect": "scramble",
+							"trigger": "load",
+							"values": {
+								"charset": "upper"
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

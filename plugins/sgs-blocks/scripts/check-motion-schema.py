@@ -21,10 +21,16 @@ WHAT --check ASSERTS
                    (identity) value, and the owner's x-sgs-writes entry lists that channel
   tokens           every token in the Spec 38A §7 table has a band, and the tokenReference enum equals the token list
   effects          every x-sgs-effects entry names real panels, values and device nodes, and labels its slots
+  field-range      a field that narrows duration, distance or angle carries x-sgs-range {min, max, unit} equal to
+                   its minimum/maximum in the base unit (ms, px, deg), so unit strings are held to the same range
+  spec-*           refusal texts, §7 bands, §10 owner properties and identities, the injected-layer cap and the
+                   §6.2 trigger lists equal what Spec 38A states (lib/motion_spec_pins.py)
+Exemptions (the stagger helper's durations without device overrides, schema-worded refusal texts) print as notes.
 
 --self-test copies the schema to a temp folder and plants, one at a time, a malformed file, a field with an inline
-type, a refusal without text and a channel owner property without syntax; it exits 0 only when the clean copy passes
-and every plant fails.
+type, a refusal without text, a channel owner property without syntax, a reworded refusal text, an off-spec band, a
+non-identity owner initial, an injected-layer cap of 3, a widened hover trigger enum and a widened x-sgs-range; it
+exits 0 only when the clean copy passes and every plant is caught by its own rule.
 
 Run from the repo root:  python plugins/sgs-blocks/scripts/check-motion-schema.py --check
 """
@@ -57,6 +63,11 @@ ENTRY_KEYS = {"$ref", "description", "title", "default", "examples", "$comment",
 FIELD_META_KEYS = {"fieldType", "cssProperty", "state", "perDevice"}
 SYNTAXES = {"<length>", "<number>", "<angle>", "<percentage>", "<length-percentage>"}
 PLACEHOLDER = re.compile(r"<[A-Za-z]+>")
+# The unit-bearing field types: a field narrowing one carries x-sgs-range {min, max, unit} in this base unit.
+RANGE_BASE = {"duration": "ms", "distance": "px", "angle": "deg"}
+
+sys.path.insert(0, str(PLUGIN / "scripts" / "lib"))
+from motion_spec_pins import spec_pin_errors, spec_tokens  # noqa: E402
 
 
 def ref_name(ref: str) -> str | None:
@@ -119,8 +130,37 @@ def check_entries(schema: dict, defs: dict) -> list[str]:
     return errors
 
 
-def check_fields(schema: dict, defs: dict) -> list[str]:
+def number_bounds(defs: dict, ft: str) -> tuple:
+    """The (minimum, maximum) of a field type's number branch."""
+    d = defs.get(ft) or {}
+    for branch in [d] + list(d.get("anyOf") or []):
+        if branch.get("type") == "number":
+            return branch.get("minimum"), branch.get("maximum")
+    return None, None
+
+
+def check_range(defs: dict, where: str, ft: str, entry: dict) -> list[str]:
+    """A field narrowing a unit-bearing type carries a matching x-sgs-range; no other field carries one."""
+    rng = entry.get("x-sgs-range")
+    narrows = "minimum" in entry or "maximum" in entry
+    if ft not in RANGE_BASE:
+        return [f"field-range: {where} is a {ft} field, which has no unit forms, but carries x-sgs-range"] if rng else []
+    if not narrows and not rng:
+        return []
+    lo, hi = number_bounds(defs, ft)
+    want = {"min": entry.get("minimum", lo), "max": entry.get("maximum", hi), "unit": RANGE_BASE[ft]}
+    if rng != want:
+        return [f"field-range: {where} x-sgs-range {rng} should be {want} so its unit strings are held to the same range"]
+    return []
+
+
+def check_fields(schema: dict, defs: dict, notes: list) -> list[str]:
     errors = []
+    for ft, base in RANGE_BASE.items():
+        rng = (defs.get(ft) or {}).get("x-sgs-range")
+        lo, hi = number_bounds(defs, ft)
+        if rng is not None and rng != {"min": lo, "max": hi, "unit": base}:
+            errors.append(f"field-range: #/$defs/{ft} x-sgs-range {rng} differs from its number branch ({lo} to {hi}{base})")
     declared = {n for n, d in defs.items() if d.get("x-sgs-kind") == "fieldType"}
     if declared != FIELD_TYPES:
         errors.append(f"field-types: $defs field types differ from FR-38A-55: missing {sorted(FIELD_TYPES - declared)}, extra {sorted(declared - FIELD_TYPES)}")
@@ -154,14 +194,19 @@ def check_fields(schema: dict, defs: dict) -> list[str]:
                     errors.append(f"field-annotation: {where} is a {ft} list but $ref {entry.get('$ref')} does not hold {ft} items")
             elif target != ft:
                 errors.append(f"field-annotation: {where} says {ft} but references {entry.get('$ref')}")
+            errors += check_range(defs, where, ft, entry)
             if ft == "choice" and not entry.get("enum"):
                 errors.append(f"field-annotation: {where} is a choice with no enum")
             if meta["state"] is None and kind != "helper":
                 errors.append(f"field-annotation: {where} has no state")
             elif meta["state"] is not None and meta["state"] not in states:
                 errors.append(f"field-annotation: {where} state {meta['state']!r} is not in x-sgs-states")
-            if ft in PER_DEVICE_REQUIRED and kind != "helper" and meta["perDevice"] is not True:
-                errors.append(f"field-annotation: {where} is a {ft} field without per-device overrides (FR-38A-46)")
+            if ft in PER_DEVICE_REQUIRED and meta["perDevice"] is not True:
+                if kind == "helper":
+                    notes.append(f"exempt: {where} is a {ft} field with no device overrides because #/$defs/{name} is x-sgs-kind "
+                                 "helper (§6.2: read only by the editor helper, which writes per-device delays onto the children)")
+                else:
+                    errors.append(f"field-annotation: {where} is a {ft} field without per-device overrides (FR-38A-46)")
     return errors
 
 
@@ -242,31 +287,10 @@ def check_channels(schema: dict) -> list[str]:
     return errors
 
 
-def spec_tokens() -> list[str] | None:
-    """Token names in the Spec 38A §7 table (`a.b`, with `.c` shorthand taking the previous family)."""
-    if not SPEC.exists():
-        return None
-    text = SPEC.read_text(encoding="utf-8")
-    m = re.search(r"^## 7\. Tokens\n(.*?)(?=^## )", text, re.S | re.M)
-    if not m:
-        return None
-    names = []
-    for line in m.group(1).splitlines():
-        if not line.startswith("| `"):
-            continue
-        family = None
-        for tok in re.findall(r"`([a-z-]*\.[a-z-]+)`", line.split("|")[1]):
-            if tok.startswith("."):
-                tok = f"{family}{tok}"
-            family = tok.split(".")[0]
-            names.append(tok)
-    return names
-
-
 def check_tokens(schema: dict, defs: dict) -> list[str]:
     errors = []
     tokens = schema.get("x-sgs-tokens") or {}
-    listed = spec_tokens()
+    listed = list(spec_tokens(SPEC.read_text(encoding="utf-8"))) if SPEC.exists() else []
     if not listed:
         errors.append(f"tokens: the §7 token table was not found in {SPEC.relative_to(REPO).as_posix()}")
     for t in listed or []:
@@ -301,12 +325,14 @@ def check_effects(schema: dict, defs: dict) -> list[str]:
     return errors
 
 
-def check(path: Path) -> list[str]:
+def check(path: Path) -> tuple[list[str], list[str]]:
+    """(errors, notes) for one schema file; notes are exemptions the check reports but does not fail."""
     try:
         schema = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        return [f"parse: {path.name} is not JSON ({exc})"]
-    errors = []
+        return [f"parse: {path.name} is not JSON ({exc})"], []
+    errors: list[str] = []
+    notes: list[str] = []
     try:
         from jsonschema import Draft202012Validator
         from jsonschema.exceptions import SchemaError
@@ -319,16 +345,25 @@ def check(path: Path) -> list[str]:
     if schema.get("$schema") != "https://json-schema.org/draft/2020-12/schema":
         errors.append("meta-schema: $schema is not the 2020-12 dialect")
     defs = schema.get("$defs") or {}
-    for fn in (check_refs, check_entries, check_fields, check_tokens, check_effects):
+    for fn in (check_refs, check_entries, check_tokens, check_effects):
         errors += fn(schema, defs)
+    errors += check_fields(schema, defs, notes)
     errors += check_twins(defs)
     errors += check_refusals(schema)
     errors += check_channels(schema)
-    return errors
+    if SPEC.exists():
+        pin_errors, pin_notes = spec_pin_errors(schema, SPEC.read_text(encoding="utf-8"))
+        errors += pin_errors
+        notes += pin_notes
+    else:
+        errors.append(f"spec-refusals: {SPEC.relative_to(REPO).as_posix()} is missing, so no spec value can be pinned")
+    return errors, notes
 
 
 def cmd_check(path: Path) -> int:
-    errors = check(path)
+    errors, notes = check(path)
+    for n in notes:
+        print(f"  {n}")
     for e in errors:
         print(f"  {e}")
     rel = path.relative_to(REPO).as_posix() if path.is_relative_to(REPO) else str(path)
@@ -351,6 +386,30 @@ def _plant_owner_without_syntax(s: dict) -> None:
     del s["x-sgs-channels"][0]["owners"][0]["properties"][0]["syntax"]
 
 
+def _plant_reworded_refusal(s: dict) -> None:
+    s["x-sgs-refusals"]["pairs"][0]["text"] = "Tilt and <effect> fight over this element's transform."
+
+
+def _plant_band(s: dict) -> None:
+    s["x-sgs-tokens"]["duration.fast"]["band"].update({"min": 10, "max": 20})
+
+
+def _plant_owner_initial(s: dict) -> None:
+    s["x-sgs-channels"][0]["owners"][0]["properties"][0]["initial"] = "1px"
+
+
+def _plant_injected_max(s: dict) -> None:
+    next(lim for lim in s["x-sgs-refusals"]["limits"] if lim["kind"] == "slot-max")["max"] = 3
+
+
+def _plant_hover_trigger(s: dict) -> None:
+    s["$defs"]["HoverState"]["properties"]["trigger"]["enum"].append("click")
+
+
+def _plant_string_range(s: dict) -> None:
+    s["$defs"]["TiltValues"]["properties"]["maxAngle"]["x-sgs-range"]["max"] = 90
+
+
 def cmd_self_test() -> int:
     original = json.loads(SCHEMA.read_text(encoding="utf-8"))
     # Each plant must be caught by its own rule, named by the error's prefix.
@@ -359,12 +418,18 @@ def cmd_self_test() -> int:
         ("a field with an inline type", _plant_inline_type, "no-inline-type:"),
         ("a refusal without text", _plant_refusal_without_text, "refusals:"),
         ("a channel owner without syntax", _plant_owner_without_syntax, "channels:"),
+        ("a reworded refusal text", _plant_reworded_refusal, "spec-refusals:"),
+        ("a duration.fast band of 10 to 20ms", _plant_band, "spec-bands:"),
+        ("an owner initial that is not the identity", _plant_owner_initial, "spec-channels:"),
+        ("an injected-layer cap of 3", _plant_injected_max, "spec-limits:"),
+        ("a hover state trigger enum widened with click", _plant_hover_trigger, "spec-triggers:"),
+        ("an x-sgs-range wider than its field's maximum", _plant_string_range, "field-range:"),
     ]
     ok = True
     with tempfile.TemporaryDirectory() as tmp:
         target = Path(tmp) / "motion.schema.json"
         target.write_text(json.dumps(original), encoding="utf-8")
-        clean = check(target)
+        clean = check(target)[0]
         print(f"  {'PASS' if not clean else 'FAIL'}  positive control: the unmodified copy {'passes' if not clean else 'fails: ' + clean[0]}")
         ok = ok and not clean
         for label, plant, rule in plants:
@@ -374,7 +439,7 @@ def cmd_self_test() -> int:
                 planted = copy.deepcopy(original)
                 plant(planted)
                 target.write_text(json.dumps(planted), encoding="utf-8")
-            found = [e for e in check(target) if e.startswith(rule)]
+            found = [e for e in check(target)[0] if e.startswith(rule)]
             caught = bool(found)
             ok = ok and caught
             print(f"  {'PASS' if caught else 'FAIL'}  planted {label}: {'caught (' + found[0] + ')' if caught else 'NOT caught'}")

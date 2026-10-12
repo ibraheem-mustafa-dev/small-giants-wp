@@ -1,7 +1,8 @@
 // The sgsMotion refusal evaluator (Spec 38A §10 and §5.2): reads the pairwise refusal table and the limits from
 // `motion.schema.json` (`x-sgs-refusals`) and applies them to one element's layers, returning each refusal's exact text.
 // Rules are data: a pair fires when one layer matches side `a` and a different layer matches side `b`; a limit counts
-// effect slugs per list or paint-slot claims per element. The PHP renderer mirrors this file over the same table.
+// effect slugs per list, layer ids per element or paint-slot claims per element. The PHP renderer mirrors this file
+// over the same table.
 
 // Every layer list of an element, in paint order, with the path the inspector and the renderer name it by.
 const LISTS = [
@@ -36,6 +37,8 @@ export function layerLabel( schema, entry ) {
 	}
 	return schema[ 'x-sgs-layer-labels' ][ entry.list ] || entry.list;
 }
+
+const layerId = ( entry ) => entry.layer.id;
 
 const isOn = ( v ) => v !== undefined && v !== null && v !== false;
 
@@ -146,6 +149,16 @@ export function elementRefusals( schema, element ) {
 					} else {
 						seen.set( entry.effect, entry.path );
 					}
+				}
+			}
+		} else if ( limit.kind === 'unique-id' ) {
+			const seen = new Map();
+			for ( const entry of layers.filter( ( l ) => limit.lists.includes( l.list ) && typeof layerId( l ) === 'string' ) ) {
+				const id = layerId( entry );
+				if ( seen.has( id ) ) {
+					out.push( { id: limit.id, text: fill( limit.text, limit.placeholders, { id } ), layers: [ seen.get( id ), entry.path ] } );
+				} else {
+					seen.set( id, entry.path );
 				}
 			}
 		} else if ( limit.kind === 'slot-max' ) {

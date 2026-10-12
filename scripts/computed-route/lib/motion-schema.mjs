@@ -1,7 +1,8 @@
 // The cloning tool's sgsMotion validator (Spec 38A §6.3, FR-38A-2): Ajv for draft 2020-12, compiled once per schema,
 // over `plugins/sgs-blocks/schemas/motion.schema.json` (the same file the PHP renderer and the inspector read), plus the
 // §10 and §5.2 refusal evaluator (lib/motion-refusals.mjs). Strict mode is on; the schema's `x-sgs-*` annotation
-// keywords are registered as a vocabulary so Ajv accepts them without treating them as assertions.
+// keywords are registered as a vocabulary so Ajv accepts them without treating them as assertions, except
+// `x-sgs-range`, which is an assertion keyword (rangeProblem below).
 import fs from 'fs';
 import path from 'path';
 import Ajv2020 from 'ajv/dist/2020.js';
@@ -37,6 +38,45 @@ export function annotationKeywords( schema ) {
 	return [ ...found ].sort();
 }
 
+// `x-sgs-range` {min, max, unit}: a range in the type's base unit (ms, px or deg) that also binds the string forms a
+// sibling minimum/maximum cannot see. A number is read in the base unit; a string converts by its unit; token
+// references (`token:`, `-token:`) and `calc(` strings are not range-checked (tokens are held to their §7 bands).
+// Context-relative units (em, rem, %, vh, vw, svh, dvh) have no fixed size, so a ranged field refuses them.
+export const RANGE_UNITS = { ms: { ms: 1, s: 1000 }, px: { px: 1 }, deg: { deg: 1, turn: 360, rad: 180 / Math.PI } };
+export const RELATIVE_UNITS = new Set( [ 'em', 'rem', '%', 'vh', 'vw', 'svh', 'dvh' ] );
+
+// The problem with one value under one range, or null when it is in range or not range-checked.
+export function rangeProblem( range, value ) {
+	let amount;
+	let raw;
+	if ( typeof value === 'number' ) {
+		amount = value;
+		raw = `${ value }${ range.unit }`;
+	} else if ( typeof value === 'string' ) {
+		if ( /^-?token:/.test( value ) || value.startsWith( 'calc(' ) ) {
+			return null;
+		}
+		const m = value.match( /^(-?(?:\d+(?:\.\d+)?|\.\d+))([a-z%]+)$/ );
+		if ( ! m ) {
+			return null;
+		}
+		const factor = ( RANGE_UNITS[ range.unit ] || {} )[ m[ 2 ] ];
+		if ( factor === undefined ) {
+			return RELATIVE_UNITS.has( m[ 2 ] )
+				? `unit "${ m[ 2 ] }" has no fixed size, so this ranged field takes ${ range.unit }`
+				: `unit "${ m[ 2 ] }" does not convert to ${ range.unit }`;
+		}
+		amount = Number( m[ 1 ] ) * factor;
+		raw = value;
+	} else {
+		return null;
+	}
+	if ( amount < range.min - 1e-9 || amount > range.max + 1e-9 ) {
+		return `must be from ${ range.min } to ${ range.max }${ range.unit } (got ${ raw })`;
+	}
+	return null;
+}
+
 const compiled = new WeakMap();
 
 // The compiled validator for one schema object; compiled on first use only.
@@ -46,7 +86,17 @@ export function motionValidator( schema = defaultSchema() ) {
 		// strictTypes and strictRequired are lint rules about schema style (a narrowing `minimum` beside a `$ref`, a
 		// `required` inside an `if`/`then` branch); every other strict check stays on.
 		const ajv = new Ajv( { strict: true, strictTypes: false, strictRequired: false, allErrors: true } );
-		ajv.addVocabulary( annotationKeywords( schema ) );
+		ajv.addVocabulary( annotationKeywords( schema ).filter( ( k ) => k !== 'x-sgs-range' ) );
+		ajv.addKeyword( {
+			keyword: 'x-sgs-range',
+			schemaType: 'object',
+			errors: true,
+			validate: function checkRange( range, data ) {
+				const problem = rangeProblem( range, data );
+				checkRange.errors = problem ? [ { keyword: 'x-sgs-range', message: problem, params: { range } } ] : [];
+				return ! problem;
+			},
+		} );
 		compiled.set( schema, ajv.compile( schema ) );
 	}
 	return compiled.get( schema );

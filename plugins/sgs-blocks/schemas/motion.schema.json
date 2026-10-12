@@ -1227,7 +1227,6 @@
 						"effects"
 					],
 					"effects": [
-						"pin-scrub",
 						"flip",
 						"motion-path",
 						"draggable"
@@ -1236,7 +1235,8 @@
 				"text": "Tilt and <effect> both drive this element's transform. Move one of them to a different part.",
 				"placeholders": {
 					"<effect>": "b"
-				}
+				},
+				"crossElement": "The spec's pin-scrub child case (a tilted element among a pin-scrub block's animated children) spans two elements, so this same-element rule cannot see it; M2.1 evaluates it across the block tree."
 			},
 			{
 				"id": "opacity-hover-tier-g",
@@ -1254,8 +1254,7 @@
 						"effects"
 					],
 					"effects": [
-						"scrub",
-						"pin-scrub"
+						"scrub"
 					],
 					"rows": [
 						"opacity"
@@ -1285,8 +1284,7 @@
 						"effects"
 					],
 					"effects": [
-						"scrub",
-						"pin-scrub"
+						"scrub"
 					],
 					"rows": [
 						"opacity"
@@ -1315,8 +1313,7 @@
 						"effects"
 					],
 					"effects": [
-						"scrub",
-						"pin-scrub"
+						"scrub"
 					],
 					"rows": [
 						"blur"
@@ -1417,12 +1414,11 @@
 				"placeholders": {}
 			},
 			{
-				"id": "text-rewrite",
+				"id": "text-rewrite-entrance",
 				"source": "§5.2",
 				"a": {
 					"layers": [
-						"entrance.text",
-						"effects"
+						"entrance.text"
 					],
 					"effects": [
 						"split-reveal"
@@ -1430,11 +1426,35 @@
 				},
 				"b": {
 					"layers": [
-						"entrance.text",
+						"entrance.text"
+					],
+					"effects": [
+						"scramble"
+					]
+				},
+				"text": "Split reveal and Scramble both rewrite this text; keep one of them.",
+				"placeholders": {}
+			},
+			{
+				"id": "text-rewrite-hover",
+				"source": "§5.2",
+				"a": {
+					"layers": [
+						"entrance.text"
+					],
+					"effects": [
+						"split-reveal"
+					]
+				},
+				"b": {
+					"layers": [
 						"effects"
 					],
 					"effects": [
 						"scramble"
+					],
+					"triggers": [
+						"hover"
 					]
 				},
 				"text": "Split reveal and Scramble both rewrite this text; keep one of them.",
@@ -1468,6 +1488,21 @@
 					"<b>": "second",
 					"<c>": "extra"
 				}
+			},
+			{
+				"id": "unique-id",
+				"source": "§6.2 layer ids",
+				"kind": "unique-id",
+				"lists": [
+					"hover.effects",
+					"entrance.text",
+					"effects"
+				],
+				"textSource": "schema",
+				"text": "Two layers on this element share the id <id>; give each layer its own id.",
+				"placeholders": {
+					"<id>": "id"
+				}
 			}
 		],
 		"notices": [
@@ -1487,8 +1522,10 @@
 			"excludeEffects": "the layer's effect slug is none of these",
 			"slot": "the layer claims this paint slot (x-sgs-effects slots, a `when` slot only while that value is on)",
 			"values": "any of these value paths is set and not false in values or a device override (a dot path; a list matches any item)",
-			"rows": "values.rows holds a row whose property is one of these"
-		}
+			"rows": "values.rows holds a row whose property is one of these",
+			"triggers": "the layer's trigger is one of these"
+		},
+		"textSource": "every text is quoted from Spec 38A unless its entry sets textSource to schema (a rule the spec implies but does not word)"
 	},
 	"$defs": {
 		"tokenReference": {
@@ -1538,6 +1575,11 @@
 				}
 			],
 			"x-sgs-unit": "ms",
+			"x-sgs-range": {
+				"min": 0,
+				"max": 120000,
+				"unit": "ms"
+			},
 			"description": "Milliseconds, or a `duration` token (or `entrance.duration`).",
 			"x-sgs-kind": "fieldType"
 		},
@@ -1638,6 +1680,11 @@
 				"deg",
 				"turn"
 			],
+			"x-sgs-range": {
+				"min": -360,
+				"max": 360,
+				"unit": "deg"
+			},
 			"description": "A number in degrees, or a `deg` or `turn` string.",
 			"x-sgs-kind": "fieldType"
 		},
@@ -1985,6 +2032,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": "--sgs-mh-blur",
@@ -2083,7 +2135,12 @@
 				"blur": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 200
+					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					}
 				},
 				"grayscale": {
 					"$ref": "#/$defs/ratio",
@@ -2177,6 +2234,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": "--sgs-me-blur",
@@ -2254,6 +2316,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": "--sgs-me-blur",
@@ -2343,6 +2410,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": "--sgs-me-blur",
@@ -2423,6 +2495,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": "--sgs-me-blur",
@@ -2583,7 +2660,12 @@
 				"blur": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 200
+					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					}
 				},
 				"clip": {
 					"$ref": "#/$defs/percentage",
@@ -2637,7 +2719,12 @@
 				"blur": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 200
+					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					}
 				},
 				"clip": {
 					"$ref": "#/$defs/percentage",
@@ -2673,7 +2760,12 @@
 				"blur": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 200
+					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					}
 				},
 				"clip": {
 					"$ref": "#/$defs/percentage",
@@ -2804,6 +2896,11 @@
 					"$ref": "#/$defs/duration",
 					"description": "Scroll smoothing lag.",
 					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 5000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -2846,7 +2943,12 @@
 				"smoothing": {
 					"$ref": "#/$defs/duration",
 					"description": "Scroll smoothing lag.",
-					"maximum": 5000
+					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 5000,
+						"unit": "ms"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -2887,6 +2989,11 @@
 					"$ref": "#/$defs/duration",
 					"description": "Step between children.",
 					"maximum": 2000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 2000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -2917,6 +3024,11 @@
 				"smoothing": {
 					"$ref": "#/$defs/duration",
 					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 5000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -2940,7 +3052,12 @@
 				"stagger": {
 					"$ref": "#/$defs/duration",
 					"description": "Step between children.",
-					"maximum": 2000
+					"maximum": 2000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 2000,
+						"unit": "ms"
+					}
 				},
 				"hold": {
 					"$ref": "#/$defs/ratio",
@@ -2952,7 +3069,12 @@
 				},
 				"smoothing": {
 					"$ref": "#/$defs/duration",
-					"maximum": 5000
+					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 5000,
+						"unit": "ms"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -2980,6 +3102,11 @@
 				"smoothing": {
 					"$ref": "#/$defs/duration",
 					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 5000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -3131,7 +3258,12 @@
 			"properties": {
 				"smoothing": {
 					"$ref": "#/$defs/duration",
-					"maximum": 5000
+					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 5000,
+						"unit": "ms"
+					}
 				},
 				"hold": {
 					"$ref": "#/$defs/ratio",
@@ -3206,6 +3338,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -3238,6 +3375,11 @@
 					"$ref": "#/$defs/duration",
 					"description": "Step between units.",
 					"maximum": 300,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 300,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -3300,6 +3442,11 @@
 					"$ref": "#/$defs/duration",
 					"minimum": 100,
 					"maximum": 3000,
+					"x-sgs-range": {
+						"min": 100,
+						"max": 3000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -3334,7 +3481,12 @@
 				"blur": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 200
+					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					}
 				},
 				"rotate": {
 					"$ref": "#/$defs/angle"
@@ -3354,12 +3506,22 @@
 				"stagger": {
 					"$ref": "#/$defs/duration",
 					"description": "Step between units.",
-					"maximum": 300
+					"maximum": 300,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 300,
+						"unit": "ms"
+					}
 				},
 				"duration": {
 					"$ref": "#/$defs/duration",
 					"minimum": 100,
-					"maximum": 3000
+					"maximum": 3000,
+					"x-sgs-range": {
+						"min": 100,
+						"max": 3000,
+						"unit": "ms"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -3405,6 +3567,11 @@
 					"$ref": "#/$defs/duration",
 					"minimum": 100,
 					"maximum": 10000,
+					"x-sgs-range": {
+						"min": 100,
+						"max": 10000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -3416,6 +3583,11 @@
 				"revealDelay": {
 					"$ref": "#/$defs/duration",
 					"maximum": 10000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 10000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -3444,11 +3616,21 @@
 				"duration": {
 					"$ref": "#/$defs/duration",
 					"minimum": 100,
-					"maximum": 10000
+					"maximum": 10000,
+					"x-sgs-range": {
+						"min": 100,
+						"max": 10000,
+						"unit": "ms"
+					}
 				},
 				"revealDelay": {
 					"$ref": "#/$defs/duration",
-					"maximum": 10000
+					"maximum": 10000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 10000,
+						"unit": "ms"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -3550,6 +3732,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 100,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 100,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -3574,7 +3761,12 @@
 				"threshold": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 100
+					"maximum": 100,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 100,
+						"unit": "px"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -3933,6 +4125,11 @@
 				"smoothing": {
 					"$ref": "#/$defs/duration",
 					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 5000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -3976,7 +4173,12 @@
 				},
 				"smoothing": {
 					"$ref": "#/$defs/duration",
-					"maximum": 5000
+					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 5000,
+						"unit": "ms"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -4135,6 +4337,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 1200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 1200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": "--sgs-cursor-field-radius",
@@ -4236,6 +4443,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -4247,6 +4459,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 1200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 1200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": "--sgs-cursor-field-radius",
@@ -4312,6 +4529,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 1000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 1000,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -4323,6 +4545,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 40,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 40,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -4351,6 +4578,11 @@
 				"ringLag": {
 					"$ref": "#/$defs/duration",
 					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 5000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -4370,7 +4602,12 @@
 				"radius": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 1200
+					"maximum": 1200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 1200,
+						"unit": "px"
+					}
 				},
 				"trail": {
 					"$ref": "#/$defs/percentage",
@@ -4405,12 +4642,22 @@
 				"edge": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 200
+					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					}
 				},
 				"hoverRadius": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 1200
+					"maximum": 1200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 1200,
+						"unit": "px"
+					}
 				},
 				"radiusDuration": {
 					"$ref": "#/$defs/duration"
@@ -4424,16 +4671,31 @@
 				"ringSize": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 1000
+					"maximum": 1000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 1000,
+						"unit": "px"
+					}
 				},
 				"ringWidth": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 40
+					"maximum": 40,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 40,
+						"unit": "px"
+					}
 				},
 				"ringLag": {
 					"$ref": "#/$defs/duration",
-					"maximum": 5000
+					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 5000,
+						"unit": "ms"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -4730,6 +4992,11 @@
 				"life": {
 					"$ref": "#/$defs/duration",
 					"maximum": 20000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 20000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -4805,7 +5072,12 @@
 				},
 				"life": {
 					"$ref": "#/$defs/duration",
-					"maximum": 20000
+					"maximum": 20000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 20000,
+						"unit": "ms"
+					}
 				},
 				"speed": {
 					"$ref": "#/$defs/ratio",
@@ -4888,6 +5160,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 12,
 					"maximum": 200,
+					"x-sgs-range": {
+						"min": 12,
+						"max": 200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -4899,6 +5176,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0.5,
 					"maximum": 12,
+					"x-sgs-range": {
+						"min": 0.5,
+						"max": 12,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -4910,6 +5192,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 20,
 					"maximum": 600,
+					"x-sgs-range": {
+						"min": 20,
+						"max": 600,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -4921,6 +5208,11 @@
 					"$ref": "#/$defs/angle",
 					"minimum": 1,
 					"maximum": 60,
+					"x-sgs-range": {
+						"min": 1,
+						"max": 60,
+						"unit": "deg"
+					},
 					"x-sgs-field": {
 						"fieldType": "angle",
 						"cssProperty": null,
@@ -4932,6 +5224,11 @@
 					"$ref": "#/$defs/duration",
 					"minimum": 60,
 					"maximum": 1200,
+					"x-sgs-range": {
+						"min": 60,
+						"max": 1200,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -4951,27 +5248,52 @@
 				"cell": {
 					"$ref": "#/$defs/distance",
 					"minimum": 12,
-					"maximum": 200
+					"maximum": 200,
+					"x-sgs-range": {
+						"min": 12,
+						"max": 200,
+						"unit": "px"
+					}
 				},
 				"dotSize": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0.5,
-					"maximum": 12
+					"maximum": 12,
+					"x-sgs-range": {
+						"min": 0.5,
+						"max": 12,
+						"unit": "px"
+					}
 				},
 				"radius": {
 					"$ref": "#/$defs/distance",
 					"minimum": 20,
-					"maximum": 600
+					"maximum": 600,
+					"x-sgs-range": {
+						"min": 20,
+						"max": 600,
+						"unit": "px"
+					}
 				},
 				"lean": {
 					"$ref": "#/$defs/angle",
 					"minimum": 1,
-					"maximum": 60
+					"maximum": 60,
+					"x-sgs-range": {
+						"min": 1,
+						"max": 60,
+						"unit": "deg"
+					}
 				},
 				"ease": {
 					"$ref": "#/$defs/duration",
 					"minimum": 60,
-					"maximum": 1200
+					"maximum": 1200,
+					"x-sgs-range": {
+						"min": 60,
+						"max": 1200,
+						"unit": "ms"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -5249,6 +5571,11 @@
 					"$ref": "#/$defs/angle",
 					"minimum": -180,
 					"maximum": 180,
+					"x-sgs-range": {
+						"min": -180,
+						"max": 180,
+						"unit": "deg"
+					},
 					"x-sgs-field": {
 						"fieldType": "angle",
 						"cssProperty": null,
@@ -5260,6 +5587,11 @@
 					"$ref": "#/$defs/angle",
 					"minimum": -180,
 					"maximum": 180,
+					"x-sgs-range": {
+						"min": -180,
+						"max": 180,
+						"unit": "deg"
+					},
 					"x-sgs-field": {
 						"fieldType": "angle",
 						"cssProperty": null,
@@ -5271,6 +5603,11 @@
 					"$ref": "#/$defs/angle",
 					"minimum": -150,
 					"maximum": 150,
+					"x-sgs-range": {
+						"min": -150,
+						"max": 150,
+						"unit": "deg"
+					},
 					"x-sgs-field": {
 						"fieldType": "angle",
 						"cssProperty": null,
@@ -5315,6 +5652,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": -800,
 					"maximum": 600,
+					"x-sgs-range": {
+						"min": -800,
+						"max": 600,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -5326,6 +5668,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": -800,
 					"maximum": 800,
+					"x-sgs-range": {
+						"min": -800,
+						"max": 800,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -5430,17 +5777,32 @@
 				"rotateX": {
 					"$ref": "#/$defs/angle",
 					"minimum": -180,
-					"maximum": 180
+					"maximum": 180,
+					"x-sgs-range": {
+						"min": -180,
+						"max": 180,
+						"unit": "deg"
+					}
 				},
 				"rotateY": {
 					"$ref": "#/$defs/angle",
 					"minimum": -180,
-					"maximum": 180
+					"maximum": 180,
+					"x-sgs-range": {
+						"min": -180,
+						"max": 180,
+						"unit": "deg"
+					}
 				},
 				"rotateZ": {
 					"$ref": "#/$defs/angle",
 					"minimum": -150,
-					"maximum": 150
+					"maximum": 150,
+					"x-sgs-range": {
+						"min": -150,
+						"max": 150,
+						"unit": "deg"
+					}
 				},
 				"scaleX": {
 					"$ref": "#/$defs/scale",
@@ -5460,12 +5822,22 @@
 				"offsetX": {
 					"$ref": "#/$defs/distance",
 					"minimum": -800,
-					"maximum": 600
+					"maximum": 600,
+					"x-sgs-range": {
+						"min": -800,
+						"max": 600,
+						"unit": "px"
+					}
 				},
 				"offsetY": {
 					"$ref": "#/$defs/distance",
 					"minimum": -800,
-					"maximum": 800
+					"maximum": 800,
+					"x-sgs-range": {
+						"min": -800,
+						"max": 800,
+						"unit": "px"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -5598,6 +5970,11 @@
 				"clamp": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 10000,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -5631,7 +6008,12 @@
 				},
 				"clamp": {
 					"$ref": "#/$defs/distance",
-					"minimum": 0
+					"minimum": 0,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 10000,
+						"unit": "px"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -5660,6 +6042,11 @@
 					"$ref": "#/$defs/angle",
 					"minimum": 0,
 					"maximum": 45,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 45,
+						"unit": "deg"
+					},
 					"x-sgs-field": {
 						"fieldType": "angle",
 						"cssProperty": null,
@@ -5672,6 +6059,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 100,
 					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 100,
+						"max": 5000,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": "--sgs-tilt-persp",
@@ -5774,12 +6166,22 @@
 				"maxAngle": {
 					"$ref": "#/$defs/angle",
 					"minimum": 0,
-					"maximum": 45
+					"maximum": 45,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 45,
+						"unit": "deg"
+					}
 				},
 				"perspective": {
 					"$ref": "#/$defs/distance",
 					"minimum": 100,
-					"maximum": 5000
+					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 100,
+						"max": 5000,
+						"unit": "px"
+					}
 				},
 				"glareOpacity": {
 					"$ref": "#/$defs/opacity"
@@ -5856,6 +6258,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -5868,6 +6275,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -5880,6 +6292,11 @@
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
 					"maximum": 400,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 400,
+						"unit": "px"
+					},
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": null,
@@ -5946,17 +6363,32 @@
 				"maxPullX": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 200
+					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					}
 				},
 				"maxPullY": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 200
+					"maximum": 200,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 200,
+						"unit": "px"
+					}
 				},
 				"radius": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
-					"maximum": 400
+					"maximum": 400,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 400,
+						"unit": "px"
+					}
 				},
 				"returnDuration": {
 					"$ref": "#/$defs/duration"
@@ -6091,6 +6523,11 @@
 					"$ref": "#/$defs/angle",
 					"minimum": -90,
 					"maximum": 90,
+					"x-sgs-range": {
+						"min": -90,
+						"max": 90,
+						"unit": "deg"
+					},
 					"x-sgs-field": {
 						"fieldType": "angle",
 						"cssProperty": null,
@@ -6152,7 +6589,12 @@
 				"angle": {
 					"$ref": "#/$defs/angle",
 					"minimum": -90,
-					"maximum": 90
+					"maximum": 90,
+					"x-sgs-range": {
+						"min": -90,
+						"max": 90,
+						"unit": "deg"
+					}
 				},
 				"opacity": {
 					"$ref": "#/$defs/opacity"
@@ -6283,6 +6725,11 @@
 					"$ref": "#/$defs/duration",
 					"minimum": 500,
 					"maximum": 60000,
+					"x-sgs-range": {
+						"min": 500,
+						"max": 60000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -6303,6 +6750,11 @@
 					"$ref": "#/$defs/duration",
 					"description": "Phase offset, written once when the effect is applied.",
 					"maximum": 60000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 60000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -6325,12 +6777,22 @@
 				"period": {
 					"$ref": "#/$defs/duration",
 					"minimum": 500,
-					"maximum": 60000
+					"maximum": 60000,
+					"x-sgs-range": {
+						"min": 500,
+						"max": 60000,
+						"unit": "ms"
+					}
 				},
 				"phase": {
 					"$ref": "#/$defs/duration",
 					"description": "Phase offset, written once when the effect is applied.",
-					"maximum": 60000
+					"maximum": 60000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 60000,
+						"unit": "ms"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -7794,6 +8256,11 @@
 				"offset": {
 					"$ref": "#/$defs/duration",
 					"maximum": 10000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 10000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -7804,6 +8271,11 @@
 				"step": {
 					"$ref": "#/$defs/duration",
 					"maximum": 2000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 2000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,
@@ -7839,6 +8311,11 @@
 					"$ref": "#/$defs/duration",
 					"description": "Maximum total delay, offset included.",
 					"maximum": 20000,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 20000,
+						"unit": "ms"
+					},
 					"x-sgs-field": {
 						"fieldType": "duration",
 						"cssProperty": null,

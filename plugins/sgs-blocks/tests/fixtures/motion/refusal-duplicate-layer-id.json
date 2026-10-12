@@ -1,0 +1,38 @@
+{
+	"description": "Layer ids are unique per element across its lists (customised paths and the inspector key on them).",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Two layers on this element share the id a1; give each layer its own id."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"effects": [
+						{
+							"id": "a1",
+							"effect": "tilt",
+							"values": {
+								"maxAngle": 8
+							}
+						}
+					]
+				},
+				"effects": [
+					{
+						"id": "a1",
+						"effect": "ripple",
+						"trigger": "click",
+						"values": {
+							"sizeFactor": 2
+						}
+					}
+				]
+			}
+		}
+	}
+}

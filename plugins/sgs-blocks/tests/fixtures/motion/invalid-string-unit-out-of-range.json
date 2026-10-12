@@ -1,0 +1,46 @@
+{
+	"description": "Unit strings are held to the field's x-sgs-range in its base unit: deg and turn angles, px distances, a relative unit on a ranged field, and the angle type's own range.",
+	"expect": {
+		"valid": false,
+		"errors": [
+			"/elements/root/hover/effects/0/values/maxAngle: must be from 0 to 45deg (got 90deg)",
+			"/elements/root/hover/effects/0/values/perspective: must be from 100 to 5000px (got 1px)",
+			"/elements/root/hover/effects/1/values/angle: must be from -90 to 90deg (got 0.9turn)",
+			"/elements/root/hover/state/values/blur: unit \"em\" has no fixed size, so this ranged field takes px",
+			"/elements/root/hover/state/values/restRotate: must be from -360 to 360deg (got 2turn)"
+		],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"state": {
+						"values": {
+							"blur": "2em",
+							"restRotate": "2turn"
+						}
+					},
+					"effects": [
+						{
+							"id": "h1",
+							"effect": "tilt",
+							"values": {
+								"maxAngle": "90deg",
+								"perspective": "1px"
+							}
+						},
+						{
+							"id": "h2",
+							"effect": "sheen",
+							"values": {
+								"angle": "0.9turn"
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}
