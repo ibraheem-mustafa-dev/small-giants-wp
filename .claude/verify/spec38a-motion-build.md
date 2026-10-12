@@ -37,7 +37,8 @@ Reference: `.claude/plans/2026-10-12-spec38a-motion-build.md` (spec `.claude/spe
 | Three panels and the shell exist | `ls plugins/sgs-blocks/src/blocks/extensions/motion/{HoverPanel,EntrancePanel,EffectsPanel,MotionPanels}.js` | four files | PENDING |
 | Control sets match §5.4 | `python plugins/sgs-blocks/scripts/check-motion-control-sets.py --check` | exit 0 | PENDING |
 | Per-device, canvas and a11y probes | `node plugins/sgs-blocks/scripts/motion-qa/probe-motion-per-device.mjs && node plugins/sgs-blocks/scripts/motion-qa/probe-editor-canvas.mjs && node plugins/sgs-blocks/scripts/motion-qa/probe-motion-a11y.mjs` | pass, negative controls red | PENDING |
-| Editor typing within 10% | `node plugins/sgs-blocks/scripts/perf/measure-editor-typing.mjs --compare plugins/sgs-blocks/scripts/perf/editor-typing-baseline.json` | exit 0 | PENDING |
+| Editor typing within 10% (A/B on one HEAD with `sgs_motion_support_enabled` off and on; the M3.0 baseline is the secondary reference) | `node plugins/sgs-blocks/scripts/perf/measure-editor-typing.mjs --ab` | exit 0 | PENDING |
+| Hover rotate and translate (FR-38A-42) | `node plugins/sgs-blocks/scripts/motion-qa/probe-motion-per-device.mjs --fixture tilted-cards` | each card at its own rest angle, straightening on hover; polaroid frame matches | PENDING |
 | Bean's inspector sign-off (Gate 5) | Bean sets a hover lift, a part entrance and a grid stagger on a canary card | done without help | PENDING |
 
 ## M4 — Stagger and nav motion (PENDING)

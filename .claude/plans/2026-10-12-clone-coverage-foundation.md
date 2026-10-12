@@ -39,6 +39,7 @@ status: approved (Bean, 2026-10-12: option A), not started
 - [ ] Every behaviour and content setting gets a machine-readable meaning (what it does, its trigger, its parameters) seeded from `block.json` by `sgs-update-v2.py`, so recognisers map by query, never by a hand-written list (R-31-1).
 
 ### Phase 4. Recognisers in waves (needs Phases 1 to 3)
+- [ ] **4.0 Motion cloning writer (Spec 38A FR-38A-33, its phase M7):** the cloning route writes `sgsMotion` per element through `scripts/computed-route/lib/motion-validate.mjs` (built in Spec 38A unit M5.2) and reads motion fields from the framework DB as Spec 38A decision 3 settles it. Needs the Spec 38A build's M6.7 (`.claude/plans/2026-10-12-spec38a-motion-build.md`). Until it lands, no clone that needs motion runs after the build's removal phase.
 - [ ] One recogniser framework: a mechanism signature, read from the re-derived inventory and sampled styles, identifies a behaviour and its options and maps it to an SGS setting by DB query, or raises a named gap. Waves follow the gap list, Indus needs first. Motion and effect recognisers target the standardised motion system from Phase 0, so they wait for it rather than map onto today's presets.
 
 ## Sequencing with Indus
