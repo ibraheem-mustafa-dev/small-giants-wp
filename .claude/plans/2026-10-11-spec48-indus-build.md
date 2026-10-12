@@ -21,7 +21,7 @@ status: in progress
 | Mirror | session A, background subagent | 4, later 2 | nothing | 45 min, then 5 min |
 | Framework | session B (done 2026-10-12) | 9 → 10 → 11 → 12 | nothing | 2 h 55 |
 | Intake | session C (13 and 14 done 2026-10-12) | 13 → 14 → 14b | 3 pushed | 6 h |
-| Join | one session, from 14b (Bean, 2026-10-12: one prompt replaces the three lanes' prompts) | 15 → 16 → 17 → 18 → 19 → 20 | 14b | from Appendix B per step |
+| Join | one session, from 14b (Bean, 2026-10-12: one prompt replaces the three lanes' prompts) | 15 → 16 → 17 → 18 → 19 → 20 → 20b | 14b | from Appendix B per step |
 
 The lanes join at step 15 (needs 8, 9, 14 and 14b), and one session runs the join row in order from there: steps 16 to 18 share `indus-test` work (Appendix A's step 5 is plan step 17's snapshot, its step 11 is step 18's site build). The critical path is the intake lane (3, 13, 14: about 5 h 45 by the spec's figures, against about 12 h with every set-up and intake step in a row).
 
@@ -57,6 +57,7 @@ Every diff is read on the main thread before its commit. Every commit keeps the 
 | 17 | Sonnet | the snapshot's dry run read against the confirmed palette roles before the push |
 | 18, 19 | Opus | as their done-whens, on the live page at 375/768/1440 |
 | 20, 23 | Opus | the check's verdict table and Bean's eye at 375/768/1440 |
+| 20b | Opus | each Indus effect's mapping or named gap, each MUST FAIL with the recogniser removed |
 
 **Estimate rule.** A step that finishes in a third of its estimate or less revises every remaining estimate down in the same reply.
 
@@ -100,6 +101,8 @@ Every diff is read on the main thread before its commit. Every commit keeps the 
 
 ### Phase 5. Header vertical slice (step 20)
 - [ ] **20. Header through stage 5** (needs 11 and 19): FR-48-8 and FR-48-50 done-whens on the header, gates G0 to G7 on its rows, and Bean's eye at 375/768/1440. The other surfaces wait until this passes.
+
+- [ ] **20b. Effect recognition** (needs 14b; before 21; Bean, 2026-10-12): FR-48-77's done-when. Intake recognises each draft effect by its mechanism and maps it to an SGS setting from the framework DB (`fx_effects`, block effect support), or raises a named Spec 38 gap. Indus cases: the Heritage pinned horizontal track to `sgs/timeline` horizontal with `pinned-horizontal` (GSAP `horizontal-panel`); the brand pages' ingredient-card cursor reveal (`[data-peek]`; check whether `cursor-field` can paint it); the `[data-mag]` magnet; the `[data-tilt]` tilt; the logo marquee. Adds an `effect` review row type to Appendix C and `lib/intake-review.mjs`. Can start any time after 14b; it is independent of steps 15 to 20.
 
 ### Phase 6. The rest of Indus (steps 21 to 25)
 - [ ] **21. Trees**, **22. Forms** (FR-48-57's done-when; needs 2), **23. Check**, **24. Answer-sheet sample** (FR-48-71, FR-48-73), **25. Gap list and sign-off** (stage 5's exit).
