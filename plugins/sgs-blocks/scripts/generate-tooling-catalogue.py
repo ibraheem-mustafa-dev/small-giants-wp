@@ -269,7 +269,7 @@ _KNOWN_TABLES = {
     "blocks", "block_attributes", "block_supports", "block_selectors",
     "block_capabilities", "style_variations", "patterns", "theme_parts",
     "plugins", "hooks", "components", "deploy_steps", "gotchas",
-    "pattern_coverage", "animation_tokens", "property_suffixes",
+    "pattern_coverage", "motion_presets", "property_suffixes",
     "modifier_suffixes", "attribute_gap_candidates", "indexed_files", "docs",
     "markup_examples", "schema_metadata", "design_tokens",
     "html_tag_to_core_block", "slots", "roles", "block_composition",

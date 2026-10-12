@@ -1,7 +1,6 @@
 {
   "generated_at": "2026-08-06T20:06:11Z",
   "tables": {
-    "animation_tokens": 8,
     "array_item_schema": 68,
     "attribute_gap_candidates": 3205,
     "block_attributes": 3221,

@@ -101,7 +101,7 @@ Two of the gates, as examples of what the roster covers: `check-empty-inspector-
 
 Row counts and value vocabularies change on every reseed, so they are not written here: query them with `/sgs-db` (or `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`). What a column MEANS cannot be derived from the data, so it is written below. A column absent from this list has no verified meaning yet.
 
-Fossil columns (written, read by nothing operational; do not classify on them): `block_attributes.equivalent_implementations`; `fx_effects.reduced_motion`, `editor_story`, `created_at`; `design_tokens.css_var`, `description`; `animation_tokens.keyframes`, `duration`, `easing`, `description`, `category`, `created_at`. Surrogate `id` columns are never read.
+Fossil columns (written, read by nothing operational; do not classify on them): `block_attributes.equivalent_implementations`; `fx_effects.reduced_motion`, `editor_story`, `created_at`; `design_tokens.css_var`, `description`. Surrogate `id` columns are never read.
 
 Three 0-byte `sgs-framework.db` stubs exist on disk (repo root, `plugins/sgs-blocks/scripts/`, `~/.claude/`). Opening one returns zero rows, which looks like a clean answer; use the path at the top of this section.
 
@@ -155,6 +155,7 @@ Three 0-byte `sgs-framework.db` stubs exist on disk (repo root, `plugins/sgs-blo
 - `in_picker`: Whether the effect appears in the generic FX picker. Two-way gated against fx.js SHIPPED_EFFECTS by check-fx-list-drift.py, so it cannot rot quietly.
 - `triggers`: Comma-joined string split at read time (generate-fx-effects-php.py), not a join table — one stray comma silently changes behaviour.
 - `effect`: Primary key and the effect's public identity — the value that appears in `data-sgs-fx`. Closed vocabulary chosen by hand to match Spec 38 §11.2; every consumer keys off it (generate-fx-effects-php.py, generate-fx-qualifying-blocks.py).
+- `owned_properties` / `panels`: JSON written by `seed-motion-fx-registry.py` from the motion schema (`x-sgs-effects`, `x-sgs-channels`, `x-sgs-writes`): the channels, custom properties and paint slots an effect owns, and the panels it appears in. Read by the paint-slot and refusal checks and the editor (through `generated-fx-effect-meta.json`). Empty for the site-level effects the schema does not list.
 
 **`variant_slots`**
 
@@ -174,10 +175,12 @@ Three 0-byte `sgs-framework.db` stubs exist on disk (repo root, `plugins/sgs-blo
 
 - `selector`: A PASSIVE MIRROR of each block.json own selectors key. WordPress reads block.json directly at register_block_type and never consults this table, so editing a row changes nothing at runtime. Its single reader is generate-block-reference.py, a docs generator. Its only writer is sgs-update-v2.py.
 
-**`animation_tokens`**
+**`motion_presets`**
 
-- `name`: FOSSIL relative to the shipped runtime. The live animation system (src/blocks/extensions/animation.js) hardcodes its own 17-entry vocabulary and shares only part of this table 8; zero of these token names appear as @keyframes in any CSS under src/ or the theme. Only the sgs-db.py lookup CLI reads it.
-- `used_by`: Name overstates it — means blocks whose sgsAnimation attribute DEFAULTS to this value (seed-motion-fx-registry.py). An operator who picks the animation by hand is invisible here.
+- `family`: Groups a preset with its Subtle, Standard and Bold intensity rows; the Intensity picker reads `family = ? AND kind = 'intensity'`. Rows of one family share panel, effect, trigger and target (enforced by `validate-motion-presets.mjs` before the seeder writes).
+- `kind`: `preset` stamps a layer's Standard values, `intensity` carries only the intensity-flagged fields of the motion schema, `keyframe` holds the eight presets of the retired `animation_tokens` table. A CHECK constraint ties `intensity` to `kind = 'intensity'` and refuses "dramatic".
+- `values_json` / `devices_json`: sgsMotion values (token references `token:<family>.<key>`), the same shape a layer stores; the renderer reads stamped values on the block, never this table.
+- `position`: The file order of `plugins/sgs-blocks/scripts/data/motion-presets.json`, which is the picker's display order. The file is the source; the table is reseeded from it.
 
 ---
 

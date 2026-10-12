@@ -2017,9 +2017,10 @@ def _run_motion_fx_registry_seed(conn: sqlite3.Connection) -> None:
     ever arrived later, at the next `npm run build`, via a channel the reseed
     gate couldn't see.
 
-    This tail step seeds `fx_effects` (the Spec 38 §11.2 effect grammar) and
-    reconciles `animation_tokens` — the two tables seed-motion-fx-registry.py
-    owns that /sgs-update does not otherwise touch. It deliberately does NOT
+    This tail step seeds `fx_effects` (the Spec 38 §11.2 effect grammar,
+    with its `owned_properties` and `panels` columns read from the motion
+    schema) — the table seed-motion-fx-registry.py owns that /sgs-update does
+    not otherwise touch. It deliberately does NOT
     re-seed block_attributes.css_property for fx:* attrs — that write moved
     INTO this same pipeline run, one step earlier, as layer 2.5 of
     `_apply_attr_classification_overrides` (see that function's docstring).
@@ -2367,8 +2368,8 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = _load_
 # override entries needed for this namespace, ever (R-31-9 universal
 # mechanism: the fx:* namespace map, not a growing per-block override list).
 #
-# seed-motion-fx-registry.py itself is UNCHANGED in scope for fx_effects +
-# animation_tokens (tables /sgs-update does not otherwise touch) but no longer
+# seed-motion-fx-registry.py owns fx_effects (a table /sgs-update does not
+# otherwise touch) and no longer
 # writes block_attributes.css_property — see its own module docstring update.
 # It is also now RUN as a Stage 1 tail step (`_run_motion_fx_registry_seed`
 # below), so /sgs-update alone reproduces the full motion-fx DB state; a
@@ -3476,10 +3477,10 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         #     on-disagreement policy, so this must run every reseed to stay durable. ---
         _run_inspector_control_type_seed(conn)
 
-        # --- Stage 1 tail: seed fx_effects + animation_tokens from the motion-fx
+        # --- Stage 1 tail: seed fx_effects from the motion-fx
         #     registry (D432, 2026-08-01) — runs AFTER the css_property layers
         #     above so the fx:* namespace is already correct before this step's
-        #     own tables (fx_effects/animation_tokens) are reconciled. ---
+        #     own table (fx_effects) is reconciled. ---
         _run_motion_fx_registry_seed(conn)
 
         # --- Stage 1 tail: rebuild the `components` unification adoption ledger

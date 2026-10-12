@@ -19,7 +19,7 @@
 ## Gate 3: Opportunities Landed
 | Criterion | Command | Expected | STATUS |
 |---|---|---|---|
-| animation_tokens table exists | python sgs-db.py tokens --type animation | Schema returned | PENDING |
+| Motion presets readable (the table that replaced animation_tokens) | python sgs-db.py animations list | 96 presets listed | PASS (2026-10-13) |
 | corrections table works | python sgs-db.py corrections list | Empty list or entries | PENDING |
 | Mood board template renders | Open mood-board-template.html in browser | Renders with placeholder data | PENDING |
 | Trend detection in sgs-discover | grep -c trend sgs-discover/SKILL.md | > 0 (already done) | DONE |
