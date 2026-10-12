@@ -120,7 +120,9 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 			fold( await runWidth( width, plan, reads ), width );
 		}
 	};
-	if ( 1 === poolSize() || widths.length < 2 || ( onPage && ! reads ) ) {
+	// The widths run side by side only when INTAKE_PARALLEL_WIDTHS=1: on a real export the side-by-side run reached
+	// constructs at one width that the one-at-a-time run reached nowhere, so its output is not yet proven equal (FR-48-28).
+	if ( '1' !== process.env.INTAKE_PARALLEL_WIDTHS || 1 === poolSize() || widths.length < 2 || ( onPage && ! reads ) ) {
 		await sequential();
 	} else {
 		// The widths side by side, each on its own copy of the plan (its own reach marks, patches, gaps and readiness;

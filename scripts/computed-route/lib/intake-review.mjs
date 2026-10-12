@@ -104,7 +104,7 @@ export function contentHash( rowType, row, draftId ) {
 }
 
 const text = ( v ) => ( null === v || undefined === v ? '' : 'string' === typeof v ? v : canonical( v ) );
-const describe = ( r ) => text( r.text ?? r.summary ?? r.what ?? r.title ?? r.description ?? Object.fromEntries( Object.entries( r ).filter( ( [ k ] ) => ! VOLATILE.includes( k ) && 'draftId' !== k ) ) );
+const describe = ( r ) => text( r.text ?? r.summary ?? r.line ?? r.what ?? r.title ?? r.description ?? Object.fromEntries( Object.entries( r ).filter( ( [ k ] ) => ! VOLATILE.includes( k ) && 'draftId' !== k ) ) );
 const unique = ( list ) => {
 	const seen = new Map();
 	return list.map( ( r ) => {
@@ -241,10 +241,7 @@ export function renderReview( intake, { changed = ( intake.review || [] ).filter
 	const marks = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
 	const rows = reviewRows( intake );
 	const out = [ `# Intake review: ${ intake.client }`, '', `Taken on ${ intake.takenOn }; manifest ${ intake.manifest?.schema_version ?? '?' }, files hash ${ manifestHash( intake.manifest ) }.`, '',
-		'How to mark: put x in a section\'s `Accept all: [ ]` box to give every row the section\'s first mark; to mark one row',
-		'differently, write its mark in that row\'s Mark cell (a row\'s own mark always beats Accept all). Flag rows left blank',
-		'are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the',
-		'last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review ' + intake.client + '`.', '',
+		'How to mark: put x in a section\'s `Accept all: [ ]` box to give every row the section\'s first mark; to mark one row differently, write its mark in that row\'s Mark cell (a row\'s own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review ' + intake.client + '`.', '',
 		readingLine( readingCounts( intake, changed ) ), '',
 		notDefectLine( intake ), '',
 		'Marks per section (first value = Accept all):' ];

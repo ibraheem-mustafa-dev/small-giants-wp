@@ -307,3 +307,16 @@ test( 'MUST FAIL (FR-48-25) a re-export that inserts one record keeps every othe
 	assert.deepEqual( diffRows.map( ( r ) => [ r.rowId, r.mark ] ).sort(), [
 		[ 'inventory:anim:a.js%7C10%7Cwaapi:duration_ms', 'theirs' ], [ 'inventory:anim:a.js%7C20%7Cwaapi:duration_ms', 'theirs' ], [ 'inventory:anim:a.js%7C5%7Cwaapi:only-ours', null ] ] );
 } );
+
+test( 'MUST FAIL a missing-feature row shows its one-line description, never the raw record', () => {
+	const intake = fixture( { missingFeatures: [ { rowId: 'missing:Nav:4', draftId: 'Nav:4', construct: 'element <span>', from: 'skeleton', line: '<span>: no SGS block fits it', mainFlow: null } ] } );
+	const row = reviewRows( intake ).find( ( r ) => 'missing:Nav:4' === r.rowId );
+	assert.equal( row.shows, '<span>: no SGS block fits it' );
+	assert.ok( ! renderReview( intake ).includes( '{"construct"' ) );
+} );
+
+test( 'review.md writes each paragraph of its guide as one line (no hard wraps)', () => {
+	const md = renderReview( fixture() );
+	const guide = md.split( '\n' ).find( ( l ) => l.startsWith( 'How to mark:' ) );
+	assert.match( guide, /Then run `node scripts\/computed-route\/intake\.mjs --apply-review acme-bakery`\.$/ );
+} );
