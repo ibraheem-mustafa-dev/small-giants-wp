@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-12",
+  "project": "Sandbox fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 2057,
+      "sha256": "924fe6732a5bb306d13c93d226de3eb3848b674c79d735039d6a3748c7e32c67"
+    },
+    {
+      "path": "README.md",
+      "bytes": 266,
+      "sha256": "9d32f46952f8902cf6acc15a8e7df8a0e1244cfa0f24c42e0e265361bb465796"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    }
+  ]
+}

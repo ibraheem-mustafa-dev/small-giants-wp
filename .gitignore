@@ -187,6 +187,8 @@ scripts/parity/benchmark/*.log
 sites/*/build/qa/parity/out/
 sites/*/build/qa/parity/out-*/
 sites/*/build/qa/solve/
+# Intake replay files (Spec 48 FR-48-23): fonts, stock images and runtime scripts per export hash; re-recordable.
+sites/*/build/intake/replay/
 
 # LEDGER backups written by the ledger-rotate hook (git already holds every LEDGER version)
 .claude/memory/session-*.md

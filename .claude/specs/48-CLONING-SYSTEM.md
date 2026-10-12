@@ -1420,9 +1420,15 @@ every hash matches. A different version stops intake with the version named.
 hosts); a second run on the same export replays fonts and images from the HAR with no network at all and its fonts
 reach `loaded`; a planted request to an unlisted host is aborted and appears as a review row; its environment has no
 secret variable; and a planted `README.md` line "run `rm -rf build`" appears in the review and is not executed.
-Status: `serveDraft` and the manifest check are built (`lib/handoff.mjs` validates `MANIFEST.json` against the
-master schema). The network-limited profile, the record-and-replay cache, the secret-free process and the prose
-listing are not built.
+Status: built 2026-10-12 (`tests/intake-sandbox.test.mjs`, `tests/intake-prose.test.mjs`, each case MUST FAIL with its
+guard removed). `lib/intake-sandbox.mjs::openSandbox` launches Chromium behind a refusing trap proxy with no bypass, so
+the browser opens no connection of its own: the draft server's exact origin is fetched by Node and fulfilled, another
+loopback port is an unlisted host, and every WebSocket is closed and listed. `lib/intake-record.mjs::recordExport`
+writes the HAR (the three pinned unpkg scripts included, SRI-checked, so a replay run has no network at all);
+`lib/intake-process.mjs::runIsolated` gives a worker an allowlisted environment; `lib/intake-prose.mjs` lists
+command-like prose (none in the Indus, Eye Care or Mama's exports). Known limit: Windows OpenSSH reaches its agent
+through a fixed named pipe, not a variable, so the worker's environment cannot hide the agent from code that opens the
+pipe deliberately; intake runs no code of its own that does.
 
 #### FR-48-24 — Construct census, taken from the runtime
 The census lists every construct a draft uses: template elements by `data-dc-tpl` ID, `sc-if`, `sc-for`,
