@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-12",
+  "project": "Intake command fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 3976,
+      "sha256": "2160363e97cd81cb094df395bf924516a93b8e1a27a3b50ccd74fa9cd49429bb"
+    },
+    {
+      "path": "README.md",
+      "bytes": 262,
+      "sha256": "0a4b2d0e7330907de548681365eb830f8aa8bb49e0fa3919596be8e20053ab86"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    },
+    {
+      "path": "surfaces.json",
+      "bytes": 1595,
+      "sha256": "06c4b5734c67340db8dbc8095618f324315963a6abbcaacf3b10b2b039109d03"
+    },
+    {
+      "path": "tokens/colors.css",
+      "bytes": 113,
+      "sha256": "f33db9653f38bba1323e4210bc91111d0eb3e5c6f35d1a7fdf6fad7ce3fefaad"
+    }
+  ]
+}

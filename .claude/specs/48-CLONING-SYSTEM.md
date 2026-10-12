@@ -1349,7 +1349,13 @@ Nothing is asked again in later stages. Stage 2's environment work (Appendix A s
 depend on the review and may start before stage 1 exits; the snapshot, Site Info, media and site build wait for it.
 **Exit:** every census construct has a reader or a gap row (FR-48-24); every review row carries Bean's mark or the
 flag default; and `intake.json` validates against its schema.
-Status: not built.
+Status: the command is built 2026-10-12 (`intake.mjs`, `lib/intake-run*.mjs`, `lib/intake-review.mjs`,
+`tests/intake-command.test.mjs`, `tests/intake-review.test.mjs`). An Indus rehearsal writes a valid `intake.json`,
+`review.md` and `page-map.json` with no live request; a run takes about 97 minutes of machine time (draft defects
+63, skeletons 17, palette readings 9, census 7). Not yet built: §3.4 step 3 (the AI finaliser deciding the
+low-confidence block choices before Bean's review), the re-derived inventory (FR-48-25, Appendix B step 14b), and
+blocked requests from the census, reading and defect sandboxes reaching the notices (only the replay check's and the
+skeleton sandboxes' do). The Indus review today is 761 rows, 553 of them skeleton block choices.
 
 #### FR-48-18 — Stage 2: site build
 **Entry:** stage 1's exit test passes and the client has its own test site (a `build-deploy.py` `TARGETS` entry and
@@ -1682,8 +1688,8 @@ gap rows, and Bean's marks with the date. It carries the `MANIFEST.json` hashes 
 makes it stale (G0, §14). It is validated against `scripts/computed-route/data/intake.schema.json`, whose top-level
 keys are Appendix C, "Intake record". The schema files for every record in Appendix C live in
 `scripts/computed-route/data/` and are checked by the route's tests.
-Status: the schema is built (`data/intake.schema.json`, 2026-10-12) and `tests/intake-schemas.test.mjs` holds every
-Appendix C schema file equal to the spec; the command that writes `intake.json` is not built.
+Status: built 2026-10-12: `intake.mjs` writes `intake.json`, validated against `data/intake.schema.json` before it is
+written, and `tests/intake-schemas.test.mjs` holds every Appendix C schema file equal to the spec.
 
 ## 10. Value matrix
 

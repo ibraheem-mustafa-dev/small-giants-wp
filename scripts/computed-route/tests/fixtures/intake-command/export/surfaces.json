@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "project": "Intake command fixture",
+  "generated": "2026-10-12",
+  "records": [
+    { "id": "S-01", "kind": "header", "name": "Site header", "dc": "Home", "template_tpl_id": "1", "route": "*", "parent": null, "opened_by": "always rendered", "closed_by": "never", "states": [ { "name": "default", "state_keys": {}, "how_to_reach": "load" } ] },
+    { "id": "S-02", "kind": "drawer", "name": "Mobile drawer", "dc": "Home", "template_tpl_id": "8", "route": "*", "parent": null, "opened_by": "Menu button (toggleDrawer) below 1024", "closed_by": "Menu button or a route change", "states": [ { "name": "closed", "state_keys": { "drawerOpen": false }, "how_to_reach": "default" }, { "name": "open", "state_keys": { "drawerOpen": true }, "how_to_reach": "tap Menu; setState({ drawerOpen: true })" } ] },
+    { "id": "S-03", "kind": "footer", "name": "Footer", "dc": "Home", "template_tpl_id": "25", "route": "*", "parent": null, "opened_by": "always rendered", "closed_by": "never", "states": [ { "name": "default", "state_keys": {}, "how_to_reach": "load" } ] },
+    { "id": "S-04", "kind": "page", "name": "home", "dc": "Home", "template_tpl_id": "13", "route": "/", "parent": null, "opened_by": "route", "closed_by": "route", "states": [ { "name": "default", "state_keys": {}, "how_to_reach": "load" } ] },
+    { "id": "S-05", "kind": "page", "name": "About us", "dc": "Home", "template_tpl_id": "22", "route": "/about", "parent": null, "opened_by": "route", "closed_by": "route", "states": [ { "name": "default", "state_keys": {}, "how_to_reach": "load" } ] }
+  ]
+}

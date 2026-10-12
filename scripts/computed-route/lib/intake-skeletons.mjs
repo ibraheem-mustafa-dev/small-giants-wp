@@ -23,6 +23,7 @@ import { readDecisions, skeletonDir } from './skeleton-finalise.mjs';
 import { readRouting } from './intake-routing.mjs';
 import { loadCalibration } from './cache.mjs';
 import { openDb } from './db.mjs';
+import { setDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const SURFACE_KINDS = [ 'header', 'footer', 'drawer', 'menu', 'form', 'modal', 'global', 'page' ];
@@ -79,7 +80,7 @@ export function surfaceRoots( { folder, census, records = null } ) {
 		}
 		slugs.add( s );
 		const rootTpl = tpls.at( -1 );
-		surfaces.push( { id: r.id, name: r.name, kind: r.kind, component: r.dc, rootTpl, tpls, route: r.route ?? null, slug: s, rootTag: elements.get( `${ r.dc }:${ rootTpl }` ).detail.tag, selector: `[${ ROOT_MARK }="${ s }"]` } );
+		surfaces.push( { id: r.id, name: r.name, kind: r.kind, component: r.dc, rootTpl, tpls, route: r.route ?? null, slug: s, rootTag: elements.get( `${ r.dc }:${ rootTpl }` ).detail.tag, selector: `[${ ROOT_MARK }="${ s }"]`, states: r.states || [], openedBy: r.opened_by ?? null } );
 	}
 	// A census CPT element (by tag) in a component that no record of a claiming kind names.
 	const claimed = ( component, kinds ) => recs.some( ( r ) => r.dc === component && kinds.includes( r.kind ) );
@@ -164,6 +165,92 @@ const rowsOf = ( surface, proposal ) => proposal.rows.map( ( r ) => ( {
 	candidates: r.candidates.slice( 0, 3 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share } ) ), action: r.action, snippet: r.snippet, screenshots: r.screenshots,
 } ) );
 
+// State-driven surfaces (a drawer, a mega-menu panel, a modal) render only when their state opens. The ways to open one,
+// in order: each surfaces.json state whose keys are plain state keys with concrete values (a state named "open" first;
+// "closed" and "default" never), then each template handler of the surface's component whose method `opened_by` names.
+const IDENT = /^[A-Za-z_$][\w$]*$/;
+export function openers( s, census = null ) {
+	const concrete = ( st ) => {
+		const keys = Object.entries( st.state_keys || {} );
+		return keys.length && keys.every( ( [ n, v ] ) => IDENT.test( n ) && ! ( 'string' === typeof v && /^<.*>$/.test( v ) ) ) && ! /^(closed|default)$/i.test( st.name || '' );
+	};
+	const states = ( s.states || [] ).filter( concrete ).sort( ( a, b ) => Number( ! /open/i.test( a.name ) ) - Number( ! /open/i.test( b.name ) ) );
+	const out = states.map( ( st ) => ( { via: 'state', state: st.name, keys: st.state_keys } ) );
+	const named = new Set( String( s.openedBy || '' ).match( /[A-Za-z_$][\w$]*(?=\s*\()|\b[a-z]+[A-Z][\w$]*\b/g ) || [] );
+	for ( const r of census?.rows || [] ) {
+		if ( 'handler' === r.kind && 'template' === r.detail?.wiring && r.component === s.component && r.detail.event && ( named.has( r.detail.method ) || named.has( r.detail.expression ) ) ) {
+			out.push( { via: 'trigger', draftId: r.draftId, event: r.detail.event, method: r.detail.method ?? null } );
+		}
+	}
+	return out;
+}
+export const describeOpener = ( o ) => ( 'state' === o.via ? `state "${ o.state }" ${ JSON.stringify( o.keys ) }` : `trigger ${ o.event } on ${ o.draftId }${ o.method ? ` (${ o.method })` : '' }` );
+
+// Marks the surface root at the current width. When it does not render and `opener` is given, applies it (a state is
+// set; a trigger is fired only while the root is absent, so a toggle never closes it) and settles, then marks again.
+async function markAt( page, s, settle, opener = null ) {
+	const args = [ s.component, s.rootTpl, s.slug, ROOT_MARK, 'page' === s.kind ];
+	const m = await page.evaluate( markRoot, args );
+	if ( ! m.error || ! opener ) {
+		return m;
+	}
+	const reached = 'state' === opener.via ? await setDraftState( page, { component: s.component, keys: opener.keys } ) : await fireTrigger( page, { component: s.component, draftId: opener.draftId }, opener.event );
+	if ( ! reached ) {
+		return { error: `${ describeOpener( opener ) } reached nothing (component not mounted or trigger not rendered)` };
+	}
+	await settle( page );
+	return page.evaluate( markRoot, args );
+}
+
+// Back at 1440 with the draft's own state put back (every key changed since the snapshot).
+async function closeAgain( page, settle ) {
+	await page.setViewportSize( { width: 1440, height: 900 } );
+	await settle( page );
+	await restoreDraftState( page );
+	await settle( page );
+}
+
+// Tries each opener: at every inventory width the root is marked, opened when absent, and marked again. The first
+// opener under which the root renders at one width or more wins. Returns { opener, at (widths it renders at), readAt
+// ({ width: the nearest rendering width read in its place }), tried } or { error, tried }. The state stays open on
+// success; the caller closes it.
+async function openSurface( page, s, settle, list ) {
+	const tried = [];
+	await snapshotDraftState( page );
+	for ( const o of list ) {
+		const errors = [];
+		const at = [];
+		for ( const w of INVENTORY_WIDTHS ) {
+			await page.setViewportSize( { width: w, height: 900 } );
+			await settle( page );
+			const m = await markAt( page, s, settle, o );
+			m.error ? errors.push( `${ w }px: ${ m.error }` ) : at.push( w );
+		}
+		if ( at.length ) {
+			const nearest = ( w ) => at.reduce( ( b, x ) => ( Math.abs( x - w ) < Math.abs( b - w ) ? x : b ), at[ 0 ] );
+			return { opener: o, at, readAt: Object.fromEntries( INVENTORY_WIDTHS.filter( ( w ) => ! at.includes( w ) ).map( ( w ) => [ w, nearest( w ) ] ) ), tried };
+		}
+		tried.push( `${ describeOpener( o ) } (${ errors.join( '; ' ) })` );
+		await closeAgain( page, settle );
+	}
+	return { error: list.length ? `still not rendered after ${ tried.join( '; then ' ) }` : 'no opener: surfaces.json gives no concrete state keys and opened_by names no template handler of the component', tried };
+}
+
+// The inventory of an opened surface: a width the surface never renders at is read at the nearest width it does
+// (recorded as `readAt`), and every settle re-opens it, so a resize that closes it opens it again.
+async function readOpened( h, s, settle, open, shotsDir ) {
+	const view = ( w ) => open.readAt[ w ] ?? w;
+	const page = new Proxy( h.page, { get: ( t, k ) => ( 'setViewportSize' === k ? ( v ) => t.setViewportSize( { ...v, width: view( v.width ) } ) : 'function' === typeof t[ k ] ? t[ k ].bind( t ) : t[ k ] ) } );
+	const settleOpen = async ( _p, w ) => {
+		await settle( h.page );
+		const m = await markAt( h.page, s, settle, open.opener );
+		if ( m.error ) {
+			throw new Error( `${ s.slug } did not stay open at ${ view( w ) }px: ${ m.error }` );
+		}
+	};
+	return readInventory( { page, root: s.selector, settle: settleOpen, shotsDir: shotsDir ? path.join( shotsDir, s.slug ) : null, url: h.page.url() } );
+}
+
 // The facts and client decisions, once per run. Returns { facts, clientDecisions } or { error }.
 function factsFor( { db, client, repo, facts } ) {
 	const file = path.join( skeletonDir( repo, client ), 'decisions.json' );
@@ -182,11 +269,15 @@ function factsFor( { db, client, repo, facts } ) {
 
 // The inventory and proposal of every surface (surfaceRoots' list). Surfaces sharing a page and route share one fresh
 // sandbox and harness run: settled in rest mode at open, then each surface's root is marked and read at 1440, 375 and
-// 768, settleRest after each resize. o: { folder, harPath, surfaces, client, db?, facts?, entry?, routing?, site?,
-// shotsDir?, widths, repo?, harness? (harness options), log? }. Returns { skeletons: [{ surface, id, kind, name, route,
-// inventory, rows, counts, problems, gap? }], gaps, runs: [{ file, hash, surfaces, requests, unlisted, blocked,
-// proxyAttempts, ms }] }. A surface whose inventory or proposal throws keeps its entry with `gap` and adds a gap row.
-export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {} } ) {
+// 768, settleRest after each resize. A root that does not render at rest is opened first (openers: its surfaces.json
+// state keys, else a trigger `census`'s template handlers link to it through `opened_by`), read, then closed again; the
+// entry's `opened` says how, where it renders and which widths were read at a neighbour (`readAt`). `openStates: false`
+// switches opening off (the tests' negative control). o: { folder, harPath, surfaces, client, db?, facts?, entry?,
+// routing?, site?, shotsDir?, widths, repo?, harness? (harness options), log?, census?, openStates? }. Returns
+// { skeletons: [{ surface, id, kind, name, route, opened?, inventory, rows, counts, problems, gap? }], gaps, runs:
+// [{ file, hash, surfaces, requests, unlisted, blocked, proxyAttempts, ms }] }. A surface whose inventory or proposal
+// throws, or that no opener renders, keeps its entry with `gap` and adds a gap row naming what was tried.
+export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true } ) {
 	if ( [ ...widths ].sort().join() !== [ ...INVENTORY_WIDTHS ].sort().join() ) {
 		throw new Error( `the skeleton inventory reads at ${ INVENTORY_WIDTHS.join( ', ' ) } (Spec 48 §3.4), not ${ widths.join( ', ' ) }` );
 	}
@@ -239,16 +330,31 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 					try {
 						await h.page.setViewportSize( { width: 1440, height: 900 } );
 						await settle( h.page );
-						const m = await h.page.evaluate( markRoot, [ s.component, s.rootTpl, s.slug, ROOT_MARK, 'page' === s.kind ] );
-						if ( m.error ) {
+						let m = await markAt( h.page, s, settle );
+						let open = null;
+						let inventory;
+						if ( m.error && openStates ) {
+							open = await openSurface( h.page, s, settle, openers( s, census ) );
+							if ( open.error ) {
+								throw new Error( `${ m.error }; ${ open.error }` );
+							}
+							try {
+								inventory = await readOpened( h, s, settle, open, shotsDir );
+								m = { ...( await markAt( h.page, s, settle ) ), viaState: true };
+							} finally {
+								await closeAgain( h.page, settle );
+							}
+						} else if ( m.error ) {
 							throw new Error( m.error );
+						} else {
+							inventory = await readInventory( { page: h.page, root: s.selector, settle, shotsDir: shotsDir ? path.join( shotsDir, s.slug ) : null, url: h.page.url() } );
 						}
-						const inventory = await readInventory( { page: h.page, root: s.selector, settle, shotsDir: shotsDir ? path.join( shotsDir, s.slug ) : null, url: h.page.url() } );
 						if ( f.error ) {
 							throw new Error( f.error );
 						}
 						const r = proposeSkeleton( { inventory, facts: f.facts, surface: s.slug, clientDecisions: f.clientDecisions, calKeys, db: theDb } );
-						out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal ), counts: r.proposal.counts, problems: r.problems } );
+						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, tried: open.tried };
+						out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal ), counts: r.proposal.counts, problems: r.problems } );
 						log( `${ s.slug }: ${ inventory.elements.length } elements, ${ r.proposal.rows.length } rows` );
 					} catch ( e ) {
 						fail( s, e.message.split( '\n' )[ 0 ] );
