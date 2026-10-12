@@ -115,6 +115,26 @@ test( 'MUST FAIL (c): the planted map embed is aborted and listed as an unlisted
 	assert.ok( sb.requests.filter( ( r ) => 'maps.google.com' === r.host ).every( ( r ) => 'aborted' === r.outcome ) );
 } );
 
+// The census, defect and harness pages come from newPage(), not visit(); their blocked rows carry the ID the same way.
+test( 'MUST FAIL (c2): a request blocked on a page opened with newPage() carries the requesting element draft ID', async () => {
+	const own = await openSandbox( { folder: FIXTURE, index: INDEX, harPath, mode: 'replay' } );
+	let rows;
+	try {
+		const p = await own.newPage();
+		await p.goto( `${ own.origin }/${ INDEX }`, { waitUntil: 'load' } );
+		await p.waitForSelector( '#dc-root [data-dc-tpl]' );
+		await p.waitForLoadState( 'networkidle' );
+	} finally {
+		await own.close();
+		rows = own.blocked.filter( ( b ) => 'maps.google.com' === b.host );
+	}
+	assert.ok( rows.length, `no blocked row for maps.google.com:
+${ JSON.stringify( own.blocked, null, 1 ) }` );
+	for ( const b of rows ) {
+		assert.match( String( b.draftId ), /^\d+$/, `draftId ${ b.draftId } (${ b.draftIdError || 'no error' })` );
+	}
+} );
+
 test( 'MUST FAIL (d): a worker started by runIsolated holds no secret variable', async () => {
 	const dir = tempDir( 'intake-worker-' );
 	const worker = path.join( dir, 'worker.mjs' );

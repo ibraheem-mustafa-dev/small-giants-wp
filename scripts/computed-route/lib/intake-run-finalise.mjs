@@ -28,8 +28,8 @@ export const needsFinaliser = ( r ) => ! r.finalisedBy && ( ( r.low && ! r.actio
 
 // The request for every surface with such rows: { generated, client, prompt, picksFile, picksShape, context, counts,
 // surfaces: { <surface>: finaliseRequest(...) } }. intake.json keeps each row's tag, words, a 160-character snippet,
-// its top three candidates and its copies, not the full inventory, so each element is built from the row (parent,
-// boxes and candidate evidence lines are absent) and `neighbours` lists the rows before and after it in the surface.
+// its top three candidates and its copies, not the full inventory, so each element is built from the row (candidate
+// evidence lines are absent); the row's parent, siblings and boxes (null on a row written without them) are copied in, and `neighbours` lists the rows before and after it in the surface.
 export function intakeFinaliseRequest( intake, { promptFile = FINALISER_PROMPT } = {} ) {
 	const surfaces = {};
 	for ( const [ surface, s ] of Object.entries( intake.skeletons || {} ) ) {
@@ -45,7 +45,11 @@ export function intakeFinaliseRequest( intake, { promptFile = FINALISER_PROMPT }
 			const i = at.get( x.key );
 			const r = all[ i ];
 			const near = [ all[ i - 1 ], all[ i + 1 ] ].filter( Boolean ).map( ( n ) => ( { key: n.key, tag: n.tag, words: n.words, block: n.block } ) );
-			return { ...x, rowId: r.rowId, draftId: r.draftId, action: r.action ?? null, copies: r.copies ?? 1, keys: r.keys, otherWords: r.otherWords, alsoIn: r.alsoIn, neighbours: near };
+			return {
+				...x, rowId: r.rowId, draftId: r.draftId, action: r.action ?? null, copies: r.copies ?? 1, keys: r.keys, otherWords: r.otherWords, alsoIn: r.alsoIn, neighbours: near,
+				// The writer's inventory context kept on the row (lib/intake-skeletons.mjs::contextOf); null where the record predates it.
+				parent: r.parent ?? null, siblings: r.siblings ?? null, siblingCount: r.siblingCount ?? null, boxes: r.boxes ?? null,
+			};
 		} );
 		surfaces[ surface ] = req;
 	}
@@ -53,7 +57,7 @@ export function intakeFinaliseRequest( intake, { promptFile = FINALISER_PROMPT }
 	return {
 		generated: new Date().toISOString(), client: intake.client, prompt: promptFile, picksFile: 'finalise-picks.json',
 		picksShape: '{ "<surface>": [ <one answerShape entry per row of that surface> ] }',
-		context: 'Built from intake.json rows: the element is the row (tag, words, snippet); parent, boxes and candidate evidence lines are not kept there. neighbours are the rows before and after it.',
+		context: 'Built from intake.json rows: the element is the row (tag, words, snippet); candidate evidence lines are not kept there. parent, siblings (the nearest 12 in document order; siblingCount is the full number) and boxes (375, 768, 1440; x and y are page coordinates) come from the skeleton inventory, null where it held none. neighbours are the rows before and after it in the surface.',
 		counts: { surfaces: Object.keys( surfaces ).length, rows }, surfaces,
 	};
 }

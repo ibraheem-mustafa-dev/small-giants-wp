@@ -182,3 +182,17 @@ test( 'cutDraft cuts at the runtime boundaries and places the logic at its file 
 	assert.equal( c.logicLine, 4 );
 	assert.throws( () => cutDraft( '<p>no component</p>' ), /no <x-dc>/ );
 } );
+
+test( 'MUST FAIL: the static pass returns its own sandbox blocked requests, so they reach the notices', async () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-census-empty-har-' ) );
+	temps.push( dir );
+	const har = JSON.parse( fs.readFileSync( harPath, 'utf8' ) );
+	har.log.entries = har.log.entries.filter( ( e ) => ! /fonts\.(googleapis|gstatic)\.com/.test( e.request.url ) );
+	const fontless = path.join( dir, 'fontless.har' );
+	fs.writeFileSync( fontless, JSON.stringify( har ) );
+	const bare = await staticCensus( { folder: EXPORT, entry: ENTRY, harPath: fontless } );
+	const font = bare.blocked.find( ( b ) => 'fonts.googleapis.com' === b.host );
+	assert.ok( font, 'with the fonts cut from the replay file the helmet font request is a blocked replay miss on the static pass' );
+	assert.equal( font.reason, 'replay-miss' );
+	assert.deepEqual( census.blocked.filter( ( b ) => 'fonts.googleapis.com' === b.host ), [], 'replayed from the HAR, the same request is not blocked' );
+} );

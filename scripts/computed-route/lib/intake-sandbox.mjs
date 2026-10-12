@@ -33,6 +33,8 @@ export const hostOf = ( url ) => {
 		return null;
 	}
 };
+// How long the context must be request-free before pending blocked rows get their draft IDs.
+const QUIET_MS = 300;
 const escapeRe = ( s ) => s.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
 
 // What the sandbox does with a URL: 'origin' (the draft server), 'inline' (data:, blob:), 'pinned' (one of the three
@@ -193,8 +195,10 @@ async function resolveDraftId( row, request ) {
 //   requests: { url, host, kind (classifyUrl), outcome: origin|inline|har|memory|aborted|failed } for every request;
 //   blocked:  { url, host, reason: 'unlisted-host'|'replay-miss'|'websocket', draftId } for every aborted request
 //             and every WebSocket (a loopback port other than the draft server's is an unlisted host);
-//   visit(pagePath, { width }) renders a draft page, waits for the runtime and fonts, scrolls it through, resolves the
-//   blocked rows' draft IDs and returns the page.
+//   Every aborted request's draft ID is resolved once the context is request-free for QUIET_MS, on any page it opens
+//   (visit() and newPage() alike); an ID that cannot be resolved leaves draftId null with draftIdError set.
+//   visit(pagePath, { width }) renders a draft page, waits for the runtime and fonts, scrolls it through, waits for the
+//   pending ID resolutions and returns the page; close() waits for them too.
 export async function openSandbox( { folder, index, harPath = null, mode = 'replay', widths = [ 1440 ], stockHosts = [], pinnedBodies = {}, headless = true, timeout = 60000 } ) {
 	if ( ! [ 'replay', 'discover' ].includes( mode ) ) {
 		throw new Error( `openSandbox mode must be 'replay' or 'discover', not ${ JSON.stringify( mode ) }` );
@@ -214,19 +218,43 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 	const requests = [];
 	const blocked = [];
 	const rows = new Map();
+	// Aborted requests awaiting their draft ID. The runtime stamps data-dc-tpl after the request fires, so a row is resolved
+	// once the page is quiet (no request in flight for QUIET_MS), when a page opened here closes, in visit() and in close():
+	// a page opened with newPage() (the census, defect and harness pages) gets IDs exactly as visit() does.
 	const pending = [];
+	let resolving = Promise.resolve();
+	let inflight = 0;
+	let quiet = null;
+	const drain = () => {
+		resolving = resolving.then( async () => {
+			for ( const [ b, req ] of pending.splice( 0 ) ) {
+				await resolveDraftId( b, req );
+			}
+		} );
+		return resolving;
+	};
 	context.on( 'request', ( r ) => {
 		const row = { url: r.url(), host: hostOf( r.url() ), kind: classifyUrl( r.url(), { origin, stockHosts } ), outcome: null };
 		rows.set( r, row );
 		requests.push( row );
+		inflight++;
+		clearTimeout( quiet );
 	} );
+	const settled = () => {
+		inflight = Math.max( 0, inflight - 1 );
+		if ( 0 === inflight ) {
+			quiet = setTimeout( () => void drain(), QUIET_MS );
+		}
+	};
 	context.on( 'requestfinished', ( r ) => {
+		settled();
 		const row = rows.get( r );
 		if ( row && ! row.outcome ) {
 			row.outcome = 'origin' === row.kind || 'inline' === row.kind ? row.kind : 'har';
 		}
 	} );
 	context.on( 'requestfailed', ( r ) => {
+		settled();
 		const row = rows.get( r );
 		if ( row && ! row.outcome ) {
 			row.outcome = 'failed';
@@ -270,7 +298,15 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 	if ( hasHar ) {
 		await context.routeFromHAR( harPath, { notFound: 'fallback', url: replayFilter( stockHosts ) } );
 	}
-	const newPage = () => context.newPage();
+	const newPage = async () => {
+		const page = await context.newPage();
+		const closePage = page.close.bind( page );
+		page.close = async ( ...args ) => {
+			await drain().catch( () => {} );
+			return closePage( ...args );
+		};
+		return page;
+	};
 	const visit = async ( pagePath = index, { width = widths[ 0 ], height = 900 } = {} ) => {
 		const page = await context.newPage();
 		await page.setViewportSize( { width, height } );
@@ -287,12 +323,12 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 			await document.fonts.ready;
 		} );
 		await page.waitForLoadState( 'networkidle', { timeout } );
-		for ( const [ b, req ] of pending.splice( 0 ) ) {
-			await resolveDraftId( b, req );
-		}
+		await drain();
 		return page;
 	};
 	const close = async () => {
+		clearTimeout( quiet );
+		await drain();
 		await browser.close();
 		await srv.close();
 		await trap.close();

@@ -117,7 +117,7 @@ export const STAGES = [
 		const unreached = c.rows.filter( ( r ) => true === r.unreached ).length;
 		return {
 			census: { rows: slimCensus( c.rows, c.problems ), pass: c.pass, problems: c.problems, counts: c.counts },
-			blocked: c.runtime?.blocked ?? [],
+			blocked: [ ...( c.blocked ?? [] ), ...( c.runtime?.blocked ?? [] ) ],
 			gaps: [ ...c.gaps, ...c.problems.map( ( p ) => gap( 'census', job.entry, p ) ) ],
 			note: `${ c.rows.length } constructs, ${ c.pass ? 'pass' : `FAIL (${ c.problems.length } problems)` }, ${ unreached } unreached`,
 		};
@@ -168,7 +168,7 @@ export const STAGES = [
 		const c = ctx.censusFull;
 		const d = await twoPassDefects( { folder: job.folder, entry: job.entry, harPath: job.harPath, census: { rows: c.rows, sources: c.sources }, visits: ctx.visits.census, widths: job.widths, flags: ctx.flagRows ?? null, log } );
 		return {
-			draftDefects: defectReviewRows( d ), notDefects: d.notDefects.length, passes: d.passes, gaps: d.gaps, blocked: d.blocked,
+			draftDefects: defectReviewRows( d ), notDefects: d.notDefects, passes: d.passes, gaps: d.gaps, blocked: d.blocked,
 			note: `${ d.rows.length } defects in ${ d.groups.length } groups, ${ d.notDefects.length } not defects; pass A ${ ( d.passes.a.ms / 1000 ).toFixed( 1 ) }s, pass B ${ ( d.passes.b.ms / 1000 ).toFixed( 1 ) }s`,
 		};
 	} ],

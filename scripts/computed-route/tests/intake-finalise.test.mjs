@@ -15,6 +15,7 @@ import { renderReview, parseReview, reviewRows, carryOver, CONFIDENT_HEADING } f
 import { recordProblems, parseArgs } from '../lib/intake-run.mjs';
 import { mergeBlocked } from '../lib/intake-run-collapse.mjs';
 import { intakeFinaliseRequest, reviewDecisions } from '../lib/intake-run-finalise.mjs';
+import { contextOf, SIBLING_CAP } from '../lib/intake-skeletons.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const INTAKE = path.join( HERE, '..', 'intake.mjs' );
@@ -95,12 +96,43 @@ test( 'MUST FAIL: --finalise asks about exactly the low-confidence and unresolve
 	const phone = req.surfaces.header.rows[ 0 ];
 	assert.deepEqual( Object.keys( req.surfaces.header ).sort(), [ 'answerShape', 'generated', 'prompt', 'rows', 'source', 'surface' ] );
 	assert.equal( phone.element.words, '0121 000 0000' );
-	assert.deepEqual( phone.siblings, [] );
+	assert.equal( phone.siblings, null, 'a row written without inventory context has no siblings, not an empty list' );
 	assert.deepEqual( phone.neighbours.map( ( n ) => n.key ), [ 'Site/2#0', 'Site/9#0' ] );
 	assert.deepEqual( req.surfaces.footer.rows[ 0 ].keys, [ 'Site/18#0', 'Site/18#1', 'Site/18#2' ] );
 	const done = { ...fixture() };
 	done.skeletons.header.rows[ 1 ] = { ...done.skeletons.header.rows[ 1 ], finalisedBy: 'agent' };
 	assert.equal( intakeFinaliseRequest( done ).counts.rows, 2, 'a row the finaliser already picked is not asked again' );
+} );
+
+const box = ( x, y, w, h ) => ( { x, y, w, h } );
+const el = ( key, parentKey, tag, boxes ) => ( { key, parentKey, tag, box: boxes } );
+
+test( 'MUST FAIL: a finalise request row carries its parent, siblings and boxes from the skeleton inventory, null where it held none', () => {
+	const inventory = { elements: [
+		el( 'Site/1#0', null, 'header', { 1440: box( 0, 0, 1440, 80 ), 768: box( 0, 0, 768, 80 ), 375: box( 0, 0, 375, 64 ) } ),
+		el( 'Site/2#0', 'Site/1#0', 'a', { 1440: box( 40, 20, 120, 40 ), 768: null, 375: box( 16, 12, 100, 40 ) } ),
+		el( 'Site/3#0', 'Site/1#0', 'span', { 1440: box( 900, 20, 160, 40 ), 768: null, 375: null } ),
+		el( 'Site/3#1', 'Site/1#0', 'span', { 1440: box( 1000, 20, 160, 40 ), 768: null, 375: null } ),
+	] };
+	const proposal = { rows: [ { key: 'Site/1#0', block: 'sgs/container' }, { key: 'Site/2#0', block: 'sgs/logo' }, { key: 'Site/3#0', block: 'sgs/text' }, { key: 'Site/3#1', block: null } ] };
+	const ctx = contextOf( inventory, proposal, 'Site/3#0' );
+	assert.deepEqual( ctx.parent, { draftId: 'Site:1', tag: 'header', block: 'sgs/container' } );
+	assert.deepEqual( ctx.siblings, [ { draftId: 'Site:2', tag: 'a', block: 'sgs/logo' }, { draftId: 'Site:3', tag: 'span', block: null } ] );
+	assert.deepEqual( ctx.boxes, [ { width: 1440, x: 900, y: 20, w: 160, h: 40 } ], 'only the widths the element was measured at' );
+	const root = contextOf( inventory, proposal, 'Site/1#0' );
+	assert.equal( root.parent, null, 'a root has no parent' );
+	assert.equal( contextOf( { elements: [ el( 'Site/9#0', null, 'p', { 1440: null, 768: null, 375: null } ) ] }, { rows: [] }, 'Site/9#0' ).boxes, null, 'no measured box means null, not zeros' );
+	const many = { elements: [ el( 'P/1#0', null, 'ul', {} ), ...Array.from( { length: 40 }, ( _, i ) => el( `P/2#${ i }`, 'P/1#0', 'li', {} ) ) ] };
+	const capped = contextOf( many, { rows: [] }, 'P/2#20' );
+	assert.equal( capped.siblings.length, SIBLING_CAP );
+	assert.equal( capped.siblingCount, 39 );
+	const intake = fixture();
+	Object.assign( intake.skeletons.header.rows[ 1 ], ctx );
+	const asked = intakeFinaliseRequest( intake ).surfaces.header.rows;
+	const mine = asked.find( ( r ) => 'Site/5#0' === r.key );
+	assert.deepEqual( { parent: mine.parent, siblings: mine.siblings, siblingCount: mine.siblingCount, boxes: mine.boxes }, ctx );
+	const bare = asked.find( ( r ) => 'Site/9#0' === r.key );
+	assert.deepEqual( [ bare.parent, bare.siblings, bare.boxes ], [ null, null, null ], 'a row without context reads null, never invented' );
 } );
 
 test( 'MUST FAIL: an invalid pick is refused, naming it, and nothing is written', () => {

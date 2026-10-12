@@ -159,7 +159,7 @@ function checkHosts( sources, hosts ) {
 
 // Every draft reachable from `entry` (recursive dc-import) with its cut and its stamped template, plus the helmet
 // script files each loads: [{ component, file, template, logic, logicLine, logicColumn, via: entry|bridge|standalone,
-// stamped: { elements, topTexts }, scripts: [{ src, file, text } | { src, error }] }]. Renders in the sandbox (replay
+// stamped: { elements, topTexts }, scripts: [{ src, file, text } | { src, error }] }], with `blocked` on the list. Renders in the sandbox (replay
 // mode, `harPath`), or in an already open `sandbox` (openSandbox's result). Throws when a draft is missing or its
 // template never reaches the runtime.
 export async function draftSources( { folder, entry, harPath = null, sandbox = null, timeout = 60000 } ) {
@@ -208,6 +208,8 @@ export async function draftSources( { folder, entry, harPath = null, sandbox = n
 			await sb.close();
 		}
 	}
+	// The aborted requests of a sandbox opened here (a caller's own sandbox keeps its own list), IDs resolved by close().
+	out.blocked = sandbox ? [] : sb.blocked;
 	return out;
 }
 

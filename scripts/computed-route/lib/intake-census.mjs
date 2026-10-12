@@ -145,7 +145,7 @@ export function crossCheck( sources, rows ) {
 	return { table, gaps };
 }
 
-// The static pass: { rows, gaps, sources, counts }. Renders the drafts once in the sandbox (draftSources), parses each
+// The static pass: { rows, gaps, sources, counts, blocked }. Renders the drafts once in the sandbox (draftSources), parses each
 // draft's logic and each helmet script file once (a file loaded by several drafts is read once).
 export async function staticCensus( { folder, entry, harPath = null, sandbox = null, timeout = 60000 } ) {
 	const sources = await draftSources( { folder, entry, harPath, sandbox, timeout } );
@@ -175,7 +175,7 @@ export async function staticCensus( { folder, entry, harPath = null, sandbox = n
 	assignIds( rows );
 	const cross = crossCheck( sources, rows );
 	gaps.push( ...cross.gaps );
-	return { rows, gaps, sources, counts: cross.table };
+	return { rows, gaps, sources, counts: cross.table, blocked: sources.blocked || [] };
 }
 
 const isEmpty = ( v ) => null == v || '' === v || ( Array.isArray( v ) && ! v.length ) || ( 'object' === typeof v && ! Array.isArray( v ) && ! Object.keys( v ).length );
@@ -184,7 +184,7 @@ const isEmpty = ( v ) => null == v || '' === v || ( Array.isArray( v ) && ! v.le
 // reader on each construct of its kind. `readers` ({ kind: fn }) overrides a registry reader; `root` is where reader
 // modules resolve (readerFor). `runtime` ({ visits, widths, harPath, harness }) adds the runtime pass
 // (lib/intake-census-runtime.mjs): rows then carry source static|runtime|both and `unreached`, and a visit that fails
-// is a problem. Returns { rows, gaps, problems, pass, sources, counts, runtime }: each row carries `reader`
+// is a problem. Returns { rows, gaps, problems, pass, sources, counts, runtime, blocked } (`blocked`: the static pass's aborted requests): each row carries `reader`
 // ('<module>#<fn>') or `gap` (the registry's reason, or the reader's error).
 export async function runCensus( { folder, entry, registry = null, root, readers = {}, harPath = null, sandbox = null, census = null, timeout = 60000, runtime = null } ) {
 	const reg = registry || loadRegistry();
@@ -247,5 +247,5 @@ export async function runCensus( { folder, entry, registry = null, root, readers
 			}
 		}
 	}
-	return { rows, gaps, problems, pass: ! problems.length, sources: base.sources, counts: base.counts, runtime: run };
+	return { rows, gaps, problems, pass: ! problems.length, sources: base.sources, counts: base.counts, runtime: run, blocked: base.blocked || [] };
 }

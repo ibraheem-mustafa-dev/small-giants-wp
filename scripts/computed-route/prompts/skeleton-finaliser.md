@@ -7,7 +7,7 @@ You settle the low-confidence rows of a skeleton the skeleton writer proposed (S
 `sites/<client>/build/skeleton/<surface>.finalise-request.json`. Each row holds:
 
 - `element`: the draft element (tag, attributes, its own words, the draft's own code `snippet`, loop and condition `membership`, display, boxes and visibility at 375, 768 and 1440).
-- `parent` and `siblings`: the neighbours by key, tag and words.
+- `parent`, `siblings`, `siblingCount` and `boxes`: the element's place in the draft. `parent` is `{ draftId, tag, block }`, the element it sits inside and the block the writer proposed for it (null at the surface root). `siblings` is the same shape for elements sharing that parent, in document order (at most 12 nearest; `siblingCount` is the full number). `boxes` is `[ { width, x, y, w, h } ]` at 1440, 768 and 375 in page pixels, in the widths where the element rendered. Any of them is null when the inventory held nothing; never infer a value for a null. `neighbours` are the rows before and after it in the surface.
 - `candidates`: the blocks the writer scored, each with its evidence lines (framework database facts, Site Info matches, standing decisions).
 - `confidence` and `reason`.
 
@@ -20,8 +20,9 @@ For each row, the one SGS block the element becomes, or that it is removed.
 3. A line that exists only because of the designer's brief (a coming-soon line, placeholder copy) is `remove`.
 4. A typed brand name or a logo image is the logo block, never a text block.
 5. Site Info content (phone, address, hours, copyright, attribution) is a block that reads Site Info, never typed text.
-6. You never invent attributes. `attributes` carries only content or structure settings a skeleton may hold (text, a link, a display type). A setting that paints a CSS property (a size, a colour, a spacing) is never yours to write: Fill measures it.
-7. If you cannot decide from the evidence, give your best pick with a confidence below 0.6 and say what you could not see. Do not guess a high confidence.
+6. Read the placement with the words, after the database evidence. A box as wide as the page (w close to the width) under a header or footer parent is a section or bar, so a container-type block; siblings that share one block are a repeated item, so choose the block the list uses and do not split it; a box that is narrow and tall beside a wider sibling is a column. A parent proposed as a form, card or list sets what its children can be.
+7. You never invent attributes. `attributes` carries only content or structure settings a skeleton may hold (text, a link, a display type). A setting that paints a CSS property (a size, a colour, a spacing) is never yours to write: Fill measures it.
+8. If you cannot decide from the evidence, give your best pick with a confidence below 0.6 and say what you could not see. Do not guess a high confidence.
 
 ## Output
 

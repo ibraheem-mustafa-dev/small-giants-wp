@@ -24,6 +24,7 @@ import { readRouting } from './intake-routing.mjs';
 import { loadCalibration } from './cache.mjs';
 import { openDb } from './db.mjs';
 import { setDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
+import { templateOf } from './intake-run-collapse.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const SURFACE_KINDS = [ 'header', 'footer', 'drawer', 'menu', 'form', 'modal', 'global', 'page' ];
@@ -160,9 +161,35 @@ const summaryOf = ( inv ) => ( {
 	},
 } );
 
-const rowsOf = ( surface, proposal ) => proposal.rows.map( ( r ) => ( {
+// At most this many siblings travel with a row (the ones nearest it in document order); `siblingCount` is the full count,
+// so a long list reads as long without making every row of a 60-item list carry 60 neighbours.
+export const SIBLING_CAP = 12;
+
+// The context the finaliser (Spec 48 §3.4 step 3) judges an element by, from the inventory the row was proposed from:
+// { parent: { draftId, tag, block } | null, siblings: [ { draftId, tag, block } ], siblingCount, boxes: [ { width, x, y, w, h } ]
+// | null }. `block` is the proposal's block for that element (null when it has no row or none fits). A value the
+// inventory does not hold is null, never a guess: a root element has no parent, an element with no measured box at any
+// width has no boxes.
+export function contextOf( inventory, proposal, key ) {
+	const els = inventory.elements;
+	const at = els.findIndex( ( e ) => e.key === key );
+	const e = els[ at ];
+	const blockOf = new Map( proposal.rows.map( ( r ) => [ r.key, r.block ?? null ] ) );
+	const ref = ( x ) => ( { draftId: templateOf( x.key )?.draftId ?? x.key, tag: x.tag, block: blockOf.get( x.key ) ?? null } );
+	if ( ! e ) {
+		return { parent: null, siblings: [], siblingCount: 0, boxes: null };
+	}
+	const parent = els.find( ( x ) => x.key === e.parentKey );
+	const sibs = els.map( ( x, i ) => ( { x, i } ) ).filter( ( { x } ) => x.parentKey === e.parentKey && x.key !== e.key );
+	const near = sibs.length > SIBLING_CAP ? [ ...sibs ].sort( ( a, b ) => Math.abs( a.i - at ) - Math.abs( b.i - at ) ).slice( 0, SIBLING_CAP ).sort( ( a, b ) => a.i - b.i ) : sibs;
+	const boxes = INVENTORY_WIDTHS.filter( ( w ) => e.box?.[ w ] ).sort( ( a, b ) => b - a ).map( ( w ) => ( { width: w, x: e.box[ w ].x, y: e.box[ w ].y, w: e.box[ w ].w, h: e.box[ w ].h } ) );
+	return { parent: parent ? ref( parent ) : null, siblings: near.map( ( { x } ) => ref( x ) ), siblingCount: sibs.length, boxes: boxes.length ? boxes : null };
+}
+
+const rowsOf = ( surface, proposal, inventory ) => proposal.rows.map( ( r ) => ( {
 	rowId: `skeleton:${ surface }:${ r.key }`, key: r.key, tag: r.tag, words: r.words, block: r.block, confidence: r.confidence, low: r.low, reason: r.reason,
 	candidates: r.candidates.slice( 0, 3 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share } ) ), action: r.action, snippet: r.snippet, screenshots: r.screenshots,
+	...contextOf( inventory, proposal, r.key ),
 } ) );
 
 // State-driven surfaces (a drawer, a mega-menu panel, a modal) render only when their state opens. The ways to open one,
@@ -354,7 +381,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						}
 						const r = proposeSkeleton( { inventory, facts: f.facts, surface: s.slug, clientDecisions: f.clientDecisions, calKeys, db: theDb } );
 						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, tried: open.tried };
-						out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal ), counts: r.proposal.counts, problems: r.problems } );
+						out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems } );
 						log( `${ s.slug }: ${ inventory.elements.length } elements, ${ r.proposal.rows.length } rows` );
 					} catch ( e ) {
 						fail( s, e.message.split( '\n' )[ 0 ] );
