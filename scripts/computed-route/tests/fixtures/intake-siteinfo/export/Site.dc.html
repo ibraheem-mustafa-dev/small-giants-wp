@@ -1,0 +1,65 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<x-dc>
+<header>
+  <a href="tel:0121 496 0000" aria-label="Call 0121 496 0000">0121 496 0000</a>
+  <a href="mailto:info@acme-bakery.co.uk">info@acme-bakery.co.uk</a>
+  <a href="tel:0121 77">Call the shop</a>
+  <a href="mailto:hello@example.com">Say hello</a>
+  <a href="https://www.instagram.com/acmebakery" aria-label="Instagram">ig</a>
+  <a href="https://facebook.com/acmebakery" aria-label="Facebook">f</a>
+  <a href="https://instagram.com.evil.example/acmebakery" aria-label="Our gallery">g</a>
+  <a href="#/" aria-label="LinkedIn">in</a>
+  <a href="https://wa.me/441214960000" aria-label="WhatsApp">wa</a>
+  <a href="#/">Home</a>
+</header>
+<main>
+  <section><h2>Welcome</h2><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p></section>
+  <img src="https://images.unsplash.com/photo-1509440159596?w=800" alt="Bread on a board">
+  <a href="https://unsplash.com/photos/1509440159596">Photo credit</a>
+  <image-slot id="hero" shape="rect" placeholder="Hero photo: loaves on a shelf"></image-slot>
+  <image-slot id="team" shape="rect" src="assets/team.jpg" placeholder="Team"></image-slot>
+  <div><span>Call us</span><span>{{ shopPhone }}</span></div>
+  <p>Find us: 12 Market Street, Birmingham B1 1AA</p>
+  <form onSubmit="{{ submit }}"><label>Your name</label><input name="name" placeholder="Your name"><button type="submit">Send</button></form>
+  <sc-if value="{{ sent }}"><p>Message sent.</p></sc-if>
+  <form onSubmit="{{ quickSubmit }}"><input name="email"><button type="submit">Join</button></form>
+  <form onSubmit="{{ realSubmit }}"><input name="email"><button type="submit">Subscribe</button></form>
+  <button onClick="{{ addToBasket }}">Add to basket</button>
+  <p>{{ tagline || 'Your tagline here' }}</p>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home', sent: false, sending: false, joined: false, basket: [] };
+  componentDidMount() {
+    window.addEventListener('hashchange', () => this.setState({ page: 'home' }));
+    const saved = sessionStorage.getItem('acme-seen');
+    this._jitter = (Math.random() * 10 - 5).toFixed(1);
+  }
+  get pages() { return { home: {} }; }
+  get slots() { const w = [[540, 1050]]; return { 0: [], 1: w, 2: w, 3: w, 4: w, 5: [[540, 720], [840, 1050]], 6: [[600, 900]] }; }
+  addToBasket = () => { const b = [...this.state.basket, 'loaf']; localStorage.setItem('acme-basket', JSON.stringify(b)); this.setState({ basket: b }); };
+  submit = (e) => { e.preventDefault(); this.setState({ sending: true }); setTimeout(() => this.setState({ sending: false, sent: true }), 900); };
+  quickSubmit = (e) => { e.preventDefault(); this.setState({ joined: true, done: true }); };
+  realSubmit = (e) => { e.preventDefault(); fetch('/wp-json/acme/v1/subscribe', { method: 'POST' }).then(() => this.setState({ done: true })); };
+  renderVals() {
+    const pid = '1509440159596';
+    return {
+      shopPhone: '0121 496 0000',
+      contact: [
+        { label: 'Visit', value: '12 Market Street', note: 'Birmingham B1 1AA' },
+        { label: 'Call', value: '0121 496 0999', note: 'Orders line' },
+        { label: 'Email', value: 'info@acme-bakery.co.uk' },
+      ],
+      fields: [['name', 'Your name', 'text'], ['email', 'Email', 'email']],
+      orderRef: 'ACME-' + Math.floor(Math.random() * 90000),
+      photo: 'https://images.unsplash.com/photo-' + pid + '?w=600',
+      greeting: 'Hello {{ name }}',
+      sent: this.state.sent, submit: this.submit, quickSubmit: this.quickSubmit, realSubmit: this.realSubmit,
+      addToBasket: this.addToBasket, tagline: '',
+    };
+  }
+}
+</script>
+</body></html>

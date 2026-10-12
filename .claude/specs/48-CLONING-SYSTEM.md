@@ -1599,9 +1599,12 @@ proposal source beside the intake harvest; its output feeds the same review rows
 it is the one Site Info writer for a cloned site.
 *Done when:* intake on Indus proposes its phone, email and social links, lists a planted placeholder address and a
 malformed phone number, and the confirmed set reaches Site Info through the provisioning script's dry-run table.
-Status: not built at intake. Shape validation and placeholder refusal are built in `provision-site-info-from-draft.py`
-(dry run by default) and in the `business_info/` package (FR-33-14). `sync-business-info.py` still has a `--push`
-write path.
+Status: built at intake 2026-10-12 (`lib/intake-siteinfo.mjs`, `lib/intake-siteinfo-shape.mjs`,
+`tests/intake-siteinfo.test.mjs`). Indus proposes its phone, email, WhatsApp link, two address candidates (the footer
+text and the contact data object) and per-day hours, and refuses its four `#/` social links; a dry run of
+`provision-site-info-from-draft.py --site indus-test` with the phone and email shows both as WRITE. `wa.me` is read as
+WhatsApp through a one-entry alias, because the brand registry does not list it. `sync-business-info.py` still has a
+`--push` write path; intake never passes it.
 
 #### FR-48-33 — Placeholder, stock and prototype-only flags
 Intake flags three kinds of construct so that none is built as if it were final:
@@ -1614,7 +1617,9 @@ Intake flags three kinds of construct so that none is built as if it were final:
 
 Each flag is a review row. Placeholder copy is written with the flag kept in `page-map.json`. Stock images upload as
 previews (FR-48-58).
-Status: not built.
+Status: built 2026-10-12 (`lib/intake-flags.mjs`, `tests/intake-flags.test.mjs`). Indus: 36 placeholder rows (19 empty
+image slots, 12 `#/` social links, 4 README lines and one more), 3 stock image builders, 5 prototype-only rows (the trade
+application's stored draft and `Math.random` reference, the enquiry form's timed submit, the inline forms' thank-you).
 
 #### FR-48-34 — Draft defects and the missing-features list
 - **Draft defects** are a closed list (DESIGN decision 3) with an operational test. A row is a draft defect only when
