@@ -1,0 +1,260 @@
+--- a/scripts/sgs-db.py	2026-10-12 23:26:28.502688400 +0100
++++ b/scripts/sgs-db.py	2026-10-12 23:26:45.409932100 +0100
+@@ -17,6 +17,7 @@
+     python sgs-db.py hooks [type]                        — list hooks
+     python sgs-db.py components                          — shared components and utils
+     python sgs-db.py sql "<query>"                       — raw SQL query
++    python sgs-db.py animations list|get <slug>          — motion presets (read-only; edit scripts/data/motion-presets.json)
+     python sgs-db.py fingerprint <hash>                  — look up a pattern by exact fingerprint
+     python sgs-db.py patterns-by-category <category>     — list patterns filtered by category
+     python sgs-db.py patterns-by-industry <industry>     — list patterns filtered by industry
+@@ -474,10 +475,13 @@
+     print(f'  Design tokens: {token_count}')
+     print(f'  Style variations: {variation_count}')
+ 
+-    # Animation stats
+-    anim_count = c.execute('SELECT COUNT(*) as n FROM animation_tokens').fetchone()['n']
+-    if anim_count:
+-        print(f'  Animation tokens: {anim_count}')
++    # Motion preset stats
++    try:
++        preset_count = c.execute('SELECT COUNT(*) as n FROM motion_presets').fetchone()['n']
++    except sqlite3.OperationalError:
++        preset_count = 0
++    if preset_count:
++        print(f'  Motion presets: {preset_count}')
+ 
+     # Pattern stats
+     pattern_count = c.execute('SELECT COUNT(*) as n FROM patterns').fetchone()['n']
+@@ -521,69 +525,52 @@
+ 
+ 
+ def cmd_animations(conn, args):
+-    """List, add, or show animation tokens."""
++    """List or show motion presets (the table that replaced animation_tokens). Read-only."""
+     if not args or args[0] == 'list':
+-        query = 'SELECT name, category, duration, easing, description FROM animation_tokens'
+-        params = []
++        clauses, params = [], []
+         i = 0
+         while i < len(args):
+-            if args[i] == '--category' and i + 1 < len(args):
+-                query += ' WHERE category = ?'
++            if args[i] in ('--kind', '--panel', '--family') and i + 1 < len(args):
++                clauses.append(f'{args[i][2:]} = ?')
+                 params.append(args[i + 1])
+                 i += 2
+             else:
+                 i += 1
+-        query += ' ORDER BY category, name'
+-        rows = conn.execute(query, params).fetchall()
+-        count = len(rows)
++        query = 'SELECT slug, panel, effect, kind, intensity, trigger, label FROM motion_presets'
++        if clauses:
++            query += ' WHERE ' + ' AND '.join(clauses)
++        query += ' ORDER BY position'
++        try:
++            rows = conn.execute(query, params).fetchall()
++        except sqlite3.OperationalError as exc:
++            print(f'  motion_presets is unavailable ({exc}); run the reseed that creates it.')
++            return
+         print()
+-        print(f'  Animation Tokens ({count}):')
+-        print_table(rows, ['name', 'category', 'duration', 'easing', 'description'])
++        print(f'  Motion presets ({len(rows)}):')
++        print_table(rows, ['slug', 'panel', 'effect', 'kind', 'intensity', 'trigger', 'label'])
+     elif args[0] == 'get' and len(args) >= 2:
+-        name = args[1]
+-        row = conn.execute('SELECT * FROM animation_tokens WHERE name = ?', (name,)).fetchone()
++        try:
++            row = conn.execute('SELECT * FROM motion_presets WHERE slug = ?', (args[1],)).fetchone()
++        except sqlite3.OperationalError as exc:
++            print(f'  motion_presets is unavailable ({exc}); run the reseed that creates it.')
++            return
+         if not row:
+-            print(f'Animation not found: {name}')
++            print(f'Motion preset not found: {args[1]}')
+             return
+         print()
+-        print(f'  Animation: {row["name"]}')
+-        print(f'  Category: {row["category"]}')
+-        print(f'  Duration: {row["duration"]}')
+-        print(f'  Easing: {row["easing"]}')
+-        desc = row["description"] or "—"
+-        print(f'  Description: {desc}')
+-        used = row["used_by"] or "—"
+-        print(f'  Used by: {used}')
+-        print(f'  Keyframes:')
+-        print(row["keyframes"])
++        for key in ('slug', 'panel', 'effect', 'family', 'kind', 'intensity', 'label', 'trigger', 'target_level', 'source'):
++            print(f'  {key}: {row[key] if row[key] is not None else "-"}')
++        print('  values:')
++        print(json.dumps(json.loads(row['values_json']), indent=2))
++        print('  devices:')
++        print(json.dumps(json.loads(row['devices_json']), indent=2))
+     elif args[0] == 'add':
+-        fields = {
+-            'name': None, 'keyframes': None, 'duration': '300ms', 'easing': 'ease',
+-            'category': 'entrance', 'description': None, 'used_by': None
+-        }
+-        i = 1
+-        while i < len(args):
+-            key = args[i].lstrip('-')
+-            if key in fields and i + 1 < len(args):
+-                fields[key] = args[i + 1]
+-                i += 2
+-            else:
+-                i += 1
+-        if not fields['name'] or not fields['keyframes']:
+-            print('  Required: --name <name> --keyframes "..."')
+-            return
+-        c = conn.cursor()
+-        c.execute(
+-            'INSERT INTO animation_tokens (name, keyframes, duration, easing, category, description, used_by) VALUES (?, ?, ?, ?, ?, ?, ?)',
+-            (fields['name'], fields['keyframes'], fields['duration'], fields['easing'],
+-             fields['category'], fields['description'], fields['used_by'])
+-        )
+-        conn.commit()
+-        print(f'  Created animation: {fields["name"]}')
++        print('  Motion presets are read-only here: only the seeders write the framework DB.')
++        print('  Add or change a preset in plugins/sgs-blocks/scripts/data/motion-presets.json,')
++        print('  then run plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py.')
+     else:
+-        print('  Usage: animations list [--category name]')
+-        print('         animations add --name name --keyframes "..." [--duration ms] [--easing name] [--category type] [--description text] [--used-by blocks]')
+-        print('         animations get <name>')
++        print('  Usage: animations list [--kind preset|intensity|keyframe] [--panel hover|entrance|effects] [--family name]')
++        print('         animations get <slug>')
+ 
+ def _trunc(value, length=30):
+     """Truncate a value to `length` chars, appending '...' if clipped."""
+--- a/ANIMATIONS-INTEGRATION.md	2026-10-12 23:26:28.529262800 +0100
++++ b/ANIMATIONS-INTEGRATION.md	2026-10-12 23:26:45.410942300 +0100
+@@ -1,104 +1,37 @@
+-# SGS Framework Animations Integration
++# SGS Framework Motion Presets
+ 
+-## Completed Tasks
++Motion presets live in the `motion_presets` table of `sgs-framework.db`. The table replaced `animation_tokens`; its eight former rows are the `keyframe` rows.
+ 
+-### 1. Database Table and CLI Commands
++## Where presets come from
+ 
+-**File:** `scripts/sgs-db.py`
++- **Source of truth:** `plugins/sgs-blocks/scripts/data/motion-presets.json` in the SGS repo, validated against `plugins/sgs-blocks/schemas/motion.schema.json` by `plugins/sgs-blocks/scripts/validate-motion-presets.mjs`.
++- **Seeder:** `plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py` loads the file into the table and deletes rows the file no longer lists. A preset that fails validation stops the seeder with a non-zero exit that names it.
++- **Editor copy:** `plugins/sgs-blocks/scripts/generate-motion-presets-json.py` writes `src/components/motion/generated-motion-presets.json` from the same file.
+ 
+-**Changes:**
+-- Added `cmd_animations()` function with three subcommands:
+-  - `animations list [--category name]` — list all animation tokens (optionally filtered by category)
+-  - `animations add --name NAME --keyframes "..." [--duration ms] [--easing name] [--category type] [--description text] [--used-by blocks]` — add a new animation token
+-  - `animations get <name>` — show full details of a single animation
+-- Added `'animations'` branch to `main()` CLI router
+-- Updated docstring to document the new commands
+-- Added animation stats to `cmd_stats()` output
+-
+-**Database:**
+-- Created `animation_tokens` table in `sgs-framework.db` with columns:
+-  - id (primary key)
+-  - name (text, unique)
+-  - keyframes (text)
+-  - duration (text, default '300ms')
+-  - easing (text, default 'ease')
+-  - description (text)
+-  - used_by (text)
+-  - category (text, default 'entrance')
+-  - created_at (datetime)
+-
+-**Categories Supported:**
+-- entrance
+-- exit
+-- emphasis
+-- scroll
+-- hover
+-- loading
+-
+-**Sample Data:**
+-7 animation tokens seeded:
+-- fade-in (entrance, 300ms)
+-- fade-out (exit, 300ms)
+-- slide-up (entrance, 400ms)
+-- zoom-in (entrance, 500ms)
+-- bounce (emphasis, 600ms)
+-- pulse (emphasis, 2000ms)
+-- spin (loading, 1000ms)
+-
+-### 2. Wiki Animation Pages
+-
+-**Directory:** `wiki/animations/`
+-
+-**Files Created:** 12 markdown files
+-
+-1. **fade-in.md** — opacity 0 to 1, entrance
+-2. **fade-out.md** — opacity 1 to 0, exit
+-3. **slide-up.md** — translateY(20px) to 0, entrance
+-4. **slide-down.md** — translateY(-20px) to 0, entrance
+-5. **slide-left.md** — translateX(20px) to 0, entrance
+-6. **slide-right.md** — translateX(-20px) to 0, entrance
+-7. **scale-up.md** — scale(0.95) to 1, entrance
+-8. **zoom-in.md** — scale(0) to 1, entrance
+-9. **bounce.md** — 0%, 100% vs 50% translateY, emphasis
+-10. **pulse.md** — scale/opacity breathing, emphasis
+-11. **shake.md** — translateX shake, emphasis
+-12. **spin.md** — 0deg to 360deg rotation, loading
+-
+-**Format:** Each file includes:
+-- Frontmatter with: name, category, duration, easing
+-- Keyframes CSS code block
+-- Usage description
+-- SGS blocks using this animation
+-- CSS custom property reference
++## Columns
+ 
+-## Testing
++`slug` (unique), `panel` (hover, entrance, effects), `effect` (an `fx_effects` slug, or empty for the hover state and the entrance), `family`, `kind`, `intensity`, `label`, `values_json`, `devices_json`, `trigger`, `target_level` (block, surface, part), `source`, `position`.
+ 
+-### CLI Commands
+-```bash
+-# List all animations
+-python3 sgs-db.py animations list
++## Kinds
+ 
+-# Filter by category
+-python3 sgs-db.py animations list --category entrance
++- `preset`: stamps a layer's Standard values (hover lift, scale, rotate, translate, image zoom, indent; the entrance fades, slides, scales, rotate, blur, bounce and reveal).
++- `intensity`: three rows (Subtle, Standard, Bold) per family. They carry only the Intensity-governed fields (travel, angle, radius, range, speed) and never differ in trigger or target.
++- `keyframe`: the reconciled `animation_tokens` presets (fade-in, fade-out, slide-up, zoom-in, bounce, pulse, spin, fade-up), with theme token references where a token fits.
+ 
+-# Get full details
+-python3 sgs-db.py animations get fade-in
++Values are `sgsMotion` values. A token reference `token:<family>.<key>` resolves to `var(--wp--custom--<family>--<key>)`.
+ 
+-# Add new animation
+-python3 sgs-db.py animations add --name custom --keyframes "@keyframes custom { ... }" --duration 500ms --easing ease --category entrance
+-```
++## CLI (read-only)
+ 
+-### Database Stats
+ ```bash
+-python3 sgs-db.py stats
+-# Output now includes:
+-#   Animation tokens: 7
++python3 sgs-db.py animations list
++python3 sgs-db.py animations list --kind intensity --panel hover
++python3 sgs-db.py animations list --family hover-scale
++python3 sgs-db.py animations get hover-scale-standard
++python3 sgs-db.py stats        # includes "Motion presets: N"
+ ```
+ 
+-## Next Steps
++`animations add` prints where to edit instead of writing: only the seeders write the framework DB.
++
++## Wiki pages
+ 
+-1. Populate remaining animations as needed (shake, scale-down, etc.)
+-2. Add animation tokens to block attributes (hover effects, entrance reveals)
+-3. Create animation control UI components in block editor
+-4. Document animation best practices in main ARCHITECTURE.md
+-5. Add animation presets to theme.json theme-wide defaults
++`wiki/animations/` holds one markdown page per classic keyframe animation (frontmatter: name, category, duration, easing; keyframes CSS block; usage notes). They are reference pages and are not generated from the table.

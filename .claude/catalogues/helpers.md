@@ -354,14 +354,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_mega_render_context` | `function sgs_mega_render_context(): string` | The context of the mega panel currently rendering: '' (bar, or no panel on the stack) or 'drawer'. |
 | `sgs_mega_render_item_panel` | `function sgs_mega_render_item_panel( array $item, string $viewall_class, string $context = '' ): ?string` | Render a mega menu item's panel with its "View all" fallback, for either menu fork. One path for the bar and the drawer. |
 
-#### `includes/helpers-motion-easing.php` — 4 function(s)
+#### `includes/helpers-motion-easing.php` — 3 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_motion_easing_values` | `function sgs_motion_easing_values(): array` | Every named easing value, in editor order. Mirrors the JSON enums. |
-| `sgs_motion_valid_cubic_bezier` | `function sgs_motion_valid_cubic_bezier( string $value ): bool` | Validate a hand-typed `cubic-bezier(x1, y1, x2, y2)` curve. |
 | `sgs_motion_easing_css` | `function sgs_motion_easing_css( string $value, string $custom = '', string $fallback = 'ease' ): string` | Resolve a named easing (plus its custom curve) to a CSS easing function. |
-| `sgs_motion_ms` | `function sgs_motion_ms( $raw, int $default, int $max = 3000 ): int` | Clamp a duration attribute to 0..$max whole milliseconds. |
+| `sgs_flat_duration_ms` | `function sgs_flat_duration_ms( $raw, int $default, int $max = 3000 ): int` | Read a flat millisecond attribute (a nav, cart, icon or header duration) as whole milliseconds. |
 
 #### `includes/helpers-nav-drawer-motion.php` — 5 function(s)
 
@@ -704,7 +703,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). |
 
-**69 files, 344 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**69 files, 343 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -736,7 +735,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `MediaGalleryPicker.js` | `MediaGalleryPicker (default)` | MediaGalleryPicker — shared bulk multi-select media component for SGS blocks. |
 | `MediaPicker.js` | `MediaPicker (default)` | MediaPicker — shared media-slot component for SGS blocks. |
 | `MediaSizingPanel.js` | `MediaSizingPanel (default)`, `RATIO_OPTIONS` | MediaSizingPanel — the shared "media size & crop" panel (C19, 2026-08-27). |
-| `MotionEasingControl.js` | `MotionEasingControl (default)`, `isValidCubicBezier`, `motionEasingCss`… | MotionEasingControl: the shared named-easing picker for nav motion (Wave 3C U-5). One list read by the burger morph, the drawer… |
+| `MotionEasingControl.js` | `MotionEasingControl (default)`, `motionEasingCss`, `MOTION_EASING_OPTIONS`… | MotionEasingControl: the shared named-easing picker for nav motion (Wave 3C U-5). One list read by the burger morph, the drawer… |
 | `ParticleTrailRowControls.js` | `ParticleTrailRowControls` | ParticleTrailRowControls — shared particle-trail (FR-38-32) controls for blocks that reach the effect via a block-private escape… |
 | `ResponsiveBoxControl.js` | `ResponsiveBoxControl (default)`, `ResponsiveBorderRadiusControl`, `BOX_UNITS`… | ResponsiveBoxControl / ResponsiveBorderRadiusControl — shared responsive box-family editor controls (Box-object interface… |
 | `ResponsiveBoxControls.js` | `ResponsiveBoxControls (default)` | ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel. |

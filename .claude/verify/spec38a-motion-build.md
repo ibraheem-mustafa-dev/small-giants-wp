@@ -2,20 +2,20 @@
 
 Reference: `.claude/plans/2026-10-12-spec38a-motion-build.md` (spec `.claude/specs/38A-SGS-MOTION-MODEL.md`). Generated 2026-10-12; STATUS is updated by handoff reconciliation. A phase passes when every row passes.
 
-## M0 — Baseline before the support registration (PENDING)
+## M0 — Baseline before the support registration (PASSED 2026-10-13)
 
 | Criterion | Command | Expected | STATUS |
 |---|---|---|---|
-| Baseline committed before the support registration | `git merge-base --is-ancestor $(git log --format=%h -1 --diff-filter=A -- plugins/sgs-blocks/scripts/perf/editor-typing-baseline.json) $(git log --format=%h -1 --diff-filter=A -- plugins/sgs-blocks/includes/motion/support-registration.php)` | exit 0 | PENDING |
+| Baseline committed before the support registration | `git merge-base --is-ancestor $(git log --format=%h -1 --diff-filter=A -- plugins/sgs-blocks/scripts/perf/editor-typing-baseline.json) $(git log --format=%h -1 --diff-filter=A -- plugins/sgs-blocks/includes/motion/support-registration.php)` | exit 0 | PASS (9a9995d97 before 1277cd09e) |
 
 ## M1 — Foundations (PENDING)
 
 | Criterion | Command | Expected | STATUS |
 |---|---|---|---|
-| Schema check green and self-test catches plants | `python plugins/sgs-blocks/scripts/check-motion-schema.py --check && python plugins/sgs-blocks/scripts/check-motion-schema.py --self-test` | exit 0, every plant reported caught | PENDING |
-| Old easing and ms helpers gone | `git grep -n "sgs_motion_valid_cubic_bezier\|sgs_motion_ms" -- plugins` | no output | PENDING |
-| `sgsMotion` never declared in a block.json | `git grep -n '"sgsMotion"' -- 'plugins/sgs-blocks/src/blocks/*/block.json'` | no output | PENDING |
-| Every motion gate passes | `python plugins/sgs-blocks/scripts/run-motion-gates.py` | exit 0 | PENDING |
+| Schema check green and self-test catches plants | `python plugins/sgs-blocks/scripts/check-motion-schema.py --check && python plugins/sgs-blocks/scripts/check-motion-schema.py --self-test` | exit 0, every plant reported caught | PASS (2026-10-13) |
+| Old easing and ms helpers gone | `git grep -n "sgs_motion_valid_cubic_bezier\|sgs_motion_ms" -- plugins` | no output | PASS (2026-10-13) |
+| `sgsMotion` never declared in a block.json | `git grep -n '"sgsMotion"' -- 'plugins/sgs-blocks/src/blocks/*/block.json'` | no output | PASS (2026-10-13) |
+| Every motion gate passes | `python plugins/sgs-blocks/scripts/run-motion-gates.py` | exit 0 | PASS (10/10, 2026-10-13; recheck at M1 close) |
 | One easing list definition | `git grep -nE "const (MOTION_EASING_OPTIONS\|EASING_OPTIONS\|FX_EASE_OPTIONS) =" -- plugins/sgs-blocks/src` | one line, in `src/components/motion/EasingAtom.js` | PENDING |
 | Motion field rows (decision 3 option B; under option A count `block_attributes` rows with `source='sgs-motion'`) | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT COUNT(*) FROM motion_field_rows"` and `python plugins/sgs-blocks/scripts/check-motion-db-rows.py --check` | non-zero; exit 0 | PENDING |
 | Presets table in, old table out | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT name FROM sqlite_master WHERE name IN ('motion_presets','animation_tokens')"` | `motion_presets` only | PENDING |
