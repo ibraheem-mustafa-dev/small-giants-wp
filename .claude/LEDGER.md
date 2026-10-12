@@ -53,7 +53,7 @@ Open owed items:
 - **Icon unification and spacing control** (`plans/archive/2026-10-08-icon-unification-and-spacing-control.md`): `sgs/icon` is the one icon block and `sgs/social-icons` its Site Info row; open points are in Spec 47 §7.
 - **Register rows:** every row carries a Lane and a hash in the fix register; the wiring gate blocks new gaps only (baseline `plugins/sgs-blocks/scripts/wiring-fingerprint-baseline.json`).
 
-**Bean-only tasks:** the register's Bean rulings (see Parked); what to do with `sites/mamas-munches/theme-snapshot.json`'s uncommitted change: it is the redesign draft's palette (logo pink `#EE8088`, logo yellow `#F9CF6E`) written into the canary's snapshot, drops `accent-dark`, fails three snapshot gates and so blocks every local `npm run build` (deploys build at HEAD and are unaffected); the redesign now has its own folder and extracted snapshot; the trademark sentence in the Site Info copyright text (register 46).
+**Bean-only tasks:** the register's Bean rulings (see Parked); the trademark sentence in the Site Info copyright text (register 46).
 
 ### Front H: Claude Design handover standard and the unified cloning spec
 
@@ -63,19 +63,21 @@ and hardened by a final five-persona council (`.claude/reports/2026-10-11-spec48
 from stage 1: a value matrix gives every kind of value a read, write, check and gap rule, checked code to code with the
 render confirming; a gap reaches the framework list only through gates G0-G7. Spec 32 is slim (3.1.0: styling contract
 and snapshot format, new FR-32-14 to FR-32-20); Spec 27 gains FR-30-16/17. `scripts/check-spec-id-landing.py` proves
-every kept ID lands. Appendix B (the Indus critical path) is under way, scripts only, nothing deployed (HEAD
-`a41608067`): the route has its own pinned packages (`npm ci` in `scripts/computed-route`), a per-site default paint,
+every kept ID lands. Appendix B (the Indus critical path) is under way. Phase 2, the Spec 32 framework halves (steps 9 to 12), is done and
+live on `indus-test` at `3e1bdd9e9`: five palette slugs and a container Section ground (FR-32-14), per-tier section
+padding and gutter tokens read by `theme/sgs-theme/assets/css/layout-tokens.css` (FR-32-15), and `sgsCustomCss` parsed
+and scoped per instance (FR-32-20), each verified live. On the route side (HEAD `a41608067` at the last route handoff): the route has its own pinned packages (`npm ci` in `scripts/computed-route`), a per-site default paint,
 accepted value forms (`clamp`, `vw`, `repeat`), the 1440 desktop tier, the `container.layout` resolver fixes, portable
 calibration fixtures and a stage-0 command; the Indus mirror `local-indus` (port 8083) exists. Route suite 924/927 (the
 3 known `lint.test.mjs` brandName failures). Stage 0 has 13 of 17 Indus blocks current; four slot maps stay stale
 because recalibrating them on Indus would drop settings Eye Care reaches (plan step 8). Spec 48A v0.1 with `handoff-check.mjs`; the Indus and Mama's exports in `sites/<client>/handoff/`
 pass it (repackaged 2026-10-11 by `handoff-repackage.mjs`; no design change since export).
 **Blockers:** stage 0's exit (Appendix B step 8) waits on those four blocks' missing calibration content; nothing
-else blocks the framework lane (session B) or the intake lane (session C). **Time-critical:** the standalone Claude
+else blocks the intake lane (session C). **Time-critical:** the standalone Claude
 Design site deletes its projects on 14 December 2026; export every project as a "Project archive" and test the
 artifact-based Claude Design once before then (plan B0; Spec 48A goes to 1.0 after it).
-**Resume from:** `plans/2026-10-11-spec48-indus-build.md` Phase 1 step 8 (route lane), plus Phase 2 and Phase 3 in
-their own sessions from `.claude/prompts/2026-10-11-spec48-framework-lane.md` and `…-intake-lane.md` and, as a separate session, B5 (mirror the live
+**Resume from:** `plans/2026-10-11-spec48-indus-build.md` Phase 1 step 8 (route lane), plus Phase 3 in its own
+session from `.claude/prompts/2026-10-11-spec48-intake-lane.md` and, as a separate session, B5 (mirror the live
 Eye Care site into its draft).
 **Bean-only tasks:** B0.
 

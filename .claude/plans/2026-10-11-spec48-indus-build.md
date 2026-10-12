@@ -23,7 +23,7 @@ and the stage-0 calibration baseline is written. Steps 13 to 25 are not started 
 |---|---|---|---|---|
 | Route | session A (the one that wrote this plan) | 3 → 5 → 6 → 7 → 8 | 8 needs 4 | 3 h 15 |
 | Mirror | session A, background subagent | 4, later 2 and 16 | nothing | 45 min, then 5 and 30 min |
-| Framework | session B, prompt `.claude/prompts/2026-10-11-spec48-framework-lane.md` | 9 → 10 → 11 → 12 (queued) | nothing | 2 h 55 |
+| Framework | session B (done 2026-10-12) | 9 → 10 → 11 → 12 | nothing | 2 h 55 |
 | Intake | session C, prompt `.claude/prompts/2026-10-11-spec48-intake-lane.md` | 13 → 14 → 14b | 3 pushed | 6 h |
 
 The lanes join at step 15 (needs 8, 9, 14 and 14b). The critical path is the intake lane (3, 13, 14: about 5 h 45 by the
