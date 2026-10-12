@@ -390,18 +390,19 @@ stage 1's skeleton proposal adds outside the fixed set is calibrated in that sam
 Done when: a stage-0 run on Indus writes the baseline file, refuses to report a block whose deploy hash differs from its
 cache as calibrated, writes no default-paint file, and `container.gridTemplateColumns` is no longer `dead`.
 Status: the command is built (2026-10-11: `stage0.mjs`, `lib/stage0.mjs`, `data/calibration-baseline.schema.json`,
-`calibrate.mjs --slot-map-only`, `tests/stage0.test.mjs`); the Indus run is blocked by site-bound fixtures. The block
+`calibrate.mjs --slot-map-only`, `tests/stage0.test.mjs`); Indus has 13 of its 17 blocks current and 4 stale. The block
 set maps each surface kind to the `sgs/` blocks whose slug is the kind or ends in `-<kind>`, because `block_composition`
 has no surface-kind column; for Indus that gives 17 blocks (the six layout and content blocks, plus accordion,
 choice-flow-result, form, form-step, mega-panel, nav-bar-menu, nav-drawer, nav-drawer-menu, site-footer, site-header and
 wishlist-panel, the last a false match on `-panel`). Card-grid, hero and trust-bar come from `page` surfaces, which no
-block is named for, so they are calibrated by the stage 2 exit rule above. **Blocker (proven 2026-10-11):**
-`calibration-fixtures.json` carries one site's IDs: nav-bar-menu, nav-drawer-menu and site-header use Eye Care's
-`nav_menu` term 96, menu item 195 and drawer 203; media uses attachment 202, nav-drawer logo 4080; buybox, product-card,
-responsive-logo, audio, before-after, measured-diagram and diagram-dimension carry IDs too. On `local-indus`, which has
-no menus, those blocks rendered empty, so the library-wide slot maps lost settings (nav-bar-menu 90 to 76, nav-drawer-menu
-52 to 36) and gained dead ones; the five affected slot maps were restored from the copy taken before the run and stay
-stale until the fixtures resolve per site. `container.gridTemplateColumns` is no longer dead (2026-10-11: the marker wrote a
+block is named for, so they are calibrated by the stage 2 exit rule above. Fixtures are portable (2026-10-11: tokens resolved per
+calibration target, `lib/calibration-refs.mjs`; `provision-calibration-refs.mjs` created the `indus-test` calibration
+menu 3, item 26, drawer 20 and logo 29). The Indus run then improved nav-drawer-menu (52 to 70 settings, kept) but
+would have cost four library-wide slot maps settings Eye Care's run reaches, so those four were restored and stay
+stale: nav-bar-menu (the six `itemBadge*` and `itemTextDecorationHover`: the calibration menu has no badge item),
+site-header (`backgroundAttachment`, `backgroundSize`, `bgHoverZoomScale`), media (eleven `videoTime*` settings dead) and
+nav-drawer (`chromeSlotFontStyle`; `anchorOffset` and `chromeRatingColour` dead). Their causes are not yet proven. No
+baseline is kept until the four are current. `container.gridTemplateColumns` is no longer dead (2026-10-11: the marker wrote a
 number, which `SGS_Container_Wrapper` ignores as a template; the `repeat` probe writes a string, FR-48-2), and every
 `:count` setting is now calibrated (it was dropped for having no readable property). The two `container.layout` ties are fixed
 (`lib/resolve.mjs::resolve` drops a yes/no setting whose unreached widths keep a default paint the draft differs from;

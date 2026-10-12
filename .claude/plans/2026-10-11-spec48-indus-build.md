@@ -115,10 +115,12 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
   `sites/indus-foods/build/intake/calibration-baseline.json` (validating against its Appendix C schema), refuses to
   report a block whose deploy hash differs from its cache as calibrated, and writes no default-paint file. Stage 0's
   exit (FR-48-16) then holds.
-  Command built 2026-10-11 (`stage0.mjs`); the live run passed its own checks but proved the calibration fixtures are
-  bound to Eye Care's IDs (FR-48-3 status), so no baseline is kept. **Next: portable fixtures** (fixture references
-  resolved per calibration target, and a calibration menu, drawer and media created by Appendix A step 13 on each
-  test site), then re-run stage 0. Needs Bean's approval (a shared calibration change).
+  Command built and fixtures portable (2026-10-11); 13 of 17 Indus blocks current, nav-drawer-menu recalibrated on
+  `local-indus`. **Next:** prove why nav-bar-menu, site-header, media and nav-drawer lose settings on `local-indus`
+  that Eye Care's run reaches (FR-48-3 status lists them; likely missing calibration content such as a badge menu
+  item, a header background image or a video), extend `provision-calibration-refs.mjs`, then re-run stage 0 with the
+  cache backed up and every block's settings diffed. Add a guard so a `--recalibrate` that would drop a setting the
+  existing slot map reaches is refused, not written (a slot map is shared by every client).
 
 ### Phase 2. Spec 32 framework halves (steps 9 to 12, session B)
 - [ ] **9. Palette slugs.** FR-32-14's done-when (five slugs in the framework palette and every snapshot with today's
