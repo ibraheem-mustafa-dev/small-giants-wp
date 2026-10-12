@@ -17,6 +17,7 @@ import { useMergeRefs } from "@wordpress/compose";
 import { useSeparatorOverlay } from "../../shared/separators/useSeparatorOverlay";
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl, SgsSeparatorControl } from "../../components";
 import ScrollSidewaysPanel from "./components/ScrollSidewaysPanel";
+import { hasContentBand, sectionPaddingDefaults } from "../../utils/section-padding";
 import { resolveOnTiers } from "../../utils/responsive";
 import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, backgroundPreview, svgBackgroundPreview, tierBoxLonghands, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, flattenPresetSetting, separatorsFlowPreview, typographyPreviewStyle, textIndentPreviewCss, sgsBorderPreview } from "../../utils";
 import ShapeDividerPreview from "../../components/ShapeDividerPreview";
@@ -358,10 +359,24 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     } );
   }
 
+  // Section padding default (Spec 32 FR-32-15): a container with a content band that sits in no other such
+  // container takes the snapshot's per-tier section padding token (theme layout-tokens.css), as on the page.
+  const nestedInBand = useSelect(
+    ( select ) => {
+      const editor = select( "core/block-editor" );
+      return editor
+        .getBlockParentsByBlockName( clientId, "sgs/container" )
+        .some( ( id ) => hasContentBand( editor.getBlockAttributes( id ) ) );
+    },
+    [ clientId ]
+  );
+  const sectionPad = hasContentBand( attributes ) && ! nestedInBand;
+
   const className = [
     "sgs-container",
     layout && `sgs-container--${layout}`,
     'section' === attributes.ground && 'sgs-container--ground-section',
+    sectionPad && 'sgs-container--section-pad',
   ]
     .filter(Boolean)
     .join(" ");
@@ -676,12 +691,13 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
             value={ attributes.padding }
             onChange={ ( obj ) => setAttributes( { padding: obj } ) }
           >
-            { ( { ownValue, setOwnValue } ) => (
+            { ( { tier, ownValue, setOwnValue } ) => (
               <SgsBoxControl
                 label={ __( "Padding", "sgs-blocks" ) }
                 values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
                 units={ BOX_UNITS }
                 presets
+                defaults={ sectionPad ? sectionPaddingDefaults( customSettings, tier ) : undefined }
                 onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
               />
             ) }

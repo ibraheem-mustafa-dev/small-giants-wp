@@ -1,0 +1,54 @@
+/**
+ * Per-tier section padding and side gutter (Spec 32 FR-32-15).
+ *
+ * Each client's snapshot sets six tokens in `settings.custom`, printed by WordPress as
+ * `--wp--custom--section--padding--{mobile,tablet,desktop}` and `--wp--custom--gutter--{mobile,tablet,desktop}`.
+ * This file is their only reader, so a section's padding and the site gutter change at each device tier
+ * (Mobile < 768px, Tablet 768-1023px, Desktop >= 1024px) with no per-block setting.
+ *
+ * GUTTER. WordPress prints `--wp--style--root--padding-left/right` on `body` from `styles.spacing.padding`,
+ * and its `.has-global-padding` rule (printed when `useRootPaddingAwareAlignments` is on) reads them;
+ * `SGS_Container_Wrapper` gives that class to a container with a content band. Redefining the two properties
+ * per tier here moves every gutter at once. `:root:root body` (0,2,1) beats the `body` declaration on
+ * specificity, not on enqueue order.
+ *
+ * SECTION PADDING. `SGS_Container_Wrapper` gives `sgs-container--section-pad` to a section-kind container with a
+ * content band (the same gate as the gutter). A section inside another such section takes none, so nested
+ * sections never compound. `:where()` keeps the rule at zero specificity: any padding the client sets on the
+ * block (a per-instance class rule) wins on every side and tier it sets. Top and bottom are written as longhands
+ * so the minifier cannot fold them into a shorthand.
+ */
+
+:root:root body {
+	--wp--style--root--padding-left: var(--wp--custom--gutter--mobile);
+	--wp--style--root--padding-right: var(--wp--custom--gutter--mobile);
+}
+
+:where(.sgs-container--section-pad:not(.sgs-container--section-pad .sgs-container--section-pad)) {
+	padding-top: var(--wp--custom--section--padding--mobile, 0);
+	padding-bottom: var(--wp--custom--section--padding--mobile, 0);
+}
+
+@media (min-width: 768px) {
+	:root:root body {
+		--wp--style--root--padding-left: var(--wp--custom--gutter--tablet);
+		--wp--style--root--padding-right: var(--wp--custom--gutter--tablet);
+	}
+
+	:where(.sgs-container--section-pad:not(.sgs-container--section-pad .sgs-container--section-pad)) {
+		padding-top: var(--wp--custom--section--padding--tablet, 0);
+		padding-bottom: var(--wp--custom--section--padding--tablet, 0);
+	}
+}
+
+@media (min-width: 1024px) {
+	:root:root body {
+		--wp--style--root--padding-left: var(--wp--custom--gutter--desktop);
+		--wp--style--root--padding-right: var(--wp--custom--gutter--desktop);
+	}
+
+	:where(.sgs-container--section-pad:not(.sgs-container--section-pad .sgs-container--section-pad)) {
+		padding-top: var(--wp--custom--section--padding--desktop, 0);
+		padding-bottom: var(--wp--custom--section--padding--desktop, 0);
+	}
+}

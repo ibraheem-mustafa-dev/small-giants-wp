@@ -676,6 +676,18 @@
           "line-width": "1.4px",
           "extension-width": "1px"
         }
+      },
+      "section": {
+        "padding": {
+          "mobile": "0",
+          "tablet": "0",
+          "desktop": "0"
+        }
+      },
+      "gutter": {
+        "mobile": "52px",
+        "tablet": "52px",
+        "desktop": "52px"
       }
     },
     "appearanceTools": true,

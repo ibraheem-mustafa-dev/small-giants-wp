@@ -267,6 +267,18 @@
       "sgs": {
         "headerPattern": "sgs/framework-header-default",
         "footerPattern": "sgs/framework-footer-default"
+      },
+      "section": {
+        "padding": {
+          "mobile": "0",
+          "tablet": "0",
+          "desktop": "0"
+        }
+      },
+      "gutter": {
+        "mobile": "0",
+        "tablet": "0",
+        "desktop": "0"
       }
     }
   },

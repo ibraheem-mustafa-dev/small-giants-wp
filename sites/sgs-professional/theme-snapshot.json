@@ -84,7 +84,19 @@
         "hard": "6px 6px 0px 0px var(--wp--custom--shadow-colour)",
         "pressed": "pressed"
       },
-      "shadowColour": "var(--wp--preset--color--text)"
+      "shadowColour": "var(--wp--preset--color--text)",
+      "section": {
+        "padding": {
+          "mobile": "0",
+          "tablet": "0",
+          "desktop": "0"
+        }
+      },
+      "gutter": {
+        "mobile": "0",
+        "tablet": "0",
+        "desktop": "0"
+      }
     },
     "color": {
       "palette": [

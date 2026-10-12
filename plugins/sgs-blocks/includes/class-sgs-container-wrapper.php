@@ -1689,6 +1689,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$classes[] = 'has-global-padding';
 			}
 
+			// Section padding default (Spec 32 FR-32-15): a section-kind container with a content
+			// band (page content, the same gate as the gutter above) takes the snapshot's per-tier
+			// `--wp--custom--section--padding--{tier}` as its top and bottom padding through
+			// theme/sgs-theme/assets/css/layout-tokens.css. That rule is zero-specificity, so padding
+			// the client sets wins, and it skips a section nested in another, so nesting never compounds.
+			if ( $is_section && $has_band_props && false !== $opt_wrap_inner ) {
+				$classes[] = 'sgs-container--section-pad';
+			}
+
 			// Composite block class (e.g. 'sgs-hero') is appended directly after the
 			// base class so composites carry both sgs-container + their own class.
 			if ( '' !== $opt_block_class ) {

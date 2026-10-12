@@ -550,6 +550,18 @@
       },
       "maxWidth": {
         "narrow-420": "420px"
+      },
+      "section": {
+        "padding": {
+          "mobile": "0",
+          "tablet": "0",
+          "desktop": "0"
+        }
+      },
+      "gutter": {
+        "mobile": "var(--wp--preset--spacing--40)",
+        "tablet": "var(--wp--preset--spacing--40)",
+        "desktop": "var(--wp--preset--spacing--40)"
       }
     },
     "appearanceTools": true,

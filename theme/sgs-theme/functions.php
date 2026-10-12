@@ -135,6 +135,9 @@ function setup(): void {
 	// well as the front end, or an operator resizing the canvas would see desktop
 	// heading sizes at every width while the published page shrank them.
 	add_editor_style( 'assets/css/type-scale.css' );
+	// Per-tier section padding and gutter tokens (Spec 32 FR-32-15), so the canvas
+	// pads sections as the page does at each device width.
+	add_editor_style( 'assets/css/layout-tokens.css' );
 }
 add_action( 'after_setup_theme', __NAMESPACE__ . '\setup' );
 
@@ -438,6 +441,15 @@ function enqueue_styles(): void {
 		get_theme_file_uri( 'assets/css/type-scale.css' ),
 		array(),
 		asset_version( 'assets/css/type-scale.css', $theme_version )
+	);
+
+	// Per-tier section padding and side gutter (Spec 32 FR-32-15): the only reader of
+	// the snapshot's settings.custom.section.padding.* and settings.custom.gutter.* tokens.
+	wp_enqueue_style(
+		'sgs-layout-tokens',
+		get_theme_file_uri( 'assets/css/layout-tokens.css' ),
+		array(),
+		asset_version( 'assets/css/layout-tokens.css', $theme_version )
 	);
 
 	// Per-variation stylesheet enqueue DELETED 2026-05-22 (Phase 5a Decision 18).
