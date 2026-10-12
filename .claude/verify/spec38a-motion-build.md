@@ -65,7 +65,7 @@ Reference: `.claude/plans/2026-10-12-spec38a-motion-build.md` (spec `.claude/spe
 | Criterion | Command | Expected | STATUS |
 |---|---|---|---|
 | No old attribute in code or protected content | `python plugins/sgs-blocks/scripts/migrate-motion/migrate_motion.py --check` (code, then `--site` for each target) | exit 0 | PENDING |
-| Nav index ladders gone | `git grep -nE "sibling-index\(\|sibling-count\(\|--sgs-(g\|gr\|nd-last-)?i:" -- plugins/sgs-blocks/src/blocks/nav-bar-menu plugins/sgs-blocks/src/blocks/nav-drawer plugins/sgs-blocks/src/blocks/nav-drawer-menu` | no output | PENDING |
+| Nav index ladders gone | `git grep -nE "sibling-index\(\|sibling-count\(\|--sgs-(i\|gi\|gri\|ri\|nd-last-i\|ndm-si):" -- plugins/sgs-blocks/src/blocks/nav-bar-menu plugins/sgs-blocks/src/blocks/nav-drawer plugins/sgs-blocks/src/blocks/nav-drawer-menu` | no output | PENDING |
 | Old runtimes deleted | `ls plugins/sgs-blocks/src/blocks/extensions/fx.js plugins/sgs-blocks/src/blocks/extensions/animation.js plugins/sgs-blocks/assets/js/tilt-3d.js` | all three missing | PENDING |
 | No client names in code | `python scripts/check-no-client-names.py --check` | exit 0 | PENDING |
 | Bean's final sign-off (Gate 9) | cropped before-and-after pairs at 1440, 768 and 375 | match | PENDING |
