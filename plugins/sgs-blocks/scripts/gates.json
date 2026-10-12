@@ -1564,21 +1564,21 @@
     "order": 174
   },
   {
-    "id": "test-custom-css-scope-php",
-    "cmd": "php tests/php/run-custom-css-scope-cases-standalone.php",
-    "tier": "fast",
-    "added_D": null,
-    "added_commit": null,
-    "budget_ms": 500,
-    "order": 175
-  },
-  {
-    "id": "test-custom-css-scope-js",
+    "id": "test-custom-css-scope",
     "cmd": "node scripts/tests/test-custom-css-scope-js.mjs",
     "tier": "fast",
     "added_D": null,
     "added_commit": null,
     "budget_ms": 500,
     "order": 176
+  },
+  {
+    "id": "check-section-gutter-tokens",
+    "cmd": "python scripts/migrate-section-gutter-tokens.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 177
   }
 ]

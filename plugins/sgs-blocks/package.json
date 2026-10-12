@@ -112,6 +112,7 @@
     "check:preset-token-naming": "python scripts/check-preset-token-naming.py --check",
     "check:palette-slug-refs": "python scripts/check-palette-slug-refs.py --check",
     "check:snapshot-palette-roster": "python scripts/check-snapshot-palette-roster.py --check",
+    "check:section-gutter-tokens": "python scripts/migrate-section-gutter-tokens.py --check",
     "audit:stage8": "node scripts/stage8-audit.js",
     "check:vacuous-guards": "python scripts/remove-vacuous-style-engine-guard.py --check",
     "check:ksort-before-hash": "python scripts/check-ksort-before-hash.py --check",

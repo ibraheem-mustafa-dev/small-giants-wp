@@ -300,9 +300,17 @@ def test_fetch_reports_found_absent_or_error_from_the_ssh_result(pts, monkeypatc
 # 3. Exit code — main() with every network / SSH / disk-writing function stubbed
 # ---------------------------------------------------------------------------
 def _full_roster_snap(pts) -> dict:
-    """A snapshot carrying every framework palette slug (the push guard's precondition)."""
+    """A snapshot carrying every framework palette slug and layout token (the push guard's precondition)."""
     roster = pts.palette_roster.framework_roster()
-    return _snap([{"slug": s, "color": "#112233", "name": s} for s in roster])
+    snap = _snap([{"slug": s, "color": "#112233", "name": s} for s in roster])
+    custom = snap.setdefault("settings", {}).setdefault("custom", {})
+    for path in pts.layout_tokens.framework_layout_tokens():
+        node = custom
+        keys = path.split(".")
+        for key in keys[:-1]:
+            node = node.setdefault(key, {})
+        node[keys[-1]] = "0"
+    return snap
 
 
 def _run_main(pts, monkeypatch, *, server, gs_state, gs_body, post_ok=True, extra_args=(),
@@ -451,6 +459,13 @@ def test_roster_guard_names_every_missing_slug(pts):
     trimmed = copy.deepcopy(full)
     _pal(trimmed)[:] = [e for e in _pal(trimmed) if e["slug"] not in ("link-hover", "section")]
     assert pts.roster_guard(trimmed) == ["link-hover", "section"]
+
+
+def test_roster_guard_names_a_missing_layout_token(pts):
+    trimmed = _full_roster_snap(pts)
+    del trimmed["settings"]["custom"]["gutter"]["tablet"]
+    del trimmed["settings"]["custom"]["section"]["padding"]["mobile"]
+    assert pts.roster_guard(trimmed) == ["custom.section.padding.mobile", "custom.gutter.tablet"]
 
 
 def test_push_refuses_a_snapshot_missing_a_roster_slug_before_any_network_action(pts, monkeypatch, capsys):
