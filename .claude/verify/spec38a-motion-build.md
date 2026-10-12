@@ -1,0 +1,69 @@
+# Verification Criteria — Spec 38A build (the SGS motion model)
+
+Reference: `.claude/plans/2026-10-12-spec38a-motion-build.md` (spec `.claude/specs/38A-SGS-MOTION-MODEL.md`). Generated 2026-10-12; STATUS is updated by handoff reconciliation. A phase passes when every row passes.
+
+## M0 — Baseline before the support registration (PENDING)
+
+| Criterion | Command | Expected | STATUS |
+|---|---|---|---|
+| Baseline committed before the support registration | `git merge-base --is-ancestor $(git log --format=%h -1 --diff-filter=A -- plugins/sgs-blocks/scripts/perf/editor-typing-baseline.json) $(git log --format=%h -1 --diff-filter=A -- plugins/sgs-blocks/includes/motion/support-registration.php)` | exit 0 | PENDING |
+
+## M1 — Foundations (PENDING)
+
+| Criterion | Command | Expected | STATUS |
+|---|---|---|---|
+| Schema check green and self-test catches plants | `python plugins/sgs-blocks/scripts/check-motion-schema.py --check && python plugins/sgs-blocks/scripts/check-motion-schema.py --self-test` | exit 0, every plant reported caught | PENDING |
+| Old easing and ms helpers gone | `git grep -n "sgs_motion_valid_cubic_bezier\|sgs_motion_ms" -- plugins` | no output | PENDING |
+| `sgsMotion` never declared in a block.json | `git grep -n '"sgsMotion"' -- 'plugins/sgs-blocks/src/blocks/*/block.json'` | no output | PENDING |
+| Every motion gate passes | `python plugins/sgs-blocks/scripts/run-motion-gates.py` | exit 0 | PENDING |
+| One easing list definition | `git grep -nE "const (MOTION_EASING_OPTIONS\|EASING_OPTIONS\|FX_EASE_OPTIONS) =" -- plugins/sgs-blocks/src` | one line, in `src/components/motion/EasingAtom.js` | PENDING |
+| Presets table in, old table out | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT name FROM sqlite_master WHERE name IN ('motion_presets','animation_tokens')"` | `motion_presets` only | PENDING |
+| Spec status lines | `grep -nE "^- \*\*FR-38A-(1\|3\|14\|15\|55\|56) " .claude/specs/38A-SGS-MOTION-MODEL.md` | each says built | PENDING |
+
+## M2 — Renderer and runtime (PENDING)
+
+| Criterion | Command | Expected | STATUS |
+|---|---|---|---|
+| Renderer and refusal tests | `cd plugins/sgs-blocks && vendor/bin/phpunit --filter "MotionRendererTest\|MotionRefusalsTest"` | pass | PENDING |
+| Runtime stagger removed, formula frozen | `git grep -n staggerOffset -- plugins; ls plugins/sgs-blocks/tests/fixtures/motion/legacy-stagger-offset.json` | no grep output; file exists | PENDING |
+| Scripts write custom properties only | `python plugins/sgs-blocks/scripts/check-motion-style-writes.py --check` | exit 0 (and `--self-test` exit 1) | PENDING |
+| Live model probe, three engines | `node plugins/sgs-blocks/scripts/motion-qa/probe-motion-model.mjs` | pass, each negative control red | PENDING |
+| No inline styles | `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` | exit 0 | PENDING |
+
+## M3 — Inspector (PENDING)
+
+| Criterion | Command | Expected | STATUS |
+|---|---|---|---|
+| Three panels and the shell exist | `ls plugins/sgs-blocks/src/blocks/extensions/motion/{HoverPanel,EntrancePanel,EffectsPanel,MotionPanels}.js` | four files | PENDING |
+| Control sets match §5.4 | `python plugins/sgs-blocks/scripts/check-motion-control-sets.py --check` | exit 0 | PENDING |
+| Per-device, canvas and a11y probes | `node plugins/sgs-blocks/scripts/motion-qa/probe-motion-per-device.mjs && node plugins/sgs-blocks/scripts/motion-qa/probe-editor-canvas.mjs && node plugins/sgs-blocks/scripts/motion-qa/probe-motion-a11y.mjs` | pass, negative controls red | PENDING |
+| Editor typing within 10% | `node plugins/sgs-blocks/scripts/perf/measure-editor-typing.mjs --compare plugins/sgs-blocks/scripts/perf/editor-typing-baseline.json` | exit 0 | PENDING |
+| Bean's inspector sign-off (Gate 5) | Bean sets a hover lift, a part entrance and a grid stagger on a canary card | done without help | PENDING |
+
+## M4 — Stagger and nav motion (PENDING)
+
+| Criterion | Command | Expected | STATUS |
+|---|---|---|---|
+| JS and PHP stagger parity | `php plugins/sgs-blocks/tests/php/run-motion-stagger-parity-standalone.php` | identical to the JS test cases | PENDING |
+| Stagger drift gate | `python plugins/sgs-blocks/scripts/check-motion-stagger-drift.py --check` | exit 0 (and `--self-test` exit 1) | PENDING |
+| Indus drawer and mega delays live | probe on indus-test (M4.5, M4.6) | measured equals stored: 55ms step drawer, 26ms step mega, both capped at 320ms | PENDING |
+
+## M5 — Effects fold-in (PENDING)
+
+| Criterion | Command | Expected | STATUS |
+|---|---|---|---|
+| Every exposed parameter is read by its runtime | `python plugins/sgs-blocks/scripts/check-fx-list-drift.py --check` | exit 0 | PENDING |
+| Stacked effects compose | `node plugins/sgs-blocks/scripts/motion-qa/probe-motion-stacks.mjs` | pass in three engines | PENDING |
+| Nine new effects in the picker | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT COUNT(*) FROM fx_effects WHERE in_picker=1 AND effect IN ('parallax','tilt','ripple','sheen','scroll-progress','ambient-float','marquee','ken-burns','svg-loop')"` | 9 | PENDING |
+| No motion literals | `python plugins/sgs-blocks/scripts/check-motion-literals.py --check` | exit 0 (and `--self-test` exit 1) | PENDING |
+| Motion QA on the canary | `cd plugins/sgs-blocks && npm run qa:motion` | green | PENDING |
+
+## M6 — Migration and removal (PENDING)
+
+| Criterion | Command | Expected | STATUS |
+|---|---|---|---|
+| No old attribute in code or protected content | `python plugins/sgs-blocks/scripts/migrate-motion/migrate_motion.py --check` (code, then `--site` for each target) | exit 0 | PENDING |
+| Nav index ladders gone | `git grep -nE "sibling-index\(\|sibling-count\(\|--sgs-(g\|gr\|nd-last-)?i:" -- plugins/sgs-blocks/src/blocks/nav-bar-menu plugins/sgs-blocks/src/blocks/nav-drawer plugins/sgs-blocks/src/blocks/nav-drawer-menu` | no output | PENDING |
+| Old runtimes deleted | `ls plugins/sgs-blocks/src/blocks/extensions/fx.js plugins/sgs-blocks/src/blocks/extensions/animation.js plugins/sgs-blocks/assets/js/tilt-3d.js` | all three missing | PENDING |
+| No client names in code | `python scripts/check-no-client-names.py --check` | exit 0 | PENDING |
+| Bean's final sign-off (Gate 9) | cropped before-and-after pairs at 1440, 768 and 375 | match | PENDING |
