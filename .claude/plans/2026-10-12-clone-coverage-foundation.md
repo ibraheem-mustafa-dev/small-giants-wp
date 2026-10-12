@@ -19,6 +19,11 @@ status: approved (Bean, 2026-10-12: option A), not started
 
 ## Phases
 
+### Phase 0. Standardised motion system (setup before the motion parts of this plan)
+- [ ] **0.1 Review** (running 2026-10-12, session C): a QC council of the current hover, entrance and fx implementations, their editor controls, tokens, element targeting and orchestration.
+- [ ] **0.2 Design** (brainstorming, research council, GitHub research): Bean's target is one standardised panel per motion type (hover, entrance and reveal, motion fx) on every compatible block; an effect type per element, each element customised on its own; picking a type reveals modular controls for every variable a draft can hold (for a fade: direction, distance, duration, delay, easing curve, optional presets); the same controls define site-wide motion tokens; container-level orchestration sets children's motion with an optional stagger and an order (for example row first, left to right). The current preset-heavy model is the problem: it is close to the banned hard-coded setup.
+- [ ] **0.3 Spec and build:** a Spec 38 rewrite and its plan, then the build. Phase 1 may run beside it, with every motion family in the coverage map marked as waiting on Phase 0 instead of mapped to controls that will be replaced.
+
 ### Phase 1. Capability inventory and the failing test (one session)
 - [ ] **1.1 Framework inventory.** `scripts/computed-route/capabilities.mjs` generates `data/capabilities.json` from the framework DB (read-only) and code: every block setting grouped into capability families (by role, type, enum and extension source, never a hand-written list), every extension and `supports.sgs` key, every `fx_effects` row and animation preset, every post type, template and template part, every plugin's client-facing feature, every theme-snapshot key.
 - [ ] **1.2 Draft inventory.** The same command lists what a draft can hold: every HTML element, CSS at-rule and property family, and runtime construct kind, from the Claude Design handoff method and the web platform; intake raises a review row for anything it sees that is not covered ("seen but unsupported"), so nothing is dropped silently.
@@ -33,7 +38,7 @@ status: approved (Bean, 2026-10-12: option A), not started
 - [ ] Every behaviour and content setting gets a machine-readable meaning (what it does, its trigger, its parameters) seeded from `block.json` by `sgs-update-v2.py`, so recognisers map by query, never by a hand-written list (R-31-1).
 
 ### Phase 4. Recognisers in waves (needs Phases 1 to 3)
-- [ ] One recogniser framework: a mechanism signature, read from the re-derived inventory and sampled styles, identifies a behaviour and its options and maps it to an SGS setting by DB query, or raises a named gap. Waves follow the gap list, Indus needs first. Motion and effect recognisers target the standardised motion system that `.claude/specs/38-SGS-MOTION-SYSTEM.md` is being redesigned around (Bean, 2026-10-12: one modular panel per motion type with per-element, per-variable controls and container-level orchestration with stagger and order), so they wait for that design rather than map onto today's presets.
+- [ ] One recogniser framework: a mechanism signature, read from the re-derived inventory and sampled styles, identifies a behaviour and its options and maps it to an SGS setting by DB query, or raises a named gap. Waves follow the gap list, Indus needs first. Motion and effect recognisers target the standardised motion system from Phase 0, so they wait for it rather than map onto today's presets.
 
 ## Sequencing with Indus
 - The Indus build (`.claude/plans/2026-10-11-spec48-indus-build.md`) continues through step 20 (the header slice needs mostly styling and navigation).
