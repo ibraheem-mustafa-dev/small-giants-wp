@@ -10,6 +10,8 @@
 import { SelectControl, Notice } from '@wordpress/components';
 import { NumberControl } from './primitives';
 import { __ } from '@wordpress/i18n';
+import DurationAtom from './motion/DurationAtom';
+import { clampToRange } from './motion/atom-utils';
 
 /** Clamp a custom duration to a safe range in milliseconds (mirrors includes/animation-timing-clamp.php). */
 const MAX_CUSTOM_DURATION_MS = 5000;
@@ -19,7 +21,8 @@ const MAX_CUSTOM_DISTANCE_PX = 400;
 /**
  * Clamp a value to a 0..max integer, falling back to `fallback` when the
  * value is missing or not a finite number — never lets a stray NaN or
- * out-of-range value reach the stored attribute.
+ * out-of-range value reach the stored attribute. The duration field type's
+ * clamp (`./motion/atom-utils::clampToRange`).
  *
  * @param {number|string} value    Raw input.
  * @param {number}        max      Upper bound.
@@ -27,11 +30,7 @@ const MAX_CUSTOM_DISTANCE_PX = 400;
  * @return {number} A clamped whole number.
  */
 function clamp( value, max, fallback ) {
-	const num = Number( value );
-	if ( ! Number.isFinite( num ) ) {
-		return fallback;
-	}
-	return Math.max( 0, Math.min( max, Math.round( num ) ) );
+	return clampToRange( value, 0, max, fallback );
 }
 
 const ANIMATIONS = [
@@ -97,20 +96,38 @@ function distanceOptions( animation ) {
 }
 
 /**
- * Duration options reference theme.json motion tokens:
- * settings.custom.duration.* — var(--wp--custom--duration--<value>)
+ * The duration field node this control stores: the theme's `duration` tokens (not the entrance token) or a whole
+ * number of milliseconds up to MAX_CUSTOM_DURATION_MS. Stored as the bare token key (`fast`) or the milliseconds as a
+ * string, the shape the animation observer reads.
  */
-const DURATIONS = [
-	{ label: __( 'Instant (60ms)', 'sgs-blocks' ),     value: 'instant' },
-	{ label: __( 'Fast (150ms)', 'sgs-blocks' ),        value: 'fast' },
-	{ label: __( 'Medium (300ms)', 'sgs-blocks' ),      value: 'medium' },
-	{ label: __( 'Slow (500ms)', 'sgs-blocks' ),        value: 'slow' },
-	{ label: __( 'Extra slow (800ms)', 'sgs-blocks' ),  value: 'extra-slow' },
-	{ label: __( 'Custom', 'sgs-blocks' ),              value: 'custom' },
-];
+const DURATION_NODE = {
+	$ref: '#/$defs/duration',
+	maximum: MAX_CUSTOM_DURATION_MS,
+	pattern: '^token:duration\\.[a-z-]+$',
+	'x-sgs-range': { min: 0, max: MAX_CUSTOM_DURATION_MS, unit: 'ms' },
+};
+const DURATION_TOKEN_PREFIX = 'token:duration.';
 
-/** Token values from DURATIONS, excluding the synthetic "custom" entry. */
-const DURATION_TOKENS = DURATIONS.map( ( d ) => d.value ).filter( ( v ) => 'custom' !== v );
+/** The stored duration (`fast`, `450` or empty) as a duration field value. */
+function toDurationValue( stored ) {
+	if ( ! stored ) {
+		return undefined;
+	}
+	const ms = Number( stored );
+	return Number.isFinite( ms ) && String( ms ) === String( stored ).trim()
+		? ms
+		: DURATION_TOKEN_PREFIX + stored;
+}
+
+/** A duration field value as the stored string. */
+function fromDurationValue( value ) {
+	if ( value === undefined ) {
+		return '';
+	}
+	return typeof value === 'number'
+		? String( Math.round( value ) )
+		: value.slice( DURATION_TOKEN_PREFIX.length );
+}
 
 /**
  * Easing options reference theme.json motion tokens:
@@ -141,8 +158,6 @@ export default function AnimationControl( {
 	const hasAnimation = animation && animation !== 'none';
 	const isDirectional = hasAnimation && DIRECTIONAL_EFFECTS.includes( animation );
 
-	const isCustomDuration =
-		!! animationDuration && ! DURATION_TOKENS.includes( animationDuration );
 	const isCustomDistance =
 		!! animationDistance && ! PRESET_DISTANCES.includes( animationDistance );
 
@@ -174,34 +189,13 @@ export default function AnimationControl( {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SelectControl
+					<DurationAtom
 						label={ __( 'Duration', 'sgs-blocks' ) }
-						value={ isCustomDuration ? 'custom' : ( animationDuration || 'medium' ) }
-						options={ DURATIONS }
-						onChange={ ( val ) =>
-							onChangeDuration(
-								'custom' === val
-									? String( clamp( animationDuration, MAX_CUSTOM_DURATION_MS, 300 ) )
-									: val
-							)
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						value={ toDurationValue( animationDuration ) }
+						fieldNode={ DURATION_NODE }
+						emptyLabel={ __( 'Default (Medium)', 'sgs-blocks' ) }
+						onChange={ ( next ) => onChangeDuration( fromDurationValue( next ) ) }
 					/>
-					{ isCustomDuration && (
-						<NumberControl
-							label={ __( 'Custom duration (ms)', 'sgs-blocks' ) }
-							value={ animationDuration }
-							min={ 0 }
-							max={ MAX_CUSTOM_DURATION_MS }
-							onChange={ ( val ) =>
-								onChangeDuration(
-									String( clamp( val, MAX_CUSTOM_DURATION_MS, 300 ) )
-								)
-							}
-							__next40pxDefaultSize
-						/>
-					) }
 					<SelectControl
 						label={ __( 'Easing', 'sgs-blocks' ) }
 						value={ animationEasing || 'default' }

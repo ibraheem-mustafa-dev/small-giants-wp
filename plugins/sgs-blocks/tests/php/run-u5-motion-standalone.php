@@ -76,8 +76,8 @@ foreach ( array( 'nav-drawer' => 'entryEasing', 'nav-bar-menu' => 'submenuAnimat
 	$json = json_decode( read_file( "src/blocks/$block/block.json" ), true );
 	ok( ( $json['attributes'][ $attr ]['enum'] ?? null ) === $values, "$block.$attr enum equals sgs_motion_easing_values()" );
 }
-preg_match_all( "/value: '([a-z-]+)' \\}/", read_file( 'src/components/MotionEasingControl.js' ), $m );
-ok( $m[1] === $values, 'MotionEasingControl.js options list the same values in the same order' );
+preg_match_all( "/\\bnav: '([a-z-]+)'/", read_file( 'src/components/motion/EasingAtom.js' ), $m );
+ok( $m[1] === $values, 'the Easing atom master list carries the nav vocabulary in the same values and order' );
 
 ok( 'ease-out' === sgs_motion_easing_css( 'ease-out-css' ), 'ease-out-css resolves to the CSS keyword' );
 ok( 'cubic-bezier(0.16, 0.84, 0.32, 1)' === sgs_motion_easing_css( 'drafts' ), 'drafts resolves to the drafts curve (halcyon, the wholesale-food client)' );

@@ -26,6 +26,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 import { useSettings } from '@wordpress/block-editor';
 import { SelectControl } from '@wordpress/components';
 import { UnitControl } from './primitives';
@@ -46,6 +47,12 @@ const CUSTOM_VALUE = '__custom__';
  *                                        slug string alongside a length — same
  *                                        undeclared-attr silent-discard guard
  *                                        (D338) fontSizePresets already carries.
+ * @param {Array}    [props.tokenPresets] Opt-in `[ { label, value } ]` options stored verbatim (for
+ *                                        example the motion `distance` tokens,
+ *                                        `token:distance.md`), listed after the spacing
+ *                                        scale. Default none: a caller that omits it
+ *                                        renders exactly as before. Like `presets`, only
+ *                                        pass it when the attr stores a string.
  * @param {string}   [props.help]         Passthrough to UnitControl's `help`.
  * @param {string}   [props.placeholder]  Passthrough to UnitControl's `placeholder`
  *                                        (e.g. showing an inherited tier value).
@@ -85,6 +92,7 @@ export default function SgsLengthControl( {
 	onChange,
 	units,
 	presets = false,
+	tokenPresets,
 	help,
 	placeholder,
 	hideLabelFromVision,
@@ -98,9 +106,12 @@ export default function SgsLengthControl( {
 	// dropdown simply never appeared — a false absence that looks like "the
 	// theme has no spacing scale". Normalise once, then use unguarded.
 	const [ spacingSizesRaw ] = useSettings( 'spacing.spacingSizes' );
-	const spacingSizes = flattenPresetSetting( spacingSizesRaw );
+	// With `tokenPresets` an emptied value still shows the Custom input once Custom… is picked (opt-in path only).
+	const [ customPicked, setCustomPicked ] = useState( false );
+	const spacingSizes = presets ? flattenPresetSetting( spacingSizesRaw ) : [];
+	const tokens = Array.isArray( tokenPresets ) ? tokenPresets : [];
 
-	if ( ! presets || ! spacingSizes.length ) {
+	if ( ! spacingSizes.length && ! tokens.length ) {
 		return (
 			<UnitControl
 				label={ label }
@@ -118,12 +129,21 @@ export default function SgsLengthControl( {
 		);
 	}
 
-	const isPresetValue = spacingSizes.some( ( s ) => s.slug === value );
-	const selectValue = ! value ? '' : isPresetValue ? value : CUSTOM_VALUE;
+	const isPresetValue =
+		spacingSizes.some( ( s ) => s.slug === value ) ||
+		tokens.some( ( token ) => token.value === value );
+	const keepCustom = tokens.length > 0 && customPicked;
+	let selectValue = CUSTOM_VALUE;
+	if ( ! value ) {
+		selectValue = keepCustom ? CUSTOM_VALUE : '';
+	} else if ( isPresetValue ) {
+		selectValue = value;
+	}
 
 	const options = [
 		{ label: __( '— none —', 'sgs-blocks' ), value: '' },
 		...spacingSizes.map( ( s ) => ( { label: `${ s.name || s.slug } (${ s.size })`, value: s.slug } ) ),
+		...tokens,
 		{ label: __( 'Custom…', 'sgs-blocks' ), value: CUSTOM_VALUE },
 	];
 
@@ -138,6 +158,7 @@ export default function SgsLengthControl( {
 				options={ options }
 				disabled={ disabled }
 				onChange={ ( next ) => {
+					setCustomPicked( next === CUSTOM_VALUE );
 					if ( next === CUSTOM_VALUE ) {
 						onChange( isPresetValue ? '' : value );
 						return;

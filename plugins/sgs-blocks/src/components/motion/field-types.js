@@ -5,13 +5,16 @@
  * CSS emission. Every range, unit, enum and pattern is read from the schema's `$defs` and from the field's own schema
  * node (its narrowing `minimum`, `maximum`, `enum`, `multipleOf` and `x-sgs-range`); nothing here restates a bound.
  *
+ * The `$defs` come from `generated-motion-defs.json`, the build-time extract of `schemas/motion.schema.json`
+ * (`scripts/generate-motion-editor-defs.py`), so the editor bundle never carries the whole schema.
+ *
  * The PHP twin is `includes/motion/class-sgs-motion-field-types.php`; `tests/js/motion-field-types-parity.test.js`
  * proves both give the same verdict and the same CSS for the same value.
  *
  * Every function takes a plain value and an optional field node, never an sgsMotion path.
  */
 
-import schema from '../../../schemas/motion.schema.json';
+import defs from './generated-motion-defs.json';
 import {
 	createEvaluator,
 	isAnnotation,
@@ -26,7 +29,7 @@ import {
 	tokenCss,
 } from './field-types/css-values';
 
-const DEFS = schema.$defs;
+const DEFS = defs.$defs;
 const evaluate = createEvaluator( DEFS );
 const TOKENS = Object.freeze( [ ...DEFS.tokenReference.enum ] );
 
@@ -59,6 +62,9 @@ const NARROWING_KEYS = Object.freeze( [
 ] );
 
 const REF_PREFIX = '#/$defs/';
+
+/** The token bands, keyed `<family>.<key>` (`duration.fast`), each `{ band, usedBy, cssVar }`. */
+export const TOKEN_BANDS = Object.freeze( defs[ 'x-sgs-tokens' ] );
 
 /**
  * The schema node a value of this type is checked against: the type's `$def`, narrowed by the field node's own
@@ -153,6 +159,25 @@ const ROW_VALUE_TYPES = Object.freeze(
 		return map;
 	}, {} )
 );
+
+/**
+ * The properties a property row can animate, in schema order.
+ *
+ * @return {string[]} The `propertyRow` property enum.
+ */
+export function rowProperties() {
+	return [ ...DEFS.propertyRow.properties.property.enum ];
+}
+
+/**
+ * The field type of a property row's `from` and `to` values for one property.
+ *
+ * @param {string} property Row property (`opacity`, `x`, `rotate` ...).
+ * @return {string|null} The field type name, or null for an unknown property.
+ */
+export function rowValueType( property ) {
+	return ROW_VALUE_TYPES[ property ] || null;
+}
 
 // The CSS for an already-valid value.
 function valueCss( type, value ) {

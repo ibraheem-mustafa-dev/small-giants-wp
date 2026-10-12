@@ -38,6 +38,9 @@
  *          schema, then generate-motion-presets-json.py --check compares it with the committed
  *          generated-motion-presets.json (the presets come from that file, which the DB table is
  *          seeded from, so the generated copy does not depend on the DB's contents).
+ *        - generate-motion-editor-defs.py --check (no DB needed, so it runs first on every machine, DB or not)
+ *          compares src/components/motion/generated-motion-defs.json, the $defs and x-sgs-tokens extract of
+ *          schemas/motion.schema.json the editor imports in place of the whole schema, with the schema.
  *        - generate-fx-qualifying-blocks.py ALSO runs with --check (2026-07-31
  *          — it used to have no --check mode, so this wrapper emulated one
  *          externally via a snapshot/diff/restore dance; that external
@@ -86,6 +89,10 @@ function runNode(scriptRelPath, extraArgs = []) {
 }
 
 function main() {
+	// The editor's schema extract is built from schemas/motion.schema.json alone (no DB), so it is checked on every
+	// machine, before the DB-dependent steps: a stale extract fails the build whoever runs it.
+	runPython("generate-motion-editor-defs.py", ["--check"]);
+
 	if (!fs.existsSync(DB_PATH)) {
 		log(
 			`DB not found: ${DB_PATH} — skipping the motion-fx generator chain (building ` +
