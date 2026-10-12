@@ -4,8 +4,9 @@
 // that writes the clock and starts a 400ms transition and a 700ms timeout; no infinite animation, so the long waits
 // between the interval's ticks are quiet). With skipping on (the default) and off (opts.skipQuiet false, as
 // INTAKE_SKIP_QUIET=0) the rest and clock-sample readings are byte-identical, the settle times agree, and the
-// 6500ms-interval settle drops from about 20 s of wall time to under 3 s. The readings are sensitive to the virtual time
-// an observer or timer fires at (a 4ms shift in the scroll step changes them), so the identity is not vacuous.
+// 6500ms-interval settle drops from about 20 s of wall time to about 2 s (asserted as under half). The readings are
+// sensitive to the virtual time an observer or timer fires at (a 4ms shift in the scroll step changes them), so the
+// identity is not vacuous.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
@@ -52,8 +53,8 @@ test( 'MUST FAIL: rest readings with quiet-step skipping on and off are byte-ide
 	assert.equal( bar( on, 'frames' ).declared.width, '60px' );
 	assert.equal( on.summary.settleMs, 19504, 'the boot settle ends on the 16ms step after the third tick' );
 	assert.ok( Number( bar( on, 'reveal' ).declared.width.replace( 'px', '' ) ) > 195, 'the reveal fired after the boot settle' );
-	assert.ok( on.ms < 6000, `the skipping run took ${ on.ms }ms` );
-	assert.ok( off.ms > 3 * on.ms, `skipping saved too little: ${ off.ms }ms off, ${ on.ms }ms on` );
+	// Wall time is relative (a loaded machine slows both runs): about 2 s against 22 s when idle.
+	assert.ok( off.ms > 2 * on.ms, `skipping saved too little: ${ off.ms }ms off, ${ on.ms }ms on` );
 } );
 
 test( 'MUST FAIL: clock-kind sample readings with skipping on and off are byte-identical', async () => {

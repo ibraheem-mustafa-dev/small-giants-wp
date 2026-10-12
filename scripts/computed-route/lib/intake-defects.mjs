@@ -17,6 +17,7 @@ import { buildModel, codeTarget, countAt } from './intake-census-map.mjs';
 import { deadCodeWhy, prototypeOnlyWhy } from './intake-defects-static.mjs';
 import { deadFieldWhy } from './intake-defects-deadfield.mjs';
 import { chainPass } from './intake-defects-chain.mjs';
+import { mapPool, poolSize } from './intake-pool.mjs';
 
 export { boundStyleRows, classifyCompiled, readPageBindings, bindingVerdicts, unresolvedBindingDefects } from './intake-defects-binding.mjs';
 
@@ -32,14 +33,17 @@ const kebab = ( p ) => p.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` );
 export const motionModifier = ( r ) => [ 'transition', 'keyframes' ].includes( r.kind ) && Boolean( r.detail?.property ) && ! DECLARES_MOTION.has( kebab( r.detail.property ) );
 
 // FR-48-34 test 2. `census`: { rows, sources } with the runtime pass applied (rows carry `unreached`). Opens one forced
-// page per width and page file (hash visits are reached inside it), forces every candidate's state, and decides.
-// `onPage(session, { width, visit })` runs on each visit after the rest settle, before any forcing. `force` switches a
+// page per width and page file (hash visits are reached inside it), forces every candidate's state, and decides. The
+// widths run side by side in the browser-unit pool (lib/intake-pool.mjs) and are folded in width order.
+// `onPage(session, { width, visit }, into)` runs on each visit after the rest settle, before any forcing, writing what
+// it reads into the Map `into`: `reads` itself when the widths run one at a time, else one Map per width, each appended
+// to `reads` in width order (an `onPage` given without `reads` runs the widths one at a time). `force` switches a
 // forcing off ({ pseudo, state, events, props, deadCode, deadField, reducedMotion, drag, coords, chain }: false); it
 // exists only for the tests' negative
 // controls. `only` (a Set of census row IDs) limits the candidates, for a second pass over more visits. `flags`
 // (lib/intake-flags.mjs::proposeFlags rows, optional) lets a construct be prototype-only (FR-48-33). Returns { rows,
 // notDefects, gaps, blocked } (`blocked`: every forced page's aborted requests).
-export async function unreachedDefects( { folder, entry, harPath, census, visits = [ entry ], widths = WIDTHS, harness = {}, timeout = 60000, onPage = null, force = {}, only = null, flags = null } ) {
+export async function unreachedDefects( { folder, entry, harPath, census, visits = [ entry ], widths = WIDTHS, harness = {}, timeout = 60000, onPage = null, reads = null, force = {}, only = null, flags = null } ) {
 	const out = { rows: [], notDefects: [], gaps: [], blocked: [] };
 	const unreached = census.rows.filter( ( r ) => true === r.unreached );
 	census.rows.filter( ( r ) => null === r.unreached && r.traceGap ).forEach( ( r ) => out.gaps.push( { construct: r.kind, draftId: r.draftId, error: `the census could not decide reach (${ r.traceGap }); not tested as a draft defect` } ) );
@@ -68,8 +72,13 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 	const mountedWith = mountedProps( census.rows );
 	const selectors = [ ...new Set( cands.filter( ( r ) => 'stylesheet' === r.detail.via && r.detail.selector ).map( ( r ) => r.detail.selector ) ) ];
 	const failed = new Set();
-	for ( const width of widths ) {
-		for ( const group of groupVisits( visits, entry ) ) {
+	// One width: every page group in order on `on` (the plan the width's forceVisit calls read and mark), with onPage
+	// writing into `into`. Returns the width's gap rows, blocked requests and whether a visit failed.
+	const groups = groupVisits( visits, entry );
+	const runWidth = async ( width, on, into ) => {
+		const u = { gaps: [], blocked: [], failed: false };
+		let call = 0;
+		for ( const group of groups ) {
 			let s = null;
 			try {
 				s = await openForcedPage( { folder, entry, harPath, file: group.file, hash: group.visits[ 0 ].hash, width, harness, timeout, forcePseudoState: false !== force.pseudo, drag: false !== force.drag, coords: false !== force.coords } );
@@ -81,20 +90,75 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 						await s.settle();
 					}
 					if ( onPage ) {
-						await onPage( s, { width, visit: v.label } );
+						await onPage( s, { width, visit: v.label }, into );
 					}
-					await forceVisit( s, { plan, source, texts, files, selectors, triggers, width, force, last: i === group.visits.length - 1 } );
+					await forceVisit( s, { plan: on, source, texts, files, selectors, triggers, width, force, last: i === group.visits.length - 1, call: call++ } );
 				}
 			} catch ( e ) {
-				failed.add( width );
-				out.blocked.push( ...( e.blocked || [] ) );
-				out.gaps.push( { construct: 'defect-visit', draftId: `${ group.file }@${ width }`, error: e.message.split( '\n' ).slice( 0, 3 ).join( ' ' ) } );
+				u.failed = true;
+				u.blocked.push( ...( e.blocked || [] ) );
+				u.gaps.push( { construct: 'defect-visit', draftId: `${ group.file }@${ width }`, error: e.message.split( '\n' ).slice( 0, 3 ).join( ' ' ) } );
 			} finally {
 				if ( s ) {
 					await s.close();
-					out.blocked.push( ...s.blocked );
+					u.blocked.push( ...s.blocked );
 				}
 			}
+		}
+		return u;
+	};
+	const fold = ( u, width ) => {
+		out.gaps.push( ...u.gaps );
+		out.blocked.push( ...u.blocked );
+		u.failed && failed.add( width );
+	};
+	const sequential = async () => {
+		for ( const width of widths ) {
+			fold( await runWidth( width, plan, reads ), width );
+		}
+	};
+	if ( 1 === poolSize() || widths.length < 2 || ( onPage && ! reads ) ) {
+		await sequential();
+	} else {
+		// The widths side by side, each on its own copy of the plan (its own reach marks, patches, gaps and readiness;
+		// the row, target, props gating, dead and prototype verdicts shared). A one-at-a-time run carries one thing across
+		// widths: a row's sc-if patches, props and gaps are read once, at the first visit whose page knows its template
+		// (p.ready), and later widths reuse them. That reading comes from the component's template, the same at every
+		// width, so the copies are merged as that run would hold them only when every later width read the same patches,
+		// props and gaps at its very first visit (before anything used them); otherwise the widths are run again one at
+		// a time.
+		const copies = widths.map( () => new Map( [ ...plan ].map( ( [ id, p ] ) => [ id, { ...p, patches: [], gaps: [], props: new Set( p.props ), at: new Map(), ready: false } ] ) ) );
+		const intos = widths.map( () => new Map() );
+		const units = await mapPool( widths, poolSize(), ( width, i ) => runWidth( width, copies[ i ], intos[ i ] ) );
+		const readGaps = ( q ) => q.gaps.slice( q.readyAt.gaps[ 0 ], q.readyAt.gaps[ 1 ] );
+		const sig = ( q ) => JSON.stringify( [ q.patches, [ ...q.props ], readGaps( q ) ] );
+		const firstReady = ( id ) => copies.findIndex( ( c ) => c.get( id ).ready );
+		const same = [ ...plan.keys() ].every( ( id ) => {
+			const f = firstReady( id );
+			return f < 0 || copies.slice( f + 1 ).every( ( c ) => c.get( id ).ready && 0 === c.get( id ).readyAt.call && sig( c.get( id ) ) === sig( copies[ f ].get( id ) ) );
+		} );
+		if ( same ) {
+			for ( const [ id, p ] of plan ) {
+				const f = firstReady( id );
+				copies.forEach( ( c, i ) => {
+					const q = c.get( id );
+					if ( q.at.get( widths[ i ] ) ) {
+						p.at.set( widths[ i ], true );
+					}
+					const skip = f >= 0 && i > f ? q.readyAt.gaps : [ 0, 0 ];
+					p.gaps.push( ...q.gaps.filter( ( g, k ) => k < skip[ 0 ] || k >= skip[ 1 ] ) );
+				} );
+				if ( f >= 0 ) {
+					const q = copies[ f ].get( id );
+					Object.assign( p, { ready: true, readyAt: q.readyAt, patches: q.patches, props: q.props } );
+				}
+			}
+			units.forEach( ( u, i ) => fold( u, widths[ i ] ) );
+			for ( const into of reads ? intos : [] ) {
+				into.forEach( ( list, id ) => reads.set( id, [ ...( reads.get( id ) || [] ), ...list ] ) );
+			}
+		} else {
+			await sequential();
 		}
 	}
 	for ( const p of plan.values() ) {
@@ -109,7 +173,7 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 // the rows whose element only now renders get their pseudo and hover forcing too and the state is put back; code-wired
 // listeners, then their pointer gestures; the two-step chain (lib/intake-defects-chain.mjs); a last settle with the
 // scroll pass.
-async function forceVisit( s, { plan, source, texts, files, selectors, triggers, width, force, last } ) {
+async function forceVisit( s, { plan, source, texts, files, selectors, triggers, width, force, last, call = 0 } ) {
 	const pending = () => [ ...plan.values() ].filter( ( p ) => ! p.at.get( width ) );
 	// Once every candidate is reached at this width, the remaining steps can record nothing decideRow reads (p.at only
 	// turns true, and p.gaps or p.patches matter only for a row reached nowhere), so they are skipped. Only on the
@@ -182,12 +246,15 @@ async function forceVisit( s, { plan, source, texts, files, selectors, triggers,
 			continue;
 		}
 		p.ready = true;
+		const g0 = p.gaps.length;
 		for ( const f of around.ifs ) {
 			const k = conditionKeys( source.get( p.row.component ) || {}, f.value, { loopVars: around.loopVars } );
 			k.props.forEach( ( x ) => p.props.add( x ) );
 			p.gaps.push( ...k.gaps.map( ( g ) => `sc-if ${ p.row.component }:${ f.n }: ${ g }` ) );
 			p.patches.push( ...patchesOf( k.keys ).map( ( patch ) => ( { comp: p.row.component, patch } ) ) );
 		}
+		// Where the reading happened: the width's forceVisit call and the gaps it added (unreachedDefects' width merge).
+		p.readyAt = { call, gaps: [ g0, p.gaps.length ] };
 	}
 	await check();
 	await s.snapshot();
@@ -333,11 +400,11 @@ function numberRows( rows ) {
 export async function proposeDraftDefects( { folder, entry, harPath, census, visits = [ entry ], widths = WIDTHS, harness = {}, timeout = 60000, flags = null } ) {
 	const bound = boundStyleRows( census );
 	const reads = new Map();
-	const onPage = ( s, at ) => readPageBindings( s.page, bound, at, reads );
+	const onPage = ( s, at, into = reads ) => readPageBindings( s.page, bound, at, into );
 	const marked = census.rows.some( ( r ) => 'boolean' === typeof r.unreached );
 	const u = marked
-		? await unreachedDefects( { folder, entry, harPath, census, visits, widths, harness, timeout, onPage, flags } )
-		: await unreachedDefects( { folder, entry, harPath, census: { ...census, rows: [] }, visits, widths, harness, timeout, onPage } );
+		? await unreachedDefects( { folder, entry, harPath, census, visits, widths, harness, timeout, onPage, reads, flags } )
+		: await unreachedDefects( { folder, entry, harPath, census: { ...census, rows: [] }, visits, widths, harness, timeout, onPage, reads } );
 	const b = bindingVerdicts( bound, reads );
 	const gaps = [ ...b.gaps, ...u.gaps, ...( marked ? [] : [ { construct: 'draft-defect', draftId: entry, error: 'the census carries no runtime `unreached` marks: FR-48-34 test 2 was not run' } ] ) ];
 	const rows = numberRows( [ ...b.rows, ...u.rows ] );
