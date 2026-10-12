@@ -1464,7 +1464,14 @@ Four negative controls run with the census tests and must each turn it red:
 A fifth control covers the static pass: a fixture handler that no render ever calls is listed as `unreached`, and the
 census fails if the static pass is removed. A positive control (the unchanged fixture) passes. The registry's format
 is Appendix C.
-Status: not built.
+Status: the static pass, the registry and controls 1 to 4 are built (2026-10-12; `lib/intake-census.mjs`,
+`lib/intake-census-template.mjs`, `lib/intake-census-logic.mjs`, `lib/intake-registry.mjs`,
+`data/construct-registry.json`, `tests/intake-census.test.mjs`). An import inside a false `sc-if` has no stamped
+template on the page, so it is loaded on its own in the sandbox. Indus's static census: 900 template elements, 967
+bindings, 115 `sc-if`, 53 `sc-for`, 2 imports, 103 `style-*` rules, 12 getters, 133 `renderVals()` keys, 86 handlers,
+29 timers, 5 observers, 49 Web Animations calls, 71 links, no unknown construct; the regex cross-check agrees in every
+category except observers (10 against 5: the regex also counts `typeof ResizeObserver` guards), kept as a gap row. Every
+registry entry is a gap naming the step that builds its reader. The runtime pass and control 5 are not built.
 
 #### FR-48-25 — The inventory, re-derived (Spec 48A FR-48A-7)
 Intake writes its own `animations.json` and `surfaces.json` equivalents into `intake.json` by `METHOD.md` §0-§8,

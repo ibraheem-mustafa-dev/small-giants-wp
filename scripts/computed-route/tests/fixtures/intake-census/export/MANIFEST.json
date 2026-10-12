@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-12",
+  "project": "Census fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Child.dc.html",
+      "bytes": 367,
+      "sha256": "9b3aceaa1ff1a8bfe45558f50eff83cc36357215a66e79a67c1a92bbdc59d708"
+    },
+    {
+      "path": "Home.dc.html",
+      "bytes": 2948,
+      "sha256": "34e1f102dba918d68a876cee07e903bffc83dd7fd375b09424c134a330f67a48"
+    },
+    {
+      "path": "Panel.dc.html",
+      "bytes": 359,
+      "sha256": "cd36c6b18cbe8bbbdd88a636c67f979ceefd51673e3cc687736487bbddacca8e"
+    },
+    {
+      "path": "helper.js",
+      "bytes": 192,
+      "sha256": "31926a5128f3c9901ad7c96d354fef09546d95b79c97b49a2826b05180cd40ee"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    }
+  ]
+}

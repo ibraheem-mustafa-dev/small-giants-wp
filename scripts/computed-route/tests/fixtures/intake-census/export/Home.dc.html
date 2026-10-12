@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+<script src="./helper.js"></script>
+<style>
+@keyframes census-pulse { from { opacity: .6; } to { opacity: 1; } }
+.census-title { font-family: 'Montserrat', sans-serif; animation: census-pulse 2s ease-in-out infinite alternate; }
+@font-face { font-family: 'Census Local'; src: local('Arial'); }
+</style>
+</helmet>
+<main style="padding:24px;font-family:system-ui,sans-serif;color:#222">
+  <h1 class="census-title" data-reveal="up" style="margin:0">{{ title }}</h1>
+  <a href="#/about" style="color:#0a7ea8;transition:color .2s ease" style-hover="color:{{ hoverColour }}" style-focus="outline:2px solid #000" onClick="{{ toggle }}">About</a>
+  <button type="button" onDoubleClick="{{ neverCalled }}">More</button>
+  <div ref="{{ setBox }}" style="width:40px;height:40px;background:#d8ca50"></div>
+  <ul>
+    <sc-for list="{{ links }}" as="item" hint-placeholder-count="2">
+      <li><a href="{{ item.href }}">{{ item.label }}</a></li>
+    </sc-for>
+  </ul>
+  <sc-if value="{{ open }}" hint-placeholder-val="true">
+    <dc-import name="Child" hint-size="100%,60px"></dc-import>
+  </sc-if>
+  <sc-if value="{{ showPanel }}" hint-placeholder-val="false">
+    <dc-import name="Panel" hint-size="100%,60px"></dc-import>
+  </sc-if>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { open: true, count: 0 };
+
+  get links() {
+    return [ { href: '#/one', label: 'One' }, { href: '#/two', label: 'Two' } ];
+  }
+
+  setBox = ( el ) => { this._box = el; };
+  toggle = () => { this.setState( { open: ! this.state.open } ); };
+  onResize = () => { this.setState( { w: window.innerWidth } ); };
+
+  neverCalled() {
+    this.setState( { count: this.state.count + 1 } );
+  }
+
+  componentDidMount() {
+    window.addEventListener( 'resize', this.onResize );
+    this._t = setTimeout( () => this.pulse(), 50 );
+    this._io = new IntersectionObserver( () => {} );
+    requestAnimationFrame( () => {} );
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener( 'resize', this.onResize );
+    clearTimeout( this._t );
+    if ( this._io ) this._io.disconnect();
+  }
+
+  pulse() {
+    if ( ! this._box ) return;
+    this._box.animate( [ { opacity: 0.5 }, { opacity: 1 } ], { duration: 200 } );
+    this._box.style.transition = 'opacity .2s';
+  }
+
+  baseVals() {
+    return { title: 'Census fixture', hoverColour: '#075e80' };
+  }
+
+  renderVals() {
+    const v = { ...this.baseVals(), links: this.links, toggle: this.toggle, setBox: this.setBox, neverCalled: this.neverCalled.bind( this ) };
+    v.open = this.state.open;
+    Object.assign( v, { showPanel: false } );
+    return v;
+  }
+}
+</script>
+</body>
+</html>

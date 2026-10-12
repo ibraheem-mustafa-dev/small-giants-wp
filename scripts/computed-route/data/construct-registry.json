@@ -1,0 +1,21 @@
+{
+	"template-element": { "gap": "reader lands with the skeleton proposal (§3.4, Appendix B step 14)" },
+	"sc-if": { "gap": "reader lands with the skeleton proposal (§3.4, Appendix B step 14)" },
+	"sc-for": { "gap": "reader lands with the skeleton proposal (§3.4, Appendix B step 14)" },
+	"dc-import": { "gap": "reader lands with the skeleton proposal (§3.4, Appendix B step 14)" },
+	"binding": { "gap": "reader lands with Fill's declared values (FR-48-8, Appendix B step 20)" },
+	"style-hover": { "gap": "reader lands with Fill's declared values (FR-48-8, Appendix B step 20); an unresolved {{ }} is a draft defect (FR-48-34)" },
+	"getter": { "gap": "reader lands with the routing adapters (FR-48-26, Appendix B step 14)" },
+	"renderVals-key": { "gap": "reader lands with Fill's declared values (FR-48-8, Appendix B step 20)" },
+	"handler": { "gap": "re-derived inventory not built (FR-48-25, Appendix B step 14b)" },
+	"timer": { "gap": "re-derived inventory not built (FR-48-25, Appendix B step 14b)" },
+	"observer": { "gap": "re-derived inventory not built (FR-48-25, Appendix B step 14b)" },
+	"waapi": { "gap": "re-derived inventory not built (FR-48-25, Appendix B step 14b)" },
+	"transition": { "gap": "re-derived inventory not built (FR-48-25, Appendix B step 14b)" },
+	"keyframes": { "gap": "re-derived inventory not built (FR-48-25, Appendix B step 14b)" },
+	"ref": { "gap": "re-derived inventory not built (FR-48-25, Appendix B step 14b)" },
+	"data-hook": { "gap": "re-derived inventory not built (FR-48-25, Appendix B step 14b)" },
+	"helmet-script": { "gap": "reader lands with the prototype-only flags (FR-48-33, Appendix B step 14)" },
+	"helmet-font": { "gap": "font capture is the snapshot extractor's (FR-33-18, Appendix B step 17)" },
+	"link": { "gap": "reader lands with the routing adapters (FR-48-26, Appendix B step 14)" }
+}
