@@ -64,7 +64,7 @@ from stage 1: a value matrix gives every kind of value a read, write, check and 
 render confirming; a gap reaches the framework list only through gates G0-G7. Spec 32 is slim (3.1.0: styling contract
 and snapshot format, new FR-32-14 to FR-32-20); Spec 27 gains FR-30-16/17. `scripts/check-spec-id-landing.py` proves
 every kept ID lands. Appendix B (the Indus critical path) is under way. Phase 2, the Spec 32 framework halves (steps 9 to 12), is done and
-live on `indus-test` at `3e1bdd9e9`: five palette slugs and a container Section ground (FR-32-14), per-tier section
+live on `indus-test` at `3e1bdd9e9` and on sandybrown and eye-care-test (colours and gutter read unchanged there, 2026-10-12): five palette slugs and a container Section ground (FR-32-14), per-tier section
 padding and gutter tokens read by `theme/sgs-theme/assets/css/layout-tokens.css` (FR-32-15), and `sgsCustomCss` parsed
 and scoped per instance (FR-32-20), each verified live. Phase 1 (steps 1 to 8) is done: the route has its own pinned packages (`npm ci` in `scripts/computed-route`), a per-site default paint,
 accepted value forms (`clamp`, `vw`, `repeat`), the 1440 desktop tier, the `container.layout` resolver fixes, portable
