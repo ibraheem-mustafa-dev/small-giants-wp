@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div class="card" style="padding:8px">
+  <span>{{ label }}</span>
+  <sc-if value="{{ glow }}"><p class="glow">Glow</p></sc-if>
+  <sc-if value="{{ promo }}"><p class="promo">Promo</p></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  componentDidMount() {
+    if ( this.props.glow ) {
+      setTimeout( () => {}, 10 );
+    }
+  }
+
+  renderVals() {
+    return { label: 'Card' };
+  }
+}
+</script>
+</body>
+</html>

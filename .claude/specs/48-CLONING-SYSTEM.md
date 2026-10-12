@@ -1661,7 +1661,19 @@ application's stored draft and `Math.random` reference, the enquiry form's timed
 - **Missing features** are one line each: a construct the census found that no SGS block or feature holds. Bean marks
   each one "map to an existing block", "record as a deliberate difference" or "build". Stage 1 builds only what stops
   a main flow (buy, contact, apply).
-Status: not built.
+
+Outcomes that are not defects (decided 2026-10-12 while building): a construct gated on a component prop no parent mounts
+is a prop variant (FR-48-29); a construct behind a constant guard the code itself fixes, or reached only through a
+`renderVals()` key no template binds, is dead code (the code's intent is "off"); a construct inside code whose rendered
+elements are all flagged placeholder or prototype-only is prototype-only (FR-48-33). Defects are listed grouped by the
+class member or script that holds them, so the review marks a function, not each call site.
+Status: built 2026-10-12 (`lib/intake-defects*.mjs`, `lib/intake-missing.mjs`, `lib/intake-state.mjs`, their tests). On
+Indus, test 1 finds all seven bound `style-hover` rules, not only the mega menu's: the pinned runtime compiles a
+`style-*` attribute's text raw, so a `{{ }}` there never resolves and the browser drops the bound declaration. Test 2
+over every route at 375/768/1440 leaves 15 constructs in 8 groups (from 218 at rest only). Known limits of the forcing,
+each a candidate cause for some of the 15: drag events are not among the fired listener types; two-step states (open
+the drawer, then an accordion row) cannot be chained, because state is restored after each trigger; pointer handlers
+fire without coordinates; a field set only by dead code is not followed. Test 2 on Indus takes about 40 minutes.
 
 #### FR-48-35 — The intake record
 `intake.json` holds the census, the re-derived inventory, the routing adapter and routes, the width basis and

@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-12",
+  "project": "Draft defects fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Card.dc.html",
+      "bytes": 580,
+      "sha256": "aff3d6e8995ed044f2341b19829110e7b4e84af576d383fb29ccd6797a412fc2"
+    },
+    {
+      "path": "Home.dc.html",
+      "bytes": 2526,
+      "sha256": "a13d2ffb9f6b7f35f5206477898205297f4c21ba5ca00d8d6cf1fc218084f543"
+    },
+    {
+      "path": "image-slot.js",
+      "bytes": 499,
+      "sha256": "9ca9350873d6c14101235f88c52b3d447b8a759b290f17ba55503cdf8573e243"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<main style="min-height:1600px;padding:24px;font-family:system-ui,sans-serif;color:#222">
+  <h1>Defects fixture</h1>
+  <a class="b-dropped" href="#top" style-hover="color:{{ hoverColour }};text-decoration:underline">Dropped binding</a>
+  <a class="b-literal" href="#top" style-hover="--tint:{{ tint }};outline-color:red">Literal binding</a>
+  <a class="b-plain" href="#top" style-hover="color:#c00">Plain hover</a>
+  <sc-if value="{{ wideOpen }}">
+    <p class="wide-open">Wide menu</p>
+  </sc-if>
+  <sc-if value="{{ secret }}">
+    <p class="secret" style-hover="color:#0a0">Secret</p>
+  </sc-if>
+  <sc-if value="{{ impossible }}">
+    <p class="impossible">Never</p>
+  </sc-if>
+  <ul>
+    <sc-for list="{{ items }}" as="item">
+      <li>{{ item.label }} <sc-if value="{{ item.open }}"><span class="item-open">Open item</span></sc-if></li>
+    </sc-for>
+  </ul>
+  <button type="button" onClick="{{ toggle }}">Toggle</button>
+  <dc-import name="Card" promo="{{ promoOn }}" hint-size="100%,60px"></dc-import>
+  <image-slot id="hero-photo" shape="rect" placeholder="Hero photo"></image-slot>
+</main>
+<helmet>
+<script src="./image-slot.js"></script>
+</helmet>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { menuOpen: false, secret: false, mode: 'none', clicks: 0 };
+
+  get wide() {
+    return window.innerWidth >= 1024;
+  }
+
+  toggle = () => {
+    this.setState( { clicks: this.state.clicks + 1 } );
+    if ( this.rm ) {
+      setTimeout( () => {}, 5 );
+    }
+  };
+
+  get rm() {
+    return matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+  }
+
+  componentDidMount() {
+    this.sparkle();
+  }
+
+  sparkle() {
+    const mode = 'off';
+    if ( mode === 'off' ) {
+      return;
+    }
+    document.body.animate( [ { opacity: 1 } ], { duration: 10 } );
+  }
+
+  setGhostEl = ( el ) => {
+    if ( el ) {
+      el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 10 } );
+    }
+  };
+
+  renderVals() {
+    return {
+      hoverColour: '#c00',
+      tint: 'teal',
+      wideOpen: this.wide && this.state.menuOpen,
+      secret: this.state.secret,
+      impossible: this.state.mode === 'a' && this.state.mode === 'b',
+      items: [ { label: 'One', open: false } ],
+      toggle: this.toggle,
+      promoOn: false,
+      setGhostEl: this.setGhostEl,
+    };
+  }
+}
+</script>
+</body>
+</html>
