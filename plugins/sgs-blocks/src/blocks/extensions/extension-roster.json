@@ -124,8 +124,8 @@
 			"rule": { "mode": "universal", "requiresClassName": false, "hideSlug": null },
 			"attributes": {
 				"sgsCustomCss": { "type": "string", "default": "", "role": "styling" },
-				"sgsCustomCssId": { "type": "string", "default": "", "role": "styling" },
-				"sgsCustomCssNote": { "type": "string", "default": "", "role": "styling" }
+				"sgsCustomCssId": { "type": "string", "default": "", "role": "behaviour" },
+				"sgsCustomCssNote": { "type": "string", "default": "", "role": "behaviour" }
 			}
 		},
 		{
