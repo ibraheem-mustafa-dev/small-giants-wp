@@ -178,7 +178,9 @@ function valueCss( type, value ) {
 	if ( looksLikeToken( value ) ) {
 		return resolveToken( value );
 	}
-	return typeof value === 'string' ? value : null;
+	// Any whitespace run the schema patterns admit (`\s`, which includes U+2028 and U+FEFF) prints as one space, so
+	// the emitted declaration holds only CSS whitespace.
+	return typeof value === 'string' ? value.replace( /\s+/g, ' ' ) : null;
 }
 
 /**

@@ -347,6 +347,8 @@ final class Sgs_Motion_Field_Types {
 		if ( Sgs_Motion_Field_Css::looks_like_token( $value ) ) {
 			return self::resolve_token( $value );
 		}
-		return is_string( $value ) ? $value : null;
+		// Any whitespace run the schema patterns admit (JavaScript's \s, which includes U+2028 and U+FEFF) prints as one
+		// space, so the emitted declaration holds only CSS whitespace.
+		return is_string( $value ) ? preg_replace( '~' . Sgs_Motion_Schema_Eval::JS_SPACE_CLASS . '+~u', ' ', $value ) : null;
 	}
 }

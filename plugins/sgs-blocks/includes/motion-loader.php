@@ -5,7 +5,9 @@
  *
  * Order: `motion/*.php`, then `motion/field-types/`, `motion/migrate/` and `motion/migrate/mappers/`, each folder's
  * files sorted by name. `migrate/` loads before `migrate/mappers/`, so an interface or base class a mapper extends is
- * declared first. Every file is loaded with `require_once`, so a file another include already required (for example
+ * declared first. Within one folder the order is alphabetical, not dependency order, so a file that extends or
+ * implements a class declared in another file under `includes/motion/` requires that file itself with `require_once`
+ * (as `class-sgs-motion-field-types.php` does for its helpers). Every file is loaded with `require_once`, so a file another include already required (for example
  * `helpers-motion-easing.php` requiring the field-type class) is not loaded twice. The files run inside a closure, so
  * a file's top-level variables stay out of the global scope (functions, classes and hook registrations a file declares are global as usual).
  *

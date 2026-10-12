@@ -376,7 +376,10 @@ final class Sgs_Motion_Schema_Eval {
 	 */
 	private function pattern_matches( string $pattern, string $value ): bool {
 		if ( ! array_key_exists( $pattern, $this->patterns ) ) {
-			$this->patterns[ $pattern ] = self::translate_pattern( $pattern );
+			$pcre = self::translate_pattern( $pattern );
+			// A pattern PCRE cannot compile refuses the value; the probe's compile warning is suppressed so a bad field
+			// node does not write to the log on every call.
+			$this->patterns[ $pattern ] = ( null !== $pcre && false !== @preg_match( $pcre, '' ) ) ? $pcre : null; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		}
 		$pcre = $this->patterns[ $pattern ];
 		return null !== $pcre && 1 === preg_match( $pcre, $value );
