@@ -14,7 +14,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { recheckManifest } from '../lib/intake-sandbox.mjs';
 import { recordExport } from '../lib/intake-record.mjs';
-import { quietSkip } from '../lib/intake-harness.mjs';
+import { quietSkip, openHarness, settleRest } from '../lib/intake-harness.mjs';
 import { readSurface } from '../lib/intake-reading.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -62,6 +62,21 @@ test( 'MUST FAIL: clock-kind sample readings with skipping on and off are byte-i
 	const off = await read( { mode: 'sample', sample, skipQuiet: false } );
 	assert.equal( on.jsonl, off.jsonl );
 	assert.equal( on.records.filter( ( r ) => 7000 === r.t ).find( ( r ) => r.path.endsWith( 'div:nth-child(4)' ) ).declared.width, '16.5px' );
+} );
+
+test( 'MUST FAIL: a settle on a page with nothing pending ends on its first step, with skipping on as off (no jump before a step reports something pending)', async () => {
+	for ( const skipQuiet of [ true, false ] ) {
+		const h = await openHarness( { folder: FIXTURE, index: INDEX, harPath, skipQuiet } );
+		try {
+			await settleRest( h.page, h.options );
+			const again = await settleRest( h.page, h.options );
+			assert.equal( again.settleMs, 16, `skipQuiet ${ skipQuiet }: the settled page's boot settle took ${ again.settleMs }ms` );
+			assert.equal( again.settleAfterScrollMs, 16 );
+			assert.equal( again.virtualMs - again.startMs, 16 + 100 * again.scroll.length + 16 );
+		} finally {
+			await h.close();
+		}
+	}
 } );
 
 test( 'negative control: the readings change when an observer fires 4ms of virtual time later, so the identity above is not vacuous', async () => {

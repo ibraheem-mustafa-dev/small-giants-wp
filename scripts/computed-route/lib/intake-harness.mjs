@@ -277,13 +277,14 @@ const describe = ( p ) => [ ...p.timeouts, ...p.intervals, ...p.frames ]
 
 // One settle phase: steps until no timeout due within timeoutMaxMs of the phase start is pending, every interval has
 // ticked intervalTicks times and no frame callback is scheduled. Throws, naming what is still pending, at settleMaxMs.
-// A quiet stretch is jumped (quietSkip) no further than the first step at or past settleMaxMs, so the ceiling throws at
-// the same virtual time with the same pending list.
+// A quiet stretch is jumped (quietSkip) only after a step has reported something pending (the first step is always
+// stepped, so a page that is already settled ends on it), and no further than the first step at or past settleMaxMs, so
+// the ceiling throws at the same virtual time with the same pending list.
 async function settlePhase( page, o, label ) {
 	const start = await page.evaluate( () => performance.now() );
 	const windowEnd = start + o.timeoutMaxMs;
 	const ceiling = start + ( o.stepMs > 0 ? Math.ceil( o.settleMaxMs / o.stepMs ) * o.stepMs : 0 );
-	let q = skipping( o ) ? await quietMs( page ) : 0;
+	let q = 0;
 	let now = start;
 	for ( ;; ) {
 		const skip = skipping( o ) ? quietSkip( q, ceiling - now, o ) : 0;
