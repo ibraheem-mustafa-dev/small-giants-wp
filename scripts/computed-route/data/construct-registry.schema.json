@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Construct registry (Spec 48 Appendix C, FR-48-24)",
+  "type": "object",
+  "additionalProperties": {
+    "oneOf": [
+      {
+        "type": "object",
+        "required": ["module", "fn"],
+        "additionalProperties": false,
+        "properties": {
+          "module": { "type": "string", "pattern": "^lib/.+\\.mjs$" },
+          "fn": { "type": "string" }
+        }
+      },
+      {
+        "type": "object",
+        "required": ["gap"],
+        "additionalProperties": false,
+        "properties": { "gap": { "type": "string", "minLength": 1 } }
+      }
+    ]
+  }
+}

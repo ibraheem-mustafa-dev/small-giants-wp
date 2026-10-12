@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Reading (Spec 48 Appendix C, FR-48-28)",
+  "type": "object",
+  "required": ["surface", "mode", "width", "state", "t", "draftId", "path", "computed", "box", "harness"],
+  "properties": {
+    "surface": { "type": "string" },
+    "mode": { "enum": ["rest", "sample"] },
+    "width": { "type": "integer" },
+    "state": { "type": "string" },
+    "t": { "type": "number" },
+    "draftId": { "type": "string" },
+    "path": { "type": "string" },
+    "computed": { "type": "object", "additionalProperties": { "type": "string" } },
+    "declared": { "type": "object", "additionalProperties": { "type": "string" } },
+    "box": { "type": "object", "required": ["x", "y", "w", "h"] },
+    "harness": { "type": "object", "required": ["clock", "seed", "stepMs"] }
+  }
+}

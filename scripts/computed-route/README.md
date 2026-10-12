@@ -40,6 +40,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `trace-check.mjs` | `<handoff folder> [entry .dc.html] [--shift=7]` (FR-48A-7 cross-check): loads a single-file draft's entry page at 1440, scrolls it, records every Web Animations call, CSS animation start and CSS transition run with its `data-dc-tpl`, and matches each to an `animations.json` record; `--shift=7` is the negative control (a sound run drops to 0 matches). |
 | `data/skeleton-decisions.json` | The skeleton writer's standing, client-free decisions: the column-label block, the list rule (minimum links, stacked), brief-only line patterns, Site Info text patterns (copyright, hours, address, attribution), the maps-link and logo-image patterns, and element decisions. Every block named is checked against the framework database on load. |
 | `data/calibration-baseline.schema.json` | Appendix C: the JSON Schema (draft 2020-12) of `calibration-baseline.json`, validated with the route's pinned Ajv. |
+| `data/reading.schema.json`, `data/construct-registry.schema.json` | Appendix C: the JSON Schemas (draft 2020-12) of a reading record (FR-48-28) and of `data/construct-registry.json` (FR-48-24); `tests/intake-schemas.test.mjs` fails when either differs from the spec. |
+| `lib/intake-spec-sync.mjs` | Spec 48 Appendix C against `data/*.schema.json`: parses each labelled JSON block, the intake-record key table and the construct-kind list from the spec, and reports every disagreement with a schema file. |
 | `data/known-runtimes.json` | FR-48A-5: every accepted `support.js` build by SHA-256 (`{ runtimes: [ { sha256, added, source, probe, path } ] }`), `path` naming its local copy. `c60c49083997…` came from the Indus Foods export, `8fe7df74405f…` from the Eye Care and Mama's Munches exports (all 2026-10-11, probe pass). |
 | `data/runtime-probe.dc.html` | FR-48A-5: the fixture draft the runtime probe renders: nesting, `sc-if` both ways, `sc-for`, camelCase attributes (`viewBox`, `tabIndex`, `onClick`), a helmet `<style>`, `style-hover`, a table and a select, so the encoder's renames are numbered. No external scripts. |
 | `data/runtime-probe.expected.json` | FR-48A-5: the fixture's recorded numbering from both known builds (identical): `live`, the rendered page's `[tag, data-dc-tpl]` list in document order, and `annotated`, the same from `__dcAnnotatedTemplate`. |
@@ -179,6 +181,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/draft-serve.test.mjs` | FR-47-4 draft server: no path escape or symlink escape (MUST FAIL), ephemeral port, directory index, content types, Range, and close frees the port. |
 | `tests/handoff-check.test.mjs` | Spec 48A on synthetic folders: a missing required file, an extra file, an unreachable draft, the manifest both ways, a wrong hash, a wrong `runtime_sha256`, an unknown runtime, a stale inventory and an unsafe SVG each fail (MUST FAIL); one file per page linked by href and a `dc-import` name with a space pass; a block-mapping README heading and a differing schema copy are warnings. |
 | `tests/handoff-repackage.test.mjs` | An unchanged old-format export repackages and passes the handoff check; a dry run writes nothing; a draft changed after export, a changed `support.js`, a `MANIFEST.md` with no hash table, a missing `MANIFEST.md` and a current-format export are refused with the folder untouched (MUST FAIL). |
+| `tests/intake-schemas.test.mjs` | Appendix C: the calibration-baseline, reading and construct-registry schema files equal the spec's blocks, and the page-map and intake schemas once they exist; the spec lists 19 construct kinds; a changed schema type, a key added to the spec's Reading block, a registry entry holding both a reader and a gap, a drifted page map and a missing intake key each fail (MUST FAIL). |
 | `tests/fill-skeleton.test.mjs` | FR-47-4: the finder vocabulary, slot scoping, node numbering, skeleton problems and the clean tree. |
 | `tests/skeleton-propose.test.mjs` | Spec 48 §3.4: the four generator rules over the committed footer inventory plus a fixture slice for the typed wordmark and the coming-soon line; no style value in a skeleton; client decisions and stale signatures; the 13 uncertain rows scored against the committed footer tree (at least 12 must match: MUST FAIL). |
 | `tests/walker-tpl-finder.test.mjs` | R-47-4: a bare `[data-dc-tpl]` selector picks the wrong copy or nested element and the `tpl` finder picks the right one (MUST FAIL); `tplKeyOf` and the finder are inverses. |
@@ -936,6 +939,13 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `buildBaseline({ client, site, takenOn, playwright, cacheDir, blocks, hashes })` → the Appendix C object; `baselineProblems(baseline, ajv?)` → readable problems (empty when valid and a browser is named).
 - `calibrateArgs({ site, client, blocks, recalibrate })` → the `calibrate.mjs` argument list, always with `--slot-map-only`. `installedPlaywright()` → the installed Playwright version.
 - `runStage0(o, deps)` → `{ code, lines, baseline }`; `o` is `{ repo, client, site, cacheDir, plan, recalibrate }`, `deps` the injected effects (`refs` and `refsExist(roles)` among them).
+
+### `lib/intake-spec-sync.mjs`
+- `SPEC_FILE`, `DATA_DIR`: the spec and the route's `data/` folder. `LABELS`: each Appendix C label with its schema file and shape (`body`, or `items` for the page-map array).
+- `specBlock(specText, label)` → the parsed JSON block after `**<label>:**`; throws naming the label when there is none.
+- `constructKinds(specText)` → the construct kinds Appendix C lists for the registry.
+- `syncProblems(specText, label, schema)` → each disagreement between the spec block and the schema file (wrapper keys ignored), prefixed with the label.
+- `intakeProblems(specText, schema)` → each intake-record key missing from the schema's `required` or `properties`, and each extra required key.
 
 ### `handoff-repackage.mjs`
 - `parseArgs(argv)` → `{ folder, project, entries, generated, dryRun }` or `{ error }`. `main(argv, log?)` → the exit code.
