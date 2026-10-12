@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@keyframes inv-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes inv-unused { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+</style>
+</helmet>
+<main style="padding:24px;font-family:system-ui,sans-serif;color:#222">
+  <a href="#/about" style="color:#0a7ea8;transition:color .2s ease" style-hover="color:#075e80">About</a>
+  <span style="color:#222" style-hover="color:#cc0000">Instant</span>
+  <i style="display:inline-block;animation:inv-spin 2s linear infinite">*</i>
+  <button type="button" ref="{{ setBtn }}" onClick="{{ toggle }}">Menu</button>
+  <sc-if value="{{ open }}" hint-placeholder-val="false">
+    <nav data-panel="menu" ref="{{ setPanel }}" style="padding:8px">Panel <button type="button" onClick="{{ close }}">Close</button></nav>
+  </sc-if>
+  <sc-if value="{{ wide }}" hint-placeholder-val="true">
+    <p>Wide layout</p>
+  </sc-if>
+  <div ref="{{ setBar }}" style="width:0px;height:4px;background:#d8ca50"></div>
+  <section data-reveal="up" style="margin-top:24px">Reveal</section>
+  <dc-import name="Card" size="sm" hint-size="100%,40px"></dc-import>
+  <dc-import name="Card" size="{{ cardSize }}" hint-size="100%,40px"></dc-import>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { open: false, ticks: 0, w: window.innerWidth };
+  rm = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+
+  setBtn = ( el ) => { this._btn = el; };
+  setPanel = ( el ) => { this._panel = el; };
+  setBar = ( el ) => { this._bar = el; };
+  toggle = () => { this.setState( { open: true } ); };
+  close = () => { this.setState( { open: false } ); };
+
+  componentDidMount() {
+    this._iv = setInterval( () => {
+      this.setState( { ticks: this.state.ticks + 1 } );
+      if ( this._bar ) this._bar.style.width = ( this.state.ticks * 10 ) + 'px';
+    }, 200 );
+    this._io = new IntersectionObserver( ( entries ) => entries.forEach( ( en ) => {
+      if ( en.isIntersecting ) en.target.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 400 } );
+    } ) );
+    document.querySelectorAll( '[data-reveal]' ).forEach( ( el ) => this._io.observe( el ) );
+  }
+
+  componentDidUpdate() {
+    if ( this.state.open && this._panel && ! this.rm ) this._panel.animate( [ { opacity: 0, transform: 'translateY(-8px)' }, { opacity: 1, transform: 'none' } ], { duration: 300, easing: 'ease-out' } );
+  }
+
+  componentWillUnmount() {
+    clearInterval( this._iv );
+    if ( this._io ) this._io.disconnect();
+  }
+
+  renderVals() {
+    return { toggle: this.toggle, close: this.close, setBtn: this.setBtn, setPanel: this.setPanel, setBar: this.setBar, open: this.state.open, wide: this.state.w >= 1024, cardSize: this.state.w < 700 ? 'sm' : 'md' };
+  }
+}
+</script>
+</body>
+</html>

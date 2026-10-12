@@ -167,10 +167,17 @@ export const STAGES = [
 		const { twoPassDefects, defectReviewRows } = await import( './intake-run-defects.mjs' );
 		const c = ctx.censusFull;
 		const d = await twoPassDefects( { folder: job.folder, entry: job.entry, harPath: job.harPath, census: { rows: c.rows, sources: c.sources }, visits: ctx.visits.census, widths: job.widths, flags: ctx.flagRows ?? null, log } );
+		ctx.notDefects = d.notDefects;
 		return {
 			draftDefects: defectReviewRows( d ), notDefects: d.notDefects, passes: d.passes, gaps: d.gaps, blocked: d.blocked,
 			note: `${ d.rows.length } defects in ${ d.groups.length } groups, ${ d.notDefects.length } not defects; pass A ${ ( d.passes.a.ms / 1000 ).toFixed( 1 ) }s, pass B ${ ( d.passes.b.ms / 1000 ).toFixed( 1 ) }s`,
 		};
+	} ],
+	// FR-48-25 and FR-48-29: the inventory re-derived from the census, its timer and frame writers sampled per width, a
+	// dead-code verdict of the draft defects marking its record, and Claude Design's copies diffed (lib/intake-inventory.mjs).
+	[ 'inventory', async ( job, ctx ) => {
+		const { inventoryStage } = await import( './intake-inventory.mjs' );
+		return inventoryStage( job, ctx );
 	} ],
 	[ 'skeletons', async ( job, ctx, log ) => {
 		const roots = surfaceRoots( { folder: job.folder, census: ctx.censusFull } );

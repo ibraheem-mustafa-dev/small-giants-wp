@@ -274,3 +274,11 @@ export function defectGroups( rows, census ) {
 	}
 	return [ ...groups.values() ];
 }
+
+// The props each component is mounted with by a parent draft (FR-48-29): Map(component name → Set(prop names)), from
+// the census's dc-import rows (their decoded attribute names).
+export function mountedProps( rows ) {
+	const out = new Map();
+	rows.filter( ( r ) => 'dc-import' === r.kind ).forEach( ( r ) => out.set( r.detail.name, new Set( [ ...( out.get( r.detail.name ) || [] ), ...( r.detail.props || [] ) ] ) ) );
+	return out;
+}

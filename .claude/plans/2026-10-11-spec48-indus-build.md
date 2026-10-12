@@ -8,14 +8,9 @@ status: in progress
 
 # Spec 48 Indus build
 
-**Purpose.** Spec 48 Appendix B lists the 25 ordered steps that turn the Indus Claude Design export
-(`sites/indus-foods/handoff/`) into a working SGS site through stages 0 to 5. This plan groups them into phases, each
-closed by the done-when of the requirement it cites, and fixes who runs what, in which order, beside what. Quality and
-reliability come first; a speed or cost gain is taken only where it adds no risk (Bean, 2026-10-11).
+**Purpose.** Spec 48 Appendix B lists the 25 ordered steps that turn the Indus Claude Design export (`sites/indus-foods/handoff/`) into a working SGS site through stages 0 to 5. This plan groups them into phases, each closed by the done-when of the requirement it cites, and fixes who runs what, in which order, beside what. Quality and reliability come first; a speed or cost gain is taken only where it adds no risk (Bean, 2026-10-11).
 
-**Where it stands (2026-10-12).** Phase 1 (steps 1 to 8) and steps 9 to 12 are done: all 17 Indus blocks are current
-and the stage-0 calibration baseline is written. Steps 13 and 14 are done (intake lane); 14b is next, then 15; steps 16 to 25 are not started or are
-in the other lanes. Progress per step is marked in the phases below.
+**Where it stands (2026-10-12).** Phase 1 (steps 1 to 8) and steps 9 to 12 are done: all 17 Indus blocks are current and the stage-0 calibration baseline is written. Steps 13 and 14 are done (intake lane); 14b is next, then 15; steps 16 to 25 are not started or are in the other lanes. Progress per step is marked in the phases below.
 
 ## Orchestration
 
@@ -28,43 +23,25 @@ in the other lanes. Progress per step is marked in the phases below.
 | Intake | session C (13 and 14 done 2026-10-12) | 13 → 14 → 14b | 3 pushed | 6 h |
 | Join | one session, from 14b (Bean, 2026-10-12: one prompt replaces the three lanes' prompts) | 15 → 16 → 17 → 18 → 19 → 20 | 14b | from Appendix B per step |
 
-The lanes join at step 15 (needs 8, 9, 14 and 14b), and one session runs the join row in order from there: steps 16 to
-18 share `indus-test` work (Appendix A's step 5 is plan step 17's snapshot, its step 11 is step 18's site build). The
-critical path is the intake lane (3, 13, 14: about 5 h 45 by the spec's figures, against about 12 h with every set-up
-and intake step in a row).
+The lanes join at step 15 (needs 8, 9, 14 and 14b), and one session runs the join row in order from there: steps 16 to 18 share `indus-test` work (Appendix A's step 5 is plan step 17's snapshot, its step 11 is step 18's site build). The critical path is the intake lane (3, 13, 14: about 5 h 45 by the spec's figures, against about 12 h with every set-up and intake step in a row).
 
 ### Why these lanes (file-overlap proof, grep on 2026-10-11)
 Two steps run side by side only when the files they write do not overlap.
-- Step 3 rewrites the third-party imports in `calibrate.mjs`, `pairs.mjs`, `trace-check.mjs`, `lint.mjs`,
-  `lib/fill-read.mjs`, `lib/handoff.mjs`, `lib/runtime-probe.mjs`, `lib/svg-screen.mjs`, `lib/trial-run.mjs`,
-  `lib/winning-rule.mjs` and ten test files (`grep -rln node_modules scripts/computed-route --include=*.mjs`).
-- Step 5 writes `lib/cache.mjs` (imported only by `calibrate.mjs`), `calibrate.mjs`, `lib/calibrate.mjs` and the
-  default-paint readers `lib/fill-prop.mjs` and `lib/fill-resolve.mjs` (`grep -rln "defaultPaint\|paintKey"`).
-- Step 6 writes `lib/calibrate.mjs` (the `forms: union(…)` line) and the marker and instance planners
-  (`lib/calibrate-markers.mjs::markersFor`, `lib/calibrate-instances.mjs`).
-- Step 7 writes the same planners (`gridTemplateColumns` is in `cache/container.json` `dead`),
-  `lib/resolve.mjs` (`TIER_OF`, `tiersOf`, and the two ties that stop `container.layout`'s discovered values; its NULL
-  `css_property` is by design, proven 2026-10-11, so no seeder edit or reseed).
-- Overlaps: 3 and 5 share `calibrate.mjs`, 5 and 6 share `lib/calibrate.mjs`, 6 and 7 share the planners. So 3, 5, 6
-  and 7 run strictly in sequence.
-- Step 4 writes `scripts/local-wp/sync-build.sh`, `scripts/local-wp/README.md`, `calibration-targets.json`, a gitignored
-  secrets file, the WSL mirror and one private page on `indus-test`: no route file, so it runs beside the route lane.
-- Steps 13 and 14 write new files (`intake.mjs`, `lib/intake-*.mjs`, `lib/tokens.mjs`, `data/*.schema.json`); they
-  need step 3's `package.json` and must not edit it (a new dependency goes back to session A) and edit only their own
-  rows of `scripts/computed-route/README.md`.
-- Steps 9 to 11 are framework files (`theme/`, `plugins/`). They run in sequence inside their lane until a grep proves
-  them disjoint (9 and 15 both add tokens to `theme/sgs-theme/theme.json` and every snapshot).
+- Step 3 rewrites the third-party imports in `calibrate.mjs`, `pairs.mjs`, `trace-check.mjs`, `lint.mjs`, `lib/fill-read.mjs`, `lib/handoff.mjs`, `lib/runtime-probe.mjs`, `lib/svg-screen.mjs`, `lib/trial-run.mjs`, `lib/winning-rule.mjs` and ten test files (`grep -rln node_modules scripts/computed-route --include=*.mjs`).
+- Step 5 writes `lib/cache.mjs` (imported only by `calibrate.mjs`), `calibrate.mjs`, `lib/calibrate.mjs` and the default-paint readers `lib/fill-prop.mjs` and `lib/fill-resolve.mjs` (`grep -rln "defaultPaint\|paintKey"`).
+- Step 6 writes `lib/calibrate.mjs` (the `forms: union(…)` line) and the marker and instance planners (`lib/calibrate-markers.mjs::markersFor`, `lib/calibrate-instances.mjs`).
+- Step 7 writes the same planners (`gridTemplateColumns` is in `cache/container.json` `dead`), `lib/resolve.mjs` (`TIER_OF`, `tiersOf`, and the two ties that stop `container.layout`'s discovered values; its NULL `css_property` is by design, proven 2026-10-11, so no seeder edit or reseed).
+- Overlaps: 3 and 5 share `calibrate.mjs`, 5 and 6 share `lib/calibrate.mjs`, 6 and 7 share the planners. So 3, 5, 6 and 7 run strictly in sequence.
+- Step 4 writes `scripts/local-wp/sync-build.sh`, `scripts/local-wp/README.md`, `calibration-targets.json`, a gitignored secrets file, the WSL mirror and one private page on `indus-test`: no route file, so it runs beside the route lane.
+- Steps 13 and 14 write new files (`intake.mjs`, `lib/intake-*.mjs`, `lib/tokens.mjs`, `data/*.schema.json`); they need step 3's `package.json` and must not edit it (a new dependency goes back to session A) and edit only their own rows of `scripts/computed-route/README.md`.
+- Steps 9 to 11 are framework files (`theme/`, `plugins/`). They run in sequence inside their lane until a grep proves them disjoint (9 and 15 both add tokens to `theme/sgs-theme/theme.json` and every snapshot).
 
 ### The serial queue
-Deploys, DB reseeds, `local-indus` mirror refreshes, calibration runs and live-site writes run one at a time across
-every session (they write the shared DB, the shared mirror or the live test site). Before each: `ListAgents`, then
-`SendMessage` to every active peer naming the operation; after it lands, say so. Expected order: (a) step 4's
-calibration page and mirror fill (done); (b) step 6's recalibration of heading and container on `local-indus` (done);
-(c) step 12's refresh loop (done); (d) step 8's stage-0 calibration run (done). Later live writes (step 16 on
-`indus-test`, stage 2's snapshot push and site build) go through the same queue.
+Deploys, DB reseeds, `local-indus` mirror refreshes, calibration runs and live-site writes run one at a time across every session (they write the shared DB, the shared mirror or the live test site). Before each: `ListAgents`, then `SendMessage` to every active peer naming the operation; after it lands, say so. Expected order: (a) step 4's calibration page and mirror fill (done); (b) step 6's recalibration of heading and container on `local-indus` (done); (c) step 12's refresh loop (done); (d) step 8's stage-0 calibration run (done). Later live writes (step 16 on `indus-test`, stage 2's snapshot push and site build) go through the same queue.
 
 ### Model and QC per step
 Every diff is read on the main thread before its commit. Every commit keeps the guardrails green.
+
 | Step | Model | QC beyond the done-when |
 |---|---|---|
 | 3 | Sonnet | `npm ci` installs the lock; negative control: the lint ban turns red when its rule is removed |
@@ -81,154 +58,54 @@ Every diff is read on the main thread before its commit. Every commit keeps the 
 | 18, 19 | Opus | as their done-whens, on the live page at 375/768/1440 |
 | 20, 23 | Opus | the check's verdict table and Bean's eye at 375/768/1440 |
 
-**Estimate rule.** A step that finishes in a third of its estimate or less revises every remaining estimate down in
-the same reply.
-**Actuals (2026-10-11).** Steps 3 to 7 took 5 to 25 minutes of agent time each against 30 to 60 estimated, so
-read every remaining Appendix B agent estimate at about a third.
+**Estimate rule.** A step that finishes in a third of its estimate or less revises every remaining estimate down in the same reply.
 
-**Guardrails on every commit.** `python scripts/check-spec-id-landing.py` and `--self-test` green;
-`node --test "scripts/computed-route/tests/*.test.mjs"` fails only the 3 known `lint.test.mjs` brandName cases;
-explicit-pathspec commits straight to `main`.
+**Actuals (2026-10-11).** Steps 3 to 7 took 5 to 25 minutes of agent time each against 30 to 60 estimated, so read every remaining Appendix B agent estimate at about a third.
+
+**Guardrails on every commit.** `python scripts/check-spec-id-landing.py` and `--self-test` green; `node --test "scripts/computed-route/tests/*.test.mjs"` fails only the 3 known `lint.test.mjs` brandName cases; explicit-pathspec commits straight to `main`.
 
 ## Phases
 
 ### Phase 1. Set-up and stage 0 (Appendix B steps 1 to 8)
 - [x] **1. Current export.** Passes `handoff-check.mjs` (2026-10-11).
-- [x] **2. Test-site email** (done 2026-10-12). Appendix A step 6 on `indus-test` through the studio mailbox (sandybrown's
-  login and key, `.claude/dev-setup.md` §Site email): From `Indus Foods (test) <admin@smallgiantsstudio.co.uk>`, digest and
-  `--redirect-all-to` the studio mailbox; no client mailbox (Bean, 2026-10-12: the studio does not run Indus's domain or
-  email). `provision-site-mail.py --target indus-test --check` exits 0; the test send is row 1 `sent` in `wp_fsmpt_email_logs`.
-- [x] **3. Route dependencies** (done 2026-10-11; route suite 867/870, the 3 known failures). FR-48-75 done when: `npm ci` in `scripts/computed-route` installs the pinned set; a
-  planted import from `plugins/sgs-blocks/node_modules` fails `lint.mjs`. (The G0 browser-version case lands with G0,
-  Phase 6.)
-- [x] **4. Indus mirror and targets** (done 2026-10-11: `local-indus` on port 8083, database `wp_indus`; calibration
-  page 15 on both sites; overlay image attachment 18). Appendix A step 13 done: `local-indus` serves, its secrets file exists, the
-  calibration page exists on `indus-test` and the mirror with one ID, and `calibration-targets.json` has `indus-test`
-  and `local-indus`.
-- [x] **5. Per-site default paint** (done 2026-10-11; a mirror shares its test site's paint through `mirrorOf`). §3.2 done when a run on one site never reads or overwrites another site's
-  `cache/<site>/<block>.paint.json`, and the slot map stays one library-wide `cache/<block>.json`.
-- [x] **6. Accepted value forms** (done 2026-10-11; also fixed `container.gridTemplateColumns`, step 7's first item). FR-48-2 done when recalibrating `sgs/heading` and `sgs/container` records `clamp` on
-  a font-size setting that accepts it and `repeat` on the container's grid template setting, and a planted setting that
-  strips `clamp()` records no `clamp`.
-- [x] **7. Indus calibration fixes and the desktop tier** (done 2026-10-11). FR-48-74 done when `resolve.test.mjs` writes 48px at 1440
-  and 52px at 1920 as desktop 48px with no gap, routes a declared `clamp()` with the same readings to the fluid path,
-  and both cases fail with the 1920 merge restored (built 2026-10-11); plus `container.gridTemplateColumns` is not dead
-  (done in step 6) and a flex row and a grid draft on the container's root resolve to `layout` `flex` and `grid`
-  (the hide-on-device and `flex`/`stack` ties, FR-48-3).
-  Left open, for Phase 5 (the header slice is the first Solve run that needs them): `solve.mjs` builds a row's
-  `siblings` from difference rows only, so a flex-row draft whose live element is already a row stays `ambiguous` in
-  Solve (Fill passes every draft property and resolves); calibration does not record the value a marker painted
-  (`lib/calibrate.mjs::slotFor`), so a yes/no setting that reaches all three widths cannot be excluded by value; and
-  the stack discovery records `flex-direction: column` on the root only, though the wrapper also forces it on
-  `__inner`.
-- [x] **8. Stage 0 command and run** (done 2026-10-12). FR-48-3 done when a stage-0 run on Indus writes
-  `sites/indus-foods/build/intake/calibration-baseline.json` (validating against its Appendix C schema), refuses to
-  report a block whose deploy hash differs from its cache as calibrated, and writes no default-paint file. Stage 0's
-  exit (FR-48-16) then holds.
-  Run on `local-indus` at `3e1bdd9e9`: all 17 blocks current, `sites/indus-foods/build/intake/calibration-baseline.json`
-  written and its counts and hashes checked against `cache/*.json` (17 of 17), no paint file changed, and every block's
-  settings diffed against the pre-run cache: no setting lost except two named, proven ones. `calibrate.mjs` now refuses
-  a slot map that drops a reached setting unless `--allow-loss` names it; the refusals it raised on Indus, their proven
-  causes and fixes (a badge menu item, `::before` media-layer reads, 16 typography `css_property` overrides, the
-  `extensions.css` link-underline rule) and the open calibration debt are in FR-48-3's Status.
-  Left open: `chromeRatingColour` (sgs/nav-drawer) reads dead until a test site has a Site Info rating, which needs a
-  real rating source, never a planted one (it would show on the client's build); and `bgHoverZoomScale` has no
-  `css_property` on any of the seven blocks that declare it, so no hover zoom is calibrated. Owner: step 20 if the
-  Indus header or a header surface uses either, otherwise Phase 6 (a DB override per block naming the zoom layer's
-  `transform`, then recalibration through the refresh loop).
+- [x] **2. Test-site email** (done 2026-10-12). Appendix A step 6 on `indus-test` through the studio mailbox (sandybrown's login and key, `.claude/dev-setup.md` §Site email): From `Indus Foods (test) <admin@smallgiantsstudio.co.uk>`, digest and `--redirect-all-to` the studio mailbox; no client mailbox (Bean, 2026-10-12: the studio does not run Indus's domain or email). `provision-site-mail.py --target indus-test --check` exits 0; the test send is row 1 `sent` in `wp_fsmpt_email_logs`.
+- [x] **3. Route dependencies** (done 2026-10-11; route suite 867/870, the 3 known failures). FR-48-75 done when: `npm ci` in `scripts/computed-route` installs the pinned set; a planted import from `plugins/sgs-blocks/node_modules` fails `lint.mjs`. (The G0 browser-version case lands with G0, Phase 6.)
+- [x] **4. Indus mirror and targets** (done 2026-10-11: `local-indus` on port 8083, database `wp_indus`; calibration page 15 on both sites; overlay image attachment 18). Appendix A step 13 done: `local-indus` serves, its secrets file exists, the calibration page exists on `indus-test` and the mirror with one ID, and `calibration-targets.json` has `indus-test` and `local-indus`.
+- [x] **5. Per-site default paint** (done 2026-10-11; a mirror shares its test site's paint through `mirrorOf`). §3.2 done when a run on one site never reads or overwrites another site's `cache/<site>/<block>.paint.json`, and the slot map stays one library-wide `cache/<block>.json`.
+- [x] **6. Accepted value forms** (done 2026-10-11; also fixed `container.gridTemplateColumns`, step 7's first item). FR-48-2 done when recalibrating `sgs/heading` and `sgs/container` records `clamp` on a font-size setting that accepts it and `repeat` on the container's grid template setting, and a planted setting that strips `clamp()` records no `clamp`.
+- [x] **7. Indus calibration fixes and the desktop tier** (done 2026-10-11). FR-48-74 done when `resolve.test.mjs` writes 48px at 1440 and 52px at 1920 as desktop 48px with no gap, routes a declared `clamp()` with the same readings to the fluid path, and both cases fail with the 1920 merge restored (built 2026-10-11); plus `container.gridTemplateColumns` is not dead (done in step 6) and a flex row and a grid draft on the container's root resolve to `layout` `flex` and `grid` (the hide-on-device and `flex`/`stack` ties, FR-48-3). Left open, for Phase 5 (the header slice is the first Solve run that needs them): `solve.mjs` builds a row's `siblings` from difference rows only, so a flex-row draft whose live element is already a row stays `ambiguous` in Solve (Fill passes every draft property and resolves); calibration does not record the value a marker painted (`lib/calibrate.mjs::slotFor`), so a yes/no setting that reaches all three widths cannot be excluded by value; and the stack discovery records `flex-direction: column` on the root only, though the wrapper also forces it on `__inner`.
+- [x] **8. Stage 0 command and run** (done 2026-10-12). FR-48-3 done when a stage-0 run on Indus writes `sites/indus-foods/build/intake/calibration-baseline.json` (validating against its Appendix C schema), refuses to report a block whose deploy hash differs from its cache as calibrated, and writes no default-paint file. Stage 0's exit (FR-48-16) then holds. Run on `local-indus` at `3e1bdd9e9`: all 17 blocks current, `sites/indus-foods/build/intake/calibration-baseline.json` written and its counts and hashes checked against `cache/*.json` (17 of 17), no paint file changed, and every block's settings diffed against the pre-run cache: no setting lost except two named, proven ones. `calibrate.mjs` now refuses a slot map that drops a reached setting unless `--allow-loss` names it; the refusals it raised on Indus, their proven causes and fixes (a badge menu item, `::before` media-layer reads, 16 typography `css_property` overrides, the `extensions.css` link-underline rule) and the open calibration debt are in FR-48-3's Status. Left open: `chromeRatingColour` (sgs/nav-drawer) reads dead until a test site has a Site Info rating, which needs a real rating source, never a planted one (it would show on the client's build); and `bgHoverZoomScale` has no `css_property` on any of the seven blocks that declare it, so no hover zoom is calibrated. Owner: step 20 if the Indus header or a header surface uses either, otherwise Phase 6 (a DB override per block naming the zoom layer's `transform`, then recalibration through the refresh loop).
 
 ### Phase 2. Spec 32 framework halves (steps 9 to 12, session B)
-- [x] **9. Palette slugs** (code done 2026-10-12, commits 7815a2b9b, 8caab9757, 25a761b5b). FR-32-14: the five slugs in
-  the framework and all nine snapshots, the completeness gate and push guard with negative controls, the container's
-  Section ground toggle. Four non-client snapshots linked below 4.5:1 and take the darker shade of the same hue (Spec 32
-  FR-32-14 status). The rendered colour check passed on `indus-test`, `sandybrown` and `eye-care-test` (FR-32-14 status).
-- [x] **10. Per-tier section padding and gutter tokens** (code done 2026-10-12, commits 2c9f4f5ed, 039c21622,
-  2d4a1b876). FR-32-15: six tokens in every snapshot at today's values, `theme/sgs-theme/assets/css/layout-tokens.css`
-  as their reader, the wrapper's `.sgs-container--section-pad`, the placeholder, the push guard. The Indus 375/768/1440
-  parity check needs step 17's snapshot; the nested-section and token-change checks passed on `indus-test`, and the gutter reads unchanged on `sandybrown` and `eye-care-test`. A snapshot whose `styles.css` sets the root padding is refused by the gate and the push, because the gutter token outranks it.
-- [x] **11. `sgsCustomCss` hardening** (code done 2026-10-12, commit d6c1d3968; its gate folded in 2d4a1b876). FR-32-20: parsed and scoped per instance (PHP and JS twins
-  on one shared case table, one gate), stable instance key, core-block lift, `edit_css` save check, route label; three
-  raw unscoped readers removed (the nav link helper, `nav-drawer`), guarded. The canvas-versus-page and head-collector
-  checks passed on `indus-test`.
-- [x] **12. Framework refresh loop** (done 2026-10-12). The framework lane reseeded the shared DB from a detached HEAD
-  worktree (twice: for steps 9 to 11, then for the route lane's typography overrides 9295b6005), ran
-  `dbschema/seed_reference_data.py` after each (a normal reseed leaves `sgs/hero.splitMediaType` as select-from-enum),
-  and deployed `indus-test` at 3e1bdd9e9. FR-32-14, -15 and -20 were verified live there. The route lane then
-  refreshed `local-indus` and ran stage 0: all 17 Indus blocks current (`stage0.mjs --plan` lists none to recalibrate),
-  baseline in `sites/indus-foods/build/intake/calibration-baseline.json`. One live-check fix landed on the way:
-  section padding is a per-role opt-in (`supports.sgs.sectionPadding`, sgs/container), so the site header takes none.
+- [x] **9. Palette slugs** (code done 2026-10-12, commits 7815a2b9b, 8caab9757, 25a761b5b). FR-32-14: the five slugs in the framework and all nine snapshots, the completeness gate and push guard with negative controls, the container's Section ground toggle. Four non-client snapshots linked below 4.5:1 and take the darker shade of the same hue (Spec 32 FR-32-14 status). The rendered colour check passed on `indus-test`, `sandybrown` and `eye-care-test` (FR-32-14 status).
+- [x] **10. Per-tier section padding and gutter tokens** (code done 2026-10-12, commits 2c9f4f5ed, 039c21622, 2d4a1b876). FR-32-15: six tokens in every snapshot at today's values, `theme/sgs-theme/assets/css/layout-tokens.css` as their reader, the wrapper's `.sgs-container--section-pad`, the placeholder, the push guard. The Indus 375/768/1440 parity check needs step 17's snapshot; the nested-section and token-change checks passed on `indus-test`, and the gutter reads unchanged on `sandybrown` and `eye-care-test`. A snapshot whose `styles.css` sets the root padding is refused by the gate and the push, because the gutter token outranks it.
+- [x] **11. `sgsCustomCss` hardening** (code done 2026-10-12, commit d6c1d3968; its gate folded in 2d4a1b876). FR-32-20: parsed and scoped per instance (PHP and JS twins on one shared case table, one gate), stable instance key, core-block lift, `edit_css` save check, route label; three raw unscoped readers removed (the nav link helper, `nav-drawer`), guarded. The canvas-versus-page and head-collector checks passed on `indus-test`.
+- [x] **12. Framework refresh loop** (done 2026-10-12). The framework lane reseeded the shared DB from a detached HEAD worktree (twice: for steps 9 to 11, then for the route lane's typography overrides 9295b6005), ran `dbschema/seed_reference_data.py` after each (a normal reseed leaves `sgs/hero.splitMediaType` as select-from-enum), and deployed `indus-test` at 3e1bdd9e9. FR-32-14, -15 and -20 were verified live there. The route lane then refreshed `local-indus` and ran stage 0: all 17 Indus blocks current (`stage0.mjs --plan` lists none to recalibrate), baseline in `sites/indus-foods/build/intake/calibration-baseline.json`. One live-check fix landed on the way: section padding is a per-role opt-in (`supports.sgs.sectionPadding`, sgs/container), so the site header takes none.
 
 ### Phase 3. Stage 1 intake (steps 13 to 15, session C, then the join)
-- [x] **13. Intake 4a** (done 2026-10-12, session C). FR-48-23 and FR-48-28 done-whens; FR-48-24's census with
-  `construct-registry.json`; the Appendix C schemas for the reading record, the registry and the baseline. Built as
-  `lib/intake-sandbox.mjs`, `-record`, `-process`, `-prose`, `lib/intake-harness.mjs`, `lib/intake-reading.mjs`, the
-  `lib/intake-census*.mjs` static and runtime passes and `lib/intake-registry.mjs`, each case with its MUST FAIL
-  control; `tests/intake-schemas.test.mjs` holds every Appendix C schema equal to the spec. The Indus census (24
-  visits at three widths) takes about 9 minutes and is identical across two runs.
-- [x] **14. Intake 4b** (done 2026-10-12, session C). FR-48-26, -27, -30, -31, -32, -33 and -34, §3.4 steps 1 to 4, the
-  intake and page-map schemas, and `intake.mjs` (`<client> [--record]`, `--finalise`, `--apply-picks`, `--render`,
-  `--apply-review`), each with its MUST FAIL controls (route suite 1135/1138, the 3 known brandName failures). An Indus
-  rehearsal writes a valid `intake.json`, `review.md` and `page-map.json` with no live request in about 97 minutes of
-  machine time; the review is 762 rows, 415 needing reading and 347 confident block proposals under "Accept all".
-  Residual, owned here (none blocks step 15):
-  - a blocked request caught by a census, defect or harness page has `draftId` null (only `openSandbox`'s `visit()`
-    resolves IDs), and the static census's own sandbox list is not merged;
-  - the finaliser request holds each row's tag, words, snippet and top three candidates but no parent, siblings or
-    boxes (`lib/intake-skeletons.mjs::rowsOf`/`summaryOf` would carry them);
-  - draft-defect forcing does not fire drag events, chain two-step states (drawer, then an accordion row) or give
-    pointer handlers coordinates, and does not follow a field only dead code sets; Indus leaves 15 test-2 defects in 8
-    groups that may shrink once these land;
-  - `lib/intake-ast.mjs::parseLogic` and `lib/intake-census-logic.mjs::parseLogic` are two Babel wrappers with
-    different return shapes; merge them when either is next edited.
-  Owned elsewhere: the Indus header's navigation comes out as containers, not a navigation block (FR-48-6, open in
-  `.claude/plans/2026-10-04-spec47-full-coverage.md` R2); no Appendix C post type fits a single-product route (decided
-  before Mama's intake, FR-48-30 status).
-- [ ] **14b. Re-derived inventory and prop variants** (session C, Opus; needs 13 and 14; before 15). FR-48-25 and
-  FR-48-29 are on FR-48-17's work list but were in no Appendix B step (Bean, 2026-10-12: a step of their own). Build:
-  intake writes its own `animations` and `surfaces` inventory into `intake.json` by `handoff-schema/METHOD.md` §0 to §8
-  (from the census rows, the harness's sample mode for timer-written styles per width, and the forced states the
-  defect pass already reaches), validates both against the master schemas in
-  `.claude/claude-design-handoff/handoff-schema/`, diffs Claude Design's copies against them as `inventory-diff` review
-  rows (marks `ours`/`theirs`; the review library already renders the section), and turns the registry's motion kinds
-  (`waapi`, `transition`, `keyframes`, `observer`, `timer`, `handler`, `ref`, `data-hook`) from gaps into readers;
-  FR-48-29: a `dc-import` mounted with `data-props` records non-default variants as states only when a parent mounts
-  them (the defect pass already classifies prop-gated code as `prop-variant`). Also (Bean, 2026-10-12): `intake.json`
-  keeps the full not-a-defect list, and `review.md` lists the unwired dead-code entries (a handler or ref callback no template binding
-  names, which a misspelled wiring would also produce) as their own section, default mark "not a defect"; the other
-  reasons stay a count per reason (FR-48-34). Done when FR-48-25's done-when holds on Indus and Mama's, the planted
-  misspelled handler appears in that section, and `trace-check.mjs --shift=7` still fails.
-- [ ] **15. Intake run and Bean's review** (needs 14b; steps 8 and 9 are done). In order: `node
-  scripts/computed-route/intake.mjs indus-foods --record` (the replay file misses four stock images the census and
-  defect pages ask for, and only `--record` tops it up); `intake.mjs --finalise indus-foods`, an agent answers
-  `sites/indus-foods/build/intake/finalise-request.json` with `scripts/computed-route/prompts/skeleton-finaliser.md`
-  into `finalise-picks.json`, then `intake.mjs --apply-picks indus-foods`; Bean marks `review.md`; `intake.mjs
-  --apply-review indus-foods` exits 0. Stage 1's exit (FR-48-17): every census construct has a reader or a gap row,
-  every review row carries Bean's mark, `intake.json` validates.
+- [x] **13. Intake 4a** (done 2026-10-12, session C). FR-48-23 and FR-48-28 done-whens; FR-48-24's census with `construct-registry.json`; the Appendix C schemas for the reading record, the registry and the baseline. Built as `lib/intake-sandbox.mjs`, `-record`, `-process`, `-prose`, `lib/intake-harness.mjs`, `lib/intake-reading.mjs`, the `lib/intake-census*.mjs` static and runtime passes and `lib/intake-registry.mjs`, each case with its MUST FAIL control; `tests/intake-schemas.test.mjs` holds every Appendix C schema equal to the spec. The Indus census (24 visits at three widths) takes about 9 minutes and is identical across two runs.
+- [x] **14. Intake 4b** (done 2026-10-12, session C). FR-48-26, -27, -30, -31, -32, -33 and -34, §3.4 steps 1 to 4, the intake and page-map schemas, and `intake.mjs` (`<client> [--record]`, `--finalise`, `--apply-picks`, `--render`, `--apply-review`), each with its MUST FAIL controls (route suite 1135/1138, the 3 known brandName failures). An Indus rehearsal writes a valid `intake.json`, `review.md` and `page-map.json` with no live request in about 97 minutes of machine time; the review is 762 rows, 415 needing reading and 347 confident block proposals under "Accept all". Residual, owned here (none blocks step 15):
+  - a blocked request caught by a census, defect or harness page has `draftId` null (only `openSandbox`'s `visit()` resolves IDs), and the static census's own sandbox list is not merged;
+  - the finaliser request holds each row's tag, words, snippet and top three candidates but no parent, siblings or boxes (`lib/intake-skeletons.mjs::rowsOf`/`summaryOf` would carry them);
+  - draft-defect forcing does not fire drag events, chain two-step states (drawer, then an accordion row) or give pointer handlers coordinates, and does not follow a field only dead code sets; Indus leaves 15 test-2 defects in 8 groups that may shrink once these land;
+  - `lib/intake-ast.mjs::parseLogic` and `lib/intake-census-logic.mjs::parseLogic` are two Babel wrappers with different return shapes; merge them when either is next edited. Owned elsewhere: the Indus header's navigation comes out as containers, not a navigation block (FR-48-6, open in `.claude/plans/2026-10-04-spec47-full-coverage.md` R2); no Appendix C post type fits a single-product route (decided before Mama's intake, FR-48-30 status).
+- [x] **14b. Re-derived inventory and prop variants** (done 2026-10-12, Join session; Opus subagent; needs 13 and 14; before 15). FR-48-25 and FR-48-29 are on FR-48-17's work list but were in no Appendix B step (Bean, 2026-10-12: a step of their own). Build: intake writes its own `animations` and `surfaces` inventory into `intake.json` by `handoff-schema/METHOD.md` §0 to §8 (from the census rows, the harness's sample mode for timer-written styles per width, and the forced states the defect pass already reaches), validates both against the master schemas in `.claude/claude-design-handoff/handoff-schema/`, diffs Claude Design's copies against them as `inventory-diff` review rows (marks `ours`/`theirs`; the review library already renders the section), and turns the registry's motion kinds (`waapi`, `transition`, `keyframes`, `observer`, `timer`, `handler`, `ref`, `data-hook`) from gaps into readers; FR-48-29: a `dc-import` mounted with `data-props` records non-default variants as states only when a parent mounts them (the defect pass already classifies prop-gated code as `prop-variant`). Also (Bean, 2026-10-12): `intake.json` keeps the full not-a-defect list, and `review.md` lists the unwired dead-code entries (a handler or ref callback no template binding names, which a misspelled wiring would also produce) as their own section, default mark "not a defect"; the other reasons stay a count per reason (FR-48-34). Done when FR-48-25's done-when holds on Indus and Mama's, the planted misspelled handler appears in that section, and `trace-check.mjs --shift=7` still fails. Progress (2026-10-12): the FR-48-25 and FR-48-29 parts are done: the `inventory` stage (`lib/intake-inventory.mjs::inventoryStage`, after the draft defects) validates on Indus and Mama's with every occurrence mapped, the registry's eight motion, trigger and hook kinds are read by `readInventory`, and `trace-check.mjs --shift=7` still matches 0; `lib/intake-run.mjs::buildRecord` writes it as `intake.json`'s `inventory` and the FR-48-25 gap row is gone. The not-a-defect part landed in e6814ffaf: `intake.json`'s `notDefects` and review.md's `not-a-defect` section. Expect about 455 `inventory-diff` rows on Indus (544 on Mama's), mostly real disagreements with Claude Design's files (easing formulas, `iterations` on scroll writers, `:active` splits), all defaulting to `ours` under Accept all. Left open, owner Phase 6 unless the header slice (step 20) needs it: writers rendered only on non-entry routes are not sampled (Indus's 18 sample gap rows), an `sc-if` toggled by `!this.state.x` is listed `unforceable`, and surface kinds are inferred from state-key and component names. Session C may swap `lib/intake-defects.mjs::unreachedDefects`'s inline mount map for `mountedProps` when it next edits that file.
+- [ ] **15. Intake run and Bean's review** (needs 14b; steps 8 and 9 are done). In order: `node scripts/computed-route/intake.mjs indus-foods --record` (the replay file misses four stock images the census and defect pages ask for, and only `--record` tops it up); `intake.mjs --finalise indus-foods`, an agent answers `sites/indus-foods/build/intake/finalise-request.json` with `scripts/computed-route/prompts/skeleton-finaliser.md` into `finalise-picks.json`, then `intake.mjs --apply-picks indus-foods`; Bean marks `review.md`; `intake.mjs --apply-review indus-foods` exits 0. Stage 1's exit (FR-48-17): every census construct has a reader or a gap row, every review row carries Bean's mark, `intake.json` validates.
 
 ### Phase 4. Stage 2 site build (steps 16 to 19)
-- [ ] **16. Appendix A on `indus-test`**, the steps not already done (may start after step 4). Checked 2026-10-12 over
-  SSH: steps 1 to 3, 6, 7, 8, 9 and 13 are done; step 4 does not apply (Indus is a trade wholesaler, no WooCommerce).
-  Step 7: `blog_public` is 0 (the homepage carries `noindex, nofollow`). Step 9: `site_icon` is attachment 33, the
-  Indus logo fitted into a 512px square (the export's `logo-square.svg` is 1998x1302, not square), and the homepage's
-  `rel="icon"` links point at it; the PNG is a scratch render, not committed. Still open: steps 5, 10, 11 and 12, which
-  follow stage 1 (snapshot, Site Info and site build need step 15).
-- [ ] **17. Snapshot** (needs 12 and 15): the extractor reads `tokens/*.css` with the confirmed roles; dry run, then
-  push.
+- [ ] **16. Appendix A on `indus-test`**, the steps not already done (may start after step 4). Checked 2026-10-12 over SSH: steps 1 to 3, 6, 7, 8, 9 and 13 are done; step 4 does not apply (Indus is a trade wholesaler, no WooCommerce). Step 7: `blog_public` is 0 (the homepage carries `noindex, nofollow`). Step 9: `site_icon` is attachment 33, the Indus logo fitted into a 512px square (the export's `logo-square.svg` is 1998x1302, not square), and the homepage's `rel="icon"` links point at it; the PNG is a scratch render, not committed. Still open: steps 5, 10, 11 and 12, which follow stage 1 (snapshot, Site Info and site build need step 15).
+- [ ] **17. Snapshot** (needs 12 and 15): the extractor reads `tokens/*.css` with the confirmed roles; dry run, then push.
 - [ ] **18. Site build** (needs 15 and 16): FR-48-55, FR-48-58 and FR-48-59 done-whens.
 - [ ] **19. Default-paint step** (needs 17): FR-48-18's exit, as the refresh loop's step 4.
 
 ### Phase 5. Header vertical slice (step 20)
-- [ ] **20. Header through stage 5** (needs 11 and 19): FR-48-8 and FR-48-50 done-whens on the header, gates G0 to G7
-  on its rows, and Bean's eye at 375/768/1440. The other surfaces wait until this passes.
+- [ ] **20. Header through stage 5** (needs 11 and 19): FR-48-8 and FR-48-50 done-whens on the header, gates G0 to G7 on its rows, and Bean's eye at 375/768/1440. The other surfaces wait until this passes.
 
 ### Phase 6. The rest of Indus (steps 21 to 25)
-- [ ] **21. Trees**, **22. Forms** (FR-48-57's done-when; needs 2), **23. Check**, **24. Answer-sheet sample**
-  (FR-48-71, FR-48-73), **25. Gap list and sign-off** (stage 5's exit).
+- [ ] **21. Trees**, **22. Forms** (FR-48-57's done-when; needs 2), **23. Check**, **24. Answer-sheet sample** (FR-48-71, FR-48-73), **25. Gap list and sign-off** (stage 5's exit).
 
 After Indus: Mama's (shop surfaces, after Spec 27 FR-30-16/17 and fixture products).
 
 ## Decisions
-- **FR-32-14 and FR-32-15 migrate every snapshot, `sites/mamas-munches/theme-snapshot.json` included** (Bean,
-  2026-10-11), with values equal to what each site shows today.
-- **Calibration fixtures become portable** (Bean, 2026-10-11): references resolved per calibration target, and a
-  calibration menu, drawer and image on every test site (step 8).
+- **FR-32-14 and FR-32-15 migrate every snapshot, `sites/mamas-munches/theme-snapshot.json` included** (Bean, 2026-10-11), with values equal to what each site shows today.
+- **Calibration fixtures become portable** (Bean, 2026-10-11): references resolved per calibration target, and a calibration menu, drawer and image on every test site (step 8).

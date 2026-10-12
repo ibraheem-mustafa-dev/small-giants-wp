@@ -118,7 +118,6 @@ function tail( file, log ) {
 export function buildRecord( { client, takenOn, manifest, result } ) {
 	const p = result.parts;
 	const gaps = [ ...result.gaps ];
-	gaps.push( { construct: 'inventory', draftId: 'animations.json', error: 'the re-derived animation inventory (FR-48-25) is not built: inventory.animations is empty and Claude Design\'s animations.json is not used as a source', stage: 'inventory' } );
 	const attempts = ( p.replay?.proxyAttempts ?? 0 ) + ( p.skeletons?.proxyAttempts ?? 0 );
 	if ( attempts ) {
 		gaps.push( { construct: 'sandbox', draftId: client, error: `the trap proxy saw ${ attempts } connection attempt(s): something tried the live network`, stage: 'replay' } );
@@ -129,7 +128,7 @@ export function buildRecord( { client, takenOn, manifest, result } ) {
 		manifest: { schema_version: manifest.schemaVersion, files: Object.fromEntries( manifest.files.map( ( f ) => [ f.path, f.sha256 ] ) ) },
 		tools: result.tools, harness: result.harness,
 		census: p.census?.census?.rows ?? [],
-		inventory: { animations: null, surfaces: p.skeletons?.surfaces ?? null, diff: [] },
+		inventory: p.inventory?.inventory ?? { animations: null, surfaces: null, diff: [] },
 		routing: r ? { adapter: r.adapter, routes: r.routes, links: r.links } : { adapter: null, routes: [], links: [] },
 		breakpoints: p.breakpoints?.breakpoints ?? [],
 		pageMap: p[ 'page map' ]?.pageMap ?? [],

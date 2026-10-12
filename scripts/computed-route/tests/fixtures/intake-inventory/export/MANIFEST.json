@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-12",
+  "project": "Inventory fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Card.dc.html",
+      "bytes": 1014,
+      "sha256": "61938ee2775ec0fbb5189c044d39775776bdf3c10785b2f91ed0fe3f8f6226c7"
+    },
+    {
+      "path": "Home.dc.html",
+      "bytes": 3122,
+      "sha256": "edb2fc2ef066f27a64dcf7258427ff1267e21bbf3c7d422bb3be82d4e5a13714"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    }
+  ]
+}

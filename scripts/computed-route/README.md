@@ -1,19 +1,12 @@
 # Computed route (Spec 48)
 
-Measures a rendered design draft and writes block settings through the framework database, one surface at a time.
-**Solve** takes an existing layout tree, compares it with the draft through the parity walker, turns each difference
-into a setting write, rebuilds and repeats (at most three rounds). **Fill** fills a skeleton tree from
-the measured draft. Governing spec: `.claude/specs/48-CLONING-SYSTEM.md`.
+Measures a rendered design draft and writes block settings through the framework database, one surface at a time. **Solve** takes an existing layout tree, compares it with the draft through the parity walker, turns each difference into a setting write, rebuilds and repeats (at most three rounds). **Fill** fills a skeleton tree from the measured draft. Governing spec: `.claude/specs/48-CLONING-SYSTEM.md`.
 
-**Never touches:** `plugins/sgs-blocks/scripts/` (nothing is imported from it), the framework DB's contents (opened read-only, never written), the canary's homepage, posts page or motion-QA fixtures, and
-any site's active header, footer, drawer or snapshot pointer (R-47-1, R-47-2, R-47-11). `lint.mjs` enforces the index
-below and the import ban.
+**Never touches:** `plugins/sgs-blocks/scripts/` (nothing is imported from it), the framework DB's contents (opened read-only, never written), the canary's homepage, posts page or motion-QA fixtures, and any site's active header, footer, drawer or snapshot pointer (R-47-1, R-47-2, R-47-11). `lint.mjs` enforces the index below and the import ban.
 
-**External imports, read-only:** `node:sqlite`; `plugins/sgs-blocks/src/blocks/*/block.json` (attribute schemas);
-`scripts/parity/lib/*.mjs`; `scripts/wp-build-page.js` and `scripts/parity/draft-live-walk.mjs`, run as commands.
+**External imports, read-only:** `node:sqlite`; `plugins/sgs-blocks/src/blocks/*/block.json` (attribute schemas); `scripts/parity/lib/*.mjs`; `scripts/wp-build-page.js` and `scripts/parity/draft-live-walk.mjs`, run as commands.
 
-**Tests:** `node --test "scripts/computed-route/tests/*.test.mjs"` (Node 24 runs a glob, not a bare folder). Each
-file names the rule it proves and has one case marked MUST FAIL.
+**Tests:** `node --test "scripts/computed-route/tests/*.test.mjs"` (Node 24 runs a glob, not a bare folder). Each file names the rule it proves and has one case marked MUST FAIL.
 
 ## Files
 
@@ -66,6 +59,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/intake-defects.mjs`, `lib/intake-defects-binding.mjs`, `lib/intake-defects-keys.mjs`, `lib/intake-defects-force.mjs`, `lib/intake-defects-static.mjs` | FR-48-34's closed draft-defect list. Test 1: a `style-*` rule whose compiled declaration still holds `{{ }}` or was dropped at read time (the pinned runtime compiles the attribute text raw, so every bound `style-*` value is a defect). Test 2: a census construct `unreached` at 375, 768 and 1440 even when forced (hover and focus through the DevTools protocol, the state keys its condition reads set through the runtime's own `setState`, every handler's event and every code-wired listener fired, the scroll pass, both reduced-motion preferences). Not defects: a breakpoint, `reached-when-forced`, `render-wins`, `prop-variant` (FR-48-29), `dead-code` (a provable constant guard or an unbound `renderVals` key) and `prototype-only` (inside flagged placeholder or prototype code); a construct forcing cannot reach is a gap row. Defects are grouped by the class member or script that holds them. Coverage offsets come from `lib/intake-census-map.mjs`. |
 | `lib/intake-missing.mjs` | FR-48-34's missing-features list: unresolved skeleton rows, and pointer or hover behaviours whose code reads pointer position or writes motion with no matching block capability or `sgs-fx` effect; each marked with the main flow it sits in (buy, contact, apply) or none. |
 | `lib/intake-state.mjs` | Shared draft-state helper: sets a mounted component's state through its React fiber and the runtime's `logic.setState`, snapshots and restores it, fires a template event as the DOM event React hears (default action prevented), and records and fires code-wired listeners. |
+| `lib/intake-inventory.mjs`, `lib/intake-inventory-anim.mjs`, `lib/intake-inventory-tpl.mjs`, `lib/intake-inventory-code.mjs`, `lib/intake-inventory-target.mjs`, `lib/intake-inventory-keys.mjs`, `lib/intake-inventory-css.mjs`, `lib/intake-inventory-surfaces.mjs`, `lib/intake-inventory-sample.mjs`, `lib/intake-inventory-diff.mjs` | FR-48-25: the inventory re-derived by `handoff-schema/METHOD.md` §0 to §8 from the census rows and the census's own parse (never a regex over the draft): an A or L record per Web Animations call, a J record per JS style, text, scroll or playback writer, a TR record per transition declaration (its `style-*` rule folded in), a PS record per instant pseudo rule, a K record per animation declaration (an @keyframes rule maps to the records naming it), an RM record per reduced-motion rule; each with its target element, trigger (followed through timers, observers, listeners, lifecycle methods, template handlers, ref callbacks and callers) and reduced-motion guard. Surfaces: one per component, route and group of interactive `sc-if`s, each `sc-if` classified as interactive, route, breakpoint, prop variant or content variant, states carrying the forcing patches `lib/intake-state.mjs::setDraftState` sets. Both validate against the master schemas, every counted occurrence maps to record IDs, interval and frame-loop writers are sampled per width under the harness clock, and Claude Design's copies are diffed into review rows. `readInventory` is the registry reader of the motion, trigger and hook kinds. |
+| `lib/intake-props.mjs` | FR-48-29: a component's `data-props` declaration, the value each parent mount passes (a literal, or the option strings its bound `renderVals` key yields), the non-default values a parent mounts (states of the component's surface) and the enum props no parent passes (listed, not built). |
 | `tests/fixtures/intake-defects/Home.dc.html`, `tests/fixtures/intake-defects/Card.dc.html`, `tests/fixtures/intake-defects/image-slot.js`, `tests/fixtures/intake-defects/MANIFEST.json`, `tests/fixtures/intake-defects/support.js` | The draft-defect fixture: a dropped and a literal bound hover rule, a branch open at 1024 and up only, a branch reached when its state key is forced, an impossible branch, a hover-only rule, a prop-gated branch with and without a parent mounting the prop, constant-guarded and unbound dead code, a placeholder custom element and a reduced-motion branch. Not route code. |
 | `lib/intake-review.mjs` | FR-48-17: Bean's one batched review. Renders `review.md` from an intake record (one section per row type with an "Accept all" line and a Mark cell per row; carried-over changed rows first), reads it back, validates every mark against Appendix C's values per row type, applies accept-all and the flag default, and lists every row still without a mark as a blocker; lists the unwired dead-code not-a-defect entries as their own section and counts the other not-a-defect reasons in the header; carries a mark across a re-export when the row's draft ID and content hash are unchanged. |
 | `lib/intake-ast-eval.mjs` | Deeper static evaluation beside `lib/intake-ast.mjs`: follows a value to its data through loop variables, spreads, getters, `this.x =` assignments, `Object.assign` and local calls, and judges simple filter conditions, so a link built as `'#/' + s.key` inside a loop resolves to each item's key. `evalStr` is unchanged. |
@@ -74,8 +69,9 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/fixtures/intake-pagemap/hash/Site.dc.html`, `tests/fixtures/intake-pagemap/hash/Enquiry.dc.html`, `tests/fixtures/intake-pagemap/hash/surfaces.json`, `tests/fixtures/intake-pagemap/manifest/Shop.dc.html` | The page-map fixtures: a hash export with menus, a mega panel, a drawer, an imported form and a surfaces inventory; a draft with an embedded `data-sgs-manifest`. Not route code. |
 | `tests/fixtures/intake-siteinfo/export/Site.dc.html`, `tests/fixtures/intake-siteinfo/export/README.md`, `tests/fixtures/intake-siteinfo/stub-provision.py` | The Site Info and flags fixture: a phone, email, address, hours getter and socials, a planted placeholder address and malformed phone, a `{{ }}` value, lorem copy, a stock image, a stored basket and a timed fake submit; a stub of the provisioning script that prints its table and exits 9 on `--apply`. Not route code. |
 | `tests/fixtures/intake-routing/bp-unreadable/Panel.dc.html`, `tests/fixtures/intake-routing/files/About.dc.html`, `tests/fixtures/intake-routing/files/Card.dc.html`, `tests/fixtures/intake-routing/files/Home.dc.html`, `tests/fixtures/intake-routing/files/MANIFEST.json`, `tests/fixtures/intake-routing/hash/Site.dc.html`, `tests/fixtures/intake-routing/hybrid/Site.dc.html`, `tests/fixtures/intake-routing/hybrid-sets-page/Site.dc.html`, `tests/fixtures/intake-routing/none/Page.dc.html`, `tests/fixtures/intake-routing/state-page/Shop.dc.html` | The routing and breakpoint fixtures: one export per adapter kind, the Indus-style hybrid, a hybrid whose `go()` also sets `state.page`, a draft with no router, and an unreadable width basis. Not route code. |
-| `data/construct-registry.json` | FR-48-24 / Appendix C: the 19 construct kinds, each with its reader or the reason it has none yet (the requirement and Appendix B step that builds it). |
+| `data/construct-registry.json` | FR-48-24 / Appendix C: the 19 construct kinds, each with its reader (the motion, trigger and hook kinds: `lib/intake-inventory.mjs::readInventory`) or the reason it has none yet (the requirement and Appendix B step that builds it). |
 | `tests/fixtures/intake-census/export/Home.dc.html`, `tests/fixtures/intake-census/export/Child.dc.html`, `tests/fixtures/intake-census/export/Panel.dc.html`, `tests/fixtures/intake-census/export/helper.js`, `tests/fixtures/intake-census/export/support.js`, `tests/fixtures/intake-census/export/MANIFEST.json`, `tests/fixtures/intake-census/lib/fixture-readers.mjs` | The census fixture export: every construct kind, a mounted and an unmounted import, a helmet script and a handler no render calls; and the fixture readers (`readAny`, `readThrows`, `readEmpty`) for the reader controls. Not route code. |
+| `tests/fixtures/intake-inventory/export/Home.dc.html`, `tests/fixtures/intake-inventory/export/Card.dc.html`, `tests/fixtures/intake-inventory/export/support.js`, `tests/fixtures/intake-inventory/export/MANIFEST.json` | The inventory fixture export: an inline transition with a hover rule, an instant pseudo rule, a used and an unused @keyframes, a reduced-motion rule, a guarded Web Animations call in `componentDidUpdate`, an observer reveal, an interval style writer, a toggling and a breakpoint `sc-if`, and a Card with an enum prop a parent mounts non-default and one no parent passes. Not route code. |
 | `tests/fixtures/intake-census/runtime-export/Home.dc.html`, `tests/fixtures/intake-census/runtime-export/MANIFEST.json`, `tests/fixtures/intake-census/runtime-export/support.js` | The runtime-census fixture export: a called and an uncalled handler, an `sc-if` branch that opens at one width only, and a timer the static pass cannot see. Not route code. |
 | `lib/tokens.mjs` | FR-48-31: parses an export's `tokens/*.css` into declared custom properties with no render (comments, strings, nested parentheses, `@import`, nested `@media`/`@supports`, element rules, CSS nesting), resolves each `var()` chain with fallbacks (a cycle or missing reference is a problem with a null value, R-48-3), types each value and normalises colours to `#RRGGBB[AA]`. |
 | `lib/intake-palette.mjs` | FR-48-31 / FR-33-2 / R-47-7: the palette role proposal. Colour tokens matched to the draft's colours by exact value (alpha-aware), deduped at CIEDE2000 ΔE ≤ 1, given a slug from named name rules and usage rules (`custom-<name>` when nothing is confident, FR-33-2); unused tokens get no role; colours outside the tokens stay one-off hex; slugs read from `theme/sgs-theme/theme.json` at run time. |
@@ -224,7 +220,9 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/intake-sandbox.test.mjs` | FR-48-23 in headless Chromium on the fixture export (MUST FAIL each): a replay run makes no request outside the allowlist, a fetch to another loopback port and a WebSocket are blocked and listed; a second run replays fonts, images and pinned scripts from the HAR with no proxy attempt and its font `loaded`; the map embed is aborted and listed with its draft ID, also when the page came from `newPage()`; a worker started by `runIsolated` holds no secret variable and the guard throws on one; a `schema_version` other than "1.0" and one changed byte stop the re-check. |
 | `tests/intake-harness.test.mjs` | FR-48-28 on the fixture export in headless Chromium: two runs give byte-identical JSON lines in rest and in sample mode; switching off any one item (clock, random, storage, timeouts, intervals, frame loops, scroll pass, font wait, animation hold) makes the fixture differ or never settle (MUST FAIL, each also proven by removing the real mechanism); the 600ms fade reads 0, 0.5 and 1; every record validates and one without `harness` is refused. |
 | `tests/intake-prose.test.mjs` | FR-48-23: the planted "run `rm -rf build`" README line is listed and not executed (MUST FAIL); notes in the inventories are located by JSON path; ordinary prose and code spans naming functions are not listed. |
-| `tests/intake-census.test.mjs` | FR-48-24's four controls on the fixture export, each MUST FAIL with its guard removed: a deleted registry entry names the unread kind; an invented `sc-zzz` attribute and a computed-key getter are named unknown constructs; a throwing reader leaves a gap row and fails; an empty reader fails. The unchanged fixture with a full reader registry passes, and so does the committed all-gap registry. |
+| `tests/intake-census.test.mjs` | FR-48-24's four controls on the fixture export, each MUST FAIL with its guard removed: a deleted registry entry names the unread kind; an invented `sc-zzz` attribute and a computed-key getter are named unknown constructs; a throwing reader leaves a gap row and fails; an empty reader fails. The unchanged fixture with a full reader registry passes, and so does the committed registry (its motion, trigger and hook kinds read by `lib/intake-inventory.mjs::readInventory`, every other kind a gap). |
+| `tests/intake-inventory.test.mjs` | FR-48-25 and FR-48-29 on the inventory fixture export, each MUST FAIL with its mechanism removed: the inventory validates against both master schemas and every occurrence maps to a record (a removed mapping is named; a record missing `trace` and a surface with no state fail the schemas); template, keyframes, reduced-motion, Web Animations, interval-writer and surface records carry their values, targets and triggers (a renamed reduced-motion guard turns `skip` into `unchanged`; a condition no handler writes has no opener); a prop variant a parent mounts is a state and an unpassed enum prop is listed (with no parent passing it, no state); the committed registry reads every motion, trigger and hook construct (an inventory that does not map one is an empty reader); sample mode reads the interval writer at 0, 100 and 200 ms per width; the stage's output shape. |
+| `tests/intake-inventory-diff.test.mjs` | FR-48-25's diff with no browser: identical inventories give no row whatever their IDs, names and spellings; a changed field, a record or route or toggling `sc-if` only one side has, a count, a surface kind and a state count each give a row (MUST FAIL); a missing copy is a row. |
 | `tests/intake-census-runtime.test.mjs` | FR-48-24 control 5 and the runtime pass, each MUST FAIL with its mechanism removed: a handler no render calls is listed and `unreached` at every width; without the static pass it is not listed at all; a called handler is `both`; an `sc-if` open at one width only is reached; a timer only the runtime sees becomes a `runtime` row. |
 | `tests/intake-routing.test.mjs` | FR-48-26: each adapter accepts its own fixture and refuses the other two kinds'; the hybrid resolves to `hash`; a `go()` that also sets `state.page` fails loudly; no router fails loudly; an unresolved link is a gap row (MUST FAIL each with its rule removed); the real exports resolve to `hash` (Indus, 23 routes), `files` (Mama's, 11) and `state-page` (Eye Care, 11). |
 | `tests/intake-breakpoints.test.mjs` | FR-48-27: the window basis, the root basis (ResizeObserver `contentRect` on the root ref), a reversed comparison, and an unreadable basis and a non-static threshold as gap rows (MUST FAIL each); Indus's 768, 1024, 1200 and 1260 on the window basis. |
@@ -470,8 +468,7 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 - `SSH`: the ssh arguments for the shared host.
 
 ### `lib/calibration-refs.mjs` (wsl or ssh for the existence check)
-Site references (Spec 48 §3.2). A fixture names each WordPress object it needs by a token; each calibration target maps
-the token to its own object in `calibration-targets.json` `refs`:
+Site references (Spec 48 §3.2). A fixture names each WordPress object it needs by a token; each calibration target maps the token to its own object in `calibration-targets.json` `refs`:
 
 | Token | The site object (`ROLES`) | Written as |
 |---|---|---|
@@ -482,9 +479,7 @@ the token to its own object in `calibration-targets.json` `refs`:
 | `{{logo}}` | an image attachment used as a logo | a number |
 | `{{product}}`, `{{product:text}}` | a published WooCommerce product | a number, or the id as text where the attribute stores strings |
 
-A whole-string token becomes the id as a number (`:text` keeps it a string); a token inside a longer string or an
-object key becomes the id's text. An attachment id beside the URL its render falls back to (`url` beside `id`,
-`<stem>Url` beside `<stem>Id`) is `url-backed` and stays literal: the element renders on any site.
+A whole-string token becomes the id as a number (`:text` keeps it a string); a token inside a longer string or an object key becomes the id's text. An attachment id beside the URL its render falls back to (`url` beside `id`, `<stem>Url` beside `<stem>Id`) is `url-backed` and stays literal: the element renders on any site.
 - `ROLES`, `TOKEN`: the vocabulary and the token pattern.
 - `refsFor(targets, site)` → the target's refs over its `mirrorOf` test site's.
 - `tokensIn(value)` → every token in strings and keys (`role` or `role.url`); `fixtureRoles(fixture)` → the roles.
@@ -651,32 +646,12 @@ Live confirmation of the `canvas-settable` claims, read-only: it writes no tree,
 node scripts/computed-route/confirm-canvas.mjs [--candidates --client <slug>] <triage dir | families.json> <out.json> [base url] [only indices]
 ```
 
-After a sweep, run it in candidates mode and write the result to `sites/<client>/build/qa/canvas-confirm.json`:
-it measures every family `canvasSettable` could ever cite, so a refuted citation's fallback is already measured and
-never fails open (Eye Care 2026-10-07: 1,795 families, 13,715 claims, 0 skipped stylesheets, one pass).
+After a sweep, run it in candidates mode and write the result to `sites/<client>/build/qa/canvas-confirm.json`: it measures every family `canvasSettable` could ever cite, so a refuted citation's fallback is already measured and never fails open (Eye Care 2026-10-07: 1,795 families, 13,715 claims, 0 skipped stylesheets, one pass).
 
-A claim classes a row W because another block declares a setting whose `css_property` covers the row's property
-and the reachability gate judged its emission to reach the row's element. Confirming that needs a
-value-independent test, because computed styles and CDP matched-styles cannot separate "the cited setting loses"
-from "the cited setting is unset". So this enumerates every rule in every loaded stylesheet that declares the
-property and whose selector matches the row element, and asks whether any of them is the cited block's. The walk
-recurses into `@media` blocks without checking whether they apply, so the test is generous to the claim and a
-refutation is conservative. Verdicts: `CONFIRMED`, `VAR-CHANNEL` (a matching rule reads a custom property the
-framework sets on the cited block), `REFUTED` (rules govern the row but none is the cited block's), `NO-RULE`
-(nothing declares the property for this element at all) and `ABSENT` (the row is not in the DOM on that page).
+A claim classes a row W because another block declares a setting whose `css_property` covers the row's property and the reachability gate judged its emission to reach the row's element. Confirming that needs a value-independent test, because computed styles and CDP matched-styles cannot separate "the cited setting loses" from "the cited setting is unset". So this enumerates every rule in every loaded stylesheet that declares the property and whose selector matches the row element, and asks whether any of them is the cited block's. The walk recurses into `@media` blocks without checking whether they apply, so the test is generous to the claim and a refutation is conservative. Verdicts: `CONFIRMED`, `VAR-CHANNEL` (a matching rule reads a custom property the framework sets on the cited block), `REFUTED` (rules govern the row but none is the cited block's), `NO-RULE` (nothing declares the property for this element at all) and `ABSENT` (the row is not in the DOM on that page).
 
-- `familiesFrom(triageDir)` → the claims grouped into families of (cited block, cited setting, row property),
-  read from the triage reports so there is no separate hand step to go stale. A family is the unit the claim is
-  made in: 168 rows collapse to 63 families, and surface is the wrong axis because a family spans surfaces.
-  A resolver-hop citation has no `where` key and a canvas-roster citation has `ancestor` or `sibling`; the two
-  are the same claim reached from two directions and are reported apart. `property` is the CSS property the row
-  stands for (`lib/solve-rows.mjs::cssProp`: `painted-ground` is `background-color`), the key
-  `measuredReachFrom` is looked up with and the property the stylesheet walk reads.
-- `candidatesFrom({ client, triageDir, manifest, contextFor? })` → every family `canvasSettable` would consider for any
-  issue of any `canvas: true` surface, found by calling it with a `ctx.measuredReach` that records each
-  (block, setting, property, cited ref) and answers false, unioned with `familiesFrom`. Asking about every issue,
-  not only today's canvas-settable rows, keeps the set independent of the confirm file it replaces.
-  `contextFor(surface, recorder)` defaults to `triage.mjs::surfaceContext`.
+- `familiesFrom(triageDir)` → the claims grouped into families of (cited block, cited setting, row property), read from the triage reports so there is no separate hand step to go stale. A family is the unit the claim is made in: 168 rows collapse to 63 families, and surface is the wrong axis because a family spans surfaces. A resolver-hop citation has no `where` key and a canvas-roster citation has `ancestor` or `sibling`; the two are the same claim reached from two directions and are reported apart. `property` is the CSS property the row stands for (`lib/solve-rows.mjs::cssProp`: `painted-ground` is `background-color`), the key `measuredReachFrom` is looked up with and the property the stylesheet walk reads.
+- `candidatesFrom({ client, triageDir, manifest, contextFor? })` → every family `canvasSettable` would consider for any issue of any `canvas: true` surface, found by calling it with a `ctx.measuredReach` that records each (block, setting, property, cited ref) and answers false, unioned with `familiesFrom`. Asking about every issue, not only today's canvas-settable rows, keeps the set independent of the confirm file it replaces. `contextFor(surface, recorder)` defaults to `triage.mjs::surfaceContext`.
 
 Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md`.
 
@@ -1000,7 +975,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - No exports: the worker module `runIsolated` starts, which checks it holds no secret and runs the browser stages.
 
 ### `lib/intake-run-stages.mjs`
-- `routeVisits(routing, entry)` → a visit per route; `STAGES`: the browser stages in FR-48-17's order, each `{ name, run(ctx) }`.
+- `routeVisits(routing, entry)` → a visit per route; `STAGES`: the browser stages in FR-48-17's order, each `{ name, run(ctx) }`; the `inventory` stage (after the draft defects, whose `notDefects` it reads from the context) returns `{ inventory: { animations, surfaces, diff, occurrences, propVariants, samples } }`.
 
 ### `lib/intake-run-defects.mjs`
 - `twoPassDefects(ctx)` → the draft-defect result from a three-visit pass and a pass over every route for its remaining candidates; `defectReviewRows(result)` → one review row per defect group.
@@ -1142,8 +1117,8 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `surfaceRoots({ folder, census, records? })` → `{ surfaces: [{ name, kind, component, rootTpl, route, selector }], parts, gaps }`.
 - `proposeSkeletons({ folder, harPath, surfaces, client, db?, facts?, entry?, routing?, site?, shotsDir?, widths, repo?, harness?, log? })` → `{ skeletons, gaps, runs }`; per surface `{ surface, inventory, rows: [{ rowId: 'skeleton:<surface>:<key>', key, tag, words, block, confidence, low, reason, candidates, action }], problems }`; `runs` records each sandbox's requests, blocked hosts and proxy attempts.
 - `openers(surface, census)` and `describeOpener(opener)`: how a surface that does not render at rest is opened (its `surfaces.json` state keys through `setDraftState`, else the handler its `opened_by` names through `fireTrigger`); `proposeSkeletons` takes `census` and `openStates`, and each entry records `opened` and any `readAt` width.
-- `unresolvedRows(skeletons)` → the kept rows with action `unresolved` or no candidate.
 - `contextOf(inventory, proposal, key)` → `{ parent: { draftId, tag, block } | null, siblings: [{ draftId, tag, block }], siblingCount, boxes: [{ width, x, y, w, h }] | null }`, the inventory context every skeleton row carries for the finaliser (null where the inventory held nothing); `SIBLING_CAP` (12) limits `siblings` to the nearest in document order.
+- `unresolvedRows(skeletons)` → the kept rows with action `unresolved` or no candidate.
 
 ### `lib/intake-defects.mjs`
 - `WIDTHS`, `STATE_KINDS`, `motionModifier(row)`; re-exports test 1 from `lib/intake-defects-binding.mjs`.
@@ -1154,7 +1129,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `boundStyleRows(census)`, `classifyCompiled({ value, rule })` → `unresolved`, `dropped`, `resolved` or `no-rule`; `readPageBindings(page)`, `bindingVerdicts(...)`, `unresolvedBindingDefects({ pages, census })`.
 
 ### `lib/intake-defects-keys.mjs`
-- `logicModel(source)`, `conditionKeys(...)` (the state keys a condition reads, with the literal values the code writes or compares), `patchesOf(...)`, `memberAt(...)`, `propsGating(...)` (whether a construct's gate reads `this.props.*`), `defectGroups(rows)`.
+- `logicModel(source)`, `conditionKeys(...)` (the state keys a condition reads, with the literal values the code writes or compares), `patchesOf(...)`, `memberAt(...)`, `propsGating(...)` (whether a construct's gate reads `this.props.*`), `defectGroups(rows)`, `mountedProps(rows)` → Map(component → the prop names its parents mount it with, from the census's `dc-import` rows; FR-48-29).
 
 ### `lib/intake-defects-force.mjs`
 - `FORCEABLE`, `PSEUDO_ELEMENTS`; `openForcedPage(...)`: one harness page per width with the forcing tools installed.
@@ -1170,6 +1145,43 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/intake-state.mjs`
 - `setDraftState(page, { component, keys })` → instances set (0 = not mounted); `snapshotDraftState(page)`, `restoreDraftState(page)` → counts.
 - `fireTrigger(page, { selector } | { component, draftId }, event)` → false when nothing is rendered; `listenerInit` (an init script), `fireListeners(page, types)`, `LISTENER_TRIGGERS`.
+
+### `lib/intake-inventory.mjs`
+- `EFFECT_KINDS`, `TRIGGER_KINDS`; `inventoryCensus({ folder, entry, routing, census, harPath })` → the census widened to every page file of a one-file-per-page draft (`{ rows, sources, gaps, blocked }`).
+- `inventoryCore(census, { routing?, notDefects?, props? })` → `{ model, anim, surf, occurrences }`; `occurrences(census, model, anim, surf)` → `[{ occurrence, kind, role: effect|trigger|context|surface, recordIds, why? }]`.
+- `buildInventory({ census, folder, routing?, notDefects?, samples?, generated? })` → `{ animations, surfaces, occurrences, propVariants, samples, problems, gaps, meta }`; `validateInventory(inv)` → master-schema problems; `reconcile(inv)` → an occurrence with no record, or a count naming a missing record.
+- `readTheirs(folder)` → Claude Design's `{ animations, surfaces }`; `readInventory(row, { rows, sources })` → the registry reading `{ recordIds, role, why? }` or null; `inventoryStage(job, ctx)` → the intake stage's parts.
+
+### `lib/intake-inventory-anim.mjs`
+- `CATEGORIES` (the master schema's counted categories as census-row tests); `animationRecords(census, { notDefects? })` → `{ records, census: Map(row id → record IDs), sites, counts, unresolved, meta }`.
+
+### `lib/intake-inventory-tpl.mjs`
+- `elementStyles(element)`, `describeElement(comp, element)`, `traceOf(rows, { pseudo? })`; `templateRecords(census, add)` → TR, PS, K and RM records through `add`; `animationRecord(add, row, element, source, opts)`; `applyReducedMotion(records, rmRecords, metaOf)`.
+
+### `lib/intake-inventory-code.mjs`
+- `codeModel(census)`, `textOf(prog, node)`, `offsetOf(prog, draftId)`, `lineOf(node)`, `nodeAt(prog, off, re)`, `ancestors(prog, node)`, `memberOf(prog, node)`, `functionName(prog, node)`, `eventTrigger(event)`; the node tests `isFn`, `isThis`, `prop`, `globalName`.
+- `triggerOf(model, comp, node)` → `{ type, detail, state_keys?, delay, via, members, called }`; `reducedMotionOf(prog, node)` → `{ behaviour, detail }`; `literalOf(node)`.
+
+### `lib/intake-inventory-target.mjs`
+- `targetOf(model, comp, expr)` → `{ tpl, comp, selector, rule? }`; `constValue(prog, node)`; `waapiEffect(prog, call)` → `{ properties, timing, frames }`; `writerSites(prog)` → `[{ node, mechanism, target, properties }]`.
+
+### `lib/intake-inventory-keys.mjs`
+- `stateWriters(prog)` → Map(member → state keys written); `routeKeys(prog)`, `viewportKeys(prog)` → the keys a router or the viewport writes; `timeReads(prog)`.
+
+### `lib/intake-inventory-css.mjs`
+- `cssDecls` (re-exported), `ms(time)`, `splitTop(text, sep?)`, `parseTransition(value)`, `parseAnimation(value)`, `cssBlocks(text)` → `[{ media, selector, decls }]`, `sameSelector(a, b)`, `reducedMotionMedia(media)`, `matchSelector(elements, selector)` → `{ tpl, rule? }`.
+
+### `lib/intake-inventory-surfaces.mjs`
+- `surfaceRecords(census, { model, anim, routing?, props? })` → `{ records, counts, unresolved, scIf, componentSurface, keySurfaces }`.
+
+### `lib/intake-inventory-sample.mjs`
+- `SAMPLE_WIDTHS`; `sampleTargets(records, meta)` → the interval and frame-loop J records with a template target; `sampleWriters({ folder, index, harPath, file?, hash?, targets, widths?, harness? })` → `{ samples: [{ recordId, width, t, values }], gaps }`.
+
+### `lib/intake-inventory-diff.mjs`
+- `norm(value)`, `pairKey(record)`, `routeKey(route)`, `scIfKey(key)`; `diffAnimations(ours, theirs)`, `diffSurfaces(ours, theirs)`, `diffInventory(ours, theirs)` → `[{ rowId, draftId, text, field, ours, theirs, why }]`.
+
+### `lib/intake-props.mjs`
+- `declaredProps(text)` → `{ props }` or `{ error }` from the `data-props` of `<script data-dc-script>`; `propVariants({ folder, census })` → `{ props: [{ component, prop, editor, options, default, mounted, variants, unused, unusedOptions, gates }], gaps }`.
 
 ### `lib/intake-review.mjs`
 - `ROW_TYPES`, `SECTION_TITLES`; `MARKS` (Appendix C's mark values per row type; the first is what "Accept all" sets) and `markShapes`; `markProblem(rowType, mark)` → why a mark is refused, or null.
