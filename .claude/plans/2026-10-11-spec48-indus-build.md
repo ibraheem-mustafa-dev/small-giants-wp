@@ -23,12 +23,15 @@ in the other lanes. Progress per step is marked in the phases below.
 | Lane | Where | Steps, in order | Needs | Agent time (Appendix B) |
 |---|---|---|---|---|
 | Route | session A (the one that wrote this plan) | 3 → 5 → 6 → 7 → 8 | 8 needs 4 | 3 h 15 |
-| Mirror | session A, background subagent | 4, later 2 and 16 | nothing | 45 min, then 5 and 30 min |
+| Mirror | session A, background subagent | 4, later 2 | nothing | 45 min, then 5 min |
 | Framework | session B (done 2026-10-12) | 9 → 10 → 11 → 12 | nothing | 2 h 55 |
 | Intake | session C (13 and 14 done 2026-10-12) | 13 → 14 → 14b | 3 pushed | 6 h |
+| Join | one session, from 14b (Bean, 2026-10-12: one prompt replaces the three lanes' prompts) | 15 → 16 → 17 → 18 → 19 → 20 | 14b | from Appendix B per step |
 
-The lanes join at step 15 (needs 8, 9, 14 and 14b). The critical path is the intake lane (3, 13, 14: about 5 h 45 by the
-spec's figures, against about 12 h with every set-up and intake step in a row).
+The lanes join at step 15 (needs 8, 9, 14 and 14b), and one session runs the join row in order from there: steps 16 to
+18 share `indus-test` work (Appendix A's step 5 is plan step 17's snapshot, its step 11 is step 18's site build). The
+critical path is the intake lane (3, 13, 14: about 5 h 45 by the spec's figures, against about 12 h with every set-up
+and intake step in a row).
 
 ### Why these lanes (file-overlap proof, grep on 2026-10-11)
 Two steps run side by side only when the files they write do not overlap.
@@ -72,7 +75,10 @@ Every diff is read on the main thread before its commit. Every commit keeps the 
 | 9 | Sonnet | every negative control in FR-32-14's done-when |
 | 10, 11 | Opus | as their done-whens; 11 is security-relevant (CSS scoping) |
 | 12, 16 | Sonnet | each refresh-loop step's own exit signal |
-| 13, 14 | Opus | each case named in the FR done-whens; 14's `review.md` read by the main thread |
+| 13, 14, 14b | Opus | each case named in the FR done-whens; 14's `review.md` read by the main thread |
+| 15 | main thread; the finaliser is an Opus subagent | `review.md` read on the main thread before Bean marks it; no row marked by an agent |
+| 17 | Sonnet | the snapshot's dry run read against the confirmed palette roles before the push |
+| 18, 19 | Opus | as their done-whens, on the live page at 375/768/1440 |
 | 20, 23 | Opus | the check's verdict table and Bean's eye at 375/768/1440 |
 
 **Estimate rule.** A step that finishes in a third of its estimate or less revises every remaining estimate down in
@@ -186,8 +192,11 @@ explicit-pathspec commits straight to `main`.
   rows (marks `ours`/`theirs`; the review library already renders the section), and turns the registry's motion kinds
   (`waapi`, `transition`, `keyframes`, `observer`, `timer`, `handler`, `ref`, `data-hook`) from gaps into readers;
   FR-48-29: a `dc-import` mounted with `data-props` records non-default variants as states only when a parent mounts
-  them (the defect pass already classifies prop-gated code as `prop-variant`). Done when FR-48-25's done-when holds on
-  Indus and Mama's and `trace-check.mjs --shift=7` still fails.
+  them (the defect pass already classifies prop-gated code as `prop-variant`). Also (Bean, 2026-10-12): `intake.json`
+  keeps the full not-a-defect list, and `review.md` lists the unwired dead-code entries (a handler or ref callback no template binding
+  names, which a misspelled wiring would also produce) as their own section, default mark "not a defect"; the other
+  reasons stay a count per reason (FR-48-34). Done when FR-48-25's done-when holds on Indus and Mama's, the planted
+  misspelled handler appears in that section, and `trace-check.mjs --shift=7` still fails.
 - [ ] **15. Intake run and Bean's review** (needs 14b; steps 8 and 9 are done). In order: `node
   scripts/computed-route/intake.mjs indus-foods --record` (the replay file misses four stock images the census and
   defect pages ask for, and only `--record` tops it up); `intake.mjs --finalise indus-foods`, an agent answers

@@ -63,6 +63,7 @@
         "enum": [
           "page",
           "post",
+          "product",
           "product_cat",
           "shop",
           "sgs_header",

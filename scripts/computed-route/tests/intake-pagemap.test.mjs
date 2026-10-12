@@ -130,7 +130,8 @@ test( 'classifyRoute: shop, product category, single product, cart, checkout, ar
 	assert.equal( classifyRoute( 'shop' ).postType, 'shop' );
 	assert.equal( classifyRoute( 'catalogue Request Catalogue' ).postType, 'page', 'a catalogue with no priced items is a page' );
 	assert.equal( classifyRoute( 'catalogue', { prices: true } ).postType, 'product_cat' );
-	assert.equal( classifyRoute( 'Product.dc.html' ).template, 'single-product' );
+	assert.deepEqual( classifyRoute( 'Product.dc.html' ), { postType: 'product', template: 'single-product', collection: 'live' }, 'a single product is a product row, never the shop' );
+	assert.equal( classifyRoute( 'product archive' ).postType, 'shop' );
 	assert.equal( classifyRoute( 'Basket' ).template, 'cart' );
 	assert.equal( classifyRoute( 'checkout' ).template, 'checkout' );
 	assert.equal( classifyRoute( 'post' ).postType, 'post' );

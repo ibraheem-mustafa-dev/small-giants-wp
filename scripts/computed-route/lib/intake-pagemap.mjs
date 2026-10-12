@@ -22,15 +22,15 @@ const SLUG_PREFIX = { header: 'header', footer: 'footer', drawer: 'drawer', menu
 const titleCase = ( key ) => kebab( key ).split( '-' ).filter( Boolean ).map( ( w ) => w[ 0 ].toUpperCase() + w.slice( 1 ) ).join( ' ' );
 
 // Post type, page template and collection from a route's own words (its key, title, or the manifest's type text):
-// a product archive is the WooCommerce shop (a product category when it says so), a single product the
-// single-product template, cart and checkout their WooCommerce templates, an article a post, anything else a page.
+// a product archive is the WooCommerce shop (a product category when it says so), a single product a `product` row
+// (the design of WooCommerce's single-product template), cart and checkout their WooCommerce templates, an article a post, anything else a page.
 export function classifyRoute( text, { prices = false } = {} ) {
 	const t = String( text ).toLowerCase().replace( /\.dc\.html/g, '' );
 	if ( /product categor/.test( t ) ) {
 		return { postType: 'product_cat', template: 'archive-product', collection: 'live' };
 	}
 	if ( /single product|product single|(^|\s)product(\s|$)/.test( t ) && ! /archive/.test( t ) ) {
-		return { postType: 'shop', template: 'single-product', collection: 'live' };
+		return { postType: 'product', template: 'single-product', collection: 'live' };
 	}
 	if ( /product archive|(^|[^a-z])(shop|store)([^a-z]|$)/.test( t ) || ( prices && /catalog/.test( t ) ) ) {
 		return { postType: /catalog/.test( t ) && ! /shop|store/.test( t ) ? 'product_cat' : 'shop', template: 'archive-product', collection: 'live' };

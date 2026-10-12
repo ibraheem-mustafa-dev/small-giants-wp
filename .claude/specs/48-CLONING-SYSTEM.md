@@ -1603,7 +1603,8 @@ Intake proposes `sites/<client>/build/page-map.json` from the adapter's routes (
 embedded `<script type="application/json" data-sgs-manifest>` block when present (Eye Care). One row per route holds:
 `slug`, `title`, `parent`, `template` (a theme page template or a WooCommerce template), `menus` (each menu it sits in,
 with position and parent item), `postType` (a page; a blog post as `post`; a catalogue page as the WooCommerce shop or
-a product category archive, never a static page copying products), `collection` (`static`: the draft's items are
+a product category archive, never a static page copying products; a single-product page as `product`, the design of
+WooCommerce's `single-product` template that every product uses), `collection` (`static`: the draft's items are
 content written into the page; `live`: the items come from WordPress posts or products), and `id` (empty until the
 site-build script writes it). Every CPT surface (header, footer, drawer, mega menu, modal, form, choice flow) gets its
 own row with its post type. Bean confirms the map once (FR-48-17). The row format is Appendix C, "Page map".
@@ -1612,10 +1613,8 @@ row or a gap row, and the file validates against its schema.
 Status: built 2026-10-12 (`lib/intake-pagemap.mjs`, `lib/intake-pagemap-surfaces.mjs`, `lib/intake-ast-eval.mjs`,
 `data/page-map.schema.json`, `tests/intake-pagemap.test.mjs`). Indus: 23 pages, 6 posts (the `#/post-*` articles), a
 header, footer, drawer, 4 mega menu panels and 4 forms; every link resolves (the routing reader's 3 gap rows close
-once loop variables are followed). Eye Care's rows come from its embedded manifest. Open for Mama's intake (the first
-shop proof): Appendix C's `postType` has no value for a single-product route, so such a route is written as `shop`
-with template `single-product` today and the site-build script must not read it as the shop page; the enum or a
-template-only row is decided before Mama's intake.
+once loop variables are followed). Eye Care's rows come from its embedded manifest. A single-product route is a `product`
+row with template `single-product` (Bean, 2026-10-12: a shop needs its own product kind, never the shop page's).
 
 #### FR-48-31 — Palette role proposal
 Intake builds the token-to-slug role proposal (§11, FR-33-2), which Bean confirms in the review. The tokens come from
@@ -2261,7 +2260,9 @@ One script, `scripts/computed-route/site-build.mjs`, builds the site's skeleton 
    <title> --slug <slug> --tree <tree>`. Its tree is the stage 3 tree when one exists, else a one-block placeholder
    tree. `--create` reaches `post-new.php?post_type=<type>` for any post type (the documented list is page,
    `sgs_header`, `sgs_footer`, `sgs_drawer`, `sgs_modal`, `sgs_mega_menu`, `sgs_form`, `sgs_choice_flow`,
-   `wp_block`). The script reads the ID `wp-build-page.js` prints and writes it into the row.
+   `wp_block`). The script reads the ID `wp-build-page.js` prints and writes it into the row. A `product` row
+   creates no post: its tree builds WooCommerce's `single-product` template (`wp-build-page.js --template
+   single-product`), the products themselves come from WooCommerce (`collection: live`), and its `id` stays empty.
 2. **Parent and page template.** `wp-build-page.js` sets only title, slug and status, so the script sets the rest by
    WP-CLI: `wp post update <id> --post_parent=<parentId> --page_template=<template> --user=Claude`.
 3. **Menus.** `wp menu create "<name>"`, `wp menu item add-post <menu> <id> [--parent-id=<itemId>] [--position=<n>]`,
@@ -2758,7 +2759,7 @@ Each key is a construct kind (`sc-if`, `sc-for`, `dc-import`, `binding`, `style-
     "menus": { "type": "array", "items": { "type": "object", "required": ["menu", "position"],
       "properties": { "menu": { "type": "string" }, "position": { "type": "integer" },
         "parentItem": { "type": ["string", "null"] } } } },
-    "postType": { "enum": ["page", "post", "product_cat", "shop", "sgs_header", "sgs_footer", "sgs_drawer",
+    "postType": { "enum": ["page", "post", "product", "product_cat", "shop", "sgs_header", "sgs_footer", "sgs_drawer",
       "sgs_modal", "sgs_mega_menu", "sgs_form", "sgs_choice_flow", "wp_block"] },
     "collection": { "enum": ["static", "live"] },
     "flags": { "type": "array", "items": { "enum": ["placeholder", "stock", "prototype-only"] } },
