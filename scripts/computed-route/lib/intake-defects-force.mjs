@@ -4,19 +4,25 @@
 //     setState path (the mounted component's logic instance, reached from its host element's React fiber);
 //   - hover, focus and the other forceable pseudo-classes, forced on the element's node through the DevTools protocol
 //     (CSS.forcePseudoState) and confirmed by the compiled pseudo rule matching (CSS.getMatchedStylesForNode);
-//   - a template handler's event, dispatched on its rendered element (a handler's state is its event);
+//   - a template handler's event, dispatched on its rendered element (a handler's state is its event), a pointer, drag
+//     or touch one at the element's centre and followed by its gesture (lib/intake-defects-gesture.mjs);
+//   - code-wired listeners, drag types and delegated targets included (lib/intake-defects-gesture.mjs);
 //   - the harness's scroll pass (settleRest) after the state is set.
 // What to force is read statically (lib/intake-defects-keys.mjs); openForcedPage holds one harness page per width with
 // the probes on it.
 import { openSandbox } from './intake-sandbox.mjs';
 import { preparePage, gotoDraft, settleRest } from './intake-harness.mjs';
 import { traceInit, collect } from './intake-census-trace.mjs';
-import { setDraftState, snapshotDraftState, restoreDraftState, fireTrigger, listenerInit, fireListeners } from './intake-state.mjs';
+import { setDraftState, snapshotDraftState, restoreDraftState, draftStateChanged, fireTrigger, listenerInit, fireListeners } from './intake-state.mjs';
+import { handlerInit, gestureIn, POINTER_TYPES, DRAG_TYPES } from './intake-defects-gesture.mjs';
 
 // CDP CSS.forcePseudoState's forceable pseudo-classes; pseudo-elements need no forcing (their element renders them).
 export const FORCEABLE = [ 'active', 'focus', 'hover', 'visited', 'focus-within', 'focus-visible', 'target' ];
 export const PSEUDO_ELEMENTS = [ 'before', 'after' ];
 
+
+// A template event (onMouseMove, onPointerDown, onDragStart, onTouchStart…) that a pointer, drag or touch fires.
+const pointerish = ( event ) => /^on(click|doubleclick|dblclick|mouse|pointer|drag|drop|touch|contextmenu)/i.test( String( event || '' ) ) || /^(click|dblclick|mouse|pointer|drag|drop|touch)/.test( String( event || '' ) );
 
 // In-page: rendered copies of a stamped element, tagged with a probe attribute; returns how many.
 function tagElements( { comp, n, tag } ) {
@@ -60,9 +66,10 @@ function enclosingIfs( { comp, n } ) {
 
 // One harness page at one width with the probes on: CDP coverage, DOM and CSS. Returns a session:
 // { page, origin, width, rest, collect(), setState(comp, patch), enclosingIfs(row), forcePseudo(row), dispatch(row),
-//   coverage(), settle(), close(), blocked } (`blocked`: the sandbox's aborted requests). A failure to open carries the
-// requests blocked so far as the error's `blocked`. `forcePseudoState: false` exists only for the tests' negative control.
-export async function openForcedPage( { folder, entry, harPath, file = entry, hash = '', width, harness = {}, timeout = 60000, forcePseudoState = true } ) {
+//   dispatchAt(row, index), copies(row), gestures(), snapshot(slot), restore(slot), changed(slot), coverage(), settle(),
+//   close(), blocked } (`blocked`: the sandbox's aborted requests). A failure to open carries the requests blocked so far
+// as the error's `blocked`. `forcePseudoState`, `drag` and `coords` false exist only for the tests' negative controls.
+export async function openForcedPage( { folder, entry, harPath, file = entry, hash = '', width, harness = {}, timeout = 60000, forcePseudoState = true, drag = true, coords = true } ) {
 	const sb = await openSandbox( { folder, index: entry, harPath, mode: 'replay', widths: [ width ], timeout } );
 	try {
 		const page = await sb.newPage();
@@ -77,6 +84,7 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 		const opts = await preparePage( page, harness );
 		await page.addInitScript( traceInit );
 		await page.addInitScript( listenerInit );
+		await page.addInitScript( handlerInit );
 		await gotoDraft( page, sb.origin, file, { hash, timeout } );
 		const rest = await settleRest( page, opts );
 		await cdp.send( 'DOM.enable' );
@@ -100,7 +108,28 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 			collect: ( arg ) => page.evaluate( collect, arg ),
 			enclosingIfs: ( row ) => page.evaluate( enclosingIfs, { comp: row.component, n: row.draftId.slice( row.draftId.lastIndexOf( ':' ) + 1 ) } ),
 			setState: ( comp, patch ) => setDraftState( page, { component: comp, keys: patch } ),
-			snapshot: () => snapshotDraftState( page ),
+			snapshot: ( slot = null ) => snapshotDraftState( page, slot ),
+			// Counts the instances whose state changed since the snapshot in `slot`.
+			changed: ( slot = null ) => draftStateChanged( page, slot ),
+			// Fires every code-wired pointer, mouse, touch and drag listener as a real pointer reaches it (drag gestures,
+			// coordinates, delegated targets), then runs the clock; returns how many events it fired.
+			async gestures() {
+				const n = await page.evaluate( gestureIn, { op: 'listeners', types: [ ...POINTER_TYPES, ...DRAG_TYPES ], drag, coords } );
+				await session.nudge();
+				return n;
+			},
+			// How many rendered copies a template row has.
+			copies: ( row ) => page.evaluate( gestureIn, { op: 'copies', comp: row.component, n: row.draftId.slice( row.draftId.lastIndexOf( ':' ) + 1 ) } ),
+			// Fires a template handler's event on rendered copy `index` (pointer events at its centre, with their gesture);
+			// false when that copy is not rendered.
+			async dispatchAt( row, index ) {
+				if ( ! pointerish( row.detail.event ) ) {
+					return 0 === index ? session.dispatch( row ) : false;
+				}
+				const n = await page.evaluate( gestureIn, { op: 'template', comp: row.component, n: row.draftId.slice( row.draftId.lastIndexOf( ':' ) + 1 ), event: row.detail.event, index, drag, coords } );
+				await frame();
+				return n > 0;
+			},
 			// Fires the listeners the draft wired in code (recorded at load), then runs the clock.
 			async listeners() {
 				const n = await fireListeners( page );
@@ -114,9 +143,9 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 				await page.setViewportSize( { width, height: 900 } );
 				await session.nudge();
 			},
-			// Puts the snapshot state back and lets React render it; returns whether anything changed.
-			async restore() {
-				const n = await restoreDraftState( page );
+			// Puts the snapshot state (in `slot`) back and lets React render it; returns whether anything changed.
+			async restore( slot = null ) {
+				const n = await restoreDraftState( page, slot );
 				if ( n ) {
 					await session.nudge();
 				}
@@ -185,8 +214,12 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 				}
 				return false;
 			},
-			// Dispatches a template handler's event on its first rendered copy; false when none rendered.
+			// Dispatches a template handler's event on its first rendered copy (a pointer one through dispatchAt); false when
+			// none rendered.
 			async dispatch( row ) {
+				if ( pointerish( row.detail.event ) && ( drag || coords ) ) {
+					return session.dispatchAt( row, 0 );
+				}
 				if ( ! await fireTrigger( page, { component: row.component, draftId: row.draftId }, row.detail.event ) ) {
 					return false;
 				}

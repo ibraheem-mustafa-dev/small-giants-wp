@@ -3,16 +3,20 @@
 //   1. unresolved-binding: a `style-*` value holds a `{{ }}` binding still unresolved in the compiled rule at read time
 //      (lib/intake-defects-binding.mjs).
 //   2. unreached: a code-declared state, motion or behaviour (an `unreached` census row of STATE_KINDS) still unreached
-//      at every tested width with its state forced (lib/intake-defects-force.mjs), reduced motion included. Reached at
+//      at every tested width with its state forced (lib/intake-defects-force.mjs), reduced motion, pointer gestures
+//      with coordinates (lib/intake-defects-gesture.mjs) and two-step states (lib/intake-defects-chain.mjs) included. Reached at
 //      some widths only is a breakpoint; reached when forced is not a defect; forcing that is impossible is a gap row
 //      (R-48-3). Unreached but not a defect: `prop-variant` (gated by a prop no parent mounts, FR-48-29), `dead-code` and
-//      `prototype-only` (FR-48-33), both proved statically (lib/intake-defects-static.mjs).
+//      `prototype-only` (FR-48-33), both proved statically (lib/intake-defects-static.mjs; a construct whose guard needs a
+//      field only dead code writes is dead code too, lib/intake-defects-deadfield.mjs).
 import { boundStyleRows, readPageBindings, bindingVerdicts } from './intake-defects-binding.mjs';
 import { groupVisits } from './intake-census-runtime.mjs';
 import { openForcedPage } from './intake-defects-force.mjs';
-import { conditionKeys, patchesOf, propsGating, defectGroups } from './intake-defects-keys.mjs';
+import { conditionKeys, patchesOf, propsGating, defectGroups, mountedProps } from './intake-defects-keys.mjs';
 import { buildModel, codeTarget, countAt } from './intake-census-map.mjs';
 import { deadCodeWhy, prototypeOnlyWhy } from './intake-defects-static.mjs';
+import { deadFieldWhy } from './intake-defects-deadfield.mjs';
+import { chainPass } from './intake-defects-chain.mjs';
 
 export { boundStyleRows, classifyCompiled, readPageBindings, bindingVerdicts, unresolvedBindingDefects } from './intake-defects-binding.mjs';
 
@@ -30,7 +34,8 @@ export const motionModifier = ( r ) => [ 'transition', 'keyframes' ].includes( r
 // FR-48-34 test 2. `census`: { rows, sources } with the runtime pass applied (rows carry `unreached`). Opens one forced
 // page per width and page file (hash visits are reached inside it), forces every candidate's state, and decides.
 // `onPage(session, { width, visit })` runs on each visit after the rest settle, before any forcing. `force` switches a
-// forcing off ({ pseudo, state, events, props, deadCode, reducedMotion }: false); it exists only for the tests' negative
+// forcing off ({ pseudo, state, events, props, deadCode, deadField, reducedMotion, drag, coords, chain }: false); it
+// exists only for the tests' negative
 // controls. `only` (a Set of census row IDs) limits the candidates, for a second pass over more visits. `flags`
 // (lib/intake-flags.mjs::proposeFlags rows, optional) lets a construct be prototype-only (FR-48-33). Returns { rows,
 // notDefects, gaps, blocked } (`blocked`: every forced page's aborted requests).
@@ -54,20 +59,20 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 		const target = isCode( r ) || 'handler' === r.kind ? codeTarget( r, model, rowsByComp ) : null;
 		const props = new Set( target && ! target.gap && source.get( target.comp ) ? propsGating( source.get( target.comp ), target.off ) : [] );
 		const ok = target && ! target.gap;
-		const dead = ok && false !== force.deadCode && source.get( target.comp ) && ! files.has( target.comp ) ? deadCodeWhy( source.get( target.comp ), target.off, census ) : null;
+		const src = ok && false !== force.deadCode && ! files.has( target.comp ) ? source.get( target.comp ) : null;
+		const dead = src ? deadCodeWhy( src, target.off, census ) || ( false !== force.deadField ? deadFieldWhy( src, target.off, census ) : null ) : null;
 		const proto = ok ? prototypeOnlyWhy( { target, flags, census, files, model, sources: source } ) : null;
 		return [ r.id, { row: r, patches: [], gaps: [], props, dead, proto, at: new Map(), ready: false, target } ];
 	} ) );
 	// The props each component is mounted with by a parent draft (dc-import attributes), for FR-48-29.
-	const mountedWith = new Map();
-	census.rows.filter( ( r ) => 'dc-import' === r.kind ).forEach( ( r ) => mountedWith.set( r.detail.name, new Set( [ ...( mountedWith.get( r.detail.name ) || [] ), ...( r.detail.props || [] ) ] ) ) );
+	const mountedWith = mountedProps( census.rows );
 	const selectors = [ ...new Set( cands.filter( ( r ) => 'stylesheet' === r.detail.via && r.detail.selector ).map( ( r ) => r.detail.selector ) ) ];
 	const failed = new Set();
 	for ( const width of widths ) {
 		for ( const group of groupVisits( visits, entry ) ) {
 			let s = null;
 			try {
-				s = await openForcedPage( { folder, entry, harPath, file: group.file, hash: group.visits[ 0 ].hash, width, harness, timeout, forcePseudoState: false !== force.pseudo } );
+				s = await openForcedPage( { folder, entry, harPath, file: group.file, hash: group.visits[ 0 ].hash, width, harness, timeout, forcePseudoState: false !== force.pseudo, drag: false !== force.drag, coords: false !== force.coords } );
 				for ( const [ i, v ] of group.visits.entries() ) {
 					if ( i ) {
 						await s.page.evaluate( ( h ) => {
@@ -101,8 +106,9 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 // Reach checks after each forcing step on one visit; marks p.at(width) true once reached. Order: rest; each state
 // patch (the state is put back after it); each pseudo rule forced; each element's hover chain for its transitions;
 // each template handler's event dispatched (`triggers`: every census template handler, reached or not), after which
-// the rows whose element only now renders get their pseudo and hover forcing too and the state is put back; a last
-// settle with the scroll pass.
+// the rows whose element only now renders get their pseudo and hover forcing too and the state is put back; code-wired
+// listeners, then their pointer gestures; the two-step chain (lib/intake-defects-chain.mjs); a last settle with the
+// scroll pass.
 async function forceVisit( s, { plan, source, texts, files, selectors, triggers, width, force } ) {
 	const pending = () => [ ...plan.values() ].filter( ( p ) => ! p.at.get( width ) );
 	const trees = new Map();
@@ -219,11 +225,22 @@ async function forceVisit( s, { plan, source, texts, files, selectors, triggers,
 		}
 		await s.listeners();
 		await check();
+		if ( false !== force.drag || false !== force.coords ) {
+			await s.gestures();
+			await check();
+		}
 		await s.restore();
 	};
 	if ( false !== force.events ) {
 		await triggerPass();
 		await s.wiggle();
+		await check();
+	}
+	if ( false !== force.chain && false !== force.events ) {
+		const keys = new Set();
+		const patches = pending().flatMap( ( p ) => p.patches ).filter( ( x ) => ! keys.has( JSON.stringify( x ) ) && keys.add( JSON.stringify( x ) ) );
+		await chainPass( s, { triggers, patches: false !== force.state ? patches : [], pending, check, rendered: () => rendered, pseudoPass } );
+		await s.restore();
 		await check();
 	}
 	await s.settle();

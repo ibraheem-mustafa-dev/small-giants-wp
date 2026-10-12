@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-12",
+  "project": "Draft defects gesture and chain fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 3397,
+      "sha256": "9a7c14fffe32c638e8fd61019207587d05eedec658b1d8ea1e30e34042a008b3"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<main style="min-height:1400px;padding:24px;font-family:system-ui,sans-serif;color:#222">
+  <h1>Gesture fixture</h1>
+  <div class="drag-box" ref="{{ setDragEl }}" draggable="true" style="width:160px;height:60px;background:#ddd">Drag me</div>
+  <div class="tilt" data-tilt="" style="width:200px;height:80px;margin-top:12px;background:#eee">Tilt</div>
+  <div class="magnet" onMouseMove="{{ magnet }}" style="width:200px;height:60px;margin-top:12px;background:#cde">Magnet</div>
+  <button type="button" class="open-drawer" onClick="{{ openDrawer }}">Menu</button>
+  <sc-if value="{{ drawerOpen }}">
+    <nav class="drawer">
+      <sc-for list="{{ rows }}" as="row">
+        <button type="button" onClick="{{ row.onToggle }}" style="display:block">{{ row.label }}</button>
+      </sc-for>
+    </nav>
+  </sc-if>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { drawerOpen: false, acc: null };
+
+  componentDidMount() {
+    this._armed = false;
+    this.pulse();
+    this.animateGhost();
+    document.addEventListener( 'pointermove', ( e ) => {
+      const t = e.target.closest && e.target.closest( '[data-tilt]' );
+      if ( ! t ) {
+        return;
+      }
+      const r = t.getBoundingClientRect();
+      if ( ! ( e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom ) ) {
+        return;
+      }
+      t.animate( [ { opacity: 0.9 }, { opacity: 1 } ], { duration: 10 } );
+    } );
+  }
+
+  setDragEl = ( el ) => {
+    if ( ! el || el._bound ) {
+      return;
+    }
+    el._bound = true;
+    el.addEventListener( 'pointerup', () => {
+      this._down = false;
+    } );
+    el.addEventListener( 'pointermove', () => {
+      if ( ! this._down ) {
+        return;
+      }
+      el.animate( [ { transform: 'translateX(0)' }, { transform: 'translateX(4px)' } ], { duration: 10 } );
+    } );
+    el.addEventListener( 'pointerdown', () => {
+      this._down = true;
+    } );
+    el.addEventListener( 'dragstart', () => {
+      setTimeout( () => {}, 5 );
+    } );
+  };
+
+  magnet = ( e ) => {
+    if ( ! e.clientX ) {
+      return;
+    }
+    setTimeout( () => {}, 5 );
+  };
+
+  openDrawer = () => {
+    this.setState( { drawerOpen: true } );
+  };
+
+  get menu() {
+    return [ { label: 'Home', kind: null }, { label: 'About', kind: 'simple' } ];
+  }
+
+  toggleRow( i ) {
+    if ( ! this.menu[ i ].kind ) {
+      return;
+    }
+    this.setState( { acc: i } );
+    this.animateAcc();
+  }
+
+  animateAcc() {
+    document.body.animate( [ { opacity: 0.95 }, { opacity: 1 } ], { duration: 10 } );
+  }
+
+  animateGhost() {
+    if ( this._ghostEl ) {
+      this._ghostEl.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 10 } );
+    }
+  }
+
+  setGhostRef = ( el ) => {
+    this._ghostEl = el;
+  };
+
+  pulse() {
+    if ( this._armed ) {
+      document.body.animate( [ { opacity: 0.9 }, { opacity: 1 } ], { duration: 10 } );
+    }
+  }
+
+  renderVals() {
+    return {
+      setDragEl: this.setDragEl,
+      magnet: this.magnet,
+      openDrawer: this.openDrawer,
+      drawerOpen: this.state.drawerOpen,
+      rows: this.menu.map( ( m, i ) => ( { label: m.label, onToggle: () => this.toggleRow( i ) } ) ),
+    };
+  }
+}
+</script>
+</body>
+</html>

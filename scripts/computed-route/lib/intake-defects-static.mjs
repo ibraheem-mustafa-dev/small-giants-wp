@@ -92,10 +92,11 @@ function templateNames( census, comp ) {
 	return out;
 }
 
-// The endings of deadCodeWhy's two "unwired" reasons: a member handed to the template under a key no binding names, or
-// a member nothing references. A misspelled template binding produces the same reasons, so review.md lists these
-// entries one by one (FR-48-34); a constant guard is the code's own "off" and stays a count.
-export const UNWIRED_PHRASES = Object.freeze( [ ', which no template binding references', ' is never referenced' ] );
+// The endings of the "unwired" dead-code reasons: a member handed to the template under a key no binding names, a
+// member nothing references (deadCodeWhy), or a guard field nothing writes (lib/intake-defects-deadfield.mjs). A
+// misspelled binding or field name produces the same reasons, so review.md lists these entries one by one
+// (FR-48-34); a constant guard is the code's own "off" and stays a count.
+export const UNWIRED_PHRASES = Object.freeze( [ ', which no template binding references', ' is never referenced', ', which nothing writes' ] );
 
 // True when a dead-code note (deadCodeWhy's, or a dead-field note quoting it) names an unwired member.
 export const isUnwired = ( note ) => UNWIRED_PHRASES.some( ( p ) => String( note ?? '' ).includes( p ) );

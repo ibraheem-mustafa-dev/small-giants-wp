@@ -19,7 +19,15 @@
 //     the script's unreached timer is prototype-only.
 //   - toggle's `if ( this.rm )` timer runs only under prefers-reduced-motion: reduce, which is forced too.
 // Each verdict has a MUST FAIL run with its forcing switched off (`force`, which exists only for these controls).
-// The fixture's HAR is recorded once into the OS temp folder (the first run needs the network).
+// The second fixture, tests/fixtures/intake-defects-gesture/, holds what a real pointer and a two-step state reach:
+//   - drag: a pointermove listener that needs its pointerdown first (wired up, move, down) and a dragstart timer;
+//   - coordinates: a document pointermove listener that looks for [data-tilt] and needs the pointer inside its box, and
+//     an onMouseMove handler that bails without clientX;
+//   - two steps: animateAcc runs only when the second row inside the drawer is clicked (the first opens nothing);
+//   - dead field: animateGhost needs this._ghostEl, which only an unbound ref callback writes;
+//   - pulse needs this._armed, which componentDidMount sets false: genuinely unreached and not provably dead, so it
+//     stays a defect under every run (the control that nothing real is hidden).
+// The fixtures' HARs are recorded once into the OS temp folder (the first run needs the network).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
@@ -32,29 +40,44 @@ import { proposeFlags } from '../lib/intake-flags.mjs';
 import { staticCensus, applyRuntime } from '../lib/intake-census.mjs';
 import { runtimeCensus } from '../lib/intake-census-runtime.mjs';
 import { proposeDraftDefects, unreachedDefects, classifyCompiled, boundStyleRows, motionModifier, STATE_KINDS } from '../lib/intake-defects.mjs';
+import { isUnwired } from '../lib/intake-defects-static.mjs';
+import { deadFieldWhy } from '../lib/intake-defects-deadfield.mjs';
 import { conditionKeys, patchesOf, defectGroups } from '../lib/intake-defects-keys.mjs';
 import { countAt } from '../lib/intake-census-map.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FOLDER = path.join( HERE, 'fixtures', 'intake-defects' );
+const GESTURE = path.join( HERE, 'fixtures', 'intake-defects-gesture' );
 const ENTRY = 'Home.dc.html';
 const fx = {};
+const gx = {};
+
+// The census (static and runtime pass) of a fixture folder, its HAR recorded on first use.
+async function censusOf( folder ) {
+	const { manifestHash } = recheckManifest( folder );
+	const harPath = path.join( os.tmpdir(), 'sgs-intake-defects-replay', `${ manifestHash }.har` );
+	if ( ! fs.existsSync( harPath ) ) {
+		await recordExport( { folder, index: ENTRY, harPath } );
+	}
+	const st = await staticCensus( { folder, entry: ENTRY, harPath } );
+	const rt = await runtimeCensus( { folder, entry: ENTRY, harPath, census: st } );
+	return { harPath, census: { rows: applyRuntime( st.rows, rt ), sources: st.sources } };
+}
 
 test.before( async () => {
-	const { manifestHash } = recheckManifest( FOLDER );
-	fx.harPath = path.join( os.tmpdir(), 'sgs-intake-defects-replay', `${ manifestHash }.har` );
-	if ( ! fs.existsSync( fx.harPath ) ) {
-		await recordExport( { folder: FOLDER, index: ENTRY, harPath: fx.harPath } );
-	}
-	const st = await staticCensus( { folder: FOLDER, entry: ENTRY, harPath: fx.harPath } );
-	const rt = await runtimeCensus( { folder: FOLDER, entry: ENTRY, harPath: fx.harPath, census: st } );
-	fx.census = { rows: applyRuntime( st.rows, rt ), sources: st.sources };
+	Object.assign( fx, await censusOf( FOLDER ) );
 	fx.flags = proposeFlags( { folder: FOLDER, census: fx.census } ).rows;
 	fx.res = await proposeDraftDefects( { folder: FOLDER, entry: ENTRY, harPath: fx.harPath, census: fx.census, flags: fx.flags } );
 	const base = { folder: FOLDER, entry: ENTRY, harPath: fx.harPath, census: fx.census };
 	// One negative-control run: forced hover, the prop-variant rule, the dead-code rule and reduced motion off, no flags.
 	fx.noPseudo = await unreachedDefects( { ...base, widths: [ 1440 ], force: { pseudo: false, props: false, deadCode: false, reducedMotion: false } } );
 	fx.noState = await unreachedDefects( { ...base, widths: [ 375, 1440 ], force: { state: false, events: false } } );
+	Object.assign( gx, await censusOf( GESTURE ) );
+	const g = { folder: GESTURE, entry: ENTRY, harPath: gx.harPath, census: gx.census };
+	gx.res = await unreachedDefects( g );
+	for ( const off of [ 'drag', 'coords', 'chain', 'deadField' ] ) {
+		gx[ off ] = await unreachedDefects( { ...g, widths: [ 375 ], force: { [ off ]: false } } );
+	}
 } );
 
 const defect = ( res, censusId ) => res.rows.find( ( r ) => r.censusId === censusId );
@@ -198,4 +221,46 @@ test( 'dead code, prototype-only and reduced motion are not defects', () => {
 
 test( 'MUST FAIL (dead code, flags, reduced motion): with each switched off the construct wrongly becomes a defect', () => {
 	[ 'waapi@Home:js:65:4', 'waapi@Home:js:70:6', 'timer@image-slot.js:js:13:6', 'timer@Home:js:48:6' ].forEach( ( id ) => assert.ok( defect( fx.noPseudo, id ), id ) );
+} );
+
+// The gesture fixture's construct IDs (census row IDs; js:<line>:<column> in Home.dc.html).
+const G = {
+	dragMove: 'waapi@Home:js:58:6', dragstart: 'handler@Home:js:63:4/addEventListener:dragstart', dragTimer: 'timer@Home:js:64:6',
+	tilt: 'waapi@Home:js:42:6', magnet: 'timer@Home:js:72:4', acc: 'waapi@Home:js:92:4', ghost: 'waapi@Home:js:97:6', pulse: 'waapi@Home:js:107:6',
+};
+
+test( 'gestures, coordinates and two-step states reach their constructs; a field only dead code writes is dead code', () => {
+	[ G.dragMove, G.dragstart, G.dragTimer, G.tilt, G.magnet, G.acc ].forEach( ( id ) => assert.equal( notDefect( gx.res, id )?.why, 'reached-when-forced', id ) );
+	assert.deepEqual( [ notDefect( gx.res, G.ghost ).why, notDefect( gx.res, G.ghost ).note ],
+		[ 'dead-code', 'animateGhost needs this._ghostEl, which is written only in dead code (setGhostRef is never referenced)' ] );
+	assert.deepEqual( gx.res.rows.map( ( r ) => r.censusId ), [ G.pulse ], 'only the genuinely unreached construct is a defect' );
+} );
+
+test( 'MUST FAIL (drag): without drag events and press gestures the drag constructs wrongly become defects', () => {
+	[ G.dragMove, G.dragstart, G.dragTimer ].forEach( ( id ) => assert.ok( defect( gx.drag, id ), id ) );
+} );
+
+test( 'MUST FAIL (coordinates): without a positioned pointer on the elements the code looks for, both pointer constructs wrongly become defects', () => {
+	[ G.tilt, G.magnet ].forEach( ( id ) => assert.ok( defect( gx.coords, id ), id ) );
+} );
+
+test( 'MUST FAIL (two-step states): without the chain, the row inside the drawer is never opened', () => {
+	assert.ok( defect( gx.chain, G.acc ) );
+} );
+
+test( 'MUST FAIL (dead field): without the dead-field rule the ghost animation wrongly becomes a defect', () => {
+	assert.ok( defect( gx.deadField, G.ghost ) );
+} );
+
+test( 'negative control: the construct no forcing reaches and no static rule proves dead stays a defect in every run', () => {
+	[ gx.res, gx.drag, gx.coords, gx.chain, gx.deadField ].forEach( ( r ) => assert.ok( defect( r, G.pulse ) ) );
+	assert.equal( defect( gx.res, G.pulse ).kind, 'waapi' );
+} );
+
+test( 'MUST FAIL: a dead-field note is listed as unwired for review, whether its writer is unbound or nothing writes the field', () => {
+	const logic = 'class Component { animatePage() { if ( this._foodEL ) { this._foodEL.animate( [], 300 ); } } setFoodEl( el ) { this._foodEl = el; } }';
+	const why = deadFieldWhy( { logic }, logic.indexOf( '.animate(' ), { rows: [] } );
+	assert.match( String( why ), /this\._foodEL, which nothing writes/, 'a misspelled field reads as a field nothing writes' );
+	assert.ok( isUnwired( why ), 'so review.md lists it under unwired code' );
+	assert.ok( ! isUnwired( 'exits at a constant guard before it: if (true) is always true' ), 'a constant guard stays a count' );
 } );
