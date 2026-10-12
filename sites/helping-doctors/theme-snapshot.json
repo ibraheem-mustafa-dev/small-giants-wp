@@ -185,6 +185,31 @@
           "slug": "accent-text",
           "name": "Text on Accent",
           "color": "#92400E"
+        },
+        {
+          "slug": "heading",
+          "name": "Heading Text",
+          "color": "#1a4139"
+        },
+        {
+          "slug": "link",
+          "name": "Link",
+          "color": "#2d6e5e"
+        },
+        {
+          "slug": "link-hover",
+          "name": "Link Hover",
+          "color": "#1a4139"
+        },
+        {
+          "slug": "section",
+          "name": "Section Background",
+          "color": "#e8f5f2"
+        },
+        {
+          "slug": "section-text",
+          "name": "Section Text",
+          "color": "#1a1a1a"
         }
       ]
     },
@@ -262,7 +287,7 @@
           "lineHeight": "1.25"
         },
         "color": {
-          "text": "var:preset|color|primary-dark"
+          "text": "var:preset|color|heading"
         }
       },
       "h1": {
@@ -301,16 +326,16 @@
       },
       "link": {
         "color": {
-          "text": "var:preset|color|primary"
+          "text": "var:preset|color|link"
         },
         ":hover": {
           "color": {
-            "text": "var:preset|color|primary-dark"
+            "text": "var:preset|color|link-hover"
           }
         },
         ":focus-visible": {
           "color": {
-            "text": "var:preset|color|primary-dark"
+            "text": "var:preset|color|link-hover"
           },
           "typography": {
             "textDecoration": "underline"

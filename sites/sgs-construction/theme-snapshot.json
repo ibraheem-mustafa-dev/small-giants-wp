@@ -197,6 +197,31 @@
           "slug": "whatsapp",
           "name": "WhatsApp",
           "color": "#25D366"
+        },
+        {
+          "slug": "heading",
+          "name": "Heading Text",
+          "color": "#1C1C1C"
+        },
+        {
+          "slug": "link",
+          "name": "Link",
+          "color": "#92400E"
+        },
+        {
+          "slug": "link-hover",
+          "name": "Link Hover",
+          "color": "#1C1C1C"
+        },
+        {
+          "slug": "section",
+          "name": "Section Background",
+          "color": "#F5F3F0"
+        },
+        {
+          "slug": "section-text",
+          "name": "Section Text",
+          "color": "#1C1C1C"
         }
       ]
     },
@@ -389,11 +414,11 @@
       },
       "link": {
         "color": {
-          "text": "var(--wp--preset--color--accent)"
+          "text": "var:preset|color|link"
         },
         ":hover": {
           "color": {
-            "text": "var(--wp--preset--color--primary)"
+            "text": "var:preset|color|link-hover"
           }
         }
       },
@@ -416,6 +441,11 @@
             "background": "var(--wp--preset--color--primary)",
             "text": "var(--wp--preset--color--text-inverse)"
           }
+        }
+      },
+      "heading": {
+        "color": {
+          "text": "var:preset|color|heading"
         }
       }
     }

@@ -1746,6 +1746,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				);
 			}
 
+			// Section ground (`ground` = 'section', Spec 32 FR-32-14): the container takes the
+			// site's `section` and `section-text` palette colours through the zero-specificity
+			// `.sgs-container--ground-section` rule in container/style.css, so an explicit
+			// backgroundColour or textColour on the block still wins. The tone judgement sees it
+			// as the BOTTOM layer, beneath any colour, gradient, image or overlay the block
+			// paints itself.
+			if ( 'section' === ( $attributes['ground'] ?? '' ) ) {
+				$classes[]     = 'sgs-container--ground-section';
+				$tone_layers[] = array(
+					'colour'  => 'section',
+					'opacity' => 1.0,
+				);
+			}
+
 			// Surface tone override ('auto' | 'light' | 'dark', U-13 §4.3/§4.4):
 			// lets an operator override the automatic judgement above for a
 			// section whose picture misleads (a light sky over a dark subject).

@@ -291,6 +291,11 @@
 		"backgroundImageMobile": {
 			"type": "object"
 		},
+		"ground": {
+			"type": "string",
+			"enum": [ "", "section" ],
+			"default": ""
+		},
 		"surfaceTone": {
 			"type": "string",
 			"enum": [ "auto", "light", "dark" ],

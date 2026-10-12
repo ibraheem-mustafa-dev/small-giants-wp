@@ -9,6 +9,7 @@ import {
   PanelBody,
   SelectControl,
   TextControl,
+  ToggleControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { useRef } from "@wordpress/element";
@@ -360,6 +361,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   const className = [
     "sgs-container",
     layout && `sgs-container--${layout}`,
+    'section' === attributes.ground && 'sgs-container--ground-section',
   ]
     .filter(Boolean)
     .join(" ");
@@ -456,6 +458,18 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
           Styles on hero — the same panel in two different tabs
           depending on which block the client had selected. */}
       <InspectorControls group="styles">
+        {/* Section ground: the site's section background and its paired text colour
+            (palette slugs `section` and `section-text`, Spec 32 FR-32-14). A colour set
+            below on this block still wins; the preview class mirrors the frontend's. */}
+        <PanelBody title={ __( "Section ground", "sgs-blocks" ) } initialOpen={ false }>
+          <ToggleControl
+            __nextHasNoMarginBottom
+            label={ __( "Section ground", "sgs-blocks" ) }
+            help={ __( "Uses the site's section background and text colours.", "sgs-blocks" ) }
+            checked={ "section" === attributes.ground }
+            onChange={ ( on ) => setAttributes( { ground: on ? "section" : "" } ) }
+          />
+        </PanelBody>
         {/* Base background colour — the OUTER-most paint layer, BELOW the
             background image/video/SVG (::before), the overlay colour/gradient
             (backgroundOverlayColour/overlayGradient, painted on the

@@ -196,6 +196,31 @@
           "color": "#CFC7BB",
           "name": "Border Hover",
           "_source": "declared"
+        },
+        {
+          "slug": "heading",
+          "color": "#141414",
+          "name": "Heading Text"
+        },
+        {
+          "slug": "link",
+          "color": "#141414",
+          "name": "Link"
+        },
+        {
+          "slug": "link-hover",
+          "color": "#0F0F0F",
+          "name": "Link Hover"
+        },
+        {
+          "slug": "section",
+          "color": "#FFFFFF",
+          "name": "Section Background"
+        },
+        {
+          "slug": "section-text",
+          "color": "#141414",
+          "name": "Section Text"
         }
       ],
       "gradients": [],
@@ -682,16 +707,16 @@
     "elements": {
       "link": {
         "color": {
-          "text": "var:preset|color|primary"
+          "text": "var:preset|color|link"
         },
         ":hover": {
           "color": {
-            "text": "var:preset|color|primary-dark"
+            "text": "var:preset|color|link-hover"
           }
         },
         ":focus-visible": {
           "color": {
-            "text": "var:preset|color|primary-dark"
+            "text": "var:preset|color|link-hover"
           },
           "typography": {
             "textDecoration": "underline"
@@ -703,6 +728,9 @@
           "fontFamily": "var:preset|font-family|heading",
           "fontWeight": "500",
           "lineHeight": "1.0"
+        },
+        "color": {
+          "text": "var:preset|color|heading"
         }
       },
       "h1": {

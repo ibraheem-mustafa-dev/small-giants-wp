@@ -116,6 +116,31 @@
           "slug": "footer-bg",
           "color": "#0F172A",
           "name": "Footer Background"
+        },
+        {
+          "slug": "heading",
+          "color": "#1A202C",
+          "name": "Heading Text"
+        },
+        {
+          "slug": "link",
+          "color": "#0a7ea8",
+          "name": "Link"
+        },
+        {
+          "slug": "link-hover",
+          "color": "#0F4C4C",
+          "name": "Link Hover"
+        },
+        {
+          "slug": "section",
+          "color": "#F1F0EC",
+          "name": "Section Background"
+        },
+        {
+          "slug": "section-text",
+          "color": "#1A202C",
+          "name": "Section Text"
         }
       ],
       "gradients": [],
@@ -531,16 +556,16 @@
     "elements": {
       "link": {
         "color": {
-          "text": "var:preset|color|primary"
+          "text": "var:preset|color|link"
         },
         ":hover": {
           "color": {
-            "text": "var:preset|color|primary-dark"
+            "text": "var:preset|color|link-hover"
           }
         },
         ":focus-visible": {
           "color": {
-            "text": "var:preset|color|primary-dark"
+            "text": "var:preset|color|link-hover"
           },
           "typography": {
             "textDecoration": "underline"
@@ -555,7 +580,7 @@
           "letterSpacing": "-1.24px"
         },
         "color": {
-          "text": "var:preset|color|text"
+          "text": "var:preset|color|heading"
         }
       },
       "h1": {

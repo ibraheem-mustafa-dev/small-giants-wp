@@ -59,6 +59,14 @@
 	box-sizing: border-box;
 }
 
+/* Section ground (the `ground` attribute): the site's section background and its paired text colour
+   (palette slugs `section` and `section-text`, Spec 32 FR-32-14). :where() keeps this at zero
+   specificity, so an explicit background or text colour on the block (a per-instance rule) wins. */
+:where(.sgs-container--ground-section) {
+	background-color: var(--wp--preset--color--section);
+	color: var(--wp--preset--color--section-text);
+}
+
 /* Content-width inner wrapper — full-bleed background with capped content.
    box-sizing + width:100% prevent overflow when max-width + margin + parent
    padding combine on narrow viewports. */

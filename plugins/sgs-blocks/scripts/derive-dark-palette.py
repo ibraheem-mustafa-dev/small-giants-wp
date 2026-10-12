@@ -29,12 +29,12 @@ functions.php::dark_mode_ink_css. A text slug paired with a fill only by its nam
 counts only when that pair already reads in light mode (else a light-mode warning).
 
 Roles (any slug, not a fixed list — `_sgsDark.roles` overrides the name-based guess):
-    surface  slug*, *-bg, background*, base*, and footer-bg (endswith '-bg' covers it).
+    surface  slug*, section, *-bg, background*, base*, and footer-bg (endswith '-bg' covers it).
              Mapped onto a dark band: the base `surface` slug sits at OKLCh L 0.18;
              every OTHER surface slug sits at L 0.21-0.27 in its ORIGINAL lightness
              order (hue kept, chroma capped at 0.03 — a tinted cream becomes a tinted
              near-black, not a hueless grey).
-    text     text*, *-text. A `*-text` slug whose prefix names another palette slug
+    text     text*, heading, *-text. A `*-text` slug whose prefix names another palette slug
              (`primary-text`, `accent-text`) is treated as TEXT-ON-THAT-FILL and paired
              against that fill's dark value, never a surface — same rule the design
              names explicitly for `text-inverse` (paired with `primary`, its brand
@@ -260,12 +260,13 @@ def classify_role(slug: str, roles_override: dict) -> str:
         return "locked"
     if (
         s.startswith("surface")
+        or s == "section"
         or s.endswith("-bg")
         or s.startswith("background")
         or s.startswith("base")
     ):
         return "surface"
-    if s.startswith("text") or s.endswith("-text"):
+    if s.startswith("text") or s.endswith("-text") or s == "heading":
         return "text"
     if s.startswith("border"):
         return "border"

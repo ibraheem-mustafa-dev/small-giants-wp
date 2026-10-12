@@ -164,6 +164,31 @@
           "slug": "border-light",
           "name": "Border Light",
           "color": "#E5E7EB"
+        },
+        {
+          "slug": "heading",
+          "name": "Heading Text",
+          "color": "#3a2e26"
+        },
+        {
+          "slug": "link",
+          "name": "Link",
+          "color": "#b7475b"
+        },
+        {
+          "slug": "link-hover",
+          "name": "Link Hover",
+          "color": "#8c3343"
+        },
+        {
+          "slug": "section",
+          "name": "Section Background",
+          "color": "#fff9f0"
+        },
+        {
+          "slug": "section-text",
+          "name": "Section Text",
+          "color": "#3a2e26"
         }
       ],
       "gradients": [],
@@ -555,16 +580,16 @@
     "elements": {
       "link": {
         "color": {
-          "text": "var:preset|color|primary"
+          "text": "var:preset|color|link"
         },
         ":hover": {
           "color": {
-            "text": "var:preset|color|primary-dark"
+            "text": "var:preset|color|link-hover"
           }
         },
         ":focus-visible": {
           "color": {
-            "text": "var:preset|color|primary-dark"
+            "text": "var:preset|color|link-hover"
           },
           "typography": {
             "textDecoration": "underline"
@@ -575,6 +600,9 @@
         "typography": {
           "lineHeight": "1.2",
           "fontFamily": "var:preset|font-family|heading"
+        },
+        "color": {
+          "text": "var:preset|color|heading"
         }
       },
       "h1": {

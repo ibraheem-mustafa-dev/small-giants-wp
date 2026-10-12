@@ -1,0 +1,447 @@
+{
+  "spec": "Spec 32 FR-32-14",
+  "generated": "2026-10-12",
+  "note": "Values written by migrate-palette-roster-slugs.py --fix --apply, with the contrast of the three gated pairs per file. section is surface-alt and section-text is text from each file's own palette everywhere.",
+  "files": {
+    "theme/sgs-theme/theme.json": {
+      "slugs": {
+        "heading": "#1A202C",
+        "link": "#1F7A7A",
+        "link-hover": "#0F4C4C",
+        "section": "#F1F0EC",
+        "section-text": "#1A202C"
+      },
+      "sources": {
+        "heading": "framework default = text",
+        "link": "framework default = primary",
+        "link-hover": "framework default = primary-dark",
+        "section": "framework default = surface-alt",
+        "section-text": "framework default = text"
+      },
+      "contrast": [
+        {
+          "fg": "section-text",
+          "bg": "section",
+          "fg_hex": "#1A202C",
+          "bg_hex": "#F1F0EC",
+          "ratio": 14.31,
+          "status": "ok"
+        },
+        {
+          "fg": "link",
+          "bg": "surface",
+          "fg_hex": "#1F7A7A",
+          "bg_hex": "#FAF9F6",
+          "ratio": 4.84,
+          "status": "ok"
+        },
+        {
+          "fg": "link-hover",
+          "bg": "surface",
+          "fg_hex": "#0F4C4C",
+          "bg_hex": "#FAF9F6",
+          "ratio": 9.24,
+          "status": "ok"
+        }
+      ]
+    },
+    "sites/eye-care-ward-end/theme-snapshot.json": {
+      "slugs": {
+        "heading": "#141414",
+        "link": "#141414",
+        "link-hover": "#0F0F0F",
+        "section": "#FFFFFF",
+        "section-text": "#141414"
+      },
+      "sources": {
+        "heading": "framework mapping (text)",
+        "link": "element: primary",
+        "link-hover": "element: primary-dark"
+      },
+      "contrast": [
+        {
+          "fg": "section-text",
+          "bg": "section",
+          "fg_hex": "#141414",
+          "bg_hex": "#FFFFFF",
+          "ratio": 18.42,
+          "status": "ok"
+        },
+        {
+          "fg": "link",
+          "bg": "surface",
+          "fg_hex": "#141414",
+          "bg_hex": "#FAF8F5",
+          "ratio": 17.38,
+          "status": "ok"
+        },
+        {
+          "fg": "link-hover",
+          "bg": "surface",
+          "fg_hex": "#0F0F0F",
+          "bg_hex": "#FAF8F5",
+          "ratio": 18.08,
+          "status": "ok"
+        }
+      ]
+    },
+    "sites/helping-doctors/theme-snapshot.json": {
+      "slugs": {
+        "heading": "#1a4139",
+        "link": "#2d6e5e",
+        "link-hover": "#1a4139",
+        "section": "#e8f5f2",
+        "section-text": "#1a1a1a"
+      },
+      "sources": {
+        "heading": "element: primary-dark",
+        "link": "element: primary",
+        "link-hover": "element: primary-dark"
+      },
+      "contrast": [
+        {
+          "fg": "section-text",
+          "bg": "section",
+          "fg_hex": "#1a1a1a",
+          "bg_hex": "#e8f5f2",
+          "ratio": 15.56,
+          "status": "ok"
+        },
+        {
+          "fg": "link",
+          "bg": "surface",
+          "fg_hex": "#2d6e5e",
+          "bg_hex": "#ffffff",
+          "ratio": 5.99,
+          "status": "ok"
+        },
+        {
+          "fg": "link-hover",
+          "bg": "surface",
+          "fg_hex": "#1a4139",
+          "bg_hex": "#ffffff",
+          "ratio": 11.3,
+          "status": "ok"
+        }
+      ]
+    },
+    "sites/indus-foods/theme-snapshot.json": {
+      "slugs": {
+        "heading": "#1A202C",
+        "link": "#0a7ea8",
+        "link-hover": "#0F4C4C",
+        "section": "#F1F0EC",
+        "section-text": "#1A202C"
+      },
+      "sources": {
+        "heading": "element: text",
+        "link": "element: primary",
+        "link-hover": "element: primary-dark"
+      },
+      "contrast": [
+        {
+          "fg": "section-text",
+          "bg": "section",
+          "fg_hex": "#1A202C",
+          "bg_hex": "#F1F0EC",
+          "ratio": 14.31,
+          "status": "ok"
+        },
+        {
+          "fg": "link",
+          "bg": "surface",
+          "fg_hex": "#0a7ea8",
+          "bg_hex": "#ffffff",
+          "ratio": 4.6,
+          "status": "ok"
+        },
+        {
+          "fg": "link-hover",
+          "bg": "surface",
+          "fg_hex": "#0F4C4C",
+          "bg_hex": "#ffffff",
+          "ratio": 9.73,
+          "status": "ok"
+        }
+      ]
+    },
+    "sites/mamas-munches-redesign/theme-snapshot.json": {
+      "slugs": {
+        "heading": "#3a2a22",
+        "link": "#a8404f",
+        "link-hover": "#0F4C4C",
+        "section": "#F1F0EC",
+        "section-text": "#3a2a22"
+      },
+      "sources": {
+        "heading": "framework mapping (text)",
+        "link": "element: primary",
+        "link-hover": "element: primary-dark"
+      },
+      "contrast": [
+        {
+          "fg": "section-text",
+          "bg": "section",
+          "fg_hex": "#3a2a22",
+          "bg_hex": "#F1F0EC",
+          "ratio": 12.0,
+          "status": "ok"
+        },
+        {
+          "fg": "link",
+          "bg": "surface",
+          "fg_hex": "#a8404f",
+          "bg_hex": "#fbf3dc",
+          "ratio": 5.4,
+          "status": "ok"
+        },
+        {
+          "fg": "link-hover",
+          "bg": "surface",
+          "fg_hex": "#0F4C4C",
+          "bg_hex": "#fbf3dc",
+          "ratio": 8.78,
+          "status": "ok"
+        }
+      ]
+    },
+    "sites/mamas-munches/theme-snapshot.json": {
+      "slugs": {
+        "heading": "#3a2e26",
+        "link": "#e68a95",
+        "link-hover": "#b7475b",
+        "section": "#fff9f0",
+        "section-text": "#3a2e26"
+      },
+      "sources": {
+        "heading": "framework mapping (text)",
+        "link": "element: primary",
+        "link-hover": "element: primary-dark"
+      },
+      "contrast": [
+        {
+          "fg": "section-text",
+          "bg": "section",
+          "fg_hex": "#3a2e26",
+          "bg_hex": "#fff9f0",
+          "ratio": 12.55,
+          "status": "ok"
+        },
+        {
+          "fg": "link",
+          "bg": "surface",
+          "fg_hex": "#e68a95",
+          "bg_hex": "#fbf3dc",
+          "ratio": 2.25,
+          "status": "low"
+        },
+        {
+          "fg": "link-hover",
+          "bg": "surface",
+          "fg_hex": "#b7475b",
+          "bg_hex": "#fbf3dc",
+          "ratio": 4.66,
+          "status": "ok"
+        }
+      ]
+    },
+    "sites/sgs-construction/theme-snapshot.json": {
+      "slugs": {
+        "heading": "#1C1C1C",
+        "link": "#E8700A",
+        "link-hover": "#1C1C1C",
+        "section": "#F5F3F0",
+        "section-text": "#1C1C1C"
+      },
+      "sources": {
+        "heading": "framework mapping (text); no heading element existed",
+        "link": "element: var(--wp--preset--color--accent)",
+        "link-hover": "element: var(--wp--preset--color--primary)"
+      },
+      "contrast": [
+        {
+          "fg": "section-text",
+          "bg": "section",
+          "fg_hex": "#1C1C1C",
+          "bg_hex": "#F5F3F0",
+          "ratio": 15.39,
+          "status": "ok"
+        },
+        {
+          "fg": "link",
+          "bg": "surface",
+          "fg_hex": "#E8700A",
+          "bg_hex": "#FFFFFF",
+          "ratio": 3.11,
+          "status": "low"
+        },
+        {
+          "fg": "link-hover",
+          "bg": "surface",
+          "fg_hex": "#1C1C1C",
+          "bg_hex": "#FFFFFF",
+          "ratio": 17.04,
+          "status": "ok"
+        }
+      ]
+    },
+    "sites/sgs-healthcare/theme-snapshot.json": {
+      "slugs": {
+        "heading": "#1A2E35",
+        "link": "#1A5F6B",
+        "link-hover": "#4CAF88",
+        "section": "#F0F9F7",
+        "section-text": "#1A2E35"
+      },
+      "sources": {
+        "heading": "framework mapping (text); no heading element existed",
+        "link": "element: var(--wp--preset--color--primary)",
+        "link-hover": "element: var(--wp--preset--color--accent)"
+      },
+      "contrast": [
+        {
+          "fg": "section-text",
+          "bg": "section",
+          "fg_hex": "#1A2E35",
+          "bg_hex": "#F0F9F7",
+          "ratio": 13.19,
+          "status": "ok"
+        },
+        {
+          "fg": "link",
+          "bg": "surface",
+          "fg_hex": "#1A5F6B",
+          "bg_hex": "#FFFFFF",
+          "ratio": 7.26,
+          "status": "ok"
+        },
+        {
+          "fg": "link-hover",
+          "bg": "surface",
+          "fg_hex": "#4CAF88",
+          "bg_hex": "#FFFFFF",
+          "ratio": 2.69,
+          "status": "low"
+        }
+      ]
+    },
+    "sites/sgs-mosque/theme-snapshot.json": {
+      "slugs": {
+        "heading": "#1A2E22",
+        "link": "#C9A035",
+        "link-hover": "#1A3D2B",
+        "section": "#F5FBF7",
+        "section-text": "#1A2E22"
+      },
+      "sources": {
+        "heading": "framework mapping (text); no heading element existed",
+        "link": "element: var(--wp--preset--color--accent)",
+        "link-hover": "element: var(--wp--preset--color--primary)"
+      },
+      "contrast": [
+        {
+          "fg": "section-text",
+          "bg": "section",
+          "fg_hex": "#1A2E22",
+          "bg_hex": "#F5FBF7",
+          "ratio": 13.74,
+          "status": "ok"
+        },
+        {
+          "fg": "link",
+          "bg": "surface",
+          "fg_hex": "#C9A035",
+          "bg_hex": "#FFFFFF",
+          "ratio": 2.45,
+          "status": "low"
+        },
+        {
+          "fg": "link-hover",
+          "bg": "surface",
+          "fg_hex": "#1A3D2B",
+          "bg_hex": "#FFFFFF",
+          "ratio": 12.03,
+          "status": "ok"
+        }
+      ]
+    },
+    "sites/sgs-professional/theme-snapshot.json": {
+      "slugs": {
+        "heading": "#1E2D5E",
+        "link": "#8B4A6B",
+        "link-hover": "#1E2D5E",
+        "section": "#F8F7F9",
+        "section-text": "#1E2D5E"
+      },
+      "sources": {
+        "heading": "framework mapping (text); no heading element existed",
+        "link": "element: var(--wp--preset--color--accent)",
+        "link-hover": "element: var(--wp--preset--color--primary)"
+      },
+      "contrast": [
+        {
+          "fg": "section-text",
+          "bg": "section",
+          "fg_hex": "#1E2D5E",
+          "bg_hex": "#F8F7F9",
+          "ratio": 12.35,
+          "status": "ok"
+        },
+        {
+          "fg": "link",
+          "bg": "surface",
+          "fg_hex": "#8B4A6B",
+          "bg_hex": "#FFFFFF",
+          "ratio": 6.38,
+          "status": "ok"
+        },
+        {
+          "fg": "link-hover",
+          "bg": "surface",
+          "fg_hex": "#1E2D5E",
+          "bg_hex": "#FFFFFF",
+          "ratio": 13.19,
+          "status": "ok"
+        }
+      ]
+    }
+  },
+  "contrast_failures": [
+    {
+      "file": "sites/mamas-munches/theme-snapshot.json",
+      "fg": "link",
+      "bg": "surface",
+      "fg_hex": "#e68a95",
+      "bg_hex": "#fbf3dc",
+      "ratio": 2.25,
+      "status": "low"
+    },
+    {
+      "file": "sites/sgs-construction/theme-snapshot.json",
+      "fg": "link",
+      "bg": "surface",
+      "fg_hex": "#E8700A",
+      "bg_hex": "#FFFFFF",
+      "ratio": 3.11,
+      "status": "low"
+    },
+    {
+      "file": "sites/sgs-healthcare/theme-snapshot.json",
+      "fg": "link-hover",
+      "bg": "surface",
+      "fg_hex": "#4CAF88",
+      "bg_hex": "#FFFFFF",
+      "ratio": 2.69,
+      "status": "low"
+    },
+    {
+      "file": "sites/sgs-mosque/theme-snapshot.json",
+      "fg": "link",
+      "bg": "surface",
+      "fg_hex": "#C9A035",
+      "bg_hex": "#FFFFFF",
+      "ratio": 2.45,
+      "status": "low"
+    }
+  ]
+}

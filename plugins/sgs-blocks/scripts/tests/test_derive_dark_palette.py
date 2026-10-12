@@ -362,7 +362,12 @@ def test_real_snapshot_derives_with_no_failures(snapshot_with_dark):
     result = ddp.derive(snapshot_with_dark)
     palette = _palette_dict(snapshot_with_dark)
     assert result["failures"] == [], result["failures"]
-    assert result["ink"] == {"element": {"button": {"base": {"text": palette["text"]}}}}
+    # The button keeps its dark label. `primary-dark` is a button hover fill and, now that the link hover
+    # reads its own `link-hover` slug, nothing pins its dark value to a link pair, so the hover label may
+    # need its own fill-scoped ink too (`surface` text on that fill).
+    button_ink = result["ink"]["element"]["button"]
+    assert button_ink["base"] == {"text": palette["text"]}
+    assert set(button_ink) <= {"base", "hover"} and set(result["ink"]) == {"element"}
     assert {w["slug"] for w in result["warnings"]} == {"text-inverse", "primary-text", "accent-text"}
     assert all(w["mode"] == "light" for w in result["warnings"])
     # Page text really inverted: light enough for every dark surface.
