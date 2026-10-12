@@ -60,7 +60,7 @@ if ( ! function_exists( 'sgs_icon_motion_decls' ) ) {
 			'move-duration'  => $values['move_ms'] ?? null,
 			'paint-duration' => $values['paint_ms'] ?? null,
 		) as $name => $raw ) {
-			$ms = sgs_motion_ms( $raw, 0 );
+			$ms = sgs_flat_duration_ms( $raw, 0 );
 			if ( $ms > 0 ) {
 				$out[] = $prefix . '-' . $name . ':' . $ms . 'ms';
 			}

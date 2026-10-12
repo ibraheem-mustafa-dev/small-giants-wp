@@ -108,7 +108,7 @@ function build_hover_vars(
 	// Slug maps to var(--wp--custom--easing--{slug}). 'custom' is the one
 	// exception — a hand-typed cubic-bezier()/steps()/linear() curve, resolved
 	// (and validated) by the SAME shared helper the nav motion controls use
-	// (sgs_motion_easing_css() / sgs_motion_valid_cubic_bezier(),
+	// (sgs_motion_easing_css() / Sgs_Motion_Field_Types::is_valid_cubic_bezier(),
 	// includes/helpers-motion-easing.php) rather than a second validator.
 	$allowed_easings = array( 'default', 'ease-out', 'ease-in', 'spring', 'linear' );
 	if ( 'custom' === $hover_easing_slug ) {

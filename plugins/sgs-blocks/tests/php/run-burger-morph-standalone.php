@@ -248,7 +248,7 @@ foreach ( $hostile_curves as $label => $curve ) {
 // Negative control: bypass the validator — prove the refusal tests above can fail.
 $helper_source = (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/helpers-motion-easing.php' );
 $bypass_validator = str_replace(
-	'return sgs_motion_valid_cubic_bezier( $custom ) ? $custom : $fallback;',
+	'return \SGS\Blocks\Motion\Sgs_Motion_Field_Types::is_valid_cubic_bezier( $custom ) ? $custom : $fallback;',
 	'return $custom;',
 	$helper_source
 );

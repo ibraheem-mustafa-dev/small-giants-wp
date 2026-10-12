@@ -97,7 +97,7 @@ if ( ! function_exists( 'sgs_header_ink_css' ) ) {
 		$transition = '';
 		$paints_ink = array() !== $live;
 		if ( $paints_ink ) {
-			$duration = sgs_motion_ms( $attributes['inkDuration'] ?? null, 400 );
+			$duration = sgs_flat_duration_ms( $attributes['inkDuration'] ?? null, 400 );
 			if ( $duration > 0 ) {
 				$easing = sgs_motion_easing_css( (string) ( $attributes['inkEasing'] ?? 'ease' ), (string) ( $attributes['inkEasingCustom'] ?? '' ) );
 				$props  = $has_tone_fill ? array( 'color', 'background-color' ) : array( 'color' );

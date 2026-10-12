@@ -85,7 +85,7 @@ if ( ! function_exists( 'sgs_nav_menu_caret_css' ) ) {
 		$turn_duration_raw = $attributes['submenuCaretTurnDuration'] ?? null;
 		$turn_easing_key   = (string) ( $attributes['submenuCaretTurnEasing'] ?? '' );
 		if ( is_numeric( $turn_duration_raw ) || '' !== $turn_easing_key ) {
-			$turn_ms     = sgs_motion_ms( $turn_duration_raw, 300 );
+			$turn_ms     = sgs_flat_duration_ms( $turn_duration_raw, 300 );
 			$turn_easing = sgs_motion_easing_css(
 				$turn_easing_key,
 				(string) ( $attributes['submenuCaretTurnEasingCustom'] ?? '' ),

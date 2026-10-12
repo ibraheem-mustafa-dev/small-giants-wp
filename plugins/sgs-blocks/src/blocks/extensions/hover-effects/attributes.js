@@ -66,7 +66,7 @@ export function addHoverAttributes( settings ) {
 			// Hand-typed cubic-bezier()/steps()/linear() curve, read only when
 			// sgsHoverEasing is 'custom' — validated server-side by the SAME
 			// shared helper the nav motion controls use (D-Wave 3C U-5),
-			// includes/helpers-motion-easing.php::sgs_motion_valid_cubic_bezier().
+			// includes/motion/class-sgs-motion-field-types.php::Sgs_Motion_Field_Types::is_valid_cubic_bezier().
 			sgsHoverEasingCustom: { type: 'string',  default: '' },
 			// Image zoom on hover — from the block's own hoverDefaults.
 			sgsHoverImageZoom:    { type: 'boolean', default: defaults.imageZoom },

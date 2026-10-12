@@ -86,7 +86,7 @@ ok( 'var(--wp--custom--easing--ease-out)' === sgs_motion_easing_css( 'ease-out' 
 ok( 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' === sgs_motion_easing_css( 'custom', 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' ), 'a valid custom curve passes through' );
 ok( 'ease-out' === sgs_motion_easing_css( 'custom', 'red;}body{x', 'ease-out' ), 'a hostile custom curve falls back' );
 ok( 'ease-out' === sgs_motion_easing_css( 'nope', '', 'ease-out' ), 'an unknown name falls back' );
-ok( 3000 === sgs_motion_ms( 99999, 1 ) && 0 === sgs_motion_ms( -5, 1 ) && 7 === sgs_motion_ms( 'x', 7 ), 'durations clamp to 0..3000 and default on junk' );
+ok( 3000 === sgs_flat_duration_ms( 99999, 1 ) && 0 === sgs_flat_duration_ms( -5, 1 ) && 7 === sgs_flat_duration_ms( 'x', 7 ), 'durations clamp to 0..3000 and default on junk' );
 
 // ══════════════════════════════════════════════════════════════════════════
 // 2. Drawer motion resolution.

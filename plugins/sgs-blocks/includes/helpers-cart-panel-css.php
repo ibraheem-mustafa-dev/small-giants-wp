@@ -190,7 +190,7 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 	if ( $is_drawer ) {
 		$motion = array();
 		if ( is_numeric( $attributes['panelSlideDuration'] ?? null ) && (float) $attributes['panelSlideDuration'] > 0 ) {
-			$motion[] = 'animation-duration:' . sgs_motion_ms( $attributes['panelSlideDuration'], 250 ) . 'ms';
+			$motion[] = 'animation-duration:' . sgs_flat_duration_ms( $attributes['panelSlideDuration'], 250 ) . 'ms';
 		}
 		if ( '' !== (string) ( $attributes['panelSlideEasing'] ?? '' ) ) {
 			$motion[] = 'animation-timing-function:' . sgs_motion_easing_css( (string) $attributes['panelSlideEasing'], (string) ( $attributes['panelSlideEasingCustom'] ?? '' ), 'ease-out' );

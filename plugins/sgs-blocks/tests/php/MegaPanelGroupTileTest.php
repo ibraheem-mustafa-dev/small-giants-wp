@@ -5,7 +5,7 @@
  * groupPadding is a per-tier box object emitted through sgs_emit_responsive_css()
  * with 'box' => true (the same call render.php makes), so only the sides that are
  * set print, and an unset value prints nothing. groupTransitionDuration is a
- * numeric-millisecond string validated by sgs_motion_ms(). The remaining checks
+ * numeric-millisecond string validated by sgs_flat_duration_ms() against the duration field type. The remaining checks
  * read block.json and render.php to prove both attributes are declared with no
  * default value and that render.php emits them on the group tile.
  *
@@ -63,9 +63,9 @@ final class MegaPanelGroupTileTest extends TestCase {
 	}
 
 	public function test_duration_is_validated_as_milliseconds(): void {
-		$this->assertSame( 250, sgs_motion_ms( '250', 0 ) );
-		$this->assertSame( 0, sgs_motion_ms( 'url(x)', 0 ) );
-		$this->assertSame( 3000, sgs_motion_ms( '99999', 0 ) );
+		$this->assertSame( 250, sgs_flat_duration_ms( '250', 0 ) );
+		$this->assertSame( 0, sgs_flat_duration_ms( 'url(x)', 0 ) );
+		$this->assertSame( 3000, sgs_flat_duration_ms( '99999', 0 ) );
 	}
 
 	public function test_block_json_declares_both_without_a_value(): void {
@@ -83,7 +83,7 @@ final class MegaPanelGroupTileTest extends TestCase {
 		$php = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/mega-panel/render.php' );
 		$this->assertStringContainsString( "\$attributes['groupPadding']", $php );
 		$this->assertStringContainsString( "'[data-mega-style]' . \$rel_group", $php );
-		$this->assertStringContainsString( "'{transition-duration:' . sgs_motion_ms(", $php );
+		$this->assertStringContainsString( "'{transition-duration:' . sgs_flat_duration_ms(", $php );
 		$this->assertLessThan(
 			strpos( $php, '@media (prefers-reduced-motion: reduce){' ),
 			strpos( $php, "\$attributes['groupTransitionDuration']" ),

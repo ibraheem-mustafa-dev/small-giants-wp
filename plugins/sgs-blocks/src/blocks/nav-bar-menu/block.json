@@ -1451,7 +1451,7 @@
 		"itemMotionEasingCustom": {
 			"type": "string",
 			"default": "",
-			"description": "A hand-typed `cubic-bezier(x1, y1, x2, y2)` curve, read only when `itemMotionEasing` is `custom` (validated by sgs_motion_valid_cubic_bezier)."
+			"description": "A hand-typed `cubic-bezier(x1, y1, x2, y2)` curve, read only when `itemMotionEasing` is `custom` (validated by the easing field type, Sgs_Motion_Field_Types::is_valid_cubic_bezier)."
 		},
 		"triggerHoverLabel": {
 			"type": "string",

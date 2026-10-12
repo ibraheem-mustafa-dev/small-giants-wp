@@ -106,20 +106,20 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_section_motion' ) ) {
 		}
 
 		$mode = (string) ( $attributes['submenuAnimation'] ?? 'none' );
-		$in   = sgs_motion_ms( $attributes['submenuAnimationDuration'] ?? 180, 180 );
+		$in   = sgs_flat_duration_ms( $attributes['submenuAnimationDuration'] ?? 180, 180 );
 		$ease = sgs_motion_easing_css( (string) ( $attributes['submenuAnimationEasing'] ?? 'ease-out-css' ), (string) ( $attributes['submenuAnimationEasingCustom'] ?? '' ), 'ease-out' );
 		$vars = '';
 		if ( in_array( $mode, array( 'fade', 'fade-lift', 'height' ), true ) ) {
 			$out['classes'][] = 'sgs-nav-drawer-menu--acc-' . $mode;
 			$vars            .= '--sgs-ndm-acc-in:' . $in . 'ms;'
-				. '--sgs-ndm-acc-out:' . sgs_motion_ms( $attributes['submenuExitDuration'] ?? 150, 150 ) . 'ms;'
+				. '--sgs-ndm-acc-out:' . sgs_flat_duration_ms( $attributes['submenuExitDuration'] ?? 150, 150 ) . 'ms;'
 				. '--sgs-ndm-acc-ease:' . $ease . ';';
 		}
 
-		$step = sgs_motion_ms( $attributes['submenuItemStagger'] ?? 0, 0, 1000 );
+		$step = sgs_flat_duration_ms( $attributes['submenuItemStagger'] ?? 0, 0, 1000 );
 		if ( $step > 0 ) {
-			$dur              = sgs_motion_ms( $attributes['submenuItemStaggerDuration'] ?? 0, 0 );
-			$max              = sgs_motion_ms( $attributes['submenuItemStaggerMax'] ?? 0, 0, 10000 );
+			$dur              = sgs_flat_duration_ms( $attributes['submenuItemStaggerDuration'] ?? 0, 0 );
+			$max              = sgs_flat_duration_ms( $attributes['submenuItemStaggerMax'] ?? 0, 0, 10000 );
 			$dist             = is_numeric( $attributes['submenuItemStaggerDistance'] ?? null )
 				? max( -400, min( 400, (int) round( (float) $attributes['submenuItemStaggerDistance'] ) ) ) : 8;
 			$out['classes'][] = 'sgs-nav-drawer-menu--acc-stagger';

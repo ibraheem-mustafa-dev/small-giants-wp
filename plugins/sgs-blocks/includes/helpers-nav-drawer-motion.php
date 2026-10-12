@@ -145,8 +145,8 @@ if ( ! function_exists( 'sgs_nav_drawer_motion' ) ) {
 			$decls[ $tier ] = sgs_nav_drawer_motion_tier_decls( $pair[0], $pair[1], $grow_any );
 		}
 
-		$enter_ms = sgs_motion_ms( $attributes['entryDuration'] ?? 250, 250 );
-		$exit_ms  = sgs_motion_ms( $attributes['exitDuration'] ?? 200, 200 );
+		$enter_ms = sgs_flat_duration_ms( $attributes['entryDuration'] ?? 250, 250 );
+		$exit_ms  = sgs_flat_duration_ms( $attributes['exitDuration'] ?? 200, 200 );
 		$easing   = sgs_motion_easing_css( (string) ( $attributes['entryEasing'] ?? 'ease-out-css' ), (string) ( $attributes['entryEasingCustom'] ?? '' ), 'ease-out' );
 		$fade     = ! array_key_exists( 'entryFade', $attributes ) || ! empty( $attributes['entryFade'] );
 
@@ -165,11 +165,11 @@ if ( ! function_exists( 'sgs_nav_drawer_motion' ) ) {
 		$classes = array();
 		$data    = array();
 
-		$step = sgs_motion_ms( $attributes['itemStagger'] ?? 0, 0, 1000 );
+		$step = sgs_flat_duration_ms( $attributes['itemStagger'] ?? 0, 0, 1000 );
 		if ( $step > 0 ) {
 			$classes[] = 'sgs-nav-drawer--stagger';
-			$item_ms   = sgs_motion_ms( $attributes['itemStaggerDuration'] ?? 0, 0 );
-			$max_ms    = sgs_motion_ms( $attributes['itemStaggerMax'] ?? 0, 0, 10000 );
+			$item_ms   = sgs_flat_duration_ms( $attributes['itemStaggerDuration'] ?? 0, 0 );
+			$max_ms    = sgs_flat_duration_ms( $attributes['itemStaggerMax'] ?? 0, 0, 10000 );
 			$base     .= '--sgs-nd-stagger-step:' . $step . 'ms;'
 				. '--sgs-nd-stagger-dur:' . ( $item_ms > 0 ? $item_ms : $enter_ms ) . 'ms;';
 			if ( $max_ms > 0 ) {

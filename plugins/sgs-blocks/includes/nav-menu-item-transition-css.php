@@ -58,7 +58,7 @@ if ( ! function_exists( 'sgs_nav_item_transition_css' ) ) {
 			return '';
 		}
 
-		$ms     = sgs_motion_ms( $duration_raw, 150 );
+		$ms     = sgs_flat_duration_ms( $duration_raw, 150 );
 		$easing = sgs_motion_easing_css(
 			(string) ( $attributes['itemMotionEasing'] ?? '' ),
 			(string) ( $attributes['itemMotionEasingCustom'] ?? '' ),

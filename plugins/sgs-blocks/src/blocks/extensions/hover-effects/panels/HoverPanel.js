@@ -18,7 +18,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { SgsLengthControl } from '../../../../components';
 import { SCALE_PRESET_OPTIONS, DURATION_OPTIONS, EASING_OPTIONS } from '../constants';
 // Reuses the nav motion controls' own curve validator (Wave 3C U-5) — the
-// same function includes/helpers-motion-easing.php::sgs_motion_valid_cubic_bezier()
+// same function includes/motion/class-sgs-motion-field-types.php::Sgs_Motion_Field_Types::is_valid_cubic_bezier()
 // mirrors server-side, so a value this panel accepts is never refused at render.
 import { isValidCubicBezier } from '../../../../components/MotionEasingControl';
 
@@ -80,7 +80,7 @@ export default function HoverPanel( {
 	const customEasingInvalid =
 		'custom' === sgsHoverEasing &&
 		'' !== ( sgsHoverEasingCustom || '' ) &&
-		! isValidCubicBezier( sgsHoverEasingCustom );
+		! isValidCubicBezier( sgsHoverEasingCustom.trim() );
 	// A local addition to the shared preset list (never edit
 	// useShadowPresetOptions() itself — other pickers reuse that hook and
 	// don't all support a custom value the same way).

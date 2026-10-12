@@ -3,14 +3,16 @@
  * U-5). One list read by the burger morph, the drawer entry and exit, and the
  * dropdown and mega panels. The render-side twin is
  * `includes/helpers-motion-easing.php::sgs_motion_easing_css()`; the custom-curve
- * validator below matches `sgs_motion_valid_cubic_bezier()` exactly, so a value
- * the editor accepts is never refused server-side.
+ * validator is `isValidCubicBezier` from `./motion/field-types`, the editor twin of
+ * `Sgs_Motion_Field_Types::is_valid_cubic_bezier()`, so a value the editor accepts is
+ * never refused server-side.
  *
  * @package SGS\Blocks
  */
 
 import { __, sprintf } from '@wordpress/i18n';
 import { SelectControl, TextControl } from '@wordpress/components';
+import { isValidCubicBezier } from './motion/field-types';
 
 /**
  * Named easing options. Values mirror `sgs_motion_easing_values()`.
@@ -30,25 +32,8 @@ export const MOTION_EASING_OPTIONS = [
 	{ label: __( 'Custom curve…', 'sgs-blocks' ), value: 'custom' },
 ];
 
-/**
- * Whether a string is a real, in-range `cubic-bezier(x1, y1, x2, y2)` curve.
- * Anchored, four numbers, no exponent; x1 and x2 between 0 and 1.
- *
- * @param {string} value The candidate curve.
- * @return {boolean} True when valid.
- */
-export function isValidCubicBezier( value ) {
-	const match =
-		/^cubic-bezier\(\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*\)$/.exec(
-			( value || '' ).trim()
-		);
-	if ( ! match ) {
-		return false;
-	}
-	const x1 = parseFloat( match[ 1 ] );
-	const x2 = parseFloat( match[ 3 ] );
-	return x1 >= 0 && x1 <= 1 && x2 >= 0 && x2 <= 1;
-}
+// The custom-curve validator is the easing field type's: one definition, shared with the PHP renderer.
+export { isValidCubicBezier };
 
 /**
  * The CSS timing function for a named easing — the JS twin of
@@ -76,7 +61,7 @@ export function motionEasingCss( value, custom = '', fallback = 'ease' ) {
 	if ( literals[ value ] ) {
 		return literals[ value ];
 	}
-	if ( 'custom' === value && isValidCubicBezier( custom ) ) {
+	if ( 'custom' === value && isValidCubicBezier( ( custom || '' ).trim() ) ) {
 		return custom.trim();
 	}
 	return fallback;
@@ -103,7 +88,7 @@ export default function MotionEasingControl( {
 	onCustomChange,
 } ) {
 	const current = value || fallback;
-	const invalid = 'custom' === current && '' !== ( custom || '' ) && ! isValidCubicBezier( custom );
+	const invalid = 'custom' === current && '' !== ( custom || '' ) && ! isValidCubicBezier( custom.trim() );
 	const fallbackLabel =
 		MOTION_EASING_OPTIONS.find( ( option ) => option.value === fallback )?.label || fallback;
 

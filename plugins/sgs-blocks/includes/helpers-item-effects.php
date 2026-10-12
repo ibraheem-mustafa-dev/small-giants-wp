@@ -25,7 +25,7 @@ if ( ! function_exists( 'sgs_item_motion_transition' ) ) {
 	 * @return string e.g. `300ms ease`.
 	 */
 	function sgs_item_motion_transition( array $attributes ): string {
-		$ms     = sgs_motion_ms( $attributes['itemMotionDuration'] ?? null, 300 );
+		$ms     = sgs_flat_duration_ms( $attributes['itemMotionDuration'] ?? null, 300 );
 		$easing = sgs_motion_easing_css(
 			(string) ( $attributes['itemMotionEasing'] ?? '' ),
 			(string) ( $attributes['itemMotionEasingCustom'] ?? '' ),

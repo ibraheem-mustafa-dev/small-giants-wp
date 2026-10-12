@@ -568,7 +568,7 @@ $sgs_nd_motion = sgs_nav_drawer_motion( $attributes, $root_sel, $anchor_attr_raw
 $css          .= $sgs_nd_motion['css'];
 
 // The scrim fades with the drawer unless scrimFadeDuration sets its own time.
-$sgs_nd_scrim_fade = sgs_motion_ms( $attributes['scrimFadeDuration'] ?? 0, 0 );
+$sgs_nd_scrim_fade = sgs_flat_duration_ms( $attributes['scrimFadeDuration'] ?? 0, 0 );
 $css              .= sgs_scrim_render(
 	$attributes,
 	$uid,

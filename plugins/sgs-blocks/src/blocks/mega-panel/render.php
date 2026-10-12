@@ -699,7 +699,7 @@ if ( ! empty( $group_padding_obj ) ) {
 }
 $group_transition_raw = $attributes['groupTransitionDuration'] ?? '';
 if ( is_numeric( $group_transition_raw ) ) {
-	$css .= $group_tile_override_sel . '{transition-duration:' . sgs_motion_ms( $group_transition_raw, 0 ) . 'ms;}';
+	$css .= $group_tile_override_sel . '{transition-duration:' . sgs_flat_duration_ms( $group_transition_raw, 0 ) . 'ms;}';
 }
 $css .= '@media (prefers-reduced-motion: reduce){'
 	. $style_crd . $rel_group . '{transition:none;}'

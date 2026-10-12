@@ -1026,14 +1026,14 @@ $inner_html = $bar_html . $toggle_html;
 // ── Panel motion (Wave 3C U-5): open and close time, speed curve and item
 // stagger for every dropdown and mega panel, as values the rules in style.css
 // read. The scrim fades with the panels.
-$sgs_nm_panel_in    = sgs_motion_ms( $attributes['submenuAnimationDuration'] ?? 180, 180 );
-$sgs_nm_panel_out   = sgs_motion_ms( $attributes['submenuExitDuration'] ?? 150, 150 );
+$sgs_nm_panel_in    = sgs_flat_duration_ms( $attributes['submenuAnimationDuration'] ?? 180, 180 );
+$sgs_nm_panel_out   = sgs_flat_duration_ms( $attributes['submenuExitDuration'] ?? 150, 150 );
 $sgs_nm_panel_ease  = sgs_motion_easing_css( (string) ( $attributes['submenuAnimationEasing'] ?? 'ease-out-css' ), (string) ( $attributes['submenuAnimationEasingCustom'] ?? '' ), 'ease-out' );
 $sgs_nm_panel_vars  = '--sgs-nbm-panel-dur:' . $sgs_nm_panel_in . 'ms;--sgs-nbm-panel-exit-dur:' . $sgs_nm_panel_out . 'ms;--sgs-nbm-panel-ease:' . $sgs_nm_panel_ease . ';';
-$sgs_nm_stagger     = sgs_motion_ms( $attributes['submenuItemStagger'] ?? 0, 0, 1000 );
+$sgs_nm_stagger     = sgs_flat_duration_ms( $attributes['submenuItemStagger'] ?? 0, 0, 1000 );
 if ( $sgs_nm_stagger > 0 ) {
-	$sgs_nm_stagger_dur = sgs_motion_ms( $attributes['submenuItemStaggerDuration'] ?? 0, 0 );
-	$sgs_nm_stagger_max = sgs_motion_ms( $attributes['submenuItemStaggerMax'] ?? 0, 0, 10000 );
+	$sgs_nm_stagger_dur = sgs_flat_duration_ms( $attributes['submenuItemStaggerDuration'] ?? 0, 0 );
+	$sgs_nm_stagger_max = sgs_flat_duration_ms( $attributes['submenuItemStaggerMax'] ?? 0, 0, 10000 );
 	$sgs_nm_stagger_d   = is_numeric( $attributes['submenuItemStaggerDistance'] ?? null ) ? max( -400, min( 400, (int) round( (float) $attributes['submenuItemStaggerDistance'] ) ) ) : 8;
 	$sgs_nm_panel_vars .= '--sgs-nbm-stagger-step:' . $sgs_nm_stagger . 'ms;'
 		. '--sgs-nbm-stagger-dur:' . ( $sgs_nm_stagger_dur > 0 ? $sgs_nm_stagger_dur : $sgs_nm_panel_in ) . 'ms;'
@@ -1045,7 +1045,7 @@ $css .= $uid_sel . '{' . $sgs_nm_panel_vars . '}';
 // I-M4 (U-18): `scrimFadeDuration` — mirrors sgs/nav-drawer's own attribute.
 // 0 (default) keeps today's behaviour, fading the scrim WITH the panel's own
 // timing; a set value overrides both the enter and exit fade.
-$sgs_nm_scrim_fade = sgs_motion_ms( $attributes['scrimFadeDuration'] ?? 0, 0 );
+$sgs_nm_scrim_fade = sgs_flat_duration_ms( $attributes['scrimFadeDuration'] ?? 0, 0 );
 // scrimFadeEasing: empty follows the panel's easing; set, the backdrop has its own curve.
 $sgs_nm_scrim_ease_name = trim( (string) ( $attributes['scrimFadeEasing'] ?? '' ) );
 $sgs_nm_scrim_ease      = '' !== $sgs_nm_scrim_ease_name

@@ -4,9 +4,11 @@
  *
  * One list of named speed curves read by every nav motion control: the burger
  * morph (`burgerMorphEasing`), the drawer entry and exit (`entryEasing`) and the
- * dropdown and mega panels (`submenuAnimationEasing`). The editor mirror is
- * `src/components/motion-easing.js`; both sides validate a custom curve the same
- * way, so a value the editor accepts is never refused server-side.
+ * dropdown and mega panels (`submenuAnimationEasing`). A custom curve is validated
+ * by the easing field type (`Sgs_Motion_Field_Types::is_valid_cubic_bezier()`);
+ * the editor mirror is `src/components/MotionEasingControl.js`, which re-exports
+ * `isValidCubicBezier` from `src/components/motion/field-types.js`, so a value
+ * the editor accepts is never refused server-side.
  *
  * Design: `.claude/reports/2026-09-24-u5-motion-design.md` section 3.3.
  *
@@ -30,29 +32,6 @@ if ( ! function_exists( 'sgs_motion_easing_values' ) ) {
 	 */
 	function sgs_motion_easing_values(): array {
 		return array( 'ease', 'ease-out-css', 'ease-in-out', 'default', 'ease-out', 'quart-out', 'standard', 'drafts', 'ease-in', 'spring', 'linear', 'custom' );
-	}
-}
-
-if ( ! function_exists( 'sgs_motion_valid_cubic_bezier' ) ) {
-	/**
-	 * Validate a hand-typed `cubic-bezier(x1, y1, x2, y2)` curve.
-	 *
-	 * Anchored end to end so a declaration breakout cannot slip past the four
-	 * captured groups; `-?\d*\.?\d+` never matches an exponent. x1 and x2 (CSS's
-	 * own constraint) are clamped to 0 to 1; y1 and y2 are free, because a spring
-	 * overshoot legitimately exceeds 1.
-	 *
-	 * @param string $value The candidate curve string, verbatim.
-	 * @return bool True when it is a real, in-range cubic-bezier() curve.
-	 */
-	function sgs_motion_valid_cubic_bezier( string $value ): bool {
-		$pattern = '/^cubic-bezier\(\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*\)$/';
-		if ( 1 !== preg_match( $pattern, trim( $value ), $matches ) ) {
-			return false;
-		}
-		$x1 = (float) $matches[1];
-		$x2 = (float) $matches[3];
-		return $x1 >= 0.0 && $x1 <= 1.0 && $x2 >= 0.0 && $x2 <= 1.0;
 	}
 }
 
@@ -89,25 +68,41 @@ if ( ! function_exists( 'sgs_motion_easing_css' ) ) {
 		}
 		if ( 'custom' === $value ) {
 			$custom = trim( $custom );
-			return sgs_motion_valid_cubic_bezier( $custom ) ? $custom : $fallback;
+			return \SGS\Blocks\Motion\Sgs_Motion_Field_Types::is_valid_cubic_bezier( $custom ) ? $custom : $fallback;
 		}
 		return $fallback;
 	}
 }
 
-if ( ! function_exists( 'sgs_motion_ms' ) ) {
+if ( ! function_exists( 'sgs_flat_duration_ms' ) ) {
 	/**
-	 * Clamp a duration attribute to 0..$max whole milliseconds.
+	 * Read a flat millisecond attribute (a nav, cart, icon or header duration) as whole milliseconds.
+	 *
+	 * A non-numeric value gives `$default`. A numeric value is rounded and held to 0..`$max`, so an out-of-range
+	 * number is clamped, never dropped: the flat attributes have always painted their nearest legal value. The result
+	 * is then checked against the duration field type narrowed to the same range
+	 * (`Sgs_Motion_Field_Types::sanitise( 'duration', ... )`), the one definition of what a duration is.
 	 *
 	 * @param mixed $raw     Raw attribute value.
 	 * @param int   $default Value for a non-numeric input.
-	 * @param int   $max     Upper bound.
+	 * @param int   $max     Upper bound in milliseconds.
 	 * @return int
 	 */
-	function sgs_motion_ms( $raw, int $default, int $max = 3000 ): int {
+	function sgs_flat_duration_ms( $raw, int $default, int $max = 3000 ): int {
 		if ( ! is_numeric( $raw ) ) {
 			return $default;
 		}
-		return (int) max( 0, min( $max, round( (float) $raw ) ) );
+		$ms   = (int) max( 0, min( $max, round( (float) $raw ) ) );
+		$node = array(
+			'minimum'     => 0,
+			'maximum'     => $max,
+			'x-sgs-range' => array(
+				'min'  => 0,
+				'max'  => $max,
+				'unit' => 'ms',
+			),
+		);
+		$kept = \SGS\Blocks\Motion\Sgs_Motion_Field_Types::sanitise( 'duration', $ms, $node );
+		return is_int( $kept ) ? $kept : $default;
 	}
 }
