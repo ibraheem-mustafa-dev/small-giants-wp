@@ -1,0 +1,8 @@
+[
+  {
+    "gate": "motion-atoms",
+    "pattern": "includes/helpers-old.php",
+    "reason": "planted entry waiting on a unit that has landed",
+    "delete_in_unit": "M1.1"
+  }
+]

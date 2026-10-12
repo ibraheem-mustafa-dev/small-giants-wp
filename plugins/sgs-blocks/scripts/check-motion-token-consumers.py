@@ -37,6 +37,7 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import motion_gate_allowlist as allowlist  # noqa: E402
 import snapshot_motion_tokens as motion  # noqa: E402
 
 REPO = motion.REPO_ROOT
@@ -112,25 +113,7 @@ def find_readers(root: Path, tokens: dict[str, dict]) -> dict[str, list[str]]:
 
 
 def load_allowlist(root: Path) -> tuple[list[dict], list[str]]:
-    path = root / ALLOW_REL
-    if not path.is_file():
-        return [], []
-    try:
-        entries = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as err:
-        return [], [f"{ALLOW_REL} is not JSON: {err}"]
-    if not isinstance(entries, list):
-        return [], [f"{ALLOW_REL} must be a JSON array"]
-    errors: list[str] = []
-    live = []
-    for entry in entries:
-        if not isinstance(entry, dict) or entry.get("gate") != GATE:
-            continue
-        if not entry.get("pattern") or not entry.get("reason") or not entry.get("delete_in_unit"):
-            errors.append(f"entry for {entry.get('pattern')!r} needs pattern, reason and delete_in_unit")
-            continue
-        live.append(entry)
-    return live, errors
+    return allowlist.load(root, GATE)
 
 
 def check_consumers(root: Path) -> tuple[list[str], list[str]]:
