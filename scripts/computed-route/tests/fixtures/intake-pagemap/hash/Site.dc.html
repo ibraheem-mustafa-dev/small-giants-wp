@@ -1,0 +1,82 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Site</title></head><body>
+<x-dc>
+<header>
+  <a href="#/">Logo</a>
+  <nav>
+    <sc-for list="{{ items }}" as="item"><button onClick="{{ item.onClick }}">{{ item.label }}</button></sc-for>
+  </nav>
+</header>
+<div role="dialog" aria-label="Site menu" style="position:fixed;top:0;right:0;bottom:0;width:320px;">
+  <nav aria-label="Main">
+    <sc-for list="{{ items }}" as="item">
+      <button onClick="{{ item.onAcc }}">{{ item.label }}</button>
+      <sc-for list="{{ item.subLinks }}" as="link"><a href="{{ link.href }}">{{ link.label }}</a></sc-for>
+    </sc-for>
+  </nav>
+</div>
+<div role="dialog" aria-label="Size guide" style="position:relative;max-width:600px;"><p>Sizes</p></div>
+<main>
+  <sc-for list="{{ blocks }}" as="b">
+    <sc-for list="{{ b.cards }}" as="c"><a href="{{ c.href }}">{{ c.label }}</a></sc-for>
+    <sc-if value="{{ b.isForm }}"><form onSubmit="{{ b.onSubmit }}"><sc-for list="{{ b.fields }}" as="fd"><input name="{{ fd.name }}"></sc-for></form></sc-if>
+    <sc-if value="{{ b.isEnquiry }}"><dc-import name="Enquiry"></dc-import></sc-if>
+  </sc-for>
+  <a href="#/nowhere">Planted broken link</a>
+</main>
+<footer>
+  <sc-for list="{{ footerLinks }}" as="l"><a href="{{ l.href }}">{{ l.label }}</a></sc-for>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home' };
+  componentDidMount() { window.addEventListener('hashchange', () => this.setState({ page: this.parseHash() })); }
+  parseHash() { return (window.location.hash || '').replace(/^#\/?/, '') || 'home'; }
+  go(href) { window.location.hash = href; }
+  get services() {
+    return [ { key: 'cleaning', label: 'Cleaning' }, { key: 'repairs', label: 'Repairs' } ];
+  }
+  get articles() {
+    return [ { slug: 'first', title: 'First article', date: 'May 2026', body: 'One.' }, { slug: 'second', title: 'Second article', date: 'June 2026', body: 'Two.' } ];
+  }
+  get menus() {
+    return [
+      { label: 'Home', href: '#/' },
+      { label: 'About', href: '#/about', links: [ { label: 'Our team', href: '#/team' }, { label: 'News', href: '#/news' } ] },
+      { label: 'Services', href: '#/cleaning', links: [ { label: 'Cleaning', href: '#/cleaning' }, { label: 'Repairs', href: '#/repairs' } ] },
+      { label: 'Contact', href: '#/contact' }
+    ];
+  }
+  get pages() {
+    if (this._pages) return this._pages;
+    this._pages = {
+      home: { crumb: 'Home', blocks: [ { type: 'cards', cards: this.services.map((s) => ({ label: s.label, href: '#/' + s.key })) } ] },
+      about: { crumb: 'About us', blocks: [] },
+      team: { crumb: 'Our team', blocks: [] },
+      news: { crumb: 'News', blocks: [ { type: 'posts', posts: this.articles } ] },
+      cleaning: { crumb: 'Cleaning', blocks: [] },
+      repairs: { crumb: 'Repairs', blocks: [] },
+      contact: { crumb: 'Contact', blocks: [ { type: 'enquiry' }, { type: 'form', formTitle: 'Call me back', fields: [ { name: 'phone' } ] }, { type: 'formOld', fields: [ { name: 'old' } ] } ] }
+    };
+    this.articles.forEach((a) => {
+      this._pages['post-' + a.slug] = { crumb: 'Article', hero: { title: a.title }, blocks: [ { type: 'posts', posts: this.articles.filter((o) => o.slug !== a.slug) } ] };
+    });
+    return this._pages;
+  }
+  renderVals() {
+    const pages = this.pages;
+    const page = pages[this.state.page] || pages.home;
+    const items = this.menus.map((mn, i) => ({
+      label: mn.label,
+      subLinks: mn.links || [],
+      onClick: () => { this.go(mn.href); },
+      onAcc: () => this.setState({ acc: i })
+    }));
+    const blocks = page.blocks.filter((b) => b.type !== 'formOld').map((b) => ({ ...b, isForm: b.type === 'form', isEnquiry: b.type === 'enquiry', onSubmit: (e) => e.preventDefault(),
+      posts: (b.posts || []).map((p) => ({ ...p, href: '#/post-' + p.slug })) }));
+    return { items, blocks, footerLinks: [ { label: 'Contact', href: '#/contact' }, { label: 'News', href: '#/news' } ] };
+  }
+}
+</script>
+</body></html>

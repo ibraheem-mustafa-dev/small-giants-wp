@@ -1573,7 +1573,13 @@ site-build script writes it). Every CPT surface (header, footer, drawer, mega me
 own row with its post type. Bean confirms the map once (FR-48-17). The row format is Appendix C, "Page map".
 *Done when:* every route and every CPT surface in the census has one row, every link in the draft resolves to a
 row or a gap row, and the file validates against its schema.
-Status: not built.
+Status: built 2026-10-12 (`lib/intake-pagemap.mjs`, `lib/intake-pagemap-surfaces.mjs`, `lib/intake-ast-eval.mjs`,
+`data/page-map.schema.json`, `tests/intake-pagemap.test.mjs`). Indus: 23 pages, 6 posts (the `#/post-*` articles), a
+header, footer, drawer, 4 mega menu panels and 4 forms; every link resolves (the routing reader's 3 gap rows close
+once loop variables are followed). Eye Care's rows come from its embedded manifest. Open for Mama's intake (the first
+shop proof): Appendix C's `postType` has no value for a single-product route, so such a route is written as `shop`
+with template `single-product` today and the site-build script must not read it as the shop page; the enum or a
+template-only row is decided before Mama's intake.
 
 #### FR-48-31 — Palette role proposal
 Intake builds the token-to-slug role proposal (§11, FR-33-2), which Bean confirms in the review. The tokens come from
@@ -1644,7 +1650,8 @@ gap rows, and Bean's marks with the date. It carries the `MANIFEST.json` hashes 
 makes it stale (G0, §14). It is validated against `scripts/computed-route/data/intake.schema.json`, whose top-level
 keys are Appendix C, "Intake record". The schema files for every record in Appendix C live in
 `scripts/computed-route/data/` and are checked by the route's tests.
-Status: not built.
+Status: the schema is built (`data/intake.schema.json`, 2026-10-12) and `tests/intake-schemas.test.mjs` holds every
+Appendix C schema file equal to the spec; the command that writes `intake.json` is not built.
 
 ## 10. Value matrix
 
@@ -2632,7 +2639,8 @@ One pass is about 10 minutes of agent time and 20 minutes of machine time.
 
 The JSON Schema (draft 2020-12) files for these records live in `scripts/computed-route/data/` and are validated
 with the route's pinned Ajv (FR-48-75). This appendix fixes their shape; the schema files are generated from it and a
-test fails when the two disagree. Status: not built (none of these schema files exists).
+test fails when the two disagree. Status: built 2026-10-12: every schema file exists and `tests/intake-schemas.test.mjs`
+fails when one differs from this appendix.
 
 **Calibration baseline:** `sites/<client>/build/intake/calibration-baseline.json` (FR-48-3).
 

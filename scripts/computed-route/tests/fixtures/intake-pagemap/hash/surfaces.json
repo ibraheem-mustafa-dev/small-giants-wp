@@ -1,0 +1,11 @@
+{ "schema_version": "1.0", "records": [
+  { "id": "S-01", "kind": "header", "name": "Site header", "dc": "Site", "route": "*" },
+  { "id": "S-02", "kind": "drawer", "name": "Mobile drawer", "dc": "Site", "route": "*" },
+  { "id": "S-03", "kind": "footer", "name": "Footer", "dc": "Site", "route": "*" },
+  { "id": "S-04", "kind": "menu", "name": "About mega menu", "dc": "Site", "route": "*" },
+  { "id": "S-05", "kind": "menu", "name": "Services mega menu", "dc": "Site", "route": "*" },
+  { "id": "S-06", "kind": "form", "name": "Call me back", "dc": "Site", "route": "/contact" },
+  { "id": "S-07", "kind": "form", "name": "Enquiry", "dc": "Enquiry", "route": "/contact" },
+  { "id": "S-08", "kind": "choice flow", "name": "Quote builder", "dc": "Site", "route": "*" },
+  { "id": "S-09", "kind": "accordion", "name": "Not a CPT kind", "dc": "Site", "route": "*" }
+] }

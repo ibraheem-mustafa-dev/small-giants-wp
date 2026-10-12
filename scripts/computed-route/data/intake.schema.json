@@ -1,0 +1,496 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Intake record (Spec 48 Appendix C, FR-48-35): sites/<client>/build/intake/intake.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "client",
+    "takenOn",
+    "manifest",
+    "tools",
+    "harness",
+    "census",
+    "inventory",
+    "routing",
+    "breakpoints",
+    "pageMap",
+    "palette",
+    "siteInfo",
+    "flags",
+    "draftDefects",
+    "missingFeatures",
+    "skeletons",
+    "gaps",
+    "review"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "1"
+    },
+    "client": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "takenOn": {
+      "type": "string",
+      "minLength": 1
+    },
+    "manifest": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "files"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string"
+        },
+        "files": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "tools": {
+      "type": "object",
+      "required": [
+        "playwright",
+        "browser",
+        "runtime"
+      ],
+      "properties": {
+        "playwright": {
+          "type": "string"
+        },
+        "browser": {
+          "type": "string"
+        },
+        "runtime": {
+          "type": "string"
+        }
+      }
+    },
+    "harness": {
+      "type": "object",
+      "required": [
+        "clock",
+        "seed",
+        "stepMs"
+      ],
+      "properties": {
+        "clock": {
+          "type": "string"
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "stepMs": {
+          "type": "integer"
+        }
+      }
+    },
+    "census": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "draftId",
+          "source",
+          "unreached"
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "reader"
+            ]
+          },
+          {
+            "required": [
+              "gap"
+            ]
+          }
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "draftId": {
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "static",
+              "runtime",
+              "both"
+            ]
+          },
+          "reader": {
+            "type": "string"
+          },
+          "gap": {
+            "type": "string"
+          },
+          "unreached": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "inventory": {
+      "type": "object",
+      "required": [
+        "animations",
+        "surfaces"
+      ],
+      "properties": {
+        "animations": {},
+        "surfaces": {},
+        "diff": {
+          "type": "array"
+        }
+      }
+    },
+    "routing": {
+      "type": "object",
+      "required": [
+        "adapter",
+        "routes",
+        "links"
+      ],
+      "properties": {
+        "adapter": {
+          "enum": [
+            "hash",
+            "state-page",
+            "files"
+          ]
+        },
+        "routes": {
+          "type": "array"
+        },
+        "links": {
+          "type": "array"
+        }
+      }
+    },
+    "breakpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "basis",
+          "thresholds"
+        ],
+        "properties": {
+          "basis": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "thresholds": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    "pageMap": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/pageMapRow"
+      }
+    },
+    "palette": {
+      "type": "object",
+      "required": [
+        "tokens",
+        "rows",
+        "unused",
+        "oneOff"
+      ],
+      "properties": {
+        "tokens": {
+          "type": "array"
+        },
+        "rows": {
+          "type": "array"
+        },
+        "unused": {
+          "type": "array"
+        },
+        "oneOff": {
+          "type": "array"
+        }
+      }
+    },
+    "siteInfo": {
+      "type": "object",
+      "required": [
+        "rows",
+        "refused"
+      ],
+      "properties": {
+        "rows": {
+          "type": "array"
+        },
+        "refused": {
+          "type": "array"
+        }
+      }
+    },
+    "flags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rowId",
+          "draftId"
+        ],
+        "properties": {
+          "rowId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "draftId": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "draftDefects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rowId",
+          "draftId"
+        ],
+        "properties": {
+          "rowId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "draftId": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "missingFeatures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rowId",
+          "draftId"
+        ],
+        "properties": {
+          "rowId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "draftId": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "skeletons": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "construct",
+          "draftId",
+          "error"
+        ],
+        "properties": {
+          "construct": {
+            "type": "string"
+          },
+          "draftId": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "review": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rowId",
+          "rowType",
+          "contentHash",
+          "mark",
+          "markedOn",
+          "carriedFrom"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "rowId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rowType": {
+            "enum": [
+              "page-map",
+              "palette-role",
+              "site-info",
+              "flag",
+              "draft-defect",
+              "missing-feature",
+              "skeleton-block",
+              "inventory-diff",
+              "notice"
+            ]
+          },
+          "contentHash": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mark": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "markedOn": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "carriedFrom": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "pageMapRow": {
+      "type": "object",
+      "required": [
+        "slug",
+        "title",
+        "postType",
+        "collection",
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "route": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "parent": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "template": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "menus": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "menu",
+              "position"
+            ],
+            "properties": {
+              "menu": {
+                "type": "string"
+              },
+              "position": {
+                "type": "integer"
+              },
+              "parentItem": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "postType": {
+          "enum": [
+            "page",
+            "post",
+            "product_cat",
+            "shop",
+            "sgs_header",
+            "sgs_footer",
+            "sgs_drawer",
+            "sgs_modal",
+            "sgs_mega_menu",
+            "sgs_form",
+            "sgs_choice_flow",
+            "wp_block"
+          ]
+        },
+        "collection": {
+          "enum": [
+            "static",
+            "live"
+          ]
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "placeholder",
+              "stock",
+              "prototype-only"
+            ]
+          }
+        },
+        "id": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}
