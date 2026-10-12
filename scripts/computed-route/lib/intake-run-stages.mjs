@@ -241,3 +241,29 @@ export const STAGES = [
 		return { prose, note: `${ prose.length } command-like prose lines (listed, never run)` };
 	} ],
 ];
+
+// What each stage must wait for before it starts when stages run side by side (lib/intake-run-worker.mjs): the
+// earlier stages whose context fields it reads (routing: routing; visits and userAgent: replay; censusFull: census;
+// siteInfoFull: site info; flagRows: flags; notDefects: draft defects; skeletonRows: skeletons), or '*' for every earlier
+// stage applied (the replay top-up reads `blocked`, which the worker gathers as each stage is applied).
+// tests/intake-run-schedule.test.mjs checks each stage's own reads (and the inventory stage's inventoryStage) against
+// this list.
+export const STAGE_NEEDS = Object.freeze( {
+	routing: [],
+	replay: [ 'routing' ],
+	census: [ 'replay' ],
+	breakpoints: [],
+	'page map': [ 'routing', 'census' ],
+	'tokens and palette': [ 'replay' ],
+	'site info': [ 'routing', 'census' ],
+	flags: [ 'census', 'site info' ],
+	'draft defects': [ 'replay', 'census', 'flags' ],
+	inventory: [ 'routing', 'census', 'draft defects' ],
+	skeletons: [ 'routing', 'census' ],
+	'missing features': [ 'census', 'skeletons' ],
+	'replay top-up': [ '*' ],
+	notices: [],
+} );
+
+// The stages that open a browser outside the browser-unit pool: run side by side, each holds one pool slot.
+export const SLOT_STAGES = Object.freeze( [ 'replay', 'inventory', 'replay top-up' ] );

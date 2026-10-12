@@ -10,6 +10,7 @@
 import { draftSources, templateRows } from './intake-census-template.mjs';
 import { logicRows, scriptRows } from './intake-census-logic.mjs';
 import { loadRegistry, readerFor } from './intake-registry.mjs';
+import { withSlot } from './intake-pool.mjs';
 
 export { draftSources };
 
@@ -188,7 +189,8 @@ const isEmpty = ( v ) => null == v || '' === v || ( Array.isArray( v ) && ! v.le
 // ('<module>#<fn>') or `gap` (the registry's reason, or the reader's error).
 export async function runCensus( { folder, entry, registry = null, root, readers = {}, harPath = null, sandbox = null, census = null, timeout = 60000, runtime = null } ) {
 	const reg = registry || loadRegistry();
-	const base = census || await staticCensus( { folder, entry, harPath, sandbox, timeout } );
+	// The static pass opens a sandbox of its own: it holds one browser-unit pool slot (lib/intake-pool.mjs).
+	const base = census || await withSlot( () => staticCensus( { folder, entry, harPath, sandbox, timeout } ) );
 	const gaps = [ ...base.gaps ];
 	const problems = [];
 	let run = null;
