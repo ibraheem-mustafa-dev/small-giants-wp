@@ -122,7 +122,7 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
 
 ### Phase 2. Spec 32 framework halves (steps 9 to 12, session B)
 - [ ] **9. Palette slugs.** FR-32-14's done-when (five slugs in the framework palette and every snapshot with today's
-  rendering kept; the completeness gate and the push guard each with negative controls). See Open question 1.
+  rendering kept; the completeness gate and the push guard each with negative controls). Every snapshot is migrated (Decisions).
 - [ ] **10. Per-tier section padding and gutter tokens.** FR-32-15's done-when.
 - [ ] **11. `sgsCustomCss` hardening.** FR-32-20's done-when.
 - [ ] **12. Framework refresh loop** (Appendix B), once for 9 to 11, through the serial queue.
@@ -153,6 +153,8 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
 
 After Indus: Mama's (shop surfaces, after Spec 27 FR-30-16/17 and fixture products).
 
-## Open questions
-1. **FR-32-14 and FR-32-15 add tokens to every snapshot, including `sites/mamas-munches/theme-snapshot.json`, which this
-   track's guardrail forbids editing.** Session B stops at that file and asks Bean before its migration runs.
+## Decisions
+- **FR-32-14 and FR-32-15 migrate every snapshot, `sites/mamas-munches/theme-snapshot.json` included** (Bean,
+  2026-10-11), with values equal to what each site shows today.
+- **Calibration fixtures become portable** (Bean, 2026-10-11): references resolved per calibration target, and a
+  calibration menu, drawer and image on every test site (step 8).

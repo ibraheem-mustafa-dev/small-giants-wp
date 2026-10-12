@@ -17,9 +17,9 @@ TASKS (in sequence; grep each step's target files before starting it, and run tw
 their written files disjoint)
 1. Step 9, FR-32-14 palette slugs (Sonnet subagent, main-thread QC). A migration across every snapshot: invoke the
    migration-method skill first (detector, dry run per client, fix, check, self-test with a negative control).
-   **Stop before touching `sites/mamas-munches/theme-snapshot.json`** (this track forbids editing or reverting it) and
-   ask Bean: migrate it too (the spec says every snapshot), or leave it and make the gate report it as a known
-   exception until Bean clears it.
+   Every snapshot is migrated, `sites/mamas-munches/theme-snapshot.json` included (Bean, 2026-10-11: the five slugs
+   take the colours that site already shows, so nothing changes visually); confirm with `ListAgents` that no other
+   session is editing that file before writing it.
 2. Step 10, FR-32-15 per-tier section padding and gutter tokens (Opus). Same snapshot rule as step 9.
 3. Step 11, FR-32-20 `sgsCustomCss` hardening (Opus; security-relevant: parse and scope, never string-replace).
 4. Step 12, the framework refresh loop once for 9 to 11 (Sonnet), through the serial queue below.
