@@ -35,5 +35,6 @@ FENCES
 GUARDRAILS
 - `python scripts/check-spec-id-landing.py` and its `--self-test` stay green; `node --test
   "scripts/computed-route/tests/*.test.mjs"`: only the 3 known `lint.test.mjs` brandName failures.
+- Run `npm ci` in `scripts/computed-route` (from PowerShell) before the route tests or step 12's recalibration.
 - Deploy only with `build-deploy.py --target indus-test`; never `--allow-dirty` or `--skip-verify`.
 - Close with /handoff.

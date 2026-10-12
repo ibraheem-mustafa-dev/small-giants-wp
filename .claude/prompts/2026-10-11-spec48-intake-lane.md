@@ -6,8 +6,8 @@ CONTEXT
 `.claude/plans/2026-10-11-spec48-indus-build.md` turns Spec 48 Appendix B (the Indus critical path) into phases run in
 three lanes. You own the intake lane, the longest one and the critical path. Session A runs the route lane in the same
 folder (`scripts/computed-route/`: calibration, cache, resolver files) and session B the framework lane (`theme/`,
-`plugins/`). Start only once Appendix B step 3 (the route's own pinned `package.json`) is on `origin/main`: check
-`git log --oneline -5 -- scripts/computed-route/package.json`.
+`plugins/`). Appendix B step 3 (the route's own pinned `package.json`) is on `main`, so you can start at once; run
+`npm ci` in `scripts/computed-route` (from PowerShell) before any route command.
 
 READ FIRST
 - `.claude/plans/2026-10-11-spec48-indus-build.md`: "Orchestration" and Phase 3.
@@ -32,7 +32,8 @@ run and Bean's review) waits for session A's step 8.
 FENCES
 - Write new files (`intake.mjs`, `lib/intake-*.mjs`, `lib/tokens.mjs`, `data/*.schema.json`, their tests). Do not edit
   `package.json` or `package-lock.json` (send any new dependency to session A by `SendMessage`), the calibration files
-  (`calibrate.mjs`, `lib/calibrate*.mjs`, `lib/cache.mjs`), `lib/resolve.mjs` or `lint.mjs`. Edit only your own rows of
+  (`calibrate.mjs`, `lib/calibrate*.mjs`, `lib/cache.mjs`, `lib/calibration-refs.mjs`, `calibration-fixtures.json`,
+  `calibration-targets.json`, `stage0.mjs`, `lib/stage0.mjs`), `lib/resolve.mjs` or `lint.mjs`. Edit only your own rows of
   `scripts/computed-route/README.md`.
 - Serial queue: deploys, DB reseeds, `local-indus` mirror refreshes and calibration runs run one at a time across all
   sessions; `ListAgents` then `SendMessage` peers before each. Intake reads the export locally, so you should need none.
