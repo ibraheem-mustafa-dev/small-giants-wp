@@ -1,0 +1,90 @@
+// Spec 48 FR-48-24 and FR-48-25, the inventory core on a census written here (no browser). Following a name to its
+// declaration is an index lookup (lib/intake-inventory-code.mjs::declaratorsOf), never a scan of every node per
+// identifier: a scan made the surfaces inventory quadratic in the size of a component's logic (Indus's surfaces took
+// about 34 s), so a program and the same program 8 times larger are timed (linear grows about 8 times, quadratic about
+// 64). lib/intake-inventory.mjs::readInventory caches per census rows and sources; ::reconcile checks the occurrences
+// against the census and names a trigger kind the mapping linked none of.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { codeModel } from '../lib/intake-inventory-code.mjs';
+import { routeKeys } from '../lib/intake-inventory-keys.mjs';
+import { surfaceRecords } from '../lib/intake-inventory-surfaces.mjs';
+import { readInventory, reconcile, CONTEXT_ONLY_MIN } from '../lib/intake-inventory.mjs';
+
+// A component whose `go` method declares n chained locals and writes each to state, one of them read from `location`,
+// and whose renderVals list `items` builds its one item's `open` field from n chained locals that each read state; an
+// sc-if inside the loop reads `it.open`, which conditionKeys cannot force (a loop item), so the surfaces
+// inventory follows the list's code to the state key.
+const logic = ( n ) => {
+	const chain = ( p ) => Array.from( { length: n }, ( _, i ) => `const ${ p }${ i } = this.state.open && ${ i ? `${ p }${ i - 1 }` : 'true' };` ).join( '\n' );
+	return `class Component extends DCComponent {
+state = { open: false };
+go() {
+const where = location.hash;
+${ chain( 'a' ) }
+this.setState( { route: where, ${ Array.from( { length: n }, ( _, i ) => `k${ i }: a${ i }` ).join( ', ' ) } } );
+}
+renderVals() {
+return { items: [ { open: ( () => {
+${ chain( 'b' ) }
+return b${ n - 1 };
+} )() } ] };
+}
+}`;
+};
+const census = ( n ) => ( {
+	sources: [ { component: 'App', file: 'App.dc.html', via: 'entry', logic: logic( n ), logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: [] } } ],
+	rows: [
+		{ id: 'sc-for@App:4', kind: 'sc-for', component: 'App', draftId: 'App:4', detail: { as: 'it', list: '{{ items }}' } },
+		{ id: 'sc-if@App:5', kind: 'sc-if', component: 'App', draftId: 'App:5', detail: { value: '{{ it.open }}' } },
+	],
+} );
+const best = ( fn ) => Math.min( ...Array.from( { length: 3 }, () => {
+	const t = process.hrtime.bigint();
+	fn();
+	return Number( process.hrtime.bigint() - t ) / 1e6;
+} ) );
+
+test( 'routeKeys reads a key written from location through a local, among many', () => {
+	const model = codeModel( census( 50 ) );
+	assert.deepEqual( [ ...routeKeys( model.progs.get( 'App' ) ) ], [ 'route' ] );
+} );
+
+test( 'MUST FAIL (FR-48-25): the surfaces inventory grows linearly with a component\'s logic, not quadratically', () => {
+	const small = census( 400 );
+	const large = census( 3200 );
+	const run = ( c ) => () => surfaceRecords( c, { model: codeModel( c ) } );
+	run( small )();
+	const ratio = best( run( large ) ) / best( run( small ) );
+	assert.ok( ratio < 24, `8x the logic took ${ ratio.toFixed( 1 )}x the time (linear about 8, quadratic about 64)` );
+	assert.deepEqual( run( small )().records.map( ( r ) => r.name ), [ 'App', 'App: open (read through items)' ], 'the loop item\'s field reads open through the list\'s chain, so it is an interactive surface' );
+} );
+
+test( 'MUST FAIL (FR-48-24): readInventory answers from the census it is given, never from another census sharing its sources', () => {
+	const c = census( 5 );
+	const row = c.rows[ 1 ];
+	assert.deepEqual( readInventory( row, { rows: c.rows, sources: c.sources } ), { recordIds: [ 'S-02' ], role: 'surface' } );
+	assert.equal( readInventory( row, { rows: c.rows.filter( ( r ) => r !== row ), sources: c.sources } ), null, 'the same sources with the sc-if row removed map nothing' );
+} );
+
+// An inventory view for reconcile: one animation record, `kinds` occurrences per trigger kind with the given roles.
+const view = ( roles ) => {
+	const occ = roles.map( ( [ kind, role ], i ) => ( { occurrence: `${ kind }@App:js:${ i }:0`, kind, role, recordIds: [ 'trigger' === role ? 'A-01' : 'S-01' ] } ) );
+	return {
+		inv: { animations: { records: [ { id: 'A-01' } ], counts: {} }, surfaces: { records: [ { id: 'S-01', states: [ { state_keys: {} } ] } ], counts: { routes: { covered_by: {} }, toggling_sc_ifs: { covered_by: {} } } }, occurrences: occ },
+		census: { rows: occ.map( ( o ) => ( { id: o.occurrence, kind: o.kind } ) ) },
+	};
+};
+
+test( 'MUST FAIL (FR-48-25): reconcile names a trigger kind whose three or more occurrences all fall back to context, and a census row with no occurrence', () => {
+	const failed = view( [ [ 'timer', 'context' ], [ 'timer', 'context' ], [ 'timer', 'context' ], [ 'handler', 'trigger' ] ] );
+	assert.deepEqual( reconcile( failed.inv, { census: failed.census, jsWriters: 0 } ), [ 'all 3 timer occurrences map only to their surface (role context): the trigger mapping linked none of them' ] );
+	const some = view( [ [ 'timer', 'context' ], [ 'timer', 'context' ], [ 'timer', 'trigger' ] ] );
+	assert.deepEqual( reconcile( some.inv, { census: some.census, jsWriters: 0 } ), [], 'one linked timer is a working mapping' );
+	const two = view( [ [ 'timer', 'context' ], [ 'timer', 'context' ] ] );
+	assert.deepEqual( reconcile( two.inv, { census: two.census, jsWriters: 0 } ), [], `fewer than ${ CONTEXT_ONLY_MIN } cannot tell a failed mapping from triggers that drive nothing` );
+	const empty = { ...failed.inv, occurrences: [] };
+	assert.deepEqual( reconcile( empty, { census: failed.census, jsWriters: 0 } ), [
+		'census row timer@App:js:0:0 (timer) has no occurrence', 'census row timer@App:js:1:0 (timer) has no occurrence', 'census row timer@App:js:2:0 (timer) has no occurrence',
+		'census row handler@App:js:3:0 (handler) has no occurrence', '0 occurrences against 4 counted census rows and 0 JS writer sites' ] );
+} );

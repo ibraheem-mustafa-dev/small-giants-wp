@@ -8,6 +8,7 @@
 import { conditionKeys, patchesOf, logicModel } from './intake-defects-keys.mjs';
 import { walkAst } from './intake-census-logic.mjs';
 import { stateWriters, routeKeys, viewportKeys, timeReads } from './intake-inventory-keys.mjs';
+import { declaratorsOf } from './intake-inventory-code.mjs';
 
 const KIND_BY_NAME = [ [ /drawer|mobile|burger|hamburger|offcanvas/i, 'drawer' ], [ /mega|menu|nav|dropdown/i, 'menu' ], [ /modal|dialog|popup|lightbox|overlay/i, 'modal' ],
 	[ /step|stage|wizard/i, 'form-step' ], [ /sent|submitted|success|done|thanks|result|error|invalid/i, 'result' ], [ /faq|acc|expand|collapse|open/i, 'accordion' ],
@@ -24,6 +25,7 @@ const rootOf = ( value ) => /^\s*\{\{\s*!*\s*([A-Za-z_$][\w$]*)/.exec( value || 
 // to that field inside the list's code are read: a field no state reaches is a content variant of the list.
 function readsState( source, root, field = null, viewport = new Set() ) {
 	const m = logicModel( source );
+	const declarators = declaratorsOf( m );
 	const alias = new Set( [ ...m.locals ].filter( ( [ , l ] ) => 'MemberExpression' === l.node?.type && ! l.node.computed && 'ThisExpression' === l.node.object.type && 'state' === l.node.property.name ).map( ( [ k ] ) => k ) );
 	const reads = ( start, onlyField ) => {
 		const seen = new Set();
@@ -49,7 +51,7 @@ function readsState( source, root, field = null, viewport = new Set() ) {
 						visit( l.node, depth + 1 );
 					}
 				} else if ( 'Identifier' === n.type ) {
-					const d = m.nodes.find( ( x ) => 'VariableDeclarator' === x.type && 'Identifier' === x.id.type && x.id.name === n.name && x.init && x.init !== node && start.start <= x.start && x.end <= start.end );
+					const d = declarators.get( n.name )?.find( ( x ) => x.init !== node && start.start <= x.start && x.end <= start.end );
 					if ( d ) {
 						visit( d.init, depth + 1 );
 					}
@@ -159,12 +161,18 @@ export function surfaceRecords( census, { model, anim = { records: [] }, routing
 	// Every sc-if, classified; interactive ones grouped by component and state keys.
 	const groups = new Map();
 	const other = { route: {}, breakpoint: {}, 'prop-variant': {}, 'content-variant': {} };
+	const keyReads = new Map();
+	const keyReadsOf = ( comp ) => {
+		if ( ! keyReads.has( comp ) ) {
+			keyReads.set( comp, { router: routeKeys( model.progs.get( comp ) ), sized: viewportKeys( model.progs.get( comp ) ) } );
+		}
+		return keyReads.get( comp );
+	};
 	for ( const r of census.rows.filter( ( x ) => 'sc-if' === x.kind ) ) {
 		const src = model.sourceOf.get( r.component );
 		const loopVars = rowsOf( r.component ).filter( ( x ) => 'sc-for' === x.kind ).map( ( x ) => x.detail.as );
 		const ck = conditionKeys( src, r.detail.value, { loopVars } );
-		const router = routeKeys( model.progs.get( r.component ) );
-		const sized = viewportKeys( model.progs.get( r.component ) );
+		const { router, sized } = keyReadsOf( r.component );
 		const keys = [ ...ck.keys.keys() ].filter( ( k ) => ! sized.has( k ) );
 		const root = rootOf( r.detail.value );
 		const loop = rowsOf( r.component ).filter( ( x ) => 'sc-for' === x.kind && x.detail.as === root ).map( ( x ) => rootOf( x.detail.list ) );

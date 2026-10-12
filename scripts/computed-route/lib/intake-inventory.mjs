@@ -87,10 +87,37 @@ export function inventoryCore( census, { routing = null, notDefects = [], props 
 	return { model, anim, surf, occurrences: occurrences( census, model, anim, surf ) };
 }
 
-// Problems: an occurrence that maps to no record, a record ID a count or an occurrence names that does not exist.
-export function reconcile( inv ) {
+// A trigger kind with at least this many occurrences, every one of them `context`, is a failed trigger mapping rather
+// than a draft whose triggers drive nothing: in the reference exports and the test fixture every kind with three or
+// more occurrences has at least one linked trigger (as few as 1 observer of 5, 10 timers of 29), and fewer than three
+// is too few to tell the two apart.
+export const CONTEXT_ONLY_MIN = 3;
+
+// Problems: an occurrence that maps to no record, a record ID a count or an occurrence names that does not exist. With
+// `census` (and `jsWriters`, the number of JS writer sites), also: a census row of a counted kind (EFFECT_KINDS,
+// TRIGGER_KINDS, sc-if) with no occurrence, an occurrence count that differs from those rows plus the writer sites,
+// and a trigger kind whose CONTEXT_ONLY_MIN or more occurrences all map to `context` while the inventory holds a
+// record a trigger could drive (an animation, or a surface state set by state keys).
+export function reconcile( inv, { census = null, jsWriters = null } = {} ) {
 	const ids = new Set( [ ...inv.animations.records.map( ( r ) => r.id ), ...inv.surfaces.records.map( ( r ) => r.id ) ] );
 	const problems = [];
+	if ( census ) {
+		const counted = census.rows.filter( ( r ) => EFFECT_KINDS.includes( r.kind ) || TRIGGER_KINDS.includes( r.kind ) || 'sc-if' === r.kind );
+		const seen = new Set( inv.occurrences.map( ( o ) => o.occurrence ) );
+		counted.filter( ( r ) => ! seen.has( r.id ) ).forEach( ( r ) => problems.push( `census row ${ r.id } (${ r.kind }) has no occurrence` ) );
+		const writers = inv.occurrences.filter( ( o ) => 'js-writer' === o.kind ).length;
+		const expected = counted.length + ( jsWriters ?? writers );
+		if ( inv.occurrences.length !== expected ) {
+			problems.push( `${ inv.occurrences.length } occurrences against ${ counted.length } counted census rows and ${ jsWriters ?? writers } JS writer sites` );
+		}
+		const drivable = inv.animations.records.length > 0 || inv.surfaces.records.some( ( r ) => r.states.some( ( s ) => Object.keys( s.state_keys || {} ).length ) );
+		for ( const kind of TRIGGER_KINDS ) {
+			const of = inv.occurrences.filter( ( o ) => o.kind === kind );
+			if ( drivable && of.length >= CONTEXT_ONLY_MIN && of.every( ( o ) => 'context' === o.role ) ) {
+				problems.push( `all ${ of.length } ${ kind } occurrences map only to their surface (role context): the trigger mapping linked none of them` );
+			}
+		}
+	}
 	for ( const o of inv.occurrences ) {
 		if ( ! o.recordIds.length ) {
 			problems.push( `occurrence ${ o.occurrence } (${ o.kind }) maps to no record` );
@@ -115,27 +142,35 @@ export function validateInventory( inv, { schemas = MASTER_SCHEMAS } = {} ) {
 	];
 }
 
-// The inventory of a census: { animations, surfaces (both in the master schemas' shape), occurrences, propVariants,
-// samples, problems (schema and reconciliation), gaps }. `folder` (the export) gives the hashes, the project and the
-// drafts' data-props; `samples` come from sampleInventory.
-export function buildInventory( { census, folder, routing = null, notDefects = [], samples = [], generated = new Date().toISOString().slice( 0, 10 ) } ) {
+// The unsampled inventory of a census, built once: { head, census, pv, core }. `folder` (the export) gives the hashes,
+// the project and the drafts' data-props. withSamples turns it into the inventory.
+export function inventoryBase( { census, folder, routing = null, notDefects = [], generated = new Date().toISOString().slice( 0, 10 ) } ) {
 	const manifest = readJson( path.join( folder, 'MANIFEST.json' ) ).data || {};
 	const pv = propVariants( { folder, census } );
 	const core = inventoryCore( census, { routing, notDefects, props: pv.props } );
 	const hash = ( f ) => sha256( fs.readFileSync( path.join( folder, f ) ) );
 	const head = { schema_version: '1.0', project: manifest.project ?? path.basename( path.dirname( folder ) ), generated, runtime_sha256: hash( 'support.js' ) };
+	return { head, drafts: census.sources.map( ( s ) => ( { dc: s.component, file: s.file, sha256: hash( s.file ) } ) ), pv, core };
+}
+
+// The inventory of an inventoryBase with `samples` (from sampleWriters) attached: { animations, surfaces (both in the
+// master schemas' shape), occurrences, propVariants, samples, problems (schema and reconciliation), gaps, meta }. A
+// sampled record's trace says so.
+export function withSamples( { head, drafts, pv, core }, samples = [] ) {
 	const sampled = new Set( samples.map( ( s ) => s.recordId ) );
 	const records = core.anim.records.map( ( r ) => ( sampled.has( r.id ) ? { ...r, trace: { observed: 'yes', phases: [ ...new Set( samples.filter( ( s ) => s.recordId === r.id ).map( ( s ) => `sampled:${ s.width }` ) ) ], note: 'sampled under the harness clock (inventory.samples)' } } : r ) );
 	const inv = {
-		animations: {
-			...head, drafts: census.sources.map( ( s ) => ( { dc: s.component, file: s.file, sha256: hash( s.file ) } ) ), records, counts: core.anim.counts,
-			unresolved: core.anim.unresolved,
-		},
+		animations: { ...head, drafts, records, counts: core.anim.counts, unresolved: core.anim.unresolved },
 		surfaces: { ...head, records: core.surf.records, counts: core.surf.counts, unresolved: core.surf.unresolved },
 		occurrences: core.occurrences, propVariants: pv.props, samples,
 	};
-	const problems = [ ...validateInventory( inv ), ...reconcile( inv ) ];
+	const problems = [ ...validateInventory( inv ), ...reconcile( inv, { census: core.model.census, jsWriters: core.anim.sites.length } ) ];
 	return { ...inv, problems, gaps: pv.gaps, meta: core.anim.meta };
+}
+
+// The inventory of a census in one call (inventoryBase, then withSamples).
+export function buildInventory( { samples = [], ...rest } ) {
+	return withSamples( inventoryBase( rest ), samples );
 }
 
 // Claude Design's animations.json and surfaces.json from the export: { animations, surfaces } (null with `<k>Error`
@@ -153,14 +188,18 @@ export function readTheirs( folder ) {
 }
 
 // The construct registry's reader for the motion, trigger and hook kinds (FR-48-24): the occurrence of a census row,
-// { recordIds, role, why? }, from the inventory of the census it reads (built once per census sources list). A row the
-// inventory does not map returns null, which the census reports as an empty reader.
+// { recordIds, role, why? }, from the inventory of the census it reads (built once per pair of census rows and sources
+// lists). A row the inventory does not map returns null, which the census reports as an empty reader.
 const cores = new WeakMap();
 export function readInventory( row, ctx ) {
-	if ( ! cores.has( ctx.sources ) ) {
-		cores.set( ctx.sources, new Map( inventoryCore( { rows: ctx.rows, sources: ctx.sources } ).occurrences.map( ( o ) => [ o.occurrence, o ] ) ) );
+	if ( ! cores.has( ctx.rows ) ) {
+		cores.set( ctx.rows, new WeakMap() );
 	}
-	const o = cores.get( ctx.sources ).get( row.id );
+	const bySources = cores.get( ctx.rows );
+	if ( ! bySources.has( ctx.sources ) ) {
+		bySources.set( ctx.sources, new Map( inventoryCore( { rows: ctx.rows, sources: ctx.sources } ).occurrences.map( ( o ) => [ o.occurrence, o ] ) ) );
+	}
+	const o = bySources.get( ctx.sources ).get( row.id );
 	return o?.recordIds.length ? { recordIds: o.recordIds, role: o.role, ...( o.why ? { why: o.why } : {} ) } : null;
 }
 
@@ -171,10 +210,10 @@ export function readInventory( row, ctx ) {
 export async function inventoryStage( job, ctx ) {
 	const census = await inventoryCensus( { folder: job.folder, entry: job.entry, routing: ctx.routing, census: ctx.censusFull, harPath: job.harPath } );
 	const gaps = [ ...census.gaps ];
-	const first = buildInventory( { census, folder: job.folder, routing: ctx.routing, notDefects: ctx.notDefects || [] } );
-	const sampled = await sampleWriters( { folder: job.folder, index: job.entry, harPath: job.harPath, targets: sampleTargets( first.animations.records, first.meta ), widths: job.widths } );
+	const base = inventoryBase( { census, folder: job.folder, routing: ctx.routing, notDefects: ctx.notDefects || [] } );
+	const sampled = await sampleWriters( { folder: job.folder, index: job.entry, harPath: job.harPath, targets: sampleTargets( base.core.anim.records, base.core.anim.meta ), widths: job.widths } );
 	gaps.push( ...sampled.gaps );
-	const inv = buildInventory( { census, folder: job.folder, routing: ctx.routing, notDefects: ctx.notDefects || [], samples: sampled.samples } );
+	const inv = withSamples( base, sampled.samples );
 	gaps.push( ...inv.gaps, ...inv.problems.map( ( p ) => ( { construct: 'inventory', draftId: job.entry, error: p } ) ) );
 	const diff = diffInventory( inv, readTheirs( job.folder ) );
 	const kinds = {};
