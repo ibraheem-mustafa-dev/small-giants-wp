@@ -20,6 +20,7 @@
     "draftDefects",
     "missingFeatures",
     "skeletons",
+    "notices",
     "gaps",
     "review"
   ],
@@ -315,6 +316,46 @@
         "type": "object"
       }
     },
+    "notices": {
+      "type": "object",
+      "required": [
+        "prose",
+        "blockedHosts"
+      ],
+      "properties": {
+        "prose": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "rowId",
+              "file",
+              "text"
+            ]
+          }
+        },
+        "blockedHosts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "url",
+              "host",
+              "reason"
+            ],
+            "properties": {
+              "reason": {
+                "enum": [
+                  "unlisted-host",
+                  "replay-miss",
+                  "websocket"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
     "gaps": {
       "type": "array",
       "items": {
@@ -389,6 +430,9 @@
               "string",
               "null"
             ]
+          },
+          "changed": {
+            "type": "boolean"
           }
         }
       }

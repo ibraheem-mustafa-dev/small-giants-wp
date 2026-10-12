@@ -2677,8 +2677,9 @@ fails when one differs from this appendix.
 | `siteInfo` | the proposed key, value, source and validation result per key |
 | `flags`, `draftDefects`, `missingFeatures` | one row each, with `rowId` and `draftId` |
 | `skeletons` | per surface, the inventory and the proposed block per key with its confidence |
+| `notices` | `prose`: command-like text in the exported prose (FR-48-23); `blockedHosts`: each request the sandbox aborted, with its host, reason and draft ID |
 | `gaps` | R-48-3 gap rows: construct, draft ID, error text |
-| `review` | per row: `rowId`, `rowType`, `contentHash`, `mark`, `markedOn`, `carriedFrom` (a previous intake's date or null) |
+| `review` | per row: `rowId`, `rowType`, `contentHash`, `mark`, `markedOn`, `carriedFrom` (a previous intake's date or null), and `changed` (true when the row's content hash differs from the carried intake's) |
 
 **Construct registry:** `scripts/computed-route/data/construct-registry.json` (FR-48-24).
 

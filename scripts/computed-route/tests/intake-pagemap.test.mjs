@@ -144,7 +144,7 @@ test( 'MUST FAIL: an empty-but-shaped intake record validates; one missing revie
 		tools: { playwright: '1.0.0', browser: 'chromium 1', runtime: 'abc' }, harness: { clock: '2026-10-12T00:00:00.000Z', seed: 1, stepMs: 16 },
 		census: [], inventory: { animations: [], surfaces: [] }, routing: { adapter: 'hash', routes: [], links: [] }, breakpoints: [],
 		pageMap: hashMap.rows, palette: { tokens: [], rows: [], unused: [], oneOff: [] }, siteInfo: { rows: [], refused: [] },
-		flags: [], draftDefects: [], missingFeatures: [], skeletons: {}, gaps: [],
+		flags: [], draftDefects: [], missingFeatures: [], skeletons: {}, notices: { prose: [], blockedHosts: [] }, gaps: [],
 		review: [ { rowId: 'page:home', rowType: 'page-map', contentHash: 'h1', mark: null, markedOn: null, carriedFrom: null } ],
 	};
 	assert.deepEqual( schemaProblems( ajv, schema, record ), [] );
