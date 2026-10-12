@@ -14,7 +14,7 @@ closed by the done-when of the requirement it cites, and fixes who runs what, in
 reliability come first; a speed or cost gain is taken only where it adds no risk (Bean, 2026-10-11).
 
 **Where it stands (2026-10-12).** Phase 1 (steps 1 to 8) and steps 9 to 12 are done: all 17 Indus blocks are current
-and the stage-0 calibration baseline is written. Step 13 is done (intake lane); steps 14 to 25 are not started or are
+and the stage-0 calibration baseline is written. Steps 13 and 14 are done (intake lane); 14b is next, then 15; steps 16 to 25 are not started or are
 in the other lanes. Progress per step is marked in the phases below.
 
 ## Orchestration
@@ -25,7 +25,7 @@ in the other lanes. Progress per step is marked in the phases below.
 | Route | session A (the one that wrote this plan) | 3 → 5 → 6 → 7 → 8 | 8 needs 4 | 3 h 15 |
 | Mirror | session A, background subagent | 4, later 2 and 16 | nothing | 45 min, then 5 and 30 min |
 | Framework | session B (done 2026-10-12) | 9 → 10 → 11 → 12 | nothing | 2 h 55 |
-| Intake | session C, prompt `.claude/prompts/2026-10-11-spec48-intake-lane.md` | 13 → 14 → 14b | 3 pushed | 6 h |
+| Intake | session C (13 and 14 done 2026-10-12) | 13 → 14 → 14b | 3 pushed | 6 h |
 
 The lanes join at step 15 (needs 8, 9, 14 and 14b). The critical path is the intake lane (3, 13, 14: about 5 h 45 by the
 spec's figures, against about 12 h with every set-up and intake step in a row).
@@ -159,15 +159,42 @@ explicit-pathspec commits straight to `main`.
   `lib/intake-census*.mjs` static and runtime passes and `lib/intake-registry.mjs`, each case with its MUST FAIL
   control; `tests/intake-schemas.test.mjs` holds every Appendix C schema equal to the spec. The Indus census (24
   visits at three widths) takes about 9 minutes and is identical across two runs.
-- [ ] **14. Intake 4b.** FR-48-26, FR-48-30, FR-48-31, FR-48-32 done-whens; FR-48-27, FR-48-33, FR-48-34 and §3.4's
-  skeleton inventory and proposal; `review.md` and `intake.mjs --apply-review` (FR-48-17); the intake and page-map
-  schemas.
-- [ ] **14b. Re-derived inventory and prop variants** (session C, Opus; needs 13; before 15). FR-48-25 and FR-48-29
-  are on FR-48-17's work list but were in no Appendix B step (Bean, 2026-10-12: a step of their own, not built inside
-  13 or 14). Until it lands, the motion construct kinds sit in `data/construct-registry.json` as gaps citing FR-48-25.
-- [ ] **15. Intake run and Bean's review.** Stage 1's exit (FR-48-17): every census construct has a reader or a gap
-  row, and every review row carries Bean's mark. Runs after session B's step 9 as well as 8 and 14b: the palette
-  proposal reads the slugs from `theme/sgs-theme/theme.json`, so FR-32-14's new slugs reach it only once step 9 lands.
+- [x] **14. Intake 4b** (done 2026-10-12, session C). FR-48-26, -27, -30, -31, -32, -33 and -34, §3.4 steps 1 to 4, the
+  intake and page-map schemas, and `intake.mjs` (`<client> [--record]`, `--finalise`, `--apply-picks`, `--render`,
+  `--apply-review`), each with its MUST FAIL controls (route suite 1135/1138, the 3 known brandName failures). An Indus
+  rehearsal writes a valid `intake.json`, `review.md` and `page-map.json` with no live request in about 97 minutes of
+  machine time; the review is 762 rows, 415 needing reading and 347 confident block proposals under "Accept all".
+  Residual, owned here (none blocks step 15):
+  - a blocked request caught by a census, defect or harness page has `draftId` null (only `openSandbox`'s `visit()`
+    resolves IDs), and the static census's own sandbox list is not merged;
+  - the finaliser request holds each row's tag, words, snippet and top three candidates but no parent, siblings or
+    boxes (`lib/intake-skeletons.mjs::rowsOf`/`summaryOf` would carry them);
+  - draft-defect forcing does not fire drag events, chain two-step states (drawer, then an accordion row) or give
+    pointer handlers coordinates, and does not follow a field only dead code sets; Indus leaves 15 test-2 defects in 8
+    groups that may shrink once these land;
+  - `lib/intake-ast.mjs::parseLogic` and `lib/intake-census-logic.mjs::parseLogic` are two Babel wrappers with
+    different return shapes; merge them when either is next edited.
+  Owned elsewhere: the Indus header's navigation comes out as containers, not a navigation block (FR-48-6, open in
+  `.claude/plans/2026-10-04-spec47-full-coverage.md` R2); no Appendix C post type fits a single-product route (decided
+  before Mama's intake, FR-48-30 status).
+- [ ] **14b. Re-derived inventory and prop variants** (session C, Opus; needs 13 and 14; before 15). FR-48-25 and
+  FR-48-29 are on FR-48-17's work list but were in no Appendix B step (Bean, 2026-10-12: a step of their own). Build:
+  intake writes its own `animations` and `surfaces` inventory into `intake.json` by `handoff-schema/METHOD.md` §0 to §8
+  (from the census rows, the harness's sample mode for timer-written styles per width, and the forced states the
+  defect pass already reaches), validates both against the master schemas in
+  `.claude/claude-design-handoff/handoff-schema/`, diffs Claude Design's copies against them as `inventory-diff` review
+  rows (marks `ours`/`theirs`; the review library already renders the section), and turns the registry's motion kinds
+  (`waapi`, `transition`, `keyframes`, `observer`, `timer`, `handler`, `ref`, `data-hook`) from gaps into readers;
+  FR-48-29: a `dc-import` mounted with `data-props` records non-default variants as states only when a parent mounts
+  them (the defect pass already classifies prop-gated code as `prop-variant`). Done when FR-48-25's done-when holds on
+  Indus and Mama's and `trace-check.mjs --shift=7` still fails.
+- [ ] **15. Intake run and Bean's review** (needs 14b; steps 8 and 9 are done). In order: `node
+  scripts/computed-route/intake.mjs indus-foods --record` (the replay file misses four stock images the census and
+  defect pages ask for, and only `--record` tops it up); `intake.mjs --finalise indus-foods`, an agent answers
+  `sites/indus-foods/build/intake/finalise-request.json` with `scripts/computed-route/prompts/skeleton-finaliser.md`
+  into `finalise-picks.json`, then `intake.mjs --apply-picks indus-foods`; Bean marks `review.md`; `intake.mjs
+  --apply-review indus-foods` exits 0. Stage 1's exit (FR-48-17): every census construct has a reader or a gap row,
+  every review row carries Bean's mark, `intake.json` validates.
 
 ### Phase 4. Stage 2 site build (steps 16 to 19)
 - [ ] **16. Appendix A on `indus-test`**, the steps not already done (may start after step 4). Checked 2026-10-12 over

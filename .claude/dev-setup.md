@@ -251,7 +251,12 @@ result is one `design_handoff_<project>/` folder (Spec 48A: drafts, `support.js`
 `animations.json`, `surfaces.json`, `READING-DC-FILES.md`, `handoff-schema/`, `MANIFEST.json`); never the zip or
 standalone download, which carry no README. It is copied unchanged to `sites/<client>/handoff/` and must pass
 `node scripts/computed-route/handoff-check.mjs <folder>` before use. The route has its own pinned packages: run `npm ci` in
-`scripts/computed-route` (from PowerShell) once per checkout or worktree before any route command. Plan: `plans/2026-10-10-claude-design-handover-standard.md`. Each Claude Design draft is a folder of `.dc.html` pages
+`scripts/computed-route` (from PowerShell) once per checkout or worktree before any route command. Stage 1 intake is
+`node scripts/computed-route/intake.mjs <client> --record` (the first run records the fonts, stock images and runtime
+scripts into the gitignored `sites/<client>/build/intake/replay/<manifest hash>.har`; later runs drop `--record` and
+use no network; Indus takes about 97 minutes of machine time) and writes `sites/<client>/build/intake/intake.json`,
+`review.md` and `sites/<client>/build/page-map.json`; `--finalise`, `--apply-picks`, `--render` and `--apply-review`
+follow (Spec 48 FR-48-17). Plan: `plans/2026-10-10-claude-design-handover-standard.md`. Each Claude Design draft is a folder of `.dc.html` pages
 served locally by `scripts/computed-route/lib/draft.mjs::serveDraft`. `node scripts/computed-route/fill.mjs --serve
 <folder> --draft-index <entry>` serves it until Ctrl-C on a new port each run, and a surface on another page of the draft
 is `<served url>/<Page>.dc.html`. Fill takes the folder as `--draft-dir <folder> --draft-index <entry>` (or the served

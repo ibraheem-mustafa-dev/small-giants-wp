@@ -11,7 +11,7 @@ last_updated: 2026-10-12
 - **Eye Care is built by hand first (D1149).** Every surface is built and live on eye-care-test; the finished site becomes the cloning pipeline's answer key. The fix register is the work list and every decision in it is taken.
 - **The cloning route's "Solve" tool** (Spec 48 §3.3) measures the draft against the live site and writes block settings itself. The About page is at 100%. Current counts live in the triage files, never in this document.
 - **Nav / header / footer** (Specs 36 and 37): Waves 1 to 3C are live on sandybrown; Waves 4 and 5 have not started. You deferred the last mile of Gate 3C.
-- **The Claude Design handover is standardised and the cloning system is specified (Front H).** Drafts come from Claude Design's "Handoff to Claude Code" run by one pasted prompt, land unchanged in `sites/<client>/handoff/` and are checked by Spec 48A. Spec 48 (the cloning system, replacing Spec 47) is written: accuracy designed in from the start, Indus first then Mama's. Building it for Indus has started (`plans/2026-10-11-spec48-indus-build.md`: stage 0 nearly done); Eye Care's draft is edited to mirror the live site (B5). Indus and the Mama's redesign keep their fresh test sites (`indus-test`, `mamas-test`).
+- **The Claude Design handover is standardised and the cloning system is specified (Front H).** Drafts come from Claude Design's "Handoff to Claude Code" run by one pasted prompt, land unchanged in `sites/<client>/handoff/` and are checked by Spec 48A. Spec 48 (the cloning system, replacing Spec 47) is written: accuracy designed in from the start, Indus first then Mama's. Building it for Indus is under way (`plans/2026-10-11-spec48-indus-build.md`: stage 0, the framework halves and the intake command are done; intake step 14b, then Bean's intake review, are next); Eye Care's draft is edited to mirror the live site (B5). Indus and the Mama's redesign keep their fresh test sites (`indus-test`, `mamas-test`).
 - **Specs** are tidied to current truth (24 live specs; the generated block reference is separate). Cloning is Spec 48 only (Spec 47 is archived inside it): Specs 31, 44, 45, 20 and 19 are gone, and the roster's "Not a live spec" table maps every old number to its home. The old cloning converter and its scripts, gates and database tables are deleted; git history holds them.
 - **Need you directly:** the drawer-burger click retest, the mega-motion eye check, and the Eye Care rulings listed under Parked.
 
@@ -72,15 +72,18 @@ calibration fixtures, and a stage-0 run on the Indus mirror `local-indus` (port 
 current and wrote `sites/indus-foods/build/intake/calibration-baseline.json` (`7e7a72c86`). `calibrate.mjs` now refuses a
 slot map that drops a setting the shared map reaches unless `--allow-loss` names it; its refusals on Indus exposed and
 fixed three framework defects (FR-48-3 Status). indus-test sends email through the studio mailbox, redirected to it
-(step 2). Route suite 1122/1125 (the 3 known `lint.test.mjs` brandName failures). Spec 48A v0.1 with `handoff-check.mjs`; the Indus and Mama's exports in `sites/<client>/handoff/`
+(step 2). Phase 3 steps 13 and 14 (stage 1 intake) are done: `node scripts/computed-route/intake.mjs <client>` runs the
+export in a network-sealed sandbox under a deterministic clock and writes `intake.json`, Bean's `review.md` and the
+proposed `page-map.json`; an Indus rehearsal passes with no live request (about 97 minutes; 415 review rows need
+reading). Route suite 1135/1138 (the 3 known `lint.test.mjs` brandName failures). Spec 48A v0.1 with `handoff-check.mjs`; the Indus and Mama's exports in `sites/<client>/handoff/`
 pass it (repackaged 2026-10-11 by `handoff-repackage.mjs`; no design change since export).
-**Blockers:** none for the route lane; step 15 (the intake run) needs the intake lane's steps 14 and 14b. **Time-critical:** the standalone Claude
+**Blockers:** none for the route lane; step 15 (the intake run and Bean's review) needs step 14b (the re-derived
+animation and state inventory, FR-48-25 and FR-48-29). **Time-critical:** the standalone Claude
 Design site deletes its projects on 14 December 2026; export every project as a "Project archive" and test the
 artifact-based Claude Design once before then (plan B0; Spec 48A goes to 1.0 after it).
 **Resume from:** `plans/2026-10-11-spec48-indus-build.md` Phase 4 step 16 (route lane: Appendix A's remaining
-pre-intake steps on `indus-test`), plus Phase 3 in its own
-session from `.claude/prompts/2026-10-11-spec48-intake-lane.md` and, as a separate session, B5 (mirror the live
-Eye Care site into its draft).
+pre-intake steps on `indus-test`), Phase 3 step 14b then 15 (intake lane), and, as a separate session, B5
+(mirror the live Eye Care site into its draft).
 **Bean-only tasks:** B0.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)

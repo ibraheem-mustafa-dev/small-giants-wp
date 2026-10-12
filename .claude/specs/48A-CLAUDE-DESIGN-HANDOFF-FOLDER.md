@@ -104,7 +104,7 @@ Status: checked by `handoff-check.mjs`.
 `animations.json` and `surfaces.json` validate against the master schemas, and every draft hash and the
 `runtime_sha256` recorded in `animations.json` match the files, so an inventory written before a design change is
 refused. The target, set by Bean's decision (e) of 2026-10-11, is that intake re-derives the inventory from the code
-by `METHOD.md` and Claude Design's copy is only a cross-check; until that intake stage exists (Spec 48), Claude
+by `METHOD.md` and Claude Design's copy is only a cross-check; until Spec 48 step 14b (FR-48-25) lands, Claude
 Design's inventories are used, cross-checked by `scripts/computed-route/trace-check.mjs` on a single-file draft's
 entry page (every Web Animations call, CSS animation start and CSS transition run matched to a record, `--shift=7`
 negative control).
@@ -121,7 +121,8 @@ The WordPress page map (slug, parent, page or WooCommerce template, menus) is no
 from the routes in the code and Bean confirms it once per client. When a draft embeds a
 `<script type="application/json" data-sgs-manifest>` block (Eye Care does), intake uses it as the proposal. Image
 credits are not recorded: stock photos in a draft are previews, and real images arrive with the client's content.
-Status: Spec 48 intake stage.
+Status: built at Spec 48 intake (FR-48-30, `scripts/computed-route/lib/intake-pagemap.mjs`, 2026-10-12): Eye Care's
+embedded block is its proposal; Indus's and Mama's come from their routes.
 
 ### FR-48A-10 -- Running a draft safely
 A draft runs code: `support.js` evaluates fetched scripts with `new Function`, and each draft's logic runs in the page.
@@ -134,7 +135,8 @@ namespace (editor and provenance metadata namespaces excepted), a `script` or `f
 prefix, any `on…` attribute, an animation that rewrites a link, an `href`, `src`, `data`, `action` or CSS `url()`
 target other than a `#fragment` or a raster `data:image` URI, `javascript:` or a CSS `@import`, and on any file over
 20 MB.
-Status: SVG and size checks in `handoff-check.mjs` (`lib/svg-screen.mjs`); the browser sandbox and the prose rule are a Spec 48 intake stage.
+Status: SVG and size checks in `handoff-check.mjs` (`lib/svg-screen.mjs`); the browser sandbox, the secret-free process
+and the prose rule are built at Spec 48 intake (FR-48-23, `scripts/computed-route/lib/intake-sandbox.mjs`, 2026-10-12).
 
 ### FR-48A-11 -- Near-finished sites
 A client whose site is already built from an earlier draft (Eye Care) is not put through intake. Its draft is the
@@ -162,9 +164,9 @@ Every file has a named reader. "Built" means the reader exists today.
 |---|---|---|
 | `MANIFEST.json` | `handoff-check.mjs`: completeness, hashes, runtime | yes |
 | `support.js` | `handoff-check.mjs` runtime check and probe; `lib/draft.mjs::serveDraft` serves the draft | yes |
-| draft `.dc.html` | `handoff-check.mjs` reachability; intake decodes template and logic (`METHOD.md`); walker and skeleton writer measure only what code cannot state | check and walker yes, intake Spec 48 |
+| draft `.dc.html` | `handoff-check.mjs` reachability; intake decodes template and logic (`METHOD.md`); walker and skeleton writer measure only what code cannot state | yes (intake: Spec 48 §9) |
 | project scripts, `assets/` | the runtime while serving; `handoff-check.mjs` SVG and size checks; intake adds `assets/` to the media upload list | check yes, upload Spec 48 |
-| `tokens/*.css` | the theme extractor builds the brand palette from the declared tokens; every other colour stays a one-off hex literal | Spec 48 |
+| `tokens/*.css` | intake's `lib/tokens.mjs` proposes the palette roles; the theme extractor builds the brand palette from the declared tokens with the confirmed roles; every other colour stays a one-off hex literal | intake yes; extractor Spec 48 §11 |
 | `README.md` | Bean and agents (human guide to the design; not a cloning input, which reads the code) | yes (human/agent reader) |
 | `animations.json`, `surfaces.json` | `handoff-check.mjs` schema and currency; `trace-check.mjs` runtime cross-check; intake cross-check against its own inventory | check and trace yes, intake Spec 48 |
 | `READING-DC-FILES.md` | agents working on the draft | yes (human/agent reader) |

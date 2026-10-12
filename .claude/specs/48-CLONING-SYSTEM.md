@@ -1056,14 +1056,20 @@ full function index.
 | `lib/calibration-refs.mjs`, `fixture-refs.mjs`, `lib/fixture-refs.mjs` | Fixture tokens resolved per calibration target, the existence guard, and the detector proving no bare site ID remains in a fixture (run by `lint.mjs`) | §3.2 |
 | `provision-calibration-refs.mjs`, `lib/provision-refs.mjs` | Creates a test site's calibration menu, panel, drawer and media and writes their IDs to its `refs` | §3.2, Appendix A step 13 |
 | `tests/` | `node --test "scripts/computed-route/tests/*.test.mjs"` (Node 24 runs a glob, not a bare folder); each file names the rule it proves and has one case that must fail. `tests/check-lane-collisions.mjs` is a parallel-lane process gate, not route behaviour | all |
-| `intake.mjs` (not built) | The intake command: census, re-derived inventory, routing adapters, page map, palette roles, Site Info proposal, flags, missing-features list, the review page, and `--apply-review` | §9, FR-48-17 |
-| `lib/tokens.mjs` (not built) | Parses `tokens/*.css` into declared tokens with no render, for the palette role proposal | FR-48-31 |
+| `intake.mjs`, `lib/intake-run.mjs`, `lib/intake-run-worker.mjs`, `lib/intake-run-stages.mjs`, `lib/intake-run-defects.mjs`, `lib/intake-run-collapse.mjs`, `lib/intake-run-finalise.mjs`, `lib/intake-review.mjs` | The intake command and Bean's review: every stage in FR-48-17's order in a secret-free worker, `intake.json`, `review.md`, `page-map.json`, `--finalise`, `--apply-picks`, `--render`, `--apply-review` | §8 FR-48-17, FR-48-35, §3.4 steps 3 and 4 |
+| `lib/intake-sandbox.mjs`, `lib/intake-record.mjs`, `lib/intake-process.mjs`, `lib/intake-prose.mjs` | Running a draft safely: the trap-proxy sandbox, the replay file, the secret-free worker, command-like prose | FR-48-23 |
+| `lib/intake-harness.mjs`, `lib/intake-harness-page.mjs`, `lib/intake-reading.mjs`, `data/reading.schema.json` | The determinism harness and reading records | FR-48-28 |
+| `lib/intake-census.mjs`, `lib/intake-census-template.mjs`, `lib/intake-census-logic.mjs`, `lib/intake-census-runtime.mjs`, `lib/intake-census-trace.mjs`, `lib/intake-census-map.mjs`, `lib/intake-registry.mjs`, `data/construct-registry.json`, `data/construct-registry.schema.json` | The construct census (static and runtime passes) and its registry | FR-48-24 |
+| `lib/intake-ast.mjs`, `lib/intake-ast-eval.mjs`, `lib/intake-routing.mjs`, `lib/intake-breakpoints.mjs`, `lib/intake-pagemap.mjs`, `lib/intake-pagemap-surfaces.mjs`, `data/page-map.schema.json`, `data/intake.schema.json`, `lib/intake-spec-sync.mjs` | Draft code reading, routing adapters, width basis, the page map, and the Appendix C schemas with the test that keeps them equal to the spec | FR-48-26, FR-48-27, FR-48-30, FR-48-35, Appendix C |
+| `lib/tokens.mjs`, `lib/intake-palette.mjs` | Declared tokens with no render, and the palette role proposal | FR-48-31 |
+| `lib/intake-siteinfo.mjs`, `lib/intake-siteinfo-shape.mjs`, `lib/intake-flags.mjs` | The Site Info proposal and the placeholder, stock and prototype-only flags | FR-48-32, FR-48-33 |
+| `lib/intake-defects.mjs`, `lib/intake-defects-binding.mjs`, `lib/intake-defects-keys.mjs`, `lib/intake-defects-force.mjs`, `lib/intake-defects-static.mjs`, `lib/intake-missing.mjs`, `lib/intake-state.mjs`, `lib/intake-skeletons.mjs` | Draft defects, missing features, the shared draft-state helper, and the skeleton inventory and proposal per surface | FR-48-34, §3.4 steps 1 and 2 |
 | `package.json`, `package-lock.json` | The route's own pinned dependencies (`npm ci` in `scripts/computed-route`; `node_modules` is gitignored, so a fresh worktree runs it first) | FR-48-75 |
 | Code readers (not built) | Declared values for every property, recorded motion, logic as data, the skeleton code reader | §3.4 FR-48-7, FR-48-8, §9 |
 | Site-build script (not built) | Pages, CPT posts, menus, pointers and options from the confirmed page map | §12, R-48-2 |
 
 Every built path above was listed with `ls scripts/computed-route scripts/computed-route/lib
-scripts/computed-route/data scripts/computed-route/prompts` on 2026-10-11.
+scripts/computed-route/data scripts/computed-route/prompts` on 2026-10-12.
 
 External imports, read-only:
 - `scripts/parity/lib/*.mjs` (finders, computed-style reading, `neutralise.mjs`, `divergences.mjs`, `links.mjs`);
@@ -1621,7 +1627,10 @@ not need for a role proposal. The extractor reads the token files and the confir
 Every colour outside the declared tokens stays a one-off hex.
 *Done when:* `lib/tokens.mjs` lists every custom property in Indus's `tokens/*.css` with its resolved value, the
 proposal names a role for each used token, and a planted unused token is listed as unused, not proposed.
-Status: not built (`scripts/computed-route/lib/tokens.mjs` does not exist).
+Status: built 2026-10-12 (`lib/tokens.mjs`, `lib/intake-palette.mjs`, `tests/tokens.test.mjs`,
+`tests/intake-palette.test.mjs`). Indus's three token files give 34, 27 and 13 tokens; slugs are read from
+`theme/sgs-theme/theme.json` at run time, so FR-32-14's five new slugs are proposed; a token with no confident role is
+`custom-<name>` (FR-33-2). Usage comes from rest-mode readings at 1440 per route.
 
 #### FR-48-32 — Site Info proposal with format validation
 Intake harvests business details from the code: `tel:` and `mailto:` links, social links, the logic's data objects,
