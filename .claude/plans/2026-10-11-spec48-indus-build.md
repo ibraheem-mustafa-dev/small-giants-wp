@@ -14,7 +14,7 @@ closed by the done-when of the requirement it cites, and fixes who runs what, in
 reliability come first; a speed or cost gain is taken only where it adds no risk (Bean, 2026-10-11).
 
 **Where it stands (2026-10-12).** Steps 1 and 3 to 7 are done; step 8's command is built and 13 of the 17 Indus
-blocks are current, with four slot maps left stale on purpose (step 8 says why). Steps 2 and 9 to 25 are not started. Progress per step is marked in the phases below.
+blocks are current, with four slot maps left stale on purpose (step 8 says why). Steps 9 to 12 are done (2026-10-12). Steps 2 and 13 to 25 are not started or are in the other lanes. Progress per step is marked in the phases below.
 
 ## Orchestration
 
@@ -137,11 +137,13 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
   on one shared case table, one gate), stable instance key, core-block lift, `edit_css` save check, route label; three
   raw unscoped readers removed (the nav link helper, `nav-drawer`), guarded. The canvas-versus-page and head-collector
   checks run after step 12's deploy.
-- [ ] **12. Framework refresh loop** (Appendix B), once for 9 to 11, through the serial queue. Split agreed with the
-  route lane (2026-10-12): session B reseeds the DB from a detached HEAD worktree (first, because the deploy's
-  wiring-fingerprint gate needs the new `sgs/container::ground` row) and deploys `indus-test`; session A then refreshes
-  `local-indus`, syncs the build and runs stage 0, which recalibrates every stale Indus block (container and the nav
-  blocks included) under its lossy-write guard; session B then recalibrates only what `stage0 --plan` still lists.
+- [x] **12. Framework refresh loop** (done 2026-10-12). The framework lane reseeded the shared DB from a detached HEAD
+  worktree (twice: for steps 9 to 11, then for the route lane's typography overrides 9295b6005), ran
+  `dbschema/seed_reference_data.py` after each (a normal reseed leaves `sgs/hero.splitMediaType` as select-from-enum),
+  and deployed `indus-test` at 3e1bdd9e9. FR-32-14, -15 and -20 were verified live there. The route lane then
+  refreshed `local-indus` and ran stage 0: all 17 Indus blocks current (`stage0.mjs --plan` lists none to recalibrate),
+  baseline in `sites/indus-foods/build/intake/calibration-baseline.json`. One live-check fix landed on the way:
+  section padding is a per-role opt-in (`supports.sgs.sectionPadding`, sgs/container), so the site header takes none.
 
 ### Phase 3. Stage 1 intake (steps 13 to 15, session C, then the join)
 - [x] **13. Intake 4a** (done 2026-10-12, session C). FR-48-23 and FR-48-28 done-whens; FR-48-24's census with
