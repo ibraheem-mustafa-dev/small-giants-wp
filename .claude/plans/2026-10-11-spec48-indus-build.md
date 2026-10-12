@@ -14,17 +14,15 @@ closed by the done-when of the requirement it cites, and fixes who runs what, in
 reliability come first; a speed or cost gain is taken only where it adds no risk (Bean, 2026-10-11).
 
 **Where it stands (2026-10-12).** Steps 1 and 3 to 7 are done; step 8's command is built and 13 of the 17 Indus
-blocks are current, with four slot maps left stale on purpose (step 8 says why). Steps 2 (Bean) and 9 to 25 are not
-started. Progress per step is marked in the phases below.
+blocks are current, with four slot maps left stale on purpose (step 8 says why). Steps 2 and 9 to 25 are not started. Progress per step is marked in the phases below.
 
 ## Orchestration
 
 ### Lanes
 | Lane | Where | Steps, in order | Needs | Agent time (Appendix B) |
 |---|---|---|---|---|
-| Bean | Bean | 2 mailbox | nothing | 5 min |
 | Route | session A (the one that wrote this plan) | 3 → 5 → 6 → 7 → 8 | 8 needs 4 | 3 h 15 |
-| Mirror | session A, background subagent | 4, later 16 | 16 needs 2 (Appendix A step 6) | 45 min, then 30 min |
+| Mirror | session A, background subagent | 4, later 2 and 16 | nothing | 45 min, then 5 and 30 min |
 | Framework | session B, prompt `.claude/prompts/2026-10-11-spec48-framework-lane.md` | 9 → 10 → 11 → 12 (queued) | nothing | 2 h 55 |
 | Intake | session C, prompt `.claude/prompts/2026-10-11-spec48-intake-lane.md` | 13 → 14 | 3 pushed | 5 h 15 |
 
@@ -88,8 +86,9 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
 
 ### Phase 1. Set-up and stage 0 (Appendix B steps 1 to 8)
 - [x] **1. Current export.** Passes `handoff-check.mjs` (2026-10-11).
-- [ ] **2. Mailbox** (Bean). The Indus mailbox in hPanel and its password under a new key in the email secrets file
-  (Appendix A step 6, `.claude/dev-setup.md` §Site email). Done when `provision-site-mail.py --check` can read the key.
+- [ ] **2. Test-site email** (agent). Appendix A step 6 on `indus-test` through the studio mailbox (sandybrown's login and
+  key, `.claude/dev-setup.md` §Site email) with `--redirect-all-to` Bean; no client mailbox (Bean, 2026-10-12: the studio
+  does not run Indus's domain or email). Done when `provision-site-mail.py --target indus-test --check` exits 0.
 - [x] **3. Route dependencies** (done 2026-10-11; route suite 867/870, the 3 known failures). FR-48-75 done when: `npm ci` in `scripts/computed-route` installs the pinned set; a
   planted import from `plugins/sgs-blocks/node_modules` fails `lint.mjs`. (The G0 browser-version case lands with G0,
   Phase 6.)

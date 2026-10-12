@@ -2505,9 +2505,10 @@ the first run. A script replaces this checklist after the third client uses it (
     supply (a product without WooCommerce) is reported, and the blocks that need it are not calibrated there. For Indus:
     `indus-test` and `local-indus`.
 
-Steps 1 to 4, 6 to 9 and 13 are environment work that may run before stage 1 exits (FR-48-17). Step 6 needs the
-client's mailbox to exist first: Bean creates it in hPanel and adds its password under a new key in the email secrets
-file that `provision-site-mail.py --secret-key` reads (`.claude/dev-setup.md` §Site email).
+Steps 1 to 4, 6 to 9 and 13 are environment work that may run before stage 1 exits (FR-48-17). On a test site,
+step 6 sends through the studio's own mailbox (the sandybrown login and key in `.claude/dev-setup.md` §Site email) with
+`--redirect-all-to` Bean, so cloning never needs the client's mailbox or domain (Bean, 2026-10-12). A client mailbox is
+set up only where the studio runs that client's email at go-live.
 
 ## Appendix B. Indus critical path
 
@@ -2534,8 +2535,8 @@ One pass is about 10 minutes of agent time and 20 minutes of machine time.
 *Set-up (Bean and stage 0)*
 1. **Current export** (done 2026-10-11). `sites/indus-foods/handoff/` passes `handoff-check.mjs` after
    `handoff-repackage.mjs` (Spec 48A FR-48A-1); a design change from here means a fresh export.
-2. **Mailbox** (Bean, ~5 min). Bean creates the Indus mailbox in hPanel and adds its password to the email secrets
-   file (Appendix A step 6).
+2. **Test-site email** (agent, 5 min). Appendix A step 6 on `indus-test` through the studio mailbox with
+   `--redirect-all-to` Bean; nothing is needed from the client.
 3. **Route dependencies** (agent, 30 min). The route's `package.json` with pinned Playwright, Ajv 8, `ajv-formats`,
    `saxes` and `@babel/parser`; every import repointed; the lint ban (FR-48-75).
 4. **Indus mirror and targets** (agent, 45 min). Appendix A step 13 for Indus: `local-indus`, its secrets file, the

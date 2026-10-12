@@ -77,7 +77,7 @@ artifact-based Claude Design once before then (plan B0; Spec 48A goes to 1.0 aft
 **Resume from:** `plans/2026-10-11-spec48-indus-build.md` Phase 1 step 8 (route lane), plus Phase 2 and Phase 3 in
 their own sessions from `.claude/prompts/2026-10-11-spec48-framework-lane.md` and `…-intake-lane.md` and, as a separate session, B5 (mirror the live
 Eye Care site into its draft).
-**Bean-only tasks:** B0, the Indus mailbox (Spec 48 Appendix B step 2).
+**Bean-only tasks:** B0.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
