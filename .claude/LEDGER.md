@@ -13,6 +13,7 @@ last_updated: 2026-10-12
 - **Nav / header / footer** (Specs 36 and 37): Waves 1 to 3C are live on sandybrown; Waves 4 and 5 have not started. You deferred the last mile of Gate 3C.
 - **The Claude Design handover is standardised and the cloning system is specified (Front H).** Drafts come from Claude Design's "Handoff to Claude Code" run by one pasted prompt, land unchanged in `sites/<client>/handoff/` and are checked by Spec 48A. Spec 48 (the cloning system, replacing Spec 47) is written: accuracy designed in from the start, Indus first then Mama's. Building it for Indus is under way (`plans/2026-10-11-spec48-indus-build.md`: stage 0, the framework halves and the intake command are done; intake step 14b, then Bean's intake review, are next); Eye Care's draft is edited to mirror the live site (B5). Indus and the Mama's redesign keep their fresh test sites (`indus-test`, `mamas-test`).
 - **Specs** are tidied to current truth (24 live specs; the generated block reference is separate). Cloning is Spec 48 only (Spec 47 is archived inside it): Specs 31, 44, 45, 20 and 19 are gone, and the roster's "Not a live spec" table maps every old number to its home. The old cloning converter and its scripts, gates and database tables are deleted; git history holds them.
+- **Clone coverage and the motion model (Front M).** Spec 48 was written draft-in only, so framework capabilities (behaviour settings, most fx effects, entrance stagger, search, SEO, consent, forms beyond the basics) had no clone path. `plans/2026-10-12-clone-coverage-foundation.md` fixes that with a generated capability inventory and a failing coverage test; its Phase 0, the motion redesign, has an approved design: Spec 38A (`specs/38A-SGS-MOTION-MODEL.md` v1.4, 56 FRs: three layered panels per element, stored per-element values and delays, token-backed presets, shared control atoms first). Its build plan is being written.
 - **Need you directly:** the drawer-burger click retest, the mega-motion eye check, and the Eye Care rulings listed under Parked.
 
 ## Blockers
@@ -67,6 +68,14 @@ Open owed items:
 **Resume from:** `plans/2026-10-11-spec48-indus-build.md` Phase 3 step 14b then 15 (intake lane; the route lane has nothing pre-intake left: Appendix A steps 7 and 9 are done on `indus-test`, noindex on and site icon set), and, as a separate session, B5 (mirror the live Eye Care site into its draft).
 
 **Bean-only tasks:** B0.
+
+### Front M: Clone coverage foundation and the motion model (Spec 38A)
+
+**State (2026-10-12, session C):** five coverage audits found Spec 48 has no framework-out direction; `plans/2026-10-12-clone-coverage-foundation.md` (approved, option A) adds a generated capability inventory, a coverage map and a failing test, then recognisers in waves, and absorbs Indus step 20b (FR-48-77). Phase 0 (the motion redesign) has its review (QC council), research (`reports/2026-10-12-motion-system-research.md`, research council plus gap-analysis C 3.25 with every C+ fix applied), per-effect audit (`reports/2026-10-12-motion-effects-audit.md`) and Bean's decisions D1 to D7, and its design is approved: `specs/38A-SGS-MOTION-MODEL.md` v1.4 (`3db6f7cdb`; independent spec review approved after three rounds). Spec 38, 32 (FR-32-21), 35 A4 and 48 (FR-48-47, FR-48-77) point at it. Nothing is built.
+
+**Blockers:** none. Steps 21 onwards of the Indus build wait on the coverage plan's Phase 4 waves the Indus gap list names.
+
+**Resume from:** the coverage plan, step 0.3: /strategic-plan for Spec 38A, resuming at Phase 2 (map). Two unit maps from Opus map agents may already sit in the previous session's scratchpad (`plan-units-m1-m2.md`, `plan-units-m3-m6.md`, path in the next-session prompt); otherwise re-dispatch them.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
