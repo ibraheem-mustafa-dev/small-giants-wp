@@ -250,7 +250,8 @@ expected file map) and `handoff-schema/` into the project once. The
 result is one `design_handoff_<project>/` folder (Spec 48A: drafts, `support.js`, `assets/`, `tokens/`, README,
 `animations.json`, `surfaces.json`, `READING-DC-FILES.md`, `handoff-schema/`, `MANIFEST.json`); never the zip or
 standalone download, which carry no README. It is copied unchanged to `sites/<client>/handoff/` and must pass
-`node scripts/computed-route/handoff-check.mjs <folder>` before use. Plan: `plans/2026-10-10-claude-design-handover-standard.md`. Each Claude Design draft is a folder of `.dc.html` pages
+`node scripts/computed-route/handoff-check.mjs <folder>` before use. The route has its own pinned packages: run `npm ci` in
+`scripts/computed-route` (from PowerShell) once per checkout or worktree before any route command. Plan: `plans/2026-10-10-claude-design-handover-standard.md`. Each Claude Design draft is a folder of `.dc.html` pages
 served locally by `scripts/computed-route/lib/draft.mjs::serveDraft`. `node scripts/computed-route/fill.mjs --serve
 <folder> --draft-index <entry>` serves it until Ctrl-C on a new port each run, and a surface on another page of the draft
 is `<served url>/<Page>.dc.html`. Fill takes the folder as `--draft-dir <folder> --draft-index <entry>` (or the served
@@ -281,6 +282,7 @@ Gitignored; never committed.
 | `.claude/secrets/eye-care-test.env` | Eye Care test site (darkcyan-grouse-898606.hostingersite.com) logins | `WP_USER_EYECARETEST` + `WP_PWD_EYECARETEST` (browser/admin login); `WP_APP_PWD_EYECARETEST` (REST Basic auth); `WP_URL_EYECARETEST`; `WP_PAGE_ID_EYECARETEST`; `HOSTINGER_USERNAME` |
 | `.claude/secrets/local-eye-care.env` | Local WSL mirror of Eye Care (`localhost:8081`) | `WP_URL_LOCALEYECARE`, `WP_USER_LOCALEYECARE`, `WP_PWD_LOCALEYECARE` |
 | `.claude/secrets/local-sandybrown.env` | Local WSL mirror of the canary (`localhost:8082`) | `WP_URL_LOCALSANDYBROWN`, `WP_USER_LOCALSANDYBROWN`, `WP_PWD_LOCALSANDYBROWN` |
+| `.claude/secrets/local-indus.env` | Local WSL mirror of the Indus test site (`localhost:8083`) | `WP_URL_LOCALINDUS`, `WP_USER_LOCALINDUS`, `WP_PWD_LOCALINDUS` |
 
 > **LiteSpeed:** LiteSpeed Cache is active on sandybrown (check any other target with `wp plugin list --status=active | grep -i litespeed`). `build-deploy.py` purges three cache layers after a deploy — OPcache (compiled PHP) through an HTTPS probe, because the CLI pool has its own OPcache, the LiteSpeed page cache (rendered HTML) through wp-cli, and the theme pattern cache (a pattern file added by a deploy registers only after it clears); clearing one does nothing for the others. For a manual purge after a CSS/render change run `wp litespeed-purge all`, reset OPcache (snippet below), and clear the Hostinger CDN (`hosting_clearWebsiteCacheV1`). sandybrown's bot challenge answers the deploy's HTTPS probes with a 403 "Just a moment" page, so the OPcache purge and the post-deploy GET report ERROR while the files are live: verify by checksum over SSH and run `wp litespeed-purge all` by hand; a CSS-only change needs no OPcache reset. The same edge (response header `Server: hcdn`) answers headless browsers and curl with that 403 for 45+ minutes after a burst of traffic, on every site of the account; a headed browser passes. Run the route's host tools with `SGS_HEADED=1` then (Solve, `scripts/computed-route/pairs.mjs`, `calibrate.mjs`, `scripts/wp-build-page.js`, `sites/eye-care-ward-end/build/qa/independent-check.mjs`); they hide scrollbars, as the walker does, so the layout width matches the viewport.
 
@@ -444,14 +446,15 @@ python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
 
 ## Local WordPress mirrors (WSL)
 
-`http://localhost:8081` (Eye Care) and `http://localhost:8082` (Sandybrown) are WSL copies of the two Hostinger test
-sites (database and `wp-content`, WordPress 7.1.2), for browser-heavy runs Hostinger's edge would challenge.
-Calibration targets them as `local-eye-care` / `local-sandybrown`; one run opens one browser and logs in once
+`http://localhost:8081` (Eye Care), `http://localhost:8082` (Sandybrown) and `http://localhost:8083` (Indus) are WSL
+copies of three Hostinger test sites (database and `wp-content`, WordPress 7.1.x), for browser-heavy runs Hostinger's edge would challenge.
+Calibration targets them as `local-eye-care` / `local-sandybrown` / `local-indus` (a mirror shares its test site's IDs and
+default paint through `mirrorOf` in `scripts/computed-route/calibration-targets.json`); one run opens one browser and logs in once
 (`scripts/lib/wp-session.js`). Start, sync and safety details: `scripts/local-wp/README.md`.
 Before measuring, refresh a mirror from its test site (`bash scripts/local-wp/refresh-from-remote.sh local-eye-care eye-care-test`, from Git Bash) and sync the build. Solve runs on a mirror with `solve.mjs --site local-eye-care` (about 40 seconds a walk, no edge challenge); run page surfaces one at a time, because parallel block-editor builds on the mirror time out.
 
-⚠️ **`curl http://localhost:8081/` times out even when the site is fine.** The WSL port proxy binds 8081 and
-8082 on **IPv6 loopback only** (`netstat -ano` shows `[::1]:8081`), and curl resolves `localhost` to IPv4
+⚠️ **`curl http://localhost:8081/` times out even when the site is fine.** The WSL port proxy binds 8081,
+8082 and 8083 on **IPv6 loopback only** (`netstat -ano` shows `[::1]:8081`), and curl resolves `localhost` to IPv4
 first. `curl -6 localhost:8081` returns 200, and Chrome and Playwright try IPv6 anyway, so browser-driven
 runs are unaffected. SearXNG's `:8888` is bound on IPv4, which is why that one answers plain curl — same
 machine, same proxy, different address family. **Check reachability with `curl -6` or a real browser.**

@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-10-10
+last_updated: 2026-10-12
 ---
 
 # small-giants-wp: LEDGER (the one living status)
@@ -11,7 +11,7 @@ last_updated: 2026-10-10
 - **Eye Care is built by hand first (D1149).** Every surface is built and live on eye-care-test; the finished site becomes the cloning pipeline's answer key. The fix register is the work list and every decision in it is taken.
 - **The cloning route's "Solve" tool** (Spec 48 §3.3) measures the draft against the live site and writes block settings itself. The About page is at 100%. Current counts live in the triage files, never in this document.
 - **Nav / header / footer** (Specs 36 and 37): Waves 1 to 3C are live on sandybrown; Waves 4 and 5 have not started. You deferred the last mile of Gate 3C.
-- **The Claude Design handover is standardised and the cloning system is specified (Front H).** Drafts come from Claude Design's "Handoff to Claude Code" run by one pasted prompt, land unchanged in `sites/<client>/handoff/` and are checked by Spec 48A. Spec 48 (the cloning system, replacing Spec 47) is written: accuracy designed in from the start, Indus first then Mama's. Next: your re-exports, then a build plan from its Appendix B; Eye Care's draft is edited to mirror the live site (B5). Indus and the Mama's redesign keep their fresh test sites (`indus-test`, `mamas-test`).
+- **The Claude Design handover is standardised and the cloning system is specified (Front H).** Drafts come from Claude Design's "Handoff to Claude Code" run by one pasted prompt, land unchanged in `sites/<client>/handoff/` and are checked by Spec 48A. Spec 48 (the cloning system, replacing Spec 47) is written: accuracy designed in from the start, Indus first then Mama's. Building it for Indus has started (`plans/2026-10-11-spec48-indus-build.md`: stage 0 nearly done); Eye Care's draft is edited to mirror the live site (B5). Indus and the Mama's redesign keep their fresh test sites (`indus-test`, `mamas-test`).
 - **Specs** are tidied to current truth (24 live specs; the generated block reference is separate). Cloning is Spec 48 only (Spec 47 is archived inside it): Specs 31, 44, 45, 20 and 19 are gone, and the roster's "Not a live spec" table maps every old number to its home. The old cloning converter and its scripts, gates and database tables are deleted; git history holds them.
 - **Need you directly:** the drawer-burger click retest, the mega-motion eye check, and the Eye Care rulings listed under Parked.
 
@@ -38,7 +38,7 @@ Governing documents (one job each):
 Operating rules:
 - After every sweep, run `scripts/computed-route/confirm-canvas.mjs --candidates` to re-measure each canvas citation.
 - `solve.mjs` defaults to 3 WRITE rounds. `--rounds 0` still rebuilds every surface's page from its tree file (`solve.mjs::build` runs `wp-build-page.js`); it writes no solver setting.
-- Run host tools with `SGS_HEADED=1`, one job at a time; `curl` one probe first because the host edge 403s bursts. Local mirrors on localhost:8081/8082 need `curl -6` and carry no `cr-ref` for header, mega, shop, product, lens or size-guide.
+- Run host tools with `SGS_HEADED=1`, one job at a time; `curl` one probe first because the host edge 403s bursts. Local mirrors on localhost:8081/8082/8083 need `curl -6` and carry no `cr-ref` for header, mega, shop, product, lens or size-guide.
 - A plugin deploy does not apply a tree fix: rebuild the page with `wp-build-page.js`, one page at a time.
 - Never remove `section.sgs-hero{max-width:none}` (D725); `sgs/hero`'s `maxWidth` is a real gap (backlog). The focus ring stays the client accent (D467).
 
@@ -63,14 +63,19 @@ and hardened by a final five-persona council (`.claude/reports/2026-10-11-spec48
 from stage 1: a value matrix gives every kind of value a read, write, check and gap rule, checked code to code with the
 render confirming; a gap reaches the framework list only through gates G0-G7. Spec 32 is slim (3.1.0: styling contract
 and snapshot format, new FR-32-14 to FR-32-20); Spec 27 gains FR-30-16/17. `scripts/check-spec-id-landing.py` proves
-every kept ID lands. Nothing built or deployed: Spec 48 is mostly "not built"; its Appendix B is the Indus critical path
-(about 20 h agent, 2 h Bean). Spec 48A v0.1 with `handoff-check.mjs`; the Indus and Mama's exports in `sites/<client>/handoff/`
+every kept ID lands. Appendix B (the Indus critical path) is under way, scripts only, nothing deployed (HEAD
+`a41608067`): the route has its own pinned packages (`npm ci` in `scripts/computed-route`), a per-site default paint,
+accepted value forms (`clamp`, `vw`, `repeat`), the 1440 desktop tier, the `container.layout` resolver fixes, portable
+calibration fixtures and a stage-0 command; the Indus mirror `local-indus` (port 8083) exists. Route suite 924/927 (the
+3 known `lint.test.mjs` brandName failures). Stage 0 has 13 of 17 Indus blocks current; four slot maps stay stale
+because recalibrating them on Indus would drop settings Eye Care reaches (plan step 8). Spec 48A v0.1 with `handoff-check.mjs`; the Indus and Mama's exports in `sites/<client>/handoff/`
 pass it (repackaged 2026-10-11 by `handoff-repackage.mjs`; no design change since export).
-**Blockers:** none for Indus stage 0 beyond the mailbox. **Time-critical:** the standalone Claude
+**Blockers:** stage 0's exit (Appendix B step 8) waits on those four blocks' missing calibration content; nothing
+else blocks the framework lane (session B) or the intake lane (session C). **Time-critical:** the standalone Claude
 Design site deletes its projects on 14 December 2026; export every project as a "Project archive" and test the
 artifact-based Claude Design once before then (plan B0; Spec 48A goes to 1.0 after it).
-**Resume from:** `plans/2026-10-11-spec48-indus-build.md` (Spec 48 Appendix B as phases in three lanes: route and mirror,
-framework, intake; each extra lane has a prompt in `.claude/prompts/`) and, as a separate session, B5 (mirror the live
+**Resume from:** `plans/2026-10-11-spec48-indus-build.md` Phase 1 step 8 (route lane), plus Phase 2 and Phase 3 in
+their own sessions from `.claude/prompts/2026-10-11-spec48-framework-lane.md` and `…-intake-lane.md` and, as a separate session, B5 (mirror the live
 Eye Care site into its draft).
 **Bean-only tasks:** B0, the Indus mailbox (Spec 48 Appendix B step 2).
 
@@ -100,7 +105,8 @@ Eye Care site into its draft).
 - **Branch:** `main`. Read the commit with `git rev-parse --short HEAD`; many sessions share this tree.
 - **Deploy marker:** `.sgs-deploy-marker-<target>.json` in the server's SSH home (`plugins/sgs-blocks/scripts/build-deploy.py::marker_path`). Read the marker to see what each site runs.
 - **sandybrown (canary, default target):** WP 7.1; homepage page **2742**, posts page **2741**; fresh-clone verification page **3448**; motion-QA fixtures 2103, 2109, 2113, 2603, 2740, 3037 are never deleted.
-- **eye-care-test** (`darkcyan-grouse-898606`), **indus-test** (`lavender-dinosaur-183533`, brief `sites/indus-foods/CLAUDE.md`) and **mamas-test** (`lightsalmon-tarsier-683012`, brief `sites/mamas-munches-redesign/CLAUDE.md`): name them explicitly to deploy. indus-test and mamas-test are fresh WordPress 7.1.3 installs (reset 2026-10-10, media kept, backups in `~/backups/2026-10-10-reset/` on the server) running sgs-blocks and sgs-theme at `3340f0907`; indus-test has no pages built, and mamas-test holds the zip-export footer run's `sgs_footer` post 19 as its active footer (`sgs_active_footer_cpt_id`), to clear when it is reset for Front H's replanned clone. A first deploy to a fresh site reports `[migrate]` and `[verify]` errors until sgs-blocks and sgs-theme are activated and `wp sgs migrations run` is run over SSH.
+- **eye-care-test** (`darkcyan-grouse-898606`), **indus-test** (`lavender-dinosaur-183533`, brief `sites/indus-foods/CLAUDE.md`) and **mamas-test** (`lightsalmon-tarsier-683012`, brief `sites/mamas-munches-redesign/CLAUDE.md`): name them explicitly to deploy. indus-test and mamas-test are fresh WordPress 7.1.3 installs (reset 2026-10-10, media kept, backups in `~/backups/2026-10-10-reset/` on the server) running sgs-blocks and sgs-theme at `3340f0907`; indus-test has no content pages built (it holds the private `cr-calibration` page 15 and the calibration menu 3,
+drawer 20, panel and media made by `scripts/computed-route/provision-calibration-refs.mjs`), and mamas-test holds the zip-export footer run's `sgs_footer` post 19 as its active footer (`sgs_active_footer_cpt_id`), to clear when it is reset for Front H's replanned clone. A first deploy to a fresh site reports `[migrate]` and `[verify]` errors until sgs-blocks and sgs-theme are activated and `wp sgs migrations run` is run over SSH.
 - **D-ceiling:** `grep -oE '^## D[0-9]+' .claude/archive/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`.
 - **Parity figures:** run the parity walker (`scripts/parity/draft-live-walk.mjs`, see `scripts/parity/GAP-CHECKLIST.md`) fresh; never quote a cached figure.
 

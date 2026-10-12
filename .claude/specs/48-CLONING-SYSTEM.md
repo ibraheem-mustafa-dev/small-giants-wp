@@ -5,7 +5,7 @@ spec_version: "0.2.0"
 title: "Cloning system: Claude Design handoff to a working SGS site"
 project: small-giants-wp
 created: 2026-10-11
-last_verified: 2026-10-11
+last_verified: 2026-10-12
 status: active
 supersedes: .claude/specs/archive/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md (spec_version 0.18.0)
 references:
@@ -1037,6 +1037,11 @@ full function index.
 | `triage.mjs`, `lib/triage.mjs`, `lib/triage-source.mjs` | A candidate class (W, F, T, U, L) with evidence per open issue, including the `includes/` helpers a block's render reaches | §3.8, §14 |
 | `answer-sheet.mjs`, `lib/answer-sheet.mjs` | Scores the route against a frozen hand-labelled answer sheet, with a baseline ratchet | §15 |
 | `register-sweep.mjs`, `lib/register-sweep.mjs` | Eye Care's fix-register bundling for the sweep's status agents (a client tool, indexed; no requirement here) | none |
+| `handoff-repackage.mjs` | Brings an export made before `MANIFEST.json` to the Spec 48A format after proving every file against its old `MANIFEST.md` hash | Spec 48A FR-48A-1 |
+| `stage0.mjs`, `lib/stage0.mjs`, `data/calibration-baseline.schema.json` | Stage 0: the handoff check, the fixed block set, slot-map-only recalibration of stale blocks, `calibration-baseline.json` | FR-48-3, FR-48-16 |
+| `split-cache.mjs` | One-off, idempotent split of pre-§3.2 cache files into slot map and per-site default paint, and mirror paint moved to its test site's folder | §3.2 |
+| `lib/calibration-refs.mjs`, `fixture-refs.mjs`, `lib/fixture-refs.mjs` | Fixture tokens resolved per calibration target, the existence guard, and the detector proving no bare site ID remains in a fixture (run by `lint.mjs`) | §3.2 |
+| `provision-calibration-refs.mjs`, `lib/provision-refs.mjs` | Creates a test site's calibration menu, panel, drawer and media and writes their IDs to its `refs` | §3.2, Appendix A step 13 |
 | `tests/` | `node --test "scripts/computed-route/tests/*.test.mjs"` (Node 24 runs a glob, not a bare folder); each file names the rule it proves and has one case that must fail. `tests/check-lane-collisions.mjs` is a parallel-lane process gate, not route behaviour | all |
 | `intake.mjs` (not built) | The intake command: census, re-derived inventory, routing adapters, page map, palette roles, Site Info proposal, flags, missing-features list, the review page, and `--apply-review` | §9, FR-48-17 |
 | `lib/tokens.mjs` (not built) | Parses `tokens/*.css` into declared tokens with no render, for the palette role proposal | FR-48-31 |
@@ -1155,8 +1160,8 @@ are not route work; the destination named holds them.
 |---|---|---|---|
 | Res 1 marquee rule | Skeleton rule from the loop record plus `getAnimations()`; off the framework list | ROUTE | §3.4 FR-48-6 |
 | Res 2 pill CTA | Skeleton rule | ROUTE | §3.4 FR-48-6 |
-| Res 3 grid column count | Calibration fault first (`container.gridTemplateColumns` dead, `columns` uncached), then the declared form | INSTRUMENT, then ROUTE | §3.2 FR-48-3, §3.1 FR-48-1, §10 row 6 |
-| Res 4 flex row | Declared `display`; `container.layout` resolver ties | ROUTE + INSTRUMENT | §3.1 FR-48-1, §10 row 6 |
+| Res 3 grid column count | The declared form (calibration now reads `gridTemplateColumns` and caches `columns`; the resolver does not yet reach `columns`, FR-48-1 status) | INSTRUMENT, then ROUTE | §3.2 FR-48-3, §3.1 FR-48-1, §10 row 6 |
+| Res 4 flex row | Declared `display` (the `container.layout` resolver ties are fixed, FR-48-3) | ROUTE + INSTRUMENT | §3.1 FR-48-1, §10 row 6 |
 | Res 5 Site Info from a draft | First real run in stage 2 | ROUTE | §12, §3.9 |
 | Res 6 advisory snapshot | Declared tokens are not advisory once Bean confirms roles | ROUTE | §11 |
 | Res 7 mis-tagged fixture rows (`responsive-logo.logoId`, `nav-bar-menu.featuredItemIds`, `nav-drawer.closeStyle`, `diagram-dimension.endX/endY`) | Handed off to the DB seeder (`sgs-update-v2.py` classifier) with a record | INSTRUMENT | §14 (`I-mistag`) |
@@ -1179,7 +1184,7 @@ are not route work; the destination named holds them.
 | Res 24 Fill UNMAPPED `layout` | Declared `display` plus routing | ROUTE + INSTRUMENT | §3.1 FR-48-1, §10 row 6 |
 | Res 25 Fill UNMAPPED `variant` | Presence keys on real blocks | INSTRUMENT | §3.2 |
 | Res 26 Fill UNMAPPED border colour | Route fault (Fill's fixture partner); `container.borderColour` is calibrated at 375/768/1440 | ROUTE | §3.4 |
-| Res 27 no `clamp` in any cache's `forms` | Calibration records accepted forms | INSTRUMENT | §3.2 FR-48-2, §10 row 8 |
+| Res 27 no `clamp` in any cache's `forms` | Calibration records accepted forms (built: heading `fontSize` records `clamp` and `vw`) | INSTRUMENT | §3.2 FR-48-2, §10 row 8 |
 | Res 28 CR17 business-info `textBefore` | Handed off to the Eye Care fix register | CLIENT | n/a |
 | Res 29 no presence read for `hoursLayout`-type enums | Agent sets it in the skeleton; the calibration change awaits Bean (§6) | INSTRUMENT | §3.2 |
 | Res 30 walker-state conflict rows | Generated map diffed against `state-map-reasons.json`; guard in `lib/solve-rows.mjs` | ROUTE | §3.7 FR-48-13 |
@@ -1301,8 +1306,9 @@ client's test site has a local mirror and a `calibration-targets.json` entry for
 **Exit:** the check exits 0, `sites/<client>/build/intake/calibration-baseline.json` exists and validates
 (Appendix C), and each block in the fixed set has a slot-map cache whose deploy hash is the current one (G0, §14).
 Status: the check is built (`handoff-check.mjs`); the Indus and Mama's exports pass it (repackaged 2026-10-11, Spec 48A
-FR-48A-1). The Indus mirror and its calibration targets exist (Appendix A step 13, `local-indus`, page 15); the Indus
-calibration fixes and the baseline file are not built.
+FR-48A-1). The Indus mirror and its calibration targets exist (Appendix A step 13, `local-indus`, page 15), the Indus
+calibration fixes are built and the stage-0 command runs; 13 of the 17 blocks are current and no baseline is kept until
+the last four are (FR-48-3 status).
 
 #### FR-48-17 — Stage 1: intake, closed by one batched review
 **Entry:** stage 0's exit test passes.
@@ -2359,9 +2365,9 @@ Status: not built.
 
 #### FR-48-67 — The instrument-debt list
 Every I-class row is also written to `sites/<client>/build/qa/instrument-debt.json`, grouped by owner (the seeder or
-calibration), with the block, the attribute and the gate evidence. Known items today: `container.gridTemplateColumns`
-dead, `sgs/choice-flow`'s `skipAddsToBag` NULL `css_property` (an enum setting calibration discovered, such as
-`container.layout`, is routed through discovery and is never I-unrouted), no accepted value forms recorded in any calibration cache, and the stale caches named in FR-48-16.
+calibration), with the block, the attribute and the gate evidence. Known items today: `sgs/choice-flow`'s
+`skipAddsToBag` NULL `css_property` (an enum setting calibration discovered, such as `container.layout`, is routed
+through discovery and is never I-unrouted), and the four stale Indus slot maps named in FR-48-3's status.
 Status: not built.
 
 #### FR-48-68 — The cross-client framework backlog
@@ -2426,9 +2432,9 @@ Items Spec 48 needs but does not own. "Blocks" says which client cannot finish w
 | Button lift written as `buttonPresets.default.hover-transform` (no new key; `button/style.css` already reads variant, then `default`); the extractor folds a shared lift into `default` (FR-33-4) | Spec 32 FR-32-19 (§14.3), Spec 48 §11 | Indus (Indus snapshot only) | partly built (the key is read; the extractor writes per variant only) |
 | Shadow role names (card, card-hover, button, panel, header, drawer, modal); migration surveying saved slugs including `raised`, `subtle`, `raisedish`, `hard-sm`; old slugs kept as aliases; dry run per client; FR-26-D3 waits for the O10 shadow-picker check | Spec 32 FR-32-18 (§14.2), §13.4 (FR-26-D3) | neither | not built |
 | One font-size vocabulary across snapshots (`sites/mamas-munches` excluded by name, its slugs kept as aliases) | Spec 32 FR-32-17 (§14.2) | neither | not built |
-| Indus calibration: `gridTemplateColumns` dead, `container.layout` resolver ties, stale caches for card-grid, form, nav-drawer-menu, container, hero, trust-bar, nav-bar-menu, mega-panel | calibration (§3.2) | Indus | not built |
+| Indus calibration: four stale slot maps (nav-bar-menu, site-header, media, nav-drawer) whose calibration content `local-indus` lacks | calibration (§3.2) | Indus | partly built (FR-48-3 status) |
 | Calibration records accepted value forms (`clamp()`, `vw`, `repeat()`, column count) | calibration (§3.2, FR-48-2) | Indus (fluid presets, grids) | built |
-| Indus local mirror `local-indus` and calibration targets `indus-test` and `local-indus` | Spec 48 Appendix A step 13 | Indus | not built |
+| Indus local mirror `local-indus` and calibration targets `indus-test` and `local-indus` | Spec 48 Appendix A step 13 | Indus | built |
 | Default paint stored per site (`cache/<site>/<block>.paint.json`) | calibration (§3.2, FR-48-3) | Indus (protects Eye Care's caches) | built |
 | The route's own pinned `package.json` | Spec 48 FR-48-75 | neither | built (G0's version check not built) |
 | `overriddenBy` with a rendered-box guard | calibration (§3.2) | neither | not built |

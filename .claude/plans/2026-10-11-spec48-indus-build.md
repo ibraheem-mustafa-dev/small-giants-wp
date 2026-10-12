@@ -13,9 +13,9 @@ status: in progress
 closed by the done-when of the requirement it cites, and fixes who runs what, in which order, beside what. Quality and
 reliability come first; a speed or cost gain is taken only where it adds no risk (Bean, 2026-10-11).
 
-**Where it stands.** Step 1 is done: `node scripts/computed-route/handoff-check.mjs sites/indus-foods/handoff` →
-`pass (0 failures, 2 warnings)` on 2026-10-11 (the warnings are `METHOD.md` and `READING-DC-FILES.example.md`
-differing from the master copy; the check validates with the master). Progress per step is marked in the phases below.
+**Where it stands (2026-10-12).** Steps 1 and 3 to 7 are done; step 8's command is built and 13 of the 17 Indus
+blocks are current, with four slot maps left stale on purpose (step 8 says why). Steps 2 (Bean) and 9 to 25 are not
+started. Progress per step is marked in the phases below.
 
 ## Orchestration
 
@@ -77,6 +77,8 @@ Every diff is read on the main thread before its commit. Every commit keeps the 
 
 **Estimate rule.** A step that finishes in a third of its estimate or less revises every remaining estimate down in
 the same reply.
+**Actuals (2026-10-11).** Steps 3 to 7 took 5 to 25 minutes of agent time each against 30 to 60 estimated, so
+read every remaining Appendix B agent estimate at about a third.
 
 **Guardrails on every commit.** `python scripts/check-spec-id-landing.py` and `--self-test` green;
 `node --test "scripts/computed-route/tests/*.test.mjs"` fails only the 3 known `lint.test.mjs` brandName cases; never
