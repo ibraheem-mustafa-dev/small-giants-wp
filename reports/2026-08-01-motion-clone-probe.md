@@ -1,7 +1,9 @@
 # Motion-clone probe — does a draft's `data-sgs-fx-*` grammar survive cloning today?
 
 **Date:** 2026-08-01
+
 **Mode:** Measurement only (read-only on `plugins/sgs-blocks/scripts/converter/`; no converter edits, no deploy, no state-changing git command).
+
 **Question:** does a draft mockup carrying SGS motion attributes (Spec 38 §11.2 `data-sgs-fx-*` grammar) clone into WordPress with the motion intact, as the system stands today?
 
 **Verdict up front:** **No. Zero of the grammar's attributes survive cloning today.** This is not a small gap-fill — the wiring point named in the spec itself (§11.3: "mapped to a named later stage — NOT built in Wave A") has not been built. What D436 seeded is a different layer entirely (see below), and it does not substitute for the missing wiring. Full evidence follows.

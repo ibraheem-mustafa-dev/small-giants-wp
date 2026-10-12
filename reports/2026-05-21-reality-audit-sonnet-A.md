@@ -1,8 +1,11 @@
 # Reality Audit — Code-as-Evidence Round 2
 
 **Auditor:** Sonnet A (independent subagent, no prior context)
+
 **Scope:** sgs-clone pipeline — doc-to-code accuracy
+
 **Methodology:** Every verdict cites a script file:line. Doc-citation alone rejected. Verdicts: COVERED-VERIFIED / PARTIAL / MISSING / CONTRADICTORY / UNVERIFIABLE.
+
 **Time per section:** S0: 5 min, A: 15 min, B: 10 min, C: 20 min, D: 10 min, E: 10 min, F: 10 min, G: 5 min, H: 10 min
 
 ---

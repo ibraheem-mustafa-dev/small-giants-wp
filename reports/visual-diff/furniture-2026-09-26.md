@@ -1,11 +1,6 @@
 # Live verification: header and footer furniture (Wave 3C U-12, M-18), 2026-09-26
 
-verdict: PASS
-intent_capture_passed: true
-source_commits: 58585c959 (button link sources), 97a976fb7 (local-time), 710317436 (audio toggle), 9318daba0 (wishlist), 74f7c6862 (language-switch), fcb58efe2 (store-selector), 4a84375a6 (dark palette + theme-toggle), 0c56cf54b and 0c4be584c (per-tier toggles, icon names), f39e66310, 75d2ac8e6, da1f72118, 733e698f1 (live-check fixes), b52dd0474 (dark pairs)
-source_sha: not computed. `plugins/sgs-blocks/scripts/visual-report-sha.py` hashes files staged for a commit in progress (it served the commit-time visual gate, no longer in `.githooks/`), so it cannot bind a report to committed code; the source commits above identify the verified code instead.
-design: `.claude/reports/2026-09-26-u12-furniture-design.md`
-blocks: local-time, language-switch, store-selector, theme-toggle, wishlist-link, wishlist-panel, button, audio, product-search, product-card
+verdict: PASS intent_capture_passed: true source_commits: 58585c959 (button link sources), 97a976fb7 (local-time), 710317436 (audio toggle), 9318daba0 (wishlist), 74f7c6862 (language-switch), fcb58efe2 (store-selector), 4a84375a6 (dark palette + theme-toggle), 0c56cf54b and 0c4be584c (per-tier toggles, icon names), f39e66310, 75d2ac8e6, da1f72118, 733e698f1 (live-check fixes), b52dd0474 (dark pairs) source_sha: not computed. `plugins/sgs-blocks/scripts/visual-report-sha.py` hashes files staged for a commit in progress (it served the commit-time visual gate, no longer in `.githooks/`), so it cannot bind a report to committed code; the source commits above identify the verified code instead. design: `.claude/reports/2026-09-26-u12-furniture-design.md` blocks: local-time, language-switch, store-selector, theme-toggle, wishlist-link, wishlist-panel, button, audio, product-search, product-card
 
 ## Environment and method
 - Site: sandybrown (Mama's Munches palette), deployed with `build-deploy.py --target sandybrown` (last lane C deploy after 733e698f1; payload verified, 94 of 94 block.json checksums).

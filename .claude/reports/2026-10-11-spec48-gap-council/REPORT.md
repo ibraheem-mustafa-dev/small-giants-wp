@@ -1,43 +1,26 @@
 # Spec 48 gap-analysis council (2026-10-11, dated record)
 
-Four Opus reviewers, read-only and blind to each other, judged every recorded Spec 47 problem against what code-first
-cloning and the Spec 48A handoff files make possible: a code-first architect, a measurement sceptic, a ship-PM and a
-framework-gap realist. Inputs: `.claude/reports/2026-10-10-handover-council/R5-eyecare-gaps.md` (P1-P29),
-`.claude/reports/2026-10-11-spec-ledgers/SPEC-47-LEDGER.md` §3 (Residual 1-32 plus two) and §4 (R1-R6), and
-`SPEC-32-LEDGER.md` §4 (C1-C12). Bean's design decisions taken on these findings are in `DESIGN.md`.
+Four Opus reviewers, read-only and blind to each other, judged every recorded Spec 47 problem against what code-first cloning and the Spec 48A handoff files make possible: a code-first architect, a measurement sceptic, a ship-PM and a framework-gap realist. Inputs: `.claude/reports/2026-10-10-handover-council/R5-eyecare-gaps.md` (P1-P29), `.claude/reports/2026-10-11-spec-ledgers/SPEC-47-LEDGER.md` §3 (Residual 1-32 plus two) and §4 (R1-R6), and `SPEC-32-LEDGER.md` §4 (C1-C12). Bean's design decisions taken on these findings are in `DESIGN.md`.
 
 ## Convergence (three or four reviewers)
 
-1. The draft code states most design intent (motion parameters, every state with how to reach it, grid forms, shared
-   `{{ }}` bindings, content arrays, breakpoint thresholds), but brings new traps: three routing models, two
-   breakpoint width bases (Eye Care measures the root element, Indus and Mama's the window), placeholder and stock
-   content, prototype-only behaviour, and Claude Design's own unverified inventory (Mama's and Eye Care 100%
-   `not-instrumented`).
+1. The draft code states most design intent (motion parameters, every state with how to reach it, grid forms, shared `{{ }}` bindings, content arrays, breakpoint thresholds), but brings new traps: three routing models, two breakpoint width bases (Eye Care measures the root element, Indus and Mama's the window), placeholder and stock content, prototype-only behaviour, and Claude Design's own unverified inventory (Mama's and Eye Care 100% `not-instrumented`).
 2. A construct census with negative controls is the guard against the deleted converter's silent drops.
-3. A code-render disagreement must not write the code value; it is persisted, and draft runtime bugs get their own
-   owner.
-4. The accuracy mechanisms (R1-R6, guard, trial, neutralise, identity pairing) carry unchanged; no code-derived write
-   bypasses them.
-5. No export passes Spec 48A today (each carries `MANIFEST.md`); constructs are recounted at intake (Eye Care's `sc-if`
-   is 126 today, not R5's 87).
+3. A code-render disagreement must not write the code value; it is persisted, and draft runtime bugs get their own owner.
+4. The accuracy mechanisms (R1-R6, guard, trial, neutralise, identity pairing) carry unchanged; no code-derived write bypasses them.
+5. No export passes Spec 48A today (each carries `MANIFEST.md`); constructs are recounted at intake (Eye Care's `sc-if` is 126 today, not R5's 87).
 6. The gaps list needs evidence gates; today only 105 of 217 "missing feature" labels held.
 
 ## Verified in the main thread
 
-- No draft loads `tokens/*.css` (0 references in all three; Mama's drafts use no `var()`), so the palette is matched to
-  the draft's hex by value. The sceptic's "Mama's `#D9981C` unused" is wrong: `colors.css` lists it as a deliberate
-  one-off.
-- `container.borderColour` (`border-color`) is calibrated at 375/768/1440 (`cache/container.json`): Residual 26 is a
-  route fault, not a framework gap.
-- `container.gridTemplateColumns` is in calibration's `dead` list and `container.columns` has no entry: Residual 3 is a
-  calibration fault first.
-- `container.layout` and `choice-flow.skipAddsToBag` have NULL `css_property`; `skipAddsToBag` exists, so R5 P24's
-  "N38's setting does not exist" is stale.
+- No draft loads `tokens/*.css` (0 references in all three; Mama's drafts use no `var()`), so the palette is matched to the draft's hex by value. The sceptic's "Mama's `#D9981C` unused" is wrong: `colors.css` lists it as a deliberate one-off.
+- `container.borderColour` (`border-color`) is calibrated at 375/768/1440 (`cache/container.json`): Residual 26 is a route fault, not a framework gap.
+- `container.gridTemplateColumns` is in calibration's `dead` list and `container.columns` has no entry: Residual 3 is a calibration fault first.
+- `container.layout` and `choice-flow.skipAddsToBag` have NULL `css_property`; `skipAddsToBag` exists, so R5 P24's "N38's setting does not exist" is stale.
 
 ## Consolidated verdicts
 
-Owner: ROUTE (Spec 48), FRAMEWORK (owning spec named), INSTRUMENT (calibration or DB seeder; never a framework gap),
-CLIENT, DRAFT (Claude Design or B5), DONE.
+Owner: ROUTE (Spec 48), FRAMEWORK (owning spec named), INSTRUMENT (calibration or DB seeder; never a framework gap), CLIENT, DRAFT (Claude Design or B5), DONE.
 
 | Item | Verdict | Owner | Spec 48 home |
 |---|---|---|---|
@@ -125,10 +108,4 @@ CLIENT, DRAFT (Claude Design or B5), DONE.
 
 ## Persona MUST-FIX items carried into the design
 
-Construct census recipe and its four negative controls (sceptic); the confirm record per written value with tolerances
-per property type (sceptic); swallowed errors banned in intake, a throw becomes a gap row (sceptic); three routing
-adapters failing loudly (architect); prop variants: the default-prop render is the design (sceptic); fonts loaded before
-any confirm read (sceptic); frozen clock, seeded random and `localStorage` seeds (sceptic, architect); box-geometry check
-per paired element (sceptic); first acceptance evidence from an export untouched by B5 (sceptic); the true-gap proof
-standard G0-G7 and `gaps.json` with an instrument-debt list (realist); R-47-11 reworded for target creation, Site Info's
-first real run, skeleton block-choice fixes before Fill, a cap on framework-extension work (ship-PM).
+Construct census recipe and its four negative controls (sceptic); the confirm record per written value with tolerances per property type (sceptic); swallowed errors banned in intake, a throw becomes a gap row (sceptic); three routing adapters failing loudly (architect); prop variants: the default-prop render is the design (sceptic); fonts loaded before any confirm read (sceptic); frozen clock, seeded random and `localStorage` seeds (sceptic, architect); box-geometry check per paired element (sceptic); first acceptance evidence from an export untouched by B5 (sceptic); the true-gap proof standard G0-G7 and `gaps.json` with an instrument-debt list (realist); R-47-11 reworded for target creation, Site Info's first real run, skeleton block-choice fixes before Fill, a cap on framework-extension work (ship-PM).

@@ -121,11 +121,7 @@ Empirical effect: `equivalent_block_for('sgs/media', 'videoUrl')` now returns `'
 
 <!-- rotated 2026-07-05 by /handoff (D276 programme-complete rewrite) -->
 ---
-doc_type: state
-project: small-giants-wp
-project_id: 14
-last_updated: 2026-07-04-D275
-note: "LEAN snapshot (single active workstream as of 2026-06-17 — the cloning CSS-transfer rebuild; theme/Spec-30 work COMPLETE + archived). Full history → memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here — they drift. ≤24576 bytes."
+doc_type: state project: small-giants-wp project_id: 14 last_updated: 2026-07-04-D275 note: "LEAN snapshot (single active workstream as of 2026-06-17 — the cloning CSS-transfer rebuild; theme/Spec-30 work COMPLETE + archived). Full history → memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here — they drift. ≤24576 bytes."
 ---
 
 # small-giants-wp — State Snapshot (lean)
@@ -182,11 +178,7 @@ Cloning CSS-transfer foundation (Phase F) COMPLETE; modular-scaffold VERTICAL SL
 ## Archived 2026-07-17 (P4 — LEDGER collapse: state.md + handoff.md + next-session-prompt.md collapsed to LEDGER.md; full state.md history stack D282->D342 at collapse time, appended below the earlier 2026-06-06 archive)
 
 ---
-doc_type: state
-project: small-giants-wp
-project_id: 14
-last_updated: 2026-07-16-D341-D342
-note: "LEAN snapshot. Full history -> memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here - they drift. <=24576 bytes."
+doc_type: state project: small-giants-wp project_id: 14 last_updated: 2026-07-16-D341-D342 note: "LEAN snapshot. Full history -> memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here - they drift. <=24576 bytes."
 ---
 
 # small-giants-wp — State Snapshot (lean)

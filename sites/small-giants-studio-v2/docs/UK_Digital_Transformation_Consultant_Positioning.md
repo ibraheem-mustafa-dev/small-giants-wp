@@ -37,8 +37,7 @@ LinkedIn's 2025 algorithm has fundamentally shifted toward **knowledge-sharing a
 
 The headline is prime real estate—use all 220 characters with keywords front-loaded plus a clear value proposition.
 
-**Winning formula for consultants:**
-"I help [target audience] achieve [specific outcome] | [Credibility marker] | [Keywords]"
+**Winning formula for consultants:** "I help [target audience] achieve [specific outcome] | [Credibility marker] | [Keywords]"
 
 **Effective examples for Ibraheem's positioning:**
 - "Digital Transformation for UK SMEs & Charities | Enterprise Thinking at Startup Budgets | Marketing + Tech + Operations in One"
@@ -60,8 +59,7 @@ The first 200-300 characters are critical—this is the hook that determines whe
 5. **Personal touch (10-15% of content):** Interests that create connection points
 6. **Call-to-action:** Clear next step
 
-**Sample hook for Ibraheem:**
-"Most small businesses get priced out of proper digital transformation. The big consultancies charge enterprise rates, while freelancers only fix one thing at a time. I bridge that gap—bringing integrated marketing, operations, and tech solutions to UK SMEs and charities at budgets that actually work. If you've ever felt you need three different consultants, you probably just need one who does it properly."
+**Sample hook for Ibraheem:** "Most small businesses get priced out of proper digital transformation. The big consultancies charge enterprise rates, while freelancers only fix one thing at a time. I bridge that gap—bringing integrated marketing, operations, and tech solutions to UK SMEs and charities at budgets that actually work. If you've ever felt you need three different consultants, you probably just need one who does it properly."
 
 ### Featured section and skills strategy
 
@@ -668,8 +666,7 @@ The "Small Giants" name references "Small Giants: Companies That Choose to Be Gr
 - "Giants" could feel at odds with UK cultural preference for modesty
 - May need explanation to land properly
 
-**How to explain in profile/marketing:**
-"Small Giants Studio—because we believe small organisations can achieve giant impact with the right systems. We help UK SMEs and charities operate with the sophistication of enterprises, without the enterprise budget."
+**How to explain in profile/marketing:** "Small Giants Studio—because we believe small organisations can achieve giant impact with the right systems. We help UK SMEs and charities operate with the sophistication of enterprises, without the enterprise budget."
 
 Or more simply: "Helping small businesses become giants."
 
@@ -759,16 +756,13 @@ The competitor analysis reveals significant white space in the UK consultant mar
 
 ## Recommended positioning statement
 
-**For LinkedIn headline:**
-"Digital Transformation for UK SMEs & Charities | Enterprise Systems at Startup Budgets | Marketing + Tech + Operations | Founder, Small Giants Studio"
+**For LinkedIn headline:** "Digital Transformation for UK SMEs & Charities | Enterprise Systems at Startup Budgets | Marketing + Tech + Operations | Founder, Small Giants Studio"
 
-**For About section hook:**
-"Most small businesses can't afford the consultants who could actually help them. Enterprise firms charge enterprise rates. Freelancers fix one thing at a time. So SMEs and charities stay stuck—knowing they need better systems but unable to justify the cost.
+**For About section hook:** "Most small businesses can't afford the consultants who could actually help them. Enterprise firms charge enterprise rates. Freelancers fix one thing at a time. So SMEs and charities stay stuck—knowing they need better systems but unable to justify the cost.
 
 I bridge that gap. I bring integrated marketing, operations, and technology solutions to UK service businesses and charities at budgets that actually work. If you've ever felt you need three different consultants, you probably just need one who does it properly."
 
-**Core positioning message:**
-"Small Giants Studio helps UK SMEs, charities, and values-driven businesses transform their marketing, operations, and technology—with enterprise-grade thinking at SME-friendly prices. One consultant. Complete solution. No jargon. Real results."
+**Core positioning message:** "Small Giants Studio helps UK SMEs, charities, and values-driven businesses transform their marketing, operations, and technology—with enterprise-grade thinking at SME-friendly prices. One consultant. Complete solution. No jargon. Real results."
 
 ---
 

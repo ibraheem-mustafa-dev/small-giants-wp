@@ -1,11 +1,6 @@
 # Live verification: self-changing header message (Wave 3C U-15, M-07), 2026-09-26
 
-verdict: PASS
-intent_capture_passed: true
-source_commits: 16e20f873 (notice-banner messages, sgs/notice-message), 7046936cb (gate fixes)
-source_sha: not computed; see `reports/visual-diff/furniture-2026-09-26.md` (the SHA script hashes staged files only).
-design: `.claude/reports/2026-09-26-u15-notice-message-design.md`
-blocks: notice-banner, notice-message
+verdict: PASS intent_capture_passed: true source_commits: 16e20f873 (notice-banner messages, sgs/notice-message), 7046936cb (gate fixes) source_sha: not computed; see `reports/visual-diff/furniture-2026-09-26.md` (the SHA script hashes staged files only). design: `.claude/reports/2026-09-26-u15-notice-message-design.md` blocks: notice-banner, notice-message
 
 ## Environment and method
 - Site: sandybrown, fixture page 4072 `/qa-notice/` (tree `plugins/sgs-blocks/scripts/nav-qa/lane-c/qa-notice.json`), 1440 wide, one headed Chrome window.

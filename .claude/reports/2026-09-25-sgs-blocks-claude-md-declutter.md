@@ -14,11 +14,9 @@
 | `.claude/specs/02-SGS-BLOCKS.md` | 127,641 bytes | 125,934 bytes* |
 | `CLAUDE.md` (root) | 7,536 bytes | 7,646 bytes |
 
-\* Spec 02 shrank slightly net (a repointed sentence got shorter) despite the new HC2 paragraph
-added.
+\* Spec 02 shrank slightly net (a repointed sentence got shorter) despite the new HC2 paragraph added.
 
-Every block-touching session now loads 10.6 KB from the core file instead of 106.7 KB — the
-path-scoped rule files only load when a session actually touches the matching files.
+Every block-touching session now loads 10.6 KB from the core file instead of 106.7 KB — the path-scoped rule files only load when a session actually touches the matching files.
 
 ## Rule map — every old section, one row each
 
@@ -95,49 +93,15 @@ path-scoped rule files only load when a session actually touches the matching fi
 
 ## Scripts whose header docstrings were checked (none needed edits)
 
-`check-ungated-paint-rules.py`, `check-dead-controls.js`, `check-dead-pattern-attrs.py`,
-`check-hardcoded-render-defaults.js`, `check-dead-api-calls.py`,
-`check-empty-inspector-containers.js`, `check-wrapper-capability-preconditions.js`,
-`test_converter_conformance.py`, `scripts/surveys/survey-inspector-surface.js`,
-`placement-reach.py`. All already carry the fact CLAUDE.md was duplicating (bucket
-definitions, baseline policy, "do NOT baseline" instructions, disclosed limits) — verified by
-reading each header, not assumed.
+`check-ungated-paint-rules.py`, `check-dead-controls.js`, `check-dead-pattern-attrs.py`, `check-hardcoded-render-defaults.js`, `check-dead-api-calls.py`, `check-empty-inspector-containers.js`, `check-wrapper-capability-preconditions.js`, `test_converter_conformance.py`, `scripts/surveys/survey-inspector-surface.js`, `placement-reach.py`. All already carry the fact CLAUDE.md was duplicating (bucket definitions, baseline policy, "do NOT baseline" instructions, disclosed limits) — verified by reading each header, not assumed.
 
 ## Nothing could not be placed
 
-Every rule found a single home. The only judgement call: the "Gates born from bugs" and
-"Conformance gates" narrative sections were deleted outright rather than partially kept, because
-each gate script's own header was independently confirmed to carry the operative fact (what it
-catches, how to run it standalone, baseline policy) — re-reading it in CLAUDE.md would have been
-the third copy.
+Every rule found a single home. The only judgement call: the "Gates born from bugs" and "Conformance gates" narrative sections were deleted outright rather than partially kept, because each gate script's own header was independently confirmed to carry the operative fact (what it catches, how to run it standalone, baseline policy) — re-reading it in CLAUDE.md would have been the third copy.
 
 ## Verification
 
 - `wc -c` on every touched file — table above.
-- `python .claude/hooks/handoff-preflight.py --check` — 4 of 4 checks passed (ledger-size,
-  no-tombstones, no-dangling-links, memory-size).
-- `python plugins/sgs-blocks/scripts/check-withdrawn-figures.py --check` — 0 files carry a
-  withdrawn figure.
-- Grepped the whole repo (excluding `node_modules`, `.git`, `pipeline-state`,
-  `.claude/plans/archive`, `build/`, archived reports/decisions) for every removed section title
-  ("Colour EMISSION", "precedent-function registry", "Hover Controls Spec", "Survey detectors",
-  "S5 (STORED", "Editor-canvas mirrors", "Gates born", "Ungated paint detector", "Touch-safe
-  HOVER") — every remaining hit now points at the new `.claude/rules/*.md` file, not the old
-  106 KB CLAUDE.md. Files repointed: `.claude/specs/02-SGS-BLOCKS.md`,
-  `plugins/sgs-blocks/includes/nav-menu-item-border-featured-css.php`,
-  `plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py`,
-  `plugins/sgs-blocks/scripts/colour-codemod/classify-end-shape.js`,
-  `plugins/sgs-blocks/scripts/colour-codemod/fix.js`,
-  `plugins/sgs-blocks/scripts/generate-helper-catalogue.py`,
-  `plugins/sgs-blocks/scripts/migrate-tier-object.py`,
-  `plugins/sgs-blocks/scripts/migrations/2026-09-05-helper-function-catalogue.py`,
-  `plugins/sgs-blocks/src/blocks/audio/render.php`,
-  `plugins/sgs-blocks/src/blocks/filter-search/render.php`,
-  `plugins/sgs-blocks/src/blocks/info-box/render.php`,
-  `plugins/sgs-blocks/src/blocks/mega-aside/render.php`,
-  `plugins/sgs-blocks/src/blocks/modal/render.php`,
-  `plugins/sgs-blocks/src/blocks/process-steps/render.php`,
-  `plugins/sgs-blocks/src/blocks/product-search/render.php`,
-  `plugins/sgs-blocks/src/blocks/whatsapp-cta/edit.js`,
-  `plugins/sgs-blocks/src/blocks/whatsapp-cta/preview-style.js`. Compiled `build/blocks/*`
-  mirrors were left untouched — gitignored, regenerated on next build.
+- `python .claude/hooks/handoff-preflight.py --check` — 4 of 4 checks passed (ledger-size, no-tombstones, no-dangling-links, memory-size).
+- `python plugins/sgs-blocks/scripts/check-withdrawn-figures.py --check` — 0 files carry a withdrawn figure.
+- Grepped the whole repo (excluding `node_modules`, `.git`, `pipeline-state`, `.claude/plans/archive`, `build/`, archived reports/decisions) for every removed section title ("Colour EMISSION", "precedent-function registry", "Hover Controls Spec", "Survey detectors", "S5 (STORED", "Editor-canvas mirrors", "Gates born", "Ungated paint detector", "Touch-safe HOVER") — every remaining hit now points at the new `.claude/rules/*.md` file, not the old 106 KB CLAUDE.md. Files repointed: `.claude/specs/02-SGS-BLOCKS.md`, `plugins/sgs-blocks/includes/nav-menu-item-border-featured-css.php`, `plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py`, `plugins/sgs-blocks/scripts/colour-codemod/classify-end-shape.js`, `plugins/sgs-blocks/scripts/colour-codemod/fix.js`, `plugins/sgs-blocks/scripts/generate-helper-catalogue.py`, `plugins/sgs-blocks/scripts/migrate-tier-object.py`, `plugins/sgs-blocks/scripts/migrations/2026-09-05-helper-function-catalogue.py`, `plugins/sgs-blocks/src/blocks/audio/render.php`, `plugins/sgs-blocks/src/blocks/filter-search/render.php`, `plugins/sgs-blocks/src/blocks/info-box/render.php`, `plugins/sgs-blocks/src/blocks/mega-aside/render.php`, `plugins/sgs-blocks/src/blocks/modal/render.php`, `plugins/sgs-blocks/src/blocks/process-steps/render.php`, `plugins/sgs-blocks/src/blocks/product-search/render.php`, `plugins/sgs-blocks/src/blocks/whatsapp-cta/edit.js`, `plugins/sgs-blocks/src/blocks/whatsapp-cta/preview-style.js`. Compiled `build/blocks/*` mirrors were left untouched — gitignored, regenerated on next build.

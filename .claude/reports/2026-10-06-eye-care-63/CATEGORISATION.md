@@ -1,11 +1,8 @@
 # The 63 rows the walker cannot see — categorised
 
-**2026-10-06; the open rows closed 2026-10-07.** Live at **`da925c40c`** (`~/.sgs-deploy-marker-eye-care-test.json`); each row's proof is in its register Fix cell.
-Live `https://darkcyan-grouse-898606.hostingersite.com` · draft `https://mintcream-lyrebird-224487.hostingersite.com/`.
-Source of truth: `.claude/plans/2026-10-02-eye-care-fix-register.md`. Partition: `worksheet.md`.
+**2026-10-06; the open rows closed 2026-10-07.** Live at **`da925c40c`** (`~/.sgs-deploy-marker-eye-care-test.json`); each row's proof is in its register Fix cell. Live `https://darkcyan-grouse-898606.hostingersite.com` · draft `https://mintcream-lyrebird-224487.hostingersite.com/`. Source of truth: `.claude/plans/2026-10-02-eye-care-fix-register.md`. Partition: `worksheet.md`.
 
-**Classification needed no deploy**: every commit the register's built rows cite was already an ancestor of the
-then-live `578a8830b`. The **fixes** this session then made shipped in `4aa477507`, `110b53738` and `0cc773b19`.
+**Classification needed no deploy**: every commit the register's built rows cite was already an ancestor of the then-live `578a8830b`. The **fixes** this session then made shipped in `4aa477507`, `110b53738` and `0cc773b19`.
 
 ## Headline
 
@@ -41,9 +38,7 @@ Each verified against the running site tonight, not against its commit.
 
 ## 2. The open rows — closed 2026-10-07
 
-Every row below was built, deployed and measured live on eye-care-test (`7cb60d4f4`; row 14 at `1f6cdb4dc`); the
-register's Fix cell carries each one's proof. Framework commits `111bcd98b`, `db97bed10`, `235d54de0`,
-`7d1173187`, `7cb60d4f4`, `077f7dbec`; trees `7507ce0ae`, `473b42694`.
+Every row below was built, deployed and measured live on eye-care-test (`7cb60d4f4`; row 14 at `1f6cdb4dc`); the register's Fix cell carries each one's proof. Framework commits `111bcd98b`, `db97bed10`, `235d54de0`, `7d1173187`, `7cb60d4f4`, `077f7dbec`; trees `7507ce0ae`, `473b42694`.
 
 | Ref | Closed by |
 |---|---|
@@ -59,32 +54,21 @@ register's Fix cell carries each one's proof. Framework commits `111bcd98b`, `db
 | **N2A, N33A** | measured as never applied on Eye Care, then fixed in the trees |
 | **N8** | not reproduced (wordmark stayed on 1 line while the bag opened) |
 
-Three defects surfaced while verifying and are fixed: every frame's add-to-bag was refused (two attributes
-labelled "Size"; `class-cart-proxy.php`), a set `sgs/media` size was ignored on every WooCommerce page
-(`media-atoms/box-shape.css`), and a drawer with no menu block never loaded its stagger CSS (`077f7dbec`,
-verified live: the drawer's links now start at 0 / 52 / 90 / 140ms).
+Three defects surfaced while verifying and are fixed: every frame's add-to-bag was refused (two attributes labelled "Size"; `class-cart-proxy.php`), a set `sgs/media` size was ignored on every WooCommerce page (`media-atoms/box-shape.css`), and a drawer with no menu block never loaded its stagger CSS (`077f7dbec`, verified live: the drawer's links now start at 0 / 52 / 90 / 140ms).
 
 ## 3. Content — written, ours to own
 
-**Bean's ruling: the content is ours to write, not a client dependency.** Fatima reviews it when the site is
-ready, and she is not asked to draft anything while the build is in progress. So these are no longer "needs
-content from the client":
+**Bean's ruling: the content is ours to write, not a client dependency.** Fatima reviews it when the site is ready, and she is not asked to draft anything while the build is in progress. So these are no longer "needs content from the client":
 
-- **45** `/privacy` and `/terms`: WRITTEN, `sites/eye-care-ward-end/content/{privacy,terms}.md`. UK GDPR, the
-  eye test and prescription treated as special-category health data, made-to-order lenses against the 14-day
-  cancellation right. Every value is a UK-law or trade default; no placeholders remain.
+- **45** `/privacy` and `/terms`: WRITTEN, `sites/eye-care-ward-end/content/{privacy,terms}.md`. UK GDPR, the eye test and prescription treated as special-category health data, made-to-order lenses against the 14-day cancellation right. Every value is a UK-law or trade default; no placeholders remain.
 - **151** delivery wording: WRITTEN, `content/shipping.md`, for the three methods the shop already runs.
-- **161** brand intros: WRITTEN, `content/brand-intros.md`. 40 intros, all distinct openings. **All 40 stay** —
-  the site carries test products built for design and development, so there is no real catalogue to trim
-  against yet.
+- **161** brand intros: WRITTEN, `content/brand-intros.md`. 40 intros, all distinct openings. **All 40 stay** — the site carries test products built for design and development, so there is no real catalogue to trim against yet.
 - **159** is clinic photography, which arrives with the real build rather than being drafted.
 
 ## 4. Accepted divergence / beyond the draft
 
-- **37, "address not a link"** — the **draft has no maps link either** (zero maps/directions links). This is an
-  improvement the register chose, not a divergence from the draft. Reclassify before it is counted as a gap.
-- **N16b, "best sellers is hand-picked"** — the test site has no sales, so a live best-seller collection would
-  order arbitrarily. Not settleable until real orders exist.
+- **37, "address not a link"** — the **draft has no maps link either** (zero maps/directions links). This is an improvement the register chose, not a divergence from the draft. Reclassify before it is counted as a gap.
+- **N16b, "best sellers is hand-picked"** — the test site has no sales, so a live best-seller collection would order arbitrarily. Not settleable until real orders exist.
 
 ## 5. The thing nobody was looking for
 
@@ -92,90 +76,46 @@ Two separate defects. The first is a stated design intent that is not met; the s
 
 ### (a) The product card is not a stretched link
 
-Grid-sampled at 81 points per card with `document.elementFromPoint` (real hit-testing, not synthetic clicks),
-each card scrolled into view first:
+Grid-sampled at 81 points per card with `document.elementFromPoint` (real hit-testing, not synthetic clicks), each card scrolled into view first:
 
 | Card | Clickable surface |
 |---|---|
 | with an image | **73-79%** -> **99%** |
 | without an image | **2-5%** -> **99%** |
 
-Every card carries `a.product-card__title-link` around the title text, covering **1-2%** of the card. Cards
-with an image add `a.product-card__img-link` at **73%**. Nothing stretches a link across the card:
-`sgs-block-link-overlay` appears **zero** times on home, shop and product.
+Every card carries `a.product-card__title-link` around the title text, covering **1-2%** of the card. Cards with an image add `a.product-card__img-link` at **73%**. Nothing stretches a link across the card: `sgs-block-link-overlay` appears **zero** times on home, shop and product.
 
 **So the card WAS clickable only on the product name and the image.**
 
-> **FIXED AND VERIFIED LIVE, 2026-10-06 (`3db77f090`, deployed in `6f1963c28`).** The mechanism was never broken: the card
-> already supported a whole-surface link, but it hung on an operator toggle (`sgsBlockLinkAuto`) that was simply
-> off. Bean's ruling is that it must not be switchable off at all, so a new `supports.sgs.blockLinkAlways` flag
-> replaces `blockLinkAutoUrl` on this block: `render.php` calls `sgs_stretched_link_apply()` directly instead of
-> `sgs_stretched_link_handover()`, which gates on that toggle, and the Block Link panel renders no toggle, so no
-> dead control is left behind. The title's hover underline is also removed - the whole card is the link, so the
-> cursor already carries the affordance.
+> **FIXED AND VERIFIED LIVE, 2026-10-06 (`3db77f090`, deployed in `6f1963c28`).** The mechanism was never broken: the card already supported a whole-surface link, but it hung on an operator toggle (`sgsBlockLinkAuto`) that was simply off. Bean's ruling is that it must not be switchable off at all, so a new `supports.sgs.blockLinkAlways` flag replaces `blockLinkAutoUrl` on this block: `render.php` calls `sgs_stretched_link_apply()` directly instead of `sgs_stretched_link_handover()`, which gates on that toggle, and the Block Link panel renders no toggle, so no dead control is left behind. The title's hover underline is also removed - the whole card is the link, so the cursor already carries the affordance.
 >
-> **The URL field deliberately stays** (Bean caught this): a TYPED card resolves no product and so no permalink,
-> `apply()` is handed `''` and no-ops, and that field is its only way to have a destination. On a live card
-> `apply()` overwrites whatever is typed, so it is inert there rather than conflicting.
+> **The URL field deliberately stays** (Bean caught this): a TYPED card resolves no product and so no permalink, `apply()` is handed `''` and no-ops, and that field is its only way to have a destination. On a live card `apply()` overwrites whatever is typed, so it is inert there rather than conflicting.
 >
-> **Verified live on the same 81-point grid, so before and after are directly comparable.** Every card on
-> `/shop/` and `/` is now **99% clickable**, imageless ones included, and 16 overlays on the shop plus 8 on home
-> each resolve to their OWN product slug, so per-card URL resolution is correct rather than ambient loop state.
-> The residual 1% is **one point landing on `button.sgs-product-card__wishlist`** - correct, since the wishlist
-> must stay clickable in its own right rather than be swallowed by the overlay.
+> **Verified live on the same 81-point grid, so before and after are directly comparable.** Every card on `/shop/` and `/` is now **99% clickable**, imageless ones included, and 16 overlays on the shop plus 8 on home each resolve to their OWN product slug, so per-card URL resolution is correct rather than ambient loop state. The residual 1% is **one point landing on `button.sgs-product-card__wishlist`** - correct, since the wishlist must stay clickable in its own right rather than be swallowed by the overlay.
 >
-> **The keyboard story holds.** The overlay is inert (`tabindex="-1"`, `aria-hidden="true"`) and supplies hit
-> area only; the title keeps the single named route, with **exactly one** non-inert anchor to the product. A real
-> `Tab` walk inside a card stops on the wishlist button, the title link ("Aviator Classic"), then four swatch
-> buttons - so no nested control was lost and no duplicate tab stop was created.
+> **The keyboard story holds.** The overlay is inert (`tabindex="-1"`, `aria-hidden="true"`) and supplies hit area only; the title keeps the single named route, with **exactly one** non-inert anchor to the product. A real `Tab` walk inside a card stops on the wishlist button, the title link ("Aviator Classic"), then four swatch buttons - so no nested control was lost and no duplicate tab stop was created.
 >
-> **The hover underline is gone**, read under a real mouse hover: `text-decoration-line` is `none` resting and
-> `none` hovered.
+> **The hover underline is gone**, read under a real mouse hover: `text-decoration-line` is `none` resting and `none` hovered.
 >
-> Proven by marker AND checksum, never liveness: marker `6f1963c28` with `3db77f090` an ancestor, and the
-> deployed `product-card/style.css` md5 (LF-normalised) matches local at `3d4218db0a4ab77eade44e428d7c5aed`,
-> with `title-link:hover` absent and `blockLinkAutoUrl` gone from the deployed `block.json`. **Expected on re-measure:
-> near-100% clickable on every card, including the 12 with `photo-to-come.png`, and no underline on hover.**
-> Bean confirms the card is *supposed* to be fully clickable. S10's commits were live, but on the product card
-> the block's own visible link (`e62f45952`: "a block's OWN visible link owns the surface") was the 1-2% title
-> anchor, which is why the card read as dead almost everywhere; `3db77f090` makes the whole card the link.
+> Proven by marker AND checksum, never liveness: marker `6f1963c28` with `3db77f090` an ancestor, and the deployed `product-card/style.css` md5 (LF-normalised) matches local at `3d4218db0a4ab77eade44e428d7c5aed`, with `title-link:hover` absent and `blockLinkAutoUrl` gone from the deployed `block.json`. **Expected on re-measure: near-100% clickable on every card, including the 12 with `photo-to-come.png`, and no underline on hover.** Bean confirms the card is *supposed* to be fully clickable. S10's commits were live, but on the product card the block's own visible link (`e62f45952`: "a block's OWN visible link owns the surface") was the 1-2% title anchor, which is why the card read as dead almost everywhere; `3db77f090` makes the whole card the link.
 
-> **Correction.** An earlier draft of this report said the imageless cards had "no link at all". That was a
-> measurement error: the hit-test landed on the title row's padding, and the title link covers only 1-2% of the
-> card. The link exists - it is just very small. The corrected figures are the table above.
+> **Correction.** An earlier draft of this report said the imageless cards had "no link at all". That was a measurement error: the hit-test landed on the title row's padding, and the title link covers only 1-2% of the card. The link exists - it is just very small. The corrected figures are the table above.
 
 ### (b) The imageless cards are a content state, NOT a defect — hypothesis withdrawn
 
-**12 of 16 shop cards render no image, and that is correct.** Only **4 products have a real photograph**
-(Round Metal, Original Wayfarer, Holbrook, Oversized Cat-Eye). The other 12 carry `photo-to-come.png`, a
-deliberate stand-in awaiting the client's photography, and 1 (the QA test item) has no image at all.
+**12 of 16 shop cards render no image, and that is correct.** Only **4 products have a real photograph** (Round Metal, Original Wayfarer, Holbrook, Oversized Cat-Eye). The other 12 carry `photo-to-come.png`, a deliberate stand-in awaiting the client's photography, and 1 (the QA test item) has no image at all.
 
-> **Withdrawn.** An earlier version of this report proposed that a never-purged manifest transient
-> (`sgs_manifest_v8_<id>_<fingerprint>` written vs `sgs_manifest_<id>` deleted) was starving the cards of
-> images, and offered the fact that `gucci-oversized-cat-eye` rendered correctly as corroboration. That was a
-> coincidence: the Gucci product is simply one of the four with a real photo. The cache-key mismatch is still a
-> real bug, untracked anywhere (`class-product-manifest.php` writes `sgs_manifest_v8_<id>_<fingerprint>`; the purge
-> deletes `sgs_manifest_<id>`, so it never matches; an earlier draft wrongly cited row 59) — but it is **not** the cause of anything observed here, and no fix
-> should be built on it. Caught by Bean, who knew the photo inventory.
+> **Withdrawn.** An earlier version of this report proposed that a never-purged manifest transient (`sgs_manifest_v8_<id>_<fingerprint>` written vs `sgs_manifest_<id>` deleted) was starving the cards of images, and offered the fact that `gucci-oversized-cat-eye` rendered correctly as corroboration. That was a coincidence: the Gucci product is simply one of the four with a real photo. The cache-key mismatch is still a real bug, untracked anywhere (`class-product-manifest.php` writes `sgs_manifest_v8_<id>_<fingerprint>`; the purge deletes `sgs_manifest_<id>`, so it never matches; an earlier draft wrongly cited row 59) — but it is **not** the cause of anything observed here, and no fix should be built on it. Caught by Bean, who knew the photo inventory.
 >
-> The measuring error behind it: the check for a placeholder image tested only for the string `placeholder`,
-> so a client stand-in named `photo-to-come.png` counted as a real photo and 16 of 17 products looked
-> photographed.
+> The measuring error behind it: the check for a placeholder image tested only for the string `placeholder`, so a client stand-in named `photo-to-come.png` counted as a real photo and 16 of 17 products looked photographed.
 
-What survives is (a), and it absorbs this entirely: a card with no real photo has no image link, so it falls
-from 73-79% clickable to **2-5%**. Making the whole card the link fixes the imageless cards too, and does not
-wait on the photography.
+What survives is (a), and it absorbs this entirely: a card with no real photo has no image link, so it falls from 73-79% clickable to **2-5%**. Making the whole card the link fixes the imageless cards too, and does not wait on the photography.
 
 ## 6. The 14 CR rows — answered by the route owner
 
-CR1-CR12, CR14, CR17, CR18 are route and calibration findings. **Their table has no Fix column**
-(`Ref/Finding/Evidence/Status/Sweep`), so none can carry Fix-cell proof. Session `small-giants-wp-c8`, the route
-owner, answered on 2026-10-06:
+CR1-CR12, CR14, CR17, CR18 are route and calibration findings. **Their table has no Fix column** (`Ref/Finding/Evidence/Status/Sweep`), so none can carry Fix-cell proof. Session `small-giants-wp-c8`, the route owner, answered on 2026-10-06:
 
-**None of the 14 were closed by the route cleanup.** Its 16 tasks are H1, H2, P1, P2a, P2b1-3, P3a-d, P4 and
-R1-R3, and no CR reference appears anywhere in `plans/archive/2026-10-06-spec47-route-cleanup.md`. State that precisely:
-it is strong evidence the two sets are disjoint, **not** a line-by-line proof that no CR row was incidentally
-fixed by one of the 16. So no CR status is stale on that account, and none is marked closed here.
+**None of the 14 were closed by the route cleanup.** Its 16 tasks are H1, H2, P1, P2a, P2b1-3, P3a-d, P4 and R1-R3, and no CR reference appears anywhere in `plans/archive/2026-10-06-spec47-route-cleanup.md`. State that precisely: it is strong evidence the two sets are disjoint, **not** a line-by-line proof that no CR row was incidentally fixed by one of the 16. So no CR status is stale on that account, and none is marked closed here.
 
 | Group | Rows | What they need |
 |---|---|---|
@@ -185,29 +125,19 @@ fixed by one of the 16. So no CR status is stale on that account, and none is ma
 | **CR6** — owned by the route session | **CR6** | a MIGRATION: 178 call sites / 56 files |
 | **CR12** — PARKED by Bean | **CR12** | no owner needed |
 
-**CR6** was genuinely orphaned: `LEDGER.md` named "Spec 47 §5 Residual" as its owner and that section never
-mentioned it, so the one CR row marked proven-and-unbuilt had nobody. Now recorded there (`c0d45ec20`) with its
-blocker: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so the helper change and `seedSides`
-**must land together** or the route re-introduces what it just removed. Not scheduled. c8 offered to take it as
-one focused piece.
+**CR6** was genuinely orphaned: `LEDGER.md` named "Spec 47 §5 Residual" as its owner and that section never mentioned it, so the one CR row marked proven-and-unbuilt had nobody. Now recorded there (`c0d45ec20`) with its blocker: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so the helper change and `seedSides` **must land together** or the route re-introduces what it just removed. Not scheduled. c8 offered to take it as one focused piece.
 
-**CR12 is PARKED (Bean, 2026-10-07).** Dark mode IS implemented in the theme (`dark-mode.css`,
-`dark-mode.js`), so it is a toggle that renders nothing for current clients, not an unbuilt feature.
-Parked rather than orphaned, and not to be picked up without Bean.
+**CR12 is PARKED (Bean, 2026-10-07).** Dark mode IS implemented in the theme (`dark-mode.css`, `dark-mode.js`), so it is a toggle that renders nothing for current clients, not an unbuilt feature. Parked rather than orphaned, and not to be picked up without Bean.
 
-⚠️ **Any re-calibration must run AFTER the framework-DB reseed now in flight**, or it measures against a DB
-that is about to change.
+⚠️ **Any re-calibration must run AFTER the framework-DB reseed now in flight**, or it measures against a DB that is about to change.
 
 ## 7. Aliases, not independent work
 
-A third of the "to assess" rows only point at a parent. Six point at a parent that is **already built and live**:
-N2A, N26 → S10 · N10, N33A → S9 · N6 → S12 · 61 → 59.
-The rest inherit their parent's open state: 3 → 17 · N9, N34 → S8 · N27, N31 → S7 · N8 → N2B.
+A third of the "to assess" rows only point at a parent. Six point at a parent that is **already built and live**: N2A, N26 → S10 · N10, N33A → S9 · N6 → S12 · 61 → 59. The rest inherit their parent's open state: 3 → 17 · N9, N34 → S8 · N27, N31 → S7 · N8 → N2B.
 
 ## 8. The 15 unmeasured rows — classified from source
 
-Root-caused 2026-10-06 under `/systematic-debugging`, from code and the client's built trees only (the shared
-host was held by two peers). Each carries the one live measurement that would confirm it.
+Root-caused 2026-10-06 under `/systematic-debugging`, from code and the client's built trees only (the shared host was held by two peers). Each carries the one live measurement that would confirm it.
 
 **Three verified directly by me**, because they are the cheapest wins in the whole list:
 
@@ -239,12 +169,10 @@ host was held by two peers). Each carries the one live measurement that would co
 - **Tree-only batch (58, N33B, 9, + confirming 152)** — about 5 minutes on one build
 - **Entrance motion (14, 73, 17)** — all want a draft-shaped entrance; fix against one shared keyframe and timing convention (rise 18px, 0.5-0.9s, `cubic-bezier(.2,.7,.2,1)`) rather than re-typing it three times
 
-**Not settled from source, stated rather than guessed:** 152 (a live-DB copy of the part could carry locks),
-N36S (whether real lens-height values exist), 19 (whether the bar transitions at all, a different cause from the duration).
+**Not settled from source, stated rather than guessed:** 152 (a live-DB copy of the part could carry locks), N36S (whether real lens-height values exist), 19 (whether the bar transitions at all, a different cause from the duration).
 
 ## What is left
 
-- **N36S** sizing tab: blocked. The 4th row needs a lens-height value no product carries, and the diagram is
-  the new D1 block. The note under the table is live.
+- **N36S** sizing tab: blocked. The 4th row needs a lens-height value no product carries, and the diagram is the new D1 block. The note under the table is live.
 
 **Do not rebuild on:** the manifest-cache theory in §5(b). It was withdrawn.

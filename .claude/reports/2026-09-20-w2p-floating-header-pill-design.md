@@ -9,10 +9,7 @@ spec: 37-HEADER-FOOTER-BUILDER
 
 # W2-p — Floating header "pill" mode: design gate
 
-**Nothing here is built. This document exists to be approved or amended before any code is
-written** (project rule 7: a shared-mechanism change needs a pre-build design gate). It touches
-`sgs/site-header`'s shared sticky/transparent writer and the site-wide header-offset token, which
-is exactly the blast radius rule 7 names.
+**Nothing here is built. This document exists to be approved or amended before any code is written** (project rule 7: a shared-mechanism change needs a pre-build design gate). It touches `sgs/site-header`'s shared sticky/transparent writer and the site-wide header-offset token, which is exactly the blast radius rule 7 names.
 
 ---
 
@@ -20,46 +17,27 @@ is exactly the blast radius rule 7 names.
 
 ### What a "floating pill" is
 
-Today the header sits flush against the top and both side edges of the browser window, like a shelf
-screwed to the wall. A **floating pill** detaches it: the bar sits a small gap down from the top,
-a small gap in from each side, with rounded ends and a soft shadow, so it reads as a card hovering
-over the page rather than a band welded to it. It is the look you see on a lot of 2026 product
-sites and design-system demos.
+Today the header sits flush against the top and both side edges of the browser window, like a shelf screwed to the wall. A **floating pill** detaches it: the bar sits a small gap down from the top, a small gap in from each side, with rounded ends and a soft shadow, so it reads as a card hovering over the page rather than a band welded to it. It is the look you see on a lot of 2026 product sites and design-system demos.
 
 ### Why it is not just "add rounded corners"
 
-Three things in the framework assume the header's top edge is at zero and its bottom edge is
-therefore the same number as its height:
+Three things in the framework assume the header's top edge is at zero and its bottom edge is therefore the same number as its height:
 
-1. **Anchor links and keyboard focus.** When you click an in-page link, or tab to something near
-   the top of the page, the browser needs to know how far down the page the header's *bottom* is,
-   so it doesn't park the target underneath it. The framework publishes a number for this
-   (`--sgs-header-height` — a CSS custom property, which is just a named value CSS can reuse). That
-   number is the header's **height**. Once the header floats 16px down, its bottom edge is
-   16px lower than its height, and everything reading that number is 16px short.
-2. **Hide-on-scroll.** The "header slides away as you scroll down" behaviour slides it by exactly
-   its own height. A floating header slid by its own height still leaves its top gap visible, so a
-   16px sliver of bar stays stuck on screen.
-3. **Dropdowns and the mega panel.** A dropdown hanging off a narrow pill has to decide whether it
-   is as wide as the pill or as wide as the page.
+1. **Anchor links and keyboard focus.** When you click an in-page link, or tab to something near the top of the page, the browser needs to know how far down the page the header's *bottom* is, so it doesn't park the target underneath it. The framework publishes a number for this (`--sgs-header-height` — a CSS custom property, which is just a named value CSS can reuse). That number is the header's **height**. Once the header floats 16px down, its bottom edge is 16px lower than its height, and everything reading that number is 16px short.
+2. **Hide-on-scroll.** The "header slides away as you scroll down" behaviour slides it by exactly its own height. A floating header slid by its own height still leaves its top gap visible, so a 16px sliver of bar stays stuck on screen.
+3. **Dropdowns and the mega panel.** A dropdown hanging off a narrow pill has to decide whether it is as wide as the pill or as wide as the page.
 
-None of these is hard. All three are invisible until someone looks, which is why they belong in a
-design gate rather than in the middle of a build.
+None of these is hard. All three are invisible until someone looks, which is why they belong in a design gate rather than in the middle of a build.
 
 ### What is being asked for
 
-The ruling already signed on 2026-07-30 (recorded in `.claude/decisions.md::D418`, the "Q4 mobile
-pill" bullet) says: **the pill persists at mobile** — it does not turn back into a full-width bar
-on a phone. Width is `min(cap, 100% − 2×inset)` plus safe-area insets (the space iPhones reserve
-for the home indicator and the notch), with **one opt-in toggle** to collapse to full width below a
-breakpoint — deliberately *not* three per-device controls.
+The ruling already signed on 2026-07-30 (recorded in `.claude/decisions.md::D418`, the "Q4 mobile pill" bullet) says: **the pill persists at mobile** — it does not turn back into a full-width bar on a phone. Width is `min(cap, 100% − 2×inset)` plus safe-area insets (the space iPhones reserve for the home indicator and the notch), with **one opt-in toggle** to collapse to full width below a breakpoint — deliberately *not* three per-device controls.
 
 ---
 
 ## 2. Is the header-offset primitive actually complete? (the gate question)
 
-The plan row says *"Depends on the header-offset primitive (`--sgs-header-height` is published;
-confirm it is complete before starting)."* I confirmed it from code rather than from the plan.
+The plan row says *"Depends on the header-offset primitive (`--sgs-header-height` is published; confirm it is complete before starting)."* I confirmed it from code rather than from the plan.
 
 ### 2.1 Who publishes it
 
@@ -71,15 +49,8 @@ confirm it is complete before starting)."* I confirmed it from code rather than 
 
 Two properties of this that matter downstream:
 
-- The published value is **inline on `:root`/`body`**, so it out-ranks the theme's static 80px
-  whenever the script has run. The explicit `0px` write is deliberate and documented — the CSS
-  fallback `var( --sgs-header-height, 0px )` only fires while the property is *undefined*, and the
-  theme defining it at `:root` means that fallback is unreachable in practice (this is already
-  written down in `.claude/specs/37-HEADER-FOOTER-BUILDER.md` §scroll-padding-publisher).
-- Tier handling is **measured, not declared.** `render.php` emits `position` per device tier
-  through `sgs_merge_tri_state_declarations()`, and the publisher reads whatever the browser
-  actually computed at the current width. So "sticky on desktop only" already publishes `0px` on a
-  phone with no extra code. **Tier coverage is complete.**
+- The published value is **inline on `:root`/`body`**, so it out-ranks the theme's static 80px whenever the script has run. The explicit `0px` write is deliberate and documented — the CSS fallback `var( --sgs-header-height, 0px )` only fires while the property is *undefined*, and the theme defining it at `:root` means that fallback is unreachable in practice (this is already written down in `.claude/specs/37-HEADER-FOOTER-BUILDER.md` §scroll-padding-publisher).
+- Tier handling is **measured, not declared.** `render.php` emits `position` per device tier through `sgs_merge_tri_state_declarations()`, and the publisher reads whatever the browser actually computed at the current width. So "sticky on desktop only" already publishes `0px` on a phone with no extra code. **Tier coverage is complete.**
 
 ### 2.2 Who consumes it
 
@@ -97,65 +68,31 @@ Two properties of this that matter downstream:
 
 **Two places measure the edge themselves instead of reading it, and both are right:**
 
-- `plugins/sgs-blocks/src/shared/nav-interactivity/store.js` measures the header's real
-  `getBoundingClientRect().bottom` and writes `--sgs-drawer-header-offset`, with a comment saying
-  in as many words that the token is the theme's static value and not the real bottom edge.
-- `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js` measures the panel's own
-  `rect.top` for its vertical bound, with a comment explicitly refusing the token ("that is a
-  scroll-padding token").
+- `plugins/sgs-blocks/src/shared/nav-interactivity/store.js` measures the header's real `getBoundingClientRect().bottom` and writes `--sgs-drawer-header-offset`, with a comment saying in as many words that the token is the theme's static value and not the real bottom edge.
+- `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js` measures the panel's own `rect.top` for its vertical bound, with a comment explicitly refusing the token ("that is a scroll-padding token").
 
-Those two measured paths are **already pill-correct by construction** — they measure, so an inset
-changes nothing for them. The same two surfaces also carry a token-reading fallback (the last two
-rows of the consumer table). Those fallbacks read `--sgs-header-height` only until the measured
-value exists:
+Those two measured paths are **already pill-correct by construction** — they measure, so an inset changes nothing for them. The same two surfaces also carry a token-reading fallback (the last two rows of the consumer table). Those fallbacks read `--sgs-header-height` only until the measured value exists:
 
-- **No-JS, or before the first open:** `--sgs-header-height` resolves to the theme's static `80px`
-  (`utilities.css`), or to whatever `view.js::publishHeight` has published once it has run. A
-  floating pill's real bottom edge is its inset plus its height, which the static `80px` does not
-  know about. The mega panel's height floor and the header-anchored drawer's `top`/`max-height`
-  therefore sit off by `pill bottom edge − 80px` until the measurement replaces them.
-- **After §3.2:** where the publisher has run, the token is the pill's measured bottom edge, so
-  those fallbacks read the correct value. Float implies sticky (§3.4), so the `isHeaderPinned` gate
-  publishes the measurement rather than `0px`.
+- **No-JS, or before the first open:** `--sgs-header-height` resolves to the theme's static `80px` (`utilities.css`), or to whatever `view.js::publishHeight` has published once it has run. A floating pill's real bottom edge is its inset plus its height, which the static `80px` does not know about. The mega panel's height floor and the header-anchored drawer's `top`/`max-height` therefore sit off by `pill bottom edge − 80px` until the measurement replaces them.
+- **After §3.2:** where the publisher has run, the token is the pill's measured bottom edge, so those fallbacks read the correct value. Float implies sticky (§3.4), so the `isHeaderPinned` gate publishes the measurement rather than `0px`.
 
-So the measured paths need no work, and the two fallbacks need no code change of their own beyond
-§3.2 but do need the pre-JS check in test row P11. If P11 shows the static `80px` clips or gaps
-under a floating header, the theme default (or the emitted per-header value) has to include the
-inset.
+So the measured paths need no work, and the two fallbacks need no code change of their own beyond §3.2 but do need the pre-JS check in test row P11. If P11 shows the static `80px` clips or gaps under a floating header, the theme default (or the emitted per-header value) has to include the inset.
 
 ### 2.3 The verdict — and the one thing that is NOT complete
 
-`.claude/decisions.md::D418` records: *"B1 validated: all 4 consumers of `--sgs-header-height`
-audited, none compensates for height-not-bottom-edge semantic."* The current consumer set is 7
-files (§2.2 gives the exact grep command and its count); the four D418 names are `utilities.css`,
-`woocommerce.css`, `fx-motion-path.css` and `motion-utils.js`, and the other three are
-`header-behaviours.css`, `nav-menu-submenu-css.php` and `nav-drawer/render.php`. I read all seven
-and none compensates for the height-not-bottom-edge semantic. But read what D418 says:
+`.claude/decisions.md::D418` records: *"B1 validated: all 4 consumers of `--sgs-header-height` audited, none compensates for height-not-bottom-edge semantic."* The current consumer set is 7 files (§2.2 gives the exact grep command and its count); the four D418 names are `utilities.css`, `woocommerce.css`, `fx-motion-path.css` and `motion-utils.js`, and the other three are `header-behaviours.css`, `nav-menu-submenu-css.php` and `nav-drawer/render.php`. I read all seven and none compensates for the height-not-bottom-edge semantic. But read what D418 says:
 
 > **the token is a HEIGHT, and every consumer treats it as a BOTTOM EDGE.**
 
-Today those are the same number, because the sticky writer hardcodes `'top' => '0'`
-(`plugins/sgs-blocks/src/blocks/site-header/render.php`, the sticky entry of the
-`sgs_merge_tri_state_declarations()` call). **A floating pill is precisely the case where they stop
-being the same number.** The primitive is complete for a flush header and structurally short by
-exactly the top inset for a floating one.
+Today those are the same number, because the sticky writer hardcodes `'top' => '0'` (`plugins/sgs-blocks/src/blocks/site-header/render.php`, the sticky entry of the `sgs_merge_tri_state_declarations()` call). **A floating pill is precisely the case where they stop being the same number.** The primitive is complete for a flush header and structurally short by exactly the top inset for a floating one.
 
-So: the primitive is **not** a missing prerequisite to go and build. It is a *correct* mechanism
-carrying one latent assumption that this feature invalidates, and fixing that assumption is
-**step one of this build**, not a separate blocked row.
+So: the primitive is **not** a missing prerequisite to go and build. It is a *correct* mechanism carrying one latent assumption that this feature invalidates, and fixing that assumption is **step one of this build**, not a separate blocked row.
 
-> ⚠ **Correction to the plan.** The brief for this document referred to "W2-v (the header-offset
-> primitive, 'B1') has no build record". There is no `W2-v` row — the plan's Wave 2 rows run
-> `W2-a` … `W2-u` (`.claude/plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md`). "B1" is a
-> bullet inside D418, and it is recorded there as **validated**, not as pending work. Nothing is
-> blocking W2-p.
+> ⚠ **Correction to the plan.** The brief for this document referred to "W2-v (the header-offset primitive, 'B1') has no build record". There is no `W2-v` row — the plan's Wave 2 rows run `W2-a` … `W2-u` (`.claude/plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md`). "B1" is a bullet inside D418, and it is recorded there as **validated**, not as pending work. Nothing is blocking W2-p.
 
 ### 2.4 One inconsistency found while auditing (not a blocker, worth closing on touch)
 
-The fallback value differs between consumers: `0px` in `utilities.css` and `woocommerce.css`, but
-`80px` in `fx-motion-path.css`. Because the theme defines the property at `:root`, **no fallback
-ever fires**, so this is currently inert — but it is two different beliefs about the same token
-sitting in one tree. Close it in the same commit as §3's change, or leave it and say so.
+The fallback value differs between consumers: `0px` in `utilities.css` and `woocommerce.css`, but `80px` in `fx-motion-path.css`. Because the theme defines the property at `:root`, **no fallback ever fires**, so this is currently inert — but it is two different beliefs about the same token sitting in one tree. Close it in the same commit as §3's change, or leave it and say so.
 
 ---
 
@@ -163,11 +100,9 @@ sitting in one tree. Close it in the same commit as §3's change, or leave it an
 
 ### 3.1 The one-line shape
 
-A pill is a **sticky header whose `top` offset is an inset instead of zero, whose width is capped
-and centred, and which carries radius and shadow.** Everything else about the header is unchanged.
+A pill is a **sticky header whose `top` offset is an inset instead of zero, whose width is capped and centred, and which carries radius and shadow.** Everything else about the header is unchanged.
 
-That framing matters because it keeps this inside the existing shared writer rather than creating a
-second positioning system.
+That framing matters because it keeps this inside the existing shared writer rather than creating a second positioning system.
 
 ### 3.2 The primitive fix (build this first)
 
@@ -179,25 +114,16 @@ publishGated() → publishHeight( isHeaderPinned( header )
     : 0 )
 ```
 
-`pinnedTopOffset` is the computed `top` in px (`auto` counts as 0). Why this shape, and not a second token
-and not the header's on-screen bottom:
+`pinnedTopOffset` is the computed `top` in px (`auto` counts as 0). Why this shape, and not a second token and not the header's on-screen bottom:
 
-- For every header shipping today (`top:0`), offset 0 + height is exactly the old value, **in every
-  scroll state**, including while hide-on-scroll has moved the header off screen. That is the regression
-  test: the published number is byte-identical.
-- It does not read where the header happens to be on screen. `rect.bottom` would change with scroll
-  position, with a hide-on-scroll translation (negative bottom) and with any element above the header.
-- It keeps **one** load-bearing mechanism. A second token alongside the first would leave two overlapping
-  fixes where neither can ever be safely removed (`~/.claude/rules/prove-the-cause-before-fix.md`).
-- Every one of the seven consumers wants the bottom edge. None wants the height. The name stays; only
-  the docblock states the semantic.
+- For every header shipping today (`top:0`), offset 0 + height is exactly the old value, **in every scroll state**, including while hide-on-scroll has moved the header off screen. That is the regression test: the published number is byte-identical.
+- It does not read where the header happens to be on screen. `rect.bottom` would change with scroll position, with a hide-on-scroll translation (negative bottom) and with any element above the header.
+- It keeps **one** load-bearing mechanism. A second token alongside the first would leave two overlapping fixes where neither can ever be safely removed (`~/.claude/rules/prove-the-cause-before-fix.md`).
+- Every one of the seven consumers wants the bottom edge. None wants the height. The name stays; only the docblock states the semantic.
 
 ### 3.3 Attributes
 
-Keep the new surface as small as it can honestly be. `sgs/site-header` **already declares**
-`margin`, `maxWidth`, `contentWidth`, `borderRadius`, `shadow`, `shadowColour`, `borderWidth`,
-`borderStyle` and `borderColour` (`plugins/sgs-blocks/src/blocks/site-header/block.json`). A pill
-is mostly those controls with a `top` offset.
+Keep the new surface as small as it can honestly be. `sgs/site-header` **already declares** `margin`, `maxWidth`, `contentWidth`, `borderRadius`, `shadow`, `shadowColour`, `borderWidth`, `borderStyle` and `borderColour` (`plugins/sgs-blocks/src/blocks/site-header/block.json`). A pill is mostly those controls with a `top` offset.
 
 | Attribute | Shape | Default | What it does |
 |---|---|---|---|
@@ -207,19 +133,11 @@ is mostly those controls with a `top` offset.
 
 Three deliberate refusals:
 
-1. **No new width attribute.** The cap is the existing `maxWidth`. A pill with no `maxWidth` set is
-   full-bleed-minus-insets, which is a legitimate look, not a bug.
-2. **No new radius/shadow attributes.** `borderRadius` and `shadow` already exist and already reach
-   the root. A `floatRadius` would be a duplicate control — the exact defect
-   `check-duplicate-controls.js` exists to catch.
-3. **`headerFloatCollapse` is one toggle plus one number, not per-tier controls.** Signed in D418
-   after the shadcn reference measured as having no responsive behaviour at all. Do not re-litigate
-   it into three tier switches.
+1. **No new width attribute.** The cap is the existing `maxWidth`. A pill with no `maxWidth` set is full-bleed-minus-insets, which is a legitimate look, not a bug.
+2. **No new radius/shadow attributes.** `borderRadius` and `shadow` already exist and already reach the root. A `floatRadius` would be a duplicate control — the exact defect `check-duplicate-controls.js` exists to catch.
+3. **`headerFloatCollapse` is one toggle plus one number, not per-tier controls.** Signed in D418 after the shadcn reference measured as having no responsive behaviour at all. Do not re-litigate it into three tier switches.
 
-**Why `headerFloatInset` is a TIER-of-BOX and not a plain box:** the canonical envelope for a
-per-device box in this repo is one attribute holding `{desktop:{top,right,bottom,left}, …}`
-(`plugins/sgs-blocks/CLAUDE.md` § "The canonical TIER-of-BOXES envelope"). Side-keyed, so it reads
-through `sgs_box_object_shorthand()`. Do not invent a variant of the envelope.
+**Why `headerFloatInset` is a TIER-of-BOX and not a plain box:** the canonical envelope for a per-device box in this repo is one attribute holding `{desktop:{top,right,bottom,left}, …}` (`plugins/sgs-blocks/CLAUDE.md` § "The canonical TIER-of-BOXES envelope"). Side-keyed, so it reads through `sgs_box_object_shorthand()`. Do not invent a variant of the envelope.
 
 ### 3.4 Composition with the four existing header behaviours
 
@@ -241,14 +159,9 @@ width:  min( var(--cap), calc( 100% - var(--inset-left) - var(--inset-right) ) )
 margin-inline: auto
 ```
 
-with each inset resolved as `max( <authored inset>, env( safe-area-inset-left ) )` and the right
-side likewise. The signed D418 wording is `min(cap, calc(100% − 2×inset))`; expressing it as two
-independent sides is the same thing and survives an asymmetric authored inset.
+with each inset resolved as `max( <authored inset>, env( safe-area-inset-left ) )` and the right side likewise. The signed D418 wording is `min(cap, calc(100% − 2×inset))`; expressing it as two independent sides is the same thing and survives an asymmetric authored inset.
 
-**Zoom and reflow, both non-negotiable:** the authored inset default is `1rem`, not `16px`.
-A unit-only `px`/`vw` inset fails WCAG 1.4.4 at 200% zoom — the same a11y lock-in D420 recorded for
-the fit-cascade clamps. At a 320px viewport (WCAG 1.4.10) the `min()` guarantees no horizontal
-scroll.
+**Zoom and reflow, both non-negotiable:** the authored inset default is `1rem`, not `16px`. A unit-only `px`/`vw` inset fails WCAG 1.4.4 at 200% zoom — the same a11y lock-in D420 recorded for the fit-cascade clamps. At a 320px viewport (WCAG 1.4.10) the `min()` guarantees no horizontal scroll.
 
 ### 3.6 Dropdowns, the mega panel and the drawer
 
@@ -273,31 +186,19 @@ scroll.
 
 ### 3.8 Performance
 
-Zero new JavaScript. `publishHeight` already runs and already reads a rect; §3.2 swaps which
-property of that rect it reads. The added CSS is a handful of declarations inside the tier blocks
-`render.php` already emits. No new stylesheet, no new module, no measurable budget impact.
+Zero new JavaScript. `publishHeight` already runs and already reads a rect; §3.2 swaps which property of that rect it reads. The added CSS is a handful of declarations inside the tier blocks `render.php` already emits. No new stylesheet, no new module, no measurable budget impact.
 
 ### 3.9 Competitor precedent — verified, and flagged where it is not
 
-**Measured in this repo, trustworthy:** `.claude/decisions.md::D418` records a live measurement of
-shadcn's "Floating Pill Navbar" — it has **no responsive behaviour at all** and **overflows roughly
-45px each side at a 390px viewport**. That measurement is the reason the signed default is
-"pill persists, width `min(cap, …)`, safe-area insets" rather than "copy shadcn". It is a
-cautionary reference, not an authority.
+**Measured in this repo, trustworthy:** `.claude/decisions.md::D418` records a live measurement of shadcn's "Floating Pill Navbar" — it has **no responsive behaviour at all** and **overflows roughly 45px each side at a 390px viewport**. That measurement is the reason the signed default is "pill persists, width `min(cap, …)`, safe-area insets" rather than "copy shadcn". It is a cautionary reference, not an authority.
 
-**Read this week, NOT independently measured** — treat as design-press consensus only, and do not
-let it drive a decision on its own:
+**Read this week, NOT independently measured** — treat as design-press consensus only, and do not let it drive a decision on its own:
 
-- shadcn's block catalogue documents the pattern as a rounded-full container with shadow holding
-  logo, links and a CTA, and a multi-segment variant that splits branding / links / actions into
-  three independently styled segments. ([shadcn.io](https://www.shadcn.io/blocks/navbar-floating-pill), [CodeFronts](https://codefronts.com/navigation/css-responsive-navbar/css-floating-island-multi-segment-navbar/))
-- The recurring caution in the 2026 write-ups is that a pill comfortably carries only **4–5 primary
-  links** before it needs a dropdown that undermines the look. ([CodeFronts](https://codefronts.com/navigation/css-glassmorphic-navbars/floating-pill-navbar/))
-- The a11y floor quoted across these sources is the same one this framework already exceeds:
-  44×44px targets and a visible `:focus-visible` on every interactive element. ([UXPin](https://www.uxpin.com/studio/blog/mobile-navigation-examples/), [Design Studio](https://www.designstudiouiux.com/blog/mobile-navigation-ux/))
+- shadcn's block catalogue documents the pattern as a rounded-full container with shadow holding logo, links and a CTA, and a multi-segment variant that splits branding / links / actions into three independently styled segments. ([shadcn.io](https://www.shadcn.io/blocks/navbar-floating-pill), [CodeFronts](https://codefronts.com/navigation/css-responsive-navbar/css-floating-island-multi-segment-navbar/))
+- The recurring caution in the 2026 write-ups is that a pill comfortably carries only **4–5 primary links** before it needs a dropdown that undermines the look. ([CodeFronts](https://codefronts.com/navigation/css-glassmorphic-navbars/floating-pill-navbar/))
+- The a11y floor quoted across these sources is the same one this framework already exceeds: 44×44px targets and a visible `:focus-visible` on every interactive element. ([UXPin](https://www.uxpin.com/studio/blog/mobile-navigation-examples/), [Design Studio](https://www.designstudiouiux.com/blog/mobile-navigation-ux/))
 
-The 4–5-link caution is worth surfacing to clients as an editor notice, and it is already the same
-shape as the existing FR-36-12 informational link-count notice — reuse that, don't build a second.
+The 4–5-link caution is worth surfacing to clients as an editor notice, and it is already the same shape as the existing FR-36-12 informational link-count notice — reuse that, don't build a second.
 
 ---
 
@@ -305,47 +206,35 @@ shape as the existing FR-36-12 informational link-count notice — reuse that, d
 
 ### Recommendation — Option A: fix the token, then compose the pill from existing controls
 
-Publish the measured bottom edge from `publishHeight` (§3.2); add three attributes (§3.3); add
-float as a third precedence entry in the existing tri-state merge (§3.4); fix the hide-on-scroll
-travel; clamp dropdowns to the pill box.
+Publish the measured bottom edge from `publishHeight` (§3.2); add three attributes (§3.3); add float as a third precedence entry in the existing tri-state merge (§3.4); fix the hide-on-scroll travel; clamp dropdowns to the pill box.
 
-**Why this one.** It changes one number in one publisher and adds one entry to one existing writer.
-Everything else — radius, shadow, width cap, border — is controls the client already has. The drawer
-and mega panel's measured paths need no work because they measure rather than read the token;
-their token-reading fallbacks are covered by §3.2 and proved by P11. The regression
-proof is strong and cheap: for every header shipping today the published value is unchanged, so
-"nothing moved on any existing page" is a measurable assertion, not a hope.
+**Why this one.** It changes one number in one publisher and adds one entry to one existing writer. Everything else — radius, shadow, width cap, border — is controls the client already has. The drawer and mega panel's measured paths need no work because they measure rather than read the token; their token-reading fallbacks are covered by §3.2 and proved by P11. The regression proof is strong and cheap: for every header shipping today the published value is unchanged, so "nothing moved on any existing page" is a measurable assertion, not a hope.
 
-**Cost of being wrong.** Low. The token change is revertible in one line; the float attributes are
-additive and default off.
+**Cost of being wrong.** Low. The token change is revertible in one line; the float attributes are additive and default off.
 
 ### Option B: add a second token (`--sgs-header-bottom`) and leave `--sgs-header-height` alone
 
 Publish both; migrate consumers one at a time.
 
 **For:** nothing existing changes semantics; migration can be incremental.
-**Against:** two overlapping mechanisms where neither can ever be removed, which is the
-unfalsifiable-fix shape this project has a written rule against. Seven consumers is not enough
-migration work to justify it. **Pick this only if Bean wants the seven consumers migrated on
-separate days.**
+
+**Against:** two overlapping mechanisms where neither can ever be removed, which is the unfalsifiable-fix shape this project has a written rule against. Seven consumers is not enough migration work to justify it. **Pick this only if Bean wants the seven consumers migrated on separate days.**
 
 ### Option C: pill mode owns its own geometry, token untouched
 
-Emit the pill's offsets purely inside `sgs/site-header`'s scoped CSS and accept that anchor
-scrolling is short by the inset.
+Emit the pill's offsets purely inside `sgs/site-header`'s scoped CSS and accept that anchor scrolling is short by the inset.
 
 **For:** smallest diff.
-**Against:** ships a known WCAG 2.4.11 failure on purpose. **Do not choose this.** Listed for
-completeness so the option space is visible.
+
+**Against:** ships a known WCAG 2.4.11 failure on purpose. **Do not choose this.** Listed for completeness so the option space is visible.
 
 ### Option D: defer W2-p behind W2-n
 
 Build the scrolled-state shadow first, then the pill.
 
 **For:** §3.4's transparent-pill ruling depends on a scrolled shadow attribute that does not exist.
-**Against:** W2-n is a 30-minute row; the pill can ship with shadow suppression alone and pick up
-the scrolled shadow when W2-n lands. **Reasonable if Bean wants the full transparent story in one
-go — say so and I will sequence W2-n first.**
+
+**Against:** W2-n is a 30-minute row; the pill can ship with shadow suppression alone and pick up the scrolled shadow when W2-n lands. **Reasonable if Bean wants the full transparent story in one go — say so and I will sequence W2-n first.**
 
 ---
 
@@ -365,9 +254,7 @@ go — say so and I will sequence W2-n first.**
 | `.claude/specs/37-HEADER-FOOTER-BUILDER.md` | New FR for float mode + restate the token's semantic. |
 | `.claude/decisions.md`, `.claude/LEDGER.md` | Record the decision; move W2-p. |
 
-**Not touched, deliberately:** `store.js` (already measures the real bottom edge),
-`class-sgs-container-wrapper.php` (the header is `containerKind: section` and keeps the wrapper —
-this is not a wrapper change), any other block.
+**Not touched, deliberately:** `store.js` (already measures the real bottom edge), `class-sgs-container-wrapper.php` (the header is `containerKind: section` and keeps the wrapper — this is not a wrapper change), any other block.
 
 ---
 
@@ -404,6 +291,4 @@ Every row is a live check on the canary, per rule 5 (verify on the real page, no
 
 ### 6.3 What does not close the task
 
-Script output alone does not close it. Per R-31-13 this needs **Bean's eye on the real homepage**
-at 390 / 768 / 1440 with the pill on, and again with it off. A green harness with a pill that looks
-wrong is a failed build.
+Script output alone does not close it. Per R-31-13 this needs **Bean's eye on the real homepage** at 390 / 768 / 1440 with the pill on, and again with it off. A green harness with a pill that looks wrong is a failed build.

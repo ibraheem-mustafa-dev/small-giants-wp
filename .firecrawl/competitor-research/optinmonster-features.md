@@ -88,8 +88,7 @@ Create multi-step campaigns to improve conversions and sales.
 
 ### [Dynamic Text Replacement](https://optinmonster.com/features/dynamic-text-replacement/)
 
-Easily personalize your website with dynamic smart content
-for higher engagement and conversions.
+Easily personalize your website with dynamic smart content for higher engagement and conversions.
 
 ### [Mobile Friendly Campaigns](https://optinmonster.com/features/mobile-friendly-popups/)
 

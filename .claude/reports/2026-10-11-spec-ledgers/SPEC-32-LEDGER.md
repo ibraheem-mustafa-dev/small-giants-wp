@@ -1,25 +1,14 @@
 # Spec 32 section ledger (plan task B4)
 
-Date: 2026-10-11. Source: `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` (spec_version 2.0, 1,052 lines, read in full).
-Inputs: plan `.claude/plans/2026-10-10-claude-design-handover-standard.md` Task B4; council
-`.claude/reports/2026-10-10-handover-council/R4-needs-and-specs.md` Part 2 (checked against the current spec, see the note
-below); Spec 48A `.claude/specs/48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md`.
+Date: 2026-10-11. Source: `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` (spec_version 2.0, 1,052 lines, read in full). Inputs: plan `.claude/plans/2026-10-10-claude-design-handover-standard.md` Task B4; council `.claude/reports/2026-10-10-handover-council/R4-needs-and-specs.md` Part 2 (checked against the current spec, see the note below); Spec 48A `.claude/specs/48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md`.
 
-Bean's decision (plan, "Decisions"): Spec 32 becomes framework only (styling contract, token vocabulary, the
-`theme-snapshot.json` format). Its cloning-only parts (Part D, the extractor, §12.5-12.7) move to Spec 48. Dated material is
-cut (§0a, §8, §11, §12.3, §13.3, FR-26-A5). FR-26-D3's shadow names are corrected. FR-33-n IDs keep their numbers in Spec 48.
+Bean's decision (plan, "Decisions"): Spec 32 becomes framework only (styling contract, token vocabulary, the `theme-snapshot.json` format). Its cloning-only parts (Part D, the extractor, §12.5-12.7) move to Spec 48. Dated material is cut (§0a, §8, §11, §12.3, §13.3, FR-26-A5). FR-26-D3's shadow names are corrected. FR-33-n IDs keep their numbers in Spec 48.
 
-Verdicts: **KEEP** (stays in slim Spec 32), **MOVE-48** (goes to Spec 48), **CUT** (dropped; where the text holds a current
-rule, the rule is carried to the named place). "Split" rows record which half goes where; the ID itself lives in one place.
+Verdicts: **KEEP** (stays in slim Spec 32), **MOVE-48** (goes to Spec 48), **CUT** (dropped; where the text holds a current rule, the rule is carried to the named place). "Split" rows record which half goes where; the ID itself lives in one place.
 
-**R4 Part 2 check.** R4's table covers every one of the spec's 66 headings and blocks; no section is missing. Its classes
-hold, with three differences: (1) R4 classes FR-33-11, FR-33-13 (namespace) and FR-33-20 as FORMAT, which conflicts with
-Bean's "Part D moves" (open decisions O1-O3); (2) R4 did not catch that FR-32-11's own text contradicts §6.2(b) and the code
-(correction C2); (3) R4 counted hits, not files. The counts below are files, from today's grep.
+**R4 Part 2 check.** R4's table covers every one of the spec's 66 headings and blocks; no section is missing. Its classes hold, with three differences: (1) R4 classes FR-33-11, FR-33-13 (namespace) and FR-33-20 as FORMAT, which conflicts with Bean's "Part D moves" (open decisions O1-O3); (2) R4 did not catch that FR-32-11's own text contradicts §6.2(b) and the code (correction C2); (3) R4 counted hits, not files. The counts below are files, from today's grep.
 
-Citation command (all counts in table 2):
-`git grep -n -o -E "FR-(32|33|26)-[A-Z]?[0-9]+[a-z]?" -- ':!.claude/archive' ':!.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md'`
-"Live" excludes `reports/`, `.claude/reports/`, `.claude/memory/`, `.claude/backups/` and any `archive/` path.
+Citation command (all counts in table 2): `git grep -n -o -E "FR-(32|33|26)-[A-Z]?[0-9]+[a-z]?" -- ':!.claude/archive' ':!.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md'` "Live" excludes `reports/`, `.claude/reports/`, `.claude/memory/`, `.claude/backups/` and any `archive/` path.
 
 ---
 
@@ -186,8 +175,7 @@ Spec 32 **defines no rule IDs**. `git grep -n -E "\bR-3[23]-[0-9]" -- ':!.claude
 | Spec 02 "Composite wrapper rule" | §6.1 intro; §11 row 1; §11b; §6.3 | Spec 02 | Spec 32 KEEP |
 | `P-NO-INLINE-GATE-COVERAGE-GAPS` (parked item) | §6.2(a) injector note | LEDGER / plan parking | Spec 32 §6.2(a) KEEP |
 
-**Section citations that must still resolve after the rewrite.** Command:
-`git grep -n -o -E "Spec 32[^.;,)]{0,4}(§ ?[0-9]+[0-9.a-z()]*|Part [A-D])"`, excluding reports, memory, backups and archive.
+**Section citations that must still resolve after the rewrite.** Command: `git grep -n -o -E "Spec 32[^.;,)]{0,4}(§ ?[0-9]+[0-9.a-z()]*|Part [A-D])"`, excluding reports, memory, backups and archive.
 
 | Cited | Live files | Action |
 |---|---|---|
@@ -208,30 +196,19 @@ Spec 32 **defines no rule IDs**. `git grep -n -E "\bR-3[23]-[0-9]" -- ':!.claude
 
 Each item gives the evidence command and the output line.
 
-**C1. FR-26-D3 shadow names are wrong, and the "no slug overlaps" claim is false.** D3 says SGS ships `subtle`, `raised`,
-`floating`, `glow` and that they coexist with WordPress's shadows "because no slug overlaps".
-- `python -c "import json;t=json.load(open('theme/sgs-theme/theme.json'));print([p['slug'] for p in t['settings']['shadow']['presets']])"`
-  → `['whisper', 'soft', 'lifted', 'floating', 'crisp', 'long', 'outline', 'grounded', 'glow', 'pressed', 'hard', 'diffuse']`
-- WordPress core defaults on the canary (WP 7.1), `grep slug wp-includes/theme.json` over SSH, shadow block →
-  `natural`, `deep`, `sharp`, `outlined`, `crisp`. **`crisp` now collides.**
-- The same theme.json read → `settings.shadow` = `{'defaultPresets': False}`. D3 never mentions this flag, but it governs
-  whether core's shadows appear in the picker. Whether "both shadow sets stay" (Bean, 2026-08-07) still holds in the
-  editor is not verified (O10).
-- 8 of 9 client snapshots carry the same 12 framework names. `sites/mamas-munches` carries its own 7:
-  `['hard', 'hard-sm', 'hard-lift', 'hard-lg', 'soft', 'diffuse', 'pressed']`.
+**C1. FR-26-D3 shadow names are wrong, and the "no slug overlaps" claim is false.** D3 says SGS ships `subtle`, `raised`, `floating`, `glow` and that they coexist with WordPress's shadows "because no slug overlaps".
+- `python -c "import json;t=json.load(open('theme/sgs-theme/theme.json'));print([p['slug'] for p in t['settings']['shadow']['presets']])"` → `['whisper', 'soft', 'lifted', 'floating', 'crisp', 'long', 'outline', 'grounded', 'glow', 'pressed', 'hard', 'diffuse']`
+- WordPress core defaults on the canary (WP 7.1), `grep slug wp-includes/theme.json` over SSH, shadow block → `natural`, `deep`, `sharp`, `outlined`, `crisp`. **`crisp` now collides.**
+- The same theme.json read → `settings.shadow` = `{'defaultPresets': False}`. D3 never mentions this flag, but it governs whether core's shadows appear in the picker. Whether "both shadow sets stay" (Bean, 2026-08-07) still holds in the editor is not verified (O10).
+- 8 of 9 client snapshots carry the same 12 framework names. `sites/mamas-munches` carries its own 7: `['hard', 'hard-sm', 'hard-lift', 'hard-lg', 'soft', 'diffuse', 'pressed']`.
 
-**C2. FR-32-11's text contradicts §6.2(b) and the code.** FR-32-11 says: a fallback "inline footer `<style>`", a filter
-choosing `file` or `inline`, "`save_post` invalidates the pointer", and a filename `/uploads/sgs-css/<content-hash>.css`.
-§5 Security also says "consolidated footer `<style>`".
+**C2. FR-32-11's text contradicts §6.2(b) and the code.** FR-32-11 says: a fallback "inline footer `<style>`", a filter choosing `file` or `inline`, "`save_post` invalidates the pointer", and a filename `/uploads/sgs-css/<content-hash>.css`. §5 Security also says "consolidated footer `<style>`".
 - `plugins/sgs-blocks/includes/class-sgs-css-registry.php:178` → `return \in_array( $mode, array( 'head', 'inline' ), true ) ? 'head' : 'file';`, with line 177 `// 'inline' is a legacy alias for 'head'.`
 - line 147 → `matching link/style) — there is NO pointer, NO cold/warm transition, and NO`
 - line 228 → `$url = sgs_css_write_file( 'sgs-' . sgs_css_epoch() . '-' . \md5( $css ), $css );`
-- Fix: FR-32-11 states the `file` (default) and `head` modes, head placement, the epoch-prefixed hashed filename and
-  epoch bumps instead of a pointer, matching §6.2(b).
+- Fix: FR-32-11 states the `file` (default) and `head` modes, head placement, the epoch-prefixed hashed filename and epoch bumps instead of a pointer, matching §6.2(b).
 
-**C3. The extractor's iron law and role-by-usage rule contradict Spec 48A.** §15.1 says "the emitted VALUE is always the
-COMPUTED value … a source `:root` or base declaration is used only for the token's NAME and ROLE vocabulary". FR-33-2 says
-role comes from usage context.
+**C3. The extractor's iron law and role-by-usage rule contradict Spec 48A.** §15.1 says "the emitted VALUE is always the COMPUTED value … a source `:root` or base declaration is used only for the token's NAME and ROLE vocabulary". FR-33-2 says role comes from usage context.
 - Spec 48A §1: "The draft's code is the primary source. Rendering and measuring supplement it only for what code cannot state".
 - Spec 48A file-reader table: "`tokens/*.css` | the theme extractor builds the brand palette from the declared tokens; every other colour stays a one-off hex literal | Spec 48".
 - The plan's B4 seed requirement says the same ("instead of guessing roles from usage").
@@ -241,8 +218,7 @@ role comes from usage context.
 
 **C4. FR-33-15, FR-33-12 and §15.4 treat the README as a design input. Spec 48A says it is not.**
 - Spec 48A table: "`README.md` | Bean and agents (human guide to the design; not a cloning input, which reads the code)".
-- FR-33-15 reads "a README token table beside the draft". FR-33-12's `draft_source_sha256` hashes "the script and the
-  README". §15.4: "A README and the script can disagree". The README part of all three is rewritten in Spec 48.
+- FR-33-15 reads "a README token table beside the draft". FR-33-12's `draft_source_sha256` hashes "the script and the README". §15.4: "A README and the script can disagree". The README part of all three is rewritten in Spec 48.
 
 **C5. §14.1 says every snapshot is written by the extractor. 6 of 9 are not.**
 - `python -c "import json,glob;[print(f,'_sgsExtractor' in json.load(open(f,encoding='utf-8'))) for f in sorted(glob.glob('sites/*/theme-snapshot.json'))]"` → True for eye-care-ward-end, indus-foods, mamas-munches-redesign; False for helping-doctors, mamas-munches, sgs-construction, sgs-healthcare, sgs-mosque, sgs-professional.
@@ -263,76 +239,42 @@ role comes from usage context.
 - Framework theme.json has 21 slugs including `border` and no `border-subtle`. All 9 snapshots carry `border` (none carries `border-subtle`), so a later stage renames it. Where that happens was not traced.
 - Spec 48 uses `border` and the 21-slug roster.
 
-**C9. FR-32-7, FR-32-8, FR-32-10 and the §6 diagram assume SGS-BEM drafts.** Their "Done when" lines start from a draft
-carrying `.sgs-button--primary`. Claude Design exports do not:
-`grep -rl sgs-button sites/*/handoff --include=*.html | wc -l` → 0 for indus-foods and mamas-munches-redesign. The route
-halves are rewritten in Spec 48 against `.dc.html` drafts.
+**C9. FR-32-7, FR-32-8, FR-32-10 and the §6 diagram assume SGS-BEM drafts.** Their "Done when" lines start from a draft carrying `.sgs-button--primary`. Claude Design exports do not: `grep -rl sgs-button sites/*/handoff --include=*.html | wc -l` → 0 for indus-foods and mamas-munches-redesign. The route halves are rewritten in Spec 48 against `.dc.html` drafts.
 
-**C10. FR-32-3's list of blocks using the hover helper is stale.** It names 7 blocks.
-`git grep -l "sgs_emit_state_colour_css(" -- 'plugins/sgs-blocks/src/blocks/*/render.php'` → 17: buybox, container, form,
-google-rating-badge, hero, icon-list, info-box, notice-banner, post-grid, pricing-table, process-steps, product-card,
-site-footer, team-member, testimonial-slider, testimonial, trust-bar. Replace the list with the grep command.
+**C10. FR-32-3's list of blocks using the hover helper is stale.** It names 7 blocks. `git grep -l "sgs_emit_state_colour_css(" -- 'plugins/sgs-blocks/src/blocks/*/render.php'` → 17: buybox, container, form, google-rating-badge, hero, icon-list, info-box, notice-banner, post-grid, pricing-table, process-steps, product-card, site-footer, team-member, testimonial-slider, testimonial, trust-bar. Replace the list with the grep command.
 
-**C11. The front matter cites Spec 47 and `absorbs: [26, 33]`; FR-32-8, FR-32-10 and §15.1 cite "Spec 47".** Spec 47 is
-being retired into Spec 48 (plan B4). Every "Spec 47" pointer in the kept text becomes Spec 48.
+**C11. The front matter cites Spec 47 and `absorbs: [26, 33]`; FR-32-8, FR-32-10 and §15.1 cite "Spec 47".** Spec 47 is being retired into Spec 48 (plan B4). Every "Spec 47" pointer in the kept text becomes Spec 48.
 
-**C12. §3's last row ("never asking Bean for values") conflicts with intake.** The plan's intake (approach B) builds a
-structured file "Bean confirms once", and Spec 48A FR-48A-9 has Bean confirm the page map. This row moves to Spec 48
-(row 10) and is reworded there.
+**C12. §3's last row ("never asking Bean for values") conflicts with intake.** The plan's intake (approach B) builds a structured file "Bean confirms once", and Spec 48A FR-48A-9 has Bean confirm the page map. This row moves to Spec 48 (row 10) and is reworded there.
 
-Checked and correct (no change): all 21 §12.2 hex values match `theme/sgs-theme/theme.json`; all 8 §11b gate files and the
-helper and gate files named in §6.1 exist; `_USER_LAYER_PRESET_STRIP` holds `spacingSizes`, `shadow.presets` and
-`typography.fontSizes` as FR-26-D3 says; `SAFE_TARGETS` exists in `push-theme-snapshot.py`; only `container` declares
-`gridItem*` attributes (§6.3); no computed-route file reads a freshness key (`git grep -i -E "draft_source_sha256|draft_css_sha256|freshness" -- scripts/computed-route` → 0 lines), so FR-33-12's "not built" status holds.
+Checked and correct (no change): all 21 §12.2 hex values match `theme/sgs-theme/theme.json`; all 8 §11b gate files and the helper and gate files named in §6.1 exist; `_USER_LAYER_PRESET_STRIP` holds `spacingSizes`, `shadow.presets` and `typography.fontSizes` as FR-26-D3 says; `SAFE_TARGETS` exists in `push-theme-snapshot.py`; only `container` declares `gridItem*` attributes (§6.3); no computed-route file reads a freshness key (`git grep -i -E "draft_source_sha256|draft_css_sha256|freshness" -- scripts/computed-route` → 0 lines), so FR-33-12's "not built" status holds.
 
 ---
 
 ## 5. Open decisions for Bean
 
-**O1. Where the snapshot-push requirements FR-33-11 and FR-33-20 live.** Both sit in Part D, which Bean said moves. But
-both run at push time for every client, including the 6 hand-built ones. FR-33-11 covers backup, rollback, drift warning,
-advisory restore and Font Library carry-over in `push-theme-snapshot.py`. FR-33-20 is the dark palette derived in
-`prepare_deploy_snapshot`.
+**O1. Where the snapshot-push requirements FR-33-11 and FR-33-20 live.** Both sit in Part D, which Bean said moves. But both run at push time for every client, including the 6 hand-built ones. FR-33-11 covers backup, rollback, drift warning, advisory restore and Font Library carry-over in `push-theme-snapshot.py`. FR-33-20 is the dark palette derived in `prepare_deploy_snapshot`.
 - (a) Keep both IDs in Spec 32 §14.4/§14. The format spec owns everything that ships a snapshot. FR-33-11's first sentence (no snapshot-only push of a regenerated palette without a re-clone) goes to Spec 48.
 - (b) Move both to Spec 48 and have §14.4 cite them. A hand-built client's push safety is then documented in the cloning spec.
 - **Recommend (a).** It matches "the theme-snapshot.json format stays framework". Code citers (`push-theme-snapshot.py` cites FR-33-11 nine times) keep their IDs either way.
 
-**O2. FR-33-13 split.** It mixes the reserved `settings.custom.header`/`.footer` namespace (format) with extractor
-acyclicity and the token-map service (cloning). **Recommend:** move the ID to Spec 48. §14.3's existing table row keeps
-the reserved-namespace fact without the ID. Its only live citer is `extract.py`.
+**O2. FR-33-13 split.** It mixes the reserved `settings.custom.header`/`.footer` namespace (format) with extractor acyclicity and the token-map service (cloning). **Recommend:** move the ID to Spec 48. §14.3's existing table row keeps the reserved-namespace fact without the ID. Its only live citer is `extract.py`.
 
-**O3. Framework paragraphs inside FR-33-18 and FR-33-19.** FR-33-18's "Runtime companion" (`Google_Fonts_Self_Host`
-serves any snapshot entry with `google: true`) and FR-33-19's "How the value is applied" (`SGS_Container_Wrapper`
-resolves `contentWidth` to the global content and wide sizes) are framework behaviour. **Recommend:** both IDs move to
-Spec 48. The two paragraphs go into Spec 32 §14.2 without the IDs. `class-google-fonts-self-host.php`'s cite becomes
-"Spec 48 FR-33-18 / Spec 32 §14.2".
+**O3. Framework paragraphs inside FR-33-18 and FR-33-19.** FR-33-18's "Runtime companion" (`Google_Fonts_Self_Host` serves any snapshot entry with `google: true`) and FR-33-19's "How the value is applied" (`SGS_Container_Wrapper` resolves `contentWidth` to the global content and wide sizes) are framework behaviour. **Recommend:** both IDs move to Spec 48. The two paragraphs go into Spec 32 §14.2 without the IDs. `class-google-fonts-self-host.php`'s cite becomes "Spec 48 FR-33-18 / Spec 32 §14.2".
 
-**O4. FR-32-8 and FR-32-10: one ID, two owners.** Each holds a framework half and a cloning-route half. **Recommend:**
-keep both IDs in Spec 32 with the framework half only. The route halves become new Spec 48 FRs that cite them. No code
-cites either ID, so nothing breaks.
+**O4. FR-32-8 and FR-32-10: one ID, two owners.** Each holds a framework half and a cloning-route half. **Recommend:** keep both IDs in Spec 32 with the framework half only. The route halves become new Spec 48 FRs that cite them. No code cites either ID, so nothing breaks.
 
-**O5. FR-32-7: keep a stub or move it.** **Recommend:** move it to Spec 48 whole. Slim Spec 32 says in one line that
-`{component}Presets` are filled by the Spec 48 extractor for a cloned client or by hand otherwise. No code cites it.
+**O5. FR-32-7: keep a stub or move it.** **Recommend:** move it to Spec 48 whole. Slim Spec 32 says in one line that `{component}Presets` are filled by the Spec 48 extractor for a cloned client or by hand otherwise. No code cites it.
 
-**O6. Section numbering in the rewrite.** "Fresh rewrite" could renumber. About 25 live files cite §3, §5, §6.1(a1)/(b)/(c),
-§6.2(a)/(b), §13.2, §14 and Parts B/C (section 3 above). **Recommend:** keep those numbers and part letters, gaps allowed,
-as Part A did when Specs 26 and 33 were merged in. Repoint only the four "Part D" and one "§12.5" citers.
+**O6. Section numbering in the rewrite.** "Fresh rewrite" could renumber. About 25 live files cite §3, §5, §6.1(a1)/(b)/(c), §6.2(a)/(b), §13.2, §14 and Parts B/C (section 3 above). **Recommend:** keep those numbers and part letters, gaps allowed, as Part A did when Specs 26 and 33 were merged in. Repoint only the four "Part D" and one "§12.5" citers.
 
-**O7. §11's three answered questions.** Bean listed §11 for cutting. The answers are still current rules: product-card's
-CTA reuses `buttonPresets` (no `cardPresets`); per-instance override vars are block-scoped (`--sgs-btn-*` and so on); the
-outline hover border falls back to `primary`. **Recommend:** cut §11 and carry each answer as one line into §10 or FR-32-4.
+**O7. §11's three answered questions.** Bean listed §11 for cutting. The answers are still current rules: product-card's CTA reuses `buttonPresets` (no `cardPresets`); per-instance override vars are block-scoped (`--sgs-btn-*` and so on); the outline hover border falls back to `primary`. **Recommend:** cut §11 and carry each answer as one line into §10 or FR-32-4.
 
-**O8. §12.7's verification line.** "Verify a colour-role change by computed style, not a source diff" is general. Root
-`CLAUDE.md` already says it ("Verify the rendered output, not a metric"). **Recommend:** keep one sentence at the end of
-§12.4 and move the extractor guard to Spec 48. Drop the "rule 4a" label, which has no live definition.
+**O8. §12.7's verification line.** "Verify a colour-role change by computed style, not a source diff" is general. Root `CLAUDE.md` already says it ("Verify the rendered output, not a metric"). **Recommend:** keep one sentence at the end of §12.4 and move the extractor guard to Spec 48. Drop the "rule 4a" label, which has no live definition.
 
-**O9. FR-26-B2 is only a pointer to Spec 35.** **Recommend:** keep it as a one-line pointer so the ID still resolves. The
-hover-label detail stays marked "not re-verified".
+**O9. FR-26-B2 is only a pointer to Spec 35.** **Recommend:** keep it as a one-line pointer so the ID still resolves. The hover-label detail stays marked "not re-verified".
 
-**O10. Shadow sets (follows from C1).** Bean ruled on 2026-08-07 that SGS's and WordPress's shadows both stay. Two facts
-have changed since: SGS now has 12 presets, one of which (`crisp`) shares a slug with WordPress; and the framework sets
-`shadow.defaultPresets: false`. **Recommend:** before rewriting D3, open the editor's shadow picker on the canary and
-record what it offers. D3 then states that, and Bean confirms whether the ruling stands.
+**O10. Shadow sets (follows from C1).** Bean ruled on 2026-08-07 that SGS's and WordPress's shadows both stay. Two facts have changed since: SGS now has 12 presets, one of which (`crisp`) shares a slug with WordPress; and the framework sets `shadow.defaultPresets: false`. **Recommend:** before rewriting D3, open the editor's shadow picker on the canary and record what it offers. D3 then states that, and Bean confirms whether the ruling stands.
 
 ---
 

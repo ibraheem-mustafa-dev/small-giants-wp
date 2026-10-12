@@ -2,12 +2,7 @@
 
 **Scope:** diagnostic only, no fix proposed. Register item: `.claude/reports/2026-09-12-nav-menu-visual-review-register.md` Group M (M1-M6).
 
-**Evidence base:** `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_menu_render_items` (bar markup),
-`plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_menu_render_items_drawer` (drawer markup, comparison),
-`plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js` (bar JS store),
-`plugins/sgs-blocks/includes/nav-menu-css.php` + `plugins/sgs-blocks/includes/nav-menu-submenu-css.php` (bar CSS),
-`plugins/sgs-blocks/src/blocks/nav-menu/style.css` (drawer CSS), plus live DOM/computed-style checks on
-`sandybrown-nightingale-600381.hostingersite.com` pages 3487 ("Our Story" item, has_url branch) at 1440px.
+**Evidence base:** `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_menu_render_items` (bar markup), `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_menu_render_items_drawer` (drawer markup, comparison), `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js` (bar JS store), `plugins/sgs-blocks/includes/nav-menu-css.php` + `plugins/sgs-blocks/includes/nav-menu-submenu-css.php` (bar CSS), `plugins/sgs-blocks/src/blocks/nav-menu/style.css` (drawer CSS), plus live DOM/computed-style checks on `sandybrown-nightingale-600381.hostingersite.com` pages 3487 ("Our Story" item, has_url branch) at 1440px.
 
 ---
 

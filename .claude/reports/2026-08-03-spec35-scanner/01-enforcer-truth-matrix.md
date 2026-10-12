@@ -9,30 +9,11 @@ method: read the enforcer source + run it + plant a negative control in an out-o
 
 # Spec 35 inspector — enforcer truth matrix
 
-**Method.** Every claim below rests on two independent sources: (a) the enforcer's own
-source at a cited `file:line`, and (b) an actual run. Detection claims additionally rest
-on a **planted negative control** executed in a scratch mirror at
-`…/scratchpad/mirror/plugins/sgs-blocks` (a real copy of `src/` + `scripts/` + `package.json`,
-with `node_modules` junctioned and `theme/sgs-theme` file-copied). **No file in the repo tree
-was modified.** Every plant was confirmed to have landed (asserted in the planting script)
-before the enforcer's red/green result was trusted.
+**Method.** Every claim below rests on two independent sources: (a) the enforcer's own source at a cited `file:line`, and (b) an actual run. Detection claims additionally rest on a **planted negative control** executed in a scratch mirror at `…/scratchpad/mirror/plugins/sgs-blocks` (a real copy of `src/` + `scripts/` + `package.json`, with `node_modules` junctioned and `theme/sgs-theme` file-copied). **No file in the repo tree was modified.** Every plant was confirmed to have landed (asserted in the planting script) before the enforcer's red/green result was trusted.
 
-**Wiring baseline** — `plugins/sgs-blocks/package.json:7` (`prebuild`) invokes, in order,
-`consistency/run-consistency-gates.py`, `check-dead-controls.js --check`,
-`check-control-ux.js --check`, `lint-responsive-controls.py --check`,
-`check-box-family-guard.py --check`, `check-shared-css-state-rules.js --check`,
-`audit-inspector-conformance.js --check`, `audit-feature-parity.py --check`.
-`run-consistency-gates.py` propagates the exit code of only TWO gates
-(`check-cluster-coverage.py`, `check-box-family-guard.py` —
-`run-consistency-gates.py:118,125,163`); `check-box-flat.py`,
-`check-element-manifest-conformance.js`, `report-colour-alpha.py` and
-`check-reclassified-keys.py` run **INFORMATIONAL** (`run-consistency-gates.py:130+`) and
-their exit codes are discarded.
+**Wiring baseline** — `plugins/sgs-blocks/package.json:7` (`prebuild`) invokes, in order, `consistency/run-consistency-gates.py`, `check-dead-controls.js --check`, `check-control-ux.js --check`, `lint-responsive-controls.py --check`, `check-box-family-guard.py --check`, `check-shared-css-state-rules.js --check`, `audit-inspector-conformance.js --check`, `audit-feature-parity.py --check`. `run-consistency-gates.py` propagates the exit code of only TWO gates (`check-cluster-coverage.py`, `check-box-family-guard.py` — `run-consistency-gates.py:118,125,163`); `check-box-flat.py`, `check-element-manifest-conformance.js`, `report-colour-alpha.py` and `check-reclassified-keys.py` run **INFORMATIONAL** (`run-consistency-gates.py:130+`) and their exit codes are discarded.
 
-**Reference baseline run** (real repo, 2026-08-03): `audit-inspector-conformance.js --check`
-= PASS, 0 WARN, 20 INFO; `audit-feature-parity.py --check` = PASS, 0 unexplained;
-`check-box-family-guard.py --check` = PASS; `check-control-ux.js --check` = PASS;
-`lint-responsive-controls.py --check` = PASS; `check-dead-controls.js --check` = PASS.
+**Reference baseline run** (real repo, 2026-08-03): `audit-inspector-conformance.js --check` = PASS, 0 WARN, 20 INFO; `audit-feature-parity.py --check` = PASS, 0 unexplained; `check-box-family-guard.py --check` = PASS; `check-control-ux.js --check` = PASS; `lint-responsive-controls.py --check` = PASS; `check-dead-controls.js --check` = PASS.
 
 ---
 
@@ -69,27 +50,13 @@ their exit codes are discarded.
 
 ## Items covered by a script the checklist doesn't know about
 
-Five checklist items carry an `UNENFORCED`/wrong tag while a real enforcer exists under a
-different name. These are the primary finds:
+Five checklist items carry an `UNENFORCED`/wrong tag while a real enforcer exists under a different name. These are the primary finds:
 
-1. **Item 11 (device switcher) — tagged UNENFORCED, actually gated twice.**
-   `check-control-ux.js` check (a) and `lint-responsive-controls.py` are BOTH in `prebuild`
-   and BOTH hard-fail; both flagged the planted bespoke tier switcher. Neither checks the
-   768/1024 values, so the item is PARTIAL, not UNENFORCED.
-2. **Item 5 (real units) — tagged UNENFORCED, half-gated.**
-   `check-control-ux.js` check (b) hard-fails on a `SelectControl` writing a `*Unit` attr.
-   The raw-px `RangeControl` half remains uncovered (proven by plant).
-3. **Item 6 (box families) — tagged to the wrong script.**
-   `check-box-family-guard.py` scans the converter tree only; `consistency/check-box-flat.py`
-   is the block-level enforcer. It is INFORMATIONAL and is **already failing on the live tree**
-   (`[NEW] mega-aside::asideBorderWidth`) with the build green.
-4. **Item 2 (element-first panels) — tagged UNENFORCED, actually measured.**
-   `check-element-manifest-conformance.js` computes cluster coherence over
-   `supports.sgs.elements` for 79 blocks and currently reports **2,905 gaps** — all discarded,
-   because the script hard-sets `process.exitCode = 0`.
-5. **Item 12 (state controls) and item 13 (hideExtensions) — real enforcers exist, unwired.**
-   `check-duplicate-controls.js` (88 live findings, always exit 0) and `check-universal-fit.js`
-   (622 raw-matrix flags, always exit 0). Neither is referenced by `package.json`.
+1. **Item 11 (device switcher) — tagged UNENFORCED, actually gated twice.** `check-control-ux.js` check (a) and `lint-responsive-controls.py` are BOTH in `prebuild` and BOTH hard-fail; both flagged the planted bespoke tier switcher. Neither checks the 768/1024 values, so the item is PARTIAL, not UNENFORCED.
+2. **Item 5 (real units) — tagged UNENFORCED, half-gated.** `check-control-ux.js` check (b) hard-fails on a `SelectControl` writing a `*Unit` attr. The raw-px `RangeControl` half remains uncovered (proven by plant).
+3. **Item 6 (box families) — tagged to the wrong script.** `check-box-family-guard.py` scans the converter tree only; `consistency/check-box-flat.py` is the block-level enforcer. It is INFORMATIONAL and is **already failing on the live tree** (`[NEW] mega-aside::asideBorderWidth`) with the build green.
+4. **Item 2 (element-first panels) — tagged UNENFORCED, actually measured.** `check-element-manifest-conformance.js` computes cluster coherence over `supports.sgs.elements` for 79 blocks and currently reports **2,905 gaps** — all discarded, because the script hard-sets `process.exitCode = 0`.
+5. **Item 12 (state controls) and item 13 (hideExtensions) — real enforcers exist, unwired.** `check-duplicate-controls.js` (88 live findings, always exit 0) and `check-universal-fit.js` (622 raw-matrix flags, always exit 0). Neither is referenced by `package.json`.
 
 Other unlisted scripts, mapped:
 
@@ -113,44 +80,15 @@ Other unlisted scripts, mapped:
 
 ### Two structural blind spots that affect every roster-keyed audit
 
-- **`scripts/consistency/roster.json` holds 83 blocks; 84 block directories carry a
-  `block.json`.** `sgs/physics-canvas` is on disk and absent from the roster, so it is
-  invisible to `audit-inspector-conformance.js`, `audit-feature-parity.py` and
-  `audit-shrink-to-fit.js`. `build-roster.py` is **not** in `package.json`, so roster
-  staleness is unguarded. (Adding it to a mirror roster produced 0 findings, so there is no
-  live defect hiding here today — but the next block will be invisible the same way.)
-- **`audit-feature-parity.py:26-27` still carries `⚠ NOT YET WIRED INTO prebuild
-  (package.json:7)`.** It IS wired (last entry of `prebuild`). A stale in-file warning of
-  this kind is exactly what makes a wiring audit necessary.
+- **`scripts/consistency/roster.json` holds 83 blocks; 84 block directories carry a `block.json`.** `sgs/physics-canvas` is on disk and absent from the roster, so it is invisible to `audit-inspector-conformance.js`, `audit-feature-parity.py` and `audit-shrink-to-fit.js`. `build-roster.py` is **not** in `package.json`, so roster staleness is unguarded. (Adding it to a mirror roster produced 0 findings, so there is no live defect hiding here today — but the next block will be invisible the same way.)
+- **`audit-feature-parity.py:26-27` still carries `⚠ NOT YET WIRED INTO prebuild (package.json:7)`.** It IS wired (last entry of `prebuild`). A stale in-file warning of this kind is exactly what makes a wiring audit necessary.
 
 ---
 
 ## Claims I could not test, and why
 
-1. **Item 1 (`group` prop), item 18 (decorative image/ARIA), item 19 (a11y), item 20
-   (templateLock), item 16 ("Wave-3 native-migration audit"), T3 (competitor comparison).**
-   No enforcer exists to plant against. Absence was established by repo-wide grep for the
-   distinguishing token (`group=`, `templateLock`, `FocalPointPicker`, `clearable`) across
-   `scripts/**/*.js` and `scripts/**/*.py`, excluding `node_modules`. A grep's negative result
-   describes the grep, so each was corroborated by reading the claimed enforcer's own rule
-   list (`audit-inspector-conformance.js:11-45` enumerates all six of its rules; none is
-   `group`, `hideExtensions`, or a native-supports duplicate).
-2. **Item 10 (array shape).** Not plantable as a red/green: no gate reads an attribute's
-   declared `type` at all, so there is no code path a plant could reach. Established from
-   `audit-feature-parity.py:59-73` (attr_name only) rather than from a run.
-3. **T2 on real client pages.** `audit-shrink-to-fit.js` was proven to detect on a synthetic
-   local page I authored (deliberate 1600px `.wp-block-sgs-container`). I did NOT run it
-   against `palestine-lives.org` or the sandybrown canary — that would measure live client
-   sites, which is outside a read-only audit's remit. Its detection is therefore proven for
-   the mechanism, not for any live page's real state.
-4. **`check-dead-controls.js` findings inside the mirror were discarded as measurement
-   artefacts.** The mirror omits `plugins/sgs-blocks/includes/`, so the script's
-   shared-includes consumption check false-positived on `sgs/nav-menu::maxWidth` and
-   `sgs/product-card::overrideElements`/`packSizes`. Re-run in the real repo: exit 0. Those
-   are NOT real findings and are not reported as such.
-5. **Whether the theme's universal reduced-motion CSS rule actually satisfies WCAG 2.3.3 for
-   GSAP/Tier-G motion.** The rule forces `animation-duration`/`transition-duration` and
-   `scroll-behavior` — it cannot stop a JS timeline. Establishing that a specific block's
-   GSAP motion does or does not respect `prefers-reduced-motion` needs a live browser probe,
-   not a static audit; not attempted here. It is flagged in row 17 as a scope limit of the
-   rule, not asserted as a live defect.
+1. **Item 1 (`group` prop), item 18 (decorative image/ARIA), item 19 (a11y), item 20 (templateLock), item 16 ("Wave-3 native-migration audit"), T3 (competitor comparison).** No enforcer exists to plant against. Absence was established by repo-wide grep for the distinguishing token (`group=`, `templateLock`, `FocalPointPicker`, `clearable`) across `scripts/**/*.js` and `scripts/**/*.py`, excluding `node_modules`. A grep's negative result describes the grep, so each was corroborated by reading the claimed enforcer's own rule list (`audit-inspector-conformance.js:11-45` enumerates all six of its rules; none is `group`, `hideExtensions`, or a native-supports duplicate).
+2. **Item 10 (array shape).** Not plantable as a red/green: no gate reads an attribute's declared `type` at all, so there is no code path a plant could reach. Established from `audit-feature-parity.py:59-73` (attr_name only) rather than from a run.
+3. **T2 on real client pages.** `audit-shrink-to-fit.js` was proven to detect on a synthetic local page I authored (deliberate 1600px `.wp-block-sgs-container`). I did NOT run it against `palestine-lives.org` or the sandybrown canary — that would measure live client sites, which is outside a read-only audit's remit. Its detection is therefore proven for the mechanism, not for any live page's real state.
+4. **`check-dead-controls.js` findings inside the mirror were discarded as measurement artefacts.** The mirror omits `plugins/sgs-blocks/includes/`, so the script's shared-includes consumption check false-positived on `sgs/nav-menu::maxWidth` and `sgs/product-card::overrideElements`/`packSizes`. Re-run in the real repo: exit 0. Those are NOT real findings and are not reported as such.
+5. **Whether the theme's universal reduced-motion CSS rule actually satisfies WCAG 2.3.3 for GSAP/Tier-G motion.** The rule forces `animation-duration`/`transition-duration` and `scroll-behavior` — it cannot stop a JS timeline. Establishing that a specific block's GSAP motion does or does not respect `prefers-reduced-motion` needs a live browser probe, not a static audit; not attempted here. It is flagged in row 17 as a scope limit of the rule, not asserted as a live defect.

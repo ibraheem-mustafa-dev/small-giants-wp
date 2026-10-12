@@ -4,7 +4,9 @@
 Website for Small Giants Studio — a Birmingham-based digital transformation consultancy founded by Ibraheem Mustafa. Serves UK SMEs, charities, and social enterprises.
 
 **Domain:** smallgiantsstudio.co.uk
+
 **Stack:** Next.js
+
 **Status and plans:** `.claude/state.md`, `.claude/handoff.md`, `.claude/plans/current_mission.md`
 
 ---

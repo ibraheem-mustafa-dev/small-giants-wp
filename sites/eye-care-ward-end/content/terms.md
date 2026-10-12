@@ -66,8 +66,7 @@ If you buy online, you have the right under the Consumer Contracts (Information,
 
 **Our 30-day promise.** We give you longer than the law requires: you can return unworn frames within **30 days** of receiving them for a full refund. The 30 days start on the day your parcel is delivered or you collect your order.
 
-**Prescription lenses are made to order**
-Lenses cut to your prescription are made specially for you and can't be resold. The law has an exception for goods made to a customer's specification, so **the right to cancel does not apply to prescription lenses once we have started making them.** In practice:
+**Prescription lenses are made to order** Lenses cut to your prescription are made specially for you and can't be resold. The law has an exception for goods made to a customer's specification, so **the right to cancel does not apply to prescription lenses once we have started making them.** In practice:
 
 - You can cancel for a full refund **before** we send your order to the lens laboratory, which happens once we have checked your prescription. Tell us as soon as you can. Our order confirmation email says when your lenses go into production.
 - After that, you can't cancel the lenses or return them just because you've changed your mind, the frame doesn't suit you, or you don't like how the lenses feel.
@@ -122,5 +121,4 @@ If we can't settle it, you may be able to use an alternative dispute resolution 
 
 ## Contact
 
-Ward End Eye Care, 644 Washwood Heath Rd, Birmingham B8 2HQ
-Use the contact form on this site, or message us on WhatsApp.
+Ward End Eye Care, 644 Washwood Heath Rd, Birmingham B8 2HQ Use the contact form on this site, or message us on WhatsApp.

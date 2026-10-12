@@ -34,108 +34,44 @@ The CPT fixes this properly: the submit handler reads the durable definition dir
 
 ## 2. Identity — `form_id` stays the string slug
 
-The existing `{prefix}sgs_form_submissions` table stores `form_id varchar(100)`. The CPT's
-`post_name` (its slug) **is** that string — the post ID is an internal handle only and
-**never** enters the submissions table. This means:
+The existing `{prefix}sgs_form_submissions` table stores `form_id varchar(100)`. The CPT's `post_name` (its slug) **is** that string — the post ID is an internal handle only and **never** enters the submissions table. This means:
 
 - Zero migration for the submissions table or its `form_id` index.
 - The existing block attribute `formId` continues to work unchanged.
-- Resolution mirrors the existing `resolve_modal()` precedent exactly:
-  `resolve_form( string $slug ): ?WP_Post` — `get_page_by_path( $slug, OBJECT, 'sgs_form' )`,
-  validate `post_status === 'publish'`, fail closed (render nothing / a clear editor notice)
-  if unresolved.
+- Resolution mirrors the existing `resolve_modal()` precedent exactly: `resolve_form( string $slug ): ?WP_Post` — `get_page_by_path( $slug, OBJECT, 'sgs_form' )`, validate `post_status === 'publish'`, fail closed (render nothing / a clear editor notice) if unresolved.
 - **A slug rename is blocked** once a form has at least 1 submission (`guard_form_slug_rename` on `wp_insert_post_data`, checked against the submissions table; no second durable store to maintain), because an unguarded rename silently orphans every historical submission's join. A form with zero submissions may still be renamed freely.
 
 ## 3. CPT registration
 
-Merge into the SAME shared `register_post_type()` args array in `class-sgs-block-cpts.php`
-used by header/footer/drawer/mega-menu (`public: false`, `show_in_rest: true`). **Three
-decisions are explicit, not inherited silently:**
+Merge into the SAME shared `register_post_type()` args array in `class-sgs-block-cpts.php` used by header/footer/drawer/mega-menu (`public: false`, `show_in_rest: true`). **Three decisions are explicit, not inherited silently:**
 
-- **FR-42-1 -- Capability.** The capability is literally
-  `edit_sgs_forms`. Granted to `administrator` and `editor` only (never `author`/
-  `contributor` — this CPT's config can gate a form's own auth requirement, so an
-  over-broad grant is a real access-control risk, not just tidiness). Grant path: a single
-  `add_cap()` call in the plugin's own activation hook (mirroring how every other shared
-  capability in this codebase is granted — no filter, no runtime check-and-add). Bean's own
-  admin account holds `administrator` and therefore has this capability automatically; no
-  separate grant step is needed for the framework owner.
-- **FR-42-2 -- `custom-fields` support.** Skip `custom-fields` entirely.
-  All form settings (including `requireLogin`, `rateLimit`) live as `sgs/form` root block
-  attributes, exactly as they do today — this avoids re-deriving the exact
-  `register_meta( ..., 'show_in_rest' => true )` gap this repo has already shipped once
-  (2026-06-02, product-card meta).
+- **FR-42-1 -- Capability.** The capability is literally `edit_sgs_forms`. Granted to `administrator` and `editor` only (never `author`/ `contributor` — this CPT's config can gate a form's own auth requirement, so an over-broad grant is a real access-control risk, not just tidiness). Grant path: a single `add_cap()` call in the plugin's own activation hook (mirroring how every other shared capability in this codebase is granted — no filter, no runtime check-and-add). Bean's own admin account holds `administrator` and therefore has this capability automatically; no separate grant step is needed for the framework owner.
+- **FR-42-2 -- `custom-fields` support.** Skip `custom-fields` entirely. All form settings (including `requireLogin`, `rateLimit`) live as `sgs/form` root block attributes, exactly as they do today — this avoids re-deriving the exact `register_meta( ..., 'show_in_rest' => true )` gap this repo has already shipped once (2026-06-02, product-card meta).
 - **FR-42-3 -- `revisions`.** Revisions stay on (the shared default) as plain editorial history; retention cap 10 via a `wp_revisions_to_keep` filter scoped to `post_type === 'sgs_form'` and `sgs_choice_flow` (Spec 43 FR-43-8), matching this project's existing per-post-type revision-cap pattern.
 
 ## 4. The picker: one shared `SavedPostPicker`, reading the CPT's own REST collection
 
-No new REST endpoint and no bespoke search widget. `SavedPostPicker`
-(`plugins/sgs-blocks/src/components/SavedPostPicker.js`) is a popover with a search box and a
-result list, fed by core-data (`getEntityRecords( 'postType', <cpt>, { search, per_page: 20,
-status: 'publish' } )`) from the post type's own `/wp/v2/<rest_base>` collection. This needs only
-`show_in_rest: true` on the CPT (§3). It is deliberately not `LinkControl` with
-`suggestionsQuery`: that calls core's `/wp/v2/search`, which lists only post types registered
-`public` AND `show_in_rest`, and these CPTs are non-public (no front-end singles, no sitemap
-entries), so the request fails with HTTP 400. **Spec 43's "Linked flow" picker (`sgs/choice-flow`
-`flowId` + `flowIsLinked`, FR-43-6) uses the same component with `sgs_choice_flow` -- one picker
-component, two post types, never two implementations.**
+No new REST endpoint and no bespoke search widget. `SavedPostPicker` (`plugins/sgs-blocks/src/components/SavedPostPicker.js`) is a popover with a search box and a result list, fed by core-data (`getEntityRecords( 'postType', <cpt>, { search, per_page: 20, status: 'publish' } )`) from the post type's own `/wp/v2/<rest_base>` collection. This needs only `show_in_rest: true` on the CPT (§3). It is deliberately not `LinkControl` with `suggestionsQuery`: that calls core's `/wp/v2/search`, which lists only post types registered `public` AND `show_in_rest`, and these CPTs are non-public (no front-end singles, no sitemap entries), so the request fails with HTTP 400. **Spec 43's "Linked flow" picker (`sgs/choice-flow` `flowId` + `flowIsLinked`, FR-43-6) uses the same component with `sgs_choice_flow` -- one picker component, two post types, never two implementations.**
 
-**FR-42-4:** the form-embed block/attribute stores the resolved slug (not a raw post ID —
-see §2). The picker (`SavedPostPicker`) searches the `sgs_form` post type's own REST collection
-(`getEntityRecords( 'postType', 'sgs_form', { search } )`), because core's `/wp/v2/search` lists
-only public post types and `sgs_form` is non-public.
+**FR-42-4:** the form-embed block/attribute stores the resolved slug (not a raw post ID — see §2). The picker (`SavedPostPicker`) searches the `sgs_form` post type's own REST collection (`getEntityRecords( 'postType', 'sgs_form', { search } )`), because core's `/wp/v2/search` lists only public post types and `sgs_form` is non-public.
 
-**FR-42-5 (client-clarity fix):** the picker must show more than a bare title in its
-suggestion list. Every row carries a type badge naming the post type's singular label (read from
-`getPostType`, so "Form" for `sgs_form`), because two similarly-named draft forms
-are otherwise indistinguishable in the list.
+**FR-42-5 (client-clarity fix):** the picker must show more than a bare title in its suggestion list. Every row carries a type badge naming the post type's singular label (read from `getPostType`, so "Form" for `sgs_form`), because two similarly-named draft forms are otherwise indistinguishable in the list.
 
 ## 5. No pricing in forms
 
 `sgs/form` and its field blocks (including `sgs/form-field-tiles`) never carry a price attribute of any kind. A use case that needs pricing is a `sgs/choice-flow` (Spec 43).
 
-**FR-42-6 -- draft resumption (NOT BUILT; only the step index is kept, so answers are lost on refresh):** draft resumption — client-side,
-anonymous, ephemeral, same-browser-only persistence of in-progress answers
-(`sessionStorage`/`localStorage` keyed to the form slug) — stays a plain `sgs/form`
-requirement, since a long enquiry form losing its answers on an accidental refresh is a
-real, generic problem with no pricing involved.
+**FR-42-6 -- draft resumption (NOT BUILT; only the step index is kept, so answers are lost on refresh):** draft resumption — client-side, anonymous, ephemeral, same-browser-only persistence of in-progress answers (`sessionStorage`/`localStorage` keyed to the form slug) — stays a plain `sgs/form` requirement, since a long enquiry form losing its answers on an accidental refresh is a real, generic problem with no pricing involved.
 
 ## 6. Reference lifecycle — the orphan/delete/race contract
 
-WordPress's own closest structural analogue to this proposal — Synced Patterns (`wp_block`,
-a definition-as-post referenced by ID, resolved at render time) — has an open, multi-year bug
-log of exactly this class of failure, not registration bugs:
-[reusable-block content deleted if the page saves before the reference finishes loading](https://github.com/WordPress/gutenberg/issues/33234)
-(a load-order race with no recovery),
-[trashing the definition renders an orphaned error card everywhere it's embedded](https://github.com/WordPress/gutenberg/issues/14127),
-and [a self-referencing block crashes the editor](https://github.com/WordPress/gutenberg/issues/21117).
+WordPress's own closest structural analogue to this proposal — Synced Patterns (`wp_block`, a definition-as-post referenced by ID, resolved at render time) — has an open, multi-year bug log of exactly this class of failure, not registration bugs: [reusable-block content deleted if the page saves before the reference finishes loading](https://github.com/WordPress/gutenberg/issues/33234) (a load-order race with no recovery), [trashing the definition renders an orphaned error card everywhere it's embedded](https://github.com/WordPress/gutenberg/issues/14127), and [a self-referencing block crashes the editor](https://github.com/WordPress/gutenberg/issues/21117).
 
-**FR-42-7a -- trashed or missing form.** The referenced
-`sgs_form` post trashed/missing while an embed still references its slug degrades to a
-clear, named copy state, never a raw PHP error. Two audiences, two messages (a single wp-admin-vocabulary message shown to a public visitor is a dead
-end): (i) **public-visitor-facing** — a generic fixed, translatable fallback ("This form
-isn't available right now — please email/call us instead"), never technical vocabulary;
-(ii) **editor-only** (shown only to a logged-in user with `edit_sgs_forms`) — the concrete
-next action, e.g. "This form reference is broken — go to Forms → find `<slug>` →
-republish, or unlink this block." This is the whole of FR-42-7a's scope: `resolve_form()`
-returning null plus these two notices. Cheap, and it is what actually blocks the mandatory
-rebuild (FR-42-9/FR-42-11) — not the items in FR-42-7b below.
+**FR-42-7a -- trashed or missing form.** The referenced `sgs_form` post trashed/missing while an embed still references its slug degrades to a clear, named copy state, never a raw PHP error. Two audiences, two messages (a single wp-admin-vocabulary message shown to a public visitor is a dead end): (i) **public-visitor-facing** — a generic fixed, translatable fallback ("This form isn't available right now — please email/call us instead"), never technical vocabulary; (ii) **editor-only** (shown only to a logged-in user with `edit_sgs_forms`) — the concrete next action, e.g. "This form reference is broken — go to Forms → find `<slug>` → republish, or unlink this block." This is the whole of FR-42-7a's scope: `resolve_form()` returning null plus these two notices. Cheap, and it is what actually blocks the mandatory rebuild (FR-42-9/FR-42-11) — not the items in FR-42-7b below.
 
-**FR-42-7b -- delete guard.** A form or choice flow that is still in use cannot be
-trashed or deleted: refuse, never warn (a non-coder client clicks through a warning without
-registering it). "In use" means embedded by slug in any post whose status is publish, future,
-draft, pending or private (the definition post itself excluded), or, for a flow, linked from a
-product's `_sgs_choice_flow` meta. One finder, `Sgs_Cpt_References::all_references()`, feeds both
-this guard and the "Used by" list column. `Sgs_Cpt_Delete_Guard` enforces it on
-`pre_trash_post` / `pre_delete_post`, so the admin list, the block editor, REST and WP-CLI are
-all covered, and each surface names the pages or products: REST returns 409 `sgs_in_use`
-(the block editor shows it as an error notice), the admin list shows a "Still in use" page,
-WP-CLI prints a warning. The Gutenberg #33234 race was checked first and does not apply:
-the embed reads the saved post once for its slug and never edits or saves it (live check: with a
-linked embed loaded, the editor's unsaved-records list is empty).
+**FR-42-7b -- delete guard.** A form or choice flow that is still in use cannot be trashed or deleted: refuse, never warn (a non-coder client clicks through a warning without registering it). "In use" means embedded by slug in any post whose status is publish, future, draft, pending or private (the definition post itself excluded), or, for a flow, linked from a product's `_sgs_choice_flow` meta. One finder, `Sgs_Cpt_References::all_references()`, feeds both this guard and the "Used by" list column. `Sgs_Cpt_Delete_Guard` enforces it on `pre_trash_post` / `pre_delete_post`, so the admin list, the block editor, REST and WP-CLI are all covered, and each surface names the pages or products: REST returns 409 `sgs_in_use` (the block editor shows it as an error notice), the admin list shows a "Still in use" page, WP-CLI prints a warning. The Gutenberg #33234 race was checked first and does not apply: the embed reads the saved post once for its slug and never edits or saves it (live check: with a linked embed loaded, the editor's unsaved-records list is empty).
 
-**Spec 43's `sgs_choice_flow` needs the identical contract — build/test it once, apply to
-both CPTs, do not re-derive it.**
+**Spec 43's `sgs_choice_flow` needs the identical contract — build/test it once, apply to both CPTs, do not re-derive it.**
 
 ## 7. The fail-open rule
 
@@ -143,20 +79,11 @@ both CPTs, do not re-derive it.**
 
 ## 8. Caching + nonce contract
 
-**FR-42-8:** the nonce/config lookup is made genuinely cache-independent
-— it reads the durable `sgs_form` CPT definition directly at submit time (via
-`resolve_form()`, §2) rather than a render-time transient. This is the same fix FR-42-0
-already requires (refuse rather than guess when resolution fails), so no separate
-cache-exclusion rule is needed: a form-carrying page may stay fully cacheable, because the
-security-relevant read happens at submission time against the durable post, never against
-anything the page cache could serve stale.
+**FR-42-8:** the nonce/config lookup is made genuinely cache-independent — it reads the durable `sgs_form` CPT definition directly at submit time (via `resolve_form()`, §2) rather than a render-time transient. This is the same fix FR-42-0 already requires (refuse rather than guess when resolution fails), so no separate cache-exclusion rule is needed: a form-carrying page may stay fully cacheable, because the security-relevant read happens at submission time against the durable post, never against anything the page cache could serve stale.
 
 ## 9. Migration — mandatory, full rebuild, no deprecation path
 
-**Owner-directed (Bean, 2026-09-14):** every form goes through the CPT-backed system — there is
-no "simple form stays inline" exception. Reasoning given: a genuinely one-off form is rare,
-and the whole point of a unified form setup is consistent analytics tracking and A/B testing
-across every form on a site, which an opt-out path would fragment.
+**Owner-directed (Bean, 2026-09-14):** every form goes through the CPT-backed system — there is no "simple form stays inline" exception. Reasoning given: a genuinely one-off form is rare, and the whole point of a unified form setup is consistent analytics tracking and A/B testing across every form on a site, which an opt-out path would fragment.
 
 **FR-42-9:** the mandate is enforced in the editor (owner decision 2026-09-26). Outside a `sgs_form` post, `sgs/form` is an embed (`plugins/sgs-blocks/src/blocks/form/FormEmbedEdit.js`): pick a saved form, create one by name (published and linked in one step), or, for an inline form (older content or clone output), "Save as reusable form" moves its fields into a new saved form and links it. Fields are built only inside the saved form, whose settings show its Form ID as the slug. A linked form renders with `formId` set to the saved form's slug, whatever the definition stores, so submissions and rate limits always key on the slug (§2).
 
@@ -166,26 +93,13 @@ across every form on a site, which an opt-out path would fragment.
 
 ## 11. Sequencing
 
-**FR-42-11:** the reference-lifecycle contract (§6) and the picker (§4) are proven stable
-before the mandatory rebuild (§9) runs at scale — a bug in the CPT alone costs a broken
-contact form; running the mandatory rebuild across every existing form on top of an
-unproven reference mechanism multiplies that cost by however many forms exist.
+**FR-42-11:** the reference-lifecycle contract (§6) and the picker (§4) are proven stable before the mandatory rebuild (§9) runs at scale — a bug in the CPT alone costs a broken contact form; running the mandatory rebuild across every existing form on top of an unproven reference mechanism multiplies that cost by however many forms exist.
 
 ## 12. Explicitly still open — do not silently invent
 
-**FR-42-12:** preset starter patterns (Contact / Booking) remain an **open brainstorm
-item**, not a settled requirement of this spec. This research pass did not find a
-field-by-field breakdown for any single competitor's template (a genuine, named research
-gap) — a follow-up session must complete that research before any preset ships.
+**FR-42-12:** preset starter patterns (Contact / Booking) remain an **open brainstorm item**, not a settled requirement of this spec. This research pass did not find a field-by-field breakdown for any single competitor's template (a genuine, named research gap) — a follow-up session must complete that research before any preset ships.
 
-**FR-42-13 -- analytics (deferred).** §9's justification for making CPT-backed
-reuse *mandatory* rather than opt-in is "consistent analytics tracking and A/B testing
-across every form on a site", and this spec delivers no analytics or A/B requirement. The policy imposes real friction (every form is a two-object edit) in exchange for a stated benefit nothing in this document delivers. **Disclosed and explicitly deferred, same status
-as FR-42-12** — a minimal analytics surface (impression/start/submit events keyed to
-`form_id` + a `form_schema_version` stamp, so historical submissions aren't silently
-compared across incompatible form edits) is real, scoped-but-unbuilt follow-up work, not
-invented here. Until it ships, §9's justification is aspirational, not delivered — say so
-plainly rather than implying the benefit already exists.
+**FR-42-13 -- analytics (deferred).** §9's justification for making CPT-backed reuse *mandatory* rather than opt-in is "consistent analytics tracking and A/B testing across every form on a site", and this spec delivers no analytics or A/B requirement. The policy imposes real friction (every form is a two-object edit) in exchange for a stated benefit nothing in this document delivers. **Disclosed and explicitly deferred, same status as FR-42-12** — a minimal analytics surface (impression/start/submit events keyed to `form_id` + a `form_schema_version` stamp, so historical submissions aren't silently compared across incompatible form edits) is real, scoped-but-unbuilt follow-up work, not invented here. Until it ships, §9's justification is aspirational, not delivered — say so plainly rather than implying the benefit already exists.
 
 ## 13. Requirement index
 

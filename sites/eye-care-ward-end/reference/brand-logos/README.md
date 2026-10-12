@@ -2,21 +2,15 @@
 
 ## Source
 
-All files pulled from JP Opticians UK (`https://jpopticians.com/jp_uk`), which serves the
-raw (un-resized) copy of each brand-strip logo at:
+All files pulled from JP Opticians UK (`https://jpopticians.com/jp_uk`), which serves the raw (un-resized) copy of each brand-strip logo at:
 
 ```
 https://jpopticians.com/media/logos/brand-logos/hyva-spex4less/small/<slug>.jpg
 ```
 
-(A `webp`-converted, same-resolution copy of the same file is also served at
-`https://jpopticians.com/media/mf_webp/jpg/media/logos/brand-logos/hyva-spex4less/small/<slug>.webp`
-via the site's on-the-fly image-conversion layer — not used here since the raw JPG/PNG is
-identical resolution and simpler to archive.)
+(A `webp`-converted, same-resolution copy of the same file is also served at `https://jpopticians.com/media/mf_webp/jpg/media/logos/brand-logos/hyva-spex4less/small/<slug>.webp` via the site's on-the-fly image-conversion layer — not used here since the raw JPG/PNG is identical resolution and simpler to archive.)
 
-**No SVGs exist for any of these logos on the site.** Every asset is a small raster strip
-image (this is the size the theme uses to show a brand's logo on its product tiles/pages),
-not a scalable vector — see "Anything odd" below.
+**No SVGs exist for any of these logos on the site.** Every asset is a small raster strip image (this is the size the theme uses to show a brand's logo on its product tiles/pages), not a scalable vector — see "Anything odd" below.
 
 ## Coverage: 39 of 44 target brands found
 

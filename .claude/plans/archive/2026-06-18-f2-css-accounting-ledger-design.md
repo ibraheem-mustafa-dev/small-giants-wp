@@ -96,8 +96,7 @@ Operate on the **parsed numeric value** of `min-width`/`max-width` (tinycss2 tok
 - `max-width` value in the mobile device band {767, 767.98, 768} (and no conflicting min-width) → **Mobile**;
 - `min-width` 768 AND `max-width` in {1023, 1024} → **Tablet**;
 - `min-width` 1024 with no max-width → **Desktop**;
-- **anything else** — including `max-width:600 / 640 / 481 / 781` (visual breakpoints), `min-width:768` alone (spans tablet+desktop), `min-width:1280`, `orientation`, `print`, `min-resolution`, `prefers-*`, any compound not matching the above → **`Other:<verbatim-condition>`**. Never coerced into a device tier, never dropped (STOP-8 / Family-F / D228 lock). **A `max-width:600px` is `Other:(max-width:600px)`, NEVER Mobile** — snapping it to Mobile is the CHEAT the rt-media-600 fixture red-teams.
-`media_kind=supports` or `none` → `Base` (unless an `@media` is also in the stack). Document explicitly: a standalone `@media (min-width:768px)` is `Other:` by design (it spans Tablet+Desktop — a visual breakpoint, not a device tier).
+- **anything else** — including `max-width:600 / 640 / 481 / 781` (visual breakpoints), `min-width:768` alone (spans tablet+desktop), `min-width:1280`, `orientation`, `print`, `min-resolution`, `prefers-*`, any compound not matching the above → **`Other:<verbatim-condition>`**. Never coerced into a device tier, never dropped (STOP-8 / Family-F / D228 lock). **A `max-width:600px` is `Other:(max-width:600px)`, NEVER Mobile** — snapping it to Mobile is the CHEAT the rt-media-600 fixture red-teams. `media_kind=supports` or `none` → `Base` (unless an `@media` is also in the stack). Document explicitly: a standalone `@media (min-width:768px)` is `Other:` by design (it spans Tablet+Desktop — a visual breakpoint, not a device tier).
 
 ## 6. (REMOVED in v2) Shorthand expansion
 

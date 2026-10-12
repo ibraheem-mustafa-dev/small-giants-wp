@@ -12,12 +12,7 @@ Every element that carries a shadow gets a darkness check on the surface it sits
 - Text already has a darkness rule: `sgs_wcag_text_colour_for_bg` picks white text when white beats black on WCAG contrast (the crossover is luminance about 0.179). JS twin: `src/utils/wcag-contrast.js::calculateRelativeLuminance`.
 
 ## Problems found
-P1. **The cut-off misses real dark bands.** Palette colours from `sites/*/theme-snapshot.json` that a designer uses as a dark band but that sit ABOVE 0.05: Indus `primary-dark` #075E80 (0.096), Helping Doctors `primary` #2d6e5e (0.125) and `secondary-dark` #256050 (0.093), healthcare starter `primary` #1A5F6B (0.095), framework `primary-dark` #0F4C4C (0.058). A black shadow is close to invisible on each, and today none gets the dark treatment.
-P2. **Detection sees one attribute of one mechanism.** Ignored: `backgroundOverlayColour` over an image (the colour you actually see), gradients, `rgb()/rgba()`, 8-digit hex, and every block-private surface with its own fill (`nav-drawer::drawerBg`, `mega-panel::panelBg`, card-grid / post-grid card backgrounds, `brand-strip` tiles, `trust-bar` icon circles, nav `submenuBg`).
-P3. **Many shadows cannot be re-tinted.** The dark scope works by re-declaring variables. A raw shape with no colour falls back to the literal `SGS_SHADOW_DEFAULT_COLOUR` (`#0000001A`); about 30 block `style.css` rules and theme `utilities.css` / `woocommerce.css` hardcode `box-shadow` colours; `supports.shadow` blocks serialise whatever the style engine gives.
-P4. **Forced-colours coverage is partial**: not emitted for `--sgs-card-shadow` (card-grid, post-grid, team-member), `supports.shadow` blocks (testimonial, info-box, process-steps, timeline), gallery, or the style.css literals.
-P5. **Probable existing bug**: the six `is-style-elevated` variations (`includes/variations/sgs-*-variations.php`) use `var(--wp--custom--shadow--medium)`, which `theme.json` does not define, so they likely draw no shadow.
-P6. The editor canvas never gets the tone class, so the editor shows the light-surface shadow on a dark band.
+P1. **The cut-off misses real dark bands.** Palette colours from `sites/*/theme-snapshot.json` that a designer uses as a dark band but that sit ABOVE 0.05: Indus `primary-dark` #075E80 (0.096), Helping Doctors `primary` #2d6e5e (0.125) and `secondary-dark` #256050 (0.093), healthcare starter `primary` #1A5F6B (0.095), framework `primary-dark` #0F4C4C (0.058). A black shadow is close to invisible on each, and today none gets the dark treatment. P2. **Detection sees one attribute of one mechanism.** Ignored: `backgroundOverlayColour` over an image (the colour you actually see), gradients, `rgb()/rgba()`, 8-digit hex, and every block-private surface with its own fill (`nav-drawer::drawerBg`, `mega-panel::panelBg`, card-grid / post-grid card backgrounds, `brand-strip` tiles, `trust-bar` icon circles, nav `submenuBg`). P3. **Many shadows cannot be re-tinted.** The dark scope works by re-declaring variables. A raw shape with no colour falls back to the literal `SGS_SHADOW_DEFAULT_COLOUR` (`#0000001A`); about 30 block `style.css` rules and theme `utilities.css` / `woocommerce.css` hardcode `box-shadow` colours; `supports.shadow` blocks serialise whatever the style engine gives. P4. **Forced-colours coverage is partial**: not emitted for `--sgs-card-shadow` (card-grid, post-grid, team-member), `supports.shadow` blocks (testimonial, info-box, process-steps, timeline), gallery, or the style.css literals. P5. **Probable existing bug**: the six `is-style-elevated` variations (`includes/variations/sgs-*-variations.php`) use `var(--wp--custom--shadow--medium)`, which `theme.json` does not define, so they likely draw no shadow. P6. The editor canvas never gets the tone class, so the editor shows the light-surface shadow on a dark band.
 
 ## Design
 
@@ -27,8 +22,7 @@ P6. The editor canvas never gets the tone class, so the editor shows the light-s
 - solid colour (hex 3/6/8, `rgb()/rgba()`, palette var or slug, named keyword via a fixed list): tone of that colour; an 8-digit hex or `rgba` alpha feeds the opacity.
 - gradient: the mean luminance of its stops (parsed from the stored gradient string; any stop that cannot be resolved makes the answer `''`).
 - image with an overlay of opacity 0.5 or more: tone of the overlay; image without such an overlay: `''` (unknown, add nothing; the image is not analysed).
-- empty / `transparent`: `''`, so the element inherits its parent's context through the cascade (a transparent child container of a dark band stays dark).
-Tier objects (overlay opacity per tier): judged on the desktop value; recorded as a limitation, not guessed per tier.
+- empty / `transparent`: `''`, so the element inherits its parent's context through the cascade (a transparent child container of a dark band stays dark). Tier objects (overlay opacity per tier): judged on the desktop value; recorded as a limitation, not guessed per tier.
 
 **D3. Every surface marks itself through one helper**, `sgs_surface_tone_class( array $layers ): string` (returns `sgs-on-dark`, `sgs-on-light` or `''`, and enqueues the dark stylesheet when dark). Callers:
 - `SGS_Container_Wrapper::render` (replaces the current inline block; passes colour, gradient, image + overlay colour and opacity), so every wrapper block (container, hero, cta-section, trust-bar, site-header, site-footer, physics-canvas, card-grid, post-grid ...) is covered at once.
@@ -51,8 +45,7 @@ Tier objects (overlay opacity per tier): judged on the desktop value; recorded a
 3. Detector (survey first: the real counts go in this note before any fix), then D4 and D5 through it, one commit per block family.
 4. D3 for block-private surfaces via the detector list.
 5. D6 editor mirror.
-6. D7.
-Live verification after 2, 3 and 4: the page-53 fixture on eye-care-test extended with a #075E80 band, a gradient band, an image with a dark overlay, a card-grid on a dark band, a drawer with a dark `drawerBg`, and a #777 band (just above the cut-off, expected light); computed `box-shadow` read per card, a screenshot, and forced-colours emulation through the Playwright MCP.
+6. D7. Live verification after 2, 3 and 4: the page-53 fixture on eye-care-test extended with a #075E80 band, a gradient band, an image with a dark overlay, a card-grid on a dark band, a drawer with a dark `drawerBg`, and a #777 band (just above the cut-off, expected light); computed `box-shadow` read per card, a screenshot, and forced-colours emulation through the Playwright MCP.
 
 ## Risks for the council
 - D1 flips mid-tone brand bands (0.05 to 0.18) to dark: shadows there change from black-only to ring plus stronger black. Intended, but it is the widest visible change.

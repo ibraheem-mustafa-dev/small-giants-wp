@@ -14,7 +14,9 @@ schema_emitted: true
 # sgs/trustpilot-reviews -- Visual Diff Report
 
 **Test page:** https://sandybrown-nightingale-600381.hostingersite.com/trustpilot-smoke-test-2/
+
 **Captured at:** 2026-05-11
+
 **Iterations:** v1 (broken layout) -> v3 (3/2/1 cols + content-sized cards) -> v5 (theme-inherited typography) -> v6 (white pill header + unmuted text + clickable logo + arrows in gutter) -> v7 (looping carousel + hover effects)
 
 ## First-paint capture

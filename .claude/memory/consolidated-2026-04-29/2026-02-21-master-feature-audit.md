@@ -1,9 +1,6 @@
 # SGS Framework — Master Feature Audit & Graded Roadmap
 
-> **Date:** 2026-02-21
-> **Last verified:** 2026-04-28 (full visual + harness + Gemini Pro audit pass)
-> **Scope:** Every feature the SGS WordPress Framework could offer — theme, blocks, plugins, interactions, accessibility, performance.
-> **Sources:** 6 parallel research agents auditing Webflow, Framer, Elementor, Kadence, Spectra, GenerateBlocks, Squarespace, Wix, Breakdance, Bricks, PostX, and cutting-edge CSS/JS specs.
+> **Date:** 2026-02-21 **Last verified:** 2026-04-28 (full visual + harness + Gemini Pro audit pass) **Scope:** Every feature the SGS WordPress Framework could offer — theme, blocks, plugins, interactions, accessibility, performance. **Sources:** 6 parallel research agents auditing Webflow, Framer, Elementor, Kadence, Spectra, GenerateBlocks, Squarespace, Wix, Breakdance, Bricks, PostX, and cutting-edge CSS/JS specs.
 
 ## 2026-04-28 STATUS UPDATE — Library Aesthetic Grade: A- (Gemini Pro vision audit)
 
@@ -851,8 +848,7 @@ Phase 2 complete: all 6 P1 blocks built and verified live (Post Grid, Gallery, T
 
 Sessions 3–14 added: animation extension on all blocks, hover effects extension (universal), custom CSS/block-defaults/custom-spacing extensions, 6 more audit blocks (ToC, Pricing, Icon Block, Social Icons, Breadcrumbs, Back to Top), 12 new blocks not in the original audit (mega-menu, mobile-nav, announcement-bar, business-info, google-reviews, heritage-strip, modal, notice-banner, process-steps, svg-background, decorative-image, icon), 31 block patterns, responsive controls on 7 blocks, button variants, schema on Accordion/Team Member/Star Rating/Breadcrumbs, ARIA roles, aria-live, form errors, floating labels, tab indicator, grayscale, image zoom, block link, underline slide, button fill, masonry, min-height, letter-spacing, text-transform, text-wrap: balance, :user-invalid CSS, counter animation, staggered animation.
 
-> **"Code-confirmed"** = file exists in codebase, confirmed 2026-04-18. Does NOT mean live-verified on palestine-lives.org unless stated.
-> **Max expanded** from 294 → 310 to account for 12 new blocks not in the original feature list (+1 per new block, 4 already had higher max). Patterns max updated to 31 (SGS DB count).
+> **"Code-confirmed"** = file exists in codebase, confirmed 2026-04-18. Does NOT mean live-verified on palestine-lives.org unless stated. **Max expanded** from 294 → 310 to account for 12 new blocks not in the original feature list (+1 per new block, 4 already had higher max). Patterns max updated to 31 (SGS DB count).
 
 | Domain | Feb 2026 | 2026-04-18 | Max (updated) | % | Change |
 |--------|----------|------------|---------------|---|--------|

@@ -1,10 +1,6 @@
 # Live verification: where a surface sits (Wave 3C U-3 + U-8), 2026-09-25
 
-verdict: PASS
-intent_capture_passed: true
-commit_sha: 9f3fc5071 (feat(nav): where a drawer and a menu panel sit); live-check fixes dd2db8a1f (panels centre on the visible width; the bridge uses the resting top)
-design: `.claude/reports/2026-09-24-u3-u8-design.md`
-blocks: nav-drawer, nav-bar-menu, nav-drawer-menu (nav-bar-menu and nav-drawer-menu reports point here)
+verdict: PASS intent_capture_passed: true commit_sha: 9f3fc5071 (feat(nav): where a drawer and a menu panel sit); live-check fixes dd2db8a1f (panels centre on the visible width; the bridge uses the resting top) design: `.claude/reports/2026-09-24-u3-u8-design.md` blocks: nav-drawer, nav-bar-menu, nav-drawer-menu (nav-bar-menu and nav-drawer-menu reports point here)
 
 ## Environment and method
 - Site: sandybrown, deployed with `build-deploy.py --target sandybrown` from an isolated worktree. Before the deploy, 24 stored flat `gap` values on sgs/nav-bar-menu and sgs/nav-drawer-menu were folded to `{desktop}` with `plugins/sgs-blocks/scripts/migrate-nav-gap-tier.php` (dry run 24, apply 24, `check` 0); the deploy's oldshape audit had refused the deploy until they were.
@@ -40,10 +36,7 @@ blocks: nav-drawer, nav-bar-menu, nav-drawer-menu (nav-bar-menu and nav-drawer-m
 
 ## U-6 + U-7 (new item markup), 2026-09-25
 
-verdict: PASS
-commit_sha: 3aae1950c (feat(nav): new item markup); gate fixes 777ee5dd4 (Row extras labels, dead-API allowlist)
-design: `.claude/reports/2026-09-25-u6-u7-design.md`
-blocks: nav-drawer-menu, nav-bar-menu, mega-panel, icon-list
+verdict: PASS commit_sha: 3aae1950c (feat(nav): new item markup); gate fixes 777ee5dd4 (Row extras labels, dead-API allowlist) design: `.claude/reports/2026-09-25-u6-u7-design.md` blocks: nav-drawer-menu, nav-bar-menu, mega-panel, icon-list
 
 **Method.** Deployed with `build-deploy.py --target sandybrown --blocks-only` from an isolated worktree (checksums of `includes/helpers-item-effects.php` and `includes/nav-drawer-menu-items.php` match local). `qa-geometry-fixture.php restore`, then `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php exit-cells` on test header 3777 and drawer 3778: the drawer menu points at menu 119 (`qa-hdr-nav`, holding the mega item "Brands", panel post 1745), plus one added page link (the homepage, page 2742, given featured image 3459 for the media cell; both tagged and undone by `restore`). Page `/qa-scrim/`, one headed Chrome window (chrome-devtools), real clicks and real pointer hover, `getComputedStyle`, `getBoundingClientRect`. Page widths from `documentElement.clientWidth`: 1439, 815 (tablet tier), 441 (mobile tier; the smallest this window reaches).
 
@@ -71,11 +64,7 @@ blocks: nav-drawer-menu, nav-bar-menu, mega-panel, icon-list
 
 ## Two-bar burger (M-27 residue), 2026-09-25
 
-Design `.claude/reports/2026-09-25-two-bar-burger-design.md`; commits a19a5c6ee, c16bcb949; deployed to sandybrown.
-Fixture `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php two-bar` (exit-cells plus `burgerBarCount: 2`,
-`burgerMorph: x`, 450ms, `cubic-bezier(0.645,0.045,0.355,1)`). Checked on `/qa-scrim/` at 1440 in the chrome-devtools
-window (1.1x zoom: `documentElement.clientWidth` 1295), by clicking the burger and sampling the bars with
-`requestAnimationFrame`.
+Design `.claude/reports/2026-09-25-two-bar-burger-design.md`; commits a19a5c6ee, c16bcb949; deployed to sandybrown. Fixture `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php two-bar` (exit-cells plus `burgerBarCount: 2`, `burgerMorph: x`, 450ms, `cubic-bezier(0.645,0.045,0.355,1)`). Checked on `/qa-scrim/` at 1440 in the chrome-devtools window (1.1x zoom: `documentElement.clientWidth` 1295), by clicking the burger and sampling the bars with `requestAnimationFrame`.
 
 | Exit cell | Expected | Live |
 |---|---|---|
@@ -84,35 +73,24 @@ window (1.1x zoom: `documentElement.clientWidth` 1295), by clicking the burger a
 | Morph timing (wearecollins) | 0.45s `cubic-bezier(0.645,0.045,0.355,1)` | computed `transition: transform 0.45s cubic-bezier(0.645, 0.045, 0.355, 1)`; mid-turn at 120, 225 and 350ms, settled by 600ms |
 | X at open (wearecollins) | two bars crossed at ±45deg in the same slot | `matrix(0.707107, ±0.707107, …, 0, ±3.25)`; both opacity 1; centres 0.01px apart |
 
-Screenshot (local, gitignored): `reports/visual-diff/two-bar-burger-open-1440.png`. Three-bar default: markup byte-identical to the parent
-commit (`tests/php/run-burger-two-bar-standalone.php`, 23 of 23, negative control: the pre-change function given 2
-still draws three bars). Recorded divergence: bar thickness 2px and width 24px against the references' 1.5px and 16
-to 18px.
+Screenshot (local, gitignored): `reports/visual-diff/two-bar-burger-open-1440.png`. Three-bar default: markup byte-identical to the parent commit (`tests/php/run-burger-two-bar-standalone.php`, 23 of 23, negative control: the pre-change function given 2 still draws three bars). Recorded divergence: bar thickness 2px and width 24px against the references' 1.5px and 16 to 18px.
 
 ## U-4 (type scaling, cut to vw/vh units), 2026-09-25
 
-Commit 61ae4cf99, deployed to sandybrown (all 120 fast gates, the 4 full gates and the 3 live motion probes green). The
-fixture's `sgs/nav-bar-menu` (header 3777) was set to `itemFontSize: {desktop: 1.5}`, `itemFontSizeUnit: vw` on
-`/qa-scrim/`, read in the chrome-devtools window, then the two keys were removed again (the pre-fixture backup has
-neither).
+Commit 61ae4cf99, deployed to sandybrown (all 120 fast gates, the 4 full gates and the 3 live motion probes green). The fixture's `sgs/nav-bar-menu` (header 3777) was set to `itemFontSize: {desktop: 1.5}`, `itemFontSizeUnit: vw` on `/qa-scrim/`, read in the chrome-devtools window, then the two keys were removed again (the pre-fixture backup has neither).
 
 | Window (`window.innerWidth`) | Expected (1.5%) | `.sgs-nav-bar-menu__link` computed font-size |
 |---|---|---|
 | 1309px | 19.635px | 19.6364px |
 | 1636px | 24.54px | 24.5455px |
 
-The server build carries the new unit list (`build/blocks/heading/index.js` contains `"vw","vh"`). The editor picker and
-the heading preview fix join the batched editor round-trip pass.
+The server build carries the new unit list (`build/blocks/heading/index.js` contains `"vw","vh"`). The editor picker and the heading preview fix join the batched editor round-trip pass.
 
 ## Link padding (`itemPadding`) and per-run deploy names, 2026-09-25
 
-Commits 4cf0b9069 (setting), f06b7133f (generated rows), 7c61b7d16 (deploy script); deployed to sandybrown (120 fast
-gates, 4 full gates, 3 live motion probes green). The deploy itself used the new per-run names
-(`sgs-deploy-33728-1790309527.tar` and folder); afterwards the SSH home held no `sgs-deploy*` file and no `~/plugins`
-or `~/theme` folder.
+Commits 4cf0b9069 (setting), f06b7133f (generated rows), 7c61b7d16 (deploy script); deployed to sandybrown (120 fast gates, 4 full gates, 3 live motion probes green). The deploy itself used the new per-run names (`sgs-deploy-33728-1790309527.tar` and folder); afterwards the SSH home held no `sgs-deploy*` file and no `~/plugins` or `~/theme` folder.
 
-On `/qa-scrim/` at `window.innerWidth` 1636 (the bar shows; collapse is 1600), with header 3777's
-`sgs/nav-bar-menu` set to `itemPadding: {desktop: 14px 24px 14px 24px}` and `itemPaddingShiftHover: 8px`:
+On `/qa-scrim/` at `window.innerWidth` 1636 (the bar shows; collapse is 1600), with header 3777's `sgs/nav-bar-menu` set to `itemPadding: {desktop: 14px 24px 14px 24px}` and `itemPaddingShiftHover: 8px`:
 
 | Check | Expected | Live |
 |---|---|---|
@@ -121,20 +99,13 @@ On `/qa-scrim/` at `window.innerWidth` 1636 (the bar shows; collapse is 1600), w
 | Hovered "Shop" link, padding-left (real pointer hover) | 24px + 8px = 32px (the old rule gave 12px + 8px = 20px) | 32px |
 | Unhovered "FAQs" link, padding-left | 24px | 24px |
 
-Both keys were then removed again (the fixture backup has neither). Test: `tests/php/run-nav-link-padding-standalone.php`
-(7 of 7, negative control on d95f232c0). Deploy script: `--self-test` 16 of 16, plus a simulated second run whose
-upload and unpacked folder survived this run's cleanup.
+Both keys were then removed again (the fixture backup has neither). Test: `tests/php/run-nav-link-padding-standalone.php` (7 of 7, negative control on d95f232c0). Deploy script: `--self-test` 16 of 16, plus a simulated second run whose upload and unpacked folder survived this run's cleanup.
 
 ## U-10 + U-14 (header-row structure), 2026-09-25
 
-Commits 0fbe085f1 (build), 96b375e53, d91764560, 5a511b9a6, 8baee8dee, 5781740e7 (DB rows and gate fixes); design
-`.claude/reports/2026-09-25-u10-u14-design.md`. Deployed to sandybrown (build-deploy, motion probes green). Fixture
-`plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php` cases `header-row` and `detach-chip` on `/qa-scrim/`
-(header 3777, drawer 3778, menu collapse 1600), then put back to `two-bar`. Chrome window at 1440, `innerWidth` 1309
-(1.1x zoom), logged in (admin bar 32px).
+Commits 0fbe085f1 (build), 96b375e53, d91764560, 5a511b9a6, 8baee8dee, 5781740e7 (DB rows and gate fixes); design `.claude/reports/2026-09-25-u10-u14-design.md`. Deployed to sandybrown (build-deploy, motion probes green). Fixture `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php` cases `header-row` and `detach-chip` on `/qa-scrim/` (header 3777, drawer 3778, menu collapse 1600), then put back to `two-bar`. Chrome window at 1440, `innerWidth` 1309 (1.1x zoom), logged in (admin bar 32px).
 
-`header-row`: "Float over the page" at desktop, the top row's phone `sgsCollapseVisibility: hide`, its email `only`,
-"Whole row opens the menu" at desktop with the burger magnet on.
+`header-row`: "Float over the page" at desktop, the top row's phone `sgsCollapseVisibility: hide`, its email `only`, "Whole row opens the menu" at desktop with the burger magnet on.
 
 | Family / check | Expected | Live |
 |---|---|---|
@@ -147,8 +118,7 @@ Commits 0fbe085f1 (build), 96b375e53, d91764560, 5a511b9a6, 8baee8dee, 5781740e7
 | M-39 burger `::after` | the row's box | 1200 x 67.47 = the row, 1200 x 67.47; burger transform `none` with the magnet on |
 | M-39 click at the row's empty middle | opens the drawer | hit the burger, drawer open, `aria-expanded="true"`; close: `false`, focus on the burger |
 
-`detach-chip`: Sticky off at desktop, `triggerDetach` desktop on, after 330px, size 68.6, offset 48/32. The page was
-lengthened by a test-only injected style (it is shorter than 400px of scroll).
+`detach-chip`: Sticky off at desktop, `triggerDetach` desktop on, after 330px, size 68.6, offset 48/32. The page was lengthened by a test-only injected style (it is shorter than 400px of scroll).
 
 | Check (buck's cells) | Expected | Live |
 |---|---|---|
@@ -159,24 +129,15 @@ lengthened by a test-only injected style (it is shorter than 400px of scroll).
 | Close | both closed, focus back on the chip | both `false`, focus on the chip |
 | Back to scrollY 0 | no chip | hidden |
 
-Batched for the later pass: axe with the drawer opened from the chip, keyboard order past the chip, editor round-trips
-of the four new controls.
+Batched for the later pass: axe with the drawer opened from the chip, keyboard order past the chip, editor round-trips of the four new controls.
 
 ## Menu thumbnail as a short clip: closed by GIF, 2026-09-25
 
-Bean: the menu "video" option is GIF-based. Checked on `/qa-scrim/` (`two-bar` fixture, drawer at 1440, `innerWidth`
-1309): a 3-frame looping GIF (attachment 3945, 320 x 224) set as the linked page's (2742) featured image renders as the
-drawer item's thumbnail from the full-size original (`qa-anim.gif`, natural 320 x 224, no srcset, no resized copy); the
-served file has 3 graphic-control blocks and a NETSCAPE2.0 loop, so it plays. Restored: 2742's featured image back to
-3459, the GIF deleted.
+Bean: the menu "video" option is GIF-based. Checked on `/qa-scrim/` (`two-bar` fixture, drawer at 1440, `innerWidth` 1309): a 3-frame looping GIF (attachment 3945, 320 x 224) set as the linked page's (2742) featured image renders as the drawer item's thumbnail from the full-size original (`qa-anim.gif`, natural 320 x 224, no srcset, no resized copy); the served file has 3 graphic-control blocks and a NETSCAPE2.0 loop, so it plays. Restored: 2742's featured image back to 3459, the GIF deleted.
 
 ## Lane A batched QA pass, 2026-09-25
 
-Scope: the plan's §4 U-6 + U-7 and U-10 + U-14 batched lists (everything lane A built). Fixture
-`plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php` on `/qa-scrim/` (header 3777, drawer 3778, menu
-collapse 1600), cases `two-bar` then `detach-chip` (after `restore`), put back to `two-bar` at the end. Headless
-Playwright for axe and reduced motion; one headed Chrome (chrome-devtools, `innerWidth` 1309 at 1440, 1.1x zoom,
-logged in) for keyboard and the editor. Four defects found, fixed in d954c83f8 and deployed.
+Scope: the plan's §4 U-6 + U-7 and U-10 + U-14 batched lists (everything lane A built). Fixture `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php` on `/qa-scrim/` (header 3777, drawer 3778, menu collapse 1600), cases `two-bar` then `detach-chip` (after `restore`), put back to `two-bar` at the end. Headless Playwright for axe and reduced motion; one headed Chrome (chrome-devtools, `innerWidth` 1309 at 1440, 1.1x zoom, logged in) for keyboard and the editor. Four defects found, fixed in d954c83f8 and deployed.
 
 ### 1. Accessibility
 
@@ -188,21 +149,11 @@ logged in) for keyboard and the editor. Four defects found, fixed in d954c83f8 a
 | The chip itself | `--scope ".sgs-nav-bar-menu__detach" --require-open` | 69 x 69, 0 violations; axe `incomplete`: color-contrast 1:1 (defect 3) |
 | Scroll sideways row at 375 | temporary page 3952 from `sgs/mega-links-with-tiles`, tiles grid `scrollSideways {mobile:on}`, `scrollItemWidth {mobile:236px}` | row `display:flex`, `overflow-x:auto`, snap `x mandatory`, items 236 + 236 in 285 visible (scrollWidth 488); 1440 grid unchanged (272px 272px). Focus ring clipped (defect 2) |
 
-`/qa-scrim/` is 842px tall, so the chip threshold is reachable only in a window of about 480px or less; `axe-run.mjs`
-gained `--height` and `--scroll`, and `openness-guard.mjs::scrollTriggerIntoView` no longer centres a trigger inside a
-fixed box (centring the chip scrolled the page back above 330px).
+`/qa-scrim/` is 842px tall, so the chip threshold is reachable only in a window of about 480px or less; `axe-run.mjs` gained `--height` and `--scroll`, and `openness-guard.mjs::scrollTriggerIntoView` no longer centres a trigger inside a fixed box (centring the chip scrolled the page back above 330px).
 
-Keyboard (headed, `detach-chip`, scrolled to 449): the chip is the last stop in the tab order (it prints on
-`wp_footer`, after the footer's links); the header burger keeps its place in the header, so the order stays
-operable (WCAG 2.4.3). Tab from the last footer link lands on the chip with a visible ring, 47.5px from the side and
-64px from the top (32 + the 32px admin bar: the logged-in offset works). Enter opens the drawer, focus moves to its
-first link, both openers read `aria-expanded="true"`, the page does not move; Escape closes it and returns focus to
-the chip. Sibling dim by keyboard did NOT fire (defect 1).
+Keyboard (headed, `detach-chip`, scrolled to 449): the chip is the last stop in the tab order (it prints on `wp_footer`, after the footer's links); the header burger keeps its place in the header, so the order stays operable (WCAG 2.4.3). Tab from the last footer link lands on the chip with a visible ring, 47.5px from the side and 64px from the top (32 + the 32px admin bar: the logged-in offset works). Enter opens the drawer, focus moves to its first link, both openers read `aria-expanded="true"`, the page does not move; Escape closes it and returns focus to the chip. Sibling dim by keyboard did NOT fire (defect 1).
 
-A partly visible item in a Scroll sideways row is not scrolled into view when it takes focus (the focused button
-showed 37px of 236). Proven browser behaviour, not SGS: a plain page with the same CSS and no scripts does the same
-in every variant (snap on or off, `overflow-y` hidden or not); Chrome scrolls a row only when the focused item is
-entirely out of view. It passes WCAG 2.1 AA and 2.2's 2.4.11 (focus must not be entirely hidden).
+A partly visible item in a Scroll sideways row is not scrolled into view when it takes focus (the focused button showed 37px of 236). Proven browser behaviour, not SGS: a plain page with the same CSS and no scripts does the same in every variant (snap on or off, `overflow-y` hidden or not); Chrome scrolls a row only when the focused item is entirely out of view. It passes WCAG 2.1 AA and 2.2's 2.4.11 (focus must not be entirely hidden).
 
 Reduced motion (Playwright `reducedMotion`, every animation that starts within 1.5s of the click recorded):
 
@@ -213,11 +164,7 @@ Reduced motion (Playwright `reducedMotion`, every animation that starts within 1
 
 ### 2. Editor round-trips
 
-Page 3953 (temporary), built through the editor by `scripts/wp-build-page.js` with default copies of `sgs/site-header`
-(row, `sgs/business-info`, `sgs/nav-bar-menu` ref 119), `sgs/nav-drawer` (`sgs/nav-drawer-menu`), `sgs/icon-list`,
-`sgs/container` and `sgs/heading`. Every new control was set through its own inspector control (the input events a
-user's typing fires), the post saved, the editor reloaded, and every block's attributes compared with the snapshot
-taken before the save.
+Page 3953 (temporary), built through the editor by `scripts/wp-build-page.js` with default copies of `sgs/site-header` (row, `sgs/business-info`, `sgs/nav-bar-menu` ref 119), `sgs/nav-drawer` (`sgs/nav-drawer-menu`), `sgs/icon-list`, `sgs/container` and `sgs/heading`. Every new control was set through its own inspector control (the input events a user's typing fires), the post saved, the editor reloaded, and every block's attributes compared with the snapshot taken before the save.
 
 | Unit | Controls set, and the stored value |
 |---|---|
@@ -232,29 +179,18 @@ taken before the save.
 | Icon-list | Description "A short line under the link" (on item 1), Description colour `primary`, description font size 13px, Numbered with "01, 02, 03" (`numberFormat:decimal-leading-zero`), dim 0.5 with colour `border-subtle`, roll up |
 | Container | Scroll sideways on at the previewed device (`{desktop:on}`), Item width 236 (`{desktop:236px}`); the canvas previews a 236px scrolling row |
 
-After save and reload: 11 blocks, none invalid, nothing dirty, and every value above identical EXCEPT the three custom
-font sizes: `itemFontSize 2 → []`, `descriptionFontSize 13 → []`, `fontSize 4 → []` (defect 4).
+After save and reload: 11 blocks, none invalid, nothing dirty, and every value above identical EXCEPT the three custom font sizes: `itemFontSize 2 → []`, `descriptionFontSize 13 → []`, `fontSize 4 → []` (defect 4).
 
 ### Defects found and fixed (d954c83f8)
 
-1. **Keyboard sibling dim never fired** (drawer menu and icon-list). The keyboard rule was
-   `list:has(> item:has(:focus-visible))`; a `:has()` inside a `:has()` is invalid, so the browser dropped the rule
-   (served once, parsed 0 times; the hover rule parses). Now `list:has(> item :focus-visible)`.
-2. **Focus ring clipped in a Scroll sideways row** (ring bottom 774.5, row bottom 770.5 at 375). The row gains 8px of
-   block padding with a matching negative block margin, added to any band padding or margin. The inline start is
-   still clipped on the first item at rest (the same trick sideways would override the row's `margin-inline:auto`
-   centring); the ring stays visible on three sides, which passes 2.4.7.
-3. **See-through chip** (glyph `rgb(58,46,38)` over a footer of the same colour, 1:1). buck paints a filled round
-   shape once the button detaches; Bean chose option a: an empty chip background paints the opaque surface token.
-4. **Custom typography sizes lost on reload.** Every per-device default `{}` reaches the editor as `[]` (WordPress
-   passes block defaults through PHP); `TypographyControls.js::isTieredValue([])` was false, so the control wrote a
-   flat number into an object attribute and WordPress dropped it. An empty list now counts as an empty tier object.
+1. **Keyboard sibling dim never fired** (drawer menu and icon-list). The keyboard rule was `list:has(> item:has(:focus-visible))`; a `:has()` inside a `:has()` is invalid, so the browser dropped the rule (served once, parsed 0 times; the hover rule parses). Now `list:has(> item :focus-visible)`.
+2. **Focus ring clipped in a Scroll sideways row** (ring bottom 774.5, row bottom 770.5 at 375). The row gains 8px of block padding with a matching negative block margin, added to any band padding or margin. The inline start is still clipped on the first item at rest (the same trick sideways would override the row's `margin-inline:auto` centring); the ring stays visible on three sides, which passes 2.4.7.
+3. **See-through chip** (glyph `rgb(58,46,38)` over a footer of the same colour, 1:1). buck paints a filled round shape once the button detaches; Bean chose option a: an empty chip background paints the opaque surface token.
+4. **Custom typography sizes lost on reload.** Every per-device default `{}` reaches the editor as `[]` (WordPress passes block defaults through PHP); `TypographyControls.js::isTieredValue([])` was false, so the control wrote a flat number into an object attribute and WordPress dropped it. An empty list now counts as an empty tier object.
 
 ### Live after the deploy
 
-d954c83f8 deployed to sandybrown with `build-deploy.py` (all gates; motion probes 3 of 3 green). The first attempt was
-stopped by the oldshape audit, which found this pass's own round-trip page 3953 still holding the three flat font sizes
-the old control wrote; the page was deleted and the second run went through.
+d954c83f8 deployed to sandybrown with `build-deploy.py` (all gates; motion probes 3 of 3 green). The first attempt was stopped by the oldshape audit, which found this pass's own round-trip page 3953 still holding the three flat font sizes the old control wrote; the page was deleted and the second run went through.
 
 | Fix | Live check | Result |
 |---|---|---|
@@ -267,9 +203,7 @@ Cleaned up: pages 3952, 3953 and 3960 deleted; fixture `restore` then `two-bar`.
 
 ### U-3 + U-8 placements (added to the pass)
 
-Fixture: item-markup `restore`, then `qa-geometry-fixture.php exit-cells` (drawer `anchor` trigger / side-start /
-container by tier, menu gap 14px then 0 at mobile, dropdowns and mega panels page-centred), then `restore` and
-item-markup `two-bar` again.
+Fixture: item-markup `restore`, then `qa-geometry-fixture.php exit-cells` (drawer `anchor` trigger / side-start / container by tier, menu gap 14px then 0 at mobile, dropdowns and mega panels page-centred), then `restore` and item-markup `two-bar` again.
 
 | State | Result |
 |---|---|
@@ -278,16 +212,6 @@ item-markup `two-bar` again.
 | axe at 1440 | the burger is hidden at desktop in this fixture (UNMEASURED, correct); the page-centred dropdown opened by keyboard: 1 serious color-contrast, see below |
 | Editor round-trip (page 3972, deleted) | drawer "Panel position" (`anchor {desktop:trigger}`; `side-end` and `container` also offered and stored), "Gap above the panel" 12px (`anchorOffset {desktop:12px}`, an optional item in the Drawer ⋮ menu); bar "Item gap" 20 (`gap {desktop:20px}`), "Open from" page-centred (`submenuAlign`, a string by design), "Mega panels open from" full width (`megaAlign {desktop:full-width}`), "Distance below the bar" 10 (`submenuTopOffset 10px`). After save and reload: no differences, no invalid blocks, nothing dirty |
 
-Dropdown link contrast, fixed at the close-out (6962dd0e6): a bar dropdown's links defaulted to the palette's
-`primary` (`plugins/sgs-blocks/includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css`, the `__sublink` base
-rule), so on Mama's Munches (primary `#e68a95`) they read 2.24:1 on the cream surface `#fbf3dc` at rest. Bean chose
-`text`, as the drawer's sublinks already used; the brand colour stays as the Hover row fill (`submenuLinkBgHover`).
-Deployed to sandybrown (`build-deploy.py --target sandybrown --blocks-only`, all gates, local and server md5 of the
-file equal). With the fixture above, `axe-run.mjs … --open ".sgs-site-header .sgs-nav-bar-menu__subtoggle"
---open-via keyboard --scope ".sgs-site-header .sgs-nav-bar-menu__submenu" --viewport 1440 --require-open`: guard PASS
-(200 x 90, 2 focusable), 0 violations (1 serious color-contrast before). Test:
-`tests/php/run-nav-sublink-default-colour-standalone.php`, 8 of 8, negative control on 7a633476c. Fixture ended on
-`two-bar`.
+Dropdown link contrast, fixed at the close-out (6962dd0e6): a bar dropdown's links defaulted to the palette's `primary` (`plugins/sgs-blocks/includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css`, the `__sublink` base rule), so on Mama's Munches (primary `#e68a95`) they read 2.24:1 on the cream surface `#fbf3dc` at rest. Bean chose `text`, as the drawer's sublinks already used; the brand colour stays as the Hover row fill (`submenuLinkBgHover`). Deployed to sandybrown (`build-deploy.py --target sandybrown --blocks-only`, all gates, local and server md5 of the file equal). With the fixture above, `axe-run.mjs … --open ".sgs-site-header .sgs-nav-bar-menu__subtoggle" --open-via keyboard --scope ".sgs-site-header .sgs-nav-bar-menu__submenu" --viewport 1440 --require-open`: guard PASS (200 x 90, 2 focusable), 0 violations (1 serious color-contrast before). Test: `tests/php/run-nav-sublink-default-colour-standalone.php`, 8 of 8, negative control on 7a633476c. Fixture ended on `two-bar`.
 
-Scroll sideways first-item ring (defect 2 above): Bean accepted the inline-start trim at scroll position 0; recorded
-in Spec 02's Scroll sideways line.
+Scroll sideways first-item ring (defect 2 above): Bean accepted the inline-start trim at scroll position 0; recorded in Spec 02's Scroll sideways line.

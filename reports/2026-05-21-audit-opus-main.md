@@ -1,7 +1,9 @@
 # Pipeline consistency + requirements audit — Opus (main thread)
 
 **Generated:** 2026-05-21
+
 **Auditor:** Opus 4.7 (main agent)
+
 **Files read in full:** `state.md`, `handoff.md`, `cloning-pipeline-flow.md`, `specs/16-DETERMINISTIC-CONVERTER-V2.md`, `~/.claude/skills/sgs-clone/SKILL.md`. Skimmed: `decisions.md`, `mistakes.md`, `architecture.md`, `tooling-map.md`, `skills-commands-map.md` (sized only — not fully read in main thread, but their roles are reflected in the flow doc + spec cross-references). `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` inspected by structure (grep for stage functions, not line-by-line).
 
 ## Headline verdict

@@ -1,8 +1,6 @@
 # Phase 7 Skills Audit (Extended) — WP 7.0 Alignment
 
-Generated: 2026-05-22
-Source-of-truth: developer.wordpress.org/reference/since/7.0.0/, make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/
-Audit dispatched: Phase 7 extended audit (audit-only — NO edits in this dispatch)
+Generated: 2026-05-22 Source-of-truth: developer.wordpress.org/reference/since/7.0.0/, make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/ Audit dispatched: Phase 7 extended audit (audit-only — NO edits in this dispatch)
 
 ---
 
@@ -344,17 +342,12 @@ Audit dispatched: Phase 7 extended audit (audit-only — NO edits in this dispat
 
 ## Cross-skill cohesion notes
 
-**1. AI Connectors routing gap across three skills.**
-`wp-plugin-development` (original Phase 7 audit) documents `wp_connectors_init` registration. `sgs-wp-engine` does not route to it. `wordpress-router`'s `decision-tree.md` has no AI Connectors routing row. `wp-hooks.md` and `wp-hook-graph.md` don't list `wp_connectors_init` in their Spec 17 tables. The Connectors API was added in four independent skill updates but the routing and lookup surfaces weren't synced. A developer asking "how do I add AI to my plugin?" would not find the `wp_connectors_init` hook via any of the SGS routing tools.
+**1. AI Connectors routing gap across three skills.** `wp-plugin-development` (original Phase 7 audit) documents `wp_connectors_init` registration. `sgs-wp-engine` does not route to it. `wordpress-router`'s `decision-tree.md` has no AI Connectors routing row. `wp-hooks.md` and `wp-hook-graph.md` don't list `wp_connectors_init` in their Spec 17 tables. The Connectors API was added in four independent skill updates but the routing and lookup surfaces weren't synced. A developer asking "how do I add AI to my plugin?" would not find the `wp_connectors_init` hook via any of the SGS routing tools.
 
-**2. Spec 13 vs Spec 15 §8.1 reference split.**
-`sgs-db.md` correctly references `Spec 15 §8.1`. `wp-blocks.md` and `clone-patterns.md` both still reference `Spec 13`. Spec 13 was absorbed into Spec 15 on 2026-05-12 (blub.db row 236). This creates an inconsistent canonical reference across three commands that all claim the same BEM convention.
+**2. Spec 13 vs Spec 15 §8.1 reference split.** `sgs-db.md` correctly references `Spec 15 §8.1`. `wp-blocks.md` and `clone-patterns.md` both still reference `Spec 13`. Spec 13 was absorbed into Spec 15 on 2026-05-12 (blub.db row 236). This creates an inconsistent canonical reference across three commands that all claim the same BEM convention.
 
-**3. Hook database version currency — cross-skill blind spot.**
-Both `wp-hooks.md` and `wp-hook-graph.md` claim "7,283 hooks" in the verified database. Neither mentions whether this count covers WP 7.0 hooks. If `wp-docs.py` was indexed against WP 6.x, running `validate wp_connectors_init` would return "unverified" — causing developers to distrust a perfectly valid WP 7.0 hook. Both commands need a single-line data-currency note and a path to re-index.
+**3. Hook database version currency — cross-skill blind spot.** Both `wp-hooks.md` and `wp-hook-graph.md` claim "7,283 hooks" in the verified database. Neither mentions whether this count covers WP 7.0 hooks. If `wp-docs.py` was indexed against WP 6.x, running `validate wp_connectors_init` would return "unverified" — causing developers to distrust a perfectly valid WP 7.0 hook. Both commands need a single-line data-currency note and a path to re-index.
 
-**4. `apiVersion 3` enforcement gap — scaffold to clone pipeline.**
-`wp-scaffold` generates new plugin skeletons (no `apiVersion: 3` guidance), `sgs-clone` produces block markup (no `apiVersion: 3` in compose stage), and `clone-patterns.md` generates pattern PHP (no `apiVersion: 3` in output). All three are independently missing the same WP 7.0 block API version requirement. A full-stack fix requires updating all three consistently.
+**4. `apiVersion 3` enforcement gap — scaffold to clone pipeline.** `wp-scaffold` generates new plugin skeletons (no `apiVersion: 3` guidance), `sgs-clone` produces block markup (no `apiVersion: 3` in compose stage), and `clone-patterns.md` generates pattern PHP (no `apiVersion: 3` in output). All three are independently missing the same WP 7.0 block API version requirement. A full-stack fix requires updating all three consistently.
 
-**5. Iframed-editor present-tense gap — two skills.**
-`sgs-wp-engine` (Phase 1 Read First section) still says the editor "may run" in an iframe. `wp-block-development` (original audit) says it "will run" — future tense. Both should say it "runs in an iframe for `apiVersion: 3` blocks." Two-skill fix, consistent phrasing needed.
+**5. Iframed-editor present-tense gap — two skills.** `sgs-wp-engine` (Phase 1 Read First section) still says the editor "may run" in an iframe. `wp-block-development` (original audit) says it "will run" — future tense. Both should say it "runs in an iframe for `apiVersion: 3` blocks." Two-skill fix, consistent phrasing needed.

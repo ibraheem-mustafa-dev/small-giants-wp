@@ -13,13 +13,9 @@ canary: /loop-fixture-google-reviews/
 
 ## What changed
 
-Gains `loopCarousel` (boolean, **default `false`**) plus an inspector toggle sitting **beside but
-independent of** "Drag to scroll" — never nested inside the drag conditional. `render.php` emits
-`data-sgs-loop="1"` on the scroller under the same gate the drag emit uses; `view.js` excludes
-`[data-sgs-loop-clone]` from item selection so navigation counts REAL cards.
+Gains `loopCarousel` (boolean, **default `false`**) plus an inspector toggle sitting **beside but independent of** "Drag to scroll" — never nested inside the drag conditional. `render.php` emits `data-sgs-loop="1"` on the scroller under the same gate the drag emit uses; `view.js` excludes `[data-sgs-loop-clone]` from item selection so navigation counts REAL cards.
 
-`src/shared/effects/gsap/fx-draggable.js` is not modified. The shared loop module
-`fx-carousel-loop.js` was changed once, universally (see below), not per block.
+`src/shared/effects/gsap/fx-draggable.js` is not modified. The shared loop module `fx-carousel-loop.js` was changed once, universally (see below), not per block.
 
 This block had NO slider navigation at all before this session — `showDots`/`showArrows` were declared, exposed as inspector toggles, read into variables in render.php, and rendered nothing. Arrows and dots were built (following `sgs/trustpilot-reviews`) and wired into the existing Interactivity store rather than a competing plain-DOM listener. The dots proven here are that new navigation.
 
@@ -47,8 +43,7 @@ node scripts/motion-qa/probe-carousel-loop.mjs <url> '.sgs-google-reviews__revie
 
 ## First-paint capture — `scripts/motion-qa/probe-first-paint.mjs`, 3/3 PASS
 
-Run with **JavaScript disabled**, which is strictly harder than "before the module boots": if the
-block is correct with JS off forever, it is correct in the window before JS runs.
+Run with **JavaScript disabled**, which is strictly harder than "before the module boots": if the block is correct with JS off forever, it is correct in the window before JS runs.
 
 | Assertion | Measured |
 |---|---|
@@ -56,16 +51,11 @@ block is correct with JS off forever, it is correct in the window before JS runs
 | NO clones in server markup (cloning is a JS-time construct only) | 0 clones with JS off |
 | The loop marker IS server-emitted, so JS has something to enhance | `data-sgs-loop` present |
 
-The second row is the load-bearing one: clones are a JS-time construct, so any appearing in server
-markup would mean duplicate content shipped to every visitor — and every "real vs cloned" count in
-the section above would be built on sand.
+The second row is the load-bearing one: clones are a JS-time construct, so any appearing in server markup would mean duplicate content shipped to every visitor — and every "real vs cloned" count in the section above would be built on sand.
 
 ## What this report does NOT claim
 
-- **No screenshot pixel-diff.** The verdict rests on measured DOM and geometry plus a real pointer
-  gesture, not image comparison.
-- **Reduced motion for the loop is untested** — unchanged from the gallery exemplar; the loop
-  module has no measured reduced-motion behaviour and Spec 38 §10 carries no row for it.
-- **Keyboard arrow-wrap at the boundary was not separately exercised.** Arrows are present and
-  correctly never disable while looping, but the wrap was driven by pointer and `scrollLeft`.
+- **No screenshot pixel-diff.** The verdict rests on measured DOM and geometry plus a real pointer gesture, not image comparison.
+- **Reduced motion for the loop is untested** — unchanged from the gallery exemplar; the loop module has no measured reduced-motion behaviour and Spec 38 §10 carries no row for it.
+- **Keyboard arrow-wrap at the boundary was not separately exercised.** Arrows are present and correctly never disable while looping, but the wrap was driven by pointer and `scrollLeft`.
 - **Single viewport (1280×900), single client palette.**

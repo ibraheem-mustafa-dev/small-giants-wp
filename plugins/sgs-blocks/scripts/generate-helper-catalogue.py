@@ -429,6 +429,16 @@ def build() -> str:
     return "\n".join(out)
 
 
+
+def _unwrapped(text, nl):
+    """The catalogue with each paragraph and list item on one line (scripts/check-md-wrap.py::unwrap, the commit check)."""
+    import importlib.util as _u
+    spec = _u.spec_from_file_location("check_md_wrap", REPO / "scripts" / "check-md-wrap.py")
+    mod = _u.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.unwrap(text.replace("\r\n", "\n")).replace("\n", nl)
+
+
 def main() -> int:
     if "--json" in sys.argv:
         # Additive output mode alongside the existing default/--check markdown
@@ -444,7 +454,7 @@ def main() -> int:
     if START in doc and END in doc:
         pre, rest = doc.split(START, 1)
         _, post = rest.split(END, 1)
-        new = pre + section + post
+        new = _unwrapped(pre + section + post, nl)
     else:
         raise SystemExit(
             f"FAIL-CLOSED: markers not found in {DOC}. Add {START} / {END} first."

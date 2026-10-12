@@ -1,7 +1,9 @@
 # Visual-diff — sgs/container WS-1c (A3 + A4) — 2026-06-03
 
 **Block:** sgs/container · **Change:** A3 custom-width `margin-inline:auto` centring + A4 `sgs_container_gap_value()` raw-px gap passthrough.
+
 **Target:** canary page 144 (`/rc-fix-verification-mamas-munches/`) @1440, post deploy + OPcache reset.
+
 **Method:** Playwright computed-style (`getBoundingClientRect`) — `C:\tmp\gateB-verify.mjs`.
 
 ## Result — PASS (live-DOM, R-22-11)

@@ -1083,8 +1083,7 @@ Any additional feedback? (Optional)
 
 Submit Feedback
 
-Thank you for your feedback! We truly appreciate it and are always
-striving to improve. 🌟
+Thank you for your feedback! We truly appreciate it and are always striving to improve. 🌟
 
 
 Loading, please wait...

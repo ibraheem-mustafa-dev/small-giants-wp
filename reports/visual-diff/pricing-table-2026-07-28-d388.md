@@ -1,7 +1,9 @@
 # sgs/pricing-table — D388 editor-canvas verification (2026-07-28)
 
 **Change under test:** per-plan CTA now uses `SgsLinkControl`; plans gained `ctaTarget`/`ctaRel`.
+
 **Commit:** 64999cd2, deployed to sandybrown canary.
+
 **Test page:** draft page 1849, "spec35-wave1-d388-2026-07-28".
 
 ## What was exercised

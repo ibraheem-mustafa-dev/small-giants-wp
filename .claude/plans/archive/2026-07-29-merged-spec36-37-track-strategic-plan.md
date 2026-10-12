@@ -11,95 +11,51 @@ architecture: plans/archive/2026-07-29-spec36-37-merged-architecture-and-drawer-
 
 ## Plain-English summary (read this first)
 
-**What this is.** One roadmap for finishing the whole navigation system — headers, footers, menus,
-the slide-out menu drawer, and everything that lives inside them — built as ONE track so every
-piece matches its counterparts. It ends with the proof: directly cloning the reference sites 100%,
-starting with studionamma, to show the system can build anything without cheats or hardcoding.
+**What this is.** One roadmap for finishing the whole navigation system — headers, footers, menus, the slide-out menu drawer, and everything that lives inside them — built as ONE track so every piece matches its counterparts. It ends with the proof: directly cloning the reference sites 100%, starting with studionamma, to show the system can build anything without cheats or hardcoding.
 
-**Why one track.** The drawer hangs off the header mechanically (anchor height, burger placement,
-colour inheritance), so the drawer and its header are built and judged together.
+**Why one track.** The drawer hangs off the header mechanically (anchor height, burger placement, colour inheritance), so the drawer and its header are built and judged together.
 
-**The nav blocks.** `sgs/nav-bar-menu` (the bar), `sgs/nav-drawer-menu` (the drawer's link list) and
-`sgs/nav-drawer` (the drawer panel), all under `plugins/sgs-blocks/src/blocks/<slug>/`. The drawer
-itself lives in the `sgs_drawer` custom post type. Live reports: `reports/visual-diff/nav-bar-menu-*.md`,
-`nav-drawer-*.md`, `nav-drawer-menu-*.md`, `mega-panel-*.md`, `site-header-*.md`.
+**The nav blocks.** `sgs/nav-bar-menu` (the bar), `sgs/nav-drawer-menu` (the drawer's link list) and `sgs/nav-drawer` (the drawer panel), all under `plugins/sgs-blocks/src/blocks/<slug>/`. The drawer itself lives in the `sgs_drawer` custom post type. Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-drawer-menu-*.md`, `mega-panel-*.md`, `site-header-*.md`.
 
-**The shape:** verify what is deployed (Wave 1, closed) → build the capabilities, including the
-drawer's own edit screen (Wave 2, done) → polish the operator experience (Wave 3, partial) → fix the
-defects that are real whatever the design (Wave 3A) → deconstruct every reference into a
-requirements table (Wave 3B) → harmonise the header and nav architecture around what the references
-need (Wave 3C) → clone the references as the final proof (Wave 4) → teach the cloning pipeline to do
-headers/footers automatically (Wave 5).
+**The shape:** verify what is deployed (Wave 1, closed) → build the capabilities, including the drawer's own edit screen (Wave 2, done) → polish the operator experience (Wave 3, partial) → fix the defects that are real whatever the design (Wave 3A) → deconstruct every reference into a requirements table (Wave 3B) → harmonise the header and nav architecture around what the references need (Wave 3C) → clone the references as the final proof (Wave 4) → teach the cloning pipeline to do headers/footers automatically (Wave 5).
 
-**The header is the partial-width thing.** A capped-width or floating header holds the logo, the nav,
-the cart, the CTA and any message together as one centred surface; dropdown and mega panels take
-their width and position from that header when the header is a floating pill (measured on lamalama, the one live pill among the references: the pill and its panel are the same box, width ratio 1.000, no gap; `reports/2026-09-20-w2p-reference-pill-measurements.md`); for any other header the table records the rule each design uses. The architecture is built from the requirements table,
-never from guesses: Wave 3B measures the references, Wave 3C builds what the table says, Wave 4
-proves it.
+**The header is the partial-width thing.** A capped-width or floating header holds the logo, the nav, the cart, the CTA and any message together as one centred surface; dropdown and mega panels take their width and position from that header when the header is a floating pill (measured on lamalama, the one live pill among the references: the pill and its panel are the same box, width ratio 1.000, no gap; `reports/2026-09-20-w2p-reference-pill-measurements.md`); for any other header the table records the rule each design uses. The architecture is built from the requirements table, never from guesses: Wave 3B measures the references, Wave 3C builds what the table says, Wave 4 proves it.
 
-**Done means:** every reference on the clone roster (§ Clone roster — 12 clones, 13 with resn) cloned faithfully
-with zero hardcoding, Bean's eye signed off per clone, every preset extracted, and the clone walker
-consuming the proven system.
+**Done means:** every reference on the clone roster (§ Clone roster — 12 clones, 13 with resn) cloned faithfully with zero hardcoding, Bean's eye signed off per clone, every preset extracted, and the clone walker consuming the proven system.
 
 ## Clone roster (the definitive list — Gate 5 counts against THIS)
 
-**12 clones** = studionamma (first) · buck · dogstudio · fantasy · lamalama · lusion ·
-wearecollins · **Away · ButcherBox · rabbit.tech** (these three are owed a teardown first, W3B-3; the Away reference is the UK storefront) ·
-two designs Bean built in Claude Design, each with a header, nav bar, drawer and mega menu setup:
-**Halcyon Mega Menu** (`sites/Mega-menu design/Mega Menu.dc.html`) and **Indus Foods Mega Menu**
-(`sites/Indus Foods Mega Menu Design/Indus Foods Mega Menu.dc.html`, the client design behind W5-c).
-**resn** (WebGL) joins as the **13th clone** unless the W3B-3 teardown finds an effect that none of
-the four motion tiers (V, G, H, W) can express: Spec 38 is fully built, including the Tier W effects
-(surface treatment, flowing gradient), so its effects are inside the boundary in principle and the
-teardown only has to confirm it effect by effect. **Warm** is not on the roster.
-Gate 5 = **13/13** (12/12 if resn is excluded by the teardown).
+**12 clones** = studionamma (first) · buck · dogstudio · fantasy · lamalama · lusion · wearecollins · **Away · ButcherBox · rabbit.tech** (these three are owed a teardown first, W3B-3; the Away reference is the UK storefront) · two designs Bean built in Claude Design, each with a header, nav bar, drawer and mega menu setup: **Halcyon Mega Menu** (`sites/Mega-menu design/Mega Menu.dc.html`) and **Indus Foods Mega Menu** (`sites/Indus Foods Mega Menu Design/Indus Foods Mega Menu.dc.html`, the client design behind W5-c). **resn** (WebGL) joins as the **13th clone** unless the W3B-3 teardown finds an effect that none of the four motion tiers (V, G, H, W) can express: Spec 38 is fully built, including the Tier W effects (surface treatment, flowing gradient), so its effects are inside the boundary in principle and the teardown only has to confirm it effect by effect. **Warm** is not on the roster. Gate 5 = **13/13** (12/12 if resn is excluded by the teardown).
 
 ---
 
 ## Phase 1 — Scope
 
-- **Goal (one sentence):** every remaining FR in Specs 36+37 shipped or mapped to a named stage,
-  proven by the roster clone gate (§ Clone roster), under the signed gate's DP1–DP7 architecture.
-- **Business context:** SGS's competitive headline is "AI website-builder that clones anything
-  faithfully". Nav/header/footer is the last major surface without that proof. Wave 4's clones are
-  directly reusable as the client-facing preset library — client-build velocity.
-- **Constraints:** no version bumps or deprecations pre-production · shared worktree, commit by
-  exact path · Spec 37 §1.2 both-specs-same-commit rule · nothing renders differently until the
-  studionamma gate (gate §4.3).
-- **Success criteria (measurable):** per-wave gates below; final = FR-37-23 acceptance (live FRs +
-  never-overflow on every live site + no inline + Bean's eye) + every roster clone accepted (13/13, or 12/12 if resn is excluded).
+- **Goal (one sentence):** every remaining FR in Specs 36+37 shipped or mapped to a named stage, proven by the roster clone gate (§ Clone roster), under the signed gate's DP1–DP7 architecture.
+- **Business context:** SGS's competitive headline is "AI website-builder that clones anything faithfully". Nav/header/footer is the last major surface without that proof. Wave 4's clones are directly reusable as the client-facing preset library — client-build velocity.
+- **Constraints:** no version bumps or deprecations pre-production · shared worktree, commit by exact path · Spec 37 §1.2 both-specs-same-commit rule · nothing renders differently until the studionamma gate (gate §4.3).
+- **Success criteria (measurable):** per-wave gates below; final = FR-37-23 acceptance (live FRs + never-overflow on every live site + no inline + Bean's eye) + every roster clone accepted (13/13, or 12/12 if resn is excluded).
 - **Scope boundary (explicitly NOT included):**
-  - Spec 36 Phase 3 (inventory B4): block-menu support, Nav Health, AI-builds-nav, conditional
-    menus, WC category mega, RTL, import/export → **named stage: Spec 36 Phase 3, after this track**.
-  - Inventory A4 "deliberately NOT built" list (per-row sticky, D4 warning, 44px floor, preview
-    link, hand-typed ratio) → not built by design.
+  - Spec 36 Phase 3 (inventory B4): block-menu support, Nav Health, AI-builds-nav, conditional menus, WC category mega, RTL, import/export → **named stage: Spec 36 Phase 3, after this track**.
+  - Inventory A4 "deliberately NOT built" list (per-row sticky, D4 warning, 44px floor, preview link, hand-typed ratio) → not built by design.
   - FR-37-36 custom React picker → optional extension, only if the native modal proves insufficient.
-  - Floating UI stays in the Customiser — the "floating header mode" unit below is the
-    header-block pill mode, not a Customiser move.
+  - Floating UI stays in the Customiser — the "floating header mode" unit below is the header-block pill mode, not a Customiser move.
   - Motion Spec 38 is built; its effects are available to every clone.
-- **Calibration:** estimates anchored to this project's actuals (spec'd multi-commit wave ≈ 1
-  session; FR-36-9a notice ≈ ½ session; drawer variant build ≈ 2 sessions). Estimates quoted LOW
-  per `~/.claude/rules/time-estimates.md`; ADHD-taxed number in brackets.
+- **Calibration:** estimates anchored to this project's actuals (spec'd multi-commit wave ≈ 1 session; FR-36-9a notice ≈ ½ session; drawer variant build ≈ 2 sessions). Estimates quoted LOW per `~/.claude/rules/time-estimates.md`; ADHD-taxed number in brackets.
 
 ---
 
 ## Phase 2 — Waves, units, dependencies
 
-**Legend:** each unit = `[ID] name — surface · output · est (taxed) · critical-path?`. Status words:
-DONE · PARTIAL · NOT DONE.
+**Legend:** each unit = `[ID] name — surface · output · est (taxed) · critical-path?`. Status words: DONE · PARTIAL · NOT DONE.
 
 ### Wave 1 — Fixture & verification wave — CLOSED
 
-All six units are live-verified: the Gate 3 composed-nav fixture (fixture page 1842; mega panel
-1745 populated), mega motion, mini-cart (`displayMode` link/flyout/drawer), search (4 modes), the
-social / business-info / notices controls, and the mega starters picker. The fixtures stay on the
-canary for later waves.
+All six units are live-verified: the Gate 3 composed-nav fixture (fixture page 1842; mega panel 1745 populated), mega motion, mini-cart (`displayMode` link/flyout/drawer), search (4 modes), the social / business-info / notices controls, and the mega starters picker. The fixtures stay on the canary for later waves.
 
 **Residuals carried forward (not blocking Wave 2):**
-1. axe on the Gate-3 mega panel reports 6 primary-colour contrast violations on the Mama's palette,
-   accepted by owner ruling (the colours are the client's brand; content stays distinguishable).
-2. Bean's-eye (R-31-13) sign-off on the mega motion is not yet recorded — book it with the next
-   live URL.
+1. axe on the Gate-3 mega panel reports 6 primary-colour contrast violations on the Mama's palette, accepted by owner ruling (the colours are the client's brand; content stays distinguishable).
+2. Bean's-eye (R-31-13) sign-off on the mega motion is not yet recorded — book it with the next live URL.
 3. The cart/search screenshot set is not captured (numeric probes only).
 
 ### Wave 2 — Capability wave (gate DP2–DP5 + inventory A2/B3 build items)
@@ -128,14 +84,9 @@ canary for later waves.
 | W2-t | Doc closure sweep | DONE | Parking entries archived on resolve | — | no |
 | W2-u | **W1 re-verification on the CPT path** (wave exit) | DONE | Live probe on the CPT-rendered drawer (`reports/2026-09-20-w2u-cpt-drawer-integration.md`): focus trap, Tab and Shift+Tab cycling, ESC and focus return, scroll lock, modal and non-modal, at 375px and 1440px, each with a negative control. Findings: opening the drawer dismisses an open mega menu (they are never open together); a non-modal drawer opened from an in-content trigger leaves `main` live; a trigger-anchored drawer renders off-screen at negative x on fixture page 3699 (resolved by the header width model in W3C-1 and W3C-3) | — | YES |
 
-**Net Wave 2:** DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, p, q, r, s, t, u · PARTIAL i ·
-CLOSED with no framework feature o.
+**Net Wave 2:** DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, p, q, r, s, t, u · PARTIAL i · CLOSED with no framework feature o.
 
-**TEST (critical path):** Happy = default drawer post renders property-identical to the default
-drawer (the DP-signed bar; gate §4.3). Edge = deleted/draft drawer post → FR-36-9a notice;
-multi-header page override. Fail = DP7 harness negative controls (closed panel → VACUOUS; label
-mismatch → FAIL). Integration = header patterns render without an embedded drawer; the burger opens
-the site-wide Active drawer; a per-burger override wins.
+**TEST (critical path):** Happy = default drawer post renders property-identical to the default drawer (the DP-signed bar; gate §4.3). Edge = deleted/draft drawer post → FR-36-9a notice; multi-header page override. Fail = DP7 harness negative controls (closed panel → VACUOUS; label mismatch → FAIL). Integration = header patterns render without an embedded drawer; the burger opens the site-wide Active drawer; a per-burger override wins.
 
 ### Wave 3 — Polish wave
 
@@ -151,29 +102,17 @@ the site-wide Active drawer; a per-burger override wins.
 
 No wave's implementation starts until the previous wave has passed all five steps, in order:
 
-1. **Evidence pack** built by the delegate that did the work (live URLs, computed-style output, the
-   command that produced each claim).
-2. **QC** by someone other than the builder: `/qc-inline` per unit; `/qc-council` (cross-model, each
-   fix-shape a hypothesis measured against a baseline) on any shared-mechanism change; an adversarial
-   review of a table or family list before Bean signs it.
-3. **Docs updated in the same commit** as the code or table they describe: the spec that owns the
-   behaviour (Spec 36 and Spec 37 together, per Spec 37 §1.2), this plan's unit rows, the verify doc,
-   `LEDGER.md`, `decisions.md`, and `specs/README.md` when a spec changes.
-4. **Mechanical gates:** `python .claude/hooks/handoff-preflight.py --check` and
-   `python plugins/sgs-blocks/scripts/lints/lint-spec-drift.py --check` pass.
+1. **Evidence pack** built by the delegate that did the work (live URLs, computed-style output, the command that produced each claim).
+2. **QC** by someone other than the builder: `/qc-inline` per unit; `/qc-council` (cross-model, each fix-shape a hypothesis measured against a baseline) on any shared-mechanism change; an adversarial review of a table or family list before Bean signs it.
+3. **Docs updated in the same commit** as the code or table they describe: the spec that owns the behaviour (Spec 36 and Spec 37 together, per Spec 37 §1.2), this plan's unit rows, the verify doc, `LEDGER.md`, `decisions.md`, and `specs/README.md` when a spec changes.
+4. **Mechanical gates:** `python .claude/hooks/handoff-preflight.py --check` and `python plugins/sgs-blocks/scripts/lints/lint-spec-drift.py --check` pass.
 5. **Bean's gate** where the unit table marks one (W3B-1, W3B-5, the eye check closing 3C).
 
-Delegation rules: `/delegate` picks each model at dispatch. Mechanical measuring and fixture building
-go to a cheaper model; design, the family clustering and every shared-mechanism change go to the
-strongest. Parallel agents get disjoint file lists stated in their brief; a deploy is done once by the
-main thread after the agents' work is read and merged, never by an agent.
+Delegation rules: `/delegate` picks each model at dispatch. Mechanical measuring and fixture building go to a cheaper model; design, the family clustering and every shared-mechanism change go to the strongest. Parallel agents get disjoint file lists stated in their brief; a deploy is done once by the main thread after the agents' work is read and merged, never by an agent.
 
 ### Wave 3A — Independent fixes (real whatever the design)
 
-Every unit is first REPRODUCED inside a real `sgs/site-header` (the fixture pages 3693, 3694, 3699 and
-the Gate 2 pair 3692/3695 hold nav blocks loose in page content, so they show nothing about a header).
-A defect that does not reproduce inside a real header is closed with no change. Each fix carries a
-negative control and is verified on a real header on the canary.
+Every unit is first REPRODUCED inside a real `sgs/site-header` (the fixture pages 3693, 3694, 3699 and the Gate 2 pair 3692/3695 hold nav blocks loose in page content, so they show nothing about a header). A defect that does not reproduce inside a real header is closed with no change. Each fix carries a negative control and is verified on a real header on the canary.
 
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
@@ -183,82 +122,37 @@ negative control and is verified on a real header on the canary.
 | W3A-4 | Mama's Munches canary header | DONE. Hover colour: the header nav (`sgs_header` post 3648) had no `itemColourHover`, so the block's locked default (`primary`, FR-41-36, `includes/nav-menu-css.php::sgs_nav_shared_item_state_css`) turned the hover text pink; the header now sets `itemColourHover` to `text` and the hover text stays `rgb(58, 46, 38)` on the `rgb(245, 194, 200)` pill. Centring: `responsive-logo/render.php` no longer emits `margin-inline-end:auto` for the default left placement (that margin took the row's free space before `space-between` ran); the parent places the logo (FR-36-22 reworded), the gaps left and right of the nav are 225 and 224px, and the nav items' centre equals the centre between the logo and the cart (782). Live evidence: `reports/visual-diff/responsive-logo-2026-09-20.md` (addendum). Two intended side effects: `header-centred` centres its logo, and a drawer with `drawerAlign` centre or right now aligns its logo | 1h (2h) | no |
 | W3A-5 | QA fixtures live inside a real header | DONE: `nav-qa/build-header-fixtures.py` builds four canary pages with the nav inside `sgs/site-header` (page ids 3723 plain, 3733 capped-width, 3734 floating pill, 3735 drawer with submenus; slug prefix `qa-hdr-`). The loose-block pages (3692, 3693, 3694, 3695, 3699) stay until Bean retires them | 1.5h (3h) | YES |
 
-**Fixture facts and reproduction results.** A header placed in page content renders inside `<main>` in
-flow, beneath the site's own header, so each fixture page has two `<header>` elements; probes select
-`.entry-content header.sgs-site-header`. The pill fixture (3734) measures a 1120px header with an 8px
-radius and a mega panel of the same left edge and width (`--sgs-mm-panel-width` 1120px). Inside that
-real header the Shop dropdown computes `list-style-type: none`, link `text-decoration: none`,
-`padding-left: 0`, background `rgb(251, 243, 220)` and a border (command: hover the Shop toggle, then
-read `getComputedStyle` on `.sgs-nav-bar-menu__submenu`), so the bullets, underline, missing surface and
-indent seen on the loose fixture do not occur in a header. W3A-1 is closed: the plain dropdown works on a real header, and the pill mega's 21px gap (the
-plain and capped headers have 0px because the items fill the header's height) is rebuilt in W3C-1. W3A-3 does not reproduce
-in a real header (`qa-hdr-hover-parity`, page 3763).
+**Fixture facts and reproduction results.** A header placed in page content renders inside `<main>` in flow, beneath the site's own header, so each fixture page has two `<header>` elements; probes select `.entry-content header.sgs-site-header`. The pill fixture (3734) measures a 1120px header with an 8px radius and a mega panel of the same left edge and width (`--sgs-mm-panel-width` 1120px). Inside that real header the Shop dropdown computes `list-style-type: none`, link `text-decoration: none`, `padding-left: 0`, background `rgb(251, 243, 220)` and a border (command: hover the Shop toggle, then read `getComputedStyle` on `.sgs-nav-bar-menu__submenu`), so the bullets, underline, missing surface and indent seen on the loose fixture do not occur in a header. W3A-1 is closed: the plain dropdown works on a real header, and the pill mega's 21px gap (the plain and capped headers have 0px because the items fill the header's height) is rebuilt in W3C-1. W3A-3 does not reproduce in a real header (`qa-hdr-hover-parity`, page 3763).
 
 ### Wave 3B — Reference deconstruction (the requirements table)
 
-Output: `reports/<date>-reference-requirements-matrix.md`. The table is **rows × columns × three
-tiers**: one row per reference per surface (header shell, bar, dropdown, mega panel, trigger and close,
-drawer, footer), one typed column per defining attribute, each cell recorded at 375, 768 and 1440px.
-Rows are clustered into capability families that the SGS blocks must cover.
+Output: `reports/<date>-reference-requirements-matrix.md`. The table is **rows × columns × three tiers**: one row per reference per surface (header shell, bar, dropdown, mega panel, trigger and close, drawer, footer), one typed column per defining attribute, each cell recorded at 375, 768 and 1440px. Rows are clustered into capability families that the SGS blocks must cover.
 
-**What data exists.** Eight references have measured data, all of the OPEN DRAWER only
-(`.claude/reports/2026-07-28-drawer-code-extraction/`: studionamma, buck, dogstudio, fantasy, lamalama,
-lusion, wearecollins, resn; `labels-<site>.json` exists for seven of them, not resn). The header shell,
-bar, dropdown, mega panel and footer are unmeasured for every reference, and Away, ButcherBox and
-rabbit.tech are unmeasured entirely. So W3B-2 and W3B-3 are a fresh capture from the live reference
-sites (rendered DOM, computed style, event-driven capture for behaviour), not a re-read of files; the
-existing drawer JSON is a cross-check. Captures are taken in a real headed Chrome (`reports/reference-requirements/CAPTURE-PROTOCOL.md`); the
-first eleven were taken headless, and a headed spot-check (`HEADED-SPOTCHECK.md`) compared 133 static
-cells, of which 117 match; the 16 that differ are explained by the scrollbar, a different storefront
-(Away), page-intro timing and the user agent, and the timing cells headless could not measure were
-re-measured headed. Cells that a resting DOM cannot give (hover, close grace, motion,
-scroll behaviour) are captured by driving the page (hover, wait, diff computed styles; scroll, diff
-transforms) or, where that cannot work, read from the site's code and marked `source-only`.
+**What data exists.** Eight references have measured data, all of the OPEN DRAWER only (`.claude/reports/2026-07-28-drawer-code-extraction/`: studionamma, buck, dogstudio, fantasy, lamalama, lusion, wearecollins, resn; `labels-<site>.json` exists for seven of them, not resn). The header shell, bar, dropdown, mega panel and footer are unmeasured for every reference, and Away, ButcherBox and rabbit.tech are unmeasured entirely. So W3B-2 and W3B-3 are a fresh capture from the live reference sites (rendered DOM, computed style, event-driven capture for behaviour), not a re-read of files; the existing drawer JSON is a cross-check. Captures are taken in a real headed Chrome (`reports/reference-requirements/CAPTURE-PROTOCOL.md`); the first eleven were taken headless, and a headed spot-check (`HEADED-SPOTCHECK.md`) compared 133 static cells, of which 117 match; the 16 that differ are explained by the scrollbar, a different storefront (Away), page-intro timing and the user agent, and the timing cells headless could not measure were re-measured headed. Cells that a resting DOM cannot give (hover, close grace, motion, scroll behaviour) are captured by driving the page (hover, wait, diff computed styles; scroll, diff transforms) or, where that cannot work, read from the site's code and marked `source-only`.
 
 **Rules for every cell.**
-- The row's surface is `present`, `absent` or `not-applicable` first; `absent` is a real value and
-  clusters as its own family ("no dropdown"), never a forced fill.
-- Labels are derived from measured numbers, never eyeballed: `header width == viewport` → full-bleed;
-  narrower with equal left and right inset → capped (record px); with a radius and a top inset →
-  floating. Panel anchor: `|panelCentreX − itemCentreX| ≤ 2px` → item-centred; `|panelLeft − itemLeft|
-  ≤ 2px` → item-left; `panelWidth ≥ headerWidth − 2px` → header-wide. Centred on the viewport:
-  `|surfaceCentreX − viewportCentreX| ≤ 2px`. A panel with a fixed width centred on the header or
-  viewport is `capped-centred` (record the px, and whether it differs per panel).
-- Every column is tagged `static`, `interaction-capture` or `source-only`, and the cell records which
-  method produced it.
+- The row's surface is `present`, `absent` or `not-applicable` first; `absent` is a real value and clusters as its own family ("no dropdown"), never a forced fill.
+- Labels are derived from measured numbers, never eyeballed: `header width == viewport` → full-bleed; narrower with equal left and right inset → capped (record px); with a radius and a top inset → floating. Panel anchor: `|panelCentreX − itemCentreX| ≤ 2px` → item-centred; `|panelLeft − itemLeft| ≤ 2px` → item-left; `panelWidth ≥ headerWidth − 2px` → header-wide. Centred on the viewport: `|surfaceCentreX − viewportCentreX| ≤ 2px`. A panel with a fixed width centred on the header or viewport is `capped-centred` (record the px, and whether it differs per panel).
+- Every column is tagged `static`, `interaction-capture` or `source-only`, and the cell records which method produced it.
 - Colours are recorded as hex and sizes as px so clustering compares values, not prose.
 
-**Columns (signed off after a completeness review against the measured data and an adversarial review
-of the table design).**
-1. Archetype — header: full-bleed, capped, floating pill, partial-width bar; drawer: full-screen, side,
-   partial, floating card, card stack, dropdown from the header.
+**Columns (signed off after a completeness review against the measured data and an adversarial review of the table design).**
+1. Archetype — header: full-bleed, capped, floating pill, partial-width bar; drawer: full-screen, side, partial, floating card, card stack, dropdown from the header.
 2. Geometry — width, max-width, insets, height, radius, z-index, centring and anchor (rules above).
-3. Zone model — columns and rails, alignment, and what sits inside the surface (logo, nav, cart, CTA,
-   message, language, utility controls such as theme, sound, search, clock or status).
+3. Zone model — columns and rails, alignment, and what sits inside the surface (logo, nav, cart, CTA, message, language, utility controls such as theme, sound, search, clock or status).
 4. Ground — fill, blur, scrim present or not. *(shared sub-schema A)*
-5. Background visual and its behaviour — none, image, video, gradient or cycling media; static,
-   parallax, cross-fade, follows the hovered link, autoplay. *(shared sub-schema A)*
+5. Background visual and its behaviour — none, image, video, gradient or cycling media; static, parallax, cross-fade, follows the hovered link, autoplay. *(shared sub-schema A)*
 6. Item typography and scaling mode — size, weight, case, fluid, stepped or fixed.
-7. Item states — hover treatment, active or current indicator, ornament (index, glyph, thumbnail,
-   spacer), separators, treatment of an item that owns a panel.
-8. Secondary-block roster — kind, position, presence per tier, and content that reacts to hover (a
-   preview pane that follows the hovered link).
-9. Trigger and close — kind, element semantics and accessible name, burger style; the close button's
-   style, position and icon; replaces the burger in place or is separate; whether a top row holds it;
-   the animation between the two states; magnet.
-10. Mechanics — open trigger (hover or click), close grace, scroll-lock, `dialog` and `inert`, focus
-    handling, sticky or hide-on-scroll, whether open state survives a resize.
-11. Motion — each effect, its Spec 38 tier (V, G, H, W) and its render substrate (DOM or canvas).
-    *(shared sub-schema B)*
+7. Item states — hover treatment, active or current indicator, ornament (index, glyph, thumbnail, spacer), separators, treatment of an item that owns a panel.
+8. Secondary-block roster — kind, position, presence per tier, and content that reacts to hover (a preview pane that follows the hovered link).
+9. Trigger and close — kind, element semantics and accessible name, burger style; the close button's style, position and icon; replaces the burger in place or is separate; whether a top row holds it; the animation between the two states; magnet.
+10. Mechanics — open trigger (hover or click), close grace, scroll-lock, `dialog` and `inert`, focus handling, sticky or hide-on-scroll, whether open state survives a resize.
+11. Motion — each effect, its Spec 38 tier (V, G, H, W) and its render substrate (DOM or canvas). *(shared sub-schema B)*
 12. Content — labels, counts, case origin (source text or CSS `text-transform`), fixed or dynamic.
-13. Per-tier delta and drop mechanism — what changes at each tier, and whether an element is removed
-    from the DOM, collapsed to 0×0, reflowed or migrated to another role.
-14. SGS coverage — 14a mechanical (computed property joined to `block_attributes.css_property` through
-    `/sgs-db`) and 14b manual (a behaviour mapped to a block attribute enum); each row records which was
-    used.
+13. Per-tier delta and drop mechanism — what changes at each tier, and whether an element is removed from the DOM, collapsed to 0×0, reflowed or migrated to another role.
+14. SGS coverage — 14a mechanical (computed property joined to `block_attributes.css_property` through `/sgs-db`) and 14b manual (a behaviour mapped to a block attribute enum); each row records which was used.
 
-Clustering keys on the typed values across all surfaces, so one capability found on two surfaces (for
-example blur on a header and on a drawer) becomes one family.
+Clustering keys on the typed values across all surfaces, so one capability found on two surfaces (for example blur on a header and on a drawer) becomes one family.
 
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
@@ -271,10 +165,7 @@ example blur on a header and on a drawer) becomes one family.
 
 ### Wave 3C — Header and nav architecture harmonised from the table
 
-The list is signed and the work is planned in `plans/2026-09-21-wave-3c-implementation-plan.md` (decisions, Step 0, the 14 serial nav units plus two parallel units, the per-unit loop, the fresh-session prompt). Every family is universal (rule 3), driven by block attributes (rule 6),
-design-gated before any shared mechanism changes (rule 7), and built through the shared wrapper or
-helper the other blocks already use. Built work that disagrees with the table (the floating pill, the
-drawer anchoring, force-solid) is reopened by a family, not patched on its own.
+The list is signed and the work is planned in `plans/2026-09-21-wave-3c-implementation-plan.md` (decisions, Step 0, the 14 serial nav units plus two parallel units, the per-unit loop, the fresh-session prompt). Every family is universal (rule 3), driven by block attributes (rule 6), design-gated before any shared mechanism changes (rule 7), and built through the shared wrapper or helper the other blocks already use. Built work that disagrees with the table (the floating pill, the drawer anchoring, force-solid) is reopened by a family, not patched on its own.
 
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
@@ -284,10 +175,7 @@ drawer anchoring, force-solid) is reopened by a family, not patched on its own.
 | W3C-3b | Lottie player (U-17), in parallel — DONE | Spec 38 Tier H admits `lottie-web` light (D1151); Lottie on the logo, `sgs/media`, the hero's split media and every wrapper background (`bgLottie`); validated upload, loads only on demand, never under reduced motion | 1 session | no |
 | W3C-4 | Gate 3C composed-header check | two composed headers (copies of lamalama's pill and the Indus draft) are 100% visual copies of their references, with Bean's eye (R-31-13); open on U-18 G8 (lamalama's corner card) and Bean's decision | ½ session | YES |
 
-**TEST (critical path):** Happy = every reference's row is expressible with block attributes and one
-composed real header matches its row. Edge = the header at 375, 768 and 1440px with panels open.
-Fail = a table row with no covering attribute is a gap unit, never a trimmed reference. Integration =
-Wave 4 clones consume the families without per-reference code.
+**TEST (critical path):** Happy = every reference's row is expressible with block attributes and one composed real header matches its row. Edge = the header at 375, 768 and 1440px with panels open. Fail = a table row with no covering attribute is a gap unit, never a trimmed reference. Integration = Wave 4 clones consume the families without per-reference code.
 
 ### Wave 4 — PROOF GATE: the reference clones (DP6 as sequenced) — not started
 
@@ -300,9 +188,7 @@ Wave 4 clones consume the families without per-reference code.
 | W4-e | Starter-set narrowing | drop `centred/minimal/full`; keep `scratch` + 3 search variants | 30m (1h) | no |
 | W4-f | Contrast on all 8 client palettes per preset — **automated**: extend the DP7 contrast sweep to iterate `theme-snapshot.json` palettes (harness extension counted here) | palette sweep passes, machine evidence | 1.5h (3h) | no |
 
-**TEST (critical path):** Happy = computed-parity vs reference + Bean's eye per clone. Edge =
-mobile drawer parity; content-role migrations. Fail = DP7 harness mismatch fails the build.
-Integration = presets restyle under each client's theme-snapshot tokens (DP5 home #3).
+**TEST (critical path):** Happy = computed-parity vs reference + Bean's eye per clone. Edge = mobile drawer parity; content-role migrations. Fail = DP7 harness mismatch fails the build. Integration = presets restyle under each client's theme-snapshot tokens (DP5 home #3).
 
 ### Wave 5 — Spec 33 Part 2: the header/footer clone walker — not started
 
@@ -331,33 +217,19 @@ W4-c after W4-b ACCEPTED (Bean)   ← the one deliberate serialisation
 W5-a after W4 complete
 ```
 
-CRITICAL PATH: W2-i → W2-b → W2-d → W2-r → W2-c → Gate 2 re-run → W2-u → W3A-5 → W3B-2/3 → W3B-4
-→ W3B-5 (Bean) → W3C → W4-a2 → W4-b → Bean's eye → W4-c → W5-a → W5-b.
+CRITICAL PATH: W2-i → W2-b → W2-d → W2-r → W2-c → Gate 2 re-run → W2-u → W3A-5 → W3B-2/3 → W3B-4 → W3B-5 (Bean) → W3C → W4-a2 → W4-b → Bean's eye → W4-c → W5-a → W5-b.
 
-**Parallel opportunities:** W3A-1..4 parallel to W3B · W3-b/e parallel · W4-c's clones
-parallelise AFTER the W4-b acceptance (never before — each clone is judged whole, with its header).
-**Bean-gated bottlenecks (W4-a2, Gate 4, W3-d, the mega-motion eye check) get BOOKED at the
-preceding wave's close with the evidence pack pre-built — an external ping (Telegram), not an
-in-session reminder (Rule 7: in-session reminders die).**
+**Parallel opportunities:** W3A-1..4 parallel to W3B · W3-b/e parallel · W4-c's clones parallelise AFTER the W4-b acceptance (never before — each clone is judged whole, with its header). **Bean-gated bottlenecks (W4-a2, Gate 4, W3-d, the mega-motion eye check) get BOOKED at the preceding wave's close with the evidence pack pre-built — an external ping (Telegram), not an in-session reminder (Rule 7: in-session reminders die).**
 
 ### Tooling
 
-`/sgs-wp-engine`, `/wp-block-development`, `/delegate`, `/qc`, `/qc-inline`, `/gap-analysis`,
-`/visual-qa`, `/sgs-db`, `/wp-blocks` — all in the session skill roster. Playwright MCP live.
-`plugins/sgs-blocks/scripts/nav-qa/` harness scripts exist (LEDGER re-runnable assets).
-`build-deploy.py` = the ONE deploy path (`--target sandybrown` or `--target indus-test`).
-`wp-sgs-developer` + `design-reviewer` + `code-reviewer` agents registered.
+`/sgs-wp-engine`, `/wp-block-development`, `/delegate`, `/qc`, `/qc-inline`, `/gap-analysis`, `/visual-qa`, `/sgs-db`, `/wp-blocks` — all in the session skill roster. Playwright MCP live. `plugins/sgs-blocks/scripts/nav-qa/` harness scripts exist (LEDGER re-runnable assets). `build-deploy.py` = the ONE deploy path (`--target sandybrown` or `--target indus-test`). `wp-sgs-developer` + `design-reviewer` + `code-reviewer` agents registered.
 
 ---
 
 ## Phase 3 — Risk & effort
 
-**Conversion: 1 session = 5 focused hours.** Remaining effort by wave (LOW hours, from the unit
-tables): Wave 2 open units per the table above · Wave 3 ≈ 3.5h + Bean session · Wave 3A ≈ 5h · Wave 3B ≈ 6h + Bean sign-off · Wave 3C sized at W3B-5 · Wave 4 ≈ 48h
-(≈ 10.5 sessions; W4-d is 1h × 12 clones) · Wave 5 ≈ 22h (≈ 4.5 sessions). The clone waves are the
-biggest single driver: pattern-authoring and clone work runs 2–4× optimistic on this project.
-Schedule risk: a W4-b loop-back blocks W4-c entirely — the serialisation is deliberate but must be
-visible.
+**Conversion: 1 session = 5 focused hours.** Remaining effort by wave (LOW hours, from the unit tables): Wave 2 open units per the table above · Wave 3 ≈ 3.5h + Bean session · Wave 3A ≈ 5h · Wave 3B ≈ 6h + Bean sign-off · Wave 3C sized at W3B-5 · Wave 4 ≈ 48h (≈ 10.5 sessions; W4-d is 1h × 12 clones) · Wave 5 ≈ 22h (≈ 4.5 sessions). The clone waves are the biggest single driver: pattern-authoring and clone work runs 2–4× optimistic on this project. Schedule risk: a W4-b loop-back blocks W4-c entirely — the serialisation is deliberate but must be visible.
 
 ### Risk register
 
@@ -480,13 +352,10 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; record 
 
 ## Standing decisions
 
-1. **Drawer fixes land ON the CPT path** — a defect that is CSS-only (path-independent) is fixed
-   immediately.
+1. **Drawer fixes land ON the CPT path** — a defect that is CSS-only (path-independent) is fixed immediately.
 2. **The mega "heading-less panel notice" (36-12 residue)** waits on the mega CPT editor surface.
-3. **Per-burger override precedence:** picker value beats the site-wide Active drawer; an empty
-   picker = Active. No third "inherit" state.
-4. **W4-b evidence pack is fixed in advance:** computed-parity JSON + DP7 captures + homes table +
-   labels fidelity output. Bean judges from the pack + live URL — no ad-hoc evidence shapes.
+3. **Per-burger override precedence:** picker value beats the site-wide Active drawer; an empty picker = Active. No third "inherit" state.
+4. **W4-b evidence pack is fixed in advance:** computed-parity JSON + DP7 captures + homes table + labels fidelity output. Bean judges from the pack + live URL — no ad-hoc evidence shapes.
 6. **`labels-<site>.json` for the three unmeasured refs is generated inside W3B-3.**
 8. **Header-level width:** a partial-width or floating header holds the logo, nav and actions as one centred surface; panels follow it. Reference behaviour is read from the requirements table, never guessed.
 7. **Clone roster:** see § Clone roster; Gate 5 counts against it.
@@ -497,6 +366,4 @@ Wave 3C Step 0 (`plans/2026-09-21-wave-3c-implementation-plan.md`): re-run `/sgs
 
 ## References
 
-Inventory (scope) · signed gate (architecture) · teardown run `20260728-112649-7bc4a8` ·
-`reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md` (drawer-variant exit-gate evidence) ·
-Spec 36 · Spec 37 §4/§5 · `reports/2026-09-17-header-footer-cpt-issue-register.md`.
+Inventory (scope) · signed gate (architecture) · teardown run `20260728-112649-7bc4a8` · `reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md` (drawer-variant exit-gate evidence) · Spec 36 · Spec 37 §4/§5 · `reports/2026-09-17-header-footer-cpt-issue-register.md`.

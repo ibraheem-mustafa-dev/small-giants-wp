@@ -1,8 +1,6 @@
 # SGS block.json attribute vocabulary audit — 2026-05-12
 
-Scanned **1343** attribute rows across **67** SGS blocks. 
-Stripped property + breakpoint suffixes to expose base slot words.
-**511** distinct base words found.
+Scanned **1343** attribute rows across **67** SGS blocks. Stripped property + breakpoint suffixes to expose base slot words. **511** distinct base words found.
 
 ## 1. Drift findings — synonym clusters in use today
 

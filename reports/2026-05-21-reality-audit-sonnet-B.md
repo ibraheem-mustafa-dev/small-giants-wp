@@ -1,7 +1,10 @@
 # SGS Clone Pipeline — Reality Audit Round 2: Doc-to-Code Accuracy
 **Auditor:** Claude Sonnet (Sonnet B)
+
 **Date:** 2026-05-21
+
 **Methodology:** Read-only code-as-evidence audit. Every verdict cites a script file:line. Doc citations are not evidence.
+
 **Scope:** `sgs-clone-orchestrator.py` (1277+ lines) + `orchestrator/`, `recogniser/`, `lints/`, `value-matcher/`, `behavioural-analyser/`, `uimax-tools/`, `tools/recogniser-v2/`, `tools/recogniser/`, `scripts/*.py`
 
 ---

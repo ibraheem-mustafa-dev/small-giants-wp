@@ -1,8 +1,6 @@
 # The canvas-settable claims, live-confirmed by family
 
-Status: **ALL 63 families measured on one SHA (2026-10-07, remote, after peer d8's deploy `6f1963c28`).
-59 of 63 refuted; 4 are not-refuted-but-not-proven. `ABSENT` is ZERO — every family resolved.**
-The W-to-F reclassification is the one remaining step and needs NO host.
+Status: **ALL 63 families measured on one SHA (2026-10-07, remote, after peer d8's deploy `6f1963c28`). 59 of 63 refuted; 4 are not-refuted-but-not-proven. `ABSENT` is ZERO — every family resolved.** The W-to-F reclassification is the one remaining step and needs NO host.
 
 | Verdict | Families | Claims |
 |---|---|---|
@@ -13,23 +11,11 @@ The W-to-F reclassification is the one remaining step and needs NO host.
 
 **3,907 stylesheets read, 0 skipped**, so no verdict rests on a sheet that could not be parsed.
 
-⚠️ **The 4 CONFIRMED are "not refuted", NOT "proven".** One is sound: `sgs/trust-bar::columns →
-grid-template-columns`, whose matching rule is `.sgs-container-13c453e4 > .sgs-container__inner` — the cited
-trust-bar's own instance uid, because trust-bar renders through `SGS_Container_Wrapper`. The other three (all on
-`shop`, at depths 11 and 13: `contentBandMargin → margin-bottom`, `gridItemBorderRadius → border-radius`,
-`minHeight → min-height`) matched because the winning rule is scoped by `.sgs-shop-filters`, a class the cited
-container carries. That proves the cited block's class **scopes** the rule; it does **not** prove the cited
-**setting** drives it. Separating the two needs the emission selector — the same `ctx.emissionFor` gap named
-below. Treat these 4 as unresolved rather than as counter-examples.
+⚠️ **The 4 CONFIRMED are "not refuted", NOT "proven".** One is sound: `sgs/trust-bar::columns → grid-template-columns`, whose matching rule is `.sgs-container-13c453e4 > .sgs-container__inner` — the cited trust-bar's own instance uid, because trust-bar renders through `SGS_Container_Wrapper`. The other three (all on `shop`, at depths 11 and 13: `contentBandMargin → margin-bottom`, `gridItemBorderRadius → border-radius`, `minHeight → min-height`) matched because the winning rule is scoped by `.sgs-shop-filters`, a class the cited container carries. That proves the cited block's class **scopes** the rule; it does **not** prove the cited **setting** drives it. Separating the two needs the emission selector — the same `ctx.emissionFor` gap named below. Treat these 4 as unresolved rather than as counter-examples.
 
-**A control fell out of re-reading all 63 rather than only the 46.** The 17 families readable before d8's deploy
-kept **identical verdicts** on both SHAs; only the 46 previously-`ABSENT` changed, and every one changed from
-`ABSENT` to a real verdict. So the measurement is stable across that deploy for everything readable on both,
-and the split-baseline risk that prompted the re-read was real in principle but empirically nil. This is why
-all 63 were re-read on one SHA instead of appending the 46 to the earlier 17.
+**A control fell out of re-reading all 63 rather than only the 46.** The 17 families readable before d8's deploy kept **identical verdicts** on both SHAs; only the 46 previously-`ABSENT` changed, and every one changed from `ABSENT` to a real verdict. So the measurement is stable across that deploy for everything readable on both, and the split-baseline risk that prompted the re-read was real in principle but empirically nil. This is why all 63 were re-read on one SHA instead of appending the 46 to the earlier 17.
 
-**The prediction this report made was FALSIFIED, and that is recorded rather than quietly dropped.** It
-predicted all 63 would refute. Four did not. The root cause below still holds for the 59.
+**The prediction this report made was FALSIFIED, and that is recorded rather than quietly dropped.** It predicted all 63 would refute. Four did not. The root cause below still holds for the 59.
 
 Tool: `scripts/computed-route/confirm-canvas.mjs` (read-only; writes no tree, setting, page or stylesheet).
 
@@ -40,46 +26,28 @@ node ../../scripts/computed-route/confirm-canvas.mjs ../../sites/eye-care-ward-e
 
 ## What the claim is
 
-`lib/triage.mjs::canvasSettable` and the resolver-hop citation beside it class a row **W** (explained, not a
-framework gap) when some OTHER block — an ancestor of the row, or a sibling in the same canvas — declares a
-setting whose `css_property` covers the row's property, and the route's reachability gate (`citeReaches` /
-`reachesElement`) judges its emission to reach the row's element. On a canvas that citation reclassifies the
-row; off a canvas it is evidence only.
+`lib/triage.mjs::canvasSettable` and the resolver-hop citation beside it class a row **W** (explained, not a framework gap) when some OTHER block — an ancestor of the row, or a sibling in the same canvas — declares a setting whose `css_property` covers the row's property, and the route's reachability gate (`citeReaches` / `reachesElement`) judges its emission to reach the row's element. On a canvas that citation reclassifies the row; off a canvas it is evidence only.
 
-Every one of the 168 claims rests on `via: declared` — a DB declaration plus a source-level reachability
-argument. **None had ever been confirmed against a rendered page.**
+Every one of the 168 claims rests on `via: declared` — a DB declaration plus a source-level reachability argument. **None had ever been confirmed against a rendered page.**
 
 ### The 168 claims are two mechanisms, not one
 
-`triage.mjs` states the design intent: the resolver hop's citation and the canvas-roster citation "are the same
-claim reached from two directions; the first that holds wins". They leave different evidence, so they are
-counted apart here:
+`triage.mjs` states the design intent: the resolver hop's citation and the canvas-roster citation "are the same claim reached from two directions; the first that holds wins". They leave different evidence, so they are counted apart here:
 
 | Mechanism | Claims | Distinguishing field | Top cited block |
 |---|---|---|---|
 | Resolver-hop citation | 122 | no `where` key | `sgs/container` ×94 |
 | Canvas-roster scan (`canvasSettable`) | 46 | `where`: `ancestor` or `sibling` | `sgs/container` ×13, `sgs/text` ×9 |
 
-Both gate on a reachability check, so one instrument tests both; a defect in one gate would say nothing about
-the other, which is why the split is recorded rather than averaged away.
+Both gate on a reachability check, so one instrument tests both; a defect in one gate would say nothing about the other, which is why the split is recorded rather than averaged away.
 
 ## The instrument, and why computed styles were the wrong one
 
-Neither computed styles nor CDP `CSS.getMatchedStylesForNode` can decide this claim, because both answer "what
-paints right now" and so cannot separate **the cited setting loses** from **the cited setting is simply unset**.
-An earlier pass using matched-styles produced 2 CONFIRMED and 7 REFUTED-LOSES; every one of those nine was an
-artefact and was withdrawn (see "Two corrections" below).
+Neither computed styles nor CDP `CSS.getMatchedStylesForNode` can decide this claim, because both answer "what paints right now" and so cannot separate **the cited setting loses** from **the cited setting is simply unset**. An earlier pass using matched-styles produced 2 CONFIRMED and 7 REFUTED-LOSES; every one of those nine was an artefact and was withdrawn (see "Two corrections" below).
 
-What decides it is CSSOM rule enumeration: **every rule in every loaded stylesheet that declares the property
-and whose selector matches the row element** (`row.matches(selectorText)`). That set is value-independent — it
-is every rule that could *ever* govern that property on that element. The claim holds only if one of those
-rules belongs to the cited block, by naming one of its classes or by reading a custom property the framework
-sets on the cited block's selector.
+What decides it is CSSOM rule enumeration: **every rule in every loaded stylesheet that declares the property and whose selector matches the row element** (`row.matches(selectorText)`). That set is value-independent — it is every rule that could *ever* govern that property on that element. The claim holds only if one of those rules belongs to the cited block, by naming one of its classes or by reading a custom property the framework sets on the cited block's selector.
 
-The walk deliberately recurses into `@media` blocks **without** checking whether they currently apply, so a
-cited-owned rule hiding in any media query, at any value, still counts. The test is therefore generous to the
-claim, and a refutation is conservative: it means no rule anywhere, under any media query, at any value, could
-carry that setting to that element.
+The walk deliberately recurses into `@media` blocks **without** checking whether they currently apply, so a cited-owned rule hiding in any media query, at any value, still counts. The test is therefore generous to the claim, and a refutation is conservative: it means no rule anywhere, under any media query, at any value, could carry that setting to that element.
 
 ### Verdicts
 
@@ -93,22 +61,11 @@ carry that setting to that element.
 
 ### The harness is not vacuous
 
-A 17-of-17 refutation rate is the signature of a broken instrument, so the CONFIRMED branch was proved
-reachable with positive controls whose claim is true by construction. A container's own `contentWidth` → `width`
-on its `.sgs-container__inner` returns **CONFIRMED**. (Two further controls return `NO-RULE` legitimately: that
-container instance sets no `padding-top` or `align-items` at all.)
+A 17-of-17 refutation rate is the signature of a broken instrument, so the CONFIRMED branch was proved reachable with positive controls whose claim is true by construction. A container's own `contentWidth` → `width` on its `.sgs-container__inner` returns **CONFIRMED**. (Two further controls return `NO-RULE` legitimately: that container instance sets no `padding-top` or `align-items` at all.)
 
-`VAR-CHANNEL` never fired, and **zero** of the matching rules across all 17 measured families read a custom
-property, so the branch is inapplicable here rather than silently swallowing confirmations. It is therefore
-unexercised code: treat it as unproven until a family hits it.
+`VAR-CHANNEL` never fired, and **zero** of the matching rules across all 17 measured families read a custom property, so the branch is inapplicable here rather than silently swallowing confirmations. It is therefore unexercised code: treat it as unproven until a family hits it.
 
-**And the walk is accounted for, not assumed.** A hand-rolled `document.styleSheets` walk silently skips any
-sheet whose `cssRules` throws (cross-origin or blocked), and a skipped sheet makes a `NO-RULE` verdict a false
-negative rather than a finding — the trap is on record in auto-memory as having once reported zero matches on
-an element that demonstrably computed the value. So the tool counts every sheet and returns the tally with each
-verdict. Measured: **956 of 956 sheets read, 0 skipped**, across 52-58 sheets per page, on every one of the 17
-runs. A verdict is trustworthy only at `skipped === 0`; a future run against a CDN-served or blocked sheet will
-now say so instead of refuting silently.
+**And the walk is accounted for, not assumed.** A hand-rolled `document.styleSheets` walk silently skips any sheet whose `cssRules` throws (cross-origin or blocked), and a skipped sheet makes a `NO-RULE` verdict a false negative rather than a finding — the trap is on record in auto-memory as having once reported zero matches on an element that demonstrably computed the value. So the tool counts every sheet and returns the tally with each verdict. Measured: **956 of 956 sheets read, 0 skipped**, across 52-58 sheets per page, on every one of the 17 runs. A verdict is trustworthy only at `skipped === 0`; a future run against a CDN-served or blocked sheet will now say so instead of refuting silently.
 
 ## Result: 17 measured, 17 refuted (82 of 168 claims)
 
@@ -119,8 +76,7 @@ now say so instead of refuting silently.
 | **Refuted subtotal** | **17** | **82** |
 | `ABSENT` (host-gated) | 46 | 86 |
 
-Depth of the row below the cited block: 8 families at depth 3, 4 at depth 4, 2 at depth 2, and **3 at depth −1
-— the cited block is not an ancestor of the row at all** (those are `where: sibling` citations).
+Depth of the row below the cited block: 8 families at depth 3, 4 at depth 4, 2 at depth 2, and **3 at depth −1 — the cited block is not an ancestor of the row at all** (those are `where: sibling` citations).
 
 The refuted families, with the rule that actually governs each row:
 
@@ -146,57 +102,32 @@ The refuted families, with the rule that actually governs each row:
 
 ### The mechanism behind the refutations
 
-The clearest case is `gridItemPadding` → `.sgs-social-icons__item`. The row sits at **depth 3** from the cited
-container, and `gridItemPadding`'s consumer rule targets the container's **grid items** (depth 1). Exactly one
-rule in the whole stylesheet set matches the row and declares `padding-top`, and it belongs to
-`sgs/social-icons`. The container sets no custom properties at all, and `--sgs-gi-padding` is unset on both
-elements. So no value the client could choose on that setting would move this row: the reachability gate
-credited a setting that stops two levels above the row.
+The clearest case is `gridItemPadding` → `.sgs-social-icons__item`. The row sits at **depth 3** from the cited container, and `gridItemPadding`'s consumer rule targets the container's **grid items** (depth 1). Exactly one rule in the whole stylesheet set matches the row and declares `padding-top`, and it belongs to `sgs/social-icons`. The container sets no custom properties at all, and `--sgs-gi-padding` is unset on both elements. So no value the client could choose on that setting would move this row: the reachability gate credited a setting that stops two levels above the row.
 
-The same shape explains the rest: a container-level setting cited for a property that a child block's own
-stylesheet owns on a deep descendant.
+The same shape explains the rest: a container-level setting cited for a property that a child block's own stylesheet owns on a deep descendant.
 
 ## Root cause: the reachability gate failed open for every one of them
 
 17 of 17 refuted is not 17 coincidences. It is one mechanism, and it is measured rather than inferred.
 
-`lib/triage.mjs::reachesElement` **fails open**. When `emissionOf` cannot determine the cited setting's
-emission it returns `true` (:383-385), so the citation is accepted and the row is classed W with no evidence
-that the setting reaches the element at all. `emissionOf` has two channels:
+`lib/triage.mjs::reachesElement` **fails open**. When `emissionOf` cannot determine the cited setting's emission it returns `true` (:383-385), so the citation is accepted and the row is classed W with no evidence that the setting reaches the element at all. `emissionOf` has two channels:
 
-1. `ctx.emissionFor( block, setting, property )` — **read at :367 and supplied by no caller anywhere**, so this
-   channel is always dead.
-2. a string search over a PHP helper index, which **excludes every `render.php`**. Spec 47 §5 Residual already
-   lists "emission read by string search" as an open defect; this gives it live evidence.
+1. `ctx.emissionFor( block, setting, property )` — **read at :367 and supplied by no caller anywhere**, so this channel is always dead.
+2. a string search over a PHP helper index, which **excludes every `render.php`**. Spec 47 §5 Residual already lists "emission read by string search" as an open defect; this gives it live evidence.
 
-**Measured.** Reproducing `emissionOf` with the exact helper index `triage.mjs` builds — 847 functions over 434
-files, so not an empty-index artefact — it returned `null` for **17 of 17** of the refuted citations. **Zero
-were genuinely assessed.** R-47-12 requires that "the citation is tested on the live site before the row is
-called resolved"; for these rows that test never ran. The gate asserted reachability instead of testing it,
-which is precisely why every one of them read W.
+**Measured.** Reproducing `emissionOf` with the exact helper index `triage.mjs` builds — 847 functions over 434 files, so not an empty-index artefact — it returned `null` for **17 of 17** of the refuted citations. **Zero were genuinely assessed.** R-47-12 requires that "the citation is tested on the live site before the row is called resolved"; for these rows that test never ran. The gate asserted reachability instead of testing it, which is precisely why every one of them read W.
 
-This also makes a falsifiable prediction for the 46 host-gated families: they should behave the same way. If a
-remote read refutes them too, and `emissionOf` is null for them too, it is the same defect and not 63 of them.
+This also makes a falsifiable prediction for the 46 host-gated families: they should behave the same way. If a remote read refutes them too, and `emissionOf` is null for them too, it is the same defect and not 63 of them.
 
-**The fail-open itself is deliberate and stays.** `tests/triage.test.mjs` already asserts that a control whose
-emission the source does not name keeps its property-name credit, because refusing unknowns would manufacture
-false F rows — and that is the same guard that correctly stopped all 20 `bgHoverZoom` claims. What was wrong is
-that an untested claim and a tested one were indistinguishable in the evidence. So `reachabilityVerified()` is
-now stamped on every citation and **no classification changes**: this separates evidence from assertion without
-reclassifying a single row. The real repair is to populate `ctx.emissionFor`.
+**The fail-open itself is deliberate and stays.** `tests/triage.test.mjs` already asserts that a control whose emission the source does not name keeps its property-name credit, because refusing unknowns would manufacture false F rows — and that is the same guard that correctly stopped all 20 `bgHoverZoom` claims. What was wrong is that an untested claim and a tested one were indistinguishable in the evidence. So `reachabilityVerified()` is now stamped on every citation and **no classification changes**: this separates evidence from assertion without reclassifying a single row. The real repair is to populate `ctx.emissionFor`.
 
 ## What this does NOT yet license
 
-**The reclassification is not applied.** These 82 claims are currently W on the strength of a citation the live
-DOM refutes, and refuted rows belong in F. That is a large move (F is 173), and it should be applied once, over
-the whole population, not in two halves — the 46 host-gated families must be read first so every family is
-judged by the same instrument. Applying half now would make the F figure mean two different things.
+**The reclassification is not applied.** These 82 claims are currently W on the strength of a citation the live DOM refutes, and refuted rows belong in F. That is a large move (F is 173), and it should be applied once, over the whole population, not in two halves — the 46 host-gated families must be read first so every family is judged by the same instrument. Applying half now would make the F figure mean two different things.
 
 ## Why the local mirror only covers 17
 
-The brief expected this task to run on the local mirror. It cannot: **46 of 63 families are not readable there
-at all.** All 46 fail as "ref missing entirely", never "path not found", and the cause is which pages carry the
-route's `cr-ref-*` instrumentation:
+The brief expected this task to run on the local mirror. It cannot: **46 of 63 families are not readable there at all.** All 46 fail as "ref missing entirely", never "path not found", and the cause is which pages carry the route's `cr-ref-*` instrumentation:
 
 | Page | `cr-ref` prefixes on the local mirror | On the remote site |
 |---|---|---|
@@ -205,12 +136,9 @@ route's `cr-ref-*` instrumentation:
 | `/product/…` | `footer` only | `product`, `lens` |
 | `/help/`, `/contact/`, `/prescription-lenses/` | `help`, `contact` + `contact-form`, `lenses` | same |
 
-The mirror's **header layout and WooCommerce templates are at an older state** than the instrumented ones, so
-`header`, `mobile-menu`, `mega-*`, `shop`, `product`, `lens` and `size-guide` have no refs locally. `footer`
-works everywhere because its refs live in page content.
+The mirror's **header layout and WooCommerce templates are at an older state** than the instrumented ones, so `header`, `mobile-menu`, `mega-*`, `shop`, `product`, `lens` and `size-guide` have no refs locally. `footer` works everywhere because its refs live in page content.
 
-The 46 owed families are on `product` (14), `header` (9), `shop` (9), `lens` (6), `mega-lenses` (5),
-`mobile-menu` (2) and `size-guide` (1). They need the remote site:
+The 46 owed families are on `product` (14), `header` (9), `shop` (9), `lens` (6), `mega-lenses` (5), `mobile-menu` (2) and `size-guide` (1). They need the remote site:
 
 ```
 node ../../scripts/computed-route/confirm-canvas.mjs ../../sites/eye-care-ward-end/build/qa/triage out.json https://darkcyan-grouse-898606.hostingersite.com
@@ -223,30 +151,13 @@ The tool now distinguishes the two reasons a row can be absent, and locally **al
 | the page carries NO `cr-ref-<surface>-*` at all, so it is unmeasurable here and NOT a refutation | 46 | 86 |
 | the surface IS instrumented but that row needs its walker state opened | 0 | 0 |
 
-So nothing is currently blocked on state-driving; the blocker is purely which pages carry instrumentation.
-Run remotely, some of the 46 may convert to the second reason (`filters-open`, `tab-description`,
-`drawer-open`, the mega panels), and the tool will say so per family rather than reporting a bare `ABSENT`.
-Driving a state before the read is the one piece of the instrument still missing.
+So nothing is currently blocked on state-driving; the blocker is purely which pages carry instrumentation. Run remotely, some of the 46 may convert to the second reason (`filters-open`, `tab-description`, `drawer-open`, the mega panels), and the tool will say so per family rather than reporting a bare `ABSENT`. Driving a state before the read is the one piece of the instrument still missing.
 
-**Two guards make the remote run safe to trust**, both added before it was attempted rather than after a bad
-result. Hostinger's edge answers automated browsers with a "Checking your browser" 403 for 45+ minutes after a
-burst; a challenged page carries no markup, so every family on it would read `ABSENT` and 46 refutations would
-look like a finding. The tool therefore waits the challenge out (`parity/lib/helpers.mjs::waitOutHostCheck`),
-cache-busts each URL, and **refuses** a page carrying no instrumentation or no stylesheets instead of
-reporting verdicts for it. And because every page carries the footer's 34 refs, a generic "are there any
-`cr-ref` elements" check would pass on a page lacking the surface under test — so the check is per-surface.
+**Two guards make the remote run safe to trust**, both added before it was attempted rather than after a bad result. Hostinger's edge answers automated browsers with a "Checking your browser" 403 for 45+ minutes after a burst; a challenged page carries no markup, so every family on it would read `ABSENT` and 46 refutations would look like a finding. The tool therefore waits the challenge out (`parity/lib/helpers.mjs::waitOutHostCheck`), cache-busts each URL, and **refuses** a page carrying no instrumentation or no stylesheets instead of reporting verdicts for it. And because every page carries the footer's 34 refs, a generic "are there any `cr-ref` elements" check would pass on a page lacking the surface under test — so the check is per-surface.
 
 ## Two corrections made during this measurement
 
 Both were caught by re-reading the tool's own output, and both would have shipped a confident wrong finding.
 
-1. **Ancestor rules were counted for non-inheriting properties.** CDP returns an `inherited[]` entry per
-   ancestor whatever the property is. Without gating on whether the property actually inherits, an ancestor's
-   `display` or `padding-top` read as the winning declaration for a descendant, which no cascade would ever do.
-   This produced `sgs/form::sgsHideOnDesktop → display` as CONFIRMED from a depth-2 rule, and
-   `sgs/heading::boxShadowHover → box-shadow` from depth 3. Fixing it collapsed all 9 CONFIRMED and
-   REFUTED-LOSES verdicts, which is what prompted replacing the instrument entirely.
-2. **"The cited block emits this property" was matched too loosely.** `.sgs-container-932c86c9 {padding-top:104px}`
-   was counted as the container emitting padding to the row, when it is the container's own padding from a
-   different setting and cannot reach a depth-3 descendant. A resting value-read cannot tell a losing
-   declaration from an unset one; only value-independent rule enumeration can.
+1. **Ancestor rules were counted for non-inheriting properties.** CDP returns an `inherited[]` entry per ancestor whatever the property is. Without gating on whether the property actually inherits, an ancestor's `display` or `padding-top` read as the winning declaration for a descendant, which no cascade would ever do. This produced `sgs/form::sgsHideOnDesktop → display` as CONFIRMED from a depth-2 rule, and `sgs/heading::boxShadowHover → box-shadow` from depth 3. Fixing it collapsed all 9 CONFIRMED and REFUTED-LOSES verdicts, which is what prompted replacing the instrument entirely.
+2. **"The cited block emits this property" was matched too loosely.** `.sgs-container-932c86c9 {padding-top:104px}` was counted as the container emitting padding to the row, when it is the container's own padding from a different setting and cannot reach a depth-3 descendant. A resting value-read cannot tell a losing declaration from an unset one; only value-independent rule enumeration can.

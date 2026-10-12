@@ -1,7 +1,9 @@
 # D454 focus-ring opacity fix — verification report
 
 **Date:** 2026-08-01
+
 **Mode:** Maintenance (verification-only, read-only on source, no deploy performed)
+
 **Scope:** `.sgs-form-field__input:focus-visible` in `plugins/sgs-blocks/src/blocks/form/style.css`
 
 ## Headline finding — the fix is real, but not where the task said it was

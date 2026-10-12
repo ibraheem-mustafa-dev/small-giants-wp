@@ -275,6 +275,7 @@ The master feature audit (`docs/plans/2026-02-21-master-feature-audit.md`) track
 ## Deployment
 
 **Dev site (all changes go here):** `https://palestine-lives.org`
+
 **Client test site (READ ONLY):** `https://lightsalmon-tarsier-683012.hostingersite.com`
 
 ```bash

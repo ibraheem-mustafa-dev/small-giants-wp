@@ -8,37 +8,21 @@ governs: Spec 47 §5 stage 3 (.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md);
 
 # Eye Care: whole-site sweep, gap audit, framework fixes
 
-**Goal:** know exactly what is left on every Eye Care surface, which of it is Bean's decided difference, a real
-framework gap or a walker gap (each proven), then fix every real framework gap in one orchestrated pass before
-per-surface walker work resumes.
+**Goal:** know exactly what is left on every Eye Care surface, which of it is Bean's decided difference, a real framework gap or a walker gap (each proven), then fix every real framework gap in one orchestrated pass before per-surface walker work resumes.
 
-**Why now (Bean, 2026-10-04):** per-surface work hides the site-wide picture. Contact took a whole session to go from
-134 to 19 issues, and 13 of 17 surfaces have never been measured with today's walker, so nobody knows what is already
-fixed, what the register still needs, or whether "missing setting" labels are true.
+**Why now (Bean, 2026-10-04):** per-surface work hides the site-wide picture. Contact took a whole session to go from 134 to 19 issues, and 13 of 17 surfaces have never been measured with today's walker, so nobody knows what is already fixed, what the register still needs, or whether "missing setting" labels are true.
 
 **Session C is COMPLETE (2026-10-06):** Waves 0 to 3 and Gates 1 to 3 all passed. Spec 47 §5 stage 3's walker items 2, 4, 5 and the focus and active half of 3 are built, FR-47-7's flows ran live, FR-47-8 canvas awareness is live, and FR-47-2's presence/text/link reads, FR-47-3's content writes and handover, and FR-47-4's Fill are built. **The route result is raw F 338 to 176 on identical reports; the current measured figure on a fresh sweep is 192** (`qa/triage/*.json`), neither comparable to Session B's audited 163. Session C2 is runnable and consumes the 192. Detail: `plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md`.
 
-**Order:** Session 0 (repair everything the 2026-10-04 audit proved) → Session A (sweep) → Session B (audit what is
-still open + divergence protection + writes Session C's plan) → Session C (repair the measuring route: every unbuilt Spec 47 item) → Session C2 (assess each
-remaining finding against the fix register, then fix what Bean approves) →
-Session D (back to walker work, ranked by the sweep). Each session ends with `/handoff`. Session 0 goes first so the
-sweep measures a repaired framework and the route sees the settings the seeder and calibration were missing.
+**Order:** Session 0 (repair everything the 2026-10-04 audit proved) → Session A (sweep) → Session B (audit what is still open + divergence protection + writes Session C's plan) → Session C (repair the measuring route: every unbuilt Spec 47 item) → Session C2 (assess each remaining finding against the fix register, then fix what Bean approves) → Session D (back to walker work, ranked by the sweep). Each session ends with `/handoff`. Session 0 goes first so the sweep measures a repaired framework and the route sees the settings the seeder and calibration were missing.
 
 ## Terms (for a cold reader)
 
-- **Walker:** `scripts/parity/draft-live-walk.mjs`, measures draft and live pages at 375/768/1440 and lists every
-  painted difference as a row.
-- **Pairing:** `scripts/computed-route/pairs.mjs`, matches each live block (class `cr-ref-<surface>-<n>`) to its
-  draft element and writes the full walker config `qa/parity/<surface>.full.mjs` (`walkerFull` in `surfaces.json`).
-  A surface without it walks only a short hand-written list of pairs.
-- **Solve:** `scripts/computed-route/solve.mjs`, walks, writes block settings, rebuilds, repeats, then labels each
-  surviving row (`lib/solve-rows.mjs::classify`): Hardcode (the setting holds the draft value but paint still
-  differs), Missing setting (the framework DB routes no setting to that property and element), Unresolved (with a
-  reason), Derived box rows (positions and sizes, consequences, never written).
-- **Ledger:** `sites/eye-care-ward-end/build/qa/divergences.json`, Bean's decided differences. A matching row is
-  compared against the decided value instead of the draft and is never written.
-- **Register:** `.claude/plans/2026-10-02-eye-care-fix-register.md`, Bean's reviewed fix list (merged from
-  `Eye Care Fix Register- Bean Points.md`), the standard every surface is judged against.
+- **Walker:** `scripts/parity/draft-live-walk.mjs`, measures draft and live pages at 375/768/1440 and lists every painted difference as a row.
+- **Pairing:** `scripts/computed-route/pairs.mjs`, matches each live block (class `cr-ref-<surface>-<n>`) to its draft element and writes the full walker config `qa/parity/<surface>.full.mjs` (`walkerFull` in `surfaces.json`). A surface without it walks only a short hand-written list of pairs.
+- **Solve:** `scripts/computed-route/solve.mjs`, walks, writes block settings, rebuilds, repeats, then labels each surviving row (`lib/solve-rows.mjs::classify`): Hardcode (the setting holds the draft value but paint still differs), Missing setting (the framework DB routes no setting to that property and element), Unresolved (with a reason), Derived box rows (positions and sizes, consequences, never written).
+- **Ledger:** `sites/eye-care-ward-end/build/qa/divergences.json`, Bean's decided differences. A matching row is compared against the decided value instead of the draft and is never written.
+- **Register:** `.claude/plans/2026-10-02-eye-care-fix-register.md`, Bean's reviewed fix list (merged from `Eye Care Fix Register- Bean Points.md`), the standard every surface is judged against.
 
 ## Where things stand (2026-10-04, fc36ea861)
 
@@ -52,24 +36,15 @@ sweep measures a repaired framework and the route sees the settings the seeder a
 | Header, mobile menu, 4 megas, size guide, lens, shop, product | no refs, hand config only | unknown | unknown | 0 |
 | Bag, checkout, confirmation | hand config only, not in `surfaces.json` | unknown | unknown | 0 |
 
-Known limits of the labels: Solve's "Missing setting" means only "no DB row routes this property to this element". It
-is a lookup result, not a proven gap. Of Lenses' and the form's labels, several read like walker artefacts
-(container `transform` and `opacity` rows, likely mid-entrance-animation; `display` on form inputs) or settings that
-exist elsewhere (textarea `max-width`). Each was proved or disproved in B2; the answers are Appendix B.
+Known limits of the labels: Solve's "Missing setting" means only "no DB row routes this property to this element". It is a lookup result, not a proven gap. Of Lenses' and the form's labels, several read like walker artefacts (container `transform` and `opacity` rows, likely mid-entrance-animation; `display` on form inputs) or settings that exist elsewhere (textarea `max-width`). Each was proved or disproved in B2; the answers are Appendix B.
 
-Register: 187 surface items plus 21 route findings (CR1 to CR21); about 30 marked closed. Its Type column (tree,
-framework repair, framework new, content, client) was set by investigation on 2026-10-03 and has not been reconciled
-with walker rows since.
+Register: 187 surface items plus 21 route findings (CR1 to CR21); about 30 marked closed. Its Type column (tree, framework repair, framework new, content, client) was set by investigation on 2026-10-03 and has not been reconciled with walker rows since.
 
 ---
 
 ## Session 0: repair everything the audit proved
 
-**Source:** `.claude/reports/2026-10-04-route-data-audit/README.md` (with rerun scripts) and the wiring-fingerprint
-gate (`plans/archive/2026-10-04-wiring-fingerprint-gate.md`, built 2026-10-04). **Done when:** every group below is fixed with a
-test that fails without it (or recorded with a proven reason it cannot be), the framework DB is reseeded from clean
-HEAD, both test sites are deployed, every block is recalibrated, and a rerun of the four audit scripts and the
-fingerprint gate shows the counts fall by the predicted amounts with no new gap. **Complete 2026-10-05** (status below).
+**Source:** `.claude/reports/2026-10-04-route-data-audit/README.md` (with rerun scripts) and the wiring-fingerprint gate (`plans/archive/2026-10-04-wiring-fingerprint-gate.md`, built 2026-10-04). **Done when:** every group below is fixed with a test that fails without it (or recorded with a proven reason it cannot be), the framework DB is reseeded from clean HEAD, both test sites are deployed, every block is recalibrated, and a rerun of the four audit scripts and the fingerprint gate shows the counts fall by the predicted amounts with no new gap. **Complete 2026-10-05** (status below).
 
 | Group | Scope | Owner files | Who |
 |---|---|---|---|
@@ -81,16 +56,11 @@ fingerprint gate shows the counts fall by the predicted amounts with no new gap.
 | S0-7 Found while building the gate | Dead context wiring: `sgs/gridItem*` (6 keys, container) plus `sgs/formId` (16 blocks list it in `usesContext`, none reads it), `sgs/tabsOrientation`, `sgs/tabsStyle`: read them or remove them. One shared "is this context key consumed" helper used by `check-dead-controls.js` (`liveContextKeys`/`isConsumed`), `check-editor-render-parity.js` (`buildConsumedContextKeys`) and the wiring gate (`uses_context`): today three different tests. Split `check-editor-render-parity.js` (over 5,000 lines) into one module per check. Small confirmed defects: no control for `nav-bar-menu::margin`, `nav-drawer-menu::margin`, `choice-flow::backColourBorderHover`, extension `sgsHoverTilt3D`; `wishlist-panel::columns` never reaches the editor canvas | the named files | `wp-sgs-developer` (blocks), main thread (gates) |
 | S0-6 Serial tail | merge, read every diff, `npm run build`, `run-gates.py --tier full`, reseed from clean HEAD, deploy eye-care-test then sandybrown, recalibrate every block through the queue (`SGS_HEADED=1`), rerun the audit scripts and the gate, update the report's numbers | — | main thread |
 
-**Parallel shape:** S0-1, S0-2 and S0-5 touch disjoint files and run at once (S0-5's groups in separate worktrees);
-S0-3/S0-4 run in the main thread alongside; the tail is serial. Pause the host queue before any build or reseed.
+**Parallel shape:** S0-1, S0-2 and S0-5 touch disjoint files and run at once (S0-5's groups in separate worktrees); S0-3/S0-4 run in the main thread alongside; the tail is serial. Pause the host queue before any build or reseed.
 
 ### Session 0 status (2026-10-05)
 
-Every code group is built, on `main` and pushed. Fast gates 139/139, full tier 6/6. The framework DB is reseeded from HEAD
-(stage 1 and stage 9: 58 removed attributes pruned; F6 0 violations). Block code at `4726700c1` is deployed to
-eye-care-test and, identical block build, `7f770ebb5` to sandybrown; checksums verified on both and both motion-qa
-probes are green. The wiring gate's blocking gaps fell from 1,781 to 201 (`3fee871a2`; the one accepted entry is
-`google-reviews::scrollbarStyle::L5`, an L5 tracer blind spot).
+Every code group is built, on `main` and pushed. Fast gates 139/139, full tier 6/6. The framework DB is reseeded from HEAD (stage 1 and stage 9: 58 removed attributes pruned; F6 0 violations). Block code at `4726700c1` is deployed to eye-care-test and, identical block build, `7f770ebb5` to sandybrown; checksums verified on both and both motion-qa probes are green. The wiring gate's blocking gaps fell from 1,781 to 201 (`3fee871a2`; the one accepted entry is `google-reviews::scrollbarStyle::L5`, an L5 tracer blind spot).
 
 | Group | State | Commits and result |
 |---|---|---|
@@ -105,127 +75,45 @@ probes are green. The wiring gate's blocking gaps fell from 1,781 to 201 (`3fee8
 | Border defaults | done | `6f3601a32`: border style defaults to `solid` (13 attributes; multi-button `childBtnBorderStyle` keeps `''`). `1685d8d14`: border width 0 except exceptional types; border-named styles keep their border inside `:where()`; Google-branded google-reviews buttons are exceptional; gate `check-border-width-defaults.py`; editor marks use outline. |
 | S0-6 Serial tail | done | Merge, build, full gates, reseed from HEAD, deploy of both sites; every block recalibrated on the local WSL mirrors (2026-10-05, 94 cache files; `2f28f14fd`, `659040b1e`, `585a2ffa0`, `115081bf4`); `/sgs-update` every stage at HEAD (0 drifted rows); audit counts in the audit report's section 7. |
 
-**Incident (resolved).** An editor-route save on sandybrown, which runs the older schema, stripped newer attributes from
-pages 2742, 3405 and 3448; all three were restored byte-identical from revisions. Lesson: memory
-`editor-save-on-an-older-schema-strips-newer-attributes`. Interim guard: 6 oldshape baseline entries for
-testimonial-slider `columns` and `gridTemplateColumns` on those pages (`46deb5ae1`, `7f770ebb5`, `04e0f31c6`);
-`wp-update-block-attrs.js` now removes an attribute given as `null` in `--attrs`.
+**Incident (resolved).** An editor-route save on sandybrown, which runs the older schema, stripped newer attributes from pages 2742, 3405 and 3448; all three were restored byte-identical from revisions. Lesson: memory `editor-save-on-an-older-schema-strips-newer-attributes`. Interim guard: 6 oldshape baseline entries for testimonial-slider `columns` and `gridTemplateColumns` on those pages (`46deb5ae1`, `7f770ebb5`, `04e0f31c6`); `wp-update-block-attrs.js` now removes an attribute given as `null` in `--attrs`.
 
 **Decisions (Bean, 2026-10-05).**
 1. Grid items: Spec 32 FR-32-12 as built.
 2. Text indent is paragraph-after-paragraph through a sibling selector; the single-element `TextIndent` attribute is removed.
 3. Border style defaults to `solid`.
-4. Border width defaults to 0 except exceptional types: outline and ghost buttons, inputs, selectable pills and swatches,
-   dividers, border-drawn glyphs, transparent space reservers, forced-colours rules, border-named style variants (kept
-   inside `:where()`) and Google-branded buttons. Spec 32 §Borders carries the rule; `check-border-width-defaults.py`
-   enforces it.
-5. Standardisation rule: always reuse the shared helper, injector, atom or extension (memory
-   `match-helper-precedent-by-contract`); a second copy of a helper is a defect.
+4. Border width defaults to 0 except exceptional types: outline and ghost buttons, inputs, selectable pills and swatches, dividers, border-drawn glyphs, transparent space reservers, forced-colours rules, border-named style variants (kept inside `:where()`) and Google-branded buttons. Spec 32 §Borders carries the rule; `check-border-width-defaults.py` enforces it.
+5. Standardisation rule: always reuse the shared helper, injector, atom or extension (memory `match-helper-precedent-by-contract`); a second copy of a helper is a defect.
 
-**Session 0 tail results (2026-10-05).** Hostinger's edge put a captcha on every automated login, so every block was
-recalibrated on local WSL mirrors of both test sites (`scripts/local-wp/README.md`; proven equal to the hosted sites on
-google-reviews, accordion and accordion-item). Summed over the 94 cache files, 2026-10-04 to 2026-10-05: settings
-located 1,810 to 2,868, dead 711 to 605, noMarker 357 to 117, rejected 7 to 0; oneWidth 22 to 40 and untestedStates
-28 to 55 rose with the ~1,060 settings reached for the first time. Detail: `.claude/reports/2026-10-04-route-data-audit/README.md` section 7.
+**Session 0 tail results (2026-10-05).** Hostinger's edge put a captcha on every automated login, so every block was recalibrated on local WSL mirrors of both test sites (`scripts/local-wp/README.md`; proven equal to the hosted sites on google-reviews, accordion and accordion-item). Summed over the 94 cache files, 2026-10-04 to 2026-10-05: settings located 1,810 to 2,868, dead 711 to 605, noMarker 357 to 117, rejected 7 to 0; oneWidth 22 to 40 and untestedStates 28 to 55 rose with the ~1,060 settings reached for the first time. Detail: `.claude/reports/2026-10-04-route-data-audit/README.md` section 7.
 
 ### Parked from Session 0
 
 Each item is named so nothing is lost; none blocks Session A.
-- **P0-1 jest — DONE 2026-10-05 (`3f6cc9b74`):** `npx jest` → `Test Suites: 24 passed, 24 total`, `Tests: 294 passed,
-  294 total`. Cause: the WordPress mocks lacked what the editor code renders (`BaseControl.VisualLabel` from the
-  core-typography rebuild `bf2c903ba`, ref forwarding, `TabPanel`'s function child, `useRegistry`); fixed in the mocks.
-  The same run cleared four other red suites (stale google-reviews barrel mock, wishlist labels, schema baseline
-  refreshed for deliberate changes, tier fixture scripts now registered with jest), and fixed one source warning:
-  `DesignTokenPicker.js` now names the `statesProvidedByParent` marker.
-- **P0-2 PHPUnit — DONE 2026-10-05 (`34b92c5e5`, `a930251c1`):** `php vendor/bin/phpunit` → `Tests: 2055,
-  Assertions: 5988, Skipped: 1` (green; the skip is the opt-in real-kses proof). One code bug fixed:
-  `responsive-logo/render.php` printed an empty `data-animation=""` (built, NOT deployed: waits for Session C2's
-  deploy). Every other failure was a stale test, each updated to the commit that changed the behaviour on purpose
-  (cited in `34b92c5e5`); `StyleVariationManifestTest` is now `ThemeSnapshotManifestTest` on
-  `sites/<client>/theme-snapshot.json`. The 18 PHPUnit doc-comment deprecations became attributes, and LeanSeedSize
-  prints its size instead of raising a notice.
-- **P0-3 Seeder remainder (368 unrouted):** 81 refused as ambiguous (shape-divider top and bottom element derivation
-  drops `--top` and `--bottom`; wrapper fills against overlays), about 30 gradient siblings that need `attrMap`
-  `css:color-gradient` or `css:border-color-gradient` in `block.json`, the rest with no evidence. The roster's
-  `sgsHover*` and `sgsChildWidth` rows stay NULL (one-slot collisions).
-- **P0-4 Wiring gate L5 tracer:** a value passing through a normalising variable and then a ternary
-  (`google-reviews::scrollbarStyle`) is not traced.
-- **P0-5 Structural borders with no control (34, class S):** give controls to card and panel borders (post-grid card,
-  pricing plan, trustpilot card, wishlist row, product-search panel, choice-flow showcase panels); the rest stays design.
-- **P0-6 Sandybrown rebuild:** rebuild pages 2742, 3405 and 3448 from their trees, then delete the 6 oldshape baseline
-  entries.
-- **P0-7 Gradient regex:** `utils/tokens.js` and `surface-tone.js` keep their own copy (circular import with
-  background-preview).
-- **P0-8 Live check:** the container may not load the svg-bg and shape-divider CSS on a page with a hero but no
-  container.
+- **P0-1 jest — DONE 2026-10-05 (`3f6cc9b74`):** `npx jest` → `Test Suites: 24 passed, 24 total`, `Tests: 294 passed, 294 total`. Cause: the WordPress mocks lacked what the editor code renders (`BaseControl.VisualLabel` from the core-typography rebuild `bf2c903ba`, ref forwarding, `TabPanel`'s function child, `useRegistry`); fixed in the mocks. The same run cleared four other red suites (stale google-reviews barrel mock, wishlist labels, schema baseline refreshed for deliberate changes, tier fixture scripts now registered with jest), and fixed one source warning: `DesignTokenPicker.js` now names the `statesProvidedByParent` marker.
+- **P0-2 PHPUnit — DONE 2026-10-05 (`34b92c5e5`, `a930251c1`):** `php vendor/bin/phpunit` → `Tests: 2055, Assertions: 5988, Skipped: 1` (green; the skip is the opt-in real-kses proof). One code bug fixed: `responsive-logo/render.php` printed an empty `data-animation=""` (built, NOT deployed: waits for Session C2's deploy). Every other failure was a stale test, each updated to the commit that changed the behaviour on purpose (cited in `34b92c5e5`); `StyleVariationManifestTest` is now `ThemeSnapshotManifestTest` on `sites/<client>/theme-snapshot.json`. The 18 PHPUnit doc-comment deprecations became attributes, and LeanSeedSize prints its size instead of raising a notice.
+- **P0-3 Seeder remainder (368 unrouted):** 81 refused as ambiguous (shape-divider top and bottom element derivation drops `--top` and `--bottom`; wrapper fills against overlays), about 30 gradient siblings that need `attrMap` `css:color-gradient` or `css:border-color-gradient` in `block.json`, the rest with no evidence. The roster's `sgsHover*` and `sgsChildWidth` rows stay NULL (one-slot collisions).
+- **P0-4 Wiring gate L5 tracer:** a value passing through a normalising variable and then a ternary (`google-reviews::scrollbarStyle`) is not traced.
+- **P0-5 Structural borders with no control (34, class S):** give controls to card and panel borders (post-grid card, pricing plan, trustpilot card, wishlist row, product-search panel, choice-flow showcase panels); the rest stays design.
+- **P0-6 Sandybrown rebuild:** rebuild pages 2742, 3405 and 3448 from their trees, then delete the 6 oldshape baseline entries.
+- **P0-7 Gradient regex:** `utils/tokens.js` and `surface-tone.js` keep their own copy (circular import with background-preview).
+- **P0-8 Live check:** the container may not load the svg-bg and shape-divider CSS on a page with a hero but no container.
 - **P0-9 multi-button layout:** render passes `flex`; there is no layout control, by design.
-- **P0-10 Calibration memory (Session C, before its serial tail's recalibration):** one `calibrate.mjs` run over 46
-  blocks ran out of Node's default 4 GB heap after 43 minutes (on site-header); site-header itself needs
-  `--max-old-space-size=8192` and `SGS_CAL_CHUNK=50`. Find what the run holds between blocks.
-- **P0-11 Unclassified calibration outcomes — DONE 2026-10-05 (Session B):** the 605 dead, 40 oneWidth and 55
-  untestedStates are split by cause in `.claude/reports/2026-10-05-session-b/calibration-outcomes.md` (data in
-  `calibration-outcomes.json`, rerun with `classify-outcomes.py`, which imports `classify_dead.py::classify` unchanged
-  after generating the `layer.json` it needs). Totals confirmed independently by the main thread against the 94 cache
-  files: dead 605, oneWidth 40, untestedStates 55, top blocks cart 83, nav-bar-menu 58, product-card 51,
-  nav-drawer-menu 39, hero 35, mega-panel 29.
-  Dead by cause: FIXTURE_LACKS_ELEMENT 221, RESIDUAL 152, PORTAL_OR_CLOSED_SURFACE 94, READ_CAP_81 60,
-  HOVER_POINTER_MISSES_CHILD 28, NEEDS_OVERLAY_COMPANION 12, NEEDS_BORDER_COMPANION 12,
-  STATE_NOT_RENDERED_BY_FIXTURE 11, PSEUDO_ELEMENT 8, NEEDS_LAYOUT_MODE 7. The three `STALE_*` causes are empty
-  (0, 0, 0) and every cache was measured on 2026-10-05, which confirms the rerun cleared the stale-measurement
-  causes and leaves only structural ones.
-  **No labelled cause needs block code**: FIXTURE_LACKS_ELEMENT, both NEEDS_*_COMPANION, NEEDS_LAYOUT_MODE and
-  STATE_NOT_RENDERED_BY_FIXTURE are `calibration-fixtures.json` edits; PORTAL_OR_CLOSED_SURFACE, READ_CAP_81,
-  HOVER_POINTER_MISSES_CHILD, PSEUDO_ELEMENT and both untestedStates causes are harness changes. Four fixes clear
-  **203 of the 605** with no block code: open the cart surface (82), lift the 81-element read cap for nav-bar-menu
-  (46), give product-card fixture content (47) and give mega-panel fixture content (28).
-  Still unknown: the 152 RESIDUAL. The same file's newer `classify3` splits them into UNEXPLAINED 106,
-  HOVER_POINTER_MISSES_ELEMENT 21, DB_STATE_MISSING_HOVER 11, NEEDS_BG_IMAGE 7, NEEDS_VARIANT_OR_TOGGLE 4,
-  STATE_FOCUS_UNROUTED 2, NEEDS_LAYOUT_MODE 1, so any real framework gap is inside the 106 UNEXPLAINED.
-  oneWidth (40) groups by which widths resolved (missing 768 only 21; multi-button 8, site-footer-row 7,
-  site-header-row 7); the likely cause is that tiers follow container width, unproven. untestedStates (55) is
-  51 hover elements hidden by an open panel (nav-drawer-menu 25, nav-bar-menu 11, nav-drawer 8, modal 4) and
-  4 where site-header never took `is-header-scrolled`.
-  Caveat recorded by the run: the labels are inferred from element presence and attribute names, not proved by a
-  render, so they are strong leads rather than proofs.
+- **P0-10 Calibration memory (Session C, before its serial tail's recalibration):** one `calibrate.mjs` run over 46 blocks ran out of Node's default 4 GB heap after 43 minutes (on site-header); site-header itself needs `--max-old-space-size=8192` and `SGS_CAL_CHUNK=50`. Find what the run holds between blocks.
+- **P0-11 Unclassified calibration outcomes — DONE 2026-10-05 (Session B):** the 605 dead, 40 oneWidth and 55 untestedStates are split by cause in `.claude/reports/2026-10-05-session-b/calibration-outcomes.md` (data in `calibration-outcomes.json`, rerun with `classify-outcomes.py`, which imports `classify_dead.py::classify` unchanged after generating the `layer.json` it needs). Totals confirmed independently by the main thread against the 94 cache files: dead 605, oneWidth 40, untestedStates 55, top blocks cart 83, nav-bar-menu 58, product-card 51, nav-drawer-menu 39, hero 35, mega-panel 29. Dead by cause: FIXTURE_LACKS_ELEMENT 221, RESIDUAL 152, PORTAL_OR_CLOSED_SURFACE 94, READ_CAP_81 60, HOVER_POINTER_MISSES_CHILD 28, NEEDS_OVERLAY_COMPANION 12, NEEDS_BORDER_COMPANION 12, STATE_NOT_RENDERED_BY_FIXTURE 11, PSEUDO_ELEMENT 8, NEEDS_LAYOUT_MODE 7. The three `STALE_*` causes are empty (0, 0, 0) and every cache was measured on 2026-10-05, which confirms the rerun cleared the stale-measurement causes and leaves only structural ones. **No labelled cause needs block code**: FIXTURE_LACKS_ELEMENT, both NEEDS_*_COMPANION, NEEDS_LAYOUT_MODE and STATE_NOT_RENDERED_BY_FIXTURE are `calibration-fixtures.json` edits; PORTAL_OR_CLOSED_SURFACE, READ_CAP_81, HOVER_POINTER_MISSES_CHILD, PSEUDO_ELEMENT and both untestedStates causes are harness changes. Four fixes clear **203 of the 605** with no block code: open the cart surface (82), lift the 81-element read cap for nav-bar-menu (46), give product-card fixture content (47) and give mega-panel fixture content (28). Still unknown: the 152 RESIDUAL. The same file's newer `classify3` splits them into UNEXPLAINED 106, HOVER_POINTER_MISSES_ELEMENT 21, DB_STATE_MISSING_HOVER 11, NEEDS_BG_IMAGE 7, NEEDS_VARIANT_OR_TOGGLE 4, STATE_FOCUS_UNROUTED 2, NEEDS_LAYOUT_MODE 1, so any real framework gap is inside the 106 UNEXPLAINED. oneWidth (40) groups by which widths resolved (missing 768 only 21; multi-button 8, site-footer-row 7, site-header-row 7); the likely cause is that tiers follow container width, unproven. untestedStates (55) is 51 hover elements hidden by an open panel (nav-drawer-menu 25, nav-bar-menu 11, nav-drawer 8, modal 4) and 4 where site-header never took `is-header-scrolled`. Caveat recorded by the run: the labels are inferred from element presence and attribute names, not proved by a render, so they are strong leads rather than proofs.
 
 ## Track P: route prep, in a second session beside Session 0
 
-**Closed 2026-10-05:** every unit built, checked and proven (status below). What it leaves open sits in the units it
-serves: Session B's B1 and B4 rows, register S1 (the button timing), Spec 47 §5 stage 3 (walker items 2, 4, 5 and focus
-and active states).
+**Closed 2026-10-05:** every unit built, checked and proven (status below). What it leaves open sits in the units it serves: Session B's B1 and B4 rows, register S1 (the button timing), Spec 47 §5 stage 3 (walker items 2, 4, 5 and focus and active states).
 
-Code-only units from Sessions A and B that need neither Session 0's repairs nor the host, pulled forward so the sweep
-can start the moment Session 0's tail ends. **File ownership (no overlap with Session 0):** Track P owns
-`scripts/parity/**` (the walker, `collect.mjs` included: it also takes S0-3's walker-side `::before`/`::after` read),
-`scripts/computed-route/solve.mjs`, `lib/solve-rows.mjs`, `lib/ledger.mjs`, `lint.mjs`, the new `sweep.mjs`, and
-`sites/eye-care-ward-end/build/qa/independent-check.mjs`; Session 0 owns `calibrate.mjs`, `lib/calibrate.mjs`, the
-calibration fixtures, the seeder and every block (`lib/calibrate.mjs` reads `collect.mjs`'s `DEFAULT_PROPS` and
-`HOVER_PROPS`, so the walker's read properties are calibration's too). Units: A-1 (all five walker fixes plus the `::after` read), A1's
-rounds-0 test, A3's `sweep.mjs` aggregator and tests (built against the existing solve reports), A5's
-`independent-check.mjs::accepted` ledger fix, and B4 divergence protection. Done when each has its MUST FAIL test,
-tests and lint pass, it is pushed, and the About measure-only proof of A-1 passes.
+Code-only units from Sessions A and B that need neither Session 0's repairs nor the host, pulled forward so the sweep can start the moment Session 0's tail ends. **File ownership (no overlap with Session 0):** Track P owns `scripts/parity/**` (the walker, `collect.mjs` included: it also takes S0-3's walker-side `::before`/`::after` read), `scripts/computed-route/solve.mjs`, `lib/solve-rows.mjs`, `lib/ledger.mjs`, `lint.mjs`, the new `sweep.mjs`, and `sites/eye-care-ward-end/build/qa/independent-check.mjs`; Session 0 owns `calibrate.mjs`, `lib/calibrate.mjs`, the calibration fixtures, the seeder and every block (`lib/calibrate.mjs` reads `collect.mjs`'s `DEFAULT_PROPS` and `HOVER_PROPS`, so the walker's read properties are calibration's too). Units: A-1 (all five walker fixes plus the `::after` read), A1's rounds-0 test, A3's `sweep.mjs` aggregator and tests (built against the existing solve reports), A5's `independent-check.mjs::accepted` ledger fix, and B4 divergence protection. Done when each has its MUST FAIL test, tests and lint pass, it is pushed, and the About measure-only proof of A-1 passes.
 
-**Status (2026-10-05): every code unit built, pushed and proven.** A1 `4f70dda13`; A-1 part 1
-(timings and `::before`/`::after` in `collect.mjs`, on main for Session 0's recalibration) `4f70dda13`, part 2 (DevTools
-reads) `f7d9003f5`; A5 `fde61f00d`; B4 `5c20163c2`; A3 `65935f7d7`. Each unit's MUST FAIL test was shown red against the
-old code. The route gate's command is unchanged (`node scripts/computed-route/lint.mjs --surfaces
-sites/eye-care-ward-end/build/surfaces.json`): it checks the ledger against the register named in
-`sites/eye-care-ward-end/build/qa/ledger.config.json` (`--register` overrides; a ledger with entries and no register fails). Proof: the About proof ran on 2026-10-05 against Session 0's local mirror (localhost:8081, About rebuilt from its tree, 0 invalid blocks) and the draft served from its source folder (identical to the hosted draft: 24 pairs, 1,393 values): 1 distinct open issue, real (below); the 12 About ledger decisions held; forced hover, pseudo layers, declared widths, row spacing and the settle change added no rows. It also found 8 false rows (the draft's CSS entrance timings against live's script-driven SGS entrances of the same durations), fixed in the walker (animation timings compare only where both sides use CSS keyframes). The open issue: S1's button hover timing does not reach any sgs/button (About's "Shop the range" transitions over 0.3s, S1 decided 0.25s): `button/render.php` always emits `.{uid}.sgs-button{transition:all {transitionDuration}ms}` and `block.json::attributes.transitionDuration` defaults to 300, so the block default beats `buttonPresets.default.hover-transition` (found with the new DevTools read: the per-instance rule wins). Framework repair for Session 0 or C: emit the per-instance transition only when the attribute is set (register S1).
+**Status (2026-10-05): every code unit built, pushed and proven.** A1 `4f70dda13`; A-1 part 1 (timings and `::before`/`::after` in `collect.mjs`, on main for Session 0's recalibration) `4f70dda13`, part 2 (DevTools reads) `f7d9003f5`; A5 `fde61f00d`; B4 `5c20163c2`; A3 `65935f7d7`. Each unit's MUST FAIL test was shown red against the old code. The route gate's command is unchanged (`node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json`): it checks the ledger against the register named in `sites/eye-care-ward-end/build/qa/ledger.config.json` (`--register` overrides; a ledger with entries and no register fails). Proof: the About proof ran on 2026-10-05 against Session 0's local mirror (localhost:8081, About rebuilt from its tree, 0 invalid blocks) and the draft served from its source folder (identical to the hosted draft: 24 pairs, 1,393 values): 1 distinct open issue, real (below); the 12 About ledger decisions held; forced hover, pseudo layers, declared widths, row spacing and the settle change added no rows. It also found 8 false rows (the draft's CSS entrance timings against live's script-driven SGS entrances of the same durations), fixed in the walker (animation timings compare only where both sides use CSS keyframes). The open issue: S1's button hover timing does not reach any sgs/button (About's "Shop the range" transitions over 0.3s, S1 decided 0.25s): `button/render.php` always emits `.{uid}.sgs-button{transition:all {transitionDuration}ms}` and `block.json::attributes.transitionDuration` defaults to 300, so the block default beats `buttonPresets.default.hover-transition` (found with the new DevTools read: the per-instance rule wins). Framework repair for Session 0 or C: emit the per-instance transition only when the attribute is set (register S1).
 
-**Checked (2026-10-05).** /code-review high on the range found four Track P defects, fixed in `92bd82de0` (forced hover
-no longer repeats a rest difference as a hover row; ledger entries and accepts keep `::before`/`::after` rows apart;
-a declared width never replaces a ledger-held width; the settle floor is 900ms again, proven by a local late-reveal
-page that reads opacity 0 under 300ms). Then triage reads `includes/` helpers (`8b153abb3`), the flex alignment noise
-row is gone (`8f032be03`), and /qc passed 15 scenarios on local pages and real data, fixing triage's missing-report
-error on the way (`2035bb6ce`; report `~/.claude/pipeline-state/qc/qc-trackp-20261005-0128/stage-6-report.md`).
-Measured in Session A: About's four-width walk took 35s on the host against 31s on 2026-10-04, so the DevTools node
-lookups stay unbatched. The four review findings in Session 0's code are handled by Session 0 (deploy-hash `0b0630d6e`, calibration chunk probe, the tier helpers in its fix wave, jest mocks `7c714f86b`).
+**Checked (2026-10-05).** /code-review high on the range found four Track P defects, fixed in `92bd82de0` (forced hover no longer repeats a rest difference as a hover row; ledger entries and accepts keep `::before`/`::after` rows apart; a declared width never replaces a ledger-held width; the settle floor is 900ms again, proven by a local late-reveal page that reads opacity 0 under 300ms). Then triage reads `includes/` helpers (`8b153abb3`), the flex alignment noise row is gone (`8f032be03`), and /qc passed 15 scenarios on local pages and real data, fixing triage's missing-report error on the way (`2035bb6ce`; report `~/.claude/pipeline-state/qc/qc-trackp-20261005-0128/stage-6-report.md`). Measured in Session A: About's four-width walk took 35s on the host against 31s on 2026-10-04, so the DevTools node lookups stay unbatched. The four review findings in Session 0's code are handled by Session 0 (deploy-hash `0b0630d6e`, calibration chunk probe, the tier helpers in its fix wave, jest mocks `7c714f86b`).
 
 ## Session A: whole-site sweep (measure, never write)
 
-**Done (2026-10-05, status below). Done meant:** every surface has a walker report taken from one commit with live = HEAD; every register item carries
-one sweep status; every claimed fix is confirmed live or reopened; register, Spec 47 plan Progress, Spec 47 §5 and
-LEDGER Front F state the result. **Actual:** about 3 h 15, the A4 redo included.
+**Done (2026-10-05, status below). Done meant:** every surface has a walker report taken from one commit with live = HEAD; every register item carries one sweep status; every claimed fix is confirmed live or reopened; register, Spec 47 plan Progress, Spec 47 §5 and LEDGER Front F state the result. **Actual:** about 3 h 15, the A4 redo included.
 
 | Unit | Does | Files | Depends on | Test |
 |---|---|---|---|---|
@@ -245,67 +133,31 @@ LEDGER Front F state the result. **Actual:** about 3 h 15, the A4 redo included.
 - **closed earlier:** the register already records it closed with evidence, and the sweep agrees. If the sweep disagrees, it is **still open** (a regression), flagged in the handoff.
 - A5 takes every clean, closed earlier and partly measured item for a live check.
 
-**Gate A (review-gate):** pass when every surface has a report from A0's recorded HEAD (a report from another HEAD fails) and every register item has a
-status. Fail when a surface cannot be measured (host 403, pairing below half its blocks): record it with its reason
-and continue; never block the session on one surface.
+**Gate A (review-gate):** pass when every surface has a report from A0's recorded HEAD (a report from another HEAD fails) and every register item has a status. Fail when a surface cannot be measured (host 403, pairing below half its blocks): record it with its reason and continue; never block the session on one surface.
 
 ### Session A status (2026-10-05): done
 
-All units ran on the hosted test site (no captcha; one host job at a time). Live = HEAD was proven by checksum before
-measuring: every file of the deployed sgs-blocks build equals the local build of `4726700c1` once line endings and
-webpack's module ids are set aside, and the deployed theme.json equals the snapshot's. Recorded HEAD for every report:
-`1ea514ae8` (no block code after `4726700c1`).
+All units ran on the hosted test site (no captcha; one host job at a time). Live = HEAD was proven by checksum before measuring: every file of the deployed sgs-blocks build equals the local build of `4726700c1` once line endings and webpack's module ids are set aside, and the deployed theme.json equals the snapshot's. Recorded HEAD for every report: `1ea514ae8` (no block code after `4726700c1`).
 - **A1:** the rounds-0 test (`tests/solve.test.mjs`) already existed; shown red with the break removed.
-- **A2:** every surface paired. Two pairing fixes on the way: `pairs.mjs --state --width --recheck` pairs a panel with
-  its walker state open (`e32edfbf6`; the megas went from nothing at rest to all their blocks), and pairing runs the
-  hand config's `live.open` and lifts a landmark exclusion holding the surface (`ebf518e89`; lens). Coverage per
-  surface: the Spec 47 plan's Progress table.
-- **A3:** `qa/sweep/2026-10-05/sweep.json`: 2,373 distinct open issues over 17 surfaces (**2,414 after Session C's Gate 1**, a new content class of 41), each surface's total equal to its
-  report's `wholePage` count once the sweep counted unmapped-state rows (`62f1f0e04`; shop had lost 163). About's walk
-  35s against 31s on 2026-10-04: the DevTools lookups stay unbatched.
-- **A4:** the register's Sweep column: 77 still open, 63 not walker-measurable, 19 closed earlier, 15 partly measured,
-  27 clean on the walker. A first Sonnet pass was rejected as shallow (it cited any row on a wrapper block and gave no
-  values); `register-sweep.mjs merge` now refuses a still-open verdict that does not cite one exact row (report, ref,
-  element path, property) and quote its values with a sentence tying the item to that element, a clean claim without
-  that sentence, and hover given alone as unmeasurable (`79ad3953f`). Eight Opus agents redid it under that gate
-  (verdicts and brief in `qa/sweep/2026-10-05/a4/`). Groups 4 and 5 were re-run once Help and the product page were mapped to the size-guide surface
-  (`lib/register-sweep.mjs::SECTION_SURFACES`). Register items recorded closed or clean but open on the sweep:
-  100, 101, 102, 104 and 131 (Lenses, About, Contact) and N15 (the See all reviews button black where the draft is
-  blue); each is explained in Appendix B. N41 and 113 are closed: B4 ledgered S1's lift on Lenses and Help (D-34 to D-39). The main thread checked 6 still-open verdicts and every clean one against their rows, 7 of the
-  not-walker-measurable items and every closed claim without a report.
-- **A5:** `qa/sweep/2026-10-05/a5/README.md`: framework fixes 37/37 PASS; About independent 0 differences; Contact
-  independent 106 rows against the walker's 27 (reconciled in Session B to a 6-row residual, Appendix B); the header sticks but CR2's scrolled-state class was not
-  seen (still to prove); drawer links show no fade entrance (14 open; the rise was not sampled). S3's framework half
-  holds (no hover fade: footer and contact phone PASS; the header phone is hidden at 375 and 768, so untested); its tree
-  half (black hover colour) is open, and the sweep shows the footer business-info hover colour still differing.
+- **A2:** every surface paired. Two pairing fixes on the way: `pairs.mjs --state --width --recheck` pairs a panel with its walker state open (`e32edfbf6`; the megas went from nothing at rest to all their blocks), and pairing runs the hand config's `live.open` and lifts a landmark exclusion holding the surface (`ebf518e89`; lens). Coverage per surface: the Spec 47 plan's Progress table.
+- **A3:** `qa/sweep/2026-10-05/sweep.json`: 2,373 distinct open issues over 17 surfaces (**2,414 after Session C's Gate 1**, a new content class of 41), each surface's total equal to its report's `wholePage` count once the sweep counted unmapped-state rows (`62f1f0e04`; shop had lost 163). About's walk 35s against 31s on 2026-10-04: the DevTools lookups stay unbatched.
+- **A4:** the register's Sweep column: 77 still open, 63 not walker-measurable, 19 closed earlier, 15 partly measured, 27 clean on the walker. A first Sonnet pass was rejected as shallow (it cited any row on a wrapper block and gave no values); `register-sweep.mjs merge` now refuses a still-open verdict that does not cite one exact row (report, ref, element path, property) and quote its values with a sentence tying the item to that element, a clean claim without that sentence, and hover given alone as unmeasurable (`79ad3953f`). Eight Opus agents redid it under that gate (verdicts and brief in `qa/sweep/2026-10-05/a4/`). Groups 4 and 5 were re-run once Help and the product page were mapped to the size-guide surface (`lib/register-sweep.mjs::SECTION_SURFACES`). Register items recorded closed or clean but open on the sweep: 100, 101, 102, 104 and 131 (Lenses, About, Contact) and N15 (the See all reviews button black where the draft is blue); each is explained in Appendix B. N41 and 113 are closed: B4 ledgered S1's lift on Lenses and Help (D-34 to D-39). The main thread checked 6 still-open verdicts and every clean one against their rows, 7 of the not-walker-measurable items and every closed claim without a report.
+- **A5:** `qa/sweep/2026-10-05/a5/README.md`: framework fixes 37/37 PASS; About independent 0 differences; Contact independent 106 rows against the walker's 27 (reconciled in Session B to a 6-row residual, Appendix B); the header sticks but CR2's scrolled-state class was not seen (still to prove); drawer links show no fade entrance (14 open; the rise was not sampled). S3's framework half holds (no hover fade: footer and contact phone PASS; the header phone is hidden at 375 and 768, so untested); its tree half (black hover colour) is open, and the sweep shows the footer business-info hover colour still differing.
 
 ### Parked from Session A
 
 None blocks Session B.
-- **PA-1 Drawer pairing:** `pairs.mjs` collects no words inside the open live phone drawer (`.sgs-nav-drawer[open]`;
-  no landmark exclusion applies; cause unproven). mobile-menu is measured by header.mjs's drawer pairs only.
-- **PA-2 Per-width draft finders:** shop's and product's kept finders hold other words at 375 and 768 (the draft
-  rebuilds its layout per width), so 17 shop blocks are left out. A finder chosen per width would keep them.
-- **PA-3 Hand-pair refs in the A4 validator:** `register-sweep.mjs merge` counts only auto-paired refs as measured;
-  a hand pair's live trace names its block (`header-phone` is `cr-ref-header-11`), so N1 had to be recorded closed
-  earlier rather than clean.
-- **PA-4 Independent check reads off-screen text:** `independent-check.mjs` counts screen-reader-only text parked at
-  -9999px as painted (9 Contact rows); the walker's collector skips it (`auto-collect.mjs::srOnly`).
-- **PA-5 Confirmation needs a paid test order:** the only order on eye-care-test is cancelled (652), so its page lacks
-  the tick and continue link; a paid test order makes the walk complete.
+- **PA-1 Drawer pairing:** `pairs.mjs` collects no words inside the open live phone drawer (`.sgs-nav-drawer[open]`; no landmark exclusion applies; cause unproven). mobile-menu is measured by header.mjs's drawer pairs only.
+- **PA-2 Per-width draft finders:** shop's and product's kept finders hold other words at 375 and 768 (the draft rebuilds its layout per width), so 17 shop blocks are left out. A finder chosen per width would keep them.
+- **PA-3 Hand-pair refs in the A4 validator:** `register-sweep.mjs merge` counts only auto-paired refs as measured; a hand pair's live trace names its block (`header-phone` is `cr-ref-header-11`), so N1 had to be recorded closed earlier rather than clean.
+- **PA-4 Independent check reads off-screen text:** `independent-check.mjs` counts screen-reader-only text parked at -9999px as painted (9 Contact rows); the walker's collector skips it (`auto-collect.mjs::srOnly`).
+- **PA-5 Confirmation needs a paid test order:** the only order on eye-care-test is cancelled (652), so its page lacks the tick and continue link; a paid test order makes the walk complete.
 
 ---
 
 ## Session B: audit the three-way split, protect decisions, plan the fixes
 
-**Done 2026-10-05.** All five units and both appendices landed (`97ac6f95a`, `4e36e5775`, `124993395`, `427277644`,
-`919c23be4`, `314add9c6`). Every one of the 2,373 open issues carries one **audited** class with proof (W 1,710, F 163, T 447,
-U 28, D 17, deferred 8); the 78 unmeasurable register items carry a measure-gap tag; Bean's decisions can no longer
-be overwritten (B4, N41 and 113 closed); Session C's plan is written
-(since re-split into `plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md`
-and `plans/archive/2026-10-05-eye-care-session-c2-finding-assessment.md`). **Gate B is answered: yes,
-route fixes first (Bean, 2026-10-05).**
-Actual against the estimate: about 2 h, matching the realistic figure.
+**Done 2026-10-05.** All five units and both appendices landed (`97ac6f95a`, `4e36e5775`, `124993395`, `427277644`, `919c23be4`, `314add9c6`). Every one of the 2,373 open issues carries one **audited** class with proof (W 1,710, F 163, T 447, U 28, D 17, deferred 8); the 78 unmeasurable register items carry a measure-gap tag; Bean's decisions can no longer be overwritten (B4, N41 and 113 closed); Session C's plan is written (since re-split into `plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md` and `plans/archive/2026-10-05-eye-care-session-c2-finding-assessment.md`). **Gate B is answered: yes, route fixes first (Bean, 2026-10-05).** Actual against the estimate: about 2 h, matching the realistic figure.
 
 ### The classes (written into Spec 47 §5 as the rule)
 
@@ -316,20 +168,9 @@ Actual against the estimate: about 2 h, matching the realistic figure.
 | **W: walker or route gap** | the row is a measuring artefact, a consequence of another row, or a setting exists but the route cannot find, calibrate, pair or write it | the setting that exists (file::symbol) or the parent row it follows from |
 | **T: tree or content** | fixable now in the page tree or Site Info | the value to write |
 
-Rule: Solve's "Missing setting" starts as **W until proven F**. A walker gap is never closed by calling it missing
-functionality.
+Rule: Solve's "Missing setting" starts as **W until proven F**. A walker gap is never closed by calling it missing functionality.
 
-**Measure-gap tag (Bean, 2026-10-05).** Every register item Session A left **not walker-measurable** or **partly
-measured** (78 on the strict A4 pass: 63 and 15) also gets one tag saying why it is not measured, using Spec 47's role
-split: `content-fixable` (the draft shows it and a block setting can hold it: words in a `content` setting, an element
-shown by a `boolean-visibility` or variant setting, a link; Spec 47 §3.2/§3.3 presence, text and link, **built 2026-10-06** but their one real-data run recorded nothing, see §5 Residual),
-`handover` (content outside the tree: Site Info, product data, WooCommerce text, a page the draft never shows; name its
-owner), `behaviour` (FR-47-7 flows: clicks, filters, add to bag, step changes), `FR-47-6` (a walker read not built:
-focus and active states, script-driven entrance motion, link coverage), `pairing` (the element exists on a measured
-surface but no pair reaches it) or `PA-1` to `PA-5`. A missing link or element that no block setting could produce is
-the framework's (Missing setting), not content. The fix side comes from the register's Type column (framework repair,
-framework new, tree, content). Output: one table in this plan's appendix, so Session C's framework list and Spec 47's
-remaining work separate cleanly; the `content-fixable`, `pairing` and `FR-47-*` rows go to Spec 47 §5 Residual.
+**Measure-gap tag (Bean, 2026-10-05).** Every register item Session A left **not walker-measurable** or **partly measured** (78 on the strict A4 pass: 63 and 15) also gets one tag saying why it is not measured, using Spec 47's role split: `content-fixable` (the draft shows it and a block setting can hold it: words in a `content` setting, an element shown by a `boolean-visibility` or variant setting, a link; Spec 47 §3.2/§3.3 presence, text and link, **built 2026-10-06** but their one real-data run recorded nothing, see §5 Residual), `handover` (content outside the tree: Site Info, product data, WooCommerce text, a page the draft never shows; name its owner), `behaviour` (FR-47-7 flows: clicks, filters, add to bag, step changes), `FR-47-6` (a walker read not built: focus and active states, script-driven entrance motion, link coverage), `pairing` (the element exists on a measured surface but no pair reaches it) or `PA-1` to `PA-5`. A missing link or element that no block setting could produce is the framework's (Missing setting), not content. The fix side comes from the register's Type column (framework repair, framework new, tree, content). Output: one table in this plan's appendix, so Session C's framework list and Spec 47's remaining work separate cleanly; the `content-fixable`, `pairing` and `FR-47-*` rows go to Spec 47 §5 Residual.
 
 | Unit | Does | Files | Depends on | Test |
 |---|---|---|---|---|
@@ -340,56 +181,27 @@ remaining work separate cleanly; the `content-fixable`, `pairing` and `FR-47-*` 
 | B4 Divergence protection | **(1), (3), (4) built 2026-10-05 (`5c20163c2`, `fde61f00d`):** decided values are Solve's target (`judgeDivergence` sets `decided`, `draftValues` reads it); entries carry `register: [ids]` checked by `lint.mjs --register`; D-1 removed (Bean 2026-10-05: the subtext keeps its margin; the 375px name-field drop stays open under CR15/N45b). **(2) done 2026-10-05 (Session B).** S1's agreed lift is ledgered on Lenses and Help, closing register N41 and 113: D-34 and D-35 on `cr-ref-lenses-28` (`sgs/button` "Choose a frame"), D-36 and D-37 on `cr-ref-help-39` ("Contact me") and D-38 and D-39 on `cr-ref-help-40` ("Call"), each a `transform` entry targeting `matrix(1, 0, 0, 1, 0, -3)` and a `hover-effects` entry targeting `lifts`, over widths 768, 1440 and 1920, citing `["N41","S1"]` and `["113","S1"]`. Each ref was confirmed against the surface tree before writing, and the rows read draft `none` against live `matrix(1, 0, 0, 1, 0, -3)`: the draft does not lift, so without an entry Solve would write the draft's no-lift back over Bean's decision. `lint.mjs --register` passes, and a planted `NOT-A-REAL-ID` turns it red (negative control). The `solve.test.mjs` decision tests are green ("MUST FAIL TO OVERWRITE A DECISION", both cases). Audit for any other register decision that changes a measured value and lacks an entry: none. Eight register items read as decisions; S4 and 104 are already ledgered; S6 (page top spacing 48/90) and 93 with 18 (the red inline notice is the current wrong state, and item 18's toast removes it; its row is `cr-ref-product-4` `position`, draft `fixed` against live `static`) are fixes **towards** the draft, not divergences; N11 is behaviour; 160 and 162 are content decisions no walker read reaches; D7 needs no build: `sgs/google-reviews` already has an in-flow `badge` variant (only `floating-badge` is sticky), so it is a tree value — set `variant` to `badge` in the header tree. No lint enforces the register-to-ledger direction because the register carries no machine-readable marker for "this decision changes a measured value", so a check would be heuristic; Gate B asks Bean whether to add that marker. Proven 2026-10-04 by reading the code: Solve skips a row the ledger accepts, but when live drifts from a decided value `parity/lib/divergences.mjs::judgeDivergence` leaves the row open with `diff.draft` set to the text `"<value> (D-n)"`, while `solve.mjs::writeRound` takes its target from `solve-rows.mjs::draftValues` (the raw draft style). So the next Solve writes the draft over Bean's decision, and `guard.mjs` cannot measure that row (`"0px (D-1)"` fails its px parse). Build: (1) Solve's target for a ledgered row is the entry's decided value, parsed from the entry, not from the text; (2) every register decision that changes a measured value becomes a ledger entry citing its register ID; (3) `lint.mjs` fails an entry whose ID is not in the register; (4) the independent check (fixed in A5) fails when live differs from the decided value | `lib/solve-rows.mjs::draftValues`, `solve.mjs::writeRound`, `parity/lib/divergences.mjs`, `lint.mjs`, `divergences.json` | Session A's statuses | MUST FAIL tests: with a value entry whose live has drifted, `writeRound`'s target equals the decided value; a planted drift turns the independent check red |
 | B5 Plan Session C | Write the orchestration (below) in detail from B3's catalogue | this plan | B3 | `/strategic-plan` gates |
 
-**Why built in rather than an agent editing settings afterwards:** an after-the-fact edit is overwritten the next
-time Solve runs on that surface, and nothing would notice. A ledger entry is read by the walker, Solve and the
-independent check, so a decision holds on every run and a drift turns a check red.
+**Why built in rather than an agent editing settings afterwards:** an after-the-fact edit is overwritten the next time Solve runs on that surface, and nothing would notice. A ledger entry is read by the walker, Solve and the independent check, so a decision holds on every run and a drift turns a check red.
 
-**Gate B (go/no-go, Bean):** Bean gets a one-page plain-English summary: for each class, the count, 3 worked
-examples (what it looks like on the site and why it is that class), and for the F gaps the fix groups with a per-group
-effort and files touched, plus one recommendation. One question: approve fixing these groups? B4 touches only route
-and ledger code under `scripts/` and the ledger file, never blocks or theme, and lands as its own revertable commit.
-No-go: the F gaps stay in the register (Sweep column) and work goes straight to Session D.
+**Gate B (go/no-go, Bean):** Bean gets a one-page plain-English summary: for each class, the count, 3 worked examples (what it looks like on the site and why it is that class), and for the F gaps the fix groups with a per-group effort and files touched, plus one recommendation. One question: approve fixing these groups? B4 touches only route and ledger code under `scripts/` and the ledger file, never blocks or theme, and lands as its own revertable commit. No-go: the F gaps stay in the register (Sweep column) and work goes straight to Session D.
 
 ---
 
 ## Session C: repair the measuring route, then Session C2: assess the findings
 
-**The work runs in two sessions.** The plan is in two files:
-`plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md` and
-`plans/archive/2026-10-05-eye-care-session-c2-finding-assessment.md`.
+**The work runs in two sessions.** The plan is in two files: `plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md` and `plans/archive/2026-10-05-eye-care-session-c2-finding-assessment.md`.
 
-**Why the split.** The fix register (`plans/2026-10-02-eye-care-fix-register.md`) is the source of truth: it already
-holds the decided issues and the agreed fixes. The **audited** 163 **F** rows (raw 338, which Session C's Gate 1 took to 177) are *findings to assess*, not a list of gaps to
-build, and a walker row never creates a new fix. Many of those findings ignore how the framework works — a mega
-menu, a modal and a choice flow are CPT canvases composed from blocks, and a setting can arrive from a parent by
-block context — so "this block declares no setting" is not a defect by itself. Bean: the lens flow looks almost
-perfect, yet it carries 35 F rows. **That is a route defect, so the route is repaired before the findings are
-judged.** A mechanism group is a filing label for review and never a unit of work;
-`SGS_Container_Wrapper` is never a blanket fix, and "the only hover-decoration control" was false
-(`sgs/button::textDecorationHover`, `sgs/nav-drawer-menu` and the underline-slide utilities all exist; S2 and S12
-already decide link behaviour).
+**Why the split.** The fix register (`plans/2026-10-02-eye-care-fix-register.md`) is the source of truth: it already holds the decided issues and the agreed fixes. The **audited** 163 **F** rows (raw 338, which Session C's Gate 1 took to 177) are *findings to assess*, not a list of gaps to build, and a walker row never creates a new fix. Many of those findings ignore how the framework works — a mega menu, a modal and a choice flow are CPT canvases composed from blocks, and a setting can arrive from a parent by block context — so "this block declares no setting" is not a defect by itself. Bean: the lens flow looks almost perfect, yet it carries 35 F rows. **That is a route defect, so the route is repaired before the findings are judged.** A mechanism group is a filing label for review and never a unit of work; `SGS_Container_Wrapper` is never a blanket fix, and "the only hover-decoration control" was false (`sgs/button::textDecorationHover`, `sgs/nav-drawer-menu` and the underline-slide utilities all exist; S2 and S12 already decide link behaviour).
 
-**Session C: Spec 47 route and logic gaps only. No block controls, no shared CSS files.** Every "not built", "not
-started", "open" and "known measuring gap" in Spec 47, plus the new canvas-awareness rule (**FR-47-8**, **R-47-12**),
-plus the calibration-failure fixtures. (The sandybrown oldshape blocker was found already clear at C0.2.) The main thread writes no feature code:
-nine lanes in three waves, each lane one worktree subagent with a fixed file list, a gate after each wave.
-**Done when** a fresh measure-only sweep and triage have run on the repaired route and the new F count is recorded.
-Nothing is deferred; the one item not built is Spec 47 stage 5, a second draft, which is blocked on a second draft
-existing.
+**Session C: Spec 47 route and logic gaps only. No block controls, no shared CSS files.** Every "not built", "not started", "open" and "known measuring gap" in Spec 47, plus the new canvas-awareness rule (**FR-47-8**, **R-47-12**), plus the calibration-failure fixtures. (The sandybrown oldshape blocker was found already clear at C0.2.) The main thread writes no feature code: nine lanes in three waves, each lane one worktree subagent with a fixed file list, a gate after each wave. **Done when** a fresh measure-only sweep and triage have run on the repaired route and the new F count is recorded. Nothing is deferred; the one item not built is Spec 47 stage 5, a second draft, which is blocked on a second draft existing.
 
-**Session C2: assess every finding, on the post-C sweep, never on the old 163.** Match each row to a register Ref,
-fact-check it against canvas surfaces, parent-by-context settings, existing controls and decided register items,
-then live-test it with Playwright at 375, 768, 1440 and 1920 with screenshots and computed values. Register items
-still marked open that the findings do not cover get a live verdict too, and **each one the route missed is a new
-Spec 47 gap, listed against the section that should have caught it.** Only then does Bean get one yes/no list, and
-only approved items become framework fixes (the old W1 and W2, one owner per block, under gates W1, W2 and TAIL).
+**Session C2: assess every finding, on the post-C sweep, never on the old 163.** Match each row to a register Ref, fact-check it against canvas surfaces, parent-by-context settings, existing controls and decided register items, then live-test it with Playwright at 375, 768, 1440 and 1920 with screenshots and computed values. Register items still marked open that the findings do not cover get a live verdict too, and **each one the route missed is a new Spec 47 gap, listed against the section that should have caught it.** Only then does Bean get one yes/no list, and only approved items become framework fixes (the old W1 and W2, one owner per block, under gates W1, W2 and TAIL).
 
 Google reviews attribution (2026-10-05): done and live on eye-care-test and sandybrown (deploys at `7f375f765`; detail in `.claude/plans/archive/2026-10-05-google-reviews-attribution.md`). The block's colours and sizes follow Google's UI (40px pills and arrows), an accepted difference from the theme's colours and the 44px target (Bean, 2026-10-05); do not flag them as gaps.
 
 ## Session D: back to walker work
 
-Ranked by the sweep, not by a fixed surface order: walker gaps that hold the most open rows across surfaces first,
-then each surface to 100% with Solve under the existing done line (Spec 47 plan Progress).
+Ranked by the sweep, not by a fixed surface order: walker gaps that hold the most open rows across surfaces first, then each surface to 100% with Solve under the existing done line (Spec 47 plan Progress).
 
 ## Risks
 
@@ -418,15 +230,9 @@ then each surface to 100% with Solve under the existing done line (Spec 47 plan 
 
 ## Appendix A: why the 78 unmeasured register items are not measured (B-tags, 2026-10-05)
 
-The measure-gap tag for every register item the strict A4 pass left **not walker-measurable** (63) or **partly
-measured** (15). Tagged by one read-only Opus agent under the rule above; the main thread verified the citations of
-all 8 `content-fixable` rows (11 settings, each present with the stated `role`) and four headline claims. Source data:
-`.claude/reports/2026-10-05-session-b/measure-gap-tags.json`.
+The measure-gap tag for every register item the strict A4 pass left **not walker-measurable** (63) or **partly measured** (15). Tagged by one read-only Opus agent under the rule above; the main thread verified the citations of all 8 `content-fixable` rows (11 settings, each present with the stated `role`) and four headline claims. Source data: `.claude/reports/2026-10-05-session-b/measure-gap-tags.json`.
 
-Corrected on the main-thread check: the stagger settings that make register 14's "framework new" Type stale are
-`sgs/nav-drawer::itemStagger`, `::itemStaggerAxis`, `::itemStaggerDistance`, `::itemStaggerDuration`, `::itemStaggerMax`,
-`::itemStaggerOnClose` and `::itemStaggerReveal`, with `sgs/nav-bar-menu::submenuItemStagger*` for the submenu case;
-there is no `sgs/nav-drawer-menu` block.
+Corrected on the main-thread check: the stagger settings that make register 14's "framework new" Type stale are `sgs/nav-drawer::itemStagger`, `::itemStaggerAxis`, `::itemStaggerDistance`, `::itemStaggerDuration`, `::itemStaggerMax`, `::itemStaggerOnClose` and `::itemStaggerReveal`, with `sgs/nav-bar-menu::submenuItemStagger*` for the submenu case; there is no `sgs/nav-drawer-menu` block.
 
 One measure-gap tag and a one-line reason for every register item the 2026-10-05 strict A4 pass left **not walker-measurable** (63) or **partly measured** (15). Tag vocabulary: `.claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`, "Measure-gap tag (Bean, 2026-10-05)".
 
@@ -576,10 +382,7 @@ One measure-gap tag and a one-line reason for every register item the 2026-10-05
 
 ## Appendix B: the three-way split, proven (B1 and B2, 2026-10-05)
 
-Every one of the sweep's **2,373** distinct open issues now sits in exactly one class. B1 (`triage.mjs`) gave each a
-candidate class; six parallel read-only Opus agents grouped by mechanism proved or disproved all **338** candidate F
-rows (271 distinct block/element/property combos). Verdicts: `.claude/reports/2026-10-05-session-b/b2/*-verdicts.json`,
-the agents' brief `b2/BRIEF.md`, the mechanism grouping `group-f.mjs` and `f-groups.json`.
+Every one of the sweep's **2,373** distinct open issues now sits in exactly one class. B1 (`triage.mjs`) gave each a candidate class; six parallel read-only Opus agents grouped by mechanism proved or disproved all **338** candidate F rows (271 distinct block/element/property combos). Verdicts: `.claude/reports/2026-10-05-session-b/b2/*-verdicts.json`, the agents' brief `b2/BRIEF.md`, the mechanism grouping `group-f.mjs` and `f-groups.json`.
 
 | Class | B1 candidate | After B2 | Means |
 |---|---|---|---|
@@ -590,37 +393,15 @@ the agents' brief `b2/BRIEF.md`, the mechanism grouping `group-f.mjs` and `f-gro
 | **D** decided divergence | 0 | **17** | Bean chose a different result (S1's lift, the 44px touch target) |
 | **deferred** | 0 | **8** | the closed google-reviews track's rows |
 
-**Only 48% of the candidate framework gaps survived** (163 of 338 rows). 148 rows became W, 17 D, 2 T. That is the
-"missing setting starts as W until proven F" rule doing its work: Solve's label is a lookup result, and in just over
-half of these cases a setting did exist or the row was never a real difference.
+**Only 48% of the candidate framework gaps survived** (163 of 338 rows). 148 rows became W, 17 D, 2 T. That is the "missing setting starts as W until proven F" rule doing its work: Solve's label is a lookup result, and in just over half of these cases a setting did exist or the row was never a real difference.
 
-**The proof gate held.** All 130 confirmed F combos cite a database query or row, 128 cite both that and a
-`file::symbol`, none cite neither, and **every one names an existing precedent** - a block, setting and helper that
-already solves the same property elsewhere. No confirmed gap needs a new control primitive. 120 are high confidence,
-9 medium, 1 low.
+**The proof gate held.** All 130 confirmed F combos cite a database query or row, 128 cite both that and a `file::symbol`, none cite neither, and **every one names an existing precedent** - a block, setting and helper that already solves the same property elsewhere. No confirmed gap needs a new control primitive. 120 are high confidence, 9 medium, 1 low.
 
-**Main-thread re-checks.** Every F mechanism was re-verified against the database and the source, about 15 distinct
-claims. Confirmed exactly: `social-icons/render.php`'s brand branch writes `--sgs-social-border` on
-`.sgs-social-icons__item:nth-child(N)` while `iconBorderColour` writes the same property at the root (the 12-row
-hardcode); `sgs/social-icons` has 0 box-shadow rows; the `alignItems`/`justifyContent`/`flexDirection`/`flexWrap`
-cluster is complete on 10+ blocks (the precedent); `sgs/mega-group` declares no `boxFamilies` while `sgs/text` does;
-`accordion-item/render.php` reads `$block->context['sgs/accordionHeaderPadding']` and emits
-`--sgs-accordion-header-pad`; `core/list` holds 6 rows, all `native_wp` with `css_property` NULL;
-`core-blocks-critical.css` declares `h1..h6, .wp-block-heading { text-wrap: balance }` with no `:where()`.
+**Main-thread re-checks.** Every F mechanism was re-verified against the database and the source, about 15 distinct claims. Confirmed exactly: `social-icons/render.php`'s brand branch writes `--sgs-social-border` on `.sgs-social-icons__item:nth-child(N)` while `iconBorderColour` writes the same property at the root (the 12-row hardcode); `sgs/social-icons` has 0 box-shadow rows; the `alignItems`/`justifyContent`/`flexDirection`/`flexWrap` cluster is complete on 10+ blocks (the precedent); `sgs/mega-group` declares no `boxFamilies` while `sgs/text` does; `accordion-item/render.php` reads `$block->context['sgs/accordionHeaderPadding']` and emits `--sgs-accordion-header-pad`; `core/list` holds 6 rows, all `native_wp` with `css_property` NULL; `core-blocks-critical.css` declares `h1..h6, .wp-block-heading { text-wrap: balance }` with no `:where()`.
 
-One agent claim was corrected: B2b held that no setting could ever beat that heading rule. `sgs/heading::textWrap`
-does exist and its scoped rule would out-specify `h1`, so the claim holds only for the core heading the row sits on
-(`core/query-title`) and for any *inherited* container value, since a direct declaration beats inheritance whatever
-the specificity. Worth acting on anyway: the comment immediately above that rule records that a framework-wide
-heading `letter-spacing: -0.01em` default was removed because it "tightened EVERY client's headings and made clones
-drift from their reference sites". The same argument applies to `text-wrap: balance`, one line below it.
+One agent claim was corrected: B2b held that no setting could ever beat that heading rule. `sgs/heading::textWrap` does exist and its scoped rule would out-specify `h1`, so the claim holds only for the core heading the row sits on (`core/query-title`) and for any *inherited* container value, since a direct declaration beats inheritance whatever the specificity. Worth acting on anyway: the comment immediately above that rule records that a framework-wide heading `letter-spacing: -0.01em` default was removed because it "tightened EVERY client's headings and made clones drift from their reference sites". The same argument applies to `text-wrap: balance`, one line below it.
 
-Also recorded, because it is latent rather than active: **309 `sgs/` rows carry a `derived_selector` of the shape
-`.sgs-<block>__<attr_name>`**, using the attribute's own name as if it were a BEM element (`.sgs-accordion__padding`),
-and a further 113 rows hold a selector containing a slash (`.sgs-core/avatar__size`), which is not valid CSS. Three
-sampled names appear in no stylesheet. This cannot mis-resolve the route today: `lib/db.mjs::COLS` lists 15 columns
-and `derived_selector` is not one of them, so the route never reads it. Nothing should be built on that column until
-it is regenerated.
+Also recorded, because it is latent rather than active: **309 `sgs/` rows carry a `derived_selector` of the shape `.sgs-<block>__<attr_name>`**, using the attribute's own name as if it were a BEM element (`.sgs-accordion__padding`), and a further 113 rows hold a selector containing a slash (`.sgs-core/avatar__size`), which is not valid CSS. Three sampled names appear in no stylesheet. This cannot mis-resolve the route today: `lib/db.mjs::COLS` lists 15 columns and `derived_selector` is not one of them, so the route never reads it. Nothing should be built on that column until it is regenerated.
 
 ### What the W class is actually made of
 
@@ -639,22 +420,10 @@ it is regenerated.
 
 Two independent agents converged on the same root cause, and it is verified in the database:
 
-1. **Database rows with `css_property` NULL.** A real, working setting whose row carries no property can only be
-   matched by name, and `triage.mjs::settingFits` fails. Counted 2026-10-05: `sgsChildSizing` 10 of 10 NULL,
-   `sgsChildWidth` 10 of 10, `sgsHoverDuration`, `sgsHoverDurationMs`, `sgsHoverEasing` and `sgsHoverZoomDuration`
-   9 of 9 each, `sgsAnimationDuration` and `sgsAnimationEasing` 64 of 73 each, plus `sgs/nav-drawer::panelSize` and
-   `sgs/hero::transitionEasing`. `sgs/mega-group::sgsChildSizing` set to `fit` emits exactly the draft's
-   `flex: 0 1 auto`, and the mega-panel default it loses to carries a comment saying a group's own Child sizing
-   setting overrides it. This alone produced the batch's largest false F (9 rows) and underlies much of the 181 above.
-2. **The resolver never reaches a parent's setting when it arrives by block context.**
-   `sgs/accordion::headerPadding` and `::contentPadding` paint the item's header and content through
-   `providesContext`, and `sgs/container` carries a 13-attribute typography group on its wrapper that inherits into
-   every descendant declaring none. The resolver searches only the block the walker attributed the element to.
-   B2a called this the highest-value route fix in its batch; B2b found 11 rows of it independently.
+1. **Database rows with `css_property` NULL.** A real, working setting whose row carries no property can only be matched by name, and `triage.mjs::settingFits` fails. Counted 2026-10-05: `sgsChildSizing` 10 of 10 NULL, `sgsChildWidth` 10 of 10, `sgsHoverDuration`, `sgsHoverDurationMs`, `sgsHoverEasing` and `sgsHoverZoomDuration` 9 of 9 each, `sgsAnimationDuration` and `sgsAnimationEasing` 64 of 73 each, plus `sgs/nav-drawer::panelSize` and `sgs/hero::transitionEasing`. `sgs/mega-group::sgsChildSizing` set to `fit` emits exactly the draft's `flex: 0 1 auto`, and the mega-panel default it loses to carries a comment saying a group's own Child sizing setting overrides it. This alone produced the batch's largest false F (9 rows) and underlies much of the 181 above.
+2. **The resolver never reaches a parent's setting when it arrives by block context.** `sgs/accordion::headerPadding` and `::contentPadding` paint the item's header and content through `providesContext`, and `sgs/container` carries a 13-attribute typography group on its wrapper that inherits into every descendant declaring none. The resolver searches only the block the walker attributed the element to. B2a called this the highest-value route fix in its batch; B2b found 11 rows of it independently.
 
-Two cheaper walker guards came out of the same pass: a **tag-mismatch guard** (4 combos compared a draft `<div>` to a
-live `<img>`, or a `<span>` to an `<h1>`) and **dropping style rows from refs the pairing left unmatched**
-(`pairs/*.json::left`), which would have removed 24 of B2b's 58 rows before triage ever saw them.
+Two cheaper walker guards came out of the same pass: a **tag-mismatch guard** (4 combos compared a draft `<div>` to a live `<img>`, or a `<span>` to an `<h1>`) and **dropping style rows from refs the pairing left unmatched** (`pairs/*.json::left`), which would have removed 24 of B2b's 58 rows before triage ever saw them.
 
 ### Register items recorded closed or clean but open on the sweep
 
@@ -667,17 +436,8 @@ live `<img>`, or a `<span>` to an `<h1>`) and **dropping style rows from refs th
 | 131 | `cr-ref-contact-12` hover `color` rgb(119,113,106) against rgb(20,20,20) | W | S3's black hover colour is in the live site but not in the trees; S3's framework half holds |
 | N15 | `cr-ref-home-58` `painted-ground` blue against black | W | the "See all reviews" button, `sgs/google-reviews`: the parallel session's |
 
-Item **148** (the checkout sections' CSS fade-up) is walker-measured, so a script-driven fix would stay red; it stays
-a CSS-tier fix. **S3**'s tree half (the black hover colour) is confirmed open by 131.
+Item **148** (the checkout sections' CSS fade-up) is walker-measured, so a script-driven fix would stay red; it stays a CSS-tier fix. **S3**'s tree half (the black hover colour) is confirmed open by 131.
 
 ### Contact: 106 independent rows against the walker's 27
 
-Reconciled in full in `.claude/reports/2026-10-05-session-b/contact-independent-reconciliation.md`. The headline was
-never like-for-like: the independent check reports one row per (ref, property, **width**), which deduplicates to
-**39** distinct, of which 3 are the PA-4 off-screen screen-reader artefact and 3 are presence rows the unbuilt
-presence read cannot see. That leaves **33 against 27 - a 6-row residual, not 79.** It is entirely padding: the
-walker reports no padding property at all on Contact, while the independent check reports it on 7 refs. The largest
-values (draft 119, 151 and 363 against live 0 and 28) are not plausible as authored padding, so the likely mechanism
-is the draft's gutter padding read against a live layout that centres with `max-width` and automatic margins - but
-that is a hypothesis resting on implausibility, not proof. One live read of `cr-ref-contact-20` at 768
-(`padding-right`, `max-width`, `margin-inline`, with the winning rule's origin) settles it.
+Reconciled in full in `.claude/reports/2026-10-05-session-b/contact-independent-reconciliation.md`. The headline was never like-for-like: the independent check reports one row per (ref, property, **width**), which deduplicates to **39** distinct, of which 3 are the PA-4 off-screen screen-reader artefact and 3 are presence rows the unbuilt presence read cannot see. That leaves **33 against 27 - a 6-row residual, not 79.** It is entirely padding: the walker reports no padding property at all on Contact, while the independent check reports it on 7 refs. The largest values (draft 119, 151 and 363 against live 0 and 28) are not plausible as authored padding, so the likely mechanism is the draft's gutter padding read against a live layout that centres with `max-width` and automatic margins - but that is a hypothesis resting on implausibility, not proof. One live read of `cr-ref-contact-20` at 768 (`padding-right`, `max-width`, `margin-inline`, with the winning rule's origin) settles it.

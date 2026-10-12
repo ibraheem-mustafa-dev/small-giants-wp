@@ -2,14 +2,9 @@
 
 ## What This Is
 
-A custom Gutenberg block library (WordPress plugin) that replaces Spectra Pro. Produces clean
-semantic markup that reads design tokens from the SGS Theme. Per-block status: query
-`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` / `/wp-blocks`; live status:
-`.claude/LEDGER.md`.
+A custom Gutenberg block library (WordPress plugin) that replaces Spectra Pro. Produces clean semantic markup that reads design tokens from the SGS Theme. Per-block status: query `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` / `/wp-blocks`; live status: `.claude/LEDGER.md`.
 
-Full spec: `.claude/specs/02-SGS-BLOCKS.md` (blocks) + `.claude/specs/04-SGS-FORMS.md` (forms, incl.
-the form processing engine — DB table `{prefix}sgs_form_submissions`, REST namespace
-`sgs-forms/v1`, notification emails via `includes/mail/` `Sgs_Mailer` over `wp_mail()`; N8N is an optional automation hook).
+Full spec: `.claude/specs/02-SGS-BLOCKS.md` (blocks) + `.claude/specs/04-SGS-FORMS.md` (forms, incl. the form processing engine — DB table `{prefix}sgs_form_submissions`, REST namespace `sgs-forms/v1`, notification emails via `includes/mail/` `Sgs_Mailer` over `wp_mail()`; N8N is an optional automation hook).
 
 ## Plugin Structure
 
@@ -56,8 +51,7 @@ block-name/
 
 ## Block Categories
 
-`sgs-layout`, `sgs-content`, `sgs-interactive`, `sgs-forms` — see each block's `block.json`
-`category` for current membership.
+`sgs-layout`, `sgs-content`, `sgs-interactive`, `sgs-forms` — see each block's `block.json` `category` for current membership.
 
 ## Creating a New Block
 
@@ -91,43 +85,18 @@ Do not design a fix from first principles. Ask which blocks already have the att
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT block_slug, attr_name, css_property, css_element, css_tier FROM block_attributes WHERE css_property='object-fit'"
 ```
 
-Then read the working block's `render.php` + `style.css` and compare — the DB query surfaces
-blocks a hand-written survey misses. Never weigh "this changes what the canary currently renders":
-the framework is pre-production, so whether a default is right is decided on merit alone.
+Then read the working block's `render.php` + `style.css` and compare — the DB query surfaces blocks a hand-written survey misses. Never weigh "this changes what the canary currently renders": the framework is pre-production, so whether a default is right is decided on merit alone.
 
 ## Block Customisation Standard
 
 Every block MUST provide per-element customisation matching Kadence/Spectra depth:
 
 1. Native `supports` for wrapper-level controls (colour, typography, spacing, border).
-2. Custom attributes + controls for each inner text element: colour via `SgsColourPanel`
-   (`.claude/rules/block-editor-controls.md`); font size/weight/style/line-height via the shared
-   **`TypographyControls`** component (`src/components/TypographyControls.js`) in edit.js + the
-   shared **`sgs_typography_css_rule( $attributes, $prefix, $selector )`** helper
-   (`includes/helpers-typography.php`) in render.php — never hand-rolled font controls, never
-   native `supports.typography` on an inner element (gate: `inspector-scan` rule 45). Copy the
-   `sgs/trust-bar` triple, the clean full-surface reference; no generator scaffolds it: copy the triple by hand. Build the selector INLINE in the call —
-   `check-hardcoded-render-defaults.js::collectHelperGovernance` learns the governed element from
-   the string literals in the call's own argument region, so a pre-assigned selector variable
-   registers nothing and the gate falls back to a BEM-name heuristic that flags unrelated
-   siblings. Four further consequences, each measured: auto memory
-   `installing-a-typography-surface-trips-four-gates`. The device
-   tier is chosen once, in the global `<ResponsiveControl>` toggle
-   (`src/blocks/extensions/responsive-device-toggle.js`) — never add a per-control switcher (rule
-   25). This scopes to blocks rendering their own text element; an InnerBlocks composite
-   (`sgs/heading`/`text`/`label` children) puts typography on the child — see Spec 02's Block
-   Customisation Standard, "HC2".
-3. Custom attributes + controls for interactive elements like CTAs (text colour, background
-   colour) — via `sgs/multi-button` + `sgs/button` InnerBlocks by default.
-4. Do NOT use `:not([style*="…"])` fallback guards. Under Spec 32 no block emits an inline `style`
-   declaration, so the guard always matches and becomes unconditional. Let the value inherit, or
-   emit the fallback inside `:where()` so a `.{uid}` scoped rule wins.
-5. Use Block Selectors API in `block.json` to target native typography to the primary text
-   element.
-6. Variant-bearing blocks MUST declare `supports.sgs.variants` (a map of `variant_value → [attr/
-   slot names that variant uses]`) so the right variant can be detected the correct variant, and
-   register the variant-selector attr name to the `blocks.variant_attr` DB column via
-   `/sgs-update` (R-31-1).
+2. Custom attributes + controls for each inner text element: colour via `SgsColourPanel` (`.claude/rules/block-editor-controls.md`); font size/weight/style/line-height via the shared **`TypographyControls`** component (`src/components/TypographyControls.js`) in edit.js + the shared **`sgs_typography_css_rule( $attributes, $prefix, $selector )`** helper (`includes/helpers-typography.php`) in render.php — never hand-rolled font controls, never native `supports.typography` on an inner element (gate: `inspector-scan` rule 45). Copy the `sgs/trust-bar` triple, the clean full-surface reference; no generator scaffolds it: copy the triple by hand. Build the selector INLINE in the call — `check-hardcoded-render-defaults.js::collectHelperGovernance` learns the governed element from the string literals in the call's own argument region, so a pre-assigned selector variable registers nothing and the gate falls back to a BEM-name heuristic that flags unrelated siblings. Four further consequences, each measured: auto memory `installing-a-typography-surface-trips-four-gates`. The device tier is chosen once, in the global `<ResponsiveControl>` toggle (`src/blocks/extensions/responsive-device-toggle.js`) — never add a per-control switcher (rule 25). This scopes to blocks rendering their own text element; an InnerBlocks composite (`sgs/heading`/`text`/`label` children) puts typography on the child — see Spec 02's Block Customisation Standard, "HC2".
+3. Custom attributes + controls for interactive elements like CTAs (text colour, background colour) — via `sgs/multi-button` + `sgs/button` InnerBlocks by default.
+4. Do NOT use `:not([style*="…"])` fallback guards. Under Spec 32 no block emits an inline `style` declaration, so the guard always matches and becomes unconditional. Let the value inherit, or emit the fallback inside `:where()` so a `.{uid}` scoped rule wins.
+5. Use Block Selectors API in `block.json` to target native typography to the primary text element.
+6. Variant-bearing blocks MUST declare `supports.sgs.variants` (a map of `variant_value → [attr/ slot names that variant uses]`) so the right variant can be detected the correct variant, and register the variant-selector attr name to the `blocks.variant_attr` DB column via `/sgs-update` (R-31-1).
 
 ## Utility Functions
 
@@ -135,63 +104,30 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
 import { colourVar, fontSizeVar, spacingVar, shadowVar, borderRadiusVar, transitionVar } from '../../utils';
 ```
 
-`colourVar('primary')` → `var(--wp--preset--color--primary)` (same pattern for fontSize/spacing/
-shadow/borderRadius/transition). Use `DesignTokenPicker` for colour selection from the theme.json
-palette in the editor sidebar.
+`colourVar('primary')` → `var(--wp--preset--color--primary)` (same pattern for fontSize/spacing/ shadow/borderRadius/transition). Use `DesignTokenPicker` for colour selection from the theme.json palette in the editor sidebar.
 
 ## Cross-cutting gotchas
 
-- **Core block "unexpected content"** → open the Site Editor, click "Attempt Block Recovery" on
-  each invalid block, then save. Never fix via WP-CLI `str_replace` on `post_content` — this
-  breaks block validation and cascades.
-- **`style.css` vs `editor.css` are independent** — `style.css` compiles to the frontend-only
-  `style-index.css`, `editor.css` to the editor-only `index.css`. A fix in one does not reach the
-  other; mirror it by hand when the editor preview should match. `editor.css` reaches the editor
-  only if the block's `index.js` has `import './editor.css';` — the build bundles nothing else
-  (gate: `scripts/check-editor-css-imported.js`).
-- **Dynamic blocks with an InnerBlocks slot must `save: () => <InnerBlocks.Content />`**, never
-  `null` — `save: () => null` drops the InnerBlocks tree from `post_content` on save even though
-  render.php drives 100% of frontend output. (`sgs/product-card` has no InnerBlocks slot, so its
-  save is genuinely `null`.) Full detail: `.claude/specs/common-wp-styling-errors.md` row B4.
-- **Never write `post_content` to a page open in the block editor** — a save from the editor
-  writes its in-memory state (loaded before your write) over everything; only the last write
-  survives.
-- **Tier-object attributes have no schema protection.** Every `{desktop,tablet,mobile}`-shaped
-  attribute declares `{"type":"object","default":{}}` with no nested schema, so WordPress passes a
-  malformed sub-key through unchanged. Read and write them only through the PHP helper
-  (`sgs_responsive_normalise_object()`, `sgs_box_object_shorthand()`/`sgs_corner_object_shorthand()`)
-  and the JS write helper (`patchTier()`) — never a bare `setAttributes({attr:{tier:value}})`,
-  which silently drops the other two tiers. Full migration doctrine:
-  `.claude/rules/migration-scripts.md`.
-- **Shared CSS atoms scope per ELEMENT, not per block** — a two-element block sharing one atom
-  scope silently sets the same custom property twice. Detail: `.claude/rules/colour-emission.md`
-  ("Media atom scoping").
+- **Core block "unexpected content"** → open the Site Editor, click "Attempt Block Recovery" on each invalid block, then save. Never fix via WP-CLI `str_replace` on `post_content` — this breaks block validation and cascades.
+- **`style.css` vs `editor.css` are independent** — `style.css` compiles to the frontend-only `style-index.css`, `editor.css` to the editor-only `index.css`. A fix in one does not reach the other; mirror it by hand when the editor preview should match. `editor.css` reaches the editor only if the block's `index.js` has `import './editor.css';` — the build bundles nothing else (gate: `scripts/check-editor-css-imported.js`).
+- **Dynamic blocks with an InnerBlocks slot must `save: () => <InnerBlocks.Content />`**, never `null` — `save: () => null` drops the InnerBlocks tree from `post_content` on save even though render.php drives 100% of frontend output. (`sgs/product-card` has no InnerBlocks slot, so its save is genuinely `null`.) Full detail: `.claude/specs/common-wp-styling-errors.md` row B4.
+- **Never write `post_content` to a page open in the block editor** — a save from the editor writes its in-memory state (loaded before your write) over everything; only the last write survives.
+- **Tier-object attributes have no schema protection.** Every `{desktop,tablet,mobile}`-shaped attribute declares `{"type":"object","default":{}}` with no nested schema, so WordPress passes a malformed sub-key through unchanged. Read and write them only through the PHP helper (`sgs_responsive_normalise_object()`, `sgs_box_object_shorthand()`/`sgs_corner_object_shorthand()`) and the JS write helper (`patchTier()`) — never a bare `setAttributes({attr:{tier:value}})`, which silently drops the other two tiers. Full migration doctrine: `.claude/rules/migration-scripts.md`.
+- **Shared CSS atoms scope per ELEMENT, not per block** — a two-element block sharing one atom scope silently sets the same custom property twice. Detail: `.claude/rules/colour-emission.md` ("Media atom scoping").
 
 ## Key rules
 
-- Every block reads colours/fonts from theme.json tokens, never hardcode. Apply THE
-  DEFAULT-vs-HARDCODE TEST before any block literal — full test in Spec 32 §3: does it override a
-  theme-wide default, or hinder the pipeline? A component's own constant (not a client value) may
-  stay; `null` default = inherit is the canonical pattern. Enforced by `check-hardcoded-render-defaults.js`'s F3b.
+- Every block reads colours/fonts from theme.json tokens, never hardcode. Apply THE DEFAULT-vs-HARDCODE TEST before any block literal — full test in Spec 32 §3: does it override a theme-wide default, or hinder the pipeline? A component's own constant (not a client value) may stay; `null` default = inherit is the canonical pattern. Enforced by `check-hardcoded-render-defaults.js`'s F3b.
 - CSS scroll-snap for carousels, Intersection Observer for scroll-triggered animations.
 - Progressive enhancement: every block renders meaningful content without JS.
 - Responsive: every layout block has mobile/tablet/desktop controls.
-- Use `useInnerBlocksProps` (not the `InnerBlocks` component directly) for inner-block editor
-  integration — once per block.
+- Use `useInnerBlocksProps` (not the `InnerBlocks` component directly) for inner-block editor integration — once per block.
 
 ## Gates
 
-Fast tier runs in `prebuild`, full tier runs pre-deploy; `npm run gate:list` shows what's actually
-wired (a standalone `check:*` alias in `package.json` proves only that the alias exists, not that a
-build runs it). Every gate script documents what it catches in its own header — read that before
-re-deriving the rule. Never dump a new finding into a gate's baseline file; fix the pattern or
-generalise the gate.
+Fast tier runs in `prebuild`, full tier runs pre-deploy; `npm run gate:list` shows what's actually wired (a standalone `check:*` alias in `package.json` proves only that the alias exists, not that a build runs it). Every gate script documents what it catches in its own header — read that before re-deriving the rule. Never dump a new finding into a gate's baseline file; fix the pattern or generalise the gate.
 
-A gate that reads a block's own source reads it through `plugins/sgs-blocks/scripts/lib/block-source-files.js` /
-`block_source_files.py` (`renderFiles`/`renderSource`, `editFiles`/`editSource`, `viewFiles`/`viewSource`), never
-`render.php`, `edit.js` or `view.js` by name: a split into partials or components otherwise blinds it silently.
-A render partial names classes fully qualified (`\SGS\Blocks\X::`), never through a `use` of its own
-(gate: `check-partial-use-imports.py`).
+A gate that reads a block's own source reads it through `plugins/sgs-blocks/scripts/lib/block-source-files.js` / `block_source_files.py` (`renderFiles`/`renderSource`, `editFiles`/`editSource`, `viewFiles`/`viewSource`), never `render.php`, `edit.js` or `view.js` by name: a split into partials or components otherwise blinds it silently. A render partial names classes fully qualified (`\SGS\Blocks\X::`), never through a `use` of its own (gate: `check-partial-use-imports.py`).
 
 ## Where the rest of this file moved
 

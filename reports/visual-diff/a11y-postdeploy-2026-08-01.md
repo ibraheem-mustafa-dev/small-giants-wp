@@ -1,8 +1,11 @@
 # Post-deploy verification — 3 keyboard-a11y fixes + placeholder contrast
 
 **Date:** 2026-08-01
+
 **Canary:** sandybrown-nightingale-600381.hostingersite.com
+
 **Commits under test:** `686b9ec4` (fx-pin-scrub, D453), `16579194` (fx-scrub + fx-split-reveal), `7193b4ae` (placeholder colour)
+
 **Confirmed shipped:** all three effect JS bundles on the canary are byte-identical (md5) to the local `build/` output, and the local build source-maps to the exact edited `src/` files above. The form CSS bundle carries the colour-only placeholder rule with no `opacity`. This is not an assumption — see "Shipped-file confirmation" below.
 
 ## Why this run is different from the D453/D454 sessions

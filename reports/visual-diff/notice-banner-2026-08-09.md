@@ -14,14 +14,11 @@ change: D540 — contentWidth removed (no inner band exists on this block)
 
 `contentWidth` deleted — attribute, render emission and editor control. `maxWidth` untouched.
 
-On this block `contentWidth` never described an inner band: it emitted **`width:` on the same root
-selector** that `maxWidth` sets `max-width:` on (D540).
+On this block `contentWidth` never described an inner band: it emitted **`width:` on the same root selector** that `maxWidth` sets `max-width:` on (D540).
 
 ## Live measurement — canary block EDITOR
 
-No canary page carries this block, so the frontend could not be captured. The editor IS the surface
-the change lives on — the control is what was removed — so it was measured there instead of claiming
-a frontend capture that did not happen.
+No canary page carries this block, so the frontend could not be captured. The editor IS the surface the change lives on — the control is what was removed — so it was measured there instead of claiming a frontend capture that did not happen.
 
 | Check | Result |
 |---|---|
@@ -31,25 +28,16 @@ a frontend capture that did not happen.
 | Block validity after insert | **valid** |
 | Renders in the editor canvas | **yes** — 2 matching elements inside the canvas iframe |
 
-⚠ A first pass reported `canvasRendered: false`. That was a MEASUREMENT artefact, not a defect: the
-WP editor canvas is iframed, and the query ran against the parent document. Re-querying
-`iframe[name="editor-canvas"]`'s document found the block rendering normally. Recorded because the
-false negative would have looked like a broken block.
+⚠ A first pass reported `canvasRendered: false`. That was a MEASUREMENT artefact, not a defect: the WP editor canvas is iframed, and the query ran against the parent document. Re-querying `iframe[name="editor-canvas"]`'s document found the block rendering normally. Recorded because the false negative would have looked like a broken block.
 
 ## Not verified here
 
-Frontend first paint. Nothing on the canary carries this block. The deletion is render-neutral for
-existing content by construction — zero instances in theme patterns/parts or live canary content
-(posts, pages, sgs_header, sgs_footer) ever set `contentWidth` — but that is an argument, not a
-capture, and is recorded as such.
+Frontend first paint. Nothing on the canary carries this block. The deletion is render-neutral for existing content by construction — zero instances in theme patterns/parts or live canary content (posts, pages, sgs_header, sgs_footer) ever set `contentWidth` — but that is an argument, not a capture, and is recorded as such.
 
 ## Safety established before deleting
 
-Zero instances across theme patterns/parts AND live canary content (posts, pages, sgs_header,
-sgs_footer) set the removed attribute on this block. The deletion is render-neutral for every piece
-of content that exists today.
+Zero instances across theme patterns/parts AND live canary content (posts, pages, sgs_header, sgs_footer) set the removed attribute on this block. The deletion is render-neutral for every piece of content that exists today.
 
 ## Gates
 
-`npm run build` exit 0 · `php -l` clean · `check-dead-controls` 0 net-new · `check-dead-pattern-attrs`
-green (the gate that would catch a pattern still writing the deleted attribute).
+`npm run build` exit 0 · `php -l` clean · `check-dead-controls` 0 net-new · `check-dead-pattern-attrs` green (the gate that would catch a pattern still writing the deleted attribute).

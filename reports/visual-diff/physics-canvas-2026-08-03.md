@@ -15,26 +15,15 @@ fixture: /physics-canvas-canary/ (page 2139 — see the correction note below)
 
 ## What this block is
 
-A niche ARTISTIC canvas whose direct children become throwable, gravity-driven decorative bodies
-(GSAP Draggable + Inertia + Physics2D). **Bean ruled 2026-08-03 that this surface is deliberately NOT
-built for accessibility, structure, or cloning** — it is operator-discretion decoration. That ruling
-is recorded in Spec 38 FR-38-27 and is why the QC council's WCAG finding is not treated as a blocker
-here.
+A niche ARTISTIC canvas whose direct children become throwable, gravity-driven decorative bodies (GSAP Draggable + Inertia + Physics2D). **Bean ruled 2026-08-03 that this surface is deliberately NOT built for accessibility, structure, or cloning** — it is operator-discretion decoration. That ruling is recorded in Spec 38 FR-38-27 and is why the QC council's WCAG finding is not treated as a blocker here.
 
 ## ⚠ Fixture page ID corrected — 2138 is WRONG, it is 2139
 
-This report first said page **2138**. That page was DELETED and recreated as **2139** before the
-capture ran, and this line was not updated. Verified against the live site:
-`wp post list --name=physics-canvas-canary --post_status=any` returns `2139,physics-canvas-canary,publish`.
+This report first said page **2138**. That page was DELETED and recreated as **2139** before the capture ran, and this line was not updated. Verified against the live site: `wp post list --name=physics-canvas-canary --post_status=any` returns `2139,physics-canvas-canary,publish`.
 
-**Why 2138 was destroyed, because the reason is the more useful record:** I hand-authored its block
-markup and guessed an attribute name — `iconSlug`, which `sgs/icon` does not declare. WordPress
-SILENTLY DISCARDS undeclared attributes (D338), so the page looked fine while the oldshape audit
-correctly refused the next deploy. Replaced with attribute-free markup. **Do not hand-author block
-markup with a guessed attribute; serialise from a known-clean page or use no attributes.**
+**Why 2138 was destroyed, because the reason is the more useful record:** I hand-authored its block markup and guessed an attribute name — `iconSlug`, which `sgs/icon` does not declare. WordPress SILENTLY DISCARDS undeclared attributes (D338), so the page looked fine while the oldshape audit correctly refused the next deploy. Replaced with attribute-free markup. **Do not hand-author block markup with a guessed attribute; serialise from a known-clean page or use no attributes.**
 
-*(Found by an independent QC gate, which flagged the LEDGER/report mismatch but proposed correcting
-the LEDGER. The live site settled it the other way — the LEDGER was right.)*
+*(Found by an independent QC gate, which flagged the LEDGER/report mismatch but proposed correcting the LEDGER. The live site settled it the other way — the LEDGER was right.)*
 
 ## The capture — genuinely run, not reasoned
 
@@ -45,23 +34,15 @@ the LEDGER. The live site settled it the other way — the LEDGER was right.)*
 VERDICT: PASS — 2/2 assertions held
 ```
 
-**`first_paint_capture_passed: true` is claimed on a capture that actually ran.** This matters
-because nine reports on 2026-08-02 carried that field with no capture behind it and had to be
-corrected; the field names a measurement, so it gets one or it does not get set.
+**`first_paint_capture_passed: true` is claimed on a capture that actually ran.** This matters because nine reports on 2026-08-02 carried that field with no capture behind it and had to be corrected; the field names a measurement, so it gets one or it does not get set.
 
 ## Why one assertion is N/A, and why that is not a dodge
 
-`probe-first-paint.mjs` asserted that `data-sgs-loop` is server-emitted. That is a **looping-carousel**
-concern. `sgs/physics-canvas` is not a carousel and must never emit that marker, so the probe failed
-the block for lacking something it was never meant to have — dragging the whole verdict to FAIL for a
-reason unrelated to first paint.
+`probe-first-paint.mjs` asserted that `data-sgs-loop` is server-emitted. That is a **looping-carousel** concern. `sgs/physics-canvas` is not a carousel and must never emit that marker, so the probe failed the block for lacking something it was never meant to have — dragging the whole verdict to FAIL for a reason unrelated to first paint.
 
-The probe was fixed rather than the field fudged. `--not-a-loop` is an **explicit caller opt-out**,
-deliberately NOT auto-detected: a looping block that FORGOT its marker is exactly the bug that
-assertion exists to catch, and auto-detection would hand it a silent pass.
+The probe was fixed rather than the field fudged. `--not-a-loop` is an **explicit caller opt-out**, deliberately NOT auto-detected: a looping block that FORGOT its marker is exactly the bug that assertion exists to catch, and auto-detection would hand it a silent pass.
 
-**Negative control, run this session:** `/loop-fixture-post-grid/` **without** the flag is still
-judged on its marker and reports 3/3. The assertion keeps its power for the blocks it is for.
+**Negative control, run this session:** `/loop-fixture-post-grid/` **without** the flag is still judged on its marker and reports 3/3. The assertion keeps its power for the blocks it is for.
 
 ## Additional checks on the live fixture
 
@@ -74,10 +55,6 @@ judged on its marker and reports 3/3. The assertion keeps its power for the bloc
 
 ## What this report does NOT claim
 
-- **No live physics gesture test.** Nobody has dragged a body and watched it fall and bounce on a
-  real machine. The maths is correct by construction and unobserved in use.
-- **No visual regression comparison.** This is a brand-new block; there is no prior render to diff
-  against. "First paint is sound" is the claim, not "it looks right".
-- **Known ceiling, from the QC council:** Physics2DPlugin has NO collision detection — bodies bounce
-  off arena edges only and pass through each other. No rotation (`type: 'x,y'`), no resize handling
-  (bodies take fixed pixel geometry at init). It is a throwable layer, not a physics engine.
+- **No live physics gesture test.** Nobody has dragged a body and watched it fall and bounce on a real machine. The maths is correct by construction and unobserved in use.
+- **No visual regression comparison.** This is a brand-new block; there is no prior render to diff against. "First paint is sound" is the claim, not "it looks right".
+- **Known ceiling, from the QC council:** Physics2DPlugin has NO collision detection — bodies bounce off arena edges only and pass through each other. No rotation (`type: 'x,y'`), no resize handling (bodies take fixed pixel geometry at init). It is a throwable layer, not a physics engine.

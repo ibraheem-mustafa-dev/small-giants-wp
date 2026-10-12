@@ -19,17 +19,14 @@ Medical/rehabilitation seating for children and adults with epilepsy, autism, ce
 
 **Configurations — CORRECTED BY BEAN 2026-08-03. This supersedes any earlier reading.**
 
-⚠ There are **THREE** variant axes, not two. An earlier version of this file listed the headrest as
-part of a fixed "standard kit"; it is actually a customer CHOICE, which changes the SKU matrix from
-24 to **72** and matters for the configurator's variant engine.
+⚠ There are **THREE** variant axes, not two. An earlier version of this file listed the headrest as part of a fixed "standard kit"; it is actually a customer CHOICE, which changes the SKU matrix from 24 to **72** and matters for the configurator's variant engine.
 
 - **Size:** 1, 2, 3, 4 (Size 1 = 12-24 months, through Size 4 = adult)
 - **Colour:** Orange, Blue, Green, Grey, Pink, Black *(6)*
 - **Headrest:** Low Profile · Standard Profile · Deep Contour *(3)* ← the third axis
 - **Base SKU matrix: 4 x 6 x 3 = 72**
 
-**Optional accessories — separately priced ADD-ONS, not variants.** These toggle on/off and are added
-to the same order; the existing variation engine does not model add-ons (see the build plan §6):
+**Optional accessories — separately priced ADD-ONS, not variants.** These toggle on/off and are added to the same order; the existing variation engine does not model add-ons (see the build plan §6):
 
 | Accessory | Note |
 |---|---|
@@ -42,18 +39,13 @@ to the same order; the existing variation engine does not model add-ons (see the
 | Base Wedge | |
 | Back Rest Adjustment | |
 
-⚠ **Two accessories are not simple toggles** and are the awkward cases for both the cart model and
-the 3D model: Medial Thigh Support carries a nested variant, and Leg Rest is CONSTRAINED by the
-chosen chair size. Neither is a plain on/off boolean.
+⚠ **Two accessories are not simple toggles** and are the awkward cases for both the cart model and the 3D model: Medial Thigh Support carries a nested variant, and Leg Rest is CONSTRAINED by the chosen chair size. Neither is a plain on/off boolean.
 
 **Pricing:** From £1,164.71 ex VAT. Accessories priced separately.
 
 ## Reference Images
 
-`sites/snooza-chair/assets/` holds Wix-CDN hash-named images (`bc3963_<32-hex>~mv2.jpg`, scraped from
-the client's current Wix site), an `assets/3d-model/` subdirectory and working scripts. No reference
-image is cited by name: whoever generates the 3D model opens the directory and chooses from what is
-there. `assets/image-shortlist.md` names files that do not exist and is not a usable shortlist.
+`sites/snooza-chair/assets/` holds Wix-CDN hash-named images (`bc3963_<32-hex>~mv2.jpg`, scraped from the client's current Wix site), an `assets/3d-model/` subdirectory and working scripts. No reference image is cited by name: whoever generates the 3D model opens the directory and chooses from what is there. `assets/image-shortlist.md` names files that do not exist and is not a usable shortlist.
 
 ## Source Pages
 
@@ -64,6 +56,4 @@ there. `assets/image-shortlist.md` names files that do not exist and is not a us
 
 ## Model accuracy — Bean's ruling 2026-08-03
 
-The reference photos are not ideal and **the 3D model does not need to be dimensionally exact**
-for the pitch demo. It needs to read convincingly as the Snooza Chair on a phone screen in AR.
-Fidelity is a Track-2 concern, not a blocker for the meeting.
+The reference photos are not ideal and **the 3D model does not need to be dimensionally exact** for the pitch demo. It needs to read convincingly as the Snooza Chair on a phone screen in AR. Fidelity is a Track-2 concern, not a blocker for the meeting.

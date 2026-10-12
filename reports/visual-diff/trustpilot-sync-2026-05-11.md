@@ -1,8 +1,11 @@
 # Visual diff — SGS Trustpilot Sync infrastructure
 
 **Date:** 2026-05-11
+
 **Branch:** main
+
 **Verdict:** PASS
+
 **Reviewer:** Claude (Opus 4.7) — Bean signed off "doesn't need me to see it, I just need it to be available to set up"
 
 ## Scope

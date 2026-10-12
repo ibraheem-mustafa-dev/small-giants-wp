@@ -9,14 +9,9 @@ description: "Use when the same change is needed in more than 3 blocks, attribut
 
 ## Do this now
 
-0. ⭐ **BURNING DOWN an existing detector's findings backlog** (a rule that already reports
-   findings, e.g. `inspector-scan`)? **Go straight to Step 7b.** Steps 3, 4, 5, 6 and 9 are N/A.
-   Come back to Step 8 for the ratchet and Step 11 for the live check.
-1. **Flat `*Tablet`/`*Mobile` attrs → one object?** The tool exists:
-   `python plugins/sgs-blocks/scripts/migrate-tier-object.py --property <name> --survey`, then read
-   Step 2's ⛔ box. Stop here.
-2. **Does your change alter anything a client SEES?** Do **Step 3 first**, then Step 1 onward. Settling
-   the shape before censusing decides whether the change costs a day or a fortnight.
+0. ⭐ **BURNING DOWN an existing detector's findings backlog** (a rule that already reports findings, e.g. `inspector-scan`)? **Go straight to Step 7b.** Steps 3, 4, 5, 6 and 9 are N/A. Come back to Step 8 for the ratchet and Step 11 for the live check.
+1. **Flat `*Tablet`/`*Mobile` attrs → one object?** The tool exists: `python plugins/sgs-blocks/scripts/migrate-tier-object.py --property <name> --survey`, then read Step 2's ⛔ box. Stop here.
+2. **Does your change alter anything a client SEES?** Do **Step 3 first**, then Step 1 onward. Settling the shape before censusing decides whether the change costs a day or a fortnight.
 3. **Otherwise** (a rename, a call-site swap, a helper adoption) start at Step 1.
 
 The rule below is locked. If you hit an instruction that cannot be followed, fix it in place.
@@ -25,11 +20,9 @@ The rule below is locked. If you hit an instruction that cannot be followed, fix
 
 ## The rule
 
-> **If a change touches more than 3 blocks, files or call sites, the first deliverable is
-> the detector, not the edit.**
+> **If a change touches more than 3 blocks, files or call sites, the first deliverable is the detector, not the edit.**
 >
-> **And if the change is client-visible, the first deliverable before THAT is the settled
-> target shape** (Step 3).
+> **And if the change is client-visible, the first deliverable before THAT is the settled target shape** (Step 3).
 
 Bean-locked at **D542** (`.claude/archive/decisions.md`), the detector-first gate.
 
@@ -39,48 +32,29 @@ You have finished the detector when it can answer, without you reading any file:
 2. Where is each one?
 3. Which are genuine targets, and which are exempt and why?
 
-⛔ **A counting script is not a detector.** It is not done until it carries
-`--survey / --fix / --check / --self-test` and is registered in `gates.json` (Steps 4-8).
+⛔ **A counting script is not a detector.** It is not done until it carries `--survey / --fix / --check / --self-test` and is registered in `gates.json` (Steps 4-8).
 
 ### What it costs, and what you are buying
 
-At 4 instances the detector costs more than the edit. Measured floor: **131 lines**
-(the overlay tier-axis migration); typical **242-362**. You are not buying the edit: you are
-buying the `--check` gate that stops instance 5 arriving next month. **If the change
-genuinely cannot regress, the threshold does not apply.**
+At 4 instances the detector costs more than the edit. Measured floor: **131 lines** (the overlay tier-axis migration); typical **242-362**. You are not buying the edit: you are buying the `--check` gate that stops instance 5 arriving next month. **If the change genuinely cannot regress, the threshold does not apply.**
 
 ### If this migration is a multi-commit phase
 
-⚠ **Then R-31-5 governs (`.claude/rules/framework-principles.md`) and you split it** into three or more commits. The
-single-landing-commit assumption elsewhere in this document describes a standalone codemod, not
-a phase.
+⚠ **Then R-31-5 governs (`.claude/rules/framework-principles.md`) and you split it** into three or more commits. The single-landing-commit assumption elsewhere in this document describes a standalone codemod, not a phase.
 
 ## ⛔ When to STOP and hand back to Bean
 
-Hand back, do not improvise, do not try one more thing, the moment any of these is true.
-Say which one, and what state the tree is in. Bean is QC-only: these are the points where
-his judgement, not yours, is needed.
+Hand back, do not improvise, do not try one more thing, the moment any of these is true. Say which one, and what state the tree is in. Bean is QC-only: these are the points where his judgement, not yours, is needed.
 
-1. **`--survey` reports `unrecognised > 0`** and you cannot classify the site from the file
-   alone. The classifier is incomplete; guessing is how a migration corrupts.
-2. **`git status` shows uncommitted work in your target paths that you did not write.**
-   Another track is live in your blast radius. Five tracks share `main`.
-3. **`--apply` exited non-zero, or was interrupted.** Report `git diff --stat` verbatim. Do
-   not re-run and do not `git checkout` until Bean has seen it.
+1. **`--survey` reports `unrecognised > 0`** and you cannot classify the site from the file alone. The classifier is incomplete; guessing is how a migration corrupts.
+2. **`git status` shows uncommitted work in your target paths that you did not write.** Another track is live in your blast radius. Five tracks share `main`.
+3. **`--apply` exited non-zero, or was interrupted.** Report `git diff --stat` verbatim. Do not re-run and do not `git checkout` until Bean has seen it.
 4. **`--check` will not return to 0** after Step 10's restore.
 5. **The deploy aborts naming files you did not touch.**
-6. **You are about to add a per-file special case to `transform()`.** By Step 5's test that
-   means you miscounted your cases: re-census, do not patch.
-7. **You need a flag whose help text says "NOT recommended"** (`--allow-dirty`,
-   `--skip-verify`, `--skip-gate-full`). Those exist for Bean's judgement, not yours.
-8. **Step 3 applies and Bean is not available.** A client-visible shape needs his eye
-   (R-31-13) and you cannot proceed past Step 3 without it. Hand back with the census
-   and the ONE instance built: that is the useful state to hand over, not nothing.
-9. **The change touches a shared wrapper, the walker, `scripts/computed-route/`, or ANY helper whose blast
-   radius spans many blocks.** The three named systems are examples, not the boundary: a shared
-   helper in `includes/` called by 40 blocks is inside this condition. If you are deciding whether
-   your change qualifies, it qualifies: ask Bean. Rule 7 requires a
-   design gate and Bean's approval BEFORE building. This document does not override it.
+6. **You are about to add a per-file special case to `transform()`.** By Step 5's test that means you miscounted your cases: re-census, do not patch.
+7. **You need a flag whose help text says "NOT recommended"** (`--allow-dirty`, `--skip-verify`, `--skip-gate-full`). Those exist for Bean's judgement, not yours.
+8. **Step 3 applies and Bean is not available.** A client-visible shape needs his eye (R-31-13) and you cannot proceed past Step 3 without it. Hand back with the census and the ONE instance built: that is the useful state to hand over, not nothing.
+9. **The change touches a shared wrapper, the walker, `scripts/computed-route/`, or ANY helper whose blast radius spans many blocks.** The three named systems are examples, not the boundary: a shared helper in `includes/` called by 40 blocks is inside this condition. If you are deciding whether your change qualifies, it qualifies: ask Bean. Rule 7 requires a design gate and Bean's approval BEFORE building. This document does not override it.
 
 ---
 
@@ -176,10 +150,6 @@ Read `references/hazards.md` before writing any codemod that writes files. The o
 
 # The thesis, in one line
 
-**A census relocates the corrections from the TREE into the DETECTOR**: one commit
-fixes hundreds of sites instead of one commit per block. But a census answers *how
-many, where, and which are exempt*; it cannot answer *what shape is right*. That is
-Step 3.
+**A census relocates the corrections from the TREE into the DETECTOR**: one commit fixes hundreds of sites instead of one commit per block. But a census answers *how many, where, and which are exempt*; it cannot answer *what shape is right*. That is Step 3.
 
-Full derivation and the day-2 census evidence:
-[`reports/2026-08-24-migration-method-evidence.md`](reports/2026-08-24-migration-method-evidence.md).
+Full derivation and the day-2 census evidence: [`reports/2026-08-24-migration-method-evidence.md`](reports/2026-08-24-migration-method-evidence.md).

@@ -11,9 +11,13 @@
 
 
 **Author:** Ibraheem Mustafa + Claude (Opus, max-effort multi-advisor research)
+
 **Date:** 2026-04-24
+
 **Status:** Approved direction; implementation pending
+
 **Stakes:** Foundational restructure that Bean has flagged as "make or break" for SGS revenue work.
+
 **Sources:** Research evidenced by Gemini-Pro × 2 (architecture + operational), Sonnet (Claude-internal verification with file-level grep + Anthropic skills repo benchmarks), Gemini-Flash (community signals from r/SideProject, HN, r/vibecoding, Apr 2026 reports). Cerebras advisor failed (queue saturated); coverage maintained by other 3 angles.
 
 ---

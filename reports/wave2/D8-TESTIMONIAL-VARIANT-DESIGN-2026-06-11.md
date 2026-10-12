@@ -1,7 +1,6 @@
 # D8 — Testimonial variant rebuild — BUILD CONTRACT (Bean-approved 2026-06-11)
 
-Status: APPROVED for build. Typed-attr, variant-driven rebuild of sgs/testimonial.
-Reference mechanism: sgs/hero (variant system). Container-mirror: keep WS-4 CONTENT-kind wrapper.
+Status: APPROVED for build. Typed-attr, variant-driven rebuild of sgs/testimonial. Reference mechanism: sgs/hero (variant system). Container-mirror: keep WS-4 CONTENT-kind wrapper.
 
 ## Bean's locked decisions
 - **7 variants** (fold old dark `featured` into pull-quote-editorial as a colour treatment).
@@ -57,8 +56,7 @@ Note: classic-card uses `ratingStars`, rating-led uses `ratingScale` — distinc
 ## Migration (HIGH RISK — separate step + adversarial-council)
 save.js changes (InnerBlocks → typed/no-inner). deprecated.js needs a v8 migrate handling BOTH legacy shapes:
 1. pre-FR-22-6 scalar posts (`quote`/`name`/`role`/`rating`/`avatar`/`style`) → map to typed attrs (`reviewerName`←name, `ratingStars`←rating + `showRating:true`, `avatarMedia`←avatar, `variant`← style map: card→classic-card, minimal→minimal-quote, featured→pull-quote-editorial).
-2. FR-22-6 InnerBlocks posts → HOIST child-block text (quote/name/role from innerBlocks) back into typed attrs, drop children.
-R-22-14: no server-side legacy fallback hack in render.php (the one-way avatar read is synthesise-on-read, compliant). Back-compat = the migrate + WP-CLI batch.
+2. FR-22-6 InnerBlocks posts → HOIST child-block text (quote/name/role from innerBlocks) back into typed attrs, drop children. R-22-14: no server-side legacy fallback hack in render.php (the one-way avatar read is synthesise-on-read, compliant). Back-compat = the migrate + WP-CLI batch.
 
 ## Converter compatibility (cloning thread follow-on; block works standalone without it)
 Routing map draft class → typed attr: `__quote`/`__text`→quote, `__author`/`__name`→reviewerName, `__role`→reviewerRole, `__org`→orgName, `__summary`/`__pullquote`→summaryPhrase, `__stars`→ratingStars (+showRating), `__score`(N/M)→ratingScale+ratingScaleMax, `__avatar img`→avatarMedia, `__logo img`→orgLogo, `__work` img/video→workMedia, `__date`/`__verified`/`__source`→reviewDate/verified/sourcePlatform. Needs slots rows + blocks.variant_attr=variant + variant_slots (via /sgs-update) + FR-22-20 generalisation (testimonial = 2nd variant block onboarded). DEFERRED to cloning thread — does not block the block build.

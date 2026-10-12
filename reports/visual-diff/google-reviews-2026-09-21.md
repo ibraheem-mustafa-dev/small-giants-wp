@@ -9,10 +9,7 @@ target: sandybrown-nightingale-600381.hostingersite.com (probe page 3775, "[prob
 date:   2026-09-21
 ```
 
-Intent: a `sgs/google-reviews` block holding written reviews (`reviews[]`, `dataSource` default `auto`) renders every
-review, in the order written, through the existing variants; unrated reviews draw no stars; the free-text date and the
-reviewer detail line show as typed; each initial takes its own colour; the aggregate comes from the block; and
-written mode sends no review schema and no demo reviews. Data: the Eye Care draft's own 13 reviews (4 without a rating).
+Intent: a `sgs/google-reviews` block holding written reviews (`reviews[]`, `dataSource` default `auto`) renders every review, in the order written, through the existing variants; unrated reviews draw no stars; the free-text date and the reviewer detail line show as typed; each initial takes its own colour; the aggregate comes from the block; and written mode sends no review schema and no demo reviews. Data: the Eye Care draft's own 13 reviews (4 without a rating).
 
 ## What was measured (real DOM at 1440 and 375, cache-busted, after the deploy of 6d2d1984e)
 
@@ -29,9 +26,7 @@ written mode sends no review schema and no demo reviews. Data: the Eye Care draf
 | Review schema | none from the written blocks: the only `ld+json` on the page is block 3's (below) |
 | Existing behaviour | block 3 (`variant: list`, no reviews, no place ID) unchanged: 3 demo reviews, as before |
 
-Captures for the eye (R-31-13; PNGs are gitignored, kept beside this file locally): `google-reviews-written-grid-1440.png`, `google-reviews-written-slider-1440.png`,
-`google-reviews-written-grid-375.png`. Read by the author: grid shows 13 cards in 3 columns, coloured initials, detail line,
-date, stars where rated, "4.9 15 reviews", "Write a Review"; slider shows arrows and 13 dots.
+Captures for the eye (R-31-13; PNGs are gitignored, kept beside this file locally): `google-reviews-written-grid-1440.png`, `google-reviews-written-slider-1440.png`, `google-reviews-written-grid-375.png`. Read by the author: grid shows 13 cards in 3 columns, coloured initials, detail line, date, stars where rated, "4.9 15 reviews", "Write a Review"; slider shows arrows and 13 dots.
 
 ## Placeholder gating (commit f14814895), measured live on the canary after deploy
 
@@ -54,8 +49,7 @@ Not verified: the editor canvas notices (built, not opened in a browser); the li
 
 ## Real block editor, slider default and empty state (deploy of this change, Eye Care test site, probe page 47)
 
-Intent: selecting any variant in the block editor shows the real block (not a stand-in); the slider variant no longer crashes; the default display type is
-slider; a rating of 0.0 is never printed; a block with nothing to show says so in the editor and emits nothing on the front end.
+Intent: selecting any variant in the block editor shows the real block (not a stand-in); the slider variant no longer crashes; the default display type is slider; a rating of 0.0 is never printed; a block with nothing to show says so in the editor and emits nothing on the front end.
 
 Measured in a real Chromium editor session (WordPress 7.1, logged in, block selected via the block-editor store), console errors captured:
 
@@ -77,11 +71,6 @@ Not verified: the editor with a real Google place ID (live fetch was tested thro
 
 ## Reviews card converted as ONE block (deploy of this change, Eye Care test site page 11, real browser)
 
-This change is converter and metadata only: `block.json` gains `scalarContentLift`, an item-role declaration for `avatarColour` and a comment; no attribute, default or render path
-changed. Front end measured after the change on the real homepage (cache cleared): the whole bordered card is one `sgs/google-reviews` block (slider variant) carrying `averageRating` 4.7,
-`reviewCount` 15, `reviewRequestUrl`, the card's own border and 12px radius, and 13 reviews each with `rating` 5 and a coloured initial (11 distinct colours); 0 broken images; no "0.0"
-aggregate. The editor cases measured earlier the same day are unaffected (no editor code changed).
+This change is converter and metadata only: `block.json` gains `scalarContentLift`, an item-role declaration for `avatarColour` and a comment; no attribute, default or render path changed. Front end measured after the change on the real homepage (cache cleared): the whole bordered card is one `sgs/google-reviews` block (slider variant) carrying `averageRating` 4.7, `reviewCount` 15, `reviewRequestUrl`, the card's own border and 12px radius, and 13 reviews each with `rating` 5 and a coloured initial (11 distinct colours); 0 broken images; no "0.0" aggregate. The editor cases measured earlier the same day are unaffected (no editor code changed).
 
-Not faithful yet, stated plainly: the draft's gold stars (#FBBC04) render taupe, the "Write a review" pill renders black, the card is flush to its border with truncated text, and
-"See all reviews", the "Google Reviews" caption, the footnote and the scrollbar are absent. Each dropped declaration is now a reported skip row (13 on this card) instead of silent; carrying them needs the
-converter to route inline styles by the attribute's `derived_selector` (a shared-mechanism change awaiting approval) plus new block attributes for the review-card box, avatar size, star size and pill radius.
+Not faithful yet, stated plainly: the draft's gold stars (#FBBC04) render taupe, the "Write a review" pill renders black, the card is flush to its border with truncated text, and "See all reviews", the "Google Reviews" caption, the footnote and the scrollbar are absent. Each dropped declaration is now a reported skip row (13 on this card) instead of silent; carrying them needs the converter to route inline styles by the attribute's `derived_selector` (a shared-mechanism change awaiting approval) plus new block attributes for the review-card box, avatar size, star size and pill radius.

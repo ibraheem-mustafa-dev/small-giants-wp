@@ -1,15 +1,10 @@
 # Eye Care: where the 2026-09-28 autopilot session stopped
 
-**Written for:** Bean and the next session that picks this up. Source: the full session log of the 2026-09-28
-`/autopilot` run (three tasks: shop and lens tail, page waves, Phase 6), checked against `main` at 8ab1f0a5e.
-The governing plans are still `2026-09-24-eye-care-hand-build-design.md` (Status block) and
-`2026-09-28-eye-care-product-page-parity.md`; this file only says what state the session left them in.
+**Written for:** Bean and the next session that picks this up. Source: the full session log of the 2026-09-28 `/autopilot` run (three tasks: shop and lens tail, page waves, Phase 6), checked against `main` at 8ab1f0a5e. The governing plans are still `2026-09-24-eye-care-hand-build-design.md` (Status block) and `2026-09-28-eye-care-product-page-parity.md`; this file only says what state the session left them in.
 
 ## Why it stopped
 
-The weekly usage limit ran out at the very end ("resets Sep 30, 11pm Europe/London"). The last thing to finish was
-the re-walk of every page after the deploy. Its results were never read. The motion-batch builder died on its first
-call, so nothing of it was built.
+The weekly usage limit ran out at the very end ("resets Sep 30, 11pm Europe/London"). The last thing to finish was the re-walk of every page after the deploy. Its results were never read. The motion-batch builder died on its first call, so nothing of it was built.
 
 ## At a glance
 
@@ -23,10 +18,8 @@ call, so nothing of it was built.
 ## Task 1: shop and lens tail (DONE)
 
 - Shop: 0 open of 1,376 rows, exit 0. Lens: 0 open of 678 rows, exit 0. Benchmark still 5 of 5 with 0 noise rows.
-- £268 lens purchase lands one bag line on all three routes ("Options: Distance · Thin · 1.6 · Polarised"); 0 draft
-  products.
-- Commits (pushed): ca0079b8f (shop and lens fixes), cf827970e (walker repeat-word repair in
-  `scripts/parity/lib/auto-compare.mjs::repairRepeats`, accepts, site icon), e1b3f25fe (EASIEST accept, docs).
+- £268 lens purchase lands one bag line on all three routes ("Options: Distance · Thin · 1.6 · Polarised"); 0 draft products.
+- Commits (pushed): ca0079b8f (shop and lens fixes), cf827970e (walker repeat-word repair in `scripts/parity/lib/auto-compare.mjs::repairRepeats`, accepts, site icon), e1b3f25fe (EASIEST accept, docs).
 - Bean's decision used: the EASIEST tag stays inside its card (same as the Polarised tag, 2026-09-27).
 
 ## Task 2: page waves
@@ -42,8 +35,7 @@ call, so nothing of it was built.
 | 620e534bf | Last two gates (`--sgs-tab-padding` default, form editor class) — **this is what eye-care-test runs** |
 | (final commit) | Applied trees, walker configs and the product-page plan |
 
-After the deploy: all 11 trees applied through the editor (no invalid blocks), facet seed run ("Lenses as
-supplied"), 0 draft products, £268 purchase passes on all three routes.
+After the deploy: all 11 trees applied through the editor (no invalid blocks), facet seed run ("Lenses as supplied"), 0 draft products, £268 purchase passes on all three routes.
 
 ### Per page
 
@@ -59,23 +51,19 @@ supplied"), 0 draft products, £268 purchase passes on all three routes.
 | Checkout | `checkout.mjs` | never walked | none yet | First walk ran, not reviewed | 20% |
 | Order confirmation | `confirmation.mjs` | never walked | needs a real test order first | not run | 10% |
 
-The re-walk results live only on Bean's PC in `sites/eye-care-ward-end/build/qa/parity/out/<page>/` (gitignored).
-The queue's "exit code 0" was the queue runner's, not the walks'.
+The re-walk results live only on Bean's PC in `sites/eye-care-ward-end/build/qa/parity/out/<page>/` (gitignored). The queue's "exit code 0" was the queue runner's, not the walks'.
 
 ### Site-wide fixes made on the way (live)
 
-- One size-guide pop-up in the footer (anchor `size-guide`); every "Size guide" link opens it. Before, the footer
-  went to /help/ and the others pointed at an anchor that existed nowhere.
-- Every `/sunglasses...` shop link (both mega panels, footer, About) returned 404; all now use `/shop/` with
-  WooCommerce's filter parameters and the real brand slugs.
+- One size-guide pop-up in the footer (anchor `size-guide`); every "Size guide" link opens it. Before, the footer went to /help/ and the others pointed at an anchor that existed nowhere.
+- Every `/sunglasses...` shop link (both mega panels, footer, About) returned 404; all now use `/shop/` with WooCommerce's filter parameters and the real brand slugs.
 - `sgs/button` "fit" width now really fits (`width: fit-content`).
 - `sgs/modal` trigger hover colours now reach the page; size-guide pop-up has width, border, shadow and "×" settings.
 - `sgs/breadcrumbs` "Space around the separator"; `sgs/tabs` typography, padding, min height, indicator thickness.
 
 ### Bean's decisions made this session (2026-09-28)
 
-1. Size row: show only the frame's own universal band(s) (S up to 52mm, M up to 57mm, L above); one-size frames show
-   their one tile; "Which size am I?" beside the Size label.
+1. Size row: show only the frame's own universal band(s) (S up to 52mm, M up to 57mm, L above); one-size frames show their one tile; "Which size am I?" beside the Size label.
 2. Colour swatches: each variation's own photo, colour tile as fallback.
 3. Colourway example photos: the brand's own shots, **test site only** — must be replaced before launch (Phase 6 gate).
 4. Entrance animations: exact, as real controls.
@@ -84,55 +72,30 @@ The queue's "exit code 0" was the queue runner's, not the walks'.
 
 ## Motion batch (BUILT 2026-09-29, not yet deployed)
 
-Built in a cloud session as universal Animation-panel settings with editor controls; details and browser proof in
-`2026-09-28-eye-care-product-page-parity.md` §Motion batch. The draft's reveal trigger (1% past 6% up the screen)
-is now the framework default, with a "Start when" control; a block's own delay is kept; "Stagger the blocks
-inside" (any block with inner blocks) and a block's own stagger (repeated lists) replace hand-typed delays;
-card-grid tiles use the same settings. Eye Care's shop card and Home trees updated (not yet applied).
+Built in a cloud session as universal Animation-panel settings with editor controls; details and browser proof in `2026-09-28-eye-care-product-page-parity.md` §Motion batch. The draft's reveal trigger (1% past 6% up the screen) is now the framework default, with a "Start when" control; a block's own delay is kept; "Stagger the blocks inside" (any block with inner blocks) and a block's own stagger (repeated lists) replace hand-typed delays; card-grid tiles use the same settings. Eye Care's shop card and Home trees updated (not yet applied).
 
-Checks run here: PHP syntax, webpack compile, 116 of 127 fast gates pass; of the 11 failures, 8 need the framework
-DB or Python packages (bs4, tinycss2) only on Bean's PC, `check-hardcoded-render-defaults` fails on untouched
-`main` too, and `shadow-lift-check` is an artefact of compiling without the prebuild generators. ESLint could not
-start here (a TypeScript plugin version clash), so it runs in the PC build.
+Checks run here: PHP syntax, webpack compile, 116 of 127 fast gates pass; of the 11 failures, 8 need the framework DB or Python packages (bs4, tinycss2) only on Bean's PC, `check-hardcoded-render-defaults` fails on untouched `main` too, and `shadow-lift-check` is an artefact of compiling without the prebuild generators. ESLint could not start here (a TypeScript plugin version clash), so it runs in the PC build.
 
 ## Loose ends
 
 - **Colourway photos (C5):** not gathered yet (Gucci 76, Holbrook 81, Wayfarer 90 or Round Metal 98).
-- **Questions for Bean from the purchase-flow agent:** the draft has no bag quantity control, no checkout field
-  validation and no order recap on the confirmation page. Live has them. Recommendation: accept live (the draft is
-  a mock-up).
+- **Questions for Bean from the purchase-flow agent:** the draft has no bag quantity control, no checkout field validation and no order recap on the confirmation page. Live has them. Recommendation: accept live (the draft is a mock-up).
 - **Home:** "Photo of the clinic" placeholder text on both sides — needs a real photo from the client.
 - **About:** no photo of Fatima on either side — same imagery point.
-- **Docs out of date:** the product-page plan still says "not yet deployed" (it is live at 620e534bf); the parent
-  plan's Status progress line doesn't list the page waves; `LEDGER.md` still says eye-care-test runs fdb844df8.
-  `/handoff` never ran.
+- **Docs out of date:** the product-page plan still says "not yet deployed" (it is live at 620e534bf); the parent plan's Status progress line doesn't list the page waves; `LEDGER.md` still says eye-care-test runs fdb844df8. `/handoff` never ran.
 - **Another session** was making the walker's header-mode checks the default; that may reopen shop and lens.
 
 ## Framework fixes from Home (built 2026-09-29, need reseed + deploy)
 
-- `sgs/process-steps`: the step number gains size, weight and line-height settings (it had colour, fill and font
-  family only; size and weight were fixed in style.css, which the code itself called "honest gaps"). The
-  render-side typography helper was already wired for the "number" prefix; the defaults moved into `:where()`.
-- `sgs/card-grid`: the tile border (`cardBorderWidth` / `cardBorderColour`) painted only in the "Card" style, so
-  it was a dead control on Overlay tiles; it now paints on every style (unset width 0, no change elsewhere).
-- `sgs/whatsapp-cta`: a new "Space between icon and label" setting; its fixed 1px hover lift and 0.9 fade leave
-  style.css for the universal Hover panel (default lift 1px via `hoverDefaults.lift`, as `sgs/product-card`).
-- Not framework: the tile hover shadow uses the existing `cardShadowHover`; the review arrows' padding is
-  accepted (a 40px round button, box matches); the arrows' cream ground needs a browser check (the white
-  `arrowColourBackground` is emitted).
+- `sgs/process-steps`: the step number gains size, weight and line-height settings (it had colour, fill and font family only; size and weight were fixed in style.css, which the code itself called "honest gaps"). The render-side typography helper was already wired for the "number" prefix; the defaults moved into `:where()`.
+- `sgs/card-grid`: the tile border (`cardBorderWidth` / `cardBorderColour`) painted only in the "Card" style, so it was a dead control on Overlay tiles; it now paints on every style (unset width 0, no change elsewhere).
+- `sgs/whatsapp-cta`: a new "Space between icon and label" setting; its fixed 1px hover lift and 0.9 fade leave style.css for the universal Hover panel (default lift 1px via `hoverDefaults.lift`, as `sgs/product-card`).
+- Not framework: the tile hover shadow uses the existing `cardShadowHover`; the review arrows' padding is accepted (a 40px round button, box matches); the arrows' cream ground needs a browser check (the white `arrowColourBackground` is emitted).
 - `sgs/card-grid`: a label on the fallback tile (`noImageLabel`, "Photo to come"), as `sgs/product-card` (054d908).
-- **Hover image zoom** (ba74c6b): the Hover panel's "Zoom image on hover" is one shared rule on the media markers
-  (any block whose image is a media element) with a new "Zoom style" (inside the frame / whole image grows);
-  `sgs/media` gains the Hover panel. The Background panel gains "Zoom background on hover" (zoom %, duration,
-  easing) for every wrapper block; the container's dead Hover-panel zoom and grayscale switches are hidden.
-  The hero's split-media spill zoom is unchanged (still the wrapper's fixed 105%): hero has no Hover panel, and
-  adding one would bring section-wide lift and scale. Giving it zoom controls is its own follow-up.
+- **Hover image zoom** (ba74c6b): the Hover panel's "Zoom image on hover" is one shared rule on the media markers (any block whose image is a media element) with a new "Zoom style" (inside the frame / whole image grows); `sgs/media` gains the Hover panel. The Background panel gains "Zoom background on hover" (zoom %, duration, easing) for every wrapper block; the container's dead Hover-panel zoom and grayscale switches are hidden. The hero's split-media spill zoom is unchanged (still the wrapper's fixed 105%): hero has no Hover panel, and adding one would bring section-wide lift and scale. Giving it zoom controls is its own follow-up.
 - Home's prescription-strip photo is now `sgs/media` with that zoom (97b08d8, tree only; applies after deploy).
-- Test tooling (8be3974): the walker and `wp-build-page.js` now close their browser on every exit and sweep
-  browsers left by killed runs (`scripts/lib/close-browser-on-exit.js`).
-- To verify on the next walk: the Home photo panel fills its grid cell and zooms 105% over 1.4s on hover;
-  the hero entrance rows; Versace (103) and Polaroid (107) images on Home (run the
-  WP-CLI check with single quotes in PowerShell).
+- Test tooling (8be3974): the walker and `wp-build-page.js` now close their browser on every exit and sweep browsers left by killed runs (`scripts/lib/close-browser-on-exit.js`).
+- To verify on the next walk: the Home photo panel fills its grid cell and zooms 105% over 1.4s on hover; the hero entrance rows; Versace (103) and Polaroid (107) images on Home (run the WP-CLI check with single quotes in PowerShell).
 
 ## Parked (recorded, not for now)
 
@@ -144,15 +107,10 @@ start here (a TypeScript plugin version clash), so it runs in the PC build.
 
 Times include a 50% pad.
 
-1. **Read the eight re-walk reports** (`out/<page>/report.md` and contact sheets) and note each page's open count.
-   45-70 min. Done when every page has a number and a short list of causes.
-2. **Motion batch deploy** (code built 2026-09-29): reseed, full build, deploy, apply the shop and Home trees,
-   rerun the shop and Home walks. 45-70 min. Done when the shop walk exits 0 again and Home's reveals match.
-3. **Fix-and-walk loop per page** (one browser run at a time): product, about, lenses, help, contact, home, bag,
-   checkout. About 30 min a page, so 4-6 h in total. Done when each walker exits 0 with every shot reviewed.
-4. **Test order and confirmation walk**: place a test order on eye-care-test once checkout is clean, then walk
-   confirmation. 45 min.
+1. **Read the eight re-walk reports** (`out/<page>/report.md` and contact sheets) and note each page's open count. 45-70 min. Done when every page has a number and a short list of causes.
+2. **Motion batch deploy** (code built 2026-09-29): reseed, full build, deploy, apply the shop and Home trees, rerun the shop and Home walks. 45-70 min. Done when the shop walk exits 0 again and Home's reveals match.
+3. **Fix-and-walk loop per page** (one browser run at a time): product, about, lenses, help, contact, home, bag, checkout. About 30 min a page, so 4-6 h in total. Done when each walker exits 0 with every shot reviewed.
+4. **Test order and confirmation walk**: place a test order on eye-care-test once checkout is clean, then walk confirmation. 45 min.
 5. **Colourway photos (C5)** for one photographed frame. 45 min.
 6. **Docs and `/handoff`**: product-page plan, parent plan Status, LEDGER. 30 min.
-7. **Phase 6** (Stripe with Klarna and wallets, PayPal, `/a11y-audit`, performance audit), only when every page
-   passes. Replace the test-only colourway photos before launch.
+7. **Phase 6** (Stripe with Klarna and wallets, PayPal, `/a11y-audit`, performance audit), only when every page passes. Replace the test-only colourway photos before launch.

@@ -69,6 +69,7 @@ The shared `ShadowControl` edits ONE shadow layer. Real designs (Halcyon, Indus,
 4. `sgs_shadow_value_to_drop_shadow` strips spread from the first layer only, so a multi-layer value gives an invalid filter. Fix: chain one `drop-shadow()` per layer, skip inset layers, say why in the panel.
 
 **Corrections to this design.**
+
 5. `color-mix()` colours do NOT survive the PHP path today: `sgs_is_css_colour` does not recognise them and `sgs_colour_value` mangles them into a `currentColor` slug, while the editor previews them correctly. Fix: a strict whole-value validator for `color-mix(in srgb, <token|hex|rgb> N%, transparent)`, plus a shared PHP/JS test fixture.
 6. The composer appends ONE colour to the end of the whole string. Fix: split shape and colour lists at top-level commas, zip them, and land this (with a golden-output test) before any control work.
 7. Recognise-by-regeneration would silently demote every stored stack the first time the generator is tuned. Fix: the generator becomes a frozen, versioned table (tuned before ship, append-only afterwards); recognition tries every version and reads colour and intensity from the layers, so a custom colour still shows as Elevation N.

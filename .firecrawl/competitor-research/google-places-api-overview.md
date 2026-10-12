@@ -345,81 +345,44 @@ outlined\_flag
 
 Select platform: [Android](https://developers.google.com/maps/documentation/places/android-sdk/overview) [iOS](https://developers.google.com/maps/documentation/places/ios-sdk/overview) [JavaScript](https://developers.google.com/maps/documentation/javascript/place) [Web Service](https://developers.google.com/maps/documentation/places/web-service/overview)
 
-**European Economic Area (EEA) developers**
-If your billing address is in the European Economic Area, effective on 8 July 2025, the
-[Google Maps Platform EEA Terms of Service](https://cloud.google.com/terms/maps-platform/eea)
-will apply to your use of the Services. Functionality varies by region.
-[Learn more](https://developers.google.com/maps/comms/eea/faq).
+**European Economic Area (EEA) developers** If your billing address is in the European Economic Area, effective on 8 July 2025, the [Google Maps Platform EEA Terms of Service](https://cloud.google.com/terms/maps-platform/eea) will apply to your use of the Services. Functionality varies by region. [Learn more](https://developers.google.com/maps/comms/eea/faq).
 
 
 ## Introduction
 
-The Places API is a service that accepts HTTP requests for location
-data through a variety of methods. It returns formatted location data
-and imagery about establishments, geographic locations, or prominent
-points of interest.
+The Places API is a service that accepts HTTP requests for location data through a variety of methods. It returns formatted location data and imagery about establishments, geographic locations, or prominent points of interest.
 
-**Note:** Google Maps Platform provides separate
-versions of the Places library for [Android](https://developers.google.com/maps/documentation/places/android-sdk/overview), [iOS](https://developers.google.com/maps/documentation/places/ios-sdk/overview), and [JavaScript](https://developers.google.com/maps/documentation/javascript/places). We recommend that
-you use the version of the Places library specific to your platform. That is,
-if you are developing an Android app, you should use the Android version of
-Places.
+**Note:** Google Maps Platform provides separate versions of the Places library for [Android](https://developers.google.com/maps/documentation/places/android-sdk/overview), [iOS](https://developers.google.com/maps/documentation/places/ios-sdk/overview), and [JavaScript](https://developers.google.com/maps/documentation/javascript/places). We recommend that you use the version of the Places library specific to your platform. That is, if you are developing an Android app, you should use the Android version of Places.
 
 ## Why use the Places API (New)
 
-Create location-aware features to make detailed location data
-available to your users. The data available through the
-Places API (New) is built on one of the most accurate, up-to-date,
-and comprehensive place models of the real world. Here are example use
-cases for applications:
+Create location-aware features to make detailed location data available to your users. The data available through the Places API (New) is built on one of the most accurate, up-to-date, and comprehensive place models of the real world. Here are example use cases for applications:
 
-- Display condo rentals within major metropolitan areas with results
-targeted specifically to cities.
+- Display condo rentals within major metropolitan areas with results targeted specifically to cities.
 - Include place details in a pickup or delivery status update.
-- Display a list of parks in an area along with user-submitted
-photos and reviews.
-- Provide people planning trips with contact information, reviews,
-and price levels for establishments along the way.
+- Display a list of parks in an area along with user-submitted photos and reviews.
+- Provide people planning trips with contact information, reviews, and price levels for establishments along the way.
 
-**Note:** Places API (New) is the current version.
-Places API is now Legacy and can no longer be enabled. Legacy
-documentation and migration guides are available on the [Legacy](https://developers.google.com/maps/documentation/places/web-service/overview-legacy)
-tab.
+**Note:** Places API (New) is the current version. Places API is now Legacy and can no longer be enabled. Legacy documentation and migration guides are available on the [Legacy](https://developers.google.com/maps/documentation/places/web-service/overview-legacy) tab.
 
 ## What can you do with the Places API (New)
 
-You can use the Places API (New) to include the following features
-in your applications:
+You can use the Places API (New) to include the following features in your applications:
 
-- Provide place search results from different types of users queries,
-such as text input, nearby locations, and ambiguous or categorical
-user queries.
-- Enable autocomplete features for different search types, either
-specific text queries or categorical queries.
+- Provide place search results from different types of users queries, such as text input, nearby locations, and ambiguous or categorical user queries.
+- Enable autocomplete features for different search types, either specific text queries or categorical queries.
 
-- Refine the type of details returned about a place, such as
-operating hours, a summary, user reviews, and a photo.
+- Refine the type of details returned about a place, such as operating hours, a summary, user reviews, and a photo.
 
 - Add high-quality photos to locations served by your application.
 
-Many Google Maps Platform APIs support [place IDs](https://developers.google.com/maps/documentation/places/web-service/place-id), where
-the place ID uniquely identifies a place in the Google Places database and
-on Google Maps. There are many ways to obtain a place ID, including from
-the Places API (New), but also from the [Geocoding API](https://developers.google.com/maps/documentation/geocoding), [Routes API](https://developers.google.com/maps/documentation/routes), and [Address Validation API](https://developers.google.com/maps/documentation/address-validation).
+Many Google Maps Platform APIs support [place IDs](https://developers.google.com/maps/documentation/places/web-service/place-id), where the place ID uniquely identifies a place in the Google Places database and on Google Maps. There are many ways to obtain a place ID, including from the Places API (New), but also from the [Geocoding API](https://developers.google.com/maps/documentation/geocoding), [Routes API](https://developers.google.com/maps/documentation/routes), and [Address Validation API](https://developers.google.com/maps/documentation/address-validation).
 
-Once you have a place ID, you can use the Places API (New) to
-request more details about a particular establishment or point of
-interest, such as its complete address, phone number, user rating, and
-reviews.
+Once you have a place ID, you can use the Places API (New) to request more details about a particular establishment or point of interest, such as its complete address, phone number, user rating, and reviews.
 
 ## How the Places API (New) works
 
-Places API (New) accepts requests as a standard URL with a
-specific service endpoint, such as `/places` or
-`places:searchText` and returns a JSON response.
-Places API (New) supports authorization by API key and OAuth token.
-The following example makes a Place Details (New) request to return
-the address components for a place ID using an API key:
+Places API (New) accepts requests as a standard URL with a specific service endpoint, such as `/places` or `places:searchText` and returns a JSON response. Places API (New) supports authorization by API key and OAuth token. The following example makes a Place Details (New) request to return the address components for a place ID using an API key:
 
 ```
 https://places.googleapis.com/v1/places/GyuEmsRBfy61i59si0?fields=addressComponents&key=YOUR_API_KEY
@@ -427,9 +390,7 @@ https://places.googleapis.com/v1/places/GyuEmsRBfy61i59si0?fields=addressCompone
 
 ## How to use the Places API (New)
 
-The steps below cover a typical use case scenario for using the Places
-API service. As you build out your solution, you can use additional
-endpoints, such as Nearby Search (New) and Place Photos (New).
+The steps below cover a typical use case scenario for using the Places API service. As you build out your solution, you can use additional endpoints, such as Nearby Search (New) and Place Photos (New).
 
 |     |     |     |
 | --- | --- | --- |
@@ -463,20 +424,16 @@ Need to tell us more?
 
 
 - [![Stack Overflow](https://developers.google.com/static/site-assets/logo-stack-overflow.svg)\\
-   Stack Overflow](https://stackoverflow.com/search?q=google-places-api+web-services)
-  Ask a question under the google-maps tag.
+   Stack Overflow](https://stackoverflow.com/search?q=google-places-api+web-services) Ask a question under the google-maps tag.
 
 - [![GitHub](https://developers.google.com/static/site-assets/logo-github.svg)\\
-   GitHub](https://github.com/googlemaps/)
-  Fork our samples and try them yourself.
+   GitHub](https://github.com/googlemaps/) Fork our samples and try them yourself.
 
 - [![Discord](https://developers.google.com/static/maps/images/discord-color.png)\\
-   Discord](https://discord.gg/f4hvx8Rp2q)
-  Chat with fellow developers about Google Maps Platform.
+   Discord](https://discord.gg/f4hvx8Rp2q) Chat with fellow developers about Google Maps Platform.
 
 - [![Issue Tracker](https://developers.google.com/static/site-assets/developers_64dp.png)\\
-   Issue Tracker](https://issuetracker.google.com/issues/new?component=188872&template=787713)
-  Something wrong? Send us a bug report!
+   Issue Tracker](https://issuetracker.google.com/issues/new?component=188872&template=787713) Something wrong? Send us a bug report!
 
 
 - ### Learn More

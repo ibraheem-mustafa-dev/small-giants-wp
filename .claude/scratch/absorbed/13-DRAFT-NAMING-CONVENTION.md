@@ -1,20 +1,9 @@
-> **ABSORBED BY SPEC 15** — see `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`.
-> Preserved here for commit-message history continuity. Do not author new work against this doc.
-> All content + rules carried forward to Spec 31 (v0.2, 2026-05-12).
+> **ABSORBED BY SPEC 15** — see `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`. Preserved here for commit-message history continuity. Do not author new work against this doc. All content + rules carried forward to Spec 31 (v0.2, 2026-05-12).
 
 ---
 
 ---
-doc_type: spec
-spec_id: 13
-title: Draft Naming Convention (SGS-prefixed BEM)
-status: locked
-locked_at: 2026-05-10
-captured_in_blub_db: 236
-pattern_key: bean-drafts-use-sgs-prefixed-bem-naming
-strategic_objective: revenue-sgs
-supersedes: ad-hoc kebab-semantic class names in pre-rule mockups
-related_specs:
+doc_type: spec spec_id: 13 title: Draft Naming Convention (SGS-prefixed BEM) status: locked locked_at: 2026-05-10 captured_in_blub_db: 236 pattern_key: bean-drafts-use-sgs-prefixed-bem-naming strategic_objective: revenue-sgs supersedes: ad-hoc kebab-semantic class names in pre-rule mockups related_specs:
   - 12-DRAFT-TO-SGS-PIPELINE.md
   - 02-SGS-BLOCKS-REFERENCE.md
   - 11-SGS-BUTTON-ARCHITECTURE.md
@@ -23,7 +12,9 @@ related_specs:
 # Draft Naming Convention (SGS-prefixed BEM)
 
 **Status:** Architecture locked 2026-05-10. Canonical reference for the convention rollout plan (`.claude/plan.md` + phases 1-8). Captured as blub.db row 236, pattern_key `bean-drafts-use-sgs-prefixed-bem-naming`.
+
 **Scope:** All Bean-controlled drafts (mockups, sketches, hand-coded HTML produced in-house). Live scrapes (sites Bean does NOT control) follow the lingua-franca-conversion sub-rule (Section 5).
+
 **Replaces:** ad-hoc kebab-semantic class names in pre-rule mockups (e.g. `.hero-section`, `.cta-button`).
 
 ---
@@ -32,9 +23,7 @@ related_specs:
 
 > Every Bean-controlled draft MUST use SGS-prefixed BEM:
 >
-> ```
-> .sgs-<block>__<element>--<modifier>
-> ```
+> ``` .sgs-<block>__<element>--<modifier> ```
 >
 > - `<block>` matches an SGS block name (`hero`, `cta-section`, `card-grid`, `team-member`, etc.) — slug from `block.json`.
 > - `__<element>` matches a slot id from the block's slot list (e.g. `__copy`, `__image`, `__cta`).

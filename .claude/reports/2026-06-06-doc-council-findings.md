@@ -30,6 +30,7 @@ Four parallel adversarial reviewers (core docs / living docs / pipeline canon / 
 4. **The 7 rules as a structural, named set.** A numbered RULES block (with violation conditions + the bound-mode known-cheat warning) at the TOP of root CLAUDE.md; carried verbatim into handoff + next-session-prompt as a STOP catalogue (copy the theme thread's pattern); the 4 anti-patterns added to mistakes.md.
 
 **HIGH (convergent):**
+
 5. **Single-source status.** Add `built_status: DESCRIBED|PARTIAL|BUILT-VERIFIED` per FR; move dated D-callouts out of Spec 22/flow/stages into decisions.md. "shipped-status/counts live ONLY in state.md; handoff/decisions narrate WHY, never WHAT'S-DONE."
 6. **Shrink + archive (mechanical).** decisions.md → archive resolved (<250 lines); parking.md → enforce archive-on-resolve now (<300); truncate handoff.md + handoff-theme to the live section + an archive pointer; archive the 9 superseded/complete plans (2026-05-21-architecture-staging, 2026-05-23-parking-finishers, 2026-05-24-phase-3-parking-sweep, 2026-05-24-phase-4-skill-optimisation, both 2026-05-31-container-neutral-default-*, 2026-05-31-converter-content-routing-fix, 2026-06-04-spec27-phase2-display-seo-plan, 2026-06-04-spec28-p1-value-ladder); fix README (Spec 24/25 archived), Spec 18 frontmatter (shipped:true), 06-BUILD-ORDER (points to the cloning pipeline as current).
 7. **Goal: a 3-line SUCCESS definition at the top of CLAUDE.md + goals.md.**

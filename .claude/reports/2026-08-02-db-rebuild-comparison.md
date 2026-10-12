@@ -7,9 +7,7 @@ phase: Phase 0 Step 0.5 — rebuild-from-empty
 
 # Rebuild-from-empty comparison
 
-`sgs-update-v2.py --rebuild` run against an EMPTY database inside a sandbox HOME
-(so every `Path.home()`-hardcoding script resolved there, never at the live file —
-the live database's mtime was confirmed unchanged afterwards).
+`sgs-update-v2.py --rebuild` run against an EMPTY database inside a sandbox HOME (so every `Path.home()`-hardcoding script resolved there, never at the live file — the live database's mtime was confirmed unchanged afterwards).
 
 **Rebuild exit code: 0**
 

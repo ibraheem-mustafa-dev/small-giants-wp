@@ -13,13 +13,7 @@ source_sha: 2457cddfb1317e14
 
 **Verdict: PASS.**
 
-Same tier-fixture page (post 2270) and method as the container report: the shared migration
-toolkit's automated probe-value derivation refused all 10 box-per-tier instances (a known gap —
-its regex-based prop extraction targets the older flat-scalar shape, not this box-object shape),
-so probe values were injected directly into `post_content` via REST (an explicitly sanctioned
-path for sgs/* blocks — plugins/sgs-blocks/CLAUDE.md), matching the same figures already
-live-editor-proven on the container instance on this same page. Measured on the live frontend
-render at two viewports.
+Same tier-fixture page (post 2270) and method as the container report: the shared migration toolkit's automated probe-value derivation refused all 10 box-per-tier instances (a known gap — its regex-based prop extraction targets the older flat-scalar shape, not this box-object shape), so probe values were injected directly into `post_content` via REST (an explicitly sanctioned path for sgs/* blocks — plugins/sgs-blocks/CLAUDE.md), matching the same figures already live-editor-proven on the container instance on this same page. Measured on the live frontend render at two viewports.
 
 | Viewport | measured on | expected padding-top | actual padding-top |
 |---|---|---|---|

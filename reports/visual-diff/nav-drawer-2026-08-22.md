@@ -15,10 +15,7 @@ discharges_skips:
 
 ## What this report verifies
 
-`edit.js` and `editor.css` only — neither is a frontend surface. The change makes
-the editor preview shell collapse to a summary strip by default and expand from an
-explicit inspector toggle, and neutralises the `height:100dvh` / `width:100vw` that
-`style.css` was applying to the shell inside the editor canvas.
+`edit.js` and `editor.css` only — neither is a frontend surface. The change makes the editor preview shell collapse to a summary strip by default and expand from an explicit inspector toggle, and neutralises the `height:100dvh` / `width:100vw` that `style.css` was applying to the shell inside the editor canvas.
 
 ## Before (measured, pre-deploy, on the live editor)
 
@@ -58,14 +55,9 @@ The shell was exactly `100dvh` of the canvas. This is the defect as reported.
 
 Collapsing hides the body with CSS and never unmounts it. Proven rather than assumed:
 
-- Both children selectable: `sgs/nav-menu` and `sgs/responsive-logo`, each reporting
-  `getBlockEditingMode === "default"` (not disabled, not locked).
-- A real mutation landed and was reverted: `updateBlockAttributes` on `sgs/nav-menu`
-  set `sgsCustomCss`, read back `applied: true`, then reverted, read back
-  `reverted: true`.
-- Editor breadcrumb while expanded read
-  `Template Part › SGS Nav Drawer › SGS Responsive Logo`, i.e. an inner block was
-  genuinely selected in place.
+- Both children selectable: `sgs/nav-menu` and `sgs/responsive-logo`, each reporting `getBlockEditingMode === "default"` (not disabled, not locked).
+- A real mutation landed and was reverted: `updateBlockAttributes` on `sgs/nav-menu` set `sgsCustomCss`, read back `applied: true`, then reverted, read back `reverted: true`.
+- Editor breadcrumb while expanded read `Template Part › SGS Nav Drawer › SGS Responsive Logo`, i.e. an inner block was genuinely selected in place.
 
 ## The toggle does not serialise
 
@@ -79,9 +71,7 @@ Collapsing hides the body with CSS and never unmounts it. Proven rather than ass
 <!-- /wp:sgs/nav-drawer -->
 ```
 
-No attributes at all on the drawer; `mentionsPreview: false`; no attribute whose name
-matches `preview|open|collapse`. The preview flag is component state, so it cannot
-reach saved content.
+No attributes at all on the drawer; `mentionsPreview: false`; no attribute whose name matches `preview|open|collapse`. The preview flag is component state, so it cannot reach saved content.
 
 ## Frontend unaffected (proves editor.css did not leak)
 
@@ -95,37 +85,21 @@ Homepage, 500px viewport:
 | after burger click | `open=true`, `display:block`, height 844 = full viewport, `aria-expanded=true` |
 | after close × | `open=false`, `display:none` |
 
-STOP-DIALOG-DISPLAY-GATE holds: no `display` is set on the `<dialog>` base rule, so
-the UA's `dialog:not([open]){display:none}` still does the hiding.
+STOP-DIALOG-DISPLAY-GATE holds: no `display` is set on the `<dialog>` base rule, so the UA's `dialog:not([open]){display:none}` still does the hiding.
 
 ## A defect this capture caught
 
-The first deploy of this change was visibly wrong and the measurement is what found
-it. The shell came down from 771px to 231px, but its body was still `display:flex`
-and still laid out. `.sgs-nav-drawer__editor--collapsed .sgs-nav-drawer__body` and
-`.sgs-nav-drawer__editor .sgs-nav-drawer__body` are both (0,2,0); at equal
-specificity the later rule wins, and `display:flex` sits ~35 lines below
-`display:none` in the same file. The collapsed selectors now also carry the
-block-name class, making them (0,3,0). Fixed in `6425f728` and re-measured above.
+The first deploy of this change was visibly wrong and the measurement is what found it. The shell came down from 771px to 231px, but its body was still `display:flex` and still laid out. `.sgs-nav-drawer__editor--collapsed .sgs-nav-drawer__body` and `.sgs-nav-drawer__editor .sgs-nav-drawer__body` are both (0,2,0); at equal specificity the later rule wins, and `display:flex` sits ~35 lines below `display:none` in the same file. The collapsed selectors now also carry the block-name class, making them (0,3,0). Fixed in `6425f728` and re-measured above.
 
-A rule that loses is indistinguishable from one that is absent. Only reading the
-computed value on the live element separates them.
+A rule that loses is indistinguishable from one that is absent. Only reading the computed value on the live element separates them.
 
 ## Unrelated observation, recorded not fixed
 
-On one load of template `page`, two `sgs/business-info` blocks rendered
-"Error loading block: [object Object]". The 500 response body was
-`{"code":"wp_die","message":"<h1>Error establishing a database connection</h1>"}` —
-the host's database briefly refusing connections under a burst of ~12 concurrent
-block-renderer requests, not a defect in the block. A reload returned zero error
-blocks. Recorded because this error class appears and disappears between loads and
-could otherwise be mistaken for a code fault.
+On one load of template `page`, two `sgs/business-info` blocks rendered "Error loading block: [object Object]". The 500 response body was `{"code":"wp_die","message":"<h1>Error establishing a database connection</h1>"}` — the host's database briefly refusing connections under a burst of ~12 concurrent block-renderer requests, not a defect in the block. A reload returned zero error blocks. Recorded because this error class appears and disappears between loads and could otherwise be mistaken for a code fault.
 
 ## Gates
 
 - `audit-inline-styling.js --check` — PASS, 0 violations across 83 blocks
-- `check-editor-render-parity.js --check` — exit 0 (its one nav-drawer entry,
-  `ariaLabel`, is advisory and belongs to the accessible-name control added by the
-  colour track, not to this change)
+- `check-editor-render-parity.js --check` — exit 0 (its one nav-drawer entry, `ariaLabel`, is advisory and belongs to the accessible-name control added by the colour track, not to this change)
 - `check-no-core-blocks.py` — clean, 58 theme files
 - `npm run build` — exit 0

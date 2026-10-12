@@ -169,8 +169,7 @@ Rater B proved the naive Phase-2 is unsafe under this site's actual stack (LiteS
 4. **Explicit `litespeed_purge_post`** on invalidation (mirror `Cart_Cache_Purge`) — else the frozen full-page cache serves stale for the whole TTL.
 5. **Immutable `Cache-Control` headers** on `/uploads/sgs-css/*.css` (`.htaccess`/LiteSpeed rule) — content-hash filenames are safe-forever.
 6. **GC/expiry policy** for orphaned hashed files.
-7. **Cached (not per-request) writability check**; not writable → permanent inline fallback.
-Plus **cascade order** (Rater C): `wp_enqueue_style('sgs-page-css', …)` needs explicit `$deps` on the page's block-style handles OR a later priority than WP's block-style auto-enqueue — **verified LIVE** (Playwright `<head>` `<link>` order), not by code inspection.
+7. **Cached (not per-request) writability check**; not writable → permanent inline fallback. Plus **cascade order** (Rater C): `wp_enqueue_style('sgs-page-css', …)` needs explicit `$deps` on the page's block-style handles OR a later priority than WP's block-style auto-enqueue — **verified LIVE** (Playwright `<head>` `<link>` order), not by code inspection.
 
 ### C7 — LANDED bar (Rater C) — prevents a Phase-1-only "relocated not fixed" false-done
 LANDED verification MUST assert **0 body `<style>` tags + 1 head `<link>`** (default file mode), not merely "≤1 tag" — Phase-1-alone satisfies "≤1" but is exactly the cheat Bean flagged. Plus a live D303 residual-win check + the C6 head-order check.

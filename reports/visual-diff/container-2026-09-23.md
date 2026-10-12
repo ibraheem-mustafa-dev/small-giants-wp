@@ -1,9 +1,6 @@
 # Live verification: sgs/container and the wrapper blocks, 2026-09-23 (universal shadow-tone check, U-1 4e blur)
 
-verdict: PASS
-intent_capture_passed: true
-commit_sha: f9f20b8e7 (tip); the change set is 7dcedb346 (resolver + wrapper), c82ec0fb4 (default colour, style-engine fallbacks, elevated styles, dark-mode light reset), 298f7e45c (editor mirror, drawer and mega-panel surfaces), d53805634 + 9759d039b (stylesheet colours, one forced-colours owner), f9f20b8e7 (canvas wiring), cb2bb4d46 (4e blur fan-out)
-design: `.claude/reports/2026-09-23-shadow-tone-design.md`
+verdict: PASS intent_capture_passed: true commit_sha: f9f20b8e7 (tip); the change set is 7dcedb346 (resolver + wrapper), c82ec0fb4 (default colour, style-engine fallbacks, elevated styles, dark-mode light reset), 298f7e45c (editor mirror, drawer and mega-panel surfaces), d53805634 + 9759d039b (stylesheet colours, one forced-colours owner), f9f20b8e7 (canvas wiring), cb2bb4d46 (4e blur fan-out) design: `.claude/reports/2026-09-23-shadow-tone-design.md`
 
 ## Environment and method
 - Site: eye-care-test (`darkcyan-grouse-898606.hostingersite.com`), plugin and theme 1.5.95 deployed with `--skip-gate-full` and `--payload` for another session's uncommitted `sgs/google-reviews` files, `sgs-blocks.php` and `includes/helpers-slider-nav.php` (their in-progress work, shipped to this test site only; `gate:full` failed only on their files).
@@ -32,10 +29,7 @@ design: `.claude/reports/2026-09-23-shadow-tone-design.md`
 
 # Live verification: shadow lift on hover (every shadowed block), 2026-09-23 (appended)
 
-verdict: PASS
-intent_capture_passed: true
-commit_sha: 9a309281a (hover map, resolver, dark variants, stylesheet lift), 8b18b9d75 (PHP emitters, switch, overlays, media atom guard)
-design: `.claude/reports/2026-09-23-shadow-hover-lift-design.md`
+verdict: PASS intent_capture_passed: true commit_sha: 9a309281a (hover map, resolver, dark variants, stylesheet lift), 8b18b9d75 (PHP emitters, switch, overlays, media atom guard) design: `.claude/reports/2026-09-23-shadow-hover-lift-design.md`
 
 ## Environment and method
 - Site: eye-care-test, plugin and theme 1.5.96 deployed after 8b18b9d75 (declared payload for another session's uncommitted google-reviews, `sgs-blocks.php`, `includes/helpers-slider-nav.php`; test site only).

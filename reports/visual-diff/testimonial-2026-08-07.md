@@ -20,28 +20,19 @@ One deletion candidate here named '--wp--preset--color--heading', which is NOT a
 
 # Part 2 — art-direction tiers on the author photo (appended 2026-08-07)
 
-⚠ This file already existed and documented the colour-fallback change above. It was very
-nearly overwritten wholesale — the date-keyed-path collision this project has been bitten
-by before. The original text is untouched; the `source_sha` was added so the file certifies
-the block's staged content, which now includes BOTH changes.
+⚠ This file already existed and documented the colour-fallback change above. It was very nearly overwritten wholesale — the date-keyed-path collision this project has been bitten by before. The original text is untouched; the `source_sha` was added so the file certifies the block's staged content, which now includes BOTH changes.
 
 ## What changed
 
-`avatarMediaTablet` / `avatarMediaMobile`, object-typed to match `avatarMedia` (a flat value
-on an object-typed attr is silently coerced to the default, dropping the whole thing).
-Because `sgs_render_media()` takes no class argument, each tier gets its OWN
-`.sgs-testimonial__avatar--{tier}` WRAPPER rather than a modifier on the `<img>`.
+`avatarMediaTablet` / `avatarMediaMobile`, object-typed to match `avatarMedia` (a flat value on an object-typed attr is silently coerced to the default, dropping the whole thing). Because `sgs_render_media()` takes no class argument, each tier gets its OWN `.sgs-testimonial__avatar--{tier}` WRAPPER rather than a modifier on the `<img>`.
 
-Editor gains one `<ResponsiveControl>`-wrapped `MediaPanel`, gated on an author photo
-existing (an override for a photo that is not there is a dead control).
+Editor gains one `<ResponsiveControl>`-wrapped `MediaPanel`, gated on an author photo existing (an override for a photo that is not there is a dead control).
 
-Deliberately NOT `sgs_render_media()`'s existing `mobile_url` `<picture>` path: mobile-only,
-no tablet step, and not the BEM tier modifier the cloning pipeline's draft vocabulary reads.
+Deliberately NOT `sgs_render_media()`'s existing `mobile_url` `<picture>` path: mobile-only, no tablet step, and not the BEM tier modifier the cloning pipeline's draft vocabulary reads.
 
 ## Measured — first paint per width, computed visibility
 
-Surface: /art-direction-tier-probe/ (page 2178), `avatar-spotlight` variant. Viewport set,
-then a FRESH navigation per width. Toggles descend from `$root_sel`, a single compound token.
+Surface: /art-direction-tier-probe/ (page 2178), `avatar-spotlight` variant. Viewport set, then a FRESH navigation per width. Toggles descend from `$root_sel`, a single compound token.
 
 | measured innerWidth | nodes in DOM | visible | which tier |
 |---|---|---|---|
@@ -53,7 +44,5 @@ then a FRESH navigation per width. Toggles descend from `$root_sel`, a single co
 
 ## Limits of Part 2
 
-- Captured on `avatar-spotlight`. The other six variants share the avatar emit path but were
-  not captured individually.
-- Hidden tiers report an empty `currentSrc` (lazy, never fetched) — which is why the
-  assertion is on `display`, not on `currentSrc`.
+- Captured on `avatar-spotlight`. The other six variants share the avatar emit path but were not captured individually.
+- Hidden tiers report an empty `currentSrc` (lazy, never fetched) — which is why the assertion is on `display`, not on `currentSrc`.

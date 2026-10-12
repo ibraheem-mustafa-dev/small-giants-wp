@@ -1,8 +1,6 @@
 # Live verification: sgs/nav-bar-menu, 2026-09-23 (U-1 commit 6, item hover paint)
 
-verdict: PASS
-intent_capture_passed: true
-commit_sha: a8e537dc6
+verdict: PASS intent_capture_passed: true commit_sha: a8e537dc6
 
 ## Environment and method
 - Site: eye-care-test, plugin deployed after a8e537dc6 (declared payload for another session's uncommitted google-reviews, `sgs-blocks.php` and `includes/helpers-slider-nav.php`, test site only).

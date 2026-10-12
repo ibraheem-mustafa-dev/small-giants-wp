@@ -11,14 +11,9 @@ date:   2026-09-20
 branch: main @ 6cf7c481c ("feat(responsive-logo): Site Info logo as the middle tier of the logo chain")
 ```
 
-Live verification of the three-tier logo chain on the real canary homepage — **not** a
-probe page for tiers 2/3: the ACTIVE header (post 3648, `Mamas Munches Header`) already
-carries `<!-- wp:sgs/responsive-logo {"width":183,"linkToHome":true} /-->` with no
-block-level logo, so the site header is itself the tier-2/3 test surface.
+Live verification of the three-tier logo chain on the real canary homepage — **not** a probe page for tiers 2/3: the ACTIVE header (post 3648, `Mamas Munches Header`) already carries `<!-- wp:sgs/responsive-logo {"width":183,"linkToHome":true} /-->` with no block-level logo, so the site header is itself the tier-2/3 test surface.
 
-Every fetch used a `?qacb=<unique>` cache-buster and `wp litespeed-purge all` after each
-state change; response headers read `x-hcdn-cache-status: MISS` on every capture, so no
-result below came from a CDN copy.
+Every fetch used a `?qacb=<unique>` cache-buster and `wp litespeed-purge all` after each state change; response headers read `x-hcdn-cache-status: MISS` on every capture, so no result below came from a CDN copy.
 
 ## State touched, and its restore proof
 
@@ -30,8 +25,7 @@ result below came from a CDN copy.
 | `[QA]` attachments 3701 (PNG), 3702 (TXT) | — | `wp post delete --force` | absent from `wp post list --s="[QA]"` |
 | `[QA]` page 3704 (block-tier probe) | — | `wp post delete --force` | as above |
 
-The `logo` key was written with `wp option patch insert/update/delete sgs_site_info logo`,
-which round-trips the rest of the store untouched — proven by the md5 equality above.
+The `logo` key was written with `wp option patch insert/update/delete sgs_site_info logo`, which round-trips the rest of the store untouched — proven by the md5 equality above.
 
 ## Checks
 
@@ -52,12 +46,8 @@ which round-trips the rest of the store untouched — proven by the md5 equality
 
 ## Notes
 
-- Check 9 initially "failed" against `admin.php?page=sgs-site-info`; that is NOT the URL.
-  `Sgs_Site_Info_Admin::add_menu()` registers the submenu under
-  `Sgs_Admin_Menu::MENU_SLUG` (`'sgs'`) while `PAGE_SLUG` (`'sgs-site-info'`) is only the
-  Settings-API section key. Recorded here so the next probe does not re-derive it.
-- The picker also surfaces a `Set logo in Site Editor →` deep-link for tier 3, matching
-  `class-sgs-site-info-admin.php`'s docblock.
+- Check 9 initially "failed" against `admin.php?page=sgs-site-info`; that is NOT the URL. `Sgs_Site_Info_Admin::add_menu()` registers the submenu under `Sgs_Admin_Menu::MENU_SLUG` (`'sgs'`) while `PAGE_SLUG` (`'sgs-site-info'`) is only the Settings-API section key. Recorded here so the next probe does not re-derive it.
+- The picker also surfaces a `Set logo in Site Editor →` deep-link for tier 3, matching `class-sgs-site-info-admin.php`'s docblock.
 
 ## Screenshots
 
@@ -71,10 +61,7 @@ which round-trips the rest of the store untouched — proven by the md5 equality
 
 ## Addendum: the block adds no alignment margin (W3A-4, FR-36-22), commit `1828c2830`
 
-Intent under test: on the Mama's Munches header the nav is centred between the logo and the cart, the
-logo stays where it was, and no other SGS surface moved. Deployed with
-`build-deploy.py --target sandybrown --blocks-only` (exit 0, motion-qa probes green), then read live in
-the real Chrome on this PC with cache-busters (`?nc=`).
+Intent under test: on the Mama's Munches header the nav is centred between the logo and the cart, the logo stays where it was, and no other SGS surface moved. Deployed with `build-deploy.py --target sandybrown --blocks-only` (exit 0, motion-qa probes green), then read live in the real Chrome on this PC with cache-busters (`?nc=`).
 
 | Reading (live, 1440 wide, clientWidth 1425) | Before (deleted-rule experiment on the live page) | After the deploy |
 |---|---|---|
@@ -83,15 +70,8 @@ the real Chrome on this PC with cache-busters (`?nc=`).
 | centre of the nav items, centre between logo and cart | 992 and 783 | 782 and 782 |
 | logo `margin-inline` | `0px 417.425px` | `0px` |
 
-Six container types on `qa-logo-pin` (page 3774), offsets from the container's left edge, after the deploy:
-flex-start logo 0 with the nav and cart packed after it; flex space-between logo 0, nav 736-844, cart 1397-1440;
-flex centre the whole row centred (logo 529); grid logo 0; flow logo 0 and constrained logo 215, both with core's
-own `.alignleft` float and a 32px inline-end margin (core layouts only, which the SGS blocks do not use).
+Six container types on `qa-logo-pin` (page 3774), offsets from the container's left edge, after the deploy: flex-start logo 0 with the nav and cart packed after it; flex space-between logo 0, nav 736-844, cart 1397-1440; flex centre the whole row centred (logo 529); grid logo 0; flow logo 0 and constrained logo 215, both with core's own `.alignleft` float and a 32px inline-end margin (core layouts only, which the SGS blocks do not use).
 
-SGS surfaces on the homepage: header logo margin 0 and left 0 in a flex row; footer logo margin 0, no float, left 0
-in a block-flow container; drawer logo margin 0, left 0 in a column flex with `align-items: flex-start`.
+SGS surfaces on the homepage: header logo margin 0 and left 0 in a flex row; footer logo margin 0, no float, left 0 in a block-flow container; drawer logo margin 0, left 0 in a column flex with `align-items: flex-start`.
 
-Not tested live: `header-centred` (its logo, the only child of a `justifyContent: center` row, now centres, which
-its description says is the intent) and a drawer with `drawerAlign: center` (the logo now obeys it). Both follow
-from the container measurements above and are recorded as intended changes in the design gate
-(`.claude/reports/2026-09-20-logo-left-pin-design.md`).
+Not tested live: `header-centred` (its logo, the only child of a `justifyContent: center` row, now centres, which its description says is the intent) and a drawer with `drawerAlign: center` (the logo now obeys it). Both follow from the container measurements above and are recorded as intended changes in the design gate (`.claude/reports/2026-09-20-logo-left-pin-design.md`).

@@ -5,8 +5,7 @@ title: Helper and component/atom catalogue
 
 # Helper and component/atom catalogue
 
-**GENERATED** by `plugins/sgs-blocks/scripts/generate-helper-catalogue.py`. Do not hand-edit; edits are overwritten.
-Refresh: `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py` (`--check` exits 1 if stale).
+**GENERATED** by `plugins/sgs-blocks/scripts/generate-helper-catalogue.py`. Do not hand-edit; edits are overwritten. Refresh: `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py` (`--check` exits 1 if stale).
 
 <!-- HELPER-CATALOGUE:START -->
 
@@ -42,7 +41,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_border_radius_tiers` | `function sgs_border_radius_tiers( array $attributes ): array` | Resolve a block's `borderRadius` attribute into desktop/tablet/mobile corner objects, shape-agnostic (Phase 2 tier-object migration… |
 | `sgs_label_box_css_rule` | `function sgs_label_box_css_rule( array $box, string $selector ): string` | Build the SCOPED CSS for a label-style box on ONE selector. |
 
-#### `includes/helpers-brand-glyphs.php` — 7 function(s)
+#### `includes/helpers-brand-glyphs.php` — 8 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
@@ -51,7 +50,8 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_brand_by_site_info_key` | `function sgs_brand_by_site_info_key( string $key ): ?array` | The registry entry a Site Info key links to. |
 | `sgs_brand_by_lucide_name` | `function sgs_brand_by_lucide_name( string $name ): ?array` | The brand a Lucide icon draws, when that icon is a brand's own mark (Instagram's `instagram`). Contact entries (phone, email, address)… |
 | `sgs_brand_glyph_svg` | `function sgs_brand_glyph_svg( array $brand, string $class_name = '', int $size = 24, bool $branded = false )…` | A registry glyph as inline SVG, decorative (`aria-hidden`): the caller's text or label names the action. |
-| `sgs_brand_paint` | `function sgs_brand_paint( array $brand, bool $fixed_mark = false ): array` | The colours a brand paints an icon with (Bean decision D5): the brand colour as the ground and border, a white glyph when white reaches 3:1… |
+| `sgs_brand_paint` | `function sgs_brand_paint( array $brand, bool $fixed_mark = false, string $mode = 'brand' ): array` | The colours a brand paints an icon with. |
+| `sgs_brand_paint_hold` | `function sgs_brand_paint_hold( array $paint ): array` | A brand paint that keeps its ground and glyph on hover (`brandHover: hold`) instead of swapping them. |
 | `sgs_whatsapp_glyph_svg` | `function sgs_whatsapp_glyph_svg( string $class_name, int $size = 24 ): string` | The WhatsApp mark from the registry, filled with `currentColor` so CSS sets its colour. Decorative: the caller's own text names the action. |
 
 #### `includes/helpers-brand-logo.php` — 6 function(s)
@@ -230,12 +230,20 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_hover_state_rules` | `function sgs_hover_state_rules( string $selector, string $decls, string $focus = ':focus-visible', string…` | Emit a hover state as a touch-safe PAIR: a guarded hover rule plus an unguarded focus rule carrying the identical declarations. |
 | `sgs_hover_media_wrap` | `function sgs_hover_media_wrap( string $rule ): string` | Wrap an ALREADY-BUILT hover rule in the layer-1 media query. |
 
-#### `includes/helpers-icon.php` — 17 function(s)
+#### `includes/helpers-icon-motion.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_icon_motion_decls` | `function sgs_icon_motion_decls( array $values, string $prefix ): array` | The hover-move and motion custom properties for one set of values. |
+| `sgs_icon_shadow_vars` | `function sgs_icon_shadow_vars( array $attributes, array $map, string $prefix, bool $pin_hover = false ): array` | The resting and hover shadow as custom properties. |
+
+#### `includes/helpers-icon.php` — 18 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_icon_length_value` | `function sgs_icon_length_value( $raw, int $max_px = 512 ): string` | A size an icon control stored, as one safe CSS length, or ''. |
 | `sgs_icon_link_scheme` | `function sgs_icon_link_scheme( string $url ): string` | A link's scheme, lowercase ('tel', 'mailto', 'https'), or '' for a relative link. |
+| `sgs_icon_resolve_bound_link` | `function sgs_icon_resolve_bound_link( string $source, string $site_value, string $typed ): array` | The link a Site Info bound icon uses, and where it came from. |
 | `sgs_icon_accessible_name` | `function sgs_icon_accessible_name( string $aria_label, string $bound_key, ?array $glyph_brand, string $url )…` | The name a linked icon announces, first match wins: the client's own label; the registry's label for the Site Info key the link is bound to… |
 | `sgs_icon_visible_label` | `function sgs_icon_visible_label( string $label_text, string $aria_label, string $bound_key, ?array…` | The text a visible label shows: the client's own label text, else the icon's accessible name (sgs_icon_accessible_name()), so the words a… |
 | `sgs_icon_label_position` | `function sgs_icon_label_position( $own, string $group ): string` | Where an icon's visible label sits: its own position, except that an icon left on `end` (the default) inside an `sgs/social-icons` row… |
@@ -538,6 +546,16 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_bound_site_info_key` | `function sgs_bound_site_info_key( $block, string $attr ): ?string` | The Site Info key an attribute is bound to through the `sgs/site-info` source, or null. |
 | `sgs_bound_site_info_is_empty` | `function sgs_bound_site_info_is_empty( $block, string $attr ): bool` | True when an attribute is bound to Site Info and that key makes no link (a link attribute) or holds no value. |
 
+#### `includes/helpers-site-info-items.php` — 5 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_site_info_item_sources` | `function sgs_site_info_item_sources(): array` | The Site Info sources an icon-list item can take its text from. |
+| `sgs_site_info_hours_groups` | `function sgs_site_info_hours_groups( bool $show_closed = false, string $closed_label = '' ): array` | Opening hours with consecutive days that share the same hours folded into one group, e.g. Mon to Sat all "9.30-17.30" is one group. A day… |
+| `sgs_site_info_hours_day_text` | `function sgs_site_info_hours_day_text( array $group ): string` | The day span of one hours group: "Mon" for a single day, "Mon–Sat" for a run. |
+| `sgs_site_info_hours_text` | `function sgs_site_info_hours_text(): string` | Opening hours as one plain line, e.g. "Mon–Sat 9.30-17.30; Sun 10-14". '' when no day has hours. |
+| `sgs_site_info_item` | `function sgs_site_info_item( string $source, bool $link = false ): ?array` | One Site Info detail as escaped HTML text plus the link it makes, formatted as sgs/business-info formats it. |
+
 #### `includes/helpers-slider-nav.php` — 10 function(s)
 
 | Function | Signature | Purpose |
@@ -686,7 +704,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). |
 
-**67 files, 335 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**69 files, 344 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 

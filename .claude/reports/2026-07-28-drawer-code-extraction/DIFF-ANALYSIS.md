@@ -2,8 +2,7 @@
 
 Source data: `*-desktop.json` / `*-mobile.json` in this directory, one file per site×viewport, extracted from live `getComputedStyle()` reads on genuinely-opened panels (Chrome headless via `superpowers-chrome`).
 
-**Tally: 15/15 target cells captured, 0 skipped.**
-lamalama (desktop+mobile), lusion (desktop+mobile), dogstudio (desktop+mobile), fantasy (desktop+mobile), buck (desktop+mobile), resn (desktop only, per brief), studionamma (desktop+mobile), wearecollins (desktop+mobile).
+**Tally: 15/15 target cells captured, 0 skipped.** lamalama (desktop+mobile), lusion (desktop+mobile), dogstudio (desktop+mobile), fantasy (desktop+mobile), buck (desktop+mobile), resn (desktop only, per brief), studionamma (desktop+mobile), wearecollins (desktop+mobile).
 
 Two real-attempt honesty note: resn required 2 failed loads of the direct `#!/menu` hash URL (loader stalled on a static illustration both times, ~15s wait each) before a fresh navigate to the plain homepage + clicking the real `.js-shell__button--menu` trigger worked — recorded in `resn-desktop.json` notes. studionamma required identifying the correct `.link_first` element by TEXT ("MENU"), not by class, because multiple elements share that class — the first DOM match (logo) triggers an unrelated portfolio-preview animation, not the drawer.
 

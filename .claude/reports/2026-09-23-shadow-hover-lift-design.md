@@ -28,8 +28,7 @@ Status: DESIGN. Bean's direction (2026-09-23): "Auto lift on hover should be def
 **H2. One PHP resolver, `sgs_shadow_hover_value( $shape, $colour )`** (in `includes/helpers-shadow-layers.php` or a sibling under the line cap), returning the hover value for a resting shadow:
 - a preset slug: the map entry (a slug becomes `var(--wp--preset--shadow--<slug>)`, a literal becomes `var(--wp--custom--shadow-hover--<slug>)`, the variable WordPress generates from `settings.custom`);
 - a layered custom shadow (Layers / Raw tabs): each outer layer's y offset and blur x1.25, spread and colour unchanged, inset layers unchanged, capped by the composer's grammar; composed through `sgs_shadow_layers`;
-- `none`, empty or unparseable: '' (no hover).
-A JS twin in `src/utils/shadow-layers.js` for the Shadow panel's Hover tab ("Lifts to: Lifted") with a shared case table (`tests/shared/`), as the composer already has.
+- `none`, empty or unparseable: '' (no hover). A JS twin in `src/utils/shadow-layers.js` for the Shadow panel's Hover tab ("Lifts to: Lifted") with a shared case table (`tests/shared/`), as the composer already has.
 
 **H3. Dark surfaces.** `sgs_shadow_dark_declarations` also derives the dark variant of each literal hover entry and re-declares `--wp--custom--shadow-hover--<slug>` in the section, light and root scopes, next to the presets. A hover to another preset needs nothing (the preset variable is already re-declared).
 
@@ -47,8 +46,7 @@ A JS twin in `src/utils/shadow-layers.js` for the Shadow panel's Hover tab ("Lif
 2. H3 dark variants of the hover map.
 3. H4 in `sgs_shadow_decls` and the wrapper; H5 attribute fan-out and control.
 4. H4 for the other PHP emitters and the card properties, via the detector.
-5. H4 stylesheet transform.
-Live check on eye-care-test: page 53's cards on light and dark bands hovered with a real pointer (computed `box-shadow` before and after, a screenshot), a touch-emulated tap not sticking, reduced motion, forced colours unaffected, a block with the switch off, and an overlay block not lifting.
+5. H4 stylesheet transform. Live check on eye-care-test: page 53's cards on light and dark bands hovered with a real pointer (computed `box-shadow` before and after, a screenshot), a touch-emulated tap not sticking, reduced motion, forced colours unaffected, a block with the switch off, and an overlay block not lifting.
 
 ## Risks for the council
 - Every shadowed element now changes on hover, including static boxes (Bean's ruling, with the per-block switch).

@@ -1,7 +1,6 @@
 # Visual-diff — sgs/notice-banner WS-4 composite-mirror (CONTENT kind) — 2026-06-04
 
-verdict: PASS
-first_paint_capture_passed: true
+verdict: PASS first_paint_capture_passed: true
 
 **Change:** WS-4 — `notice-banner`'s outer wrapper now rendered by `SGS_Container_Wrapper::render(kind='content')`; CONTENT-scope width attrs mirrored from sgs/container into block.json; `ContainerWrapperControls kind="content"` wired into edit.js. CONTENT kind = width/spacing only (no bg/overlay/grid → no double-emit). Its role/icon/border identity is preserved (content kind emits no bg/overlay). Dynamic block → no deprecated.js.
 

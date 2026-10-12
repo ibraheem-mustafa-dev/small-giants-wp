@@ -4,16 +4,10 @@
 
 ## 1. The short version
 
-- **The draft's own code can tell us exactly which part of the design each block copies.** The design tool stamps every
-  element with a permanent ID (`data-dc-tpl`). We never used it. Tested on the footer: 33 of 33 blocks linked to exactly
-  the right draft element.
-- **A skeleton can be written from the draft's code**, and the existing fill-in step (Fill) fills it end to end. Every
-  word came through; style settings scored lower than a hand-written skeleton, because of three fixable Fill gaps.
-- **Trying a setting in the browser before saving it works.** It reproduced the real rebuild of the home cards to the
-  pixel, in under a second, on about 78 of 98 blocks.
-- **Block choice is the remaining judgement.** The automatic step (generator) matched your recorded choices on 8 of 13
-  uncertain rows; with the AI finaliser, 10 of 13. Most of the rest are your preferences, which a saved decision record
-  teaches once.
+- **The draft's own code can tell us exactly which part of the design each block copies.** The design tool stamps every element with a permanent ID (`data-dc-tpl`). We never used it. Tested on the footer: 33 of 33 blocks linked to exactly the right draft element.
+- **A skeleton can be written from the draft's code**, and the existing fill-in step (Fill) fills it end to end. Every word came through; style settings scored lower than a hand-written skeleton, because of three fixable Fill gaps.
+- **Trying a setting in the browser before saving it works.** It reproduced the real rebuild of the home cards to the pixel, in under a second, on about 78 of 98 blocks.
+- **Block choice is the remaining judgement.** The automatic step (generator) matched your recorded choices on 8 of 13 uncertain rows; with the AI finaliser, 10 of 13. Most of the rest are your preferences, which a saved decision record teaches once.
 
 ## 2. What was tested, and the evidence
 
@@ -26,9 +20,7 @@
 | Block choice vs your recorded decisions (13 uncertain rows) | Generator 8, generator + finaliser 10 | Scored against the fix register and ledger |
 | Fill on the generated skeleton | Ran clean in 47s. Of 105 settings on the 14 shared blocks: 49% exact, about 78% look the same. 17 of 17 words. 0 of 10 page links, because every draft link is `#` | Fill's own report, re-read |
 
-**How it compared with the first footer (24 September, written by an AI from the draft):** the same structure. The first
-one chose better blocks for headings and the footer wrappers; the generator avoided the banned list block and is the only
-one with exact links. With the finaliser, the generator is ahead.
+**How it compared with the first footer (24 September, written by an AI from the draft):** the same structure. The first one chose better blocks for headings and the footer wrappers; the generator avoided the banned list block and is the only one with exact links. With the finaliser, the generator is ahead.
 
 ## 3. What the tests found that needs fixing
 
@@ -46,8 +38,7 @@ one with exact links. With the finaliser, the generator is ahead.
 - The footer and header use the real logo image, never typed text (register N47). The draft now shows the image too.
 - The "Glasses — arriving soon" line leaves the footer's Shop list (N48).
 - "Visit or call" becomes one link list that reads Site Info (N49). Built and committed (`58ccb5621`).
-- Rule for every client: a typed brand name in a draft becomes the logo block; anything that exists only because of the
-  designer's brief (coming-soon lines) is flagged for removal.
+- Rule for every client: a typed brand name in a draft becomes the logo block; anything that exists only because of the designer's brief (coming-soon lines) is flagged for removal.
 
 ## 5. Recommended build order
 
@@ -61,5 +52,4 @@ Each step replaces an existing rule of thumb rather than adding to it, and each 
 
 ## 6. Where the evidence lives
 
-`evidence/` in this folder: the answer sheet (`fixtures.json`), the generator, inventory and review scripts, the
-generated skeleton and its comparison, the finaliser picks, Fill's report and scorer, the trial and draft-swap scripts. The council record: `.claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md`.
+`evidence/` in this folder: the answer sheet (`fixtures.json`), the generator, inventory and review scripts, the generated skeleton and its comparison, the finaliser picks, Fill's report and scorer, the trial and draft-swap scripts. The council record: `.claude/reports/2026-10-09-route-accuracy-council/COUNCIL.md`.

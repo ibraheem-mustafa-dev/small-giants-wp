@@ -1,18 +1,12 @@
 # Final adversarial council on the written specs (2026-10-11, dated record)
 
-Five reviewers in parallel, read-only, on Spec 48 (`d9a158730`), slim Spec 32, Spec 27 FR-30-16/17 and Spec 38 §4.7: a
-spec-lawyer, a cynic, a ship-PM, a day-two (client) realist and a cold implementer asked to build stages 0 and 1 for
-Indus from the spec alone. Bean asked for this council once both specs were written. Cap (plan): apply the must-fixes
-that touch IDs, correctness or work order; the rest goes to the plan's backlog.
+Five reviewers in parallel, read-only, on Spec 48 (`d9a158730`), slim Spec 32, Spec 27 FR-30-16/17 and Spec 38 §4.7: a spec-lawyer, a cynic, a ship-PM, a day-two (client) realist and a cold implementer asked to build stages 0 and 1 for Indus from the spec alone. Bean asked for this council once both specs were written. Cap (plan): apply the must-fixes that touch IDs, correctness or work order; the rest goes to the plan's backlog.
 
 ## Headline
 
-GO, after the register below. The value-matrix design holds (all five), but Appendix B as written cannot be executed:
-stage 0 depends on stage 1 and 3 outputs and on an Indus mirror nobody creates, the sandbox blocks the fonts the harness
-waits for, the harness freezes a clock the motion check needs to move, and the code-to-code check has no algorithm.
+GO, after the register below. The value-matrix design holds (all five), but Appendix B as written cannot be executed: stage 0 depends on stage 1 and 3 outputs and on an Indus mirror nobody creates, the sandbox blocks the fonts the harness waits for, the harness freezes a clock the motion check needs to move, and the code-to-code check has no algorithm.
 
-Claim checked and set aside: "Claude Design cannot write correct SHA-256 hashes" (cynic). B1 found all 84 Claude
-Design hashes matched across the three exports. A route-side seal on receipt goes to the backlog as cheap insurance.
+Claim checked and set aside: "Claude Design cannot write correct SHA-256 hashes" (cynic). B1 found all 84 Claude Design hashes matched across the three exports. A route-side seal on receipt goes to the backlog as cheap insurance.
 
 ## Register (convergence count in brackets; letter = fix item)
 
@@ -43,8 +37,4 @@ Design hashes matched across the three exports. A route-side seal on receipt goe
 | W | Route dependencies come from `plugins/sgs-blocks/node_modules` (Playwright, ajv, saxes) (1) | Route `package.json` with pinned versions; lint bans the plugin path; record the browser version per cache | Spec 48 (new FR) |
 | X | Toast with no controls versus "every customisable property has a control" (1) | State it as site chrome styled only by tokens the client edits in Global Styles (Bean's decision) | FR-48-63 |
 
-Backlog (not applied): manifest seal on receipt; route tests pinned to Eye Care build files (copy fixtures); one bridge
-adapter for runtime internals with a contract test; README function index generated from JSDoc; vendor the three unpkg
-files; throughput tripwire per client; concurrency rules; instrument-debt owner and SLA; lightweight path for brochure
-sites; editor round-trip check per surface; framework-update runbook across nine snapshots; global-styles edit policy;
-snapshot rollback; WCAG contrast check on new token pairs; status honesty sweep (gate red means partly built).
+Backlog (not applied): manifest seal on receipt; route tests pinned to Eye Care build files (copy fixtures); one bridge adapter for runtime internals with a contract test; README function index generated from JSDoc; vendor the three unpkg files; throughput tripwire per client; concurrency rules; instrument-debt owner and SLA; lightweight path for brochure sites; editor round-trip check per surface; framework-update runbook across nine snapshots; global-styles edit policy; snapshot rollback; WCAG contrast check on new token pairs; status honesty sweep (gate red means partly built).

@@ -34,11 +34,9 @@ Longer note, for the delivery page: Collect from 644 Washwood Heath Rd, Birmingh
 
 ## Optional extras
 
-**Short line for the checkout page above the methods:**
-Frames in stock go out within one working day. Prescription lenses take around 7 to 10 working days to make.
+**Short line for the checkout page above the methods:** Frames in stock go out within one working day. Prescription lenses take around 7 to 10 working days to make.
 
-**Short line for an order with prescription lenses (if a prescription item is in the basket):**
-These lenses are made for you, so please allow 7 to 10 working days before dispatch or collection.
+**Short line for an order with prescription lenses (if a prescription item is in the basket):** These lenses are made for you, so please allow 7 to 10 working days before dispatch or collection.
 
 ## Not covered, on purpose
 

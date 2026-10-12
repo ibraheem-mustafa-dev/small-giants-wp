@@ -1,8 +1,6 @@
 # Attribute vocabulary audit v2 — multi-suffix decomposition
 
-Scanned **1343** attribute rows across **67** SGS blocks. 
-Skipped: 0 placeholders + 70 structural booleans (is*/has*/show*/hide* etc.).
-After full multi-suffix decomposition: **434** distinct base slot words.
+Scanned **1343** attribute rows across **67** SGS blocks. Skipped: 0 placeholders + 70 structural booleans (is*/has*/show*/hide* etc.). After full multi-suffix decomposition: **434** distinct base slot words.
 
 ## Decomposition vocabulary in use
 

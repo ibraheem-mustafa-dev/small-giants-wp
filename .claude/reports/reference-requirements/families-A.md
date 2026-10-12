@@ -9,15 +9,9 @@ data: families-A.json
 
 # Capability families — group A: header shell, bar, footer
 
-25 families clustered from `digests/digest-A-header-bar-footer.md` across 13 references
-(studionamma · buck · dogstudio · fantasy · lamalama · lusion · wearecollins · resn · away ·
-butcherbox · rabbit · halcyon · indus-foods). Typed values, per-family `needed_by` rows and the
-`how_checked` command behind every coverage status live in `families-A.json`.
+25 families clustered from `digests/digest-A-header-bar-footer.md` across 13 references (studionamma · buck · dogstudio · fantasy · lamalama · lusion · wearecollins · resn · away · butcherbox · rabbit · halcyon · indus-foods). Typed values, per-family `needed_by` rows and the `how_checked` command behind every coverage status live in `families-A.json`.
 
-**"Needed by N of 13"** counts the references that have a measured value the capability must
-reproduce. A reference whose value is *none* (no blur, no magnet, no adaptive ink) is not counted;
-it is listed in that family's `absent_in`. `absent` is a real value and clusters as its own value,
-never a forced fill.
+**"Needed by N of 13"** counts the references that have a measured value the capability must reproduce. A reference whose value is *none* (no blur, no magnet, no adaptive ink) is not counted; it is listed in that family's `absent_in`. `absent` is a real value and clusters as its own value, never a forced fill.
 
 **Coverage:** covered 6 · partial 14 · gap 4 · conflict 1.
 
@@ -51,84 +45,27 @@ never a forced fill.
 
 ## Motion, mapped to Spec 38
 
-Almost everything in group A is Tier V: hide-on-scroll headers, transparent-to-solid restyles, hover
-paint, the sliding pill, the label magnet, caret rotation and burger-to-X morphs are all class
-toggles with CSS transitions, inside Tier V by FR-38-1 but named by **no FR**. Three named FRs are
-actually in play: **FR-38-7** (scrub) already drives `fxFooterStagger`, **FR-38-5** governs the
-entrance-versus-scrub choice a surface has to make, and **FR-38-15** (DrawSVG) is declared
-`providesNatively` on `sgs/responsive-logo`. **FR-38-10** (SplitText) is the nearest named effect for
-lamalama's GSAP message reveal. Nothing in group A needs Tier G, H or W: the one WebGL surface (resn's
-page-wide gem scene) is a page background, not a header, and resn's own teardown already records it as
-passing no Tier W test. Two effects have no tier at all and are **new-effect decisions, not gaps to
-close by attribute**: a Lottie-player logo and a live 2D-canvas mark (buck, lamalama).
+Almost everything in group A is Tier V: hide-on-scroll headers, transparent-to-solid restyles, hover paint, the sliding pill, the label magnet, caret rotation and burger-to-X morphs are all class toggles with CSS transitions, inside Tier V by FR-38-1 but named by **no FR**. Three named FRs are actually in play: **FR-38-7** (scrub) already drives `fxFooterStagger`, **FR-38-5** governs the entrance-versus-scrub choice a surface has to make, and **FR-38-15** (DrawSVG) is declared `providesNatively` on `sgs/responsive-logo`. **FR-38-10** (SplitText) is the nearest named effect for lamalama's GSAP message reveal. Nothing in group A needs Tier G, H or W: the one WebGL surface (resn's page-wide gem scene) is a page background, not a header, and resn's own teardown already records it as passing no Tier W test. Two effects have no tier at all and are **new-effect decisions, not gaps to close by attribute**: a Lottie-player logo and a live 2D-canvas mark (buck, lamalama).
 
 ## Disagreements and surprises
 
-1. **The DB is stale against `block.json` for `sgs/site-header`.** `block_attributes` has no row for
-   `headerFloat`, `headerFloatInset`, `headerFloatCollapse`, `backdropBlur`, `shadowScrolled` or
-   `shadowScrolledColour`, all of which exist and are rendered. Anyone grading header coverage from
-   `/sgs-db` alone would call the floating pill and the backdrop blur gaps — they are built. Every
-   status here was taken from `block.json` and `render.php`; the DB reads are recorded as the
-   secondary source. `/sgs-update` should be re-run before Wave 3C uses the DB for this block.
-2. **The z-index conflict is the one status that is worse than a gap.** A hardcoded `100` is not
-   neutral: it is 10× wearecollins' 9 and 1/100th of studionamma's 10000, so a clone of either
-   changes which page elements pass over the header. By the project's own rule a hardcoded wrapper
-   default that overrides faithfully-transferred CSS is a cheat to remove or gate, not a blocker.
-3. **The two drafts' `768` rows are mobile, not tablet.** halcyon collapses at 940 and indus-foods at
-   960 (both breakpoint-verified at ±1px). Reading their 768 cells as a tablet tier would invent a
-   tablet layout neither design has.
-4. **`aria-current` is everywhere and a visible current-page mark is nowhere.** Zero of thirteen
-   references mark the current page visually, yet `sgs/nav-bar-menu` carries six current-state
-   attributes. The risk here is the inverse of a gap — a non-empty default would add a mark the draft
-   never had. All six default to empty, so the risk is closed.
-5. **Bean's own drafts are the only references whose intent and render disagree**, and they disagree
-   on three separate things: sticky (declared, does not stick — proven cause is an ancestor
-   `overflow-x:hidden`), entry animations (declared 340/460/420ms, run zero times — a
-   `componentDidUpdate` arity bug), and Escape (never closes the mobile overlay). Both are recorded
-   twice in `families-A.json`, tagged `intent` and `render`. **What SGS should clone is the intent.**
-6. **buck's footer colour is chosen per page load, not per tier.** Three colours in one run looks like
-   a responsive value and is not. A clone freezes whichever colour the capture saw. The attribute is
-   right; its *supply* is the gap.
-7. **The widest build gap is ordinary commercial furniture, not art-direction.** A live clock, a
-   language switch, a country selector and a back-to-top button account for four missing blocks across
-   six references. The exotic effects (canvas logos, sibling dim, section-adaptive ink) are fewer.
-8. **resn is present, not absent.** It has no `<header>`, `<nav>` or `<footer>` element and is still
-   the reference that most needs F-A-19: its entire header is four independently pinned controls.
-   Whether F-A-19 gets built decides whether resn can be the 13th clone as a *header* at all — a
-   separate question from the Tier W motion verdict the teardown already gave.
-9. **Away's reference is the UK storefront.** The captured JSON is the US storefront the headless run
-   received; a headed Chrome is served UK (GBP, `/en-gb`, first two nav items swapped, no consent
-   banner). Structure is identical, so no family changes — but 5 of the 12 differing static cells are
-   storefront copy and must not be cloned from the JSON verbatim.
-10. **Headed timings replaced headless ones wherever they conflicted.** lamalama's committed pill
-    opacity of 0 was a pre-intro reading (full opacity at ~7.7 s), lusion's 40 s control arrival was a
-    software-rendering artefact (~6.1 s headed), and studionamma's preloader figure held exactly
-    (0 of 36 static cells differed). F-A-20 uses the headed values.
+1. **The DB is stale against `block.json` for `sgs/site-header`.** `block_attributes` has no row for `headerFloat`, `headerFloatInset`, `headerFloatCollapse`, `backdropBlur`, `shadowScrolled` or `shadowScrolledColour`, all of which exist and are rendered. Anyone grading header coverage from `/sgs-db` alone would call the floating pill and the backdrop blur gaps — they are built. Every status here was taken from `block.json` and `render.php`; the DB reads are recorded as the secondary source. `/sgs-update` should be re-run before Wave 3C uses the DB for this block.
+2. **The z-index conflict is the one status that is worse than a gap.** A hardcoded `100` is not neutral: it is 10× wearecollins' 9 and 1/100th of studionamma's 10000, so a clone of either changes which page elements pass over the header. By the project's own rule a hardcoded wrapper default that overrides faithfully-transferred CSS is a cheat to remove or gate, not a blocker.
+3. **The two drafts' `768` rows are mobile, not tablet.** halcyon collapses at 940 and indus-foods at 960 (both breakpoint-verified at ±1px). Reading their 768 cells as a tablet tier would invent a tablet layout neither design has.
+4. **`aria-current` is everywhere and a visible current-page mark is nowhere.** Zero of thirteen references mark the current page visually, yet `sgs/nav-bar-menu` carries six current-state attributes. The risk here is the inverse of a gap — a non-empty default would add a mark the draft never had. All six default to empty, so the risk is closed.
+5. **Bean's own drafts are the only references whose intent and render disagree**, and they disagree on three separate things: sticky (declared, does not stick — proven cause is an ancestor `overflow-x:hidden`), entry animations (declared 340/460/420ms, run zero times — a `componentDidUpdate` arity bug), and Escape (never closes the mobile overlay). Both are recorded twice in `families-A.json`, tagged `intent` and `render`. **What SGS should clone is the intent.**
+6. **buck's footer colour is chosen per page load, not per tier.** Three colours in one run looks like a responsive value and is not. A clone freezes whichever colour the capture saw. The attribute is right; its *supply* is the gap.
+7. **The widest build gap is ordinary commercial furniture, not art-direction.** A live clock, a language switch, a country selector and a back-to-top button account for four missing blocks across six references. The exotic effects (canvas logos, sibling dim, section-adaptive ink) are fewer.
+8. **resn is present, not absent.** It has no `<header>`, `<nav>` or `<footer>` element and is still the reference that most needs F-A-19: its entire header is four independently pinned controls. Whether F-A-19 gets built decides whether resn can be the 13th clone as a *header* at all — a separate question from the Tier W motion verdict the teardown already gave.
+9. **Away's reference is the UK storefront.** The captured JSON is the US storefront the headless run received; a headed Chrome is served UK (GBP, `/en-gb`, first two nav items swapped, no consent banner). Structure is identical, so no family changes — but 5 of the 12 differing static cells are storefront copy and must not be cloned from the JSON verbatim.
+10. **Headed timings replaced headless ones wherever they conflicted.** lamalama's committed pill opacity of 0 was a pre-intro reading (full opacity at ~7.7 s), lusion's 40 s control arrival was a software-rendering artefact (~6.1 s headed), and studionamma's preloader figure held exactly (0 of 36 static cells differed). F-A-20 uses the headed values.
 
 ## Cells I could not cluster and why
 
-- **`content` cells (every reference, every surface).** Nav labels, announcement copy, office
-  addresses, legal lines. These are the *content* a clone carries, not a capability a block attribute
-  expresses. The one part of `content` that IS a capability — copy that changes by itself — is
-  clustered as F-A-09.
-- **`tier_delta` cells.** Every one is a restatement of another cell measured at two tiers. They were
-  read as evidence for F-A-02, F-A-07, F-A-11 and F-A-15 rather than clustered as a family of their
-  own; a "things change between tiers" family would have no single mechanism behind it.
-- **butcherbox and rabbit at 768 (all surfaces), and rabbit's footer at every tier.** Never captured —
-  the emulated-viewport pass covered 375 and 1440 only. Their absence from a `needed_by` list is a
-  capture gap, not a measured `absent`, and is flagged as such in the JSON's `conventions`.
-- **All footer `motion` cells and most footer `item_states` cells.** In `not_measured` for away, buck,
-  dogstudio, fantasy, lamalama, lusion, studionamma and wearecollins — hover was never driven and no
-  reveal was sampled. F-A-20 therefore rests on class names (`appear-fade-up`, `grow-appear`) and not
-  on values. Re-measuring footer hover and reveal is the cheapest way to raise confidence in F-A-13
-  and F-A-20.
-- **Away's announcement transition timing** (all three tiers) and **buck's Lottie logo animation over
-  time.** Both are the *only* motion evidence their families would have had; F-A-09 and F-A-25 are
-  therefore scored on structure, not on duration or easing.
-- **fantasy's `is-light` header variant.** Never observed: every sampled scroll offset (0, 400, 900,
-  1800, 3500, 6000, 10000, 13500) was over a dark section. The light-ground half of its
-  section-adaptive ink is source-only, which is why F-A-05 records fantasy from source rather than
-  from a measured colour pair.
-- **resn's per-item canvas dissolve numbers** (hovered canvas holds 1411/1259/1650 lit pixels, sd 0–6,
-  while the others lose 40–98%). Measured, real, and a drawer cell — it belongs to group C. It is
-  named in F-A-13 only as evidence that sibling dim is a cross-group mechanism, not a one-site quirk.
+- **`content` cells (every reference, every surface).** Nav labels, announcement copy, office addresses, legal lines. These are the *content* a clone carries, not a capability a block attribute expresses. The one part of `content` that IS a capability — copy that changes by itself — is clustered as F-A-09.
+- **`tier_delta` cells.** Every one is a restatement of another cell measured at two tiers. They were read as evidence for F-A-02, F-A-07, F-A-11 and F-A-15 rather than clustered as a family of their own; a "things change between tiers" family would have no single mechanism behind it.
+- **butcherbox and rabbit at 768 (all surfaces), and rabbit's footer at every tier.** Never captured — the emulated-viewport pass covered 375 and 1440 only. Their absence from a `needed_by` list is a capture gap, not a measured `absent`, and is flagged as such in the JSON's `conventions`.
+- **All footer `motion` cells and most footer `item_states` cells.** In `not_measured` for away, buck, dogstudio, fantasy, lamalama, lusion, studionamma and wearecollins — hover was never driven and no reveal was sampled. F-A-20 therefore rests on class names (`appear-fade-up`, `grow-appear`) and not on values. Re-measuring footer hover and reveal is the cheapest way to raise confidence in F-A-13 and F-A-20.
+- **Away's announcement transition timing** (all three tiers) and **buck's Lottie logo animation over time.** Both are the *only* motion evidence their families would have had; F-A-09 and F-A-25 are therefore scored on structure, not on duration or easing.
+- **fantasy's `is-light` header variant.** Never observed: every sampled scroll offset (0, 400, 900, 1800, 3500, 6000, 10000, 13500) was over a dark section. The light-ground half of its section-adaptive ink is source-only, which is why F-A-05 records fantasy from source rather than from a measured colour pair.
+- **resn's per-item canvas dissolve numbers** (hovered canvas holds 1411/1259/1650 lit pixels, sd 0–6, while the others lose 40–98%). Measured, real, and a drawer cell — it belongs to group C. It is named in F-A-13 only as evidence that sibling dim is a cross-group mechanism, not a one-site quirk.

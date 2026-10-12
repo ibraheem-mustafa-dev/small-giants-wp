@@ -1,7 +1,9 @@
 # sgs/option-picker — cloning fidelity + no-inline migration
 
 **Date:** 2026-07-10
+
 **Branch:** feat/option-picker-cloning (worktree, uncommitted — for main-session review)
+
 **Status:** build GREEN; DB seeds authored but NOT run; 2 explicit STOPs (flagged, not guess-wired)
 
 ---

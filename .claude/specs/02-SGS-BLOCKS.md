@@ -196,10 +196,7 @@ Cloning a draft into SGS blocks is specified by [`48-CLONING-SYSTEM.md`](48-CLON
 
 ## Block Specifications
 
-> **Build route (name the tool — don't hand-roll):** `/sgs-wp-engine` for SGS block work, or the **`wp-sgs-developer` agent** for a heavy build; `/wp-block-development` for core-WP block-API questions (block.json, supports, bindings); `/wp-interactivity-api` for `view.js` directives.
-> **Before claiming an attribute is missing or reading a roster, query the DB, never the prose below:** `/sgs-db` or `/wp-blocks schema <slug>` (R-31-8). `02-SGS-BLOCKS-REFERENCE.md` (gitignored, generated locally by `/sgs-update` via `plugins/sgs-blocks/scripts/generate-block-reference.py`) is generated: if it is wrong, fix the generator, never the file. The per-block prose below states intent, rulings and rendering rules only; `block.json` and the framework DB hold the attributes (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/<slug>'"`).
-> **Every new/edited block is gated by Spec 32** (no inline `style=`; skip-serialisation + scoped CLASS-level `.{uid}.{block-class}` CSS; box-object attrs via BoxControl). The per-block definition-of-done is `.claude/plans/archive/block-migration-DONE-checklist.md` (11 end conditions). **No `deprecated.js`, no version bumps pre-production.**
-> **Verify on the live page, not the emit:** `/visual-qa` + `/a11y-audit`, or Playwright MCP for bespoke probes.
+> **Build route (name the tool — don't hand-roll):** `/sgs-wp-engine` for SGS block work, or the **`wp-sgs-developer` agent** for a heavy build; `/wp-block-development` for core-WP block-API questions (block.json, supports, bindings); `/wp-interactivity-api` for `view.js` directives. **Before claiming an attribute is missing or reading a roster, query the DB, never the prose below:** `/sgs-db` or `/wp-blocks schema <slug>` (R-31-8). `02-SGS-BLOCKS-REFERENCE.md` (gitignored, generated locally by `/sgs-update` via `plugins/sgs-blocks/scripts/generate-block-reference.py`) is generated: if it is wrong, fix the generator, never the file. The per-block prose below states intent, rulings and rendering rules only; `block.json` and the framework DB hold the attributes (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/<slug>'"`). **Every new/edited block is gated by Spec 32** (no inline `style=`; skip-serialisation + scoped CLASS-level `.{uid}.{block-class}` CSS; box-object attrs via BoxControl). The per-block definition-of-done is `.claude/plans/archive/block-migration-DONE-checklist.md` (11 end conditions). **No `deprecated.js`, no version bumps pre-production.** **Verify on the live page, not the emit:** `/visual-qa` + `/a11y-audit`, or Playwright MCP for bespoke probes.
 
 ### Each block follows this pattern:
 
@@ -455,6 +452,7 @@ Variant background, border and colour are overridable via `:where()` (E9). `icon
 - `wall` — Masonry-style layout
 
 **Attributes:** `/wp-blocks schema sgs/google-reviews`. `placeId` is configured on the settings page and overridable per block; `starColour` defaults to none so the stars, breakdown bars and active dot use Google's yellow.
+
 **Settings Page (sgs-blocks admin):**
 - `sgs_google_api_key` — Google Places API key (encrypted in wp_options via AES-256-CBC + `wp_salt('auth')` — same pattern as sgs-booking)
 - `sgs_google_place_id` — Default Place ID
@@ -572,8 +570,7 @@ Output as `<script type="application/ld+json">` in render.php — enables Google
 - Standalone `Review` entities live as siblings in `@graph`
 - Parser harvests standalone `Review` entities directly
 
-**Schema.org Markup:**
-Same as Google Reviews — emits `LocalBusiness` with `aggregateRating` + nested `Review` entities. Output as `<script type="application/ld+json">` in render.php — enables Google rich snippets.
+**Schema.org Markup:** Same as Google Reviews — emits `LocalBusiness` with `aggregateRating` + nested `Review` entities. Output as `<script type="application/ld+json">` in render.php — enables Google rich snippets.
 
 **Render:** Dynamic `render.php` reads from block attributes (inline) or `wp_options` (synced) or falls back to placeholder demo content for editor preview. Carousel variant uses `viewScriptModule` for the looping scroll behaviour + prefers-reduced-motion respect.
 
@@ -711,36 +708,17 @@ Every new SGS block MUST follow this customisation standard. Violations are caug
 
 ### 0. The editor CANVAS must reflect the control, not just accept it 
 
-A control is not customisable if the client cannot see its effect where they are working. Writing
-the attribute and rendering it correctly on the published page is only half the contract — the
-block editor canvas must show the change too. Enforced by
-`plugins/sgs-blocks/scripts/check-editor-render-parity.js` (CHECK A, "editor-canvas desync"),
-which finds attributes a control writes and `render.php` consumes correctly while the canvas shows
-nothing. Its block-context exemption applies only when a block's `usesContext` lists the key and its code
-reads it. `plugins/sgs-blocks/scripts/check-wiring-fingerprint.py` (fast tier, blocks new gaps against its baseline)
-proves each painting setting is wired through control, editor canvas, front-end channel and CSS reader.
+A control is not customisable if the client cannot see its effect where they are working. Writing the attribute and rendering it correctly on the published page is only half the contract — the block editor canvas must show the change too. Enforced by `plugins/sgs-blocks/scripts/check-editor-render-parity.js` (CHECK A, "editor-canvas desync"), which finds attributes a control writes and `render.php` consumes correctly while the canvas shows nothing. Its block-context exemption applies only when a block's `usesContext` lists the key and its code reads it. `plugins/sgs-blocks/scripts/check-wiring-fingerprint.py` (fast tier, blocks new gaps against its baseline) proves each painting setting is wired through control, editor canvas, front-end channel and CSS reader.
 
-**This is a client-experience requirement, not a nicety.** Per this spec's own premise, clients are
-tech-illiterate and work exclusively in the block editor. A colour picker that appears to do
-nothing reads to them as a broken product, whatever the front end does.
+**This is a client-experience requirement, not a nicety.** Per this spec's own premise, clients are tech-illiterate and work exclusively in the block editor. A colour picker that appears to do nothing reads to them as a broken product, whatever the front end does.
 
-**Mirror a shared mechanism ONCE — but only one that OWNS ITS SELECTOR.** A shared *renderer*
-(`SGS_Container_Wrapper`) or a shared *atom* (`includes/media/atoms/*`) owns markup, class and
-rule, so one mirror serves every adopting block. A shared *control panel* (`BackgroundPanel`) or a
-shared *value helper* (`sgs_colour_value`, `sgs_text_decls`) does not — the caller decides the
-selector, so there is nothing single to mirror. Shared-on-the-way-in is not shared-on-the-way-out.
+**Mirror a shared mechanism ONCE — but only one that OWNS ITS SELECTOR.** A shared *renderer* (`SGS_Container_Wrapper`) or a shared *atom* (`includes/media/atoms/*`) owns markup, class and rule, so one mirror serves every adopting block. A shared *control panel* (`BackgroundPanel`) or a shared *value helper* (`sgs_colour_value`, `sgs_text_decls`) does not — the caller decides the selector, so there is nothing single to mirror. Shared-on-the-way-in is not shared-on-the-way-out.
 
-Reference implementation: `svgBackgroundPreview()` in `src/utils/background-preview.js` — it renders
-the same element with the same class names as the frontend so the block's own
-`style.css` (loaded into the canvas by `block.json`'s `style` field) does all the painting, with no
-new CSS and no second vocabulary to drift.
+Reference implementation: `svgBackgroundPreview()` in `src/utils/background-preview.js` — it renders the same element with the same class names as the frontend so the block's own `style.css` (loaded into the canvas by `block.json`'s `style` field) does all the painting, with no new CSS and no second vocabulary to drift.
 
-⛔ **Never mirror a layer the frontend does not actually paint** — that is the inverse of what this
-check exists for. Confirm the render path first, including helpers, atoms and `render_block`
-injectors, rather than grepping the block's own files.
+⛔ **Never mirror a layer the frontend does not actually paint** — that is the inverse of what this check exists for. Confirm the render path first, including helpers, atoms and `render_block` injectors, rather than grepping the block's own files.
 
-Full pattern and the four traps that shipped defects: `.claude/rules/block-editor-controls.md` →
-"Editor-canvas mirrors".
+Full pattern and the four traps that shipped defects: `.claude/rules/block-editor-controls.md` → "Editor-canvas mirrors".
 
 ### 1. Native `supports` for wrapper-level controls
 
@@ -807,20 +785,9 @@ Declare `"supports": { "sgs": { "imageControls": true } }` in `block.json` so th
 
 A block change is not done until the inspector has ONE control per setting + zero orphans. Audit: (1) duplicate/overlap controls, (2) dead control [control → no render], (3) render-without-control [attr render.php reads but no editor control — the guard is BLIND to this], (4) vestigial attrs.
 
-**No dead controls — parent owns LAYOUT, child owns TYPOGRAPHY (HC2).** When a composite renders
-its text via child InnerBlocks (`sgs/heading`/`sgs/text`/`sgs/label`), all typography/colour/
-font-size (every breakpoint) belongs on the CHILD, not the parent. A parent control duplicating a
-child capability is both a forbidden duplicate and usually dead by CSS specificity — a parent
-scoped rule `.{uid} .sgs-x__y{color}` (0,2,0) cannot beat the child's inline style (1,0,0,0), so it
-renders nothing. This scopes standard item 3 ("custom controls per inner text element") to blocks
-that render their own text element — not to InnerBlocks composites, whose text is child-owned.
-Verify a control renders via the live DOM (computed style on the painted element), not just "the
-attr appears in render.php".
+**No dead controls — parent owns LAYOUT, child owns TYPOGRAPHY (HC2).** When a composite renders its text via child InnerBlocks (`sgs/heading`/`sgs/text`/`sgs/label`), all typography/colour/ font-size (every breakpoint) belongs on the CHILD, not the parent. A parent control duplicating a child capability is both a forbidden duplicate and usually dead by CSS specificity — a parent scoped rule `.{uid} .sgs-x__y{color}` (0,2,0) cannot beat the child's inline style (1,0,0,0), so it renders nothing. This scopes standard item 3 ("custom controls per inner text element") to blocks that render their own text element — not to InnerBlocks composites, whose text is child-owned. Verify a control renders via the live DOM (computed style on the painted element), not just "the attr appears in render.php".
 
-HC2 bans a parent PER-ELEMENT typography control, not a wrapper inheritable default. The
-WordPress-native `supports.typography` declared on the block ROOT is permitted: WP emits it as an
-inline style on the wrapper that children inherit via normal cascade, and any child's own explicit
-typography still overrides it. Only the per-element-parent-control form is banned.
+HC2 bans a parent PER-ELEMENT typography control, not a wrapper inheritable default. The WordPress-native `supports.typography` declared on the block ROOT is permitted: WP emits it as an inline style on the wrapper that children inherit via normal cascade, and any child's own explicit typography still overrides it. Only the per-element-parent-control form is banned.
 
 ---
 
@@ -843,36 +810,19 @@ All SGS blocks receive animation and interaction controls via the block extensio
 #### Entrance Animations (script animations, Spec 38 §4.3a)
 
 Attributes are injected into all `sgs/*` blocks by `plugins/sgs-blocks/src/blocks/extensions/animation.js`; the server mirror is `plugins/sgs-blocks/includes/extension-attributes.generated.php`. Read the attribute list with `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT DISTINCT attr_name FROM block_attributes WHERE attr_name LIKE 'sgsAnimation%'"`. The contract (start point, distance, stagger and the per-block `supports.sgs.animationItems` selector) is Spec 38 §4.3a.
+
 **Implementation:** `assets/js/animation-observer.js` plays each entrance with `element.animate()`, so it never shares a block's own `transition`, `animation` or `transform`; `assets/js/animation-entrance-timing.js` resolves when it starts and its stagger, and `includes/animation-stagger.php` writes the timing attributes for dynamic blocks. A stagger adds position × step (position among the group's animated blocks, capped) to the block's own delay; with none set, blocks with no delay of their own that start together play 100ms apart. A render-blocking head flag (`plugins/sgs-blocks/includes/animation-attributes.php::print_entrance_pending_flag`) holds entrances until their start pose is placed. Reduced motion and no-JS show content unanimated. Full contract: Spec 38 §4.3a.
 
 #### Hover Animations (universal hover attributes)
-**Universal hover attributes** (registered by `src/blocks/extensions/hover-effects/attributes.js` only on blocks that
-list `"hover"` in `supports.sgs.enabledExtensions`; rendered by `includes/hover-effects/hover-effects.php` as classes
-plus scoped custom properties; per-block defaults from `supports.sgs.hoverDefaults`):
+**Universal hover attributes** (registered by `src/blocks/extensions/hover-effects/attributes.js` only on blocks that list `"hover"` in `supports.sgs.enabledExtensions`; rendered by `includes/hover-effects/hover-effects.php` as classes plus scoped custom properties; per-block defaults from `supports.sgs.hoverDefaults`):
 - `sgsHoverScale` (fine %, 0 = off), `sgsHoverScalePreset` (1.02 / 1.05 / 1.1) and `sgsHoverLift` (px) — one transform
 - `sgsHoverShadow` — a shadow preset slug (never defaulted on a block that draws the automatic lift, `shadowLiftOnHover`)
-- `sgsHoverImageZoom`, `sgsHoverZoom` (%, 0 = 110%), `sgsHoverZoomDuration` (ms), `sgsHoverZoomStyle` (`''` zooms
-  inside the image's frame, `spill` = the whole visible image grows past it) — the photo zoom, eased by `sgsHoverEasing`.
-  One shared rule (`assets/css/extensions.css`, "Hover Image Zoom") keys on the media markers `.sgs-media-box` /
-  `.sgs-media-el`, so it works on any block whose image is a media element (`sgs/media` opts in with
-  `enabledExtensions:["hover"]` and `hoverExcludeControls:["shadow"]`, its shadow atom owning the image's hover shadow);
-  hovering or focusing the frame triggers it, touch-guarded, off under reduced motion. card-grid, team-member,
-  info-box and product-card keep their own card-hover zoom rules on the same `--sgs-hover-zoom` value.
-  `supports.sgs.hoverExcludeControls` hides `imageZoom`, `grayscale` or `shadow` where a block has nothing for them
-  to act on (sgs/container: its own picture is its background, zoomed from the Background panel)
-- **Background zoom on hover** (Background panel, every block rendering through `SGS_Container_Wrapper`):
-  `bgHoverZoom`, `bgHoverZoomScale` (101-150 %, default 105), `bgHoverZoomDuration` (ms, default 600),
-  `bgHoverZoomEasing` + `bgHoverZoomEasingCustom` (`MotionEasingControl` / `sgs_motion_easing_css()`). Hovering or
-  focusing into the block scales its background image inside the block (`includes/container-bg-hover-zoom.php`);
-  off while Ken Burns or parallax is on. The canvas twin is `backgroundPreview()`'s `sgs-ed-bg-hover-zoom`
-- `sgsHoverDuration` (a duration token), `sgsHoverDurationMs` (exact ms, overrides the token), `sgsHoverEasing`
-  (a token, or `custom` with `sgsHoverEasingCustom`, validated by `sgs_motion_easing_css()`)
+- `sgsHoverImageZoom`, `sgsHoverZoom` (%, 0 = 110%), `sgsHoverZoomDuration` (ms), `sgsHoverZoomStyle` (`''` zooms inside the image's frame, `spill` = the whole visible image grows past it) — the photo zoom, eased by `sgsHoverEasing`. One shared rule (`assets/css/extensions.css`, "Hover Image Zoom") keys on the media markers `.sgs-media-box` / `.sgs-media-el`, so it works on any block whose image is a media element (`sgs/media` opts in with `enabledExtensions:["hover"]` and `hoverExcludeControls:["shadow"]`, its shadow atom owning the image's hover shadow); hovering or focusing the frame triggers it, touch-guarded, off under reduced motion. card-grid, team-member, info-box and product-card keep their own card-hover zoom rules on the same `--sgs-hover-zoom` value. `supports.sgs.hoverExcludeControls` hides `imageZoom`, `grayscale` or `shadow` where a block has nothing for them to act on (sgs/container: its own picture is its background, zoomed from the Background panel)
+- **Background zoom on hover** (Background panel, every block rendering through `SGS_Container_Wrapper`): `bgHoverZoom`, `bgHoverZoomScale` (101-150 %, default 105), `bgHoverZoomDuration` (ms, default 600), `bgHoverZoomEasing` + `bgHoverZoomEasingCustom` (`MotionEasingControl` / `sgs_motion_easing_css()`). Hovering or focusing into the block scales its background image inside the block (`includes/container-bg-hover-zoom.php`); off while Ken Burns or parallax is on. The canvas twin is `backgroundPreview()`'s `sgs-ed-bg-hover-zoom`
+- `sgsHoverDuration` (a duration token), `sgsHoverDurationMs` (exact ms, overrides the token), `sgsHoverEasing` (a token, or `custom` with `sgsHoverEasingCustom`, validated by `sgs_motion_easing_css()`)
 - `sgsHoverOpacity` (0 to 1, 0 = off) — the hover fade, touch-guarded like the transform
-- `sgsHoverIndent` (a length; the block's inline-start padding grows by it on hover and focus-within, from each
-  device's own resting padding: `plugins/sgs-blocks/includes/hover-effects/vars.php::build_hover_indent_base_css`) and
-  `sgsHoverShadow` `custom` + `sgsHoverShadowCustom` (a box-shadow, sanitised by `sgs_shadow_value()`)
-- `sgsChildSizing` / `sgsChildWidth` (opt-in `"childSizing"`) — how a block sizes as a child of a flex row, per device:
-  `fit`, `fill` (takes the space the others leave) or `fixed` (with `sgsChildWidth`); `includes/child-sizing.php`
+- `sgsHoverIndent` (a length; the block's inline-start padding grows by it on hover and focus-within, from each device's own resting padding: `plugins/sgs-blocks/includes/hover-effects/vars.php::build_hover_indent_base_css`) and `sgsHoverShadow` `custom` + `sgsHoverShadowCustom` (a box-shadow, sanitised by `sgs_shadow_value()`)
+- `sgsChildSizing` / `sgsChildWidth` (opt-in `"childSizing"`) — how a block sizes as a child of a flex row, per device: `fit`, `fill` (takes the space the others leave) or `fixed` (with `sgsChildWidth`); `includes/child-sizing.php`
 - Block-own hover fades: `opacityHover` on `sgs/button`, `sgs/icon` (linked) and `sgs/responsive-logo` (0 = off)
 - `sgsHoverGrayscale`, `sgsHoverBorderAccent`, `sgsHoverTilt3D` **(BUILT)**, `sgsStaggerDelay`, `sgsFocusRing`
 - `sgsBlockLink`, `sgsBlockLinkTarget`, `sgsBlockLinkLabel` (opt-in `"blockLink"`) — a stretched link. The extension lends the surface to the block's OWN first non-inert link to that URL (marked `sgs-block-link-source`, keeping its tab stop and its name) and demotes any further link to the same place; the injected overlay is inert when such a link exists and focusable with an aria-label when none does
@@ -1162,6 +1112,7 @@ Operator-editable body copy that optionally collapses behind a "Read more / Read
 **Key behaviour:** Full text is always SSR'd into the page HTML (CSS `line-clamp` hides the overflow visually, NOT `display:none`). Toggle labels are i18n'd via server-emitted `data-read-more` / `data-read-less` attributes — no hardcoded strings in JS.
 
 Attributes: `/wp-blocks schema sgs/collapsible-text`. The body is collapsible only when `collapsible` is on (otherwise a plain text block); `collapsedLines` drives the `--sgs-ct-lines` custom property. Typography goes through the shared `TypographyControls` component.
+
 **Supports:** `align` (wide/full), `anchor`, `color` (text + background), `spacing` (margin + padding), `typography.textAlign`. Block Selectors API: `".sgs-collapsible-text__body"` for native font controls.
 
 **Render:** Dynamic `render.php`. `viewScriptModule` toggles the `--is-expanded` state + updates the toggle label.
@@ -1176,8 +1127,7 @@ Attributes: `/wp-blocks schema sgs/collapsible-text`. The body is collapsible on
 
 Date-based timeline (distinct from existing sgs/process-steps which is positional/numbered). Vertical or horizontal orientation. Alternating / left / centre alignment (vertical only). Scroll-reveal via IntersectionObserver with stagger delay (default 100ms) honouring prefers-reduced-motion. Connector style: line / dashed / dotted. Semantic ol/li/time markup.
 
-Attributes: `/wp-blocks schema sgs/timeline`.
-SGS-BEM: `.sgs-timeline` root + `--vertical/horizontal` + `--align-{left,centre,alternating}` + `__entry` / `__date` / `__node` / `__content` / `__title` / `__description` / `__image` / `__connector` + `.is-revealed` state.
+Attributes: `/wp-blocks schema sgs/timeline`. SGS-BEM: `.sgs-timeline` root + `--vertical/horizontal` + `--align-{left,centre,alternating}` + `__entry` / `__date` / `__node` / `__content` / `__title` / `__description` / `__image` / `__connector` + `.is-revealed` state.
 
 Not built: P-TIMELINE-ADVANCED-VISUAL-EFFECTS — textured/themed connector (vine, tree, MIC bricks-falling-into-place), per-entry colour-fill on scroll progression, line pulsing. The scroll-driven progress connector is Spec 38 FR-38-35.
 
@@ -1191,16 +1141,10 @@ Not built: P-TIMELINE-ADVANCED-VISUAL-EFFECTS — textured/themed connector (vin
 
 ### Universal-extension gating
 
-Universal extensions ship globally via an `addFilter` on `editor.BlockEdit` in
-`plugins/sgs-blocks/src/blocks/extensions/index.js`, so every block gets them in the inspector.
-Gating follows Spec 35 A7: most extensions are opt-OUT (`supports.sgs.hideExtensions`, read by
-`plugins/sgs-blocks/src/blocks/extensions/hide-extensions.js`); `hover` and `blockLink` are opt-IN
-(`supports.sgs.enabledExtensions`); `imageControls` is its own `supports.sgs` flag. The roster is
-`plugins/sgs-blocks/src/blocks/extensions/extension-roster.json`.
+Universal extensions ship globally via an `addFilter` on `editor.BlockEdit` in `plugins/sgs-blocks/src/blocks/extensions/index.js`, so every block gets them in the inspector. Gating follows Spec 35 A7: most extensions are opt-OUT (`supports.sgs.hideExtensions`, read by `plugins/sgs-blocks/src/blocks/extensions/hide-extensions.js`); `hover` and `blockLink` are opt-IN (`supports.sgs.enabledExtensions`); `imageControls` is its own `supports.sgs` flag. The roster is `plugins/sgs-blocks/src/blocks/extensions/extension-roster.json`.
 
 ---
 
 ## Block variations
 
-PHP block variations are registered via `plugins/sgs-blocks/includes/variations/sgs-*.php` files
-auto-discovered by `plugins/sgs-blocks/includes/variations/class-sgs-block-variations.php`.
+PHP block variations are registered via `plugins/sgs-blocks/includes/variations/sgs-*.php` files auto-discovered by `plugins/sgs-blocks/includes/variations/class-sgs-block-variations.php`.

@@ -82,9 +82,7 @@ Confidence: A, G, B, D, H high (code plus a cross-block control). I medium-high.
 
 ## 8. Live experiments left for the main thread (not run: the host is in use)
 
-**E1 (proves A, D, H).** Add a hero fixture variant `{ "variant":"split", "splitMediaImageUrl":"<image url>", "bgSvgContent":"<svg ...>" }` and two adjacent `sgs/text` inner blocks, then run
-`node scripts/computed-route/calibrate.mjs --site eye-care-test --client eye-care-ward-end --blocks sgs/hero --recalibrate`.
-Predicted: the 22 split settings, bgSvgOpacity and textIndent leave `dead`. Any of the 22 that stays dead is a genuine split-render or declaration gap.
+**E1 (proves A, D, H).** Add a hero fixture variant `{ "variant":"split", "splitMediaImageUrl":"<image url>", "bgSvgContent":"<svg ...>" }` and two adjacent `sgs/text` inner blocks, then run `node scripts/computed-route/calibrate.mjs --site eye-care-test --client eye-care-ward-end --blocks sgs/hero --recalibrate`. Predicted: the 22 split settings, bgSvgOpacity and textIndent leave `dead`. Any of the 22 that stays dead is a genuine split-render or declaration gap.
 
 **E2 (proves or kills F, I, C).** Same command with `bgKenBurns` removed from the fixture. Predicted: backgroundColourHoverGradient turns live; bgHoverZoomScale stays dead until `bgHoverZoom:true` is set (proves the marker gap); backgroundImageTablet/Mobile stay dead if the cause is the shared wrapper and turn live if Ken Burns was the blocker.
 
@@ -94,14 +92,11 @@ Predicted: the 22 split settings, bgSvgOpacity and textIndent leave `dead`. Any 
 
 ## 9. Could not determine
 
-**Two of the three undetermined items are now CLOSED, measured live on the local mirror 2026-10-06
-(`scripts/computed-route/confirm-canvas.mjs` is unrelated; these were direct in-browser reads).**
+**Two of the three undetermined items are now CLOSED, measured live on the local mirror 2026-10-06 (`scripts/computed-route/confirm-canvas.mjs` is unrelated; these were direct in-browser reads).**
 
 ### CLOSED - `maxWidth` IS defeated by `section.sgs-hero`, and the QC correction below was itself wrong
 
-Measured on a real hero at 1440 by inserting one rule into the live page's CSSOM (nothing written to any tree,
-page or stylesheet; the rule was appended LAST so source order favoured it, making any failure to apply
-specificity and never ordering):
+Measured on a real hero at 1440 by inserting one rule into the live page's CSSOM (nothing written to any tree, page or stylesheet; the rule was appended LAST so source order favoured it, making any failure to apply specificity and never ordering):
 
 | Selector inserted | Specificity | Computed `max-width` | Applied |
 |---|---|---|---|
@@ -111,66 +106,29 @@ specificity and never ordering):
 
 The only rule matching the hero root is `section.sgs-hero {max-width:none}`.
 
-**Why the QC's arithmetic reached the opposite answer: it compared the wrong rule.** `maxWidth` is not emitted
-by `hero/render.php` at all - `render.php` itself records that content max-width "now lives on the universal
-wrapper attr", and `SGS_Container_Wrapper` emits the base value as a scoped **`.uid`** rule, one class, under
-the no-inline contract (Spec 32 / D293, `class-sgs-container-wrapper.php` ~:1821). `$root_sel`
-(`.uid.wp-block-sgs-hero`, two classes) is hero's **colour** selector, not its max-width one. So `.uid` (0,1,0)
-loses to `section.sgs-hero` (0,1,1), and the container control proves a one-class rule is not inherently
-powerless.
+**Why the QC's arithmetic reached the opposite answer: it compared the wrong rule.** `maxWidth` is not emitted by `hero/render.php` at all - `render.php` itself records that content max-width "now lives on the universal wrapper attr", and `SGS_Container_Wrapper` emits the base value as a scoped **`.uid`** rule, one class, under the no-inline contract (Spec 32 / D293, `class-sgs-container-wrapper.php` ~:1821). `$root_sel` (`.uid.wp-block-sgs-hero`, two classes) is hero's **colour** selector, not its max-width one. So `.uid` (0,1,0) loses to `section.sgs-hero` (0,1,1), and the container control proves a one-class rule is not inherently powerless.
 
-A clean discriminator across the five blocks that declare `maxWidth`: **hero is the only one carrying an
-element+class `max-width:none` rule, and the only one where `maxWidth` calibrates dead.** `container`,
-`trust-bar`, `cta-section` and `site-header` carry no such rule and all four resolve it live, with the
-identical shape (`slot: ""`, effects `|margin-right |margin-left |width |height` - the calibration detects
-`maxWidth` by its consequences, never by reading `max-width` itself).
+A clean discriminator across the five blocks that declare `maxWidth`: **hero is the only one carrying an element+class `max-width:none` rule, and the only one where `maxWidth` calibrates dead.** `container`, `trust-bar`, `cta-section` and `site-header` carry no such rule and all four resolve it live, with the identical shape (`slot: ""`, effects `|margin-right |margin-left |width |height` - the calibration detects `maxWidth` by its consequences, never by reading `max-width` itself).
 
-**This is a real framework gap: the client's maxWidth control silently does nothing on `sgs/hero`.** The fix is
-NOT to remove `section.sgs-hero {max-width:none}` - that is deliberate, documented, and a 2026-09-08 qc-council
-proved live that removing it pushed the section 24px off-screen (D725). The wrapper would need to emit the base
-`maxWidth` at a specificity that beats a block stylesheet, as hero's own colour path already does. That is a
-change to the shared wrapper, which the file's own comments mark as design-gate territory, so **no fix is made
-here**.
+**This is a real framework gap: the client's maxWidth control silently does nothing on `sgs/hero`.** The fix is NOT to remove `section.sgs-hero {max-width:none}` - that is deliberate, documented, and a 2026-09-08 qc-council proved live that removing it pushed the section 24px off-screen (D725). The wrapper would need to emit the base `maxWidth` at a specificity that beats a block stylesheet, as hero's own colour path already does. That is a change to the shared wrapper, which the file's own comments mark as design-gate territory, so **no fix is made here**.
 
 ### CLOSED - why backgroundImageTablet/Mobile are dead: the tier rule paints on a box that is never created
 
 Established from the code, every step cited, no host needed:
 
-1. The tier images emit **only** `background-image`, `background-size` and `background-position`, into
-   `@media (max-width:1023px){.<uid>::before{...}}` (`class-sgs-container-wrapper.php`:2942).
-2. The declarations that make `.<uid>::before` an actual box - `content:""`, `position:absolute`, `inset:0`,
-   `z-index:-1`, `pointer-events:none` - are emitted only inside
-   `if ( $has_bg_image && ! $has_bg_video && ! $sgs_bg_img_is_simple )` (:1384). Its own comment states the
-   requirement: "`content` is mandatory: without it ::before generates no box and the background-image below
-   would never paint."
+1. The tier images emit **only** `background-image`, `background-size` and `background-position`, into `@media (max-width:1023px){.<uid>::before{...}}` (`class-sgs-container-wrapper.php`:2942).
+2. The declarations that make `.<uid>::before` an actual box - `content:""`, `position:absolute`, `inset:0`, `z-index:-1`, `pointer-events:none` - are emitted only inside `if ( $has_bg_image && ! $has_bg_video && ! $sgs_bg_img_is_simple )` (:1384). Its own comment states the requirement: "`content` is mandatory: without it ::before generates no box and the background-image below would never paint."
 3. `$has_bg_image = ! empty( $bg_image['url'] )` (:1044) - the **base** image only.
 
-So on an instance carrying a tier image but no base image, `::before` never becomes a box and the tier rule
-paints nothing. Calibration builds one instance per setting and does not pair a tier image with a base image,
-so the layer does not exist and no marker can move: `dead`.
+So on an instance carrying a tier image but no base image, `::before` never becomes a box and the tier rule paints nothing. Calibration builds one instance per setting and does not pair a tier image with a base image, so the layer does not exist and no marker can move: `dead`.
 
-Two things this rules out. The calibration reader is **not** blind to pseudo layers - `calibrate-read.mjs`:26-30
-reads `::before` and `::after`, gated on computed `content` not being `none`/`normal`/`''`, and the framework's
-`content:""` computes to `""` (two characters), which that guard does not exclude. And Ken Burns is not the
-blocker.
+Two things this rules out. The calibration reader is **not** blind to pseudo layers - `calibrate-read.mjs`:26-30 reads `::before` and `::after`, gated on computed `content` not being `none`/`normal`/`''`, and the framework's `content:""` computes to `""` (two characters), which that guard does not exclude. And Ken Burns is not the blocker.
 
-⚠ **Candidate LIVE gap, not just a measurement artefact.** The framework guards the opposite direction
-carefully: `$sgs_bg_img_is_simple` is false whenever any tier override exists, so the whole image stays on the
-CSS `::before` path rather than the `<img>` path, and its comment says why - migrating only the desktop tier
-"would silently drop a client's tablet/mobile background the moment they set one" (:1249-1257). **Nothing
-guards a client setting a tablet or mobile background with no desktop one**, which by the chain above paints
-nothing. Both fields sit in the same shared background panel, so that is a reachable client action.
-**Not confirmed live**: it needs one built instance with `backgroundImageTablet` set and `backgroundImage`
-empty, then a read of `getComputedStyle(root, '::before').content` (expected `none`) and its
-`background-image` at 768. That is a page build, so it is owed, not closed.
+⚠ **Candidate LIVE gap, not just a measurement artefact.** The framework guards the opposite direction carefully: `$sgs_bg_img_is_simple` is false whenever any tier override exists, so the whole image stays on the CSS `::before` path rather than the `<img>` path, and its comment says why - migrating only the desktop tier "would silently drop a client's tablet/mobile background the moment they set one" (:1249-1257). **Nothing guards a client setting a tablet or mobile background with no desktop one**, which by the chain above paints nothing. Both fields sit in the same shared background panel, so that is a reachable client action. **Not confirmed live**: it needs one built instance with `backgroundImageTablet` set and `backgroundImage` empty, then a read of `getComputedStyle(root, '::before').content` (expected `none`) and its `background-image` at 768. That is a page build, so it is owed, not closed.
 
 ### CLOSED - `site-header`'s `@controls:2` slot IS a real painted element
 
-The QC's caveat that site-header's success might be spurious does not hold. `@controls:N` is an element the
-instance references through `aria-controls` that lives OUTSIDE the block root - a drawer or panel moved to
-`<body>` - resolved by `document.getElementById()` and kept only when `! root.contains( t )`
-(`calibrate-read.mjs`:54, `calibrate-content.mjs`:198). It is a genuine DOM element, so site-header's resolution
-can be leaned on.
+The QC's caveat that site-header's success might be spurious does not hold. `@controls:N` is an element the instance references through `aria-controls` that lives OUTSIDE the block root - a drawer or panel moved to `<body>` - resolved by `document.getElementById()` and kept only when `! root.contains( t )` (`calibrate-read.mjs`:54, `calibrate-content.mjs`:198). It is a genuine DOM element, so site-header's resolution can be leaned on.
 
 ### Still undetermined
 
@@ -183,65 +141,31 @@ can be leaned on.
 
 Three load-bearing claims were re-checked against the code. **Two confirmed, one disproven.**
 
-**CONFIRMED — the definition of "dead".** `scripts/computed-route/lib/calibrate.mjs` returns
-`{ dead: true }` from the slot resolver when no marker moved a computed style on the instance the harness
-built. So "dead" is a statement about the fixture, not a verdict on the block, and the report's framing is
-right.
+**CONFIRMED — the definition of "dead".** `scripts/computed-route/lib/calibrate.mjs` returns `{ dead: true }` from the slot resolver when no marker moved a computed style on the instance the harness built. So "dead" is a statement about the fixture, not a verdict on the block, and the report's framing is right.
 
-**WITHDRAWN — the tier background images are NOT a systemic defect. This QC's first version said they
-were, and that was wrong** (Bean challenged it, 2026-10-06; the challenge was right).
+**WITHDRAWN — the tier background images are NOT a systemic defect. This QC's first version said they were, and that was wrong** (Bean challenged it, 2026-10-06; the challenge was right).
 
-The counts are real: `backgroundImageTablet` and `backgroundImageMobile` are dead on `container` (14 dead
-overall), `cta-section` (15), `hero` (34), `multi-button` (8), `physics-canvas` (7), `site-footer` (9) and
-`trust-bar` (20). What was wrong was the inference.
+The counts are real: `backgroundImageTablet` and `backgroundImageMobile` are dead on `container` (14 dead overall), `cta-section` (15), `hero` (34), `multi-button` (8), `physics-canvas` (7), `site-footer` (9) and `trust-bar` (20). What was wrong was the inference.
 
-**The spread is the shared panel's scope, not 7 independent defects.** Both settings come from the shared
-background panel — `src/components/SurfaceTreatmentPanel.js` and
-`src/blocks/container/components/BackgroundPanel.js`, emitted through
-`includes/class-sgs-container-wrapper.php`. **Nine** blocks declare them, which is why the dead rows cluster
-on wrapper-based blocks: that is the set of blocks the helper reaches. Counting 7 blocks with one symptom
-and reading it as one defect mistook a shared declaration for a shared failure.
+**The spread is the shared panel's scope, not 7 independent defects.** Both settings come from the shared background panel — `src/components/SurfaceTreatmentPanel.js` and `src/blocks/container/components/BackgroundPanel.js`, emitted through `includes/class-sgs-container-wrapper.php`. **Nine** blocks declare them, which is why the dead rows cluster on wrapper-based blocks: that is the set of blocks the helper reaches. Counting 7 blocks with one symptom and reading it as one defect mistook a shared declaration for a shared failure.
 
-**And they are not inherently dead: `sgs/site-header` calibrates BOTH of them successfully**, holding them
-in `settings` rather than `dead`. Whatever stops them resolving elsewhere, it is not that the setting cannot
-paint.
+**And they are not inherently dead: `sgs/site-header` calibrates BOTH of them successfully**, holding them in `settings` rather than `dead`. Whatever stops them resolving elsewhere, it is not that the setting cannot paint.
 
-**The obvious follow-up explanation also fails.** "A tier override needs a base image first" does not hold:
-on `hero`, `container` and `trust-bar` the base `backgroundImage` **RESOLVES** while only the two tier
-settings die. Only `cta-section` has all three dead.
+**The obvious follow-up explanation also fails.** "A tier override needs a base image first" does not hold: on `hero`, `container` and `trust-bar` the base `backgroundImage` **RESOLVES** while only the two tier settings die. Only `cta-section` has all three dead.
 
-⚠️ **And site-header's success should not be leaned on without a check of its own.** Its tier settings
-resolve to `slot: "@controls:2"` with a `slots` list of `@controls:N` entries and `@controls > .sgs-mega-panel`
-variants — which does not read like a painted DOM element. That resolution may itself be spurious, in which
-case the honest count is zero blocks where these settings demonstrably paint.
+⚠️ **And site-header's success should not be leaned on without a check of its own.** Its tier settings resolve to `slot: "@controls:2"` with a `slots` list of `@controls:N` entries and `@controls > .sgs-mega-panel` variants — which does not read like a painted DOM element. That resolution may itself be spurious, in which case the honest count is zero blocks where these settings demonstrably paint.
 
-**Mechanism: UNDETERMINED.** Not systemic, not partner-gated on the base image, not over any detector
-threshold, and not the experiment to run first. The decisive experiment is now narrower: calibrate
-`sgs/site-header` and one dead block at HEAD and compare how each resolves `backgroundImageTablet`,
-establishing first whether site-header's `@controls:2` slot corresponds to a real painted element.
+**Mechanism: UNDETERMINED.** Not systemic, not partner-gated on the base image, not over any detector threshold, and not the experiment to run first. The decisive experiment is now narrower: calibrate `sgs/site-header` and one dead block at HEAD and compare how each resolves `backgroundImageTablet`, establishing first whether site-header's `@controls:2` slot corresponds to a real painted element.
 
-**DISPROVEN — `maxWidth` is not defeated by `section.sgs-hero`.** The report has it that
-`section.sgs-hero { max-width: none }` outranks "the wrapper's `.uid{max-width}`". The arithmetic does not
-support that:
+**DISPROVEN — `maxWidth` is not defeated by `section.sgs-hero`.** The report has it that `section.sgs-hero { max-width: none }` outranks "the wrapper's `.uid{max-width}`". The arithmetic does not support that:
 
-- `hero/render.php` sets `$root_sel = '.' . $uid . '.wp-block-sgs-hero'` — **two classes**, specificity
-  (0,2,0).
+- `hero/render.php` sets `$root_sel = '.' . $uid . '.wp-block-sgs-hero'` — **two classes**, specificity (0,2,0).
 - `hero/style.css`'s `section.sgs-hero` is one element plus one class, specificity (0,1,1).
 
-Two classes beat one class plus an element, so the emitted `maxWidth` rule **wins** and the stylesheet does
-not defeat it. The hypothesis assumed a single-class `.uid` selector that hero does not use.
+Two classes beat one class plus an element, so the emitted `maxWidth` rule **wins** and the stylesheet does not defeat it. The hypothesis assumed a single-class `.uid` selector that hero does not use.
 
-Also worth recording against that claim: `section.sgs-hero { width: auto; max-width: none }` is
-**deliberate and documented**, not sloppiness. Its own comment cites a 2026-09-08 qc-council that proved
-live that negating a padding nothing ever applied shifted the section 24px off-screen
-(`document.documentElement.scrollWidth > clientWidth`), and ties it to D725's width model: a top-level
-section paints edge-to-edge by NOT being capped. Treating it as a bug to remove would re-break that.
+Also worth recording against that claim: `section.sgs-hero { width: auto; max-width: none }` is **deliberate and documented**, not sloppiness. Its own comment cites a 2026-09-08 qc-council that proved live that negating a padding nothing ever applied shifted the section 24px off-screen (`document.documentElement.scrollWidth > clientWidth`), and ties it to D725's width model: a top-level section paints edge-to-edge by NOT being capped. Treating it as a bug to remove would re-break that.
 
-**So `maxWidth`'s deadness is UNEXPLAINED, not probably-a-bug.** It returns to the undetermined list and
-needs its live experiment. The honest count is therefore **29 high-confidence, 4 medium, 3 undetermined**
-(the two tier images plus `maxWidth`), rather than one probable block bug.
+**So `maxWidth`'s deadness is UNEXPLAINED, not probably-a-bug.** It returns to the undetermined list and needs its live experiment. The honest count is therefore **29 high-confidence, 4 medium, 3 undetermined** (the two tier images plus `maxWidth`), rather than one probable block bug.
 
-**Not re-checked here:** the 23 split-variant-gated settings and the overlay/Ken Burns partitions. The
-split-variant mechanism matches the main thread's own prior before dispatch (hero's variant-gated families
-only paint in a variant the fixture never builds), and the report's per-setting evidence is cited; they were
-taken as read rather than independently re-derived.
+**Not re-checked here:** the 23 split-variant-gated settings and the overlay/Ken Burns partitions. The split-variant mechanism matches the main thread's own prior before dispatch (hero's variant-gated families only paint in a variant the fixture never builds), and the report's per-setting evidence is cited; they were taken as read rather than independently re-derived.

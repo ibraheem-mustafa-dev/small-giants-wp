@@ -1,7 +1,6 @@
 # R3: Indus Foods full-project export, everything outside the handoff folder and the design-system files
 
-Export root: `C:\Users\Bean\Projects\small-giants-wp\.claude\Indus-Foods-Claude-Design-Files\` (shortened to `EXP\` below).
-Handoff folder: `EXP\design_handoff_indus_foods_website\` (shortened to `HO\`).
+Export root: `C:\Users\Bean\Projects\small-giants-wp\.claude\Indus-Foods-Claude-Design-Files\` (shortened to `EXP\` below). Handoff folder: `EXP\design_handoff_indus_foods_website\` (shortened to `HO\`).
 
 **Method.** I listed every file with `find . -type f -printf '%TY-%Tm-%Td %TH:%TM %s %p'`, hashed each root file and its `HO\` namesake with `sha256sum`, and grepped each `.dc.html` for `<script src>`, `<dc-import>`, fonts, colours and `#/` routes. I opened every distinct image kind directly, and built labelled contact sheets of all 77 screenshots with Pillow (scratch: `scratchpad\council\r3img\sheet-*.jpg`). I also compared hashes with the repo's existing copy at `sites\indus-foods\`.
 

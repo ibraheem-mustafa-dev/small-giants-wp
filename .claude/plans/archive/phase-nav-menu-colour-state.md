@@ -14,10 +14,7 @@ status: IN EXECUTION — Waves A and B complete and pushed to main (steps 1-17 +
 
 ## Execution Progress Log (updated 2026-09-11 — read this before resuming any step)
 
-**This section is the single source of truth for what has actually landed.** The step bodies
-further down in this file are the ORIGINAL plan text and are NOT updated in place — several
-steps shipped with real, disclosed deviations (file counts, module names, extra fixes found
-along the way). Where this log and a step body disagree, THIS LOG WINS.
+**This section is the single source of truth for what has actually landed.** The step bodies further down in this file are the ORIGINAL plan text and are NOT updated in place — several steps shipped with real, disclosed deviations (file counts, module names, extra fixes found along the way). Where this log and a step body disagree, THIS LOG WINS.
 
 ### Wave A — CLOSED (steps 1-12)
 
@@ -63,46 +60,15 @@ Ran as two parallel subagent lanes per owner ruling 7: **Lane 5** (13→14→14a
 
 ### Open thread — RESOLVED 2026-09-11, BUILT
 
-**`sublink-marker` colour row — design question CLOSED, owner ruled.** Originally exempted from the
-Hover/Current state requirement (Normal-only, `colourExemptions` entry drafted but reasoning was
-under revision when superseded). Bean's superseding direction (2026-09-11) is now the ruled design:
-the sublink marker gets full Hover/Current states + a gradient toggle, like every other row — but the
-colour picker stays HIDDEN by default (silently inheriting the sublink text's own colour) and is
-revealed **only when the operator picks a non-default `sublinkMarkerIcon`** — the reveal is keyed on
-the ICON choice, not on whether a colour value has been set. Once revealed, the row gets `sgs/button`'s
-existing 2-state+gradient icon-colour treatment (`sgs_icon_gradient_css()`, already built, reused not
-rebuilt). It needs **one new additive `SgsColourPanel` row-descriptor key** for the conditional
-reveal — not a `fillRow3`/`textRow3` fork. Confirmed buildable by the 2026-09-11 adversarial council.
-**Do not add a `colourExemptions.sublink-marker` entry — that approach is superseded.** Full mechanism
-recorded at Spec 41's FR-41-30(b) ✅ RESOLVED block (`.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`,
-beneath its ⚠ OPEN note, kept as history) and §12 item 8. **BUILT** — confirmed live at
-`plugins/sgs-blocks/src/blocks/nav-menu/edit.js::sublinkMarkerIconIsCustom` (gates a `textRow()` call
-with the marker colour attrs) and `block.json` (declares all six `css:fill`/`css:fill-gradient` routes:
-`sublinkMarkerColour`, `sublinkMarkerColourGradient`, `sublinkMarkerColourHover`,
-`sublinkMarkerColourHoverGradient`, `sublinkMarkerColourCurrent`, `sublinkMarkerColourCurrentGradient`).
+**`sublink-marker` colour row — design question CLOSED, owner ruled.** Originally exempted from the Hover/Current state requirement (Normal-only, `colourExemptions` entry drafted but reasoning was under revision when superseded). Bean's superseding direction (2026-09-11) is now the ruled design: the sublink marker gets full Hover/Current states + a gradient toggle, like every other row — but the colour picker stays HIDDEN by default (silently inheriting the sublink text's own colour) and is revealed **only when the operator picks a non-default `sublinkMarkerIcon`** — the reveal is keyed on the ICON choice, not on whether a colour value has been set. Once revealed, the row gets `sgs/button`'s existing 2-state+gradient icon-colour treatment (`sgs_icon_gradient_css()`, already built, reused not rebuilt). It needs **one new additive `SgsColourPanel` row-descriptor key** for the conditional reveal — not a `fillRow3`/`textRow3` fork. Confirmed buildable by the 2026-09-11 adversarial council. **Do not add a `colourExemptions.sublink-marker` entry — that approach is superseded.** Full mechanism recorded at Spec 41's FR-41-30(b) ✅ RESOLVED block (`.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`, beneath its ⚠ OPEN note, kept as history) and §12 item 8. **BUILT** — confirmed live at `plugins/sgs-blocks/src/blocks/nav-menu/edit.js::sublinkMarkerIconIsCustom` (gates a `textRow()` call with the marker colour attrs) and `block.json` (declares all six `css:fill`/`css:fill-gradient` routes: `sublinkMarkerColour`, `sublinkMarkerColourGradient`, `sublinkMarkerColourHover`, `sublinkMarkerColourHoverGradient`, `sublinkMarkerColourCurrent`, `sublinkMarkerColourCurrentGradient`).
 
 **Also recorded in Spec 41 today (2026-09-11), not otherwise tracked in this plan:**
-- **§0a.4 — adversarial council review, verdict GO conditional.** Two pre-real-client-deploy fixes
-  named: (a) the submenu panel's `box-shadow` is clipped invisible by
-  `.sgs-nav-menu__submenu-wrap`'s `overflow-y:auto` — a Wave C / pre-deploy fix, not yet done; (b) the
-  suspected parallel `fillRow3`/`textRow3`/`borderRow3` builder approach was checked and confirmed NOT
-  to exist — FR-41-2(a)'s additive extension is the real, correct architecture, no action needed. Also
-  confirmed accurate: all three `colourExemptions` entries, the `hideExtensions` claim, and the §12
-  "border-row-helper" tension (already resolved). FR-41-13 reconfirmed genuinely unbuilt — already
-  correctly scheduled as this plan's Wave C (step 18), no plan change.
-- **FR-41-36 — locked default colour scheme** for item/submenu/drawer states across Normal/Hover/
-  Current, using the real `theme.json` tokens. Design decision only, not yet built; see Spec 41 for
-  the full table and the matched-pair structural principle.
+- **§0a.4 — adversarial council review, verdict GO conditional.** Two pre-real-client-deploy fixes named: (a) the submenu panel's `box-shadow` is clipped invisible by `.sgs-nav-menu__submenu-wrap`'s `overflow-y:auto` — a Wave C / pre-deploy fix, not yet done; (b) the suspected parallel `fillRow3`/`textRow3`/`borderRow3` builder approach was checked and confirmed NOT to exist — FR-41-2(a)'s additive extension is the real, correct architecture, no action needed. Also confirmed accurate: all three `colourExemptions` entries, the `hideExtensions` claim, and the §12 "border-row-helper" tension (already resolved). FR-41-13 reconfirmed genuinely unbuilt — already correctly scheduled as this plan's Wave C (step 18), no plan change.
+- **FR-41-36 — locked default colour scheme** for item/submenu/drawer states across Normal/Hover/ Current, using the real `theme.json` tokens. Design decision only, not yet built; see Spec 41 for the full table and the matched-pair structural principle.
 
 ### Wave C — re-audited 2026-09-14 (evidence-based, see below); most of it landed via ad-hoc work, NOT via this plan's own dispatch process
 
-**Why this re-audit exists.** Between the 2026-09-11 "not yet started" note above and now, an
-entire day and a half of ad-hoc work happened OUTSIDE this plan's process: Bean's full live
-review of the deployed nav-menu (D1039), the terminology/architecture redesign (D1041), the
-smart-contrast/gradient/sweep wave (D1042), and a `/qc-council` diagnostic pass (D1043). Several
-Wave C steps' INTENT is now satisfied by that work even though the plan never dispatched them.
-Verdicts below are evidence-checked against the step's OWN original pass condition, not assumed
-from the ad-hoc commits' own descriptions.
+**Why this re-audit exists.** Between the 2026-09-11 "not yet started" note above and now, an entire day and a half of ad-hoc work happened OUTSIDE this plan's process: Bean's full live review of the deployed nav-menu (D1039), the terminology/architecture redesign (D1041), the smart-contrast/gradient/sweep wave (D1042), and a `/qc-council` diagnostic pass (D1043). Several Wave C steps' INTENT is now satisfied by that work even though the plan never dispatched them. Verdicts below are evidence-checked against the step's OWN original pass condition, not assumed from the ad-hoc commits' own descriptions.
 
 | Step | Verdict | Evidence |
 |---|---|---|
@@ -117,79 +83,35 @@ from the ad-hoc commits' own descriptions.
 | 26 (flip G20c WARN→HARD, scoped to `sgs/nav-menu` only) | ⛔ **GENUINELY STILL OPEN — unsafe to flip right now** | Ran `check-ungated-paint-rules.py` live: it is currently WARN-ONLY and **`sgs/nav-menu` itself has 7 ungated-paint findings** (indicator background×2, burger background, burger-bar×2, drill-enhanced submenu, drill-back-btn) plus `sgs/nav-drawer` has 5 more — 50 blocks framework-wide carry findings in total. Step 26's own `On-Fail:` is explicit: "a gate that fails on day one is a gate nobody reads." Flipping now would hard-fail the build on nav-menu's OWN pre-existing findings. Did not flip. **What's needed to close:** the 7 nav-menu findings need triage + fix (or an explicit accepted-exception list) before the flip is safe — that's real remaining work, not a formality. |
 | 27 (living-docs update) | ⚠ **PARTIAL — some done by sibling agents today, real gaps remain** | Confirmed landed (commits `ee3758bb9`, `0cfd9a499`, `a7ace41ff`, plus two parking-archive commits): `decisions.md` D1040-D1043 backfilled, `LEDGER.md` brought current, Spec 41 frontmatter/FR-status corrected (v0.4.9, `itemColourHoverGradient`, FR-41-37/38 folded in), one new STOP-CATALOGUE entry (DOM-reparent-breaks-`:has()`), two parking entries archived. **Still open:** `.claude/specs/README.md` row 41 is stale on the exact terms step 27 itself names — it still reads **v0.4.7** (spec is now 0.4.9) and still says "Wave C ... NOT started" (contradicted by the rows above). The **`colourRows` ATOMICITY + two-corpus-blindness structural defence** step 27 explicitly calls out as a new STOP-CATALOGUE entry to add (S4) was NOT added — today's STOP-CATALOGUE commit added a different, unrelated entry. `plugins/sgs-blocks/CLAUDE.md` not checked for staleness in this pass — out of scope for this audit (not touched, per this dispatch's file-ownership boundary). |
 
-Steps 19 and 24 remain withdrawn (D1036), skipped permanently, downstream `Deps:` voided per
-their own WITHDRAWN boxes. **Net position:** of the 8 live steps (18, 20-23, 25-27), 5 are DONE
-(18, 20, 21, 22, 23), 2 are genuinely open (25 — needs Bean's formal sign-off presentation, 26 —
-needs the 7 nav-menu findings triaged before it's safe to flip), and 1 is partial (27 — two
-concrete doc gaps named above). Nothing in this table was marked done without a command output,
-live check, or commit hash to back it.
+Steps 19 and 24 remain withdrawn (D1036), skipped permanently, downstream `Deps:` voided per their own WITHDRAWN boxes. **Net position:** of the 8 live steps (18, 20-23, 25-27), 5 are DONE (18, 20, 21, 22, 23), 2 are genuinely open (25 — needs Bean's formal sign-off presentation, 26 — needs the 7 nav-menu findings triaged before it's safe to flip), and 1 is partial (27 — two concrete doc gaps named above). Nothing in this table was marked done without a command output, live check, or commit hash to back it.
 
 
 # Phase — Spec 41 `sgs/nav-menu` colour, state + control system
 
-**USP:** This is the block a visitor touches on *every page of every client site*, and today a
-client cannot colour the page they are on, cannot control the line between items, and picks a
-"hover style" from a dropdown instead of setting the colours they want. This phase turns the whole
-thing into direct controls — and retires three competing mechanisms down to one. It is also the
-first block to carry the framework's 3-state (Normal / Hover / Current) colour model end to end,
-so the shape built here is the shape every future stateful block copies.
+**USP:** This is the block a visitor touches on *every page of every client site*, and today a client cannot colour the page they are on, cannot control the line between items, and picks a "hover style" from a dropdown instead of setting the colours they want. This phase turns the whole thing into direct controls — and retires three competing mechanisms down to one. It is also the first block to carry the framework's 3-state (Normal / Hover / Current) colour model end to end, so the shape built here is the shape every future stateful block copies.
 
 ---
 
 ## QC + council closure (2026-09-11) — read this before dispatching step 1
 
-**This plan has been through a full `/qc` pass and a `/qc-council` validation, and every finding is
-folded in below. It is the FINAL, dispatch-ready edition.**
+**This plan has been through a full `/qc` pass and a `/qc-council` validation, and every finding is folded in below. It is the FINAL, dispatch-ready edition.**
 
 | Pass | Outcome | Record |
 |---|---|---|
 | `/qc` (7 stages, adapted for a plan-document target) | **`partial` · 78/100 · FIX THEN SHIP** — 7 MUST-FIXes, 13 SHOULD-FIXes. Its own estimate: folding all seven puts the plan at ~92 (`pass`/ship) | `.claude/reports/2026-09-11-nav-menu-plan-qc.md` |
 | `/qc-council` on the 2 judgement-call fixes (the split arithmetic; the G13 re-assignment) | **Rulings issued and applied verbatim** — both changed step STRUCTURE rather than step prose, which is why they went to a council rather than a reviewer's preference | folded into steps 7, 8, 22, 24 + the gate→step map |
 
-**All 7 MUST-FIXes are folded in:** ① step 6's emitter citations repointed to
-`helpers-colour-variants.php` (4 of 5 were attributed to the wrong file) · ② steps 7 and 8's
-file-count floors made arithmetically reachable · ③ steps 22/23 given disjoint evidence files **and**
-a separate browser context each · ④ G13 scenario 3 moved to step 24 (it needs step 24's migration to
-have run) + step 14a added to step 20's `Deps:` · ⑤ `SurfaceTreatmentPanel.js` cited as step 13's
-shape precedent · ⑥ step 24's live-content migration given a named codemod with `--self-test` and
-`--dry-run` · ⑦ a `/sgs-update` reseed + DB assertion added after step 14a's second-block manifest
-change. **Plus the high-value SHOULD-FIXes** — S11 (hover-guard's pre-existing advisory exit-1
-disclosed so step 20 cannot stall on it) and S12 (`Cold-Entry:` added to steps 9, 16, 22, 25, 27) —
+**All 7 MUST-FIXes are folded in:** ① step 6's emitter citations repointed to `helpers-colour-variants.php` (4 of 5 were attributed to the wrong file) · ② steps 7 and 8's file-count floors made arithmetically reachable · ③ steps 22/23 given disjoint evidence files **and** a separate browser context each · ④ G13 scenario 3 moved to step 24 (it needs step 24's migration to have run) + step 14a added to step 20's `Deps:` · ⑤ `SurfaceTreatmentPanel.js` cited as step 13's shape precedent · ⑥ step 24's live-content migration given a named codemod with `--self-test` and `--dry-run` · ⑦ a `/sgs-update` reseed + DB assertion added after step 14a's second-block manifest change. **Plus the high-value SHOULD-FIXes** — S11 (hover-guard's pre-existing advisory exit-1 disclosed so step 20 cannot stall on it) and S12 (`Cold-Entry:` added to steps 9, 16, 22, 25, 27) —
+
 **and S1–S10 + S13 batched in one line each.**
 
-⛔ **BEAN'S EXPLICIT RULING, recorded here because it is the one thing a future revision will want to
-re-open: `render.php`'s split requirement is measured on CODE LINES ONLY, not raw `wc -l`.** This is
-consistent with **his own prior ruling D722**, which already rejected a raw-line-count gate on *this
-exact file* for being comment-heavy — **48% comments then, 52% now**. It is why `render.php` splits
-into **4** PHP files and not the 8 a raw-line reading would demand, while `edit.js` (only 11%
-comments) splits on its raw count into **7**. **Do not re-litigate this without a fresh decision from
-Bean.** Full derivation: step 8's callout + §Resolved judgement calls → *Ruling 7 addendum*.
+⛔ **BEAN'S EXPLICIT RULING, recorded here because it is the one thing a future revision will want to re-open: `render.php`'s split requirement is measured on CODE LINES ONLY, not raw `wc -l`.** This is consistent with **his own prior ruling D722**, which already rejected a raw-line-count gate on *this exact file* for being comment-heavy — **48% comments then, 52% now**. It is why `render.php` splits into **4** PHP files and not the 8 a raw-line reading would demand, while `edit.js` (only 11% comments) splits on its raw count into **7**. **Do not re-litigate this without a fresh decision from Bean.** Full derivation: step 8's callout + §Resolved judgement calls → *Ruling 7 addendum*.
 
-**Plan label:** `[PLAN: opus]` — the manifest rewrite, the **four** shared-component touches
-(`SgsBorderControl::showColour`, `fx-magnet.css`'s custom property,
-`sgs_emit_state_colour_css`'s third state, and `sgs_border_states_css`'s `suppress_edges`) and the
-FR-41-15 census execution are all expensive-to-undo and need architectural judgement at the seams.
-Per-step dispatch is mostly `sonnet` (see each step's `Model:`).
+**Plan label:** `[PLAN: opus]` — the manifest rewrite, the **four** shared-component touches (`SgsBorderControl::showColour`, `fx-magnet.css`'s custom property, `sgs_emit_state_colour_css`'s third state, and `sgs_border_states_css`'s `suppress_edges`) and the FR-41-15 census execution are all expensive-to-undo and need architectural judgement at the seams. Per-step dispatch is mostly `sonnet` (see each step's `Model:`).
 
-**Docscore:** **A- (94.3%)** — `python ~/.agents/skills/shared-references/docscore.py
-.claude/plans/phase-nav-menu-colour-state.md --type archived-plan`. Structural 85.7% (6/7) /
-Completeness 100 / Quality 100 / Freshness 100. **The one failure is the 3,000-line doc-shape cap**,
-which the 2026-09-11 QC fold-in re-crossed; §Docscore records why a second annex split was
-considered and deliberately not taken. ⚠ The tool grades STRUCTURE against the template; the honest
-qualitative caveats are recorded in §Docscore below and are not a tool finding.
+**Docscore:** **A- (94.3%)** — `python ~/.agents/skills/shared-references/docscore.py .claude/plans/phase-nav-menu-colour-state.md --type archived-plan`. Structural 85.7% (6/7) / Completeness 100 / Quality 100 / Freshness 100. **The one failure is the 3,000-line doc-shape cap**, which the 2026-09-11 QC fold-in re-crossed; §Docscore records why a second annex split was considered and deliberately not taken. ⚠ The tool grades STRUCTURE against the template; the honest qualitative caveats are recorded in §Docscore below and are not a tool finding.
 
-**Aggregate cost estimate:** **≈$39.00** — **30 steps, FIVE of which are QA gates** (steps 2, 10,
-12, **16a** and 20). ⚠ Two prior corrections are kept visible rather than overwritten: the
-pre-revision line said "26 steps + 7 QA gates" (both halves wrong against the headings actually in
-this file), and the 2026-09-11 QC revision added step **16a** (S1 — the `/qc-council` after the
-census execution), taking 29 → 30 and 4 → 5 gates.
-Derived from
-`~/.agents/skills/delegate/data/routing-table.json` (sonnet $3/$15 per 1M in/out; haiku $1/$5;
-inline $10/$50) × per-step token estimates recorded on each step. No `plan_actuals` store exists
-(the dashboard that held it was discontinued 2026-08-17), so estimates fall back to routing-table
-defaults calibrated against this project's comparable plans
-(`plans/archive/2026-09-07-dead-pattern-attrs-border-migration.md`,
-`plans/archive/2026-08-23-colour-capability-grant-PLAN.md`).
+**Aggregate cost estimate:** **≈$39.00** — **30 steps, FIVE of which are QA gates** (steps 2, 10, 12, **16a** and 20). ⚠ Two prior corrections are kept visible rather than overwritten: the pre-revision line said "26 steps + 7 QA gates" (both halves wrong against the headings actually in this file), and the 2026-09-11 QC revision added step **16a** (S1 — the `/qc-council` after the census execution), taking 29 → 30 and 4 → 5 gates. Derived from `~/.agents/skills/delegate/data/routing-table.json` (sonnet $3/$15 per 1M in/out; haiku $1/$5; inline $10/$50) × per-step token estimates recorded on each step. No `plan_actuals` store exists (the dashboard that held it was discontinued 2026-08-17), so estimates fall back to routing-table defaults calibrated against this project's comparable plans (`plans/archive/2026-09-07-dead-pattern-attrs-border-migration.md`, `plans/archive/2026-08-23-colour-capability-grant-PLAN.md`).
 
 ---
 
@@ -224,12 +146,7 @@ defaults calibrated against this project's comparable plans
 
 ## References (Stage 2 Research Pre-Gate outcome)
 
-⚠ **The Research Pre-Gate was RUN and returned "no external research needed" — with three named
-exceptions that were resolved by reading the tree rather than the web.** The spec is itself the
-output of three adversarial-council rounds plus a technical-correctness review against the real
-codebase; fabricating research questions it already answers would be waste. What *was* genuinely
-open were three implementation-shape questions the spec does not settle, and each was closed by a
-verified read (commands below are runnable — a "verified" claim with no command is banned):
+⚠ **The Research Pre-Gate was RUN and returned "no external research needed" — with three named exceptions that were resolved by reading the tree rather than the web.** The spec is itself the output of three adversarial-council rounds plus a technical-correctness review against the real codebase; fabricating research questions it already answers would be waste. What *was* genuinely open were three implementation-shape questions the spec does not settle, and each was closed by a verified read (commands below are runnable — a "verified" claim with no command is banned):
 
 | Open question | Resolution | Command that produced it |
 |---|---|---|
@@ -237,19 +154,9 @@ verified read (commands below are runnable — a "verified" claim with no comman
 | Is there a precedent for splitting render-PHP? | **Yes, but NOT as a sibling partial** — blocks `require_once dirname( __DIR__, 3 ) . '/includes/<name>.php'`; `sgs/product-card` requires `includes/product-card-builtin-render.php`. The `includes/` route is the proven one | `grep -hn "require" src/blocks/product-card/render.php` |
 | Does the build copy a sibling `.php` partial inside a block folder? | **Unproven.** `wp-scripts build --experimental-modules --webpack-copy-php` is documented to copy `render.php`; nothing proves it copies arbitrary siblings. ⚠ **This is why the `includes/` route is chosen over a sibling partial — see ruling 2** | `grep -n "webpack-copy-php" plugins/sgs-blocks/package.json` |
 
-⚠ **Framework-wide finding from the `/qc-council` pass (2026-09-11) — context for both precedents
-above, and OUT OF SCOPE for this build.** The per-file size limit is **not actually enforced
-anywhere today**: 65 of 83 blocks already exceed the 250-line JS limit and 61 of 83 exceed the
-300-line PHP one — **including the two files this plan cites as split precedents**
-(`src/blocks/cart/edit.js` is 318 lines post-split against a 250 limit;
-`product-card/render.php`'s extracted `includes/product-card-builtin-render.php` is 325 lines
-against a 300 limit). **So cite those two as proof the splitting PATTERN is sound — never as proof
-that splitting reaches full compliance.** Worth Bean's awareness; ⛔ do NOT widen this phase to fix
-it, and ⛔ do not add a parking entry for it without asking Bean first.
+⚠ **Framework-wide finding from the `/qc-council` pass (2026-09-11) — context for both precedents above, and OUT OF SCOPE for this build.** The per-file size limit is **not actually enforced anywhere today**: 65 of 83 blocks already exceed the 250-line JS limit and 61 of 83 exceed the 300-line PHP one — **including the two files this plan cites as split precedents** (`src/blocks/cart/edit.js` is 318 lines post-split against a 250 limit; `product-card/render.php`'s extracted `includes/product-card-builtin-render.php` is 325 lines against a 300 limit). **So cite those two as proof the splitting PATTERN is sound — never as proof that splitting reaches full compliance.** Worth Bean's awareness; ⛔ do NOT widen this phase to fix it, and ⛔ do not add a parking entry for it without asking Bean first.
 
-**Baseline facts re-verified against the live tree as this plan was written** (each is a spec claim
-that the plan depends on; all three earlier reviews found premises that did not survive, so none is
-taken on trust):
+**Baseline facts re-verified against the live tree as this plan was written** (each is a spec claim that the plan depends on; all three earlier reviews found premises that did not survive, so none is taken on trust):
 
 | Spec claim | Verified | Command |
 |---|---|---|
@@ -262,18 +169,9 @@ taken on trust):
 | **FR-41-15 census is still accurate against the CURRENT `render.php`** | ✅ **18 background/border-carrying statements**, exactly as §FR-41-15 claims; all nine numbered `render.php` census rows located at their described selectors | the spec's own statement-aware scan, re-run (see Step 1) |
 | nav-menu's dismissible `<Notice>` precedent | ✅ `isDismissible={ true }`, `status="info"`, `marginBottom: '16px'` | `grep -n "Notice" src/blocks/nav-menu/edit.js` |
 
-**Correction-ledger entries consulted (Stage 0):**
-`~/.agents/skills/shared-references/correction-ledger.md` —
-`[RECURRING:powershell-statement-separator]` (use `;` or the Bash tool, never `&&` in PowerShell),
-`[RECURRING:hard-gate-enforcement]` (prose checkpoints get skipped; this plan's gates are runnable
-commands, never prose), `[prose-rules-ignored]` (hard Python hooks are the enforcement, which is
-why FR-41-35's detector is a first-class step and not a footnote).
+**Correction-ledger entries consulted (Stage 0):** `~/.agents/skills/shared-references/correction-ledger.md` — `[RECURRING:powershell-statement-separator]` (use `;` or the Bash tool, never `&&` in PowerShell), `[RECURRING:hard-gate-enforcement]` (prose checkpoints get skipped; this plan's gates are runnable commands, never prose), `[prose-rules-ignored]` (hard Python hooks are the enforcement, which is why FR-41-35's detector is a first-class step and not a footnote).
 
-**Project lessons this plan is structurally defended against:**
-`a-gates-scope-is-not-the-defects-scope` · `a-prohibition-in-a-subagent-brief-is-not-enforcement` ·
-`parallel_agent_dispatch_needs_one_directory_each` · `a-raw-db-update-does-not-survive-a-reseed` ·
-`revert-and-rerun-a-codemod-dont-hand-patch-its-output` · `never-stash-in-shared-worktree-commit-first` ·
-`a-renames-blast-radius-is-the-whole-write-path` · `a-schema-default-erases-the-absence-a-pipeline-preserved`.
+**Project lessons this plan is structurally defended against:** `a-gates-scope-is-not-the-defects-scope` · `a-prohibition-in-a-subagent-brief-is-not-enforcement` · `parallel_agent_dispatch_needs_one_directory_each` · `a-raw-db-update-does-not-survive-a-reseed` · `revert-and-rerun-a-codemod-dont-hand-patch-its-output` · `never-stash-in-shared-worktree-commit-first` · `a-renames-blast-radius-is-the-whole-write-path` · `a-schema-default-erases-the-absence-a-pipeline-preserved`.
 
 ---
 
@@ -307,30 +205,18 @@ why FR-41-35's detector is a first-class step and not a footnote).
 
 ## ⛔ Binding rules for every step in this phase
 
-1. **Cite code by SYMBOL, never by line.** `path/to/file.php::symbol_name` · `.json` → dot-path ·
-   `.css` → literal selector. A line number may ride along as a hint, never as the anchor. Every
-   step below and every pre-written prompt obeys this; so must every commit message and comment.
-2. **A QA gate's `Check` is a runnable command.** Never "verify it looks right". A claim that says
-   "verified" without the command that produced it is banned.
-3. **Commit straight to `main`, explicit pathspec, never `git add -A`, never `git stash`, never a
-   glob.** Pull/rebase + push after every completed step, not at the end. This tree is shared by
-   concurrent sessions and a glob has already put `main` fatal for 5 minutes.
+1. **Cite code by SYMBOL, never by line.** `path/to/file.php::symbol_name` · `.json` → dot-path · `.css` → literal selector. A line number may ride along as a hint, never as the anchor. Every step below and every pre-written prompt obeys this; so must every commit message and comment.
+2. **A QA gate's `Check` is a runnable command.** Never "verify it looks right". A claim that says "verified" without the command that produced it is banned.
+3. **Commit straight to `main`, explicit pathspec, never `git add -A`, never `git stash`, never a glob.** Pull/rebase + push after every completed step, not at the end. This tree is shared by concurrent sessions and a glob has already put `main` fatal for 5 minutes.
 4. **No deprecations, no version bumps** (D270/D293 — the framework is pre-production).
-5. **Never reason from what the canary currently renders** (Bean-locked 2026-08-31). A default is
-   decided on merits. The one exception is where the spec *explicitly* makes the current render the
-   requirement (G13's byte-identity proofs, §8.4's 8px radius) — those cite their own reason.
-6. **Every subagent gets ONE directory it may write to, named in its prompt, plus an explicit
-   "commit only these paths" pathspec.** A prohibition in a brief is not enforcement — pair it with
-   a `git diff --stat` review by the dispatching session before the next step starts.
+5. **Never reason from what the canary currently renders** (Bean-locked 2026-08-31). A default is decided on merits. The one exception is where the spec *explicitly* makes the current render the requirement (G13's byte-identity proofs, §8.4's 8px radius) — those cite their own reason.
+6. **Every subagent gets ONE directory it may write to, named in its prompt, plus an explicit "commit only these paths" pathspec.** A prohibition in a brief is not enforcement — pair it with a `git diff --stat` review by the dispatching session before the next step starts.
 
 ---
 
 ## Execution shape — where parallel applies and where it does not
 
-⚠ **This diagram was STALE by one step from Wave B onwards before this revision** — it showed
-"S12 colour rows / S14 CSS emission / S24 Bean sign-off" against headings reading 13 / 15 / 25, and
-invented an "S19 comment hygiene" step that does not exist (FR-41-19 is folded into step 9's prompt).
-Rewritten below against the real headings.
+⚠ **This diagram was STALE by one step from Wave B onwards before this revision** — it showed "S12 colour rows / S14 CSS emission / S24 Bean sign-off" against headings reading 13 / 15 / 25, and invented an "S19 comment hygiene" step that does not exist (FR-41-19 is folded into step 9's prompt). Rewritten below against the real headings.
 
 ```
 WAVE A  (four independent lanes, all safe to run concurrently — zero file overlap)
@@ -361,37 +247,13 @@ WAVE D  (verification — the phase does not close on a green script)
   → S25 Bean sign-off → S26 detector WARN→HARD → S27 docs + living-docs
 ```
 
-⚠ **Why `6a` / `14a` / `16a` rather than renumbering.** This file cross-references its own step numbers in
-roughly a hundred places (`Deps:` lines, the gate→step map, every `PD-n`, the ADHD anchors, the
-session markers), and this project has a recorded lesson for exactly that
-(`renumbering-breaks-every-pointer-that-lives-elsewhere` — inserting three items mid-doc broke six
-cross-references and needed three QC rounds, round 3's defects all caused by round 2's fix). A suffix
-inserts the work in the right place at zero pointer cost, and the convention is already in use on the
-gate names (`G5a`, `G20b`, `G20c`).
+⚠ **Why `6a` / `14a` / `16a` rather than renumbering.** This file cross-references its own step numbers in roughly a hundred places (`Deps:` lines, the gate→step map, every `PD-n`, the ADHD anchors, the session markers), and this project has a recorded lesson for exactly that (`renumbering-breaks-every-pointer-that-lives-elsewhere` — inserting three items mid-doc broke six cross-references and needed three QC rounds, round 3's defects all caused by round 2's fix). A suffix inserts the work in the right place at zero pointer cost, and the convention is already in use on the gate names (`G5a`, `G20b`, `G20c`).
 
-⚠ **Steps 4, 5 and 11's `Deps: step 2 (council GO)` is a DELIBERATE BLANKET QUALITY GATE, not a
-derived dependency** (S9). QA-1's three named questions are (a) the `includes/` require shipping
-path, (b) the inspector-scan corpus, (c) `register_post_meta` reachability — **none of them binds
-step 4** (a two-line CSS custom-property declaration), **step 5** (an optional row `heading`) or
-**step 11** (a standalone new detector touching no file any other step touches). The council is
-still a legitimate quality gate over the whole plan, so the blanket hold stands by default — but it
-is a CHOICE. ⚠ Step 11 is 70 minutes on the critical path and fully disjoint; **if Bean prefers, it
-may start immediately, in parallel with step 2 itself.** Do not read this as a technical blocker.
+⚠ **Steps 4, 5 and 11's `Deps: step 2 (council GO)` is a DELIBERATE BLANKET QUALITY GATE, not a derived dependency** (S9). QA-1's three named questions are (a) the `includes/` require shipping path, (b) the inspector-scan corpus, (c) `register_post_meta` reachability — **none of them binds step 4** (a two-line CSS custom-property declaration), **step 5** (an optional row `heading`) or **step 11** (a standalone new detector touching no file any other step touches). The council is still a legitimate quality gate over the whole plan, so the blanket hold stands by default — but it is a CHOICE. ⚠ Step 11 is 70 minutes on the critical path and fully disjoint; **if Bean prefers, it may start immediately, in parallel with step 2 itself.** Do not read this as a technical blocker.
 
-**Why `edit.js` and `render.php` ARE safely parallel (Lane 5 ∥ Lane 6) and the manifest is NOT.**
-Both lanes read the same `block.json`, but neither writes it, and after S9/S10 that file is frozen
-for the rest of the phase. They write disjoint file sets (`edit.js` + its new sub-modules vs
-`render.php` + its new `includes/` module + `style.css`). The single shared contract between them —
-the Sweep predicate — is *declarative data* in `block.json::supports.sgs.sweepEligibility`
-(FR-41-26), read mechanically by both, so neither lane can drift from the other by writing logic.
-⛔ **They are NOT parallel before S10.** Building either against a draft attribute name means a
-rename later, and a rename's blast radius is the whole write path (`a-renames-blast-radius-is-the-whole-write-path`).
+**Why `edit.js` and `render.php` ARE safely parallel (Lane 5 ∥ Lane 6) and the manifest is NOT.** Both lanes read the same `block.json`, but neither writes it, and after S9/S10 that file is frozen for the rest of the phase. They write disjoint file sets (`edit.js` + its new sub-modules vs `render.php` + its new `includes/` module + `style.css`). The single shared contract between them — the Sweep predicate — is *declarative data* in `block.json::supports.sgs.sweepEligibility` (FR-41-26), read mechanically by both, so neither lane can drift from the other by writing logic. ⛔ **They are NOT parallel before S10.** Building either against a draft attribute name means a rename later, and a rename's blast radius is the whole write path (`a-renames-blast-radius-is-the-whole-write-path`).
 
-**Why `/dispatching-parallel-agents` for Wave A and `/subagent-driven-development` for Waves B–C.**
-Wave A is four-plus genuinely independent, well-specified, disjoint-file tasks with no review loop
-between them — that is exactly the fan-out shape. Waves B and C are large, judgement-heavy edits on
-files other sessions also touch, where each task wants an implementer plus a spec-compliance review
-plus a code-quality review before the next task starts — the sequential per-task loop.
+**Why `/dispatching-parallel-agents` for Wave A and `/subagent-driven-development` for Waves B–C.** Wave A is four-plus genuinely independent, well-specified, disjoint-file tasks with no review loop between them — that is exactly the fan-out shape. Waves B and C are large, judgement-heavy edits on files other sessions also touch, where each task wants an implementer plus a spec-compliance review plus a code-quality review before the next task starts — the sequential per-task loop.
 
 ---
 
@@ -434,10 +296,7 @@ plus a code-quality review before the next task starts — the sequential per-ta
     Integration: style.css grep returns 20 lines, 12 of them real declarations across 7 rules
 ```
 
-> ✅ **Already run once while writing this plan: 18 statements, all nine numbered `render.php`
-> census rows located at their described selectors, arithmetic (11 CENSUSED / 7 GATED / 7 DISMISSED
-> = 25) reconciles.** Re-run it at execution time anyway — other sessions commit to this tree daily,
-> and a baseline is only true as of the command that produced it.
+> ✅ **Already run once while writing this plan: 18 statements, all nine numbered `render.php` census rows located at their described selectors, arithmetic (11 CENSUSED / 7 GATED / 7 DISMISSED = 25) reconciles.** Re-run it at execution time anyway — other sessions commit to this tree daily, and a baseline is only true as of the command that produced it.
 
 ---
 
@@ -474,23 +333,9 @@ QA Gate — the BUILD PLAN's fix-shapes hold against the current codebase
   Marker:  QA
 ```
 
-⚠ **The Hidden Decisions pass has already pre-empted part of this council's job, and found one thing
-it should have caught: `sgs_border_states_css()` has no edge parameter, so Step 15 rule 5 was
-unimplementable as the spec worded it.** That is now RULED (owner ruling 1): the shared helper gains
-an **additive optional `$map['suppress_edges']`**, built as its own step 6a, and FR-41-8 is rewritten
-in the spec to describe the real API. Add both the finding and the ruling to this council's inputs
-rather than making it re-derive them, and have it pressure-test the CHOSEN resolution — the additive
-shared-helper extension and its zero-delta default — rather than the refuted one or the
-block-private override this plan previously recommended.
+⚠ **The Hidden Decisions pass has already pre-empted part of this council's job, and found one thing it should have caught: `sgs_border_states_css()` has no edge parameter, so Step 15 rule 5 was unimplementable as the spec worded it.** That is now RULED (owner ruling 1): the shared helper gains an **additive optional `$map['suppress_edges']`**, built as its own step 6a, and FR-41-8 is rewritten in the spec to describe the real API. Add both the finding and the ruling to this council's inputs rather than making it re-derive them, and have it pressure-test the CHOSEN resolution — the additive shared-helper extension and its zero-delta default — rather than the refuted one or the block-private override this plan previously recommended.
 
-⛔ **(b) is the highest-value question in this gate, it is not hypothetical, and a read of the real
-detector says the answer is probably NO** — rule 31 has exactly two corpora (this block's `edit.js`
-and `src/components/`) and a block-folder sibling is in neither, so an imported `colourRows` resolves
-to nothing and every row silently scores zero states while the editor renders perfectly (D738).
-**Owner ruling 3 carries the full mechanism and the four commands that produced it, and already
-sets the safe default: the literal stays in `edit.js`. This council's job is to CONFIRM it
-empirically** — a static read is a hypothesis until a before/after
-`node scripts/inspector-scan/run.js --check` proves it. Its answer binds step 7.
+⛔ **(b) is the highest-value question in this gate, it is not hypothetical, and a read of the real detector says the answer is probably NO** — rule 31 has exactly two corpora (this block's `edit.js` and `src/components/`) and a block-folder sibling is in neither, so an imported `colourRows` resolves to nothing and every row silently scores zero states while the editor renders perfectly (D738). **Owner ruling 3 carries the full mechanism and the four commands that produced it, and already sets the safe default: the literal stays in `edit.js`. This council's job is to CONFIRM it empirically** — a static read is a hypothesis until a before/after `node scripts/inspector-scan/run.js --check` proves it. Its answer binds step 7.
 
 ---
 
@@ -531,57 +376,23 @@ empirically** — a static read is a hypothesis until a before/after
 
 **Prompt** (paste-and-run, `/subagent-prompt`-generated):
 
-> You are editing ONE file: `plugins/sgs-blocks/src/components/SgsBorderControl.js`. You may not
-> write any other file. Repo root: `c:\Users\Bean\Projects\small-giants-wp`.
+> You are editing ONE file: `plugins/sgs-blocks/src/components/SgsBorderControl.js`. You may not write any other file. Repo root: `c:\Users\Bean\Projects\small-giants-wp`.
 >
-> **Read first, in this order:** (1) `plugins/sgs-blocks/src/components/SgsBorderControl.js` in
-> full — its whole prop contract; (2)
-> `plugins/sgs-blocks/src/components/GradientCapableColourControl.js` — note how it gates its own
-> `BorderStyleControl` child with `typeof onBorderStyleChange === 'function'`; (3)
-> `plugins/sgs-blocks/src/components/BorderStyleControl.js` — prop contract is `{label?, value,
-> onChange}`, `onChange` receives `''` on deselect; (4) `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`
-> §FR-41-33 and §FR-41-2(b).
+> **Read first, in this order:** (1) `plugins/sgs-blocks/src/components/SgsBorderControl.js` in full — its whole prop contract; (2) `plugins/sgs-blocks/src/components/GradientCapableColourControl.js` — note how it gates its own `BorderStyleControl` child with `typeof onBorderStyleChange === 'function'`; (3) `plugins/sgs-blocks/src/components/BorderStyleControl.js` — prop contract is `{label?, value, onChange}`, `onChange` receives `''` on deselect; (4) `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-33 and §FR-41-2(b).
 >
-> **Task.** Add one additive prop, `showColour` (boolean, **default `true`**). When it is `true`,
-> the component must behave EXACTLY as it does today — this is the acceptance condition, not a
-> nicety. When it is `false`:
-> 1. Do not render the `.sgs-border-control__colour` FlexItem or its
->    `<GradientCapableColourControl>` at all. Omitting the colour props is NOT the same thing —
->    that renders an empty picker, which is the bug this prop exists to remove.
-> 2. `borderStyle` currently travels INTO `GradientCapableColourControl` as
->    `borderStyle`/`onBorderStyleChange`. Suppressing the picker must not take border style with
->    it. Render `plugins/sgs-blocks/src/components/BorderStyleControl.js::BorderStyleControl` as
->    `SgsBorderControl`'s own sibling in the same row, forwarding `styleValue`/`onStyleChange`.
->    ⛔ Do NOT hand-roll a `SelectControl` — that component exists, is barrel-exported from
->    `plugins/sgs-blocks/src/components/index.js::BorderStyleControl`, and already has two live
->    adopters. A hand-rolled select would also re-widen the vocabulary from 3 icons back to the
->    9-option list an owner ruling deleted across 13 blocks.
->    ⚠ Gate the sibling on `typeof onStyleChange === 'function'`, mirroring
->    `GradientCapableColourControl`'s own gate — a caller that never wired border style must get no
->    orphan control.
-> 3. Add to the component's docblock a verbatim ignore-list naming the props that become inert
->    (**12 discrete items — 9 single props plus the 3-member contrast trio; 10 if the trio counts as
->    one**. The LIST binds, not the count)
->    under `showColour={false}`: `colourStates`, `colourValue`, `onColourChange`,
->    `colourGradientValue`, `onColourGradientChange`, `colourLinked`, `colourLabel`, `clearable`,
->    `enableAlpha`, and the trio `contrastAgainst`/`contrastLabel`/`contrastLargeText`. Mark the
->    contrast trio explicitly as the dangerous one: a caller can wire a full WCAG contrast check
->    that then silently never runs, because the control performing it is not rendered.
->    ⛔ `borderStyle` is NOT on that list and must not be added to it — item 2 re-parents it.
+> **Task.** Add one additive prop, `showColour` (boolean, **default `true`**). When it is `true`, the component must behave EXACTLY as it does today — this is the acceptance condition, not a nicety. When it is `false`:
+> 1. Do not render the `.sgs-border-control__colour` FlexItem or its `<GradientCapableColourControl>` at all. Omitting the colour props is NOT the same thing — that renders an empty picker, which is the bug this prop exists to remove.
+> 2. `borderStyle` currently travels INTO `GradientCapableColourControl` as `borderStyle`/`onBorderStyleChange`. Suppressing the picker must not take border style with it. Render `plugins/sgs-blocks/src/components/BorderStyleControl.js::BorderStyleControl` as `SgsBorderControl`'s own sibling in the same row, forwarding `styleValue`/`onStyleChange`. ⛔ Do NOT hand-roll a `SelectControl` — that component exists, is barrel-exported from `plugins/sgs-blocks/src/components/index.js::BorderStyleControl`, and already has two live adopters. A hand-rolled select would also re-widen the vocabulary from 3 icons back to the 9-option list an owner ruling deleted across 13 blocks. ⚠ Gate the sibling on `typeof onStyleChange === 'function'`, mirroring `GradientCapableColourControl`'s own gate — a caller that never wired border style must get no orphan control.
+> 3. Add to the component's docblock a verbatim ignore-list naming the props that become inert (**12 discrete items — 9 single props plus the 3-member contrast trio; 10 if the trio counts as one**. The LIST binds, not the count) under `showColour={false}`: `colourStates`, `colourValue`, `onColourChange`, `colourGradientValue`, `onColourGradientChange`, `colourLinked`, `colourLabel`, `clearable`, `enableAlpha`, and the trio `contrastAgainst`/`contrastLabel`/`contrastLargeText`. Mark the contrast trio explicitly as the dangerous one: a caller can wire a full WCAG contrast check that then silently never runs, because the control performing it is not rendered. ⛔ `borderStyle` is NOT on that list and must not be added to it — item 2 re-parents it.
 >
-> **Do not** edit `GradientCapableColourControl.js`, `BorderStyleControl.js`, or any block.
-> **Do not** change any existing default. **Do not** run any git command.
+> **Do not** edit `GradientCapableColourControl.js`, `BorderStyleControl.js`, or any block. **Do not** change any existing default. **Do not** run any git command.
 >
 > **Prove it before you report done:**
 > - `cd plugins/sgs-blocks && npm run build` exits 0.
-> - Re-derive the mount roster live and paste the output:
->   `grep -rln "<SgsBorderControl" plugins/sgs-blocks/src/` — ⚠ this under-counts by at least one
->   (`sgs/media` mounts it through the media-atom chain), so also
->   `grep -rn "SgsBorderControl" plugins/sgs-blocks/src/ --include=*.js | grep -v components/`.
+> - Re-derive the mount roster live and paste the output: `grep -rln "<SgsBorderControl" plugins/sgs-blocks/src/` — ⚠ this under-counts by at least one (`sgs/media` mounts it through the media-atom chain), so also `grep -rn "SgsBorderControl" plugins/sgs-blocks/src/ --include=*.js | grep -v components/`.
 > - Quote the exact diff hunks you wrote.
 >
-> **Report:** the diff, the build result, the live mount roster, and one sentence per ignore-list
-> prop confirming it reaches `GradientCapableColourControl` and nothing else.
+> **Report:** the diff, the build result, the live mount roster, and one sentence per ignore-list prop confirming it reaches `GradientCapableColourControl` and nothing else.
 
 ---
 
@@ -615,27 +426,13 @@ empirically** — a static read is a hypothesis until a before/after
 
 **Prompt:**
 
-> Edit exactly ONE file: `plugins/sgs-blocks/assets/css/fx-magnet.css`. Repo root:
-> `c:\Users\Bean\Projects\small-giants-wp`.
+> Edit exactly ONE file: `plugins/sgs-blocks/assets/css/fx-magnet.css`. Repo root: `c:\Users\Bean\Projects\small-giants-wp`.
 >
-> Read `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-31 (the block headed
-> "The shared file therefore exposes the value it already owns") and the whole of the target file
-> including its docblock, which explains WHY the duration is 180ms.
+> Read `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-31 (the block headed "The shared file therefore exposes the value it already owns") and the whole of the target file including its docblock, which explains WHY the duration is 180ms.
 >
-> Inside the existing `[data-sgs-fx="magnet"]` rule, make this exact change and nothing else:
-> ```css
-> [data-sgs-fx="magnet"] {
->   --sgs-magnet-transition: transform 180ms ease-out;
->   transition: var( --sgs-magnet-transition );
->   /* transform / will-change unchanged */
-> }
-> ```
-> ⛔ Do not touch the `@media (prefers-reduced-motion: reduce)` rule. Do not change the duration.
-> Do not add `!important`. Do not touch any other file. Do not run git.
+> Inside the existing `[data-sgs-fx="magnet"]` rule, make this exact change and nothing else: ```css [data-sgs-fx="magnet"] { --sgs-magnet-transition: transform 180ms ease-out; transition: var( --sgs-magnet-transition ); /* transform / will-change unchanged */ } ``` ⛔ Do not touch the `@media (prefers-reduced-motion: reduce)` rule. Do not change the duration. Do not add `!important`. Do not touch any other file. Do not run git.
 >
-> **Prove it:** paste the before/after of the rule, and paste
-> `grep -rn 'data-sgs-fx="magnet"' plugins/sgs-blocks/ theme/ --include=*.css --include=*.php --include=*.js`
-> so the dispatching session can see every element this change reaches.
+> **Prove it:** paste the before/after of the rule, and paste `grep -rn 'data-sgs-fx="magnet"' plugins/sgs-blocks/ theme/ --include=*.css --include=*.php --include=*.js` so the dispatching session can see every element this change reaches.
 
 ---
 
@@ -666,27 +463,15 @@ empirically** — a static read is a hypothesis until a before/after
 
 **Prompt:**
 
-> Edit exactly ONE file: `plugins/sgs-blocks/src/components/SgsColourPanel.js`. Repo root:
-> `c:\Users\Bean\Projects\small-giants-wp`. Read the file in full — including its docblock, which
-> records that WordPress concatenates same-group Fills in mount order — and
-> `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-16.
+> Edit exactly ONE file: `plugins/sgs-blocks/src/components/SgsColourPanel.js`. Repo root: `c:\Users\Bean\Projects\small-giants-wp`. Read the file in full — including its docblock, which records that WordPress concatenates same-group Fills in mount order — and `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-16.
 >
-> **Task.** A row descriptor may now carry an optional `heading: string`. When it is a non-empty
-> string, render a non-interactive sub-heading immediately BEFORE that row's control, inside the
-> same single `PanelBody`. ⛔ Do not split into multiple `PanelBody`s. ⛔ Do not change the
-> `rows.filter(Boolean)` behaviour. ⛔ Do not change any prop name or any existing default.
+> **Task.** A row descriptor may now carry an optional `heading: string`. When it is a non-empty string, render a non-interactive sub-heading immediately BEFORE that row's control, inside the same single `PanelBody`. ⛔ Do not split into multiple `PanelBody`s. ⛔ Do not change the `rows.filter(Boolean)` behaviour. ⛔ Do not change any prop name or any existing default.
 >
-> A row that omits `heading` must render byte-identically to today — that is the acceptance
-> condition (§11 G1(a)).
+> A row that omits `heading` must render byte-identically to today — that is the acceptance condition (§11 G1(a)).
 >
-> Use the framework's existing heading idiom if one is already used elsewhere in `src/components/`
-> for a non-interactive panel sub-label — grep for it first (`grep -rn "BaseControl.VisualLabel\|__experimentalHeading\|<Heading" plugins/sgs-blocks/src/components/`)
-> and reuse what you find rather than inventing markup. Say in your report which idiom you reused
-> and where you found it; if you found none, say so and state what you used instead.
+> Use the framework's existing heading idiom if one is already used elsewhere in `src/components/` for a non-interactive panel sub-label — grep for it first (`grep -rn "BaseControl.VisualLabel\|__experimentalHeading\|<Heading" plugins/sgs-blocks/src/components/`) and reuse what you find rather than inventing markup. Say in your report which idiom you reused and where you found it; if you found none, say so and state what you used instead.
 >
-> **Prove it:** `cd plugins/sgs-blocks && npm run build` exits 0, and paste
-> `grep -rln "<SgsColourPanel" plugins/sgs-blocks/src/blocks/*/edit.js | wc -l` (live roster, never
-> a cached count). Do not run git. Do not edit any block.
+> **Prove it:** `cd plugins/sgs-blocks && npm run build` exits 0, and paste `grep -rln "<SgsColourPanel" plugins/sgs-blocks/src/blocks/*/edit.js | wc -l` (live roster, never a cached count). Do not run git. Do not edit any block.
 
 ---
 
@@ -736,73 +521,33 @@ empirically** — a static read is a hypothesis until a before/after
 
 **Prompt:**
 
-> You are editing TWO files and no others:
-> `plugins/sgs-blocks/includes/helpers-tokens.php` and
-> `plugins/sgs-blocks/includes/helpers-colour-variants.php`.
-> Repo root: `c:\Users\Bean\Projects\small-giants-wp`.
+> You are editing TWO files and no others: `plugins/sgs-blocks/includes/helpers-tokens.php` and `plugins/sgs-blocks/includes/helpers-colour-variants.php`. Repo root: `c:\Users\Bean\Projects\small-giants-wp`.
 >
-> **Read first:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-3 in full (parts a, b,
-> c, the three binding rules, and the specificity rule); then the current bodies of the five
-> emitters, **in the two files they actually live in — do not search one file for all five:**
+> **Read first:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-3 in full (parts a, b, c, the three binding rules, and the specificity rule); then the current bodies of the five emitters, **in the two files they actually live in — do not search one file for all five:**
 > - `plugins/sgs-blocks/includes/helpers-tokens.php::sgs_emit_state_colour_css` — this one ONLY.
-> - `plugins/sgs-blocks/includes/helpers-colour-variants.php::sgs_fill_decls`, `::sgs_text_decls`,
->   `::sgs_fill_states_css`, `::sgs_text_states_css`, `::sgs_border_states_css` — **all five of
->   these live here.**
+> - `plugins/sgs-blocks/includes/helpers-colour-variants.php::sgs_fill_decls`, `::sgs_text_decls`, `::sgs_fill_states_css`, `::sgs_text_states_css`, `::sgs_border_states_css` — **all five of these live here.**
 >
-> ⚠ Re-derive that mapping in one command before you start and paste it, rather than trusting this
-> list: `grep -rn "^function sgs_fill_decls\|^function sgs_text_decls\|^function sgs_fill_states_css\|^function sgs_text_states_css\|^function sgs_emit_state_colour_css" plugins/sgs-blocks/includes/*.php`.
-> ⛔ If a symbol is not where you expect it, the answer is NEVER "create the missing function" — it
-> is in the other file. Then read
-> `plugins/sgs-blocks/includes/helpers-hover-state.php` (`sgs_hover_state_rules`,
-> `sgs_hover_guarded_rule`, `SGS_HOVER_MEDIA`, `SGS_HOVER_NOT_TOUCH`).
+> ⚠ Re-derive that mapping in one command before you start and paste it, rather than trusting this list: `grep -rn "^function sgs_fill_decls\|^function sgs_text_decls\|^function sgs_fill_states_css\|^function sgs_text_states_css\|^function sgs_emit_state_colour_css" plugins/sgs-blocks/includes/*.php`. ⛔ If a symbol is not where you expect it, the answer is NEVER "create the missing function" — it is in the other file. Then read `plugins/sgs-blocks/includes/helpers-hover-state.php` (`sgs_hover_state_rules`, `sgs_hover_guarded_rule`, `SGS_HOVER_MEDIA`, `SGS_HOVER_NOT_TOUCH`).
 >
-> **⛔ There is no `_3` family.** Do not create `sgs_fill_states_css_3`, `sgs_text_states_css_3`,
-> `sgs_border_states_css_3` or `sgs_emit_state_colour_css_3`. Four near-duplicate functions are
-> four places for the next fix to be missed. The third state arrives as OPTIONAL parameters on the
-> existing functions.
+> **⛔ There is no `_3` family.** Do not create `sgs_fill_states_css_3`, `sgs_text_states_css_3`, `sgs_border_states_css_3` or `sgs_emit_state_colour_css_3`. Four near-duplicate functions are four places for the next fix to be missed. The third state arrives as OPTIONAL parameters on the existing functions.
 >
-> **(a)** `sgs_emit_state_colour_css( string $selector, array $decls_normal, array $decls_hover,
-> array $extra_states = [] ): string`. `$extra_states` maps `state_key => ['suffix' => string,
-> 'decls' => string[], 'guarded' => bool]`. Each entry emits `{$selector}{$suffix}{…$decls}`,
-> routed through `sgs_hover_state_rules()` when `guarded` is true and emitted plainly when false.
-> ⛔ **Emit `$extra_states` BEFORE `$decls_hover`, inside the function** — ordering must be a
-> property of the emitter, not of 122 call sites. The reason is in FR-41-3's specificity rule: both
-> suffixes weigh the same, so a state-pair always ties and source order is the only tie-breaker.
-> Emitting Current first means hover wins when a visitor points at the item for the page they are
-> already on, which is behaviour already locked in `render.php`'s `$hover_targets` comment.
+> **(a)** `sgs_emit_state_colour_css( string $selector, array $decls_normal, array $decls_hover, array $extra_states = [] ): string`. `$extra_states` maps `state_key => ['suffix' => string, 'decls' => string[], 'guarded' => bool]`. Each entry emits `{$selector}{$suffix}{…$decls}`, routed through `sgs_hover_state_rules()` when `guarded` is true and emitted plainly when false. ⛔ **Emit `$extra_states` BEFORE `$decls_hover`, inside the function** — ordering must be a property of the emitter, not of 122 call sites. The reason is in FR-41-3's specificity rule: both suffixes weigh the same, so a state-pair always ties and source order is the only tie-breaker. Emitting Current first means hover wins when a visitor points at the item for the page they are already on, which is behaviour already locked in `render.php`'s `$hover_targets` comment.
 >
-> **(b)** `sgs_fill_decls()` and `sgs_text_decls()` each gain a `current` key read from
-> `$map['current']` (and `$map['current_gradient']` where the mechanism supports it), and a third
-> `current` bucket in the returned array, **populated only when the caller's `$map` carries a
-> `current` key**. Their `sgs_fill_states_css()` / `sgs_text_states_css()` wrappers forward that
-> bucket into `$extra_states` when non-empty and pass `[]` when it is not.
+> **(b)** `sgs_fill_decls()` and `sgs_text_decls()` each gain a `current` key read from `$map['current']` (and `$map['current_gradient']` where the mechanism supports it), and a third `current` bucket in the returned array, **populated only when the caller's `$map` carries a `current` key**. Their `sgs_fill_states_css()` / `sgs_text_states_css()` wrappers forward that bucket into `$extra_states` when non-empty and pass `[]` when it is not.
 >
-> **(c)** `sgs_border_states_css()`: the third state is **FLAT-PATH ONLY**. When neither `gradient`
-> nor `hover_gradient` is set, emit one extra `{sel}[aria-current="page"]{border-color:Z}` rule
-> BEFORE the hover pair. When either gradient IS set the function delegates to
-> `sgs_border_gradient_css()`, a masked `::before` ring taking exactly two paints — **Current is
-> gradient-exempt at the ring level**; omit it silently there, do not attempt a third paint.
+> **(c)** `sgs_border_states_css()`: the third state is **FLAT-PATH ONLY**. When neither `gradient` nor `hover_gradient` is set, emit one extra `{sel}[aria-current="page"]{border-color:Z}` rule BEFORE the hover pair. When either gradient IS set the function delegates to `sgs_border_gradient_css()`, a masked `::before` ring taking exactly two paints — **Current is gradient-exempt at the ring level**; omit it silently there, do not attempt a third paint.
 >
-> **Binding rules you must obey:** every hover rule routes through a helper in
-> `helpers-hover-state.php` — never a bare `{sel}:hover`. `:focus-visible` stays OUTSIDE both touch
-> guards. The Current rule is never guarded.
+> **Binding rules you must obey:** every hover rule routes through a helper in `helpers-hover-state.php` — never a bare `{sel}:hover`. `:focus-visible` stays OUTSIDE both touch guards. The Current rule is never guarded.
 >
-> **⛔ The `[]` default is not a convenience, it is the acceptance condition.** Verify and paste:
-> `grep -rn "sgs_emit_state_colour_css(" plugins/sgs-blocks --include=*.php | wc -l` (expected 122
-> — re-derive it, do not trust this number). Every one of those must emit byte-identical CSS.
+> **⛔ The `[]` default is not a convenience, it is the acceptance condition.** Verify and paste: `grep -rn "sgs_emit_state_colour_css(" plugins/sgs-blocks --include=*.php | wc -l` (expected 122 — re-derive it, do not trust this number). Every one of those must emit byte-identical CSS.
 >
-> **Prove it:** `php -l` clean on both files; write and run a throwaway PHP harness under
-> `C:\Users\Bean\AppData\Local\Temp\claude\...\scratchpad\` (NOT in the repo) that calls each
-> changed function with (i) no fourth argument and (ii) a populated one, and paste both outputs
-> side by side. Delete the harness afterwards. Do not run git. Do not edit any block.
+> **Prove it:** `php -l` clean on both files; write and run a throwaway PHP harness under `C:\Users\Bean\AppData\Local\Temp\claude\...\scratchpad\` (NOT in the repo) that calls each changed function with (i) no fourth argument and (ii) a populated one, and paste both outputs side by side. Delete the harness afterwards. Do not run git. Do not edit any block.
 
 ---
 
 ### Step 6a — `sgs_border_states_css()` gains an ADDITIVE optional per-edge suppression (`suppress_edges`)
 
-> **Owner ruling 1 (2026-09-11) — full reasoning in §Resolved judgement calls.** This replaces the
-> block-private override rule this plan previously recommended. It is the phase's FOURTH
-> design-gated shared-component change and is treated exactly like the other three.
+> **Owner ruling 1 (2026-09-11) — full reasoning in §Resolved judgement calls.** This replaces the block-private override rule this plan previously recommended. It is the phase's FOURTH design-gated shared-component change and is treated exactly like the other three.
 
 ```
   Model:       sonnet
@@ -848,69 +593,30 @@ empirically** — a static read is a hypothesis until a before/after
 
 **Prompt** (paste-and-run, `/subagent-prompt`-generated):
 
-> You are editing ONE file: `plugins/sgs-blocks/includes/helpers-colour-variants.php`. Nothing else.
-> Repo root: `c:\Users\Bean\Projects\small-giants-wp`.
+> You are editing ONE file: `plugins/sgs-blocks/includes/helpers-colour-variants.php`. Nothing else. Repo root: `c:\Users\Bean\Projects\small-giants-wp`.
 >
-> **Read first, in this order:** (1) the CURRENT body of
-> `plugins/sgs-blocks/includes/helpers-colour-variants.php::sgs_border_states_css` in full,
-> including step 6's freshly-added third state and the two long comment blocks above the
-> flat-vs-gradient fork (they record two live incidents and are load-bearing context, not noise);
-> (2) `plugins/sgs-blocks/includes/helpers-colour-variants.php::sgs_border_gradient_css`, so you can
-> see why the ring path cannot carry an edge; (3)
-> `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-8 (v0.4.7) and §FR-41-3.
+> **Read first, in this order:** (1) the CURRENT body of `plugins/sgs-blocks/includes/helpers-colour-variants.php::sgs_border_states_css` in full, including step 6's freshly-added third state and the two long comment blocks above the flat-vs-gradient fork (they record two live incidents and are load-bearing context, not noise); (2) `plugins/sgs-blocks/includes/helpers-colour-variants.php::sgs_border_gradient_css`, so you can see why the ring path cannot carry an edge; (3) `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-8 (v0.4.7) and §FR-41-3.
 >
-> **Task — ONE additive optional `$map` key. Do NOT change the function signature.** The signature
-> stays `sgs_border_states_css( string $selector, array $attributes, array $map ): string`. The new
-> capability arrives as a key inside the existing `$map`, which is how `gradient`, `hover`,
-> `hover_gradient` and `width` already arrive. ⛔ Do NOT add a fourth positional parameter. ⛔ Do
-> NOT create `sgs_border_states_css_per_edge()` or any sibling — the no-sibling rule that governs
-> step 6's third state governs this identically.
+> **Task — ONE additive optional `$map` key. Do NOT change the function signature.** The signature stays `sgs_border_states_css( string $selector, array $attributes, array $map ): string`. The new capability arrives as a key inside the existing `$map`, which is how `gradient`, `hover`, `hover_gradient` and `width` already arrive. ⛔ Do NOT add a fourth positional parameter. ⛔ Do NOT create `sgs_border_states_css_per_edge()` or any sibling — the no-sibling rule that governs step 6's third state governs this identically.
 >
-> **The key's shape is the project's existing BOX OBJECT naming, reused verbatim:**
-> ```php
-> 'suppress_edges' => array( 'top' => false, 'right' => false, 'bottom' => true, 'left' => false )
-> ```
-> An absent key behaves as all-false. An absent EDGE inside the array behaves as false. Read it
-> defensively — it is operator-adjacent data by the time nav-menu passes it.
+> **The key's shape is the project's existing BOX OBJECT naming, reused verbatim:** ```php 'suppress_edges' => array( 'top' => false, 'right' => false, 'bottom' => true, 'left' => false ) ``` An absent key behaves as all-false. An absent EDGE inside the array behaves as false. Read it defensively — it is operator-adjacent data by the time nav-menu passes it.
 >
 > **Behaviour, exactly:**
-> 1. **Resting rule: UNCHANGED.** It keeps emitting the `border-color` shorthand. (nav-menu makes the
->    swept edge's resting colour transparent with its own separate rule from the sweep branch —
->    that is not this function's job and you must not do it here.)
-> 2. **Non-resting rules (hover, and the `current` state step 6 added): per-edge longhands when any
->    edge is suppressed.** Instead of one `border-color: X`, emit `border-top-color: X;
->    border-right-color: X; border-left-color: X` — the unsuppressed edges only, in
->    top/right/bottom/left order, skipping the suppressed ones. When NO edge is suppressed, emit the
->    flat shorthand exactly as today. ⛔ This last clause is the acceptance condition: an
->    implementation that always emits longhands is byte-DIFFERENT for all 100% of existing callers
->    and has failed, even though it renders the same.
+> 1. **Resting rule: UNCHANGED.** It keeps emitting the `border-color` shorthand. (nav-menu makes the swept edge's resting colour transparent with its own separate rule from the sweep branch — that is not this function's job and you must not do it here.)
+> 2. **Non-resting rules (hover, and the `current` state step 6 added): per-edge longhands when any edge is suppressed.** Instead of one `border-color: X`, emit `border-top-color: X; border-right-color: X; border-left-color: X` — the unsuppressed edges only, in top/right/bottom/left order, skipping the suppressed ones. When NO edge is suppressed, emit the flat shorthand exactly as today. ⛔ This last clause is the acceptance condition: an implementation that always emits longhands is byte-DIFFERENT for all 100% of existing callers and has failed, even though it renders the same.
 > 3. **When EVERY edge is suppressed, emit no non-resting rule at all** — not an empty rule body.
-> 4. **The gradient/ring path ignores `suppress_edges` silently**, and the docblock says so in one
->    sentence naming the reason: `sgs_border_gradient_css()` paints a masked `::before` ring that
->    takes exactly two paints and has no per-edge concept, so a per-edge request there is
->    unexpressible rather than merely unimplemented.
-> 5. Every hover rule still routes through `sgs_hover_state_rules()` with its existing
->    `:focus-within` pairing — ⛔ never a bare `{sel}:hover`, and do not drop `:focus-within` while
->    restructuring the declarations.
+> 4. **The gradient/ring path ignores `suppress_edges` silently**, and the docblock says so in one sentence naming the reason: `sgs_border_gradient_css()` paints a masked `::before` ring that takes exactly two paints and has no per-edge concept, so a per-edge request there is unexpressible rather than merely unimplemented.
+> 5. Every hover rule still routes through `sgs_hover_state_rules()` with its existing `:focus-within` pairing — ⛔ never a bare `{sel}:hover`, and do not drop `:focus-within` while restructuring the declarations.
 >
-> **Document the key in the function's docblock** alongside the existing `$map` keys, with its shape,
-> its default, and the gradient-path exemption.
+> **Document the key in the function's docblock** alongside the existing `$map` keys, with its shape, its default, and the gradient-path exemption.
 >
 > **Prove it, commands pasted:**
 > - `php -l plugins/sgs-blocks/includes/helpers-colour-variants.php` clean.
-> - Re-derive the live caller roster and paste it:
->   `grep -rn "sgs_border_states_css(" plugins/sgs-blocks --include=*.php`
-> - Write a throwaway PHP harness under
->   `C:\Users\Bean\AppData\Local\Temp\claude\...\scratchpad\` (⛔ NOT in the repo) that calls the
->   function with (i) each existing caller's real `$map` shape and no `suppress_edges`, (ii) the same
->   `$map` plus `'suppress_edges' => ['bottom'=>true]`, (iii) all four edges suppressed, and
->   (iv) a gradient set PLUS `suppress_edges` — and paste all four outputs. Run (i) against the
->   PRE-change function too (`git show HEAD:plugins/sgs-blocks/includes/helpers-colour-variants.php`
->   into the scratchpad) and `diff` the two: **the diff must be empty.** Delete the harness after.
+> - Re-derive the live caller roster and paste it: `grep -rn "sgs_border_states_css(" plugins/sgs-blocks --include=*.php`
+> - Write a throwaway PHP harness under `C:\Users\Bean\AppData\Local\Temp\claude\...\scratchpad\` (⛔ NOT in the repo) that calls the function with (i) each existing caller's real `$map` shape and no `suppress_edges`, (ii) the same `$map` plus `'suppress_edges' => ['bottom'=>true]`, (iii) all four edges suppressed, and (iv) a gradient set PLUS `suppress_edges` — and paste all four outputs. Run (i) against the PRE-change function too (`git show HEAD:plugins/sgs-blocks/includes/helpers-colour-variants.php` into the scratchpad) and `diff` the two: **the diff must be empty.** Delete the harness after.
 > - Confirm in one sentence, per existing caller, that it passes no `suppress_edges` key.
 >
-> ⛔ Do NOT edit any block, any other `includes/` file, or step 6's other file
-> (`helpers-tokens.php`). ⛔ Do NOT run git beyond `show`/`diff`/`status`.
+> ⛔ Do NOT edit any block, any other `includes/` file, or step 6's other file (`helpers-tokens.php`). ⛔ Do NOT run git beyond `show`/`diff`/`status`.
 
 ---
 
@@ -993,141 +699,50 @@ empirically** — a static read is a hypothesis until a before/after
                  (owner ruling 7 — a per-file assertion, not a total)
 ```
 
-⚠ **The atomicity rule is NECESSARY BUT NOT SUFFICIENT, which is why `colourRows` stays in
-`edit.js` — owner ruling 3 carries the verified mechanism and its four commands.** In short: rule 31
-parses only this block's `edit.js` and `src/components/`, so an imported `colourRows` resolves to
-`[]` and every row silently scores zero states. ⛔ That reading is a hypothesis until QA-1 question
-(b) proves it; if the detector DOES follow a block-folder sibling the extraction is permitted, and
-the atomicity rule still binds in full. Until then: extract PANEL COMPONENTS, leave the descriptors
-where they are.
+⚠ **The atomicity rule is NECESSARY BUT NOT SUFFICIENT, which is why `colourRows` stays in `edit.js` — owner ruling 3 carries the verified mechanism and its four commands.** In short: rule 31 parses only this block's `edit.js` and `src/components/`, so an imported `colourRows` resolves to `[]` and every row silently scores zero states. ⛔ That reading is a hypothesis until QA-1 question (b) proves it; if the detector DOES follow a block-folder sibling the extraction is permitted, and the atomicity rule still binds in full. Until then: extract PANEL COMPONENTS, leave the descriptors where they are.
 
 **Prompt:**
 
-> **This is a PURE REFACTOR. If you add, remove or change a single control, attribute or default,
-> the step has failed regardless of what else you did.** Repo root:
-> `c:\Users\Bean\Projects\small-giants-wp`. Your ONE writable directory is
-> `plugins/sgs-blocks/src/blocks/nav-menu/`.
+> **This is a PURE REFACTOR. If you add, remove or change a single control, attribute or default, the step has failed regardless of what else you did.** Repo root: `c:\Users\Bean\Projects\small-giants-wp`. Your ONE writable directory is `plugins/sgs-blocks/src/blocks/nav-menu/`.
 >
-> **Context.** `edit.js` is 1,535 lines. The project limit for JS is 250 lines
-> (`~/.claude/rules/code-quality.md`, and repo `CLAUDE.md`). Spec 41 is about to add ~40 net-new
-> attributes and a full inspector rebuild to this file, so it must be split BEFORE that lands, not
-> after.
+> **Context.** `edit.js` is 1,535 lines. The project limit for JS is 250 lines (`~/.claude/rules/code-quality.md`, and repo `CLAUDE.md`). Spec 41 is about to add ~40 net-new attributes and a full inspector rebuild to this file, so it must be split BEFORE that lands, not after.
 >
-> **Read first:** `plugins/sgs-blocks/src/blocks/cart/edit.js` together with its siblings
-> `PanelSettingsControls.js` and `TriggerSettingsControls.js` — that is the established precedent
-> in this codebase and the shape to copy. Then read
-> `plugins/sgs-blocks/src/blocks/nav-menu/edit.js` in full. Then read
-> `plugins/sgs-blocks/src/components/SgsColourPanel.js`'s docblock.
+> **Read first:** `plugins/sgs-blocks/src/blocks/cart/edit.js` together with its siblings `PanelSettingsControls.js` and `TriggerSettingsControls.js` — that is the established precedent in this codebase and the shape to copy. Then read `plugins/sgs-blocks/src/blocks/nav-menu/edit.js` in full. Then read `plugins/sgs-blocks/src/components/SgsColourPanel.js`'s docblock.
 >
 > **⛔ TWO CONSTRAINTS THAT WILL SILENTLY BREAK THINGS IF YOU MISS THEM:**
-> 1. **`SgsColourPanel` must remain mounted BEFORE any other same-group `<InspectorControls>`.**
->    WordPress concatenates same-group Fills in MOUNT order. A split that changes which component
->    mounts first silently reorders the client's inspector, and nothing errors.
-> 2. **⛔ THE `colourRows` LITERAL STAYS IN `edit.js`. It is an ATOMIC UNIT (owner ruling 3).**
->    `plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js` resolves a colour
->    row's state count as `statesArray.elements.length` on a LITERAL `ArrayExpression`, and — this
->    is the part that decides the split — it only ever looks in TWO places: the block's own
->    `edit.js`, and `src/components/`. A sibling module inside this block's folder is in neither
->    corpus, so an imported `colourRows` resolves to nothing and every nav-menu colour row silently
->    scores zero states while the editor renders perfectly. That is the recorded "code improved and
->    the gate went blind" failure (D738), and this rule's own header records it costing a 33-row
->    tree-wide undercount once already.
->    **So: extract PANEL COMPONENTS. Leave `const colourRows = [ … ]` and its
->    `<SgsColourPanel rows={ colourRows } />` mount exactly where they are.** Never rebuild the
->    array with `.map()`, `.filter()`, `.concat()`, `Array.from()`, or a spread of a variable;
->    never split it across files; never move part of it.
->    **Run `node plugins/sgs-blocks/scripts/inspector-scan/run.js --check` before AND after your
->    split and paste both outputs. The per-row state counts must be IDENTICAL** — a count that
->    changed, including one that silently became zero, fails the step.
+> 1. **`SgsColourPanel` must remain mounted BEFORE any other same-group `<InspectorControls>`.** WordPress concatenates same-group Fills in MOUNT order. A split that changes which component mounts first silently reorders the client's inspector, and nothing errors.
+> 2. **⛔ THE `colourRows` LITERAL STAYS IN `edit.js`. It is an ATOMIC UNIT (owner ruling 3).** `plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js` resolves a colour row's state count as `statesArray.elements.length` on a LITERAL `ArrayExpression`, and — this is the part that decides the split — it only ever looks in TWO places: the block's own `edit.js`, and `src/components/`. A sibling module inside this block's folder is in neither corpus, so an imported `colourRows` resolves to nothing and every nav-menu colour row silently scores zero states while the editor renders perfectly. That is the recorded "code improved and the gate went blind" failure (D738), and this rule's own header records it costing a 33-row tree-wide undercount once already. **So: extract PANEL COMPONENTS. Leave `const colourRows = [ … ]` and its `<SgsColourPanel rows={ colourRows } />` mount exactly where they are.** Never rebuild the array with `.map()`, `.filter()`, `.concat()`, `Array.from()`, or a spread of a variable; never split it across files; never move part of it. **Run `node plugins/sgs-blocks/scripts/inspector-scan/run.js --check` before AND after your split and paste both outputs. The per-row state counts must be IDENTICAL** — a count that changed, including one that silently became zero, fails the step.
 >
-> **⛔ FLOOR: 7 FILES MINIMUM, and expect 8 after step 14.** This is arithmetic, not taste:
-> `edit.js` is 1,536 lines of which 1,303 are code (11% comments — this file's bulk is real, unlike
-> `render.php`'s), and `ceil(1535/250) = 7`. A four-module split has a total capacity of 1,000 lines
-> and cannot house 1,303. **Suggested seams, all measured, none requiring a mid-panel cut:**
-> `utils.js` (~110) · `useNavMenuSource.js` (~145) · `useDrawerNotice.js` (~120) ·
-> `NavMenuNotices.js` (~95) · `SettingsPanels.js` (~210) · one file per Styles-tab panel
-> (Bar 84 / Dropdown 90 / Items 76 / Effects 31 / Underline 44 / Featured 100 / Burger 17) ·
-> `edit.js` itself (the pinned `colourRows` literal + the JSX assembly). Adjust the boundaries if
-> the file's real structure argues otherwise — but say so, and never go below 7 files.
-> Every file, including `edit.js` itself, must end ≤ 250 lines, asserted individually.
+> **⛔ FLOOR: 7 FILES MINIMUM, and expect 8 after step 14.** This is arithmetic, not taste: `edit.js` is 1,536 lines of which 1,303 are code (11% comments — this file's bulk is real, unlike `render.php`'s), and `ceil(1535/250) = 7`. A four-module split has a total capacity of 1,000 lines and cannot house 1,303. **Suggested seams, all measured, none requiring a mid-panel cut:** `utils.js` (~110) · `useNavMenuSource.js` (~145) · `useDrawerNotice.js` (~120) · `NavMenuNotices.js` (~95) · `SettingsPanels.js` (~210) · one file per Styles-tab panel (Bar 84 / Dropdown 90 / Items 76 / Effects 31 / Underline 44 / Featured 100 / Burger 17) · `edit.js` itself (the pinned `colourRows` literal + the JSX assembly). Adjust the boundaries if the file's real structure argues otherwise — but say so, and never go below 7 files. Every file, including `edit.js` itself, must end ≤ 250 lines, asserted individually.
 >
-> **Named reuse lever, verified available — use it before you add an eighth file.** The 12
-> hand-assembled rows in `colourRows` (258 lines) map onto
-> `plugins/sgs-blocks/src/components/index.js::fillRow` / `::textRow`, folding to ~105–115 lines.
-> ⚠ Rule 31 supports this: `scripts/inspector-scan/rules/31-golden-colour-control.js::checkRow`
-> takes `statesCountOverride` and `hasGradientOverride` params which exist *specifically* to carry a
-> row resolved from a `fillRow({…})` call. **So an adopted row is scored via the override path, not
-> via `statesArray.elements.length`** — owner ruling 3's "identical per-row state counts before and
-> after" test must be run against the ADOPTED shape and read on its own terms. ⛔ A changed
-> resolution PATH is not the same thing as a changed COUNT; do not read the override path as proof
-> the fold was rejected, and do not read it as licence to move `colourRows` out of `edit.js` either
-> (ruling 3's corpus limit is untouched by this).
+> **Named reuse lever, verified available — use it before you add an eighth file.** The 12 hand-assembled rows in `colourRows` (258 lines) map onto `plugins/sgs-blocks/src/components/index.js::fillRow` / `::textRow`, folding to ~105–115 lines. ⚠ Rule 31 supports this: `scripts/inspector-scan/rules/31-golden-colour-control.js::checkRow` takes `statesCountOverride` and `hasGradientOverride` params which exist *specifically* to carry a row resolved from a `fillRow({…})` call. **So an adopted row is scored via the override path, not via `statesArray.elements.length`** — owner ruling 3's "identical per-row state counts before and after" test must be run against the ADOPTED shape and read on its own terms. ⛔ A changed resolution PATH is not the same thing as a changed COUNT; do not read the override path as proof the fold was rejected, and do not read it as licence to move `colourRows` out of `edit.js` either (ruling 3's corpus limit is untouched by this).
 >
-> ⚠ **Module NAMES: report the roster you actually land.** Steps 14 and 19 currently cite
-> `panels-general.js` / `panels-design.js` / `typography-panel.js` / `submenu-panels.js` — names
-> from the superseded four-module guess. Whatever names you land are authoritative; put the final
-> roster at the top of your report and in the reuse ledger, and the dispatching session repoints
-> steps 14 and 19 before dispatching them.
+> ⚠ **Module NAMES: report the roster you actually land.** Steps 14 and 19 currently cite `panels-general.js` / `panels-design.js` / `typography-panel.js` / `submenu-panels.js` — names from the superseded four-module guess. Whatever names you land are authoritative; put the final roster at the top of your report and in the reuse ledger, and the dispatching session repoints steps 14 and 19 before dispatching them.
 >
-> **⛔ REDUCE, DON'T RELOCATE (owner ruling 7).** A split that moves 1,535 lines into six files of
-> 250 has bought a passing `wc -l` and nothing else. Before writing a single new block-private
-> helper, component or constant, look for the one the framework already ships: read
-> `plugins/sgs-blocks/src/components/index.js` (the barrel) end to end, plus
-> `src/components/primitives/` and any extension already applying to this block
-> (`grep -rn "nav-menu" plugins/sgs-blocks/src/extensions/ 2>/dev/null`). Hand-rolled controls,
-> option arrays and attribute-key maps are the bulk worth DELETING — this block already carries one
-> recorded instance (`featuredFontWeight`, number-typed with a hand-rolled 4-option array where
-> `SGS_FONT_WEIGHT_OPTIONS` exists).
-> **Write `.claude/verify/spec-41-reuse-ledger.md`**: one row per sub-file — file, final line count,
-> the shared atom/helper/extension it leans on, and the count it would have had without. "None
-> applied" is an acceptable row; "didn't look" is not.
+> **⛔ REDUCE, DON'T RELOCATE (owner ruling 7).** A split that moves 1,535 lines into six files of 250 has bought a passing `wc -l` and nothing else. Before writing a single new block-private helper, component or constant, look for the one the framework already ships: read `plugins/sgs-blocks/src/components/index.js` (the barrel) end to end, plus `src/components/primitives/` and any extension already applying to this block (`grep -rn "nav-menu" plugins/sgs-blocks/src/extensions/ 2>/dev/null`). Hand-rolled controls, option arrays and attribute-key maps are the bulk worth DELETING — this block already carries one recorded instance (`featuredFontWeight`, number-typed with a hand-rolled 4-option array where `SGS_FONT_WEIGHT_OPTIONS` exists). **Write `.claude/verify/spec-41-reuse-ledger.md`**: one row per sub-file — file, final line count, the shared atom/helper/extension it leans on, and the count it would have had without. "None applied" is an acceptable row; "didn't look" is not.
 >
 > **Prove it, with commands pasted:**
-> - `wc -l plugins/sgs-blocks/src/blocks/nav-menu/*.js` — ⛔ assert EVERY file ≤ 250 individually,
->   and name any file that lands within 10 lines of the limit (it will not survive step 14)
+> - `wc -l plugins/sgs-blocks/src/blocks/nav-menu/*.js` — ⛔ assert EVERY file ≤ 250 individually, and name any file that lands within 10 lines of the limit (it will not survive step 14)
 > - `cd plugins/sgs-blocks && npm run build` exits 0
 > - `node scripts/inspector-scan/run.js --check` — before and after, identical per-row state counts
-> - `node scripts/check-dead-controls.js --check` and
->   `node scripts/check-empty-inspector-containers.js --check` both pass
-> - `git diff --stat -- plugins/sgs-blocks/src/blocks/nav-menu/` so the dispatching session can see
->   the whole blast radius
+> - `node scripts/check-dead-controls.js --check` and `node scripts/check-empty-inspector-containers.js --check` both pass
+> - `git diff --stat -- plugins/sgs-blocks/src/blocks/nav-menu/` so the dispatching session can see the whole blast radius
 >
-> Do NOT run any git command other than `git diff`/`git status` for reporting. Do NOT touch
-> `render.php`, `block.json`, `style.css` or any file outside your one directory (the reuse ledger
-> under `.claude/verify/` is the one exception, and it is the only file you may write there).
+> Do NOT run any git command other than `git diff`/`git status` for reporting. Do NOT touch `render.php`, `block.json`, `style.css` or any file outside your one directory (the reuse ledger under `.claude/verify/` is the one exception, and it is the only file you may write there).
 
 ---
 
 ### Step 8 — Split `render.php` into FOUR PHP files (pure refactor)
 
-> ⛔ **BEAN'S DECISION, 2026-09-11 — this file's split requirement is measured on CODE LINES ONLY,
-> not raw `wc -l`.** This is consistent with his own prior ruling **D722**, which already rejected a
-> raw-line-count gate on *this exact file* for being comment-heavy (48% comments then, **52% now**).
-> **Do not re-litigate this in a future revision without a fresh decision from Bean.**
+> ⛔ **BEAN'S DECISION, 2026-09-11 — this file's split requirement is measured on CODE LINES ONLY, not raw `wc -l`.** This is consistent with his own prior ruling **D722**, which already rejected a raw-line-count gate on *this exact file* for being comment-heavy (48% comments then, **52% now**). **Do not re-litigate this in a future revision without a fresh decision from Bean.**
 >
 > **The measurement, re-derived against the live tree (command below, output pasted):**
 >
-> ```
-> render.php = 2,032 raw lines / 845 CODE lines (52% comments)
->   above the "── 4. Scoped CSS assembly" banner:  878 raw / 428 code
->   below it (the CSS assembly half):            1,154 raw / 417 code  (58% comments)
->   largest single cluster (mega-trigger / submenu / drawer-fork / indicator):
->                                                  531 raw / 139 code  (68% comments)
-> ```
+> ``` render.php = 2,032 raw lines / 845 CODE lines (52% comments) above the "── 4. Scoped CSS assembly" banner:  878 raw / 428 code below it (the CSS assembly half):            1,154 raw / 417 code  (58% comments) largest single cluster (mega-trigger / submenu / drawer-fork / indicator): 531 raw / 139 code  (68% comments) ```
 >
-> At the 300-line PHP limit measured on CODE lines: `ceil(428/300) = 2` for the markup half and
-> `ceil(417/300) = 2` for the CSS half. **On code alone this file needs 4 modules, not 8.**
-> **FLOOR AND CEILING: exactly 4 PHP files.** ⛔ Do not split it into more; a further split buys a
-> smaller number and costs a boundary nobody needed.
+> At the 300-line PHP limit measured on CODE lines: `ceil(428/300) = 2` for the markup half and `ceil(417/300) = 2` for the CSS half. **On code alone this file needs 4 modules, not 8.** **FLOOR AND CEILING: exactly 4 PHP files.** ⛔ Do not split it into more; a further split buys a smaller number and costs a boundary nobody needed.
 >
-> ⛔ **Do NOT "reduce by reuse" here — the lever is already spent.** Verified: `render.php` already
-> carries **27 shared-helper call sites** (`sgs_hover_state_rules` ×10, `sgs_colour_value` ×14,
-> `sgs_background_paint_decl` ×7, …), and both
-> `plugins/sgs-blocks/scripts/migrate-render-closures.py --survey` and
-> `plugins/sgs-blocks/scripts/migrate-length-sanitiser.py --survey` return **0 migratable,
-> plugin-wide**. A reuse-ledger row of *"none applies — shared helpers already adopted, surveys
-> return 0"* is the **correct and expected** answer for this step, not a failure to look. (⚠ This is
-> the opposite of step 7, where the `fillRow`/`textRow` lever is real and unspent.)
+> ⛔ **Do NOT "reduce by reuse" here — the lever is already spent.** Verified: `render.php` already carries **27 shared-helper call sites** (`sgs_hover_state_rules` ×10, `sgs_colour_value` ×14, `sgs_background_paint_decl` ×7, …), and both `plugins/sgs-blocks/scripts/migrate-render-closures.py --survey` and `plugins/sgs-blocks/scripts/migrate-length-sanitiser.py --survey` return **0 migratable, plugin-wide**. A reuse-ledger row of *"none applies — shared helpers already adopted, surveys return 0"* is the **correct and expected** answer for this step, not a failure to look. (⚠ This is the opposite of step 7, where the `fillRow`/`textRow` lever is real and unspent.)
 
 ```
   Model:       sonnet
@@ -1195,124 +810,40 @@ where they are.
 
 **Prompt:**
 
-> **PURE REFACTOR — byte-identical emitted CSS is the acceptance condition.** Repo root:
-> `c:\Users\Bean\Projects\small-giants-wp`. Writable files: exactly
-> `plugins/sgs-blocks/src/blocks/nav-menu/render.php` plus the NEW file(s) you create under
-> `plugins/sgs-blocks/includes/`.
+> **PURE REFACTOR — byte-identical emitted CSS is the acceptance condition.** Repo root: `c:\Users\Bean\Projects\small-giants-wp`. Writable files: exactly `plugins/sgs-blocks/src/blocks/nav-menu/render.php` plus the NEW file(s) you create under `plugins/sgs-blocks/includes/`.
 >
-> **Read first:** `plugins/sgs-blocks/src/blocks/nav-menu/render.php` in full;
-> `plugins/sgs-blocks/src/blocks/product-card/render.php`'s `require_once dirname( __DIR__, 3 ) .
-> '/includes/…'` lines and the file they pull in — that is the precedent;
-> `plugins/sgs-blocks/includes/product-card-builtin-render.php`'s own structure.
+> **Read first:** `plugins/sgs-blocks/src/blocks/nav-menu/render.php` in full; `plugins/sgs-blocks/src/blocks/product-card/render.php`'s `require_once dirname( __DIR__, 3 ) . '/includes/…'` lines and the file they pull in — that is the precedent; `plugins/sgs-blocks/includes/product-card-builtin-render.php`'s own structure.
 >
-> **Why `includes/` and not a sibling partial in the block folder:** the `includes/` route is
-> proven to ship (the whole directory is part of the plugin), whereas nothing in this repo proves
-> `wp-scripts build --experimental-modules --webpack-copy-php` copies an arbitrary sibling `.php`
-> next to `render.php`. Do not experiment with the unproven route.
-> ✅ **The path arithmetic is verified in BOTH trees:** `dirname( __DIR__, 3 )` resolves to
-> `plugins/sgs-blocks` from `src/blocks/nav-menu/render.php` AND from
-> `build/blocks/nav-menu/render.php` — both put the block folder exactly three levels down, and the
-> built copy already exists on disk.
+> **Why `includes/` and not a sibling partial in the block folder:** the `includes/` route is proven to ship (the whole directory is part of the plugin), whereas nothing in this repo proves `wp-scripts build --experimental-modules --webpack-copy-php` copies an arbitrary sibling `.php` next to `render.php`. Do not experiment with the unproven route. ✅ **The path arithmetic is verified in BOTH trees:** `dirname( __DIR__, 3 )` resolves to `plugins/sgs-blocks` from `src/blocks/nav-menu/render.php` AND from `build/blocks/nav-menu/render.php` — both put the block folder exactly three levels down, and the built copy already exists on disk.
 >
-> **⛔ ONE THING THE SPLIT MUST LEAVE BEHIND (owner ruling 2, 2026-09-11).** Step 15 adds
-> `sgs_nav_menu_typography_hover_rule()` — the small emitter for the hover-state typography trio
-> (decoration / transform / weight), needed because the shared
-> `includes/helpers-typography.php::sgs_typography_css_rule` has no hover branch and no other block
-> has ever switched the `showHover` flag on. **That function is BLOCK-PRIVATE: it is declared in
-> `plugins/sgs-blocks/src/blocks/nav-menu/render.php` itself, inside a `function_exists()` guard —
-> NOT in `includes/nav-menu-css.php` and NOT anywhere else under `includes/`.** Spec 41 FR-41-21
-> states this literally (*"a file-local function in this block's own `render.php`, not an addition to
-> `includes/`"*) and the owner has confirmed the literal reading. It is ~30 lines; budget for it when
-> you decide how close to the 300-line limit `render.php` lands, and say in your report what
-> `render.php`'s line count will be once step 15 adds it.
+> **⛔ ONE THING THE SPLIT MUST LEAVE BEHIND (owner ruling 2, 2026-09-11).** Step 15 adds `sgs_nav_menu_typography_hover_rule()` — the small emitter for the hover-state typography trio (decoration / transform / weight), needed because the shared `includes/helpers-typography.php::sgs_typography_css_rule` has no hover branch and no other block has ever switched the `showHover` flag on. **That function is BLOCK-PRIVATE: it is declared in `plugins/sgs-blocks/src/blocks/nav-menu/render.php` itself, inside a `function_exists()` guard — NOT in `includes/nav-menu-css.php` and NOT anywhere else under `includes/`.** Spec 41 FR-41-21 states this literally (*"a file-local function in this block's own `render.php`, not an addition to `includes/`"*) and the owner has confirmed the literal reading. It is ~30 lines; budget for it when you decide how close to the 300-line limit `render.php` lands, and say in your report what `render.php`'s line count will be once step 15 adds it.
 >
-> **⛔ REDUCE, DON'T RELOCATE (owner ruling 7).** Before extracting a block-private PHP helper, check
-> whether `includes/` already ships one — read `includes/render-helpers.php` (the bootstrap require
-> list) and `ls plugins/sgs-blocks/includes/helpers-*.php`. Emission code hand-reimplementing
-> `sgs_hover_state_rules()`, `sgs_colour_value()`, `sgs_corner_object_shorthand()`,
-> `sgs_border_radius_tiers()`, `sgs_shadow_attr_map()` or a typography allowlist is bulk to DELETE,
-> not to move. **Append to `.claude/verify/spec-41-reuse-ledger.md`**: one row per extracted module —
-> final line count, the shared helper it leans on, the count it would have had without. ⚠ The ONE
-> deliberate exception is the FR-41-21 emitter above, which duplicates three of
-> `sgs_typography_css_rule()`'s allowlists ON PURPOSE (extending that helper is design-gated and out
-> of scope — Spec 41 §12 item 2). Record it as a KNOWN, owner-ruled duplication.
+> **⛔ REDUCE, DON'T RELOCATE (owner ruling 7).** Before extracting a block-private PHP helper, check whether `includes/` already ships one — read `includes/render-helpers.php` (the bootstrap require list) and `ls plugins/sgs-blocks/includes/helpers-*.php`. Emission code hand-reimplementing `sgs_hover_state_rules()`, `sgs_colour_value()`, `sgs_corner_object_shorthand()`, `sgs_border_radius_tiers()`, `sgs_shadow_attr_map()` or a typography allowlist is bulk to DELETE, not to move. **Append to `.claude/verify/spec-41-reuse-ledger.md`**: one row per extracted module — final line count, the shared helper it leans on, the count it would have had without. ⚠ The ONE deliberate exception is the FR-41-21 emitter above, which duplicates three of `sgs_typography_css_rule()`'s allowlists ON PURPOSE (extending that helper is design-gated and out of scope — Spec 41 §12 item 2). Record it as a KNOWN, owner-ruled duplication.
 >
-> ⛔ **BUT ON THIS FILE THE REUSE LEVER IS ALREADY SPENT, and that is the expected answer.**
-> `render.php` already carries **27 shared-helper call sites** (`sgs_hover_state_rules` ×10,
-> `sgs_colour_value` ×14, `sgs_background_paint_decl` ×7, …), and both
-> `python plugins/sgs-blocks/scripts/migrate-render-closures.py --survey` and
-> `python plugins/sgs-blocks/scripts/migrate-length-sanitiser.py --survey` return **0 migratable,
-> plugin-wide**. Run both and paste the output. **A ledger row reading *"none applies — shared
-> helpers already adopted, surveys return 0"* is CORRECT and expected here** — it is not a
-> "didn't look" row, and you must not manufacture a reuse to avoid writing it.
+> ⛔ **BUT ON THIS FILE THE REUSE LEVER IS ALREADY SPENT, and that is the expected answer.** `render.php` already carries **27 shared-helper call sites** (`sgs_hover_state_rules` ×10, `sgs_colour_value` ×14, `sgs_background_paint_decl` ×7, …), and both `python plugins/sgs-blocks/scripts/migrate-render-closures.py --survey` and `python plugins/sgs-blocks/scripts/migrate-length-sanitiser.py --survey` return **0 migratable, plugin-wide**. Run both and paste the output. **A ledger row reading *"none applies — shared helpers already adopted, surveys return 0"* is CORRECT and expected here** — it is not a "didn't look" row, and you must not manufacture a reuse to avoid writing it.
 >
-> **⛔ WHERE THE SPLITS GO — FOUR FILES, and the count is not a judgement call.** Measured on CODE
-> lines (Bean's decision + D722; comments do not count on this file): 845 code lines total, 428
-> above the banner and 417 below, against a 300-line limit → 2 + 2 = **4 files**.
-> `render.php` carries an explicit section banner — **`── 4. Scoped CSS assembly`** — which is the
-> primary seam: everything from that banner to the end of the CSS assembly leaves `render.php`; the
-> class definition and the markup-rendering methods above it stay behind. **Then split each half
-> again:**
-> - **Markup half (428 code lines) → 2 files.** `render.php` keeps the class/entry, menu resolution
->   and attribute normalisation — plus the block-private `sgs_nav_menu_typography_hover_rule()`
->   step 15 adds (owner ruling 2; it may NOT go to `includes/`).
->   `includes/nav-menu-markup.php` takes `render_items`, `render_items_drawer` and the
->   burger/trigger markup.
-> - **CSS half (417 code lines) → 2 files.** `includes/nav-menu-css.php` takes item/state colour,
->   border, treatments + sweep. `includes/nav-menu-submenu-css.php` takes submenu/dropdown,
->   burger + magnet, the drawer fork and the indicator. ⚠ The largest single cluster here
->   (mega-trigger / submenu / drawer-fork / indicator) is 531 raw lines but only **139 code** lines
->   — 68% comments — so it does NOT force a boundary through the middle of a cluster.
+> **⛔ WHERE THE SPLITS GO — FOUR FILES, and the count is not a judgement call.** Measured on CODE lines (Bean's decision + D722; comments do not count on this file): 845 code lines total, 428 above the banner and 417 below, against a 300-line limit → 2 + 2 = **4 files**. `render.php` carries an explicit section banner — **`── 4. Scoped CSS assembly`** — which is the primary seam: everything from that banner to the end of the CSS assembly leaves `render.php`; the class definition and the markup-rendering methods above it stay behind. **Then split each half again:**
+> - **Markup half (428 code lines) → 2 files.** `render.php` keeps the class/entry, menu resolution and attribute normalisation — plus the block-private `sgs_nav_menu_typography_hover_rule()` step 15 adds (owner ruling 2; it may NOT go to `includes/`). `includes/nav-menu-markup.php` takes `render_items`, `render_items_drawer` and the burger/trigger markup.
+> - **CSS half (417 code lines) → 2 files.** `includes/nav-menu-css.php` takes item/state colour, border, treatments + sweep. `includes/nav-menu-submenu-css.php` takes submenu/dropdown, burger + magnet, the drawer fork and the indicator. ⚠ The largest single cluster here (mega-trigger / submenu / drawer-fork / indicator) is 531 raw lines but only **139 code** lines — 68% comments — so it does NOT force a boundary through the middle of a cluster.
 >
-> You may move a seam if the real structure argues for it — say so and show the counts — but the
-> file COUNT is exactly four. ⛔ Do not produce five to get a smaller number.
-> ⚠ **Grep for the banner, do not use a line number**
-> (`grep -n "Scoped CSS assembly" plugins/sgs-blocks/src/blocks/nav-menu/render.php`) — other
-> sessions commit to this file daily. If the byte-identity harness fails at that boundary, **move the
-> boundary; do not patch the output.**
+> You may move a seam if the real structure argues for it — say so and show the counts — but the file COUNT is exactly four. ⛔ Do not produce five to get a smaller number. ⚠ **Grep for the banner, do not use a line number** (`grep -n "Scoped CSS assembly" plugins/sgs-blocks/src/blocks/nav-menu/render.php`) — other sessions commit to this file daily. If the byte-identity harness fails at that boundary, **move the boundary; do not patch the output.**
 >
-> **⚠ One load-order note that must go into the new file as a comment.**
-> `helpers-tokens.php`, `helpers-hover-state.php` and `helpers-colour-variants.php` are all required
-> globally at plugin bootstrap (via `includes/render-helpers.php`). `nav-menu-css.php` is NOT — it is
-> `require_once`'d per-instance from `render.php`, matching product-card's pattern. So its functions
-> are only in scope after nav-menu's own `render.php` has run at least once on that page load. That
-> is fine today (nothing else calls into nav-menu internals) — **write the note in the file**, or a
-> future cross-block call fatals for a reason nobody will find.
+> **⚠ One load-order note that must go into the new file as a comment.** `helpers-tokens.php`, `helpers-hover-state.php` and `helpers-colour-variants.php` are all required globally at plugin bootstrap (via `includes/render-helpers.php`). `nav-menu-css.php` is NOT — it is `require_once`'d per-instance from `render.php`, matching product-card's pattern. So its functions are only in scope after nav-menu's own `render.php` has run at least once on that page load. That is fine today (nothing else calls into nav-menu internals) — **write the note in the file**, or a future cross-block call fatals for a reason nobody will find.
 >
-> **⛔ THE FATAL YOU WILL CAUSE IF YOU MISS THIS.** A top-level `function` declaration inside a
-> per-instance `render.php` fatals on the SECOND instance of the block on one page — and this page
-> genuinely has two (the header bar and the drawer's own seeded instance). Every function you
-> extract must be declared inside the `includes/` file, and that file must be `require_once`'d, and
-> each function wrapped in `if ( ! function_exists( 'sgs_nav_menu_…' ) )`. This codebase does that
-> everywhere else; match it.
+> **⛔ THE FATAL YOU WILL CAUSE IF YOU MISS THIS.** A top-level `function` declaration inside a per-instance `render.php` fatals on the SECOND instance of the block on one page — and this page genuinely has two (the header bar and the drawer's own seeded instance). Every function you extract must be declared inside the `includes/` file, and that file must be `require_once`'d, and each function wrapped in `if ( ! function_exists( 'sgs_nav_menu_…' ) )`. This codebase does that everywhere else; match it.
 >
-> **Naming:** prefix every extracted function `sgs_nav_menu_` (hook/function prefix rule, repo
-> `CLAUDE.md` naming conventions).
+> **Naming:** prefix every extracted function `sgs_nav_menu_` (hook/function prefix rule, repo `CLAUDE.md` naming conventions).
 >
-> **Prove byte-identity, do not assert it.** Before you split: build a fixture attribute array
-> covering at minimum an item background + hover, a featured item, a submenu with a min-width, a
-> burger with a hover colour, and the drawer fork; capture the emitted CSS string. After the split:
-> capture it again from the same fixture. `diff` them and paste the (empty) diff. Run the harness
-> from `C:\Users\Bean\AppData\Local\Temp\claude\...\scratchpad\`, never from the repo, and delete it
-> when done.
+> **Prove byte-identity, do not assert it.** Before you split: build a fixture attribute array covering at minimum an item background + hover, a featured item, a submenu with a min-width, a burger with a hover colour, and the drawer fork; capture the emitted CSS string. After the split: capture it again from the same fixture. `diff` them and paste the (empty) diff. Run the harness from `C:\Users\Bean\AppData\Local\Temp\claude\...\scratchpad\`, never from the repo, and delete it when done.
 >
 > **Also prove:**
-> - **BOTH counts, per file, in one table** (Bean's decision 2026-09-11 / D722 — the ENFORCED measure
->   is CODE lines; the raw count is reported for transparency only):
->   `wc -l plugins/sgs-blocks/src/blocks/nav-menu/render.php plugins/sgs-blocks/includes/nav-menu-*.php`
->   for the raw figure, and a code-line count (blank lines, `//`, `#`, `/* … */` and `*` continuation
->   lines excluded) for the enforced one. ⛔ Assert EVERY file ≤ 300 **CODE** lines individually
->   (owner ruling 7 — per file, never a total). ⛔ A file over 300 RAW lines but under 300 CODE lines
->   is **PASSING**, not a violation to fix — that is the whole point of Bean's ruling, and re-splitting
->   to satisfy the raw number is the error D722 already rejected once on this file.
+> - **BOTH counts, per file, in one table** (Bean's decision 2026-09-11 / D722 — the ENFORCED measure is CODE lines; the raw count is reported for transparency only): `wc -l plugins/sgs-blocks/src/blocks/nav-menu/render.php plugins/sgs-blocks/includes/nav-menu-*.php` for the raw figure, and a code-line count (blank lines, `//`, `#`, `/* … */` and `*` continuation lines excluded) for the enforced one. ⛔ Assert EVERY file ≤ 300 **CODE** lines individually (owner ruling 7 — per file, never a total). ⛔ A file over 300 RAW lines but under 300 CODE lines is **PASSING**, not a violation to fix — that is the whole point of Bean's ruling, and re-splitting to satisfy the raw number is the error D722 already rejected once on this file.
 > - State `render.php`'s projected CODE count once step 15 adds the ~30-line block-private emitter
 > - `php -l` clean on every file you touched
-> - `cd plugins/sgs-blocks && npm run build` exits 0, and the new `includes/` file is present in the
->   shipped tree — paste the `ls` proving it
+> - `cd plugins/sgs-blocks && npm run build` exits 0, and the new `includes/` file is present in the shipped tree — paste the `ls` proving it
 > - `git diff --stat` for reporting only
 >
-> ⛔ Do NOT change any CSS declaration, any selector, any guard condition, or any attribute read.
-> ⛔ Do NOT run git beyond `diff`/`status`. ⛔ Do NOT touch `edit.js`, `block.json` or `style.css`.
+> ⛔ Do NOT change any CSS declaration, any selector, any guard condition, or any attribute read. ⛔ Do NOT run git beyond `diff`/`status`. ⛔ Do NOT touch `edit.js`, `block.json` or `style.css`.
 
 ---
 
@@ -1363,109 +894,34 @@ where they are.
 
 **Prompt:**
 
-> You are editing ONE file: `plugins/sgs-blocks/src/blocks/nav-menu/block.json`. Nothing else.
-> Repo root: `c:\Users\Bean\Projects\small-giants-wp`. This is the highest-blast-radius edit in the
-> whole build: everything downstream is written against the names you declare here, and a rename
-> later costs the entire write path (the cloning converter emits these names too).
+> You are editing ONE file: `plugins/sgs-blocks/src/blocks/nav-menu/block.json`. Nothing else. Repo root: `c:\Users\Bean\Projects\small-giants-wp`. This is the highest-blast-radius edit in the whole build: everything downstream is written against the names you declare here, and a rename later costs the entire write path (the cloning converter emits these names too).
 >
-> **Read, in full, before editing:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §8 entire
-> (8.1 through 8.6g), plus FR-41-25, FR-41-26 (the `sweepEligibility` JSON block verbatim),
-> FR-41-30, FR-41-31, FR-41-33, FR-41-34. Then read the current `block.json` in full.
+> **Read, in full, before editing:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §8 entire (8.1 through 8.6g), plus FR-41-25, FR-41-26 (the `sweepEligibility` JSON block verbatim), FR-41-30, FR-41-31, FR-41-33, FR-41-34. Then read the current `block.json` in full.
 >
-> **DELETE (§8.3) — all of these, with NO deprecation (project policy D270, pre-production):**
-> `hoverStyle` · `underlineColour` · `underlineColourHover` · `underlineColourGradient` ·
-> `underlineThickness` · `underlineOffset` · `itemRadius` · `itemRadiusHover` · `submenuRadius` ·
-> `indicatorStyle` · `indicatorColour` · `indicatorColourGradient`.
-> ⛔ The whole `indicator*` family is in this sweep. `indicatorStyle` is an EXISTING shipped
-> attribute carrying real stored values on client pages; omitting it is how a client's pill setting
-> disappears with no explanation and no failing gate.
+> **DELETE (§8.3) — all of these, with NO deprecation (project policy D270, pre-production):** `hoverStyle` · `underlineColour` · `underlineColourHover` · `underlineColourGradient` · `underlineThickness` · `underlineOffset` · `itemRadius` · `itemRadiusHover` · `submenuRadius` · `indicatorStyle` · `indicatorColour` · `indicatorColourGradient`. ⛔ The whole `indicator*` family is in this sweep. `indicatorStyle` is an EXISTING shipped attribute carrying real stored values on client pages; omitting it is how a client's pill setting disappears with no explanation and no failing gate.
 >
-> **DECLARE (§8.4)** every net-new attribute at exactly the type and default in that table. Four
-> that a builder gets wrong:
-> - `itemFontWeightCurrent` / `itemFontWeightHover` / `submenuFontWeightHover` are
->   `"type":"string"`, **not number** — the sibling `itemFontWeight` is `{"type":"string","default":""}`,
->   and a number-typed sibling is a second vocabulary for one property.
-> - `itemBorderRadius` default is **`{"topLeft":"8px","topRight":"8px","bottomRight":"8px","bottomLeft":"8px"}`**
->   — a FLAT corner object of CSS length STRINGS, the `sgs/product-card::ctaBorderRadius` shape read
->   by `sgs_corner_object_shorthand()`. ⛔ NOT `{"desktop":{}}`: 57 attributes in this tree carry
->   that shape and every one is a BLOCK-ROOT radius read by `sgs_border_radius_tiers()`. Using it
->   here would produce a tier envelope with no corner keys, and the radius would VANISH silently
->   rather than erroring.
-> - `submenuBorderRadius` keeps `{}` — do not read the item's new default as a reason to give the
->   panel one.
-> - All six `showHover` trio attributes default `""`. ⛔ `itemTextDecorationHover` does NOT default
->   to `"underline"`; that would reinstate the underline as the block's shipped hover signal, which
->   is precisely what this spec removes.
-> - `submenuFontSize` and `submenuLetterSpacing` are `{"type":"object","default":{}}` — TIER
->   OBJECTS. ⛔ Do NOT declare `submenuFontSizeTablet`/`…Mobile` or `itemFontSizeTablet`/`…Mobile`;
->   §8.4a proves those would be attributes with zero writers and zero readers. `submenuLineHeight`
->   mirrors `itemLineHeight` as `{"type":"number"}` — deliberately un-migrated on both, symmetrical.
+> **DECLARE (§8.4)** every net-new attribute at exactly the type and default in that table. Four that a builder gets wrong:
+> - `itemFontWeightCurrent` / `itemFontWeightHover` / `submenuFontWeightHover` are `"type":"string"`, **not number** — the sibling `itemFontWeight` is `{"type":"string","default":""}`, and a number-typed sibling is a second vocabulary for one property.
+> - `itemBorderRadius` default is **`{"topLeft":"8px","topRight":"8px","bottomRight":"8px","bottomLeft":"8px"}`** — a FLAT corner object of CSS length STRINGS, the `sgs/product-card::ctaBorderRadius` shape read by `sgs_corner_object_shorthand()`. ⛔ NOT `{"desktop":{}}`: 57 attributes in this tree carry that shape and every one is a BLOCK-ROOT radius read by `sgs_border_radius_tiers()`. Using it here would produce a tier envelope with no corner keys, and the radius would VANISH silently rather than erroring.
+> - `submenuBorderRadius` keeps `{}` — do not read the item's new default as a reason to give the panel one.
+> - All six `showHover` trio attributes default `""`. ⛔ `itemTextDecorationHover` does NOT default to `"underline"`; that would reinstate the underline as the block's shipped hover signal, which is precisely what this spec removes.
+> - `submenuFontSize` and `submenuLetterSpacing` are `{"type":"object","default":{}}` — TIER OBJECTS. ⛔ Do NOT declare `submenuFontSizeTablet`/`…Mobile` or `itemFontSizeTablet`/`…Mobile`; §8.4a proves those would be attributes with zero writers and zero readers. `submenuLineHeight` mirrors `itemLineHeight` as `{"type":"number"}` — deliberately un-migrated on both, symmetrical.
 >
-> **⛔ NO JSON `enum` on any of the new small string attributes** (`triggerMode`,
-> `submenuAnimation`, every `…HoverTreatment`, `borderHoverAnimationDirection`, the six trio
-> members). PHP-validate instead. `render.php`'s own `$allowed_hover_styles` comment records the
-> reason: an out-of-enum stored value silently coerces to the block.json default with no error, and
-> that bites hardest via a programmatic writer (the cloning pipeline, pattern files) setting the
-> attribute directly. ⚠ The ONE exception is the EXISTING `itemTextDecoration`, which carries a real
-> enum today and KEEPS it — add `"overline"` as a fifth value to match `SGS_TEXT_DECORATION_OPTIONS`
-> and the PHP allowlist in `sgs_typography_css_rule()`.
+> **⛔ NO JSON `enum` on any of the new small string attributes** (`triggerMode`, `submenuAnimation`, every `…HoverTreatment`, `borderHoverAnimationDirection`, the six trio members). PHP-validate instead. `render.php`'s own `$allowed_hover_styles` comment records the reason: an out-of-enum stored value silently coerces to the block.json default with no error, and that bites hardest via a programmatic writer (the cloning pipeline, pattern files) setting the attribute directly. ⚠ The ONE exception is the EXISTING `itemTextDecoration`, which carries a real enum today and KEEPS it — add `"overline"` as a fifth value to match `SGS_TEXT_DECORATION_OPTIONS` and the PHP allowlist in `sgs_typography_css_rule()`.
 >
-> **`supports.sgs.elements` (§8.6):**
-> (a) `item` — add `"border"` to `clusters` (without it the forward-resolution pass never visits
->     `css:border-*` and the attrMap is never consulted; this block's own `indicator` element
->     records that exact trap). Repoint base `css:border-radius` → `itemBorderRadius` and **REMOVE
->     the `states.hover` border-radius entry entirely**. Add base `css:border-color`/`-width`/`-style`,
->     base `css:text-decoration` → `itemTextDecoration`, base `css:text-transform` →
->     `itemTextTransform` (both genuinely absent today). ⛔ **Base `css:font-weight` →
->     `itemFontWeight` ALREADY EXISTS and must SURVIVE** — do not drop it when adding the two state
->     siblings; a state entry with no base is the STATE_WITHOUT_BASE shape the manifest gate flags.
->     Add `states.hover` and a NEW `states.current`, per §8.6(a)'s table.
->     ⛔ **Every state member is EXPLICIT — never left to the `{prefix}Suffix` convention.** Base and
->     hover would otherwise both derive to `(text-decoration, item, state=NULL)` and collide on ONE
->     routing slot. This block's own manifest `_note`s record that exact collision happening TWICE
->     (`burgerColour`+`burgerColourHover`; `submenuColour`+`submenuColourHover`).
->     ⛔ **`states.current` must map DIFFERENT attribute names from `states.hover`.** The classifier's
->     `_record()` is LAST-WRITE-WINS; a byte-identical `selected` map was removed on 2026-08-19
->     because it silently overwrote the hover derivation and tagged three attributes with a state
->     they never render in.
-> (b) `sublink` — add `states.current`, add `"fill"` to clusters, add the fill family across base +
->     both states, add the base typography members AND the three hover trio members (FR-41-22c's
->     full list). ⚠ `"prefix": ""` STAYS — a `submenu` prefix would wrongly re-claim
->     `submenuAlign`/`Caret`/`CloseGrace`/`MinWidth`/`Radius`/`Padding`, which belong to the PANEL.
->     Every member here is explicit by necessity.
-> (c) NEW `submenu-panel` element: claims `submenuBg`, the four `submenuBorder*`, and the two shadow
->     attrs, all base-only. Clusters `["fill","border","layout"]`, `"prefix": ""`, **NO `states` key
->     at all**.
-> (d) **DELETE the `underline` element outright** — the whole entry, not a note correction.
-> (e) The `burger` element gains NOTHING for `triggerMode`/`triggerLabel`/`triggerIcon`/the three
->     `triggerMagnet*` — none is a CSS property, and declaring them creates phantom routing slots.
-> (g) Add `supports.sgs.sweepEligibility` with exactly the three rows and three keys in FR-41-26's
->     JSON block. ⛔ It is NOT an `elements` entry and routes nothing — it sits beside
->     `colourExemptions` / `hideExtensions` / `boxFamilies`. ⛔ Write
->     `"blockingBackgroundAttrs": []` for `itemColourHoverTreatment` EXPLICITLY — a missing key and
->     an empty array must not be distinguishable by accident.
+> **`supports.sgs.elements` (§8.6):** (a) `item` — add `"border"` to `clusters` (without it the forward-resolution pass never visits `css:border-*` and the attrMap is never consulted; this block's own `indicator` element records that exact trap). Repoint base `css:border-radius` → `itemBorderRadius` and **REMOVE the `states.hover` border-radius entry entirely**. Add base `css:border-color`/`-width`/`-style`, base `css:text-decoration` → `itemTextDecoration`, base `css:text-transform` → `itemTextTransform` (both genuinely absent today). ⛔ **Base `css:font-weight` → `itemFontWeight` ALREADY EXISTS and must SURVIVE** — do not drop it when adding the two state siblings; a state entry with no base is the STATE_WITHOUT_BASE shape the manifest gate flags. Add `states.hover` and a NEW `states.current`, per §8.6(a)'s table. ⛔ **Every state member is EXPLICIT — never left to the `{prefix}Suffix` convention.** Base and hover would otherwise both derive to `(text-decoration, item, state=NULL)` and collide on ONE routing slot. This block's own manifest `_note`s record that exact collision happening TWICE (`burgerColour`+`burgerColourHover`; `submenuColour`+`submenuColourHover`). ⛔ **`states.current` must map DIFFERENT attribute names from `states.hover`.** The classifier's `_record()` is LAST-WRITE-WINS; a byte-identical `selected` map was removed on 2026-08-19 because it silently overwrote the hover derivation and tagged three attributes with a state they never render in. (b) `sublink` — add `states.current`, add `"fill"` to clusters, add the fill family across base + both states, add the base typography members AND the three hover trio members (FR-41-22c's full list). ⚠ `"prefix": ""` STAYS — a `submenu` prefix would wrongly re-claim `submenuAlign`/`Caret`/`CloseGrace`/`MinWidth`/`Radius`/`Padding`, which belong to the PANEL. Every member here is explicit by necessity. (c) NEW `submenu-panel` element: claims `submenuBg`, the four `submenuBorder*`, and the two shadow attrs, all base-only. Clusters `["fill","border","layout"]`, `"prefix": ""`, **NO `states` key at all**. (d) **DELETE the `underline` element outright** — the whole entry, not a note correction. (e) The `burger` element gains NOTHING for `triggerMode`/`triggerLabel`/`triggerIcon`/the three `triggerMagnet*` — none is a CSS property, and declaring them creates phantom routing slots. (g) Add `supports.sgs.sweepEligibility` with exactly the three rows and three keys in FR-41-26's JSON block. ⛔ It is NOT an `elements` entry and routes nothing — it sits beside `colourExemptions` / `hideExtensions` / `boxFamilies`. ⛔ Write `"blockingBackgroundAttrs": []` for `itemColourHoverTreatment` EXPLICITLY — a missing key and an empty array must not be distinguishable by accident.
 >
-> Also extend `supports.sgs.colourExemptions`: keep `submenu-bg` and `indicator`, sharpen
-> `submenu-bg`'s reason to name `submenuLinkBg*` as where the hoverable surface actually is, and add
-> a matching entry for the panel's border under the same reasoning.
+> Also extend `supports.sgs.colourExemptions`: keep `submenu-bg` and `indicator`, sharpen `submenu-bg`'s reason to name `submenuLinkBg*` as where the hoverable surface actually is, and add a matching entry for the panel's border under the same reasoning.
 >
-> Also update `supports.sgs.elements.item._note` and `.sublink._note` per FR-41-19 — state what the
-> code does NOW, cite FR-41-1 and Spec 41, name `itemColourCurrent`/`itemBgCurrent`/
-> `itemFontWeightCurrent`. ⛔ **No retirement narration** — do not write "this used to have no
-> current-page colour". ⚠ The stale citation in `item._note` is `FR-35-5`, not `FR-36-5` — read it in
-> the file before editing it.
+> Also update `supports.sgs.elements.item._note` and `.sublink._note` per FR-41-19 — state what the code does NOW, cite FR-41-1 and Spec 41, name `itemColourCurrent`/`itemBgCurrent`/ `itemFontWeightCurrent`. ⛔ **No retirement narration** — do not write "this used to have no current-page colour". ⚠ The stale citation in `item._note` is `FR-35-5`, not `FR-36-5` — read it in the file before editing it.
 >
 > **Prove it, commands pasted:**
 > - `python -m json.tool plugins/sgs-blocks/src/blocks/nav-menu/block.json > /dev/null` exits 0
 > - `python -c "import json;d=json.load(open('plugins/sgs-blocks/src/blocks/nav-menu/block.json'));print(len(d['attributes']));print(sorted(d['supports']['sgs']['elements']))"`
-> - `grep -nE '"(hoverStyle|underline[A-Za-z]*|itemRadius|itemRadiusHover|submenuRadius|indicatorStyle|indicatorColour|indicatorColourGradient)"' plugins/sgs-blocks/src/blocks/nav-menu/block.json`
->   returns NOTHING
-> - For every attribute named in `sweepEligibility`, assert it resolves to a real entry in
->   `attributes` — paste a name-by-name check. A typo there reads as permanently empty, so the
->   predicate always passes and the eligibility rule silently ceases to exist.
+> - `grep -nE '"(hoverStyle|underline[A-Za-z]*|itemRadius|itemRadiusHover|submenuRadius|indicatorStyle|indicatorColour|indicatorColourGradient)"' plugins/sgs-blocks/src/blocks/nav-menu/block.json` returns NOTHING
+> - For every attribute named in `sweepEligibility`, assert it resolves to a real entry in `attributes` — paste a name-by-name check. A typo there reads as permanently empty, so the predicate always passes and the eligibility rule silently ceases to exist.
 >
-> Do NOT edit `edit.js`, `render.php` or `style.css`. Do NOT run `/sgs-update` (that is step 10).
-> Do NOT run git beyond `diff`/`status`.
+> Do NOT edit `edit.js`, `render.php` or `style.css`. Do NOT run `/sgs-update` (that is step 10). Do NOT run git beyond `diff`/`status`.
 
 ---
 
@@ -1503,27 +959,15 @@ QA Gate — the manifest is correct AND the derived DB agrees with it
   Marker:  QA  ·  Time: 30 min
 ```
 
-⛔ **G4 is a NEGATIVE CONTROL and must be RUN, not reasoned about.** The collision it catches does
-not delete a row. `_record()` is last-write-wins, so it silently retags one attribute with another's
-state and both rows survive looking entirely plausible. Assert the twelve typography triples are
-twelve DISTINCT `(css_property, css_element, css_state)` tuples. ⚠ `itemFontWeight`'s base row is the
-one to check hardest — it is the only base member that existed before this spec, so it is the one a
-builder is most likely to drop while adding its two state siblings.
+⛔ **G4 is a NEGATIVE CONTROL and must be RUN, not reasoned about.** The collision it catches does not delete a row. `_record()` is last-write-wins, so it silently retags one attribute with another's state and both rows survive looking entirely plausible. Assert the twelve typography triples are twelve DISTINCT `(css_property, css_element, css_state)` tuples. ⚠ `itemFontWeight`'s base row is the one to check hardest — it is the only base member that existed before this spec, so it is the one a builder is most likely to drop while adding its two state siblings.
 
-> ⛔ **NOTHING IN WAVE B STARTS UNTIL THIS GATE PASSES.** This is Bean's explicit requirement: the
-> manifest step has the highest blast radius in the phase (existing client content on the canary,
-> shared components, the cloning converter's write path) and must not proceed unreviewed.
+> ⛔ **NOTHING IN WAVE B STARTS UNTIL THIS GATE PASSES.** This is Bean's explicit requirement: the manifest step has the highest blast radius in the phase (existing client content on the canary, shared components, the cloning converter's write path) and must not proceed unreviewed.
 
 ---
 
 ### Step 11 — Build `check-ungated-paint-rules.py` — generic detector, WARN-ONLY, `sgs/nav-menu`-scoped enforcement
 
-> ✅ **Owner ruling 4 (2026-09-11) — CONFIRMED AS ALREADY PLANNED, scope now explicit.** The
-> detector's **LOGIC** stays generic and framework-wide (⛔ nothing here licenses writing
-> `.sgs-nav-menu__` into the script); its **ENFORCEMENT** lands on `sgs/nav-menu` only — WARN-ONLY
-> here, hardened at step 26, with framework-wide hard-fail as explicitly separate future work. Keep
-> the scope in `gates.json` config, never a dict in the script (R-31-1). Full reasoning in
-> §Resolved judgement calls.
+> ✅ **Owner ruling 4 (2026-09-11) — CONFIRMED AS ALREADY PLANNED, scope now explicit.** The detector's **LOGIC** stays generic and framework-wide (⛔ nothing here licenses writing `.sgs-nav-menu__` into the script); its **ENFORCEMENT** lands on `sgs/nav-menu` only — WARN-ONLY here, hardened at step 26, with framework-wide hard-fail as explicitly separate future work. Keep the scope in `gates.json` config, never a dict in the script (R-31-1). Full reasoning in §Resolved judgement calls.
 
 ```
   Model:       sonnet
@@ -1561,92 +1005,33 @@ builder is most likely to drop while adding its two state siblings.
 
 **Prompt:**
 
-> You are building ONE new framework-wide gate script and wiring it. Repo root:
-> `c:\Users\Bean\Projects\small-giants-wp`. Writable paths, and no others:
-> `plugins/sgs-blocks/scripts/check-ungated-paint-rules.py` (new),
-> `plugins/sgs-blocks/scripts/fixtures/ungated-paint/` (new dir),
-> `plugins/sgs-blocks/scripts/gates.json`, `plugins/sgs-blocks/package.json`.
+> You are building ONE new framework-wide gate script and wiring it. Repo root: `c:\Users\Bean\Projects\small-giants-wp`. Writable paths, and no others: `plugins/sgs-blocks/scripts/check-ungated-paint-rules.py` (new), `plugins/sgs-blocks/scripts/fixtures/ungated-paint/` (new dir), `plugins/sgs-blocks/scripts/gates.json`, `plugins/sgs-blocks/package.json`.
 >
-> **Read first:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-35 in full and
-> §FR-41-15 in full (the corrected methodology, the history table of three failed bounds, the three
-> published buckets, and the disclosed residual). Then read a sibling Python gate for house style —
-> `plugins/sgs-blocks/scripts/check-dead-api-calls.py` and
-> `plugins/sgs-blocks/scripts/check-render-undefined-vars.py`. Then read
-> `plugins/sgs-blocks/scripts/gates.json` (a JSON LIST of gate objects, 106 entries) and
-> `plugins/sgs-blocks/scripts/run-gates.py`.
+> **Read first:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-35 in full and §FR-41-15 in full (the corrected methodology, the history table of three failed bounds, the three published buckets, and the disclosed residual). Then read a sibling Python gate for house style — `plugins/sgs-blocks/scripts/check-dead-api-calls.py` and `plugins/sgs-blocks/scripts/check-render-undefined-vars.py`. Then read `plugins/sgs-blocks/scripts/gates.json` (a JSON LIST of gate objects, 106 entries) and `plugins/sgs-blocks/scripts/run-gates.py`.
 >
-> **What it detects.** A `background` or `border` declaration EMITTED (PHP) or AUTHORED (`style.css`)
-> ungated on a selector carrying no corresponding operator attribute. Both surfaces, one run.
+> **What it detects.** A `background` or `border` declaration EMITTED (PHP) or AUTHORED (`style.css`) ungated on a selector carrying no corresponding operator attribute. Both surfaces, one run.
 >
-> **⛔ Reuse FR-41-15's corrected scan logic verbatim — do not reinvent it.** It is STATEMENT-AWARE:
-> it joins each `$css .=` / `sgs_hover_guarded_rule` / `sgs_hover_state_rules` statement to its
-> terminating `;` BEFORE testing for a declaration. The spec's history table names three bounds that
-> each hid a real rule — a literal-string scan, a line-RANGE `awk`, and a line-ANCHORED grep. **A
-> re-implementation that does not join statements reproduces the 0.4.4 failure exactly**, because
-> two of the missed rules are multi-line concatenations whose `background:` sits on a different
-> physical line from its `$css .=`, with a `//` comment in between.
+> **⛔ Reuse FR-41-15's corrected scan logic verbatim — do not reinvent it.** It is STATEMENT-AWARE: it joins each `$css .=` / `sgs_hover_guarded_rule` / `sgs_hover_state_rules` statement to its terminating `;` BEFORE testing for a declaration. The spec's history table names three bounds that each hid a real rule — a literal-string scan, a line-RANGE `awk`, and a line-ANCHORED grep. **A re-implementation that does not join statements reproduces the 0.4.4 failure exactly**, because two of the missed rules are multi-line concatenations whose `background:` sits on a different physical line from its `$css .=`, with a `//` comment in between.
 >
-> **⛔ It must PRINT its own limit.** The scan is statement-aware but NOT variable-aware: a
-> declaration accumulated into an intermediate PHP variable and appended to `$css` in a later
-> separate statement is outside what it can see. `sgs/nav-menu`'s `$sgs_nm_featured_vars` assembly is
-> a live instance. `--survey` output must state this limit explicitly rather than letting a reader
-> infer completeness. A census that overstates its own reach is the defect this detector exists to
-> end.
+> **⛔ It must PRINT its own limit.** The scan is statement-aware but NOT variable-aware: a declaration accumulated into an intermediate PHP variable and appended to `$css` in a later separate statement is outside what it can see. `sgs/nav-menu`'s `$sgs_nm_featured_vars` assembly is a live instance. `--survey` output must state this limit explicitly rather than letting a reader infer completeness. A census that overstates its own reach is the defect this detector exists to end.
 >
 > **Modes:**
-> - `--survey [--block sgs/x]` — emits the census in FR-41-15's exact three-bucket form. Per hit:
->   source file, selector, verbatim declaration, bucket. ⛔ **All three buckets always** — CENSUSED,
->   GATED (with the `if` named), DISMISSED (with the reason AND the condition that would return it
->   to the census). An omission is indistinguishable from an oversight.
-> - `--check` — **WARN-ONLY FOR NOW: print every finding and EXIT 0.** Put the hard-fail behind a
->   single named module constant, e.g.
->   `HARD_FAIL_BLOCKS = []  # step 26 sets this to the gates.json-configured scope — ['sgs/nav-menu']
->   for this phase (owner ruling 4). Framework-wide hardening is separate future work, triaged
->   against a real --survey run.` — so step 26 changes one line and nothing else, and the SCOPE that
->   line reads comes from `gates.json` config rather than a dict inside the script (R-31-1).
->   Do not make it fail the build today: the tree still contains the eleven
->   nav-menu rules step 16 has not yet removed, and a gate that always fails is a gate nobody reads.
-> - `--self-test` — negative controls are FR-41-15 census **#4, #6 and #8**. Build a fixture per
->   control. ⛔ **Assert each fixture makes the check FAIL, and assert a cleaned copy of the same
->   fixture PASSES.** Both directions, or the self-test is vacuous. Add one fixture per exemption
->   in (d) proving it does not OVER-match.
+> - `--survey [--block sgs/x]` — emits the census in FR-41-15's exact three-bucket form. Per hit: source file, selector, verbatim declaration, bucket. ⛔ **All three buckets always** — CENSUSED, GATED (with the `if` named), DISMISSED (with the reason AND the condition that would return it to the census). An omission is indistinguishable from an oversight.
+> - `--check` — **WARN-ONLY FOR NOW: print every finding and EXIT 0.** Put the hard-fail behind a single named module constant, e.g. `HARD_FAIL_BLOCKS = []  # step 26 sets this to the gates.json-configured scope — ['sgs/nav-menu'] for this phase (owner ruling 4). Framework-wide hardening is separate future work, triaged against a real --survey run.` — so step 26 changes one line and nothing else, and the SCOPE that line reads comes from `gates.json` config rather than a dict inside the script (R-31-1). Do not make it fail the build today: the tree still contains the eleven nav-menu rules step 16 has not yet removed, and a gate that always fails is a gate nobody reads.
+> - `--self-test` — negative controls are FR-41-15 census **#4, #6 and #8**. Build a fixture per control. ⛔ **Assert each fixture makes the check FAIL, and assert a cleaned copy of the same fixture PASSES.** Both directions, or the self-test is vacuous. Add one fixture per exemption in (d) proving it does not OVER-match.
 >
-> **Exemptions — build each as a GENERIC rule keyed on selector shape or on `supports.sgs`, never on
-> a block name:** resets to `none`/`0`/`transparent` with no competing operator value ·
-> zero-specificity `:where()` defaults · forced-colors and `@supports` a11y rules · wrapper-delegated
-> blocks (the block declares a `supports.sgs` container kind and the paint belongs to
-> `SGS_Container_Wrapper`) · attribute-driven `var()` **whose custom property has a real,
-> empty-guarded writer**.
-> ⛔ **That last one must VERIFY THE WRITER EXISTS, not merely that a `var()` is present.** Census #8
-> is the worked counter-example: `--sgs-nm-featured-bg-hover` has no writer anywhere in `src/`, so
-> the rule can only ever paint its own hardcoded fallback. A `var()` with no writer is a hardcode
-> wearing a costume, and a syntax-only exemption would have cleared it.
-> ⛔ **If you find yourself writing `.sgs-nav-menu__` into an exemption, you have written a nav-menu
-> lint, not a gate.** Stop and generalise. (Precedent: D649 — two attempts to widen
-> `check-hardcoded-render-defaults.js` were built and reverted the same day because
-> string-coincidence matches collided with real enums.)
+> **Exemptions — build each as a GENERIC rule keyed on selector shape or on `supports.sgs`, never on a block name:** resets to `none`/`0`/`transparent` with no competing operator value · zero-specificity `:where()` defaults · forced-colors and `@supports` a11y rules · wrapper-delegated blocks (the block declares a `supports.sgs` container kind and the paint belongs to `SGS_Container_Wrapper`) · attribute-driven `var()` **whose custom property has a real, empty-guarded writer**. ⛔ **That last one must VERIFY THE WRITER EXISTS, not merely that a `var()` is present.** Census #8 is the worked counter-example: `--sgs-nm-featured-bg-hover` has no writer anywhere in `src/`, so the rule can only ever paint its own hardcoded fallback. A `var()` with no writer is a hardcode wearing a costume, and a syntax-only exemption would have cleared it. ⛔ **If you find yourself writing `.sgs-nav-menu__` into an exemption, you have written a nav-menu lint, not a gate.** Stop and generalise. (Precedent: D649 — two attempts to widen `check-hardcoded-render-defaults.js` were built and reverted the same day because string-coincidence matches collided with real enums.)
 >
-> **⛔ It does NOT extend `check-hardcoded-render-defaults.js`.** That gate runs the INVERSE
-> direction — *attribute exists → is its property also hardcoded?* — and all three of census #4/#6/#8
-> pass it clean because none has a matching attribute on its own selector. This one asks
-> *declaration exists → does a governing attribute exist?*
+> **⛔ It does NOT extend `check-hardcoded-render-defaults.js`.** That gate runs the INVERSE direction — *attribute exists → is its property also hardcoded?* — and all three of census #4/#6/#8 pass it clean because none has a matching attribute on its own selector. This one asks *declaration exists → does a governing attribute exist?*
 >
-> **Wiring.** Add an entry to `gates.json` with `id` / `cmd` / `tier: "fast"` / `added_D` /
-> `added_commit` / `budget_ms` / `order` populated (copy the field shape from a neighbouring entry),
-> plus the standalone `package.json` alias every sibling gate carries.
-> ⛔ **Prove it is REACHABLE with `npm run gate:list`, not with a `package.json` grep** — since the
-> 2026-08-24 gates.json split that grep returns a false positive in precisely this direction, and
-> this repo has already shipped a detector that sat unreachable for three weeks (D338/D493).
+> **Wiring.** Add an entry to `gates.json` with `id` / `cmd` / `tier: "fast"` / `added_D` / `added_commit` / `budget_ms` / `order` populated (copy the field shape from a neighbouring entry), plus the standalone `package.json` alias every sibling gate carries. ⛔ **Prove it is REACHABLE with `npm run gate:list`, not with a `package.json` grep** — since the 2026-08-24 gates.json split that grep returns a false positive in precisely this direction, and this repo has already shipped a detector that sat unreachable for three weeks (D338/D493).
 >
 > **Prove it, commands pasted:**
 > - `python plugins/sgs-blocks/scripts/check-ungated-paint-rules.py --self-test` passes
-> - `python plugins/sgs-blocks/scripts/check-ungated-paint-rules.py --survey --block sgs/nav-menu`
->   — paste the output; it must contain all 11 of FR-41-15's censused rules
-> - `python plugins/sgs-blocks/scripts/check-ungated-paint-rules.py --survey` with no filter
->   enumerates every block
+> - `python plugins/sgs-blocks/scripts/check-ungated-paint-rules.py --survey --block sgs/nav-menu` — paste the output; it must contain all 11 of FR-41-15's censused rules
+> - `python plugins/sgs-blocks/scripts/check-ungated-paint-rules.py --survey` with no filter enumerates every block
 > - `cd plugins/sgs-blocks && npm run gate:list` shows the new gate
-> - `grep -c "sgs-nav-menu" plugins/sgs-blocks/scripts/check-ungated-paint-rules.py` → **0**
->   (fixtures live in their own directory, not in the source)
+> - `grep -c "sgs-nav-menu" plugins/sgs-blocks/scripts/check-ungated-paint-rules.py` → **0** (fixtures live in their own directory, not in the source)
 >
 > Do NOT run git beyond `diff`/`status`. Do NOT touch any block file.
 
@@ -1748,137 +1133,32 @@ QA Gate — zero blast radius on shared code, and the two splits changed nothing
 
 **Prompt:**
 
-> You are rebuilding the colour-row descriptors for `sgs/nav-menu`. Repo root:
-> `c:\Users\Bean\Projects\small-giants-wp`. Your writable directory is
-> `plugins/sgs-blocks/src/blocks/nav-menu/` and within it you touch the `colourRows` literal in
-> `edit.js` and the `<SgsColourPanel rows={ colourRows } />` mount beside it — nothing else. ⛔ Do
-> NOT edit `render.php`, `style.css` or `block.json`; `block.json` is FROZEN and is your contract.
+> You are rebuilding the colour-row descriptors for `sgs/nav-menu`. Repo root: `c:\Users\Bean\Projects\small-giants-wp`. Your writable directory is `plugins/sgs-blocks/src/blocks/nav-menu/` and within it you touch the `colourRows` literal in `edit.js` and the `<SgsColourPanel rows={ colourRows } />` mount beside it — nothing else. ⛔ Do NOT edit `render.php`, `style.css` or `block.json`; `block.json` is FROZEN and is your contract.
 >
-> ⛔ **`colourRows` LIVES IN `edit.js` AND STAYS THERE (owner ruling 3).** Do not create a
-> `colour-rows.js`, do not import the array from a sibling module, do not build it from a helper.
-> `scripts/inspector-scan/rules/31-golden-colour-control.js` only ever parses this block's own
-> `edit.js` and `src/components/` — a block-folder sibling is in neither corpus, so an imported
-> `colourRows` resolves to nothing and every row silently scores zero states while the editor renders
-> perfectly (D738). The array, and every `states: [ … ]` inside it, is ONE ATOMIC LITERAL: never
-> `.map()`-ed, never `.filter()`-ed, never `.concat()`-ed, never `Array.from()`-ed, never spread from
-> a variable, never split across files.
+> ⛔ **`colourRows` LIVES IN `edit.js` AND STAYS THERE (owner ruling 3).** Do not create a `colour-rows.js`, do not import the array from a sibling module, do not build it from a helper. `scripts/inspector-scan/rules/31-golden-colour-control.js` only ever parses this block's own `edit.js` and `src/components/` — a block-folder sibling is in neither corpus, so an imported `colourRows` resolves to nothing and every row silently scores zero states while the editor renders perfectly (D738). The array, and every `states: [ … ]` inside it, is ONE ATOMIC LITERAL: never `.map()`-ed, never `.filter()`-ed, never `.concat()`-ed, never `Array.from()`-ed, never spread from a variable, never split across files.
 >
-> **Read first:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §9.6 (the full table, both ⓘ
-> cross-reference notes, and the two ⛔ blocks beneath it), FR-41-2, FR-41-14, FR-41-16, FR-41-23,
-> FR-41-24, FR-41-25, FR-41-26 (the eligibility predicate AND the "ONE DECLARED SOURCE, TWO
-> EVALUATORS" section), FR-41-33, and §8.1's `burgerColourHover` vs `burgerHoverColour`
-> disambiguation table. Then read `plugins/sgs-blocks/src/blocks/nav-menu/block.json` (frozen), then
-> `plugins/sgs-blocks/src/blocks/icon-list/edit.js::Edit` — the reference implementation for
-> omit-not-disable. Then read
-> **`plugins/sgs-blocks/src/components/SurfaceTreatmentPanel.js`** — *the shipped precedent for a
-> `ToggleGroupControl` choosing a visual treatment with conditional sub-controls; **copy the shape,
-> not the treatments**.* It already implements exactly what every hover-treatment selector in §9.6
-> needs — icon options, a `''`-is-None option, and sub-controls appearing per selection — so ⛔ do
-> not invent this pattern from prose.
+> **Read first:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §9.6 (the full table, both ⓘ cross-reference notes, and the two ⛔ blocks beneath it), FR-41-2, FR-41-14, FR-41-16, FR-41-23, FR-41-24, FR-41-25, FR-41-26 (the eligibility predicate AND the "ONE DECLARED SOURCE, TWO EVALUATORS" section), FR-41-33, and §8.1's `burgerColourHover` vs `burgerHoverColour` disambiguation table. Then read `plugins/sgs-blocks/src/blocks/nav-menu/block.json` (frozen), then `plugins/sgs-blocks/src/blocks/icon-list/edit.js::Edit` — the reference implementation for omit-not-disable. Then read **`plugins/sgs-blocks/src/components/SurfaceTreatmentPanel.js`** — *the shipped precedent for a `ToggleGroupControl` choosing a visual treatment with conditional sub-controls; **copy the shape, not the treatments**.* It already implements exactly what every hover-treatment selector in §9.6 needs — icon options, a `''`-is-None option, and sub-controls appearing per selection — so ⛔ do not invent this pattern from prose.
 >
-> **⛔ BUILD EVERY FILL/TEXT ROW VIA `fillRow`/`textRow` — this is a hard requirement, not a
-> nice-to-have (owner directive, 2026-09-11, closing out Step 7's deferred item).** Step 7's split
-> left the OLD `colourRows` literal hand-assembled (258 lines) rather than adopted onto
-> `plugins/sgs-blocks/src/components/index.js::fillRow` / `::textRow`, because normalising the old
-> item-bg row's asymmetric gradient shape (Normal has `itemBgGradient`, Hover has none) onto a helper
-> mid-PURE-REFACTOR would have been a real behaviour change disguised as a reformat — correctly
-> deferred, not skipped. **This step is a REBUILD, not a refactor, so the reason to defer no longer
-> applies: build every row here directly via `fillRow( { key, label, attrs: { base, hover, current,
-> gradient, hoverGradient, currentGradient }, attributes, setAttributes } )` / `textRow( {...} )` from
-> the start, on the NEW post-manifest attribute names.**
-> ⛔ **Verified — this does NOT blind rule 31.** Read
-> `plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js` yourself
-> (`d.viaHelper` / `resolveRowDescriptorFromStatesExpr`, ~line 706 and ~line 1253): the detector
-> ALREADY resolves a `fillRow(...)`/`textRow(...)` call expression natively — no manual
-> `statesCountOverride` wiring by the caller is needed, that machinery is the DETECTOR'S own
-> resolution path, not something this step configures. The thing that stays banned is moving the
-> `colourRows` ARRAY itself (or any row's `states` array) out of `edit.js` into an imported module —
-> that is the corpus limit (owner ruling 3), a completely different constraint from which function
-> builds an individual row's object. Confirm by running
-> `node plugins/sgs-blocks/scripts/inspector-scan/run.js --check` after the rebuild and pasting the
-> per-row state counts — they must be ≥2 per stateful row, matching §9.6's table, not zero.
-> ⚠ **Verified — `fillRow`/`textRow` do NOT accept a `current` key today** (read the file: `attrs`
-> destructures only `{ base, hover, gradient, hoverGradient }`, and the returned `states` array is
-> `hover ? [normal, hoverState] : [normal]` — there is no third branch). Since every stateful row in
-> §9.6 needs a Current state, **this step MUST extend `fillRow`/`textRow` additively first** —
-> mirroring step 6's own shape for `sgs_fill_decls`/`sgs_text_decls`: add optional `attrs.current` /
-> `attrs.currentGradient`, and an optional `currentState` entry appended to the returned `states`
-> array only when `current` is supplied (absent → byte-identical to today, so the other 64 blocks
-> already calling `fillRow`/`textRow` are unaffected — prove this with a before/after call using one
-> of their real `attrs` shapes and diffing the returned object). This is the SAME additive-extension
-> discipline as steps 6/6a on the PHP side, applied to the JS side of the same family. Report the
-> extension explicitly in this step's output — it is expected work, not scope creep.
+> **⛔ BUILD EVERY FILL/TEXT ROW VIA `fillRow`/`textRow` — this is a hard requirement, not a nice-to-have (owner directive, 2026-09-11, closing out Step 7's deferred item).** Step 7's split left the OLD `colourRows` literal hand-assembled (258 lines) rather than adopted onto `plugins/sgs-blocks/src/components/index.js::fillRow` / `::textRow`, because normalising the old item-bg row's asymmetric gradient shape (Normal has `itemBgGradient`, Hover has none) onto a helper mid-PURE-REFACTOR would have been a real behaviour change disguised as a reformat — correctly deferred, not skipped. **This step is a REBUILD, not a refactor, so the reason to defer no longer applies: build every row here directly via `fillRow( { key, label, attrs: { base, hover, current, gradient, hoverGradient, currentGradient }, attributes, setAttributes } )` / `textRow( {...} )` from the start, on the NEW post-manifest attribute names.** ⛔ **Verified — this does NOT blind rule 31.** Read `plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js` yourself (`d.viaHelper` / `resolveRowDescriptorFromStatesExpr`, ~line 706 and ~line 1253): the detector ALREADY resolves a `fillRow(...)`/`textRow(...)` call expression natively — no manual `statesCountOverride` wiring by the caller is needed, that machinery is the DETECTOR'S own resolution path, not something this step configures. The thing that stays banned is moving the `colourRows` ARRAY itself (or any row's `states` array) out of `edit.js` into an imported module — that is the corpus limit (owner ruling 3), a completely different constraint from which function builds an individual row's object. Confirm by running `node plugins/sgs-blocks/scripts/inspector-scan/run.js --check` after the rebuild and pasting the per-row state counts — they must be ≥2 per stateful row, matching §9.6's table, not zero. ⚠ **Verified — `fillRow`/`textRow` do NOT accept a `current` key today** (read the file: `attrs` destructures only `{ base, hover, gradient, hoverGradient }`, and the returned `states` array is `hover ? [normal, hoverState] : [normal]` — there is no third branch). Since every stateful row in §9.6 needs a Current state, **this step MUST extend `fillRow`/`textRow` additively first** — mirroring step 6's own shape for `sgs_fill_decls`/`sgs_text_decls`: add optional `attrs.current` / `attrs.currentGradient`, and an optional `currentState` entry appended to the returned `states` array only when `current` is supplied (absent → byte-identical to today, so the other 64 blocks already calling `fillRow`/`textRow` are unaffected — prove this with a before/after call using one of their real `attrs` shapes and diffing the returned object). This is the SAME additive-extension discipline as steps 6/6a on the PHP side, applied to the JS side of the same family. Report the extension explicitly in this step's output — it is expected work, not scope creep.
 >
 > **⛔ FIVE RULES THAT ARE INVISIBLE IF YOU BREAK THEM:**
-> 1. **State entries are LITERAL array entries, never `.map()`/`.filter()`-generated.**
->    `scripts/inspector-scan/rules/31-golden-colour-control.js` resolves a row's state count as
->    `statesArray.elements.length` on a literal `ArrayExpression`. A computed array renders
->    correctly while the gate reports the wrong count (D738). Conditionality happens at ARRAY level:
->    `states: [ normalBg, hoverBg, ...( 'highlight' !== itemBgHoverTreatment ? [ currentBg ] : [] ) ]`.
-> 2. **`linked: true` on EVERY state, unconditionally.** It makes `DesignTokenPicker` store the
->    palette SLUG rather than a baked hex, so a client's brand token survives a re-skin (D717/D740).
->    Both a hand migration and a codemod dropped it once and 14 assertions missed it (D881).
-> 3. **State labels are translated at the row: `__( 'Current', 'sgs-blocks' )`**, matching the
->    existing `Normal`/`Hover` entries. Hardcoding one was a real, gate-invisible i18n regression.
-> 4. **OMIT, never disable.** `SgsColourPanel` runs `rows.filter(Boolean)` and the caller inlines
->    the condition in the array literal (D609 field 9c). A greyed-out control a client can find and
->    click to no effect is the failure this rule prevents.
->    ⛔ Write conditional rows as a spread of a TERNARY, never of a boolean-`&&`:
->    `...( showMarkerColour ? [ markerColourRow ] : [] )`. `...( cond && {…} )` throws
->    (`false is not iterable`).
-> 5. **`burgerColourHover` and `burgerHoverColour` are DIFFERENT attributes** — the first is the
->    icon/text COLOUR on hover, the second is the button BACKGROUND on hover. They are anagram-close
->    and §8.1 exists solely to keep them apart. Crossing them wires a colour control to a background
->    and also crosses their two different treatment attributes.
+> 1. **State entries are LITERAL array entries, never `.map()`/`.filter()`-generated.** `scripts/inspector-scan/rules/31-golden-colour-control.js` resolves a row's state count as `statesArray.elements.length` on a literal `ArrayExpression`. A computed array renders correctly while the gate reports the wrong count (D738). Conditionality happens at ARRAY level: `states: [ normalBg, hoverBg, ...( 'highlight' !== itemBgHoverTreatment ? [ currentBg ] : [] ) ]`.
+> 2. **`linked: true` on EVERY state, unconditionally.** It makes `DesignTokenPicker` store the palette SLUG rather than a baked hex, so a client's brand token survives a re-skin (D717/D740). Both a hand migration and a codemod dropped it once and 14 assertions missed it (D881).
+> 3. **State labels are translated at the row: `__( 'Current', 'sgs-blocks' )`**, matching the existing `Normal`/`Hover` entries. Hardcoding one was a real, gate-invisible i18n regression.
+> 4. **OMIT, never disable.** `SgsColourPanel` runs `rows.filter(Boolean)` and the caller inlines the condition in the array literal (D609 field 9c). A greyed-out control a client can find and click to no effect is the failure this rule prevents. ⛔ Write conditional rows as a spread of a TERNARY, never of a boolean-`&&`: `...( showMarkerColour ? [ markerColourRow ] : [] )`. `...( cond && {…} )` throws (`false is not iterable`).
+> 5. **`burgerColourHover` and `burgerHoverColour` are DIFFERENT attributes** — the first is the icon/text COLOUR on hover, the second is the button BACKGROUND on hover. They are anagram-close and §8.1 exists solely to keep them apart. Crossing them wires a colour control to a background and also crosses their two different treatment attributes.
 >
-> **The Sweep predicate is DATA, not logic you write.** Read each row's entry from
-> `block.json::supports.sgs.sweepEligibility`.
-> ⛔ **`edit.js` does NOT currently import `block.json` — only `index.js` does
-> (`src/blocks/nav-menu/index.js::metadata`), and the `Edit` component never receives `supports` as
-> a prop.** Verified. **Add `import metadata from './block.json';` to `edit.js`** — the module that
-> carries `colourRows` and therefore the module that reads the predicate (owner ruling 3). It is a
-> read-only static import identical to what `index.js` already does and does NOT count as editing the
-> frozen `block.json`. ⚠ Re-run `node plugins/sgs-blocks/scripts/inspector-scan/run.js --check` after
-> adding it and confirm the per-row state counts are unchanged.
-> Then apply exactly three mechanical checks — `blockingBackgroundAttrs` all empty, `blockingGradientAttrs` all empty, `glyphGuard` null
-> or `attributes[attr]` not in `disallowedValues`. When false, OMIT the Sweep segment so the row
-> renders as a two-option None/Swap control. ⛔ **Write no logic of your own beyond those three
-> checks.** A builder tempted to inline "and also check X" has recreated the two-copies problem the
-> declared source exists to end — if a new blocking input is discovered, it is added to the DECLARED
-> ROW, one edit, both surfaces.
+> **The Sweep predicate is DATA, not logic you write.** Read each row's entry from `block.json::supports.sgs.sweepEligibility`. ⛔ **`edit.js` does NOT currently import `block.json` — only `index.js` does (`src/blocks/nav-menu/index.js::metadata`), and the `Edit` component never receives `supports` as a prop.** Verified. **Add `import metadata from './block.json';` to `edit.js`** — the module that carries `colourRows` and therefore the module that reads the predicate (owner ruling 3). It is a read-only static import identical to what `index.js` already does and does NOT count as editing the frozen `block.json`. ⚠ Re-run `node plugins/sgs-blocks/scripts/inspector-scan/run.js --check` after adding it and confirm the per-row state counts are unchanged. Then apply exactly three mechanical checks — `blockingBackgroundAttrs` all empty, `blockingGradientAttrs` all empty, `glyphGuard` null or `attributes[attr]` not in `disallowedValues`. When false, OMIT the Sweep segment so the row renders as a two-option None/Swap control. ⛔ **Write no logic of your own beyond those three checks.** A builder tempted to inline "and also check X" has recreated the two-copies problem the declared source exists to end — if a new blocking input is discovered, it is added to the DECLARED ROW, one edit, both surfaces.
 >
-> **Two `ⓘ` cross-reference notes must RENDER** (not merely be stated in the spec), with the verbatim
-> strings from §9.6:
-> - beneath the Item text AND Item background rows: *"Automatic readable-text checking for these
->   colours is switched on under General → Accessibility."*
-> - beneath the Item border colour row's hover-treatment selector: *"This changes the line around
->   the item. To underline the menu word itself instead, use Decoration (hover) under Typography —
->   they're separate settings and don't do the same thing."*
-> ⛔ That second note has a TWIN in the Typography panel (step 14, §9.10) and **neither ships
-> without the other** — a one-way pointer leaves the pointed-at control reading as the authoritative
-> one.
+> **Two `ⓘ` cross-reference notes must RENDER** (not merely be stated in the spec), with the verbatim strings from §9.6:
+> - beneath the Item text AND Item background rows: *"Automatic readable-text checking for these colours is switched on under General → Accessibility."*
+> - beneath the Item border colour row's hover-treatment selector: *"This changes the line around the item. To underline the menu word itself instead, use Decoration (hover) under Typography — they're separate settings and don't do the same thing."* ⛔ That second note has a TWIN in the Typography panel (step 14, §9.10) and **neither ships without the other** — a one-way pointer leaves the pointed-at control reading as the authoritative one.
 >
-> **Both border-colour rows carry `contrastAgainst` with `contrastLargeText: true`** — a border is a
-> WCAG 1.4.11 UI-component case at 3:1, never body text. `SgsBorderControl` used to default that
-> flag for its callers; moving the row out moves the obligation onto the row descriptor. Set it
-> explicitly, per row; do not inherit `GradientCapableColourControl`'s own `false` by omission.
+> **Both border-colour rows carry `contrastAgainst` with `contrastLargeText: true`** — a border is a WCAG 1.4.11 UI-component case at 3:1, never body text. `SgsBorderControl` used to default that flag for its callers; moving the row out moves the obligation onto the row descriptor. Set it explicitly, per row; do not inherit `GradientCapableColourControl`'s own `false` by omission.
 >
-> **Components, by name (there is no "dropdown" in this spec):** `ToggleGroupControl` +
-> `ToggleGroupControlOption` from `plugins/sgs-blocks/src/components/primitives` for every treatment
-> selector.
-> ⚠ **The control-shape authority is Spec 35 Part O's D810 table, NOT
-> `TypographyControls.js::SGS_TYPOGRAPHY_SWITCHER_MAX_SEGMENTED`** (S3). That constant governs the
-> typography *target switcher's* own shape, keyed on `targets.length`, and nothing else — an earlier
-> edition cited it as the general rule. The framework's real, **gate-backed** contract is Part O:
-> 2–4 options with a longest label ≤ 12 characters → `ToggleGroupControl`; 5 is neutral; 6+ →
-> `SelectControl`. The gate is `plugins/sgs-blocks/scripts/check-enum-control-shape.py`
-> (`gates.json` id `check-enum-control-shape`, tier `fast`, D812) and it runs in step 20's
-> `run-gates.py --tier all`. Every treatment selector here is 2–3 segments, so it is inside the band
-> either way — read Part O, not the typography constant.
+> **Components, by name (there is no "dropdown" in this spec):** `ToggleGroupControl` + `ToggleGroupControlOption` from `plugins/sgs-blocks/src/components/primitives` for every treatment selector. ⚠ **The control-shape authority is Spec 35 Part O's D810 table, NOT `TypographyControls.js::SGS_TYPOGRAPHY_SWITCHER_MAX_SEGMENTED`** (S3). That constant governs the typography *target switcher's* own shape, keyed on `targets.length`, and nothing else — an earlier edition cited it as the general rule. The framework's real, **gate-backed** contract is Part O: 2–4 options with a longest label ≤ 12 characters → `ToggleGroupControl`; 5 is neutral; 6+ → `SelectControl`. The gate is `plugins/sgs-blocks/scripts/check-enum-control-shape.py` (`gates.json` id `check-enum-control-shape`, tier `fast`, D812) and it runs in step 20's `run-gates.py --tier all`. Every treatment selector here is 2–3 segments, so it is inside the band either way — read Part O, not the typography constant.
 >
-> **Prove it:** `npm run build` exits 0; `node scripts/inspector-scan/run.js --check` passes and
-> resolves a state count for every row (paste it); `node scripts/check-dead-controls.js --check`
-> passes; paste the final `colourRows` literal. Do NOT run git beyond `diff`/`status`.
+> **Prove it:** `npm run build` exits 0; `node scripts/inspector-scan/run.js --check` passes and resolves a state count for every row (paste it); `node scripts/check-dead-controls.js --check` passes; paste the final `colourRows` literal. Do NOT run git beyond `diff`/`status`.
 
 ---
 
@@ -1935,110 +1215,32 @@ QA Gate — zero blast radius on shared code, and the two splits changed nothing
 
 **Prompt:**
 
-> Rebuild the `sgs/nav-menu` inspector panel layout. Repo root:
-> `c:\Users\Bean\Projects\small-giants-wp`. Writable directory:
-> `plugins/sgs-blocks/src/blocks/nav-menu/` — the panel modules and `edit.js` only. ⛔ Do NOT edit
-> the `colourRows` literal or its `<SgsColourPanel>` mount in `edit.js` (step 13 owns those, and
-> owner ruling 3 keeps them in `edit.js` — ⛔ do not move them out while splitting panels),
-> `render.php`, `style.css` or `block.json`.
+> Rebuild the `sgs/nav-menu` inspector panel layout. Repo root: `c:\Users\Bean\Projects\small-giants-wp`. Writable directory: `plugins/sgs-blocks/src/blocks/nav-menu/` — the panel modules and `edit.js` only. ⛔ Do NOT edit the `colourRows` literal or its `<SgsColourPanel>` mount in `edit.js` (step 13 owns those, and owner ruling 3 keeps them in `edit.js` — ⛔ do not move them out while splitting panels), `render.php`, `style.css` or `block.json`.
 >
-> **Read `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §9 in its entirety** — it is explicitly
-> the authoritative control-by-control layout, and where an FR's prose disagrees with §9, §9 is what
-> you implement. Also read FR-41-12, FR-41-22 (the verbatim `targets` mount), FR-41-27, FR-41-29,
-> FR-41-30, FR-41-31, FR-41-33. Then read
-> `plugins/sgs-blocks/src/blocks/card-grid/edit.js::Edit` — the two-target `TypographyControls`
-> switcher to copy — and `plugins/sgs-blocks/src/blocks/icon/edit.js` — the live `IconPicker`
-> adopter to copy.
+> **Read `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §9 in its entirety** — it is explicitly the authoritative control-by-control layout, and where an FR's prose disagrees with §9, §9 is what you implement. Also read FR-41-12, FR-41-22 (the verbatim `targets` mount), FR-41-27, FR-41-29, FR-41-30, FR-41-31, FR-41-33. Then read `plugins/sgs-blocks/src/blocks/card-grid/edit.js::Edit` — the two-target `TypographyControls` switcher to copy — and `plugins/sgs-blocks/src/blocks/icon/edit.js` — the live `IconPicker` adopter to copy.
 >
-> **⛔ THE ONE MISTAKE THAT SILENTLY DELETES NINE WORKING CONTROLS.** `TypographyControls` in
-> `targets` mode (`targets.length > 1`) renders `<TypographyTargetSwitcher>` and **discards
-> `singleProps` entirely**; the switcher then destructures `{ key, label, prefix, ...fieldProps }`
-> from the SELECTED target and forwards only `fieldProps`. So **every per-field flag — all nine
-> `show*` flags and `showHover` — must move onto EACH TARGET ENTRY.** A flag left on the outer
-> element does nothing, silently, with every gate green. FR-41-22 carries the verbatim correct
-> mount; copy it exactly, both targets, `showHover: true` on each.
+> **⛔ THE ONE MISTAKE THAT SILENTLY DELETES NINE WORKING CONTROLS.** `TypographyControls` in `targets` mode (`targets.length > 1`) renders `<TypographyTargetSwitcher>` and **discards `singleProps` entirely**; the switcher then destructures `{ key, label, prefix, ...fieldProps }` from the SELECTED target and forwards only `fieldProps`. So **every per-field flag — all nine `show*` flags and `showHover` — must move onto EACH TARGET ENTRY.** A flag left on the outer element does nothing, silently, with every gate green. FR-41-22 carries the verbatim correct mount; copy it exactly, both targets, `showHover: true` on each.
 >
 > **Panels, per §9:**
-> - §9.3 **"Menu Button"** (renamed from "Burger" — a LABEL change; ⛔ no attribute is renamed).
->   Panel-level help text: *"Controls the button that opens the mobile menu (the 'burger')."*
->   Controls in order: Icon (`IconPicker`, shown when `triggerMode` is `icon` or `icon-and-text`) ·
->   Show as (`ToggleGroupControl`, Icon | Text | Icon and text) · ↳ Label (native `TextControl` with
->   `__nextHasNoMarginBottom __next40pxDefaultSize`, shown when not `icon` — ⛔ **not**
->   `SgsFreeTextField`, which has zero adopters on this block) · Size · Magnetic pull
->   (`ToggleControl`) · ↳ Pull distance (`RangeControl` **min 20 max 400**) · ↳ Pull strength
->   (`RangeControl` **min 2 max 80**). ⛔ Those bounds match `fx-magnet.js`'s own clamp exactly — a
->   wider slider has dead ends and reads as a broken control. ⛔ No axis control.
->   Magnet help text, verbatim: *"Makes the menu button lean toward the visitor's cursor as they
->   approach it. Off automatically on touch devices and when reduced motion is requested."*
-> - §9.5 **"Accessibility"** gains the RELOCATED `itemSmartContrast` toggle beside `navLabel`.
->   Plain-language help text — ⛔ no "WCAG", no "contrast ratio", no "AA" in any client-visible
->   string: *"When you set a background, we check your text colour stays readable against it and
->   swap in a readable one if it doesn't. Switch this off to always use exactly the colour you
->   picked."*
-> - §9.7 **"Menu item"** — a labelled **Border** subsection: `SgsBorderControl` with
->   **`showColour={ false }`**, `showRadiusResponsive={ false }`, per-side width (base only), style
->   via the re-parented shared `BorderStyleControl`, radius via `radiusValues`/`onRadiusChange`.
->   ⛔ **No colour swatch** — the split is EXCLUSIVE, one live control per attribute
->   (`check-duplicate-controls.js` bans a second writer). Do not leave the swatch "for convenience".
-> - §9.8 **"Submenu — Items"** (NEW): `IconPicker` for `sublinkMarkerIcon`; cross-references to the
->   Colour panel and the Typography panel rather than duplicate controls; a NAMED empty Spacing slot
->   (no submenu-LINK padding attribute exists — `submenuPadding` is the PANEL's; do not fabricate
->   one).
-> - §9.9 **"Submenu — Container"** (renamed from "Dropdown (only affects items with sub-items)"),
->   every row a `ToolsPanelItem` with `hasValue`/`onDeselect`: Open animation · Distance below the
->   bar · Minimum width · Inner spacing · Border (`SgsBorderControl`, `showColour={false}`) · Box
->   shadow (`ShadowControl` with `attrNames={ shadowAttrKeys( 'submenuShadow' ) }` — **no options**,
->   which returns exactly `{ base, colour }`; the PHP twin `sgs_shadow_attr_map( 'submenuShadow' )`
->   takes the same no-options call, and **both sides must carry the same opt-in** or the editor
->   silently discards every write, D338).
-> - §9.10 **"Typography"** (RESTORED), sitting directly under the Colour panel as the second Design
->   panel. The FR-41-22 `targets` mount verbatim. Plus the block-private **Current-page weight**
->   `SelectControl` fed `SGS_FONT_WEIGHT_OPTIONS` (already re-exported from the barrel this file
->   imports from), at the bottom of the **Menu target only**. ⛔ Not a number input and not a
->   hand-typed weight array — the anti-pattern is on this same block (`featuredFontWeight` is
->   number-typed with a hand-rolled 4-option array); do not reproduce it.
->   Two verbatim help-text strings (BINDING wording, §9.10):
->   · Decoration (hover): *"Underlines the menu word itself on hover — not a full-width line. For a
->     line under the whole item, use the border's hover setting in the Colour panel instead."*
->   · Weight (hover): *"Makes the word bolder when you point at it. Bolder text is a little wider,
->     so the items to its right will shift across slightly as you move along the menu."*
->   And the `ⓘ` twin note: *"These change how the menu word itself looks on hover. For a line across
->   the whole item, use the item border's hover setting in the Colour panel instead."*
->   ⛔ Neither string may contain "WCAG", "contrast ratio", "AA", "signal" or "divider".
-> - ⛔ **DELETE the standalone "Indicator" panel** and the `hoverStyle` dropdown and the "Underline"
->   `PanelBody` and the "Menu item — state signals" panel. Every control they held has a named new
->   home in §9's roster table — check each one off against that table before reporting done.
+> - §9.3 **"Menu Button"** (renamed from "Burger" — a LABEL change; ⛔ no attribute is renamed). Panel-level help text: *"Controls the button that opens the mobile menu (the 'burger')."* Controls in order: Icon (`IconPicker`, shown when `triggerMode` is `icon` or `icon-and-text`) · Show as (`ToggleGroupControl`, Icon | Text | Icon and text) · ↳ Label (native `TextControl` with `__nextHasNoMarginBottom __next40pxDefaultSize`, shown when not `icon` — ⛔ **not** `SgsFreeTextField`, which has zero adopters on this block) · Size · Magnetic pull (`ToggleControl`) · ↳ Pull distance (`RangeControl` **min 20 max 400**) · ↳ Pull strength (`RangeControl` **min 2 max 80**). ⛔ Those bounds match `fx-magnet.js`'s own clamp exactly — a wider slider has dead ends and reads as a broken control. ⛔ No axis control. Magnet help text, verbatim: *"Makes the menu button lean toward the visitor's cursor as they approach it. Off automatically on touch devices and when reduced motion is requested."*
+> - §9.5 **"Accessibility"** gains the RELOCATED `itemSmartContrast` toggle beside `navLabel`. Plain-language help text — ⛔ no "WCAG", no "contrast ratio", no "AA" in any client-visible string: *"When you set a background, we check your text colour stays readable against it and swap in a readable one if it doesn't. Switch this off to always use exactly the colour you picked."*
+> - §9.7 **"Menu item"** — a labelled **Border** subsection: `SgsBorderControl` with **`showColour={ false }`**, `showRadiusResponsive={ false }`, per-side width (base only), style via the re-parented shared `BorderStyleControl`, radius via `radiusValues`/`onRadiusChange`. ⛔ **No colour swatch** — the split is EXCLUSIVE, one live control per attribute (`check-duplicate-controls.js` bans a second writer). Do not leave the swatch "for convenience".
+> - §9.8 **"Submenu — Items"** (NEW): `IconPicker` for `sublinkMarkerIcon`; cross-references to the Colour panel and the Typography panel rather than duplicate controls; a NAMED empty Spacing slot (no submenu-LINK padding attribute exists — `submenuPadding` is the PANEL's; do not fabricate one).
+> - §9.9 **"Submenu — Container"** (renamed from "Dropdown (only affects items with sub-items)"), every row a `ToolsPanelItem` with `hasValue`/`onDeselect`: Open animation · Distance below the bar · Minimum width · Inner spacing · Border (`SgsBorderControl`, `showColour={false}`) · Box shadow (`ShadowControl` with `attrNames={ shadowAttrKeys( 'submenuShadow' ) }` — **no options**, which returns exactly `{ base, colour }`; the PHP twin `sgs_shadow_attr_map( 'submenuShadow' )` takes the same no-options call, and **both sides must carry the same opt-in** or the editor silently discards every write, D338).
+> - §9.10 **"Typography"** (RESTORED), sitting directly under the Colour panel as the second Design panel. The FR-41-22 `targets` mount verbatim. Plus the block-private **Current-page weight** `SelectControl` fed `SGS_FONT_WEIGHT_OPTIONS` (already re-exported from the barrel this file imports from), at the bottom of the **Menu target only**. ⛔ Not a number input and not a hand-typed weight array — the anti-pattern is on this same block (`featuredFontWeight` is number-typed with a hand-rolled 4-option array); do not reproduce it. Two verbatim help-text strings (BINDING wording, §9.10): · Decoration (hover): *"Underlines the menu word itself on hover — not a full-width line. For a line under the whole item, use the border's hover setting in the Colour panel instead."* · Weight (hover): *"Makes the word bolder when you point at it. Bolder text is a little wider, so the items to its right will shift across slightly as you move along the menu."* And the `ⓘ` twin note: *"These change how the menu word itself looks on hover. For a line across the whole item, use the item border's hover setting in the Colour panel instead."* ⛔ Neither string may contain "WCAG", "contrast ratio", "AA", "signal" or "divider".
+> - ⛔ **DELETE the standalone "Indicator" panel** and the `hoverStyle` dropdown and the "Underline" `PanelBody` and the "Menu item — state signals" panel. Every control they held has a named new home in §9's roster table — check each one off against that table before reporting done.
 >
-> **⛔ `SgsColourPanel` must still be rendered BEFORE any other same-group `<InspectorControls>`** —
-> WordPress concatenates same-group Fills in mount order.
+> **⛔ `SgsColourPanel` must still be rendered BEFORE any other same-group `<InspectorControls>`** — WordPress concatenates same-group Fills in mount order.
 >
-> **Prove it:** `npm run build` exits 0 · `node scripts/check-dead-controls.js --check`,
-> `node scripts/check-empty-inspector-containers.js --check`,
-> `node scripts/check-duplicate-controls.js`, `node scripts/check-control-ux.js --check` all pass ·
-> `node scripts/inspector-scan/run.js --check` reports per-row state counts identical to step 13's ·
-> `wc -l plugins/sgs-blocks/src/blocks/nav-menu/*.js` — ⛔ assert EVERY file ≤ 250 individually, not
-> a total · paste §9's panel-roster table with each row ticked and the file+symbol where its controls
-> now live. Do NOT run git beyond `diff`/`status`.
+> **Prove it:** `npm run build` exits 0 · `node scripts/check-dead-controls.js --check`, `node scripts/check-empty-inspector-containers.js --check`, `node scripts/check-duplicate-controls.js`, `node scripts/check-control-ux.js --check` all pass · `node scripts/inspector-scan/run.js --check` reports per-row state counts identical to step 13's · `wc -l plugins/sgs-blocks/src/blocks/nav-menu/*.js` — ⛔ assert EVERY file ≤ 250 individually, not a total · paste §9's panel-roster table with each row ticked and the file+symbol where its controls now live. Do NOT run git beyond `diff`/`status`.
 >
-> **⛔ REDUCE, DON'T RELOCATE (owner ruling 7).** ~40 new attributes land here and the naive outcome
-> is ~40 hand-written controls. Before writing ANY control, option array, attribute-key map or
-> preview helper by hand, find the shared one: read `plugins/sgs-blocks/src/components/index.js` end
-> to end plus `src/components/primitives/`, and check whether a universal extension already covers
-> the surface. The six reuses the prompt above already names (`IconPicker`, `ToggleGroupControl`,
-> `SgsBorderControl`, `ShadowControl` + `shadowAttrKeys()`, `TypographyControls`' `targets` mount,
-> `SGS_FONT_WEIGHT_OPTIONS`) are the FLOOR, not the ceiling. **Append to
-> `.claude/verify/spec-41-reuse-ledger.md`**: one row per file — final line count, shared components
-> leaned on, and for anything hand-rolled, which shared component you checked first and why it did
-> not fit. "I did not check" is not an acceptable row.
+> **⛔ REDUCE, DON'T RELOCATE (owner ruling 7).** ~40 new attributes land here and the naive outcome is ~40 hand-written controls. Before writing ANY control, option array, attribute-key map or preview helper by hand, find the shared one: read `plugins/sgs-blocks/src/components/index.js` end to end plus `src/components/primitives/`, and check whether a universal extension already covers the surface. The six reuses the prompt above already names (`IconPicker`, `ToggleGroupControl`, `SgsBorderControl`, `ShadowControl` + `shadowAttrKeys()`, `TypographyControls`' `targets` mount, `SGS_FONT_WEIGHT_OPTIONS`) are the FLOOR, not the ceiling. **Append to `.claude/verify/spec-41-reuse-ledger.md`**: one row per file — final line count, shared components leaned on, and for anything hand-rolled, which shared component you checked first and why it did not fit. "I did not check" is not an acceptable row.
 
 ---
 
 ### Step 14a — `sgs/nav-drawer` close button: mirror the Menu Button's label + icon work (FR-41-12)
 
-> **Owner ruling 6 (2026-09-11) — IN SCOPE, built by mirroring the Menu Button, not redesigned.**
-> It runs immediately after step 14 so the pattern being copied is finished and reviewed. ⚠ **The
-> scope match was CHECKED, not assumed: it is a PARTIAL mirror** — three of four capabilities
-> transfer cleanly, one genuinely diverges, stated below rather than forced.
+> **Owner ruling 6 (2026-09-11) — IN SCOPE, built by mirroring the Menu Button, not redesigned.** It runs immediately after step 14 so the pattern being copied is finished and reviewed. ⚠ **The scope match was CHECKED, not assumed: it is a PARTIAL mirror** — three of four capabilities transfer cleanly, one genuinely diverges, stated below rather than forced.
 
 **Scope match, verified against the real files before this step was written:**
 
@@ -2050,24 +1252,9 @@ QA Gate — zero blast radius on shared code, and the two splits changed nothing
 | **Icon-and-text form** | `triggerMode` = `icon` \| `text` \| `icon-and-text` | ⚠ **DIVERGES — see below** | ⚠ **Partial** |
 | **Magnetic pull trio** | `triggerMagnet*` (FR-41-31) | — | ⛔ **NOT in scope.** FR-41-12 names the close gaps as label + icon-and-text. A magnet on a close button inside an open modal is a different design question, not a symmetry gap |
 
-⚠ **THE REAL DIVERGENCE.** `closeStyle` (string, default `"separate-x"`, **a genuine JSON `enum`**
-of `separate-x` \| `text-swap` \| `burger-morph`) looks like `triggerMode`'s twin and is not.
-`separate-x` and `text-swap` ARE the icon/text display axis, but **`burger-morph` is not a display
-mode at all — it is a GLYPH choice**: a CSS-drawn two-bar span
-(`<span class="sgs-nav-drawer__close-bars">`) reading as an X, no icon and no text. `closeStyle`
-conflates two orthogonal axes, so a naive one-to-one rename onto `triggerMode`'s three values would
-**silently delete a shipped look**.
+⚠ **THE REAL DIVERGENCE.** `closeStyle` (string, default `"separate-x"`, **a genuine JSON `enum`** of `separate-x` \| `text-swap` \| `burger-morph`) looks like `triggerMode`'s twin and is not. `separate-x` and `text-swap` ARE the icon/text display axis, but **`burger-morph` is not a display mode at all — it is a GLYPH choice**: a CSS-drawn two-bar span (`<span class="sgs-nav-drawer__close-bars">`) reading as an X, no icon and no text. `closeStyle` conflates two orthogonal axes, so a naive one-to-one rename onto `triggerMode`'s three values would **silently delete a shipped look**.
 
-**Resolution — additive, no rename, no deletion** (the prompt below carries the build detail):
-`closeStyle` keeps its name, default and three values and gains a FOURTH, `icon-and-text`, added to
-**both** the existing JSON `enum` and `render.php::$sgs_nd_allowed_close_styles` in the same commit
-(one without the other coerces the stored value away with no error). New `closeLabel` (string,
-`"Close"`) and `closeIcon` (object, `{"source":"lucide","name":"x"}`) mirror `triggerLabel` /
-`triggerIcon`, the icon resolved through the SAME source-aware resolver `sgs/icon` uses and OMITTED
-(never disabled) under `text-swap` and `burger-morph`. ⛔ When `closeLabel` is empty the hardcoded
-`aria-label="Close menu"` must SURVIVE — `aria-label=""` is an empty accessible name, strictly worse
-than a mismatch (the identical trap FR-41-12 records on the open side). `aria-hidden="true"` on the
-glyph under `icon-and-text`, matching the open side.
+**Resolution — additive, no rename, no deletion** (the prompt below carries the build detail): `closeStyle` keeps its name, default and three values and gains a FOURTH, `icon-and-text`, added to **both** the existing JSON `enum` and `render.php::$sgs_nd_allowed_close_styles` in the same commit (one without the other coerces the stored value away with no error). New `closeLabel` (string, `"Close"`) and `closeIcon` (object, `{"source":"lucide","name":"x"}`) mirror `triggerLabel` / `triggerIcon`, the icon resolved through the SAME source-aware resolver `sgs/icon` uses and OMITTED (never disabled) under `text-swap` and `burger-morph`. ⛔ When `closeLabel` is empty the hardcoded `aria-label="Close menu"` must SURVIVE — `aria-label=""` is an empty accessible name, strictly worse than a mismatch (the identical trap FR-41-12 records on the open side). `aria-hidden="true"` on the glyph under `icon-and-text`, matching the open side.
 
 ```
   Model:       sonnet
@@ -2125,103 +1312,33 @@ glyph under `icon-and-text`, matching the open side.
 
 **Prompt:**
 
-> Mirror `sgs/nav-menu`'s finished Menu Button work onto `sgs/nav-drawer`'s close button. Repo root:
-> `c:\Users\Bean\Projects\small-giants-wp`. Your ONE writable directory is
-> `plugins/sgs-blocks/src/blocks/nav-drawer/` (plus appending to
-> `.claude/verify/spec-41-reuse-ledger.md`). ⛔ Do NOT touch `sgs/nav-menu` — it is finished and
-> another lane may still be in it.
+> Mirror `sgs/nav-menu`'s finished Menu Button work onto `sgs/nav-drawer`'s close button. Repo root: `c:\Users\Bean\Projects\small-giants-wp`. Your ONE writable directory is `plugins/sgs-blocks/src/blocks/nav-drawer/` (plus appending to `.claude/verify/spec-41-reuse-ledger.md`). ⛔ Do NOT touch `sgs/nav-menu` — it is finished and another lane may still be in it.
 >
-> **Read first, in this order:** (1) `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-12
-> (v0.4.7) + §9.3's panel table; (2) the JUST-LANDED Menu Button code — the `triggerMode` /
-> `triggerLabel` / `triggerIcon` controls in `src/blocks/nav-menu/` and their `render.php` branch,
-> **including the `$aria_attr` variable that keeps `aria-label` out of the `sprintf()` format
-> string**; (3) `src/blocks/nav-drawer/render.php`'s close-button section
-> (`$sgs_nd_allowed_close_styles`, `$sgs_nd_close_inner`, the `$close_html` `sprintf()`, and the
-> `$close_colour_*` emission above it); (4) `src/blocks/nav-drawer/edit.js`'s existing "Close button"
-> `PanelBody` and its `closeStyle` `ToggleGroupControl`; (5) `src/blocks/icon/edit.js` — the live
-> `IconPicker` adopter.
+> **Read first, in this order:** (1) `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-12 (v0.4.7) + §9.3's panel table; (2) the JUST-LANDED Menu Button code — the `triggerMode` / `triggerLabel` / `triggerIcon` controls in `src/blocks/nav-menu/` and their `render.php` branch, **including the `$aria_attr` variable that keeps `aria-label` out of the `sprintf()` format string**; (3) `src/blocks/nav-drawer/render.php`'s close-button section (`$sgs_nd_allowed_close_styles`, `$sgs_nd_close_inner`, the `$close_html` `sprintf()`, and the `$close_colour_*` emission above it); (4) `src/blocks/nav-drawer/edit.js`'s existing "Close button" `PanelBody` and its `closeStyle` `ToggleGroupControl`; (5) `src/blocks/icon/edit.js` — the live `IconPicker` adopter.
 >
-> **⛔ ALREADY DONE — DO NOT REBUILD.** The close button's 2-state colour pairing works:
-> `toggleCloseColour` / `…Hover` / `…Gradient`, declared on `supports.sgs.elements.close` with
-> explicit base + `states.hover` `attrMap`s, emitted via `sgs_text_colour_decl()` +
-> `sgs_hover_state_rules()`. **No colour control, no touching those attributes or that emission** —
-> `git diff` on them must come back empty.
+> **⛔ ALREADY DONE — DO NOT REBUILD.** The close button's 2-state colour pairing works: `toggleCloseColour` / `…Hover` / `…Gradient`, declared on `supports.sgs.elements.close` with explicit base + `states.hover` `attrMap`s, emitted via `sgs_text_colour_decl()` + `sgs_hover_state_rules()`. **No colour control, no touching those attributes or that emission** — `git diff` on them must come back empty.
 >
-> **⛔ THE ONE PLACE THE MIRROR IS NOT A MIRROR — read before planning the change.** `separate-x` =
-> icon-only and `text-swap` = text-only ARE the same display axis as `triggerMode`, but
-> **`burger-morph` is a GLYPH choice, not a display mode** — a CSS-drawn two-bar
-> `<span class="sgs-nav-drawer__close-bars">`, no icon and no text. Renaming or re-valuing
-> `closeStyle` onto `triggerMode`'s three values would delete a shipped look. **Keep `closeStyle`'s
-> name, default and three values. ADD a fourth, `icon-and-text`.**
+> **⛔ THE ONE PLACE THE MIRROR IS NOT A MIRROR — read before planning the change.** `separate-x` = icon-only and `text-swap` = text-only ARE the same display axis as `triggerMode`, but **`burger-morph` is a GLYPH choice, not a display mode** — a CSS-drawn two-bar `<span class="sgs-nav-drawer__close-bars">`, no icon and no text. Renaming or re-valuing `closeStyle` onto `triggerMode`'s three values would delete a shipped look. **Keep `closeStyle`'s name, default and three values. ADD a fourth, `icon-and-text`.**
 >
 > **Build exactly this:**
-> 1. `block.json` — add `"icon-and-text"` to `attributes.closeStyle.enum` (it carries a REAL JSON
->    enum today; that is existing and stays). Add `closeLabel` (`string`, default `"Close"`) and
->    `closeIcon` (`object`, default `{"source":"lucide","name":"x"}`). ⛔ Give NEITHER new attribute
->    a JSON `enum`. Add their `supports.sgs.elements` entries only where they route a real CSS
->    property — `closeLabel` and `closeIcon` route none, so they get NO element members and NO
->    phantom routing slots (the same ruling §8.6(e) makes for `triggerMode`/`triggerLabel`).
-> 2. `render.php` — add `'icon-and-text'` to `$sgs_nd_allowed_close_styles`. ⛔ **Both lists or
->    neither.** An enum value accepted by `block.json` and rejected by the PHP allowlist (or the
->    reverse) coerces silently with no error on either side. Extend the `$sgs_nd_close_inner` branch:
->    `icon-and-text` emits the resolved icon with `aria-hidden="true"` followed by the label span.
->    Resolve `closeIcon` through the SAME source-aware resolver `sgs/icon` uses — ⛔ never a bespoke
->    lookup, and never a second call to `sgs_get_lucide_icon()` with a hand-parsed name.
-> 3. **The accessible name.** `$close_html`'s `sprintf()` hardcodes
->    `aria-label="%s"` fed `esc_attr__( 'Close menu', 'sgs-blocks' )`. Under `text-swap` and
->    `icon-and-text` the visible word IS the accessible name, so a differing `aria-label` breaks SC
->    2.5.3 Label in Name — build the attribute segment as a VARIABLE and interpolate it, exactly as
->    the open side now does. ⛔ **But when `closeLabel` resolves empty, KEEP the hardcoded
->    `aria-label`.** Emitting `aria-label=""` is an empty accessible name, strictly worse than the
->    mismatch. Assert this, do not reason about it.
-> 4. `edit.js` — in the EXISTING "Close button" `PanelBody`, mount in this order, with these
->    components (copied from §9.3, not chosen afresh): **Icon** (`IconPicker` → `closeIcon`, shown
->    only under `separate-x` / `icon-and-text` — ⛔ OMIT otherwise, never disable) · **Show as** (the
->    existing `ToggleGroupControl` → `closeStyle`, now with a fourth option) · **↳ Label** (native
->    `TextControl` with `__nextHasNoMarginBottom __next40pxDefaultSize` → `closeLabel`, shown under
->    `text-swap` / `icon-and-text`). ⛔ Not `SgsFreeTextField`. Keep this panel's existing
->    `ToolsPanelItem` `hasValue`/`onDeselect` idiom.
->    ⚠ **THE CONTROL-SHAPE QUESTION, CORRECTLY FRAMED (S3) — an earlier edition asked it against the
->    wrong rule.** `TypographyControls.js::SGS_TYPOGRAPHY_SWITCHER_MAX_SEGMENTED` is **not** the
->    authority: it governs the typography target switcher's own shape, keyed on `targets.length`.
->    The framework's real, **gate-backed** contract is **Spec 35 Part O's D810 table** — 2–4 options
->    with a longest label ≤ **12 characters** → `ToggleGroupControl`; 5 neutral; 6+ →
->    `SelectControl` — enforced by `plugins/sgs-blocks/scripts/check-enum-control-shape.py`
->    (`gates.json` id `check-enum-control-shape`, tier `fast`, D812), which step 20 runs.
->    **So a four-value `closeStyle` is squarely INSIDE Part O's 2–4 band and keeps its
->    `ToggleGroupControl`.** ⛔ Do not swap the client's control type on the strength of the
->    typography constant.
->    ⚠ **The real question is the LABEL LENGTH, and it is a genuine edge case:** Part O's 12-character
->    bound was *derived from `nav-drawer.closeStyle` itself* (`burger-morph`, exactly 12), and the new
->    `icon-and-text` label is **13 characters**. Measure the rendered label you actually ship (the
->    human label, e.g. `"Icon and text"` = 13), run the gate, and if it fails, shorten the LABEL —
->    ⛔ never the enum VALUE (the value is the stored contract and must stay `icon-and-text` to match
->    the open side's `triggerMode`). Report the measured length and the gate's verdict either way.
-> 5. `style.css` — ONLY if `icon-and-text` needs a gap/flex rule the existing
->    `.sgs-nav-drawer--close-*` classes do not already provide. Check first; report either way.
+> 1. `block.json` — add `"icon-and-text"` to `attributes.closeStyle.enum` (it carries a REAL JSON enum today; that is existing and stays). Add `closeLabel` (`string`, default `"Close"`) and `closeIcon` (`object`, default `{"source":"lucide","name":"x"}`). ⛔ Give NEITHER new attribute a JSON `enum`. Add their `supports.sgs.elements` entries only where they route a real CSS property — `closeLabel` and `closeIcon` route none, so they get NO element members and NO phantom routing slots (the same ruling §8.6(e) makes for `triggerMode`/`triggerLabel`).
+> 2. `render.php` — add `'icon-and-text'` to `$sgs_nd_allowed_close_styles`. ⛔ **Both lists or neither.** An enum value accepted by `block.json` and rejected by the PHP allowlist (or the reverse) coerces silently with no error on either side. Extend the `$sgs_nd_close_inner` branch: `icon-and-text` emits the resolved icon with `aria-hidden="true"` followed by the label span. Resolve `closeIcon` through the SAME source-aware resolver `sgs/icon` uses — ⛔ never a bespoke lookup, and never a second call to `sgs_get_lucide_icon()` with a hand-parsed name.
+> 3. **The accessible name.** `$close_html`'s `sprintf()` hardcodes `aria-label="%s"` fed `esc_attr__( 'Close menu', 'sgs-blocks' )`. Under `text-swap` and `icon-and-text` the visible word IS the accessible name, so a differing `aria-label` breaks SC 2.5.3 Label in Name — build the attribute segment as a VARIABLE and interpolate it, exactly as the open side now does. ⛔ **But when `closeLabel` resolves empty, KEEP the hardcoded `aria-label`.** Emitting `aria-label=""` is an empty accessible name, strictly worse than the mismatch. Assert this, do not reason about it.
+> 4. `edit.js` — in the EXISTING "Close button" `PanelBody`, mount in this order, with these components (copied from §9.3, not chosen afresh): **Icon** (`IconPicker` → `closeIcon`, shown only under `separate-x` / `icon-and-text` — ⛔ OMIT otherwise, never disable) · **Show as** (the existing `ToggleGroupControl` → `closeStyle`, now with a fourth option) · **↳ Label** (native `TextControl` with `__nextHasNoMarginBottom __next40pxDefaultSize` → `closeLabel`, shown under `text-swap` / `icon-and-text`). ⛔ Not `SgsFreeTextField`. Keep this panel's existing `ToolsPanelItem` `hasValue`/`onDeselect` idiom. ⚠ **THE CONTROL-SHAPE QUESTION, CORRECTLY FRAMED (S3) — an earlier edition asked it against the wrong rule.** `TypographyControls.js::SGS_TYPOGRAPHY_SWITCHER_MAX_SEGMENTED` is **not** the authority: it governs the typography target switcher's own shape, keyed on `targets.length`. The framework's real, **gate-backed** contract is **Spec 35 Part O's D810 table** — 2–4 options with a longest label ≤ **12 characters** → `ToggleGroupControl`; 5 neutral; 6+ → `SelectControl` — enforced by `plugins/sgs-blocks/scripts/check-enum-control-shape.py` (`gates.json` id `check-enum-control-shape`, tier `fast`, D812), which step 20 runs. **So a four-value `closeStyle` is squarely INSIDE Part O's 2–4 band and keeps its `ToggleGroupControl`.** ⛔ Do not swap the client's control type on the strength of the typography constant. ⚠ **The real question is the LABEL LENGTH, and it is a genuine edge case:** Part O's 12-character bound was *derived from `nav-drawer.closeStyle` itself* (`burger-morph`, exactly 12), and the new `icon-and-text` label is **13 characters**. Measure the rendered label you actually ship (the human label, e.g. `"Icon and text"` = 13), run the gate, and if it fails, shorten the LABEL — ⛔ never the enum VALUE (the value is the stored contract and must stay `icon-and-text` to match the open side's `triggerMode`). Report the measured length and the gate's verdict either way.
+> 5. `style.css` — ONLY if `icon-and-text` needs a gap/flex rule the existing `.sgs-nav-drawer--close-*` classes do not already provide. Check first; report either way.
 >
 > ⛔ No deprecations, no version bumps (D270/D293 — pre-production).
 >
 > **Prove it, commands pasted:**
 > - `python -m json.tool plugins/sgs-blocks/src/blocks/nav-drawer/block.json > /dev/null` exits 0
-> - Paste `block.json::attributes.closeStyle.enum` AND
->   `grep -n "sgs_nd_allowed_close_styles" -A 3 plugins/sgs-blocks/src/blocks/nav-drawer/render.php`
->   side by side — all four values in both
+> - Paste `block.json::attributes.closeStyle.enum` AND `grep -n "sgs_nd_allowed_close_styles" -A 3 plugins/sgs-blocks/src/blocks/nav-drawer/render.php` side by side — all four values in both
 > - `php -l` clean · `cd plugins/sgs-blocks && npm run build` exits 0
-> - `node scripts/check-dead-controls.js --check`, `node scripts/check-duplicate-controls.js`,
->   `node scripts/audit-inline-styling.js --check` all pass
-> - `git diff -- plugins/sgs-blocks/src/blocks/nav-drawer/` — paste it whole, and confirm in one
->   sentence that nothing in the `toggleCloseColour*` family or its emission changed
-> - With `closeIcon` unset, paste the rendered close-button markup and show it is byte-identical to
->   the pre-change `sgs_get_lucide_icon( 'x' )` output
+> - `node scripts/check-dead-controls.js --check`, `node scripts/check-duplicate-controls.js`, `node scripts/audit-inline-styling.js --check` all pass
+> - `git diff -- plugins/sgs-blocks/src/blocks/nav-drawer/` — paste it whole, and confirm in one sentence that nothing in the `toggleCloseColour*` family or its emission changed
+> - With `closeIcon` unset, paste the rendered close-button markup and show it is byte-identical to the pre-change `sgs_get_lucide_icon( 'x' )` output
 > - `wc -l` on every file you touched — JS ≤ 250, PHP ≤ 300, individually
 > - Append your reuse row to `.claude/verify/spec-41-reuse-ledger.md`
-> - ⛔ **RESEED THE DERIVED DB — you changed a SECOND block's manifest and step 10's reseed ran
->   before this step existed.** Run `python plugins/sgs-blocks/scripts/sgs-update-v2.py`, then paste
->   the output of
->   `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT attr_name FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND attr_name IN ('closeLabel','closeIcon')"`
->   showing BOTH rows. ⛔ If a row is missing, fix `block.json` and RE-RUN the reseed — never patch
->   the DB row directly; a raw row does not survive the next reseed.
+> - ⛔ **RESEED THE DERIVED DB — you changed a SECOND block's manifest and step 10's reseed ran before this step existed.** Run `python plugins/sgs-blocks/scripts/sgs-update-v2.py`, then paste the output of `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT attr_name FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND attr_name IN ('closeLabel','closeIcon')"` showing BOTH rows. ⛔ If a row is missing, fix `block.json` and RE-RUN the reseed — never patch the DB row directly; a raw row does not survive the next reseed.
 >
 > Do NOT run git beyond `diff`/`status`.
 
@@ -2273,139 +1390,24 @@ glyph under `icon-and-text`, matching the open side.
 
 **Prompt:**
 
-> Implement the CSS emission for Spec 41. Repo root: `c:\Users\Bean\Projects\small-giants-wp`.
-> Writable files: `plugins/sgs-blocks/includes/nav-menu-css.php` and
-> `plugins/sgs-blocks/src/blocks/nav-menu/render.php` **only**. ⛔ Do NOT edit `edit.js`, any file
-> under `src/blocks/nav-menu/*.js`, `style.css` (step 16 owns it) or `block.json` (FROZEN — it is
-> your contract).
+> Implement the CSS emission for Spec 41. Repo root: `c:\Users\Bean\Projects\small-giants-wp`. Writable files: `plugins/sgs-blocks/includes/nav-menu-css.php` and `plugins/sgs-blocks/src/blocks/nav-menu/render.php` **only**. ⛔ Do NOT edit `edit.js`, any file under `src/blocks/nav-menu/*.js`, `style.css` (step 16 owns it) or `block.json` (FROZEN — it is your contract).
 >
-> **Read in full first:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` FR-41-3, FR-41-5,
-> FR-41-8, FR-41-12, FR-41-21, FR-41-22(b), FR-41-23 (including the `::before` three-state block),
-> FR-41-25, FR-41-26 (all four sub-sections), FR-41-30, FR-41-31. Then
-> `plugins/sgs-blocks/includes/helpers-hover-state.php` in full, then
-> `plugins/sgs-blocks/src/blocks/business-info/style.css` (`.sgs-business-attribution
-> .sgs-business-info__link` — the shipped, live sweep precedent this adopts) and that block's
-> `render.php` custom-property emission.
+> **Read in full first:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` FR-41-3, FR-41-5, FR-41-8, FR-41-12, FR-41-21, FR-41-22(b), FR-41-23 (including the `::before` three-state block), FR-41-25, FR-41-26 (all four sub-sections), FR-41-30, FR-41-31. Then `plugins/sgs-blocks/includes/helpers-hover-state.php` in full, then `plugins/sgs-blocks/src/blocks/business-info/style.css` (`.sgs-business-attribution .sgs-business-info__link` — the shipped, live sweep precedent this adopts) and that block's `render.php` custom-property emission.
 >
 > **⛔ SEVEN RULES, EACH OF WHICH FAILS SILENTLY IF MISSED:**
 >
-> 1. **Every hover rule routes through a helper** in `helpers-hover-state.php` — never a bare
->    `{sel}:hover`. Use `sgs_hover_state_rules( $selector, $decls, $focus, $suffix )` when you hold
->    a BASE selector (it appends `:hover` plus any pseudo-element suffix to each comma-separated
->    part itself and emits the focus rule separately, unguarded); use
->    `sgs_hover_guarded_rule( $hover_selector, $decls )` only when you already hold a fully-built
->    `:hover` selector. The two guard layers cover DIFFERENT devices — `SGS_HOVER_MEDIA` fixes
->    phones and pure-touch tablets with no JS; `SGS_HOVER_NOT_TOUCH` fixes hybrids, which report
->    hover-capable all session while being poked with a finger. Neither covers the other's devices.
->    **`:focus-visible` stays OUTSIDE both guards.** The Current rule is never guarded and is
->    emitted BEFORE the Hover rule.
-> 2. **ALL THREE item-background fills paint on `.{uid} .sgs-nav-menu__link::before`** — same layer,
->    same `z-index:-1`, same `border-radius:inherit`. ⛔ No state's fill goes on
->    `.sgs-nav-menu__link` itself. The `hoverStyle==='pill'` branch you are deleting painted
->    `background-color` directly on the link; if its replacement lands back there, the item-text
->    row's Sweep would clip the operator's new hover fill to the shape of the letters.
->    ⚠ Emit `{link}{position:relative;isolation:isolate;}` whenever ANY of the three fills is set,
->    not only the resting one.
-> 3. **The Sweep predicate is re-evaluated HERE, server-side, and the EMISSION is what is gated.**
->    Read `WP_Block_Type_Registry::get_instance()->get_registered( 'sgs/nav-menu' )
->    ->supports['sgs']['sweepEligibility']` and apply the same three mechanical checks the inspector
->    applies. When false, resolve the treatment to `'swap'` **regardless of the stored value**, and
->    emit none of the sweep CSS. ⛔ **Do NOT clear the stored value** — it becomes valid again the
->    moment the operator clears the blocking attribute. ⛔ **Do NOT re-derive the rule or add "and
->    also check X"** — both surfaces read the same declared rows; a new blocking input is added to
->    the DATA, not to either evaluator.
->    ⛔ **Read the RESOLVED treatment into a variable once, immediately after that evaluation, and
->    have every downstream rule read THAT variable.** The stored attribute is not consulted again.
->    The sweep-plus-text-decoration rule below is the first consumer of that distinction and keying
->    it on the stored value fires it on a row that never swept.
-> 4. **The `@supports not ((background-clip:text) or (-webkit-background-clip:text))` fallback is
->    MANDATORY**, and its base rule seeds the **NORMAL** colour with the HOVER colour arriving via
->    its own separate rule inside the same block. ⛔ Never "HOVER or NORMAL" — seeding the base with
->    Hover renders the menu permanently hover-coloured on exactly the browsers least able to cope.
->    Emit it by calling the existing `includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule(
->    $selector, $value )` — this block already calls it on its Normal-state gradient path. ⛔ Do not
->    hand-roll the rule. Without it, `-webkit-text-fill-color:transparent` applies on a
->    non-supporting browser and **the text is invisible** — total content loss, not a degraded
->    effect. The hover half of the fallback still routes through `sgs_hover_state_rules()`.
-> 5. **✅ RULED (owner ruling 1) — use step 6a's additive `suppress_edges` parameter. This step
->    writes NO block-private border override.**
->    Background, so you understand what you are calling: `sgs_border_states_css()` was edge-blind —
->    signature `sgs_border_states_css( string $selector, array $attributes, array $map )`, one normal
->    paint, one hover paint, one flat `border-color:` covering all four sides — so FR-41-8's original
->    wording ("the `$map`'s `hover` and `current` keys are UNSET for the `bottom` edge") named an API
->    that did not exist. **Step 6a gave it one**, additively, reusing the project's existing box-object
->    `{top,right,bottom,left}` naming. FR-41-8 in the spec (v0.4.7) now describes that real API.
->    **What you write here:** when the RESOLVED `itemBorderHoverTreatment` is `'sweep'`, call the
->    helper ONCE, normally, for the full three-state border — and pass
->    `'suppress_edges' => array( 'bottom' => true )` in its `$map`. The helper emits the resting
->    `border-color` shorthand plus hover/current rules covering top, right and left only. That is the
->    whole mechanism. ⛔ Do NOT also emit a block-private `border-bottom-color` override "to be
->    sure" — two overlapping fixes are unfalsifiable (you cannot tell which one worked, so neither
->    can ever be safely removed), which is the exact trap
->    `~/.claude/rules/prove-the-cause-before-fix.md` names.
->    ⛔ When the treatment is NOT `'sweep'`, pass NO `suppress_edges` key at all — not an empty
->    array, not all-false. The absent key is what makes the emission byte-identical to the
->    non-sweep case.
->    The OUTCOME is unchanged from the spec's intent: without the suppression, the helper repaints a
->    real border on the border box directly beneath the band on the padding box — **two visible
->    horizontal lines**, one un-asked-for. Every other edge keeps all three states. The Hover and
->    Current swatches stay VISIBLE and STORED; only the bottom edge's non-resting emission is
->    dropped, and switching back to `Swap` restores the plain pair with nothing lost.
->    Also emit `{link}{border-bottom-color:transparent;}` and `{link}{position:relative;}` from the
->    sweep branch — those are still this block's own rules, and `border-bottom-color:transparent` is
->    the RESTING half, which the helper deliberately does not touch.
->    ⚠ **G6 is the assertion that catches a mistake here**
->    (`getComputedStyle(link).borderBottomColor === 'rgba(0, 0, 0, 0)'` while the `::after` band
->    paints) — and it now proves the shared helper's new parameter works end to end, not a
->    block-private hack.
->    A `prefers-reduced-motion: reduce` companion is MANDATORY: keep both end states, drop only the
->    travel.
-> 6. **When the RESOLVED treatment is `'sweep'` AND that prefix's hover text-decoration resolves to
->    a permitted non-`none` value, the same block-private emitter also sets `text-decoration-color`
->    to the HOVER colour**, in the SAME `sgs_hover_state_rules()` call as the decoration itself.
->    `text-decoration-color` is not governed by `-webkit-text-fill-color`, so without this the
->    glyphs travel and the line under them stays at the resting colour. ⚠ Add NO transition to it.
-> 7. **The block-private typography hover emitter (`sgs_nav_menu_typography_hover_rule()`) is
->    declared in `plugins/sgs-blocks/src/blocks/nav-menu/render.php` ITSELF, inside a
->    `function_exists()` guard — ⛔ NOT in `includes/nav-menu-css.php`, NOT anywhere under
->    `includes/` (owner ruling 2, 2026-09-11).** Spec 41 FR-41-21 says it literally ("*a file-local
->    function in this block's own `render.php`, not an addition to `includes/`*") and the owner has
->    confirmed the literal reading: this is BLOCK-PRIVATE code, and `includes/` — even a file only
->    nav-menu requires — is the shared folder. Step 8's split moved the CSS *assembly* out; it did
->    NOT move this, and step 8's prompt says so. A top-level function declaration in a per-instance
->    `render.php` fatals on the second instance, and this page has two, hence the guard.
->    It validates each value against the SAME
->    allowlists `sgs_typography_css_rule()` applies, reproduced literally (there is no exported
->    constant): `text-decoration` ∈ none/underline/line-through/overline; `text-transform` ∈
->    none/uppercase/lowercase/capitalize; `font-weight` via `preg_replace('/[^a-z0-9]/i','',$v)`.
->    ⛔ A value that is set but not permitted emits NOTHING — it never falls back to the base value.
->    ⛔ Do NOT extend `sgs_typography_css_rule()`; that is a shared helper with callers across most
->    of the block library and a design-gated change.
+> 1. **Every hover rule routes through a helper** in `helpers-hover-state.php` — never a bare `{sel}:hover`. Use `sgs_hover_state_rules( $selector, $decls, $focus, $suffix )` when you hold a BASE selector (it appends `:hover` plus any pseudo-element suffix to each comma-separated part itself and emits the focus rule separately, unguarded); use `sgs_hover_guarded_rule( $hover_selector, $decls )` only when you already hold a fully-built `:hover` selector. The two guard layers cover DIFFERENT devices — `SGS_HOVER_MEDIA` fixes phones and pure-touch tablets with no JS; `SGS_HOVER_NOT_TOUCH` fixes hybrids, which report hover-capable all session while being poked with a finger. Neither covers the other's devices. **`:focus-visible` stays OUTSIDE both guards.** The Current rule is never guarded and is emitted BEFORE the Hover rule.
+> 2. **ALL THREE item-background fills paint on `.{uid} .sgs-nav-menu__link::before`** — same layer, same `z-index:-1`, same `border-radius:inherit`. ⛔ No state's fill goes on `.sgs-nav-menu__link` itself. The `hoverStyle==='pill'` branch you are deleting painted `background-color` directly on the link; if its replacement lands back there, the item-text row's Sweep would clip the operator's new hover fill to the shape of the letters. ⚠ Emit `{link}{position:relative;isolation:isolate;}` whenever ANY of the three fills is set, not only the resting one.
+> 3. **The Sweep predicate is re-evaluated HERE, server-side, and the EMISSION is what is gated.** Read `WP_Block_Type_Registry::get_instance()->get_registered( 'sgs/nav-menu' ) ->supports['sgs']['sweepEligibility']` and apply the same three mechanical checks the inspector applies. When false, resolve the treatment to `'swap'` **regardless of the stored value**, and emit none of the sweep CSS. ⛔ **Do NOT clear the stored value** — it becomes valid again the moment the operator clears the blocking attribute. ⛔ **Do NOT re-derive the rule or add "and also check X"** — both surfaces read the same declared rows; a new blocking input is added to the DATA, not to either evaluator. ⛔ **Read the RESOLVED treatment into a variable once, immediately after that evaluation, and have every downstream rule read THAT variable.** The stored attribute is not consulted again. The sweep-plus-text-decoration rule below is the first consumer of that distinction and keying it on the stored value fires it on a row that never swept.
+> 4. **The `@supports not ((background-clip:text) or (-webkit-background-clip:text))` fallback is MANDATORY**, and its base rule seeds the **NORMAL** colour with the HOVER colour arriving via its own separate rule inside the same block. ⛔ Never "HOVER or NORMAL" — seeding the base with Hover renders the menu permanently hover-coloured on exactly the browsers least able to cope. Emit it by calling the existing `includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule( $selector, $value )` — this block already calls it on its Normal-state gradient path. ⛔ Do not hand-roll the rule. Without it, `-webkit-text-fill-color:transparent` applies on a non-supporting browser and **the text is invisible** — total content loss, not a degraded effect. The hover half of the fallback still routes through `sgs_hover_state_rules()`.
+> 5. **✅ RULED (owner ruling 1) — use step 6a's additive `suppress_edges` parameter. This step writes NO block-private border override.** Background, so you understand what you are calling: `sgs_border_states_css()` was edge-blind — signature `sgs_border_states_css( string $selector, array $attributes, array $map )`, one normal paint, one hover paint, one flat `border-color:` covering all four sides — so FR-41-8's original wording ("the `$map`'s `hover` and `current` keys are UNSET for the `bottom` edge") named an API that did not exist. **Step 6a gave it one**, additively, reusing the project's existing box-object `{top,right,bottom,left}` naming. FR-41-8 in the spec (v0.4.7) now describes that real API. **What you write here:** when the RESOLVED `itemBorderHoverTreatment` is `'sweep'`, call the helper ONCE, normally, for the full three-state border — and pass `'suppress_edges' => array( 'bottom' => true )` in its `$map`. The helper emits the resting `border-color` shorthand plus hover/current rules covering top, right and left only. That is the whole mechanism. ⛔ Do NOT also emit a block-private `border-bottom-color` override "to be sure" — two overlapping fixes are unfalsifiable (you cannot tell which one worked, so neither can ever be safely removed), which is the exact trap `~/.claude/rules/prove-the-cause-before-fix.md` names. ⛔ When the treatment is NOT `'sweep'`, pass NO `suppress_edges` key at all — not an empty array, not all-false. The absent key is what makes the emission byte-identical to the non-sweep case. The OUTCOME is unchanged from the spec's intent: without the suppression, the helper repaints a real border on the border box directly beneath the band on the padding box — **two visible horizontal lines**, one un-asked-for. Every other edge keeps all three states. The Hover and Current swatches stay VISIBLE and STORED; only the bottom edge's non-resting emission is dropped, and switching back to `Swap` restores the plain pair with nothing lost. Also emit `{link}{border-bottom-color:transparent;}` and `{link}{position:relative;}` from the sweep branch — those are still this block's own rules, and `border-bottom-color:transparent` is the RESTING half, which the helper deliberately does not touch. ⚠ **G6 is the assertion that catches a mistake here** (`getComputedStyle(link).borderBottomColor === 'rgba(0, 0, 0, 0)'` while the `::after` band paints) — and it now proves the shared helper's new parameter works end to end, not a block-private hack. A `prefers-reduced-motion: reduce` companion is MANDATORY: keep both end states, drop only the travel.
+> 6. **When the RESOLVED treatment is `'sweep'` AND that prefix's hover text-decoration resolves to a permitted non-`none` value, the same block-private emitter also sets `text-decoration-color` to the HOVER colour**, in the SAME `sgs_hover_state_rules()` call as the decoration itself. `text-decoration-color` is not governed by `-webkit-text-fill-color`, so without this the glyphs travel and the line under them stays at the resting colour. ⚠ Add NO transition to it.
+> 7. **The block-private typography hover emitter (`sgs_nav_menu_typography_hover_rule()`) is declared in `plugins/sgs-blocks/src/blocks/nav-menu/render.php` ITSELF, inside a `function_exists()` guard — ⛔ NOT in `includes/nav-menu-css.php`, NOT anywhere under `includes/` (owner ruling 2, 2026-09-11).** Spec 41 FR-41-21 says it literally ("*a file-local function in this block's own `render.php`, not an addition to `includes/`*") and the owner has confirmed the literal reading: this is BLOCK-PRIVATE code, and `includes/` — even a file only nav-menu requires — is the shared folder. Step 8's split moved the CSS *assembly* out; it did NOT move this, and step 8's prompt says so. A top-level function declaration in a per-instance `render.php` fatals on the second instance, and this page has two, hence the guard. It validates each value against the SAME allowlists `sgs_typography_css_rule()` applies, reproduced literally (there is no exported constant): `text-decoration` ∈ none/underline/line-through/overline; `text-transform` ∈ none/uppercase/lowercase/capitalize; `font-weight` via `preg_replace('/[^a-z0-9]/i','',$v)`. ⛔ A value that is set but not permitted emits NOTHING — it never falls back to the base value. ⛔ Do NOT extend `sgs_typography_css_rule()`; that is a shared helper with callers across most of the block library and a design-gated change.
 >
-> **Also implement:** `itemFontWeightCurrent` under FR-41-6's never-lighter rule (emit only when
-> `(int)itemFontWeightCurrent > (int)itemFontWeight`) · `itemSmartContrast` via the EXISTING
-> `sgs_wcag_text_colour_for_bg()` / `sgs_wcag_preferred_text_colour_for_bg()` — ⛔ do not build a new
-> contrast function · the burger `triggerMode` branch, including building the `aria-label` attribute
-> segment as a VARIABLE and interpolating it (⛔ the attribute lives inside a `sprintf()` format
-> string literal; passing `''` emits `aria-label=""`, an EMPTY accessible name, strictly worse than
-> the mismatch it fixes) · `aria-hidden="true"` on the icon under `icon-and-text` · `min-width:
-> <burgerSize>; width:auto` in place of the fixed `width` under `text`/`icon-and-text`, keeping
-> `height`/`min-height` so the 44px touch floor survives · `triggerIcon`/`sublinkMarkerIcon` through
-> the SAME source-aware resolver `sgs/icon` calls, never a bespoke lookup · the magnet's three
-> `data-sgs-fx*` attributes, each through `absint()` then `esc_attr()`, and **no attribute at all
-> when disabled** (⛔ no `view.js` change and no enqueue code — the motion registry's enqueue is
-> markup-sniffed) · the submenu typography call
-> `sgs_typography_css_rule( $attributes, 'submenu', $uid_sel . ' .sgs-nav-menu__sublink' )` ·
-> `submenuTopOffset` as `top: calc(100% + <offset>)` **plus its mandatory hover-bridge**
-> `.sgs-nav-menu__submenu-wrap::before` (emitted only when an offset is set — ⛔ `submenuCloseGrace`
-> does NOT cover this; it governs OPENNESS and never touches CSS `:hover`) · the sublink sweep
-> selector scoped to EXCLUDE featured sub-items
-> (`{uid} .sgs-nav-menu__subitem:not(.sgs-nav-menu__subitem--featured) .sgs-nav-menu__sublink`).
+> **Also implement:** `itemFontWeightCurrent` under FR-41-6's never-lighter rule (emit only when `(int)itemFontWeightCurrent > (int)itemFontWeight`) · `itemSmartContrast` via the EXISTING `sgs_wcag_text_colour_for_bg()` / `sgs_wcag_preferred_text_colour_for_bg()` — ⛔ do not build a new contrast function · the burger `triggerMode` branch, including building the `aria-label` attribute segment as a VARIABLE and interpolating it (⛔ the attribute lives inside a `sprintf()` format string literal; passing `''` emits `aria-label=""`, an EMPTY accessible name, strictly worse than the mismatch it fixes) · `aria-hidden="true"` on the icon under `icon-and-text` · `min-width:
+> <burgerSize>; width:auto` in place of the fixed `width` under `text`/`icon-and-text`, keeping `height`/`min-height` so the 44px touch floor survives · `triggerIcon`/`sublinkMarkerIcon` through the SAME source-aware resolver `sgs/icon` calls, never a bespoke lookup · the magnet's three `data-sgs-fx*` attributes, each through `absint()` then `esc_attr()`, and **no attribute at all when disabled** (⛔ no `view.js` change and no enqueue code — the motion registry's enqueue is markup-sniffed) · the submenu typography call `sgs_typography_css_rule( $attributes, 'submenu', $uid_sel . ' .sgs-nav-menu__sublink' )` · `submenuTopOffset` as `top: calc(100% + <offset>)` **plus its mandatory hover-bridge** `.sgs-nav-menu__submenu-wrap::before` (emitted only when an offset is set — ⛔ `submenuCloseGrace` does NOT cover this; it governs OPENNESS and never touches CSS `:hover`) · the sublink sweep selector scoped to EXCLUDE featured sub-items (`{uid} .sgs-nav-menu__subitem:not(.sgs-nav-menu__subitem--featured) .sgs-nav-menu__sublink`).
 >
-> **Prove it:** `php -l` clean · `node plugins/sgs-blocks/scripts/hover-guard/check.js` passes ·
-> `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 · `wc -l` every file
-> ≤ 300 · for each of the three `sweepEligibility` rows, paste the emitted CSS with the predicate
-> TRUE and with it FALSE, side by side. Do NOT run git beyond `diff`/`status`.
+> **Prove it:** `php -l` clean · `node plugins/sgs-blocks/scripts/hover-guard/check.js` passes · `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 · `wc -l` every file ≤ 300 · for each of the three `sweepEligibility` rows, paste the emitted CSS with the predicate TRUE and with it FALSE, side by side. Do NOT run git beyond `diff`/`status`.
 
 ---
 
@@ -2453,75 +1455,26 @@ glyph under `icon-and-text`, matching the open side.
 
 **Prompt:**
 
-> Execute FR-41-15's fate table on `sgs/nav-menu`. Repo root:
-> `c:\Users\Bean\Projects\small-giants-wp`. Writable files: the nav-menu CSS-emission PHP (see
-> `plugins/sgs-blocks/includes/nav-menu-css.php` and
-> `plugins/sgs-blocks/src/blocks/nav-menu/render.php`) and
-> `plugins/sgs-blocks/src/blocks/nav-menu/style.css`. Nothing else.
+> Execute FR-41-15's fate table on `sgs/nav-menu`. Repo root: `c:\Users\Bean\Projects\small-giants-wp`. Writable files: the nav-menu CSS-emission PHP (see `plugins/sgs-blocks/includes/nav-menu-css.php` and `plugins/sgs-blocks/src/blocks/nav-menu/render.php`) and `plugins/sgs-blocks/src/blocks/nav-menu/style.css`. Nothing else.
 >
-> **Read `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-15 IN FULL** — the corrected
-> methodology, the history table of three bounds that each hid a real rule, the 11-row CENSUSED
-> table, the GATED and DISMISSED tables, the 12-row fate table, census #9's per-declaration table,
-> and the three ⛔ blocks explaining why census #4/#6/#8 BREAK the Sweep treatment outright. Also
-> read FR-41-4 (its seven required changes).
+> **Read `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-15 IN FULL** — the corrected methodology, the history table of three bounds that each hid a real rule, the 11-row CENSUSED table, the GATED and DISMISSED tables, the 12-row fate table, census #9's per-declaration table, and the three ⛔ blocks explaining why census #4/#6/#8 BREAK the Sweep treatment outright. Also read FR-41-4 (its seven required changes).
 >
-> **⛔ FIRST, RE-RUN THE CENSUS YOURSELF before changing anything**, with the exact statement-aware
-> Python in FR-41-15 plus `grep -nE 'background|border'` over `style.css`, and diff your output
-> against the spec's tables. Paste both. **A fate table is only true as of the command that produced
-> it** — the dispositions in the spec were derived against a specific tree state, and other sessions
-> commit here daily. If any row has moved, STOP and report rather than guessing the new fate.
+> **⛔ FIRST, RE-RUN THE CENSUS YOURSELF before changing anything**, with the exact statement-aware Python in FR-41-15 plus `grep -nE 'background|border'` over `style.css`, and diff your output against the spec's tables. Paste both. **A fate table is only true as of the command that produced it** — the dispositions in the spec were derived against a specific tree state, and other sessions commit here daily. If any row has moved, STOP and report rather than guessing the new fate.
 >
 > **Then apply, per the fate table:**
-> - **DELETE (6):** census #3, #4, #5, #6, #8, #10. Plus the two bar `[aria-current="page"]` rules'
->   handling per the fate table, and FR-41-4's seven items — the `hoverStyle` attribute and all
->   three branches, all five underline attributes, all five named underline CSS rules including the
->   `$hover_after_sel` construction and the `prefers-reduced-motion` companion, and
->   `{featured_sel}::after{content:none;}`. ⛔ Do NOT keep that last one "just in case": the bar it
->   suppressed no longer exists, it weighs (0,3,1) against the sweep's (0,2,1) so it WINS and the
->   sweep silently does not render on featured items, and a kept suppression rule is exactly the
->   silent override `check-hardcoded-render-defaults.js` F3b exists to catch.
-> - **CONVERT (3):** census #1 (the `background` half is already attribute-driven; the `border:0`
->   half becomes conditional — emit the reset only when `submenuBorderWidth` is empty), census #7
->   (keep the `var()`, **delete the ungated `var(--wp--preset--color--primary, transparent)`
->   fallback**, emit the rule only when `--sgs-nm-featured-bg` is actually written, and switch
->   `background:` → `background-color:` so the shorthand can never reset a sweep's
->   `background-image`), census #9 (per its OWN five-row table: three declarations NO CHANGE, the
->   `border` and the `box-shadow` CONVERT to read the new attributes, keeping the current values as
->   the unset fallback so an untouched nav renders identically).
->   Also CONVERT `{uid} .sgs-nav-menu__sublink[aria-current="page"]`'s colour — ⚠
->   `--sgs-nm-submenu-current-colour` is **never written anywhere**
->   (`grep -rn "sgs-nm-submenu-current-colour" plugins/sgs-blocks/src/` returns exactly one hit, the
->   consuming rule): it is dead-but-firing and always falls through to its own hardcoded fallback.
->   Rewire it to `submenuColourCurrent`, keeping `var(--wp--preset--color--primary-dark,
->   currentColor)` as the unset fallback.
-> - **KEEP (2):** census #2 and census #11, and say in your report WHY each is kept, so a reviewer
->   can check your reasoning rather than your diff.
+> - **DELETE (6):** census #3, #4, #5, #6, #8, #10. Plus the two bar `[aria-current="page"]` rules' handling per the fate table, and FR-41-4's seven items — the `hoverStyle` attribute and all three branches, all five underline attributes, all five named underline CSS rules including the `$hover_after_sel` construction and the `prefers-reduced-motion` companion, and `{featured_sel}::after{content:none;}`. ⛔ Do NOT keep that last one "just in case": the bar it suppressed no longer exists, it weighs (0,3,1) against the sweep's (0,2,1) so it WINS and the sweep silently does not render on featured items, and a kept suppression rule is exactly the silent override `check-hardcoded-render-defaults.js` F3b exists to catch.
+> - **CONVERT (3):** census #1 (the `background` half is already attribute-driven; the `border:0` half becomes conditional — emit the reset only when `submenuBorderWidth` is empty), census #7 (keep the `var()`, **delete the ungated `var(--wp--preset--color--primary, transparent)` fallback**, emit the rule only when `--sgs-nm-featured-bg` is actually written, and switch `background:` → `background-color:` so the shorthand can never reset a sweep's `background-image`), census #9 (per its OWN five-row table: three declarations NO CHANGE, the `border` and the `box-shadow` CONVERT to read the new attributes, keeping the current values as the unset fallback so an untouched nav renders identically). Also CONVERT `{uid} .sgs-nav-menu__sublink[aria-current="page"]`'s colour — ⚠ `--sgs-nm-submenu-current-colour` is **never written anywhere** (`grep -rn "sgs-nm-submenu-current-colour" plugins/sgs-blocks/src/` returns exactly one hit, the consuming rule): it is dead-but-firing and always falls through to its own hardcoded fallback. Rewire it to `submenuColourCurrent`, keeping `var(--wp--preset--color--primary-dark, currentColor)` as the unset fallback.
+> - **KEEP (2):** census #2 and census #11, and say in your report WHY each is kept, so a reviewer can check your reasoning rather than your diff.
 >
-> **⛔ THE TRAP THIS STEP EXISTS TO AVOID.** Deleting census #3 from `render.php` while leaving its
-> STATIC TWIN census #10 standing in `style.css` leaves the double-line bug **fully intact** through
-> a fix that reads as complete. The selectors are different
-> (`.sgs-nav-drawer {uid} .sgs-nav-menu__item + .sgs-nav-menu__item` vs
-> `.sgs-nav-menu__item--drawer + .sgs-nav-menu__item--drawer`) but they paint the same edge of the
-> same drawer rows. `style.css` is a genuinely separate surface — enqueued as an ordinary
-> stylesheet, never passing through PHP. **Fix BOTH.**
+> **⛔ THE TRAP THIS STEP EXISTS TO AVOID.** Deleting census #3 from `render.php` while leaving its STATIC TWIN census #10 standing in `style.css` leaves the double-line bug **fully intact** through a fix that reads as complete. The selectors are different (`.sgs-nav-drawer {uid} .sgs-nav-menu__item + .sgs-nav-menu__item` vs `.sgs-nav-menu__item--drawer + .sgs-nav-menu__item--drawer`) but they paint the same edge of the same drawer rows. `style.css` is a genuinely separate surface — enqueued as an ordinary stylesheet, never passing through PHP. **Fix BOTH.**
 >
-> **Prove it:** re-run both census commands after your changes and paste output showing ZERO
-> censused rows remain · `python plugins/sgs-blocks/scripts/check-ungated-paint-rules.py --survey
-> --block sgs/nav-menu` reports zero CENSUSED · `php -l` clean ·
-> `node plugins/sgs-blocks/scripts/hover-guard/check.js` passes ·
-> `grep -rnE "hoverStyle|underlineColour|underlineThickness|underlineOffset" plugins/sgs-blocks/src/blocks/nav-menu/`
-> returns nothing. Do NOT run git beyond `diff`/`status`.
+> **Prove it:** re-run both census commands after your changes and paste output showing ZERO censused rows remain · `python plugins/sgs-blocks/scripts/check-ungated-paint-rules.py --survey --block sgs/nav-menu` reports zero CENSUSED · `php -l` clean · `node plugins/sgs-blocks/scripts/hover-guard/check.js` passes · `grep -rnE "hoverStyle|underlineColour|underlineThickness|underlineOffset" plugins/sgs-blocks/src/blocks/nav-menu/` returns nothing. Do NOT run git beyond `diff`/`status`.
 
 ---
 
 ### Step 16a — QA-7 / qc-council #3: multi-rater review of the census execution
 
-> **Added 2026-09-11 (S1).** Steps 13→19 are ~535 minutes of the judgement-heaviest code in the
-> phase with **no gate between step 12 and step 20**, and repo `CLAUDE.md` routes *"Multi-rater
-> code-review before commit on converter/pipeline/**SGS-block**"* → `/qc-council` (blub.db 255).
-> Steps 13–19 are SGS-block commits. `/subagent-driven-development`'s per-task implementer + 2
-> reviewers is real mitigation but it is a per-task loop, not a gate with a runnable check.
-> ⚠ Numbered `16a` rather than renumbering — `renumbering-breaks-every-pointer-that-lives-elsewhere`.
+> **Added 2026-09-11 (S1).** Steps 13→19 are ~535 minutes of the judgement-heaviest code in the phase with **no gate between step 12 and step 20**, and repo `CLAUDE.md` routes *"Multi-rater code-review before commit on converter/pipeline/**SGS-block**"* → `/qc-council` (blub.db 255). Steps 13–19 are SGS-block commits. `/subagent-driven-development`'s per-task implementer + 2 reviewers is real mitigation but it is a per-task loop, not a gate with a runnable check. ⚠ Numbered `16a` rather than renumbering — `renumbering-breaks-every-pointer-that-lives-elsewhere`.
 
 ```
 QA Gate — the census execution did not leave half a fix standing
@@ -2622,24 +1575,13 @@ QA Gate — the census execution did not leave half a fix standing
                  emitter call — a hand-copied duplicate is how the two drift
 ```
 
-⚠ **`:has()` browser floor, documented rather than silently omitted.** Firefox 121 (Dec 2023) is the
-binding constraint; Baseline "widely available" from 2023-12-19. On an older Firefox the *keyboard*
-half silently does not apply while the *mouse* half, needing no `:has()`, works everywhere. That
-bounded degradation is exactly why the two halves are split rather than written as one rule.
+⚠ **`:has()` browser floor, documented rather than silently omitted.** Firefox 121 (Dec 2023) is the binding constraint; Baseline "widely available" from 2023-12-19. On an older Firefox the *keyboard* half silently does not apply while the *mouse* half, needing no `:has()`, works everywhere. That bounded degradation is exactly why the two halves are split rather than written as one rule.
 
 ---
 
 ### Step 19 — FR-41-34: the migration notice (`register_post_meta` + write + dismissible `Notice`)
 
-⛔ **WITHDRAWN 2026-09-11 (owner) — DO NOT DISPATCH THIS STEP.** Deliberately not built, not
-deferred: no live content anywhere (including the canary) uses the pre-3-state colour shapes this
-notice would migrate, so there is nothing for an operator to be notified about. Same reasoning as
-D270 (no block deprecations pre-production) and the "no content to protect on the canary" rule.
-No code was ever committed for this step. Recorded once: `.claude/decisions.md` D1036; spec-side:
-`.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` FR-41-34's WITHDRAWN box. **Any step whose
-`Deps:` names step 19 (Step 20 below) has that dependency VOIDED, not blocked** — step 19 will
-never run, so downstream steps proceed without waiting on it. The step body below is kept as
-history, not as a queued task.
+⛔ **WITHDRAWN 2026-09-11 (owner) — DO NOT DISPATCH THIS STEP.** Deliberately not built, not deferred: no live content anywhere (including the canary) uses the pre-3-state colour shapes this notice would migrate, so there is nothing for an operator to be notified about. Same reasoning as D270 (no block deprecations pre-production) and the "no content to protect on the canary" rule. No code was ever committed for this step. Recorded once: `.claude/decisions.md` D1036; spec-side: `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` FR-41-34's WITHDRAWN box. **Any step whose `Deps:` names step 19 (Step 20 below) has that dependency VOIDED, not blocked** — step 19 will never run, so downstream steps proceed without waiting on it. The step body below is kept as history, not as a queued task.
 
 ```
   Model:       sonnet
@@ -2687,67 +1629,22 @@ history, not as a queued task.
 
 **Prompt:**
 
-> Build the Spec 41 FR-41-34 migration notice. Repo root: `c:\Users\Bean\Projects\small-giants-wp`.
-> Writable: `plugins/sgs-blocks/includes/nav-menu-migration-notice.php` (new), the registration hook
-> in `plugins/sgs-blocks/sgs-blocks.php`, and the `<Notice>` mount inside
-> `plugins/sgs-blocks/src/blocks/nav-menu/panels-general.js`. Nothing else.
+> Build the Spec 41 FR-41-34 migration notice. Repo root: `c:\Users\Bean\Projects\small-giants-wp`. Writable: `plugins/sgs-blocks/includes/nav-menu-migration-notice.php` (new), the registration hook in `plugins/sgs-blocks/sgs-blocks.php`, and the `<Notice>` mount inside `plugins/sgs-blocks/src/blocks/nav-menu/panels-general.js`. Nothing else.
 >
-> **Read:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` FR-41-34 (a)-(f) and §11 G5a and
-> G20b. Then the two precedents named there:
-> `plugins/sgs-blocks/includes/class-configurator-meta.php` (its `register_post_meta()` shape and
-> its per-object `auth_callback`), `plugins/sgs-blocks/includes/content-types/class-product-cpt.php`
-> (`register_meta()` with a schema-rich `show_in_rest`), and
-> `plugins/sgs-blocks/src/plugins/product-variation-sets/index.js::registerPlugin` (the
-> `useEntityProp( 'postType', postType, 'meta' )` idiom, including how it gates on `postType`).
-> Then read the ONE dismissible `<Notice>` that exists in this plugin —
-> `plugins/sgs-blocks/src/blocks/nav-menu/edit.js`'s own link-count advisory: `status="info"`,
-> `isDismissible={ true }`, in the default `InspectorControls` group, `style={{ marginBottom:
-> '16px' }}`. **Copy that mount exactly.**
+> **Read:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` FR-41-34 (a)-(f) and §11 G5a and G20b. Then the two precedents named there: `plugins/sgs-blocks/includes/class-configurator-meta.php` (its `register_post_meta()` shape and its per-object `auth_callback`), `plugins/sgs-blocks/includes/content-types/class-product-cpt.php` (`register_meta()` with a schema-rich `show_in_rest`), and `plugins/sgs-blocks/src/plugins/product-variation-sets/index.js::registerPlugin` (the `useEntityProp( 'postType', postType, 'meta' )` idiom, including how it gates on `postType`). Then read the ONE dismissible `<Notice>` that exists in this plugin — `plugins/sgs-blocks/src/blocks/nav-menu/edit.js`'s own link-count advisory: `status="info"`, `isDismissible={ true }`, in the default `InspectorControls` group, `style={{ marginBottom: '16px' }}`. **Copy that mount exactly.**
 >
-> **⚠ The registration is genuinely NEW work.** Every existing `_sgs_*` key in this plugin is
-> registered against `sgs_product` / `product_variation` / `product`, and **none against `post` or
-> `page`**. The IDIOM is precedented; the REGISTRATION is not. Register on BOTH `post` and `page`
-> with: `single => true` · `type => 'array'` with an explicit nested `show_in_rest` **schema** (a
-> bare `'show_in_rest' => true` on an array meta is rejected by core; `_sgs_variation_sets` is the
-> worked precedent) · `auth_callback` a closure doing `current_user_can( 'edit_post', $post_id )`
-> — ⛔ **NOT a bare `edit_posts`**; the existing configurator meta uses the per-object form
-> specifically as an IDOR guard, and a capability check that ignores the object is not a capability
-> check · a `sanitize_callback` sanitising each record's fields (block `clientId`, attribute key,
-> old value, new value) — the values are written by PHP but meta is REST-writable and must not trust
-> its input · `default => array()`, so an absent flag and an empty flag behave identically.
-> ⚠ `page` and `post` support `custom-fields` in core, so the CPT-`supports` trap does not apply —
-> but ASSERT it rather than assuming, because a meta that silently returns nothing looks identical
-> to one that was never written.
+> **⚠ The registration is genuinely NEW work.** Every existing `_sgs_*` key in this plugin is registered against `sgs_product` / `product_variation` / `product`, and **none against `post` or `page`**. The IDIOM is precedented; the REGISTRATION is not. Register on BOTH `post` and `page` with: `single => true` · `type => 'array'` with an explicit nested `show_in_rest` **schema** (a bare `'show_in_rest' => true` on an array meta is rejected by core; `_sgs_variation_sets` is the worked precedent) · `auth_callback` a closure doing `current_user_can( 'edit_post', $post_id )` — ⛔ **NOT a bare `edit_posts`**; the existing configurator meta uses the per-object form specifically as an IDOR guard, and a capability check that ignores the object is not a capability check · a `sanitize_callback` sanitising each record's fields (block `clientId`, attribute key, old value, new value) — the values are written by PHP but meta is REST-writable and must not trust its input · `default => array()`, so an absent flag and an empty flag behave identically. ⚠ `page` and `post` support `custom-fields` in core, so the CPT-`supports` trap does not apply — but ASSERT it rather than assuming, because a meta that silently returns nothing looks identical to one that was never written.
 >
-> **When it is written:** during the G5a migration path ONLY, in the same pass that writes the
-> carried-across value. Never on a fresh block, never on a save, never on render. One record per KEY
-> that actually changed. ⛔ A SKIPPED key writes no record. ⛔ The UNSET-SOURCE case writes no record
-> either. Both still LOG.
+> **When it is written:** during the G5a migration path ONLY, in the same pass that writes the carried-across value. Never on a fresh block, never on a save, never on render. One record per KEY that actually changed. ⛔ A SKIPPED key writes no record. ⛔ The UNSET-SOURCE case writes no record either. Both still LOG.
 >
-> **The wording — client-visible, so the string rules bind.** Worked example:
-> *"Your menu's hover highlight colour was carried over automatically from the old pill setting. It
-> was <old>, and is now <new>. To put it back, set the Item background row's Hover swatch to
-> <old>."*
-> ⛔ The string must not contain "WCAG", "contrast", "AA", "signal" or "migration". "Migration" is
-> developer vocabulary; the operator experienced a setting moving.
+> **The wording — client-visible, so the string rules bind.** Worked example: *"Your menu's hover highlight colour was carried over automatically from the old pill setting. It was <old>, and is now <new>. To put it back, set the Item background row's Hover swatch to
+> <old>."* ⛔ The string must not contain "WCAG", "contrast", "AA", "signal" or "migration". "Migration" is developer vocabulary; the operator experienced a setting moving.
 >
-> ⛔ **Nothing in this plugin uses `createNotice` / `useDispatch( noticesStore )`** (zero hits across
-> `src/`). Do not introduce the notices STORE — a snackbar is transient and this message must survive
-> until the operator dismisses it.
+> ⛔ **Nothing in this plugin uses `createNotice` / `useDispatch( noticesStore )`** (zero hits across `src/`). Do not introduce the notices STORE — a snackbar is transient and this message must survive until the operator dismisses it.
 >
-> ⛔ **Dismissal CLEARS the flag.** `onRemove` deletes the record(s) from the meta. **This is the one
-> genuinely new behaviour and it has NO precedent anywhere in the plugin** — no `<Notice>` in `src/`
-> carries an `onRemove` or `onDismiss` of any kind, and the one dismissible notice persists nothing
-> (it reappears on reload, because its visibility is a pure function of link count). An
-> implementation that merely copies that mount passes every other assertion in G20b and fails this
-> one.
+> ⛔ **Dismissal CLEARS the flag.** `onRemove` deletes the record(s) from the meta. **This is the one genuinely new behaviour and it has NO precedent anywhere in the plugin** — no `<Notice>` in `src/` carries an `onRemove` or `onDismiss` of any kind, and the one dismissible notice persists nothing (it reappears on reload, because its visibility is a pure function of link count). An implementation that merely copies that mount passes every other assertion in G20b and fails this one.
 >
-> **Prove it:** `php -l` clean · `npm run build` exits 0 · paste the `register_post_meta()` call ·
-> paste a WP-CLI or REST read of the meta on a test post proving it round-trips
-> (`wp post meta get <id> _sgs_nav_menu_migration_notice`) · confirm the key does NOT appear in
-> `core/post-meta` Block Bindings (a leading-underscore key is deliberately not surfaced, which is
-> correct here — this is an editor advisory, not bindable content). Do NOT run git beyond
-> `diff`/`status`.
+> **Prove it:** `php -l` clean · `npm run build` exits 0 · paste the `register_post_meta()` call · paste a WP-CLI or REST read of the meta on a test post proving it round-trips (`wp post meta get <id> _sgs_nav_menu_migration_notice`) · confirm the key does NOT appear in `core/post-meta` Block Bindings (a leading-underscore key is deliberately not surfaced, which is correct here — this is an editor advisory, not bindable content). Do NOT run git beyond `diff`/`status`.
 
 ---
 
@@ -2806,17 +1703,7 @@ QA Gate — every static gate passes on the built tree, before anything is deplo
   Marker:  QA  ·  Time: 25 min
 ```
 
-⚠ **`plugins/sgs-blocks/scripts/` is NOT optional in that grep.** A scan for these names found live
-references in `scripts/consistency/attr-role-map.json`, `golden-controls.json`, `setting-types.json`,
-`setting-reclassification.json`, `scripts/behavioural-analyser/css-property-classifications.json`,
-`extract-signatures.py`, `check-duplicate-controls.js`, `check-hover-state-classification.py` and
-`scripts/toolindex/index.json`.
-⚠ The `[^D]` guard on `borderHoverAnimation` is deliberate — `borderHoverAnimationDirection` is a
-LIVE attribute and an unanchored match reports it as a surviving reader of a deleted one.
-⚠ **G18's static half is necessary but not sufficient.** `check-duplicate-controls.js` CHECK 2 scans
-literal JSX control elements and is **blind to a duplicate writer living inside a row OBJECT LITERAL
-passed as a config prop** — which is exactly the shape nav-menu's colour rows take. G18's real proof
-is the three-part RENDERS / WRITES / EMITS assertion in step 21.
+⚠ **`plugins/sgs-blocks/scripts/` is NOT optional in that grep.** A scan for these names found live references in `scripts/consistency/attr-role-map.json`, `golden-controls.json`, `setting-types.json`, `setting-reclassification.json`, `scripts/behavioural-analyser/css-property-classifications.json`, `extract-signatures.py`, `check-duplicate-controls.js`, `check-hover-state-classification.py` and `scripts/toolindex/index.json`. ⚠ The `[^D]` guard on `borderHoverAnimation` is deliberate — `borderHoverAnimationDirection` is a LIVE attribute and an unanchored match reports it as a surviving reader of a deleted one. ⚠ **G18's static half is necessary but not sufficient.** `check-duplicate-controls.js` CHECK 2 scans literal JSX control elements and is **blind to a duplicate writer living inside a row OBJECT LITERAL passed as a config prop** — which is exactly the shape nav-menu's colour rows take. G18's real proof is the three-part RENDERS / WRITES / EMITS assertion in step 21.
 
 ---
 
@@ -2978,30 +1865,15 @@ is the three-part RENDERS / WRITES / EMITS assertion in step 21.
                  A check that only asserts 0 under reduced motion passes against a dead feature
 ```
 
-⛔ **G10(a) must NOT assert a Hover signal on a border-less menu.** `itemBorderWidth` defaults to
-`{}`, so an untouched block ships no Hover signal by design (FR-41-17a case a), and a gate asserting
-one would be asserting a capability the spec deliberately does not claim.
+⛔ **G10(a) must NOT assert a Hover signal on a border-less menu.** `itemBorderWidth` defaults to `{}`, so an untouched block ships no Hover signal by design (FR-41-17a case a), and a gate asserting one would be asserting a capability the spec deliberately does not claim.
 
 ---
 
 ### Step 24 — G5a: the stored-content migration on the canary, + G20b
 
-⛔ **WITHDRAWN 2026-09-11 (owner) — DO NOT DISPATCH THIS STEP.** G5a itself (the underlying
-stored-content carry-forward logic this step would run) is withdrawn, one level up from FR-41-34:
-there is no stored content anywhere using the old `indicatorStyle`/`indicator*` shapes to carry
-forward. G20b (the notice-appears-correctly gate, owned by this step) is withdrawn with it — it
-has nothing to assert once no migration runs. **G13 scenario 3, also owned by this step because it
-"straddles the migration", is likewise moot** — it exists only to assert the migration preserves
-rendered colour, and there is no migration to run the assertion against; G13's other three
-scenarios (owned by steps 22/24 per the gate→step map) are unaffected. Same reasoning + D-number
-as step 19 above: `.claude/decisions.md` D1036. **Any step whose `Deps:` names step 24 (Step 25
-below) has that dependency VOIDED, not blocked.** The step body below is kept as history.
+⛔ **WITHDRAWN 2026-09-11 (owner) — DO NOT DISPATCH THIS STEP.** G5a itself (the underlying stored-content carry-forward logic this step would run) is withdrawn, one level up from FR-41-34: there is no stored content anywhere using the old `indicatorStyle`/`indicator*` shapes to carry forward. G20b (the notice-appears-correctly gate, owned by this step) is withdrawn with it — it has nothing to assert once no migration runs. **G13 scenario 3, also owned by this step because it "straddles the migration", is likewise moot** — it exists only to assert the migration preserves rendered colour, and there is no migration to run the assertion against; G13's other three scenarios (owned by steps 22/24 per the gate→step map) are unaffected. Same reasoning + D-number as step 19 above: `.claude/decisions.md` D1036. **Any step whose `Deps:` names step 24 (Step 25 below) has that dependency VOIDED, not blocked.** The step body below is kept as history.
 
-> ✅ **Owner ruling 5 (2026-09-11) — RUN IT DIRECTLY AGAINST THE CANARY'S CURRENT CONTENT. The
-> duplicate-the-pages-first step is REMOVED, not deferred.** The canary is pre-production; there is
-> no client content to protect, so duplication hedges a risk that does not exist. The real safety net
-> already exists — post revisions (`On-Fail:` below) and step 1's captured baseline (PD-11), which is
-> where G13's before/after pair comes from. Full reasoning in §Resolved judgement calls.
+> ✅ **Owner ruling 5 (2026-09-11) — RUN IT DIRECTLY AGAINST THE CANARY'S CURRENT CONTENT. The duplicate-the-pages-first step is REMOVED, not deferred.** The canary is pre-production; there is no client content to protect, so duplication hedges a risk that does not exist. The real safety net already exists — post revisions (`On-Fail:` below) and step 1's captured baseline (PD-11), which is where G13's before/after pair comes from. Full reasoning in §Resolved judgement calls.
 
 ```
   Model:       sonnet
@@ -3239,225 +2111,75 @@ below) has that dependency VOIDED, not blocked.** The step body below is kept as
 | Border colour moves into `SgsColourPanel` for `sgs/nav-menu` only — a named block-scoped exception to that component's three documented exemptions | `[ROUTINE]` | Taken on merit; the general rule is unchanged and no other block moves |
 | `edit.js` and `render.php` split into modules following the `cart/` and `product-card` precedents — with the FR-41-21 emitter deliberately left BLOCK-PRIVATE in `render.php` | `[ROUTINE]` | Establishes which precedent applies to which language, and where the shared/block-private line falls inside one language (rulings 2 + 7) |
 
-**`plugins/sgs-blocks/CLAUDE.md` additions (new precedent genuinely created by this build):**
-the `showColour={false}` mount pattern and its ten-prop ignore-list · the `supports.sgs.<key>` read
-by BOTH surfaces as the canonical shape for a fact `edit.js` and `render.php` both need (the
-"one declared source, two evaluators" pattern) · the block-private typography-hover emitter as the
-adoption cost of `TypographyControls`' `showHover` flag, and the note that a SECOND adopter should
-extend the shared helper instead.
+**`plugins/sgs-blocks/CLAUDE.md` additions (new precedent genuinely created by this build):** the `showColour={false}` mount pattern and its ten-prop ignore-list · the `supports.sgs.<key>` read by BOTH surfaces as the canonical shape for a fact `edit.js` and `render.php` both need (the "one declared source, two evaluators" pattern) · the block-private typography-hover emitter as the adoption cost of `TypographyControls`' `showHover` flag, and the note that a SECOND adopter should extend the shared helper instead.
 
 ---
 
 ## Resolved judgement calls (owner rulings, 2026-09-11)
 
-**All seven are RULED. Nothing in this plan is blocked on a decision.** Each entry keeps the option
-set and the reasoning that produced it — that is the record of *why* the tree looks the way it does.
-⛔ Do NOT re-open any of these mid-execution. If one turns out wrong, change the requirement and say
-so; do not re-litigate it as a question.
+**All seven are RULED. Nothing in this plan is blocked on a decision.** Each entry keeps the option set and the reasoning that produced it — that is the record of *why* the tree looks the way it does. ⛔ Do NOT re-open any of these mid-execution. If one turns out wrong, change the requirement and say so; do not re-litigate it as a question.
 
 **Ruling 1 — `sgs_border_states_css()` gains an ADDITIVE per-edge suppression. (was KJC-7)**
-- **RULED: extend the shared helper.** Not the block-private override this plan previously
-  recommended, and not a new function sibling.
-- **The finding that forced it (verified, not inherited):** FR-41-8 stated the sweep rule as the
-  emitter's own condition — *"receives a `$map` whose `hover` (and `current`) keys are UNSET for the
-  `bottom` edge"*. The real signature is
-  `sgs_border_states_css( string $selector, array $attributes, array $map )`
-  (`grep -n "function sgs_border_states_css" -A 60 plugins/sgs-blocks/includes/helpers-colour-variants.php`)
-  — **no edge parameter, no per-edge branch.** It resolves one normal paint and one hover paint and
-  emits one flat `border-color:` covering all four sides. The instruction could not be executed.
-- **Why the shared extension over the block-private override:** the project already has a proven
-  per-edge **box object** `{top, right, bottom, left}` — §8.4 declares `itemBorderWidth` with it.
-  Border *colour* never got the concept; that is a gap in the shared painter, not a nav-menu
-  peculiarity. And FR-41-2/FR-41-3 already resolved the identical PHP-duplication finding the same
-  way: **an additive optional parameter on the existing function, never a sibling** (no `_3` family,
-  and no `sgs_border_states_css_per_edge()`). A block-private override would also have been a SECOND
-  mechanism painting border colour on one selector — two overlapping fixes, neither falsifiable,
-  neither ever safely deletable.
-- **Cost, stated honestly:** the **fourth** design-gated shared-component change in a phase that
-  carried three — treated exactly like the others: its own step (**6a**), its own paste-and-run
-  prompt, and its own before/after byte-identity gate folded into **G1(c)**, which now also asserts
-  that a caller passing no `suppress_edges` still gets the flat `border-color` SHORTHAND.
-- **Lands at:** step 6a (build) · step 12/G1(c) (zero blast radius) · step 15 rule 5 (consume) ·
-  step 22/G6 (live). **Spec:** FR-41-8 rewritten in v0.4.7; the retired unset mechanic is deleted,
-  not left standing beside the new one.
+- **RULED: extend the shared helper.** Not the block-private override this plan previously recommended, and not a new function sibling.
+- **The finding that forced it (verified, not inherited):** FR-41-8 stated the sweep rule as the emitter's own condition — *"receives a `$map` whose `hover` (and `current`) keys are UNSET for the `bottom` edge"*. The real signature is `sgs_border_states_css( string $selector, array $attributes, array $map )` (`grep -n "function sgs_border_states_css" -A 60 plugins/sgs-blocks/includes/helpers-colour-variants.php`) — **no edge parameter, no per-edge branch.** It resolves one normal paint and one hover paint and emits one flat `border-color:` covering all four sides. The instruction could not be executed.
+- **Why the shared extension over the block-private override:** the project already has a proven per-edge **box object** `{top, right, bottom, left}` — §8.4 declares `itemBorderWidth` with it. Border *colour* never got the concept; that is a gap in the shared painter, not a nav-menu peculiarity. And FR-41-2/FR-41-3 already resolved the identical PHP-duplication finding the same way: **an additive optional parameter on the existing function, never a sibling** (no `_3` family, and no `sgs_border_states_css_per_edge()`). A block-private override would also have been a SECOND mechanism painting border colour on one selector — two overlapping fixes, neither falsifiable, neither ever safely deletable.
+- **Cost, stated honestly:** the **fourth** design-gated shared-component change in a phase that carried three — treated exactly like the others: its own step (**6a**), its own paste-and-run prompt, and its own before/after byte-identity gate folded into **G1(c)**, which now also asserts that a caller passing no `suppress_edges` still gets the flat `border-color` SHORTHAND.
+- **Lands at:** step 6a (build) · step 12/G1(c) (zero blast radius) · step 15 rule 5 (consume) · step 22/G6 (live). **Spec:** FR-41-8 rewritten in v0.4.7; the retired unset mechanic is deleted, not left standing beside the new one.
 
 **Ruling 2 — the FR-41-21 hover-typography emitter is BLOCK-PRIVATE. (was KJC-1)**
-- **RULED: it lives in `plugins/sgs-blocks/src/blocks/nav-menu/render.php`, inside a
-  `function_exists()` guard. NOT in `includes/nav-menu-css.php`, NOT anywhere under `includes/`.**
-- **What it is:** `sgs_nav_menu_typography_hover_rule()`, for the hover-state typography trio —
-  needed because `includes/helpers-typography.php::sgs_typography_css_rule` has no hover branch and
-  no other block has ever switched `TypographyControls`' `showHover` on. `sgs/nav-menu` is the first
-  adopter and pays the cost block-privately.
-- **Why it was ambiguous:** KJC-1's other half (where the split-out CSS *assembly* lives) was already
-  closed by PD-2 — `includes/nav-menu-css.php`, shipping path proven. That left a literal reading of
-  FR-41-21 (*"not an addition to `includes/`"*) in tension with a file under `includes/` that only
-  nav-menu requires. **The owner confirms the literal reading:** `includes/` is the shared folder
-  regardless of who currently requires a given file in it.
-- **Consequence:** step 8's split leaves the emitter behind and reports `render.php`'s projected line
-  count once step 15 adds the ~30 lines, so the 300-line limit is budgeted not discovered. ⚠ It
-  deliberately duplicates three of `sgs_typography_css_rule()`'s allowlists — OWNER-RULED, recorded
-  in the reuse ledger so nobody "cleans it up"; promoting the trio is Spec 41 §12 item 2, taken the
-  day a SECOND block wants `showHover`. No spec edit was needed — FR-41-21 already said this
-  literally.
+- **RULED: it lives in `plugins/sgs-blocks/src/blocks/nav-menu/render.php`, inside a `function_exists()` guard. NOT in `includes/nav-menu-css.php`, NOT anywhere under `includes/`.**
+- **What it is:** `sgs_nav_menu_typography_hover_rule()`, for the hover-state typography trio — needed because `includes/helpers-typography.php::sgs_typography_css_rule` has no hover branch and no other block has ever switched `TypographyControls`' `showHover` on. `sgs/nav-menu` is the first adopter and pays the cost block-privately.
+- **Why it was ambiguous:** KJC-1's other half (where the split-out CSS *assembly* lives) was already closed by PD-2 — `includes/nav-menu-css.php`, shipping path proven. That left a literal reading of FR-41-21 (*"not an addition to `includes/`"*) in tension with a file under `includes/` that only nav-menu requires. **The owner confirms the literal reading:** `includes/` is the shared folder regardless of who currently requires a given file in it.
+- **Consequence:** step 8's split leaves the emitter behind and reports `render.php`'s projected line count once step 15 adds the ~30 lines, so the 300-line limit is budgeted not discovered. ⚠ It deliberately duplicates three of `sgs_typography_css_rule()`'s allowlists — OWNER-RULED, recorded in the reuse ledger so nobody "cleans it up"; promoting the trio is Spec 41 §12 item 2, taken the day a SECOND block wants `showHover`. No spec edit was needed — FR-41-21 already said this literally.
 
 **Ruling 3 — the `colourRows` literal is an ATOMIC UNIT, and it stays in `edit.js`. (was KJC-2)**
-- **RULED: the atomicity rule is a hard requirement with its own test**, now written into step 7
-  (`Atomicity:` in its Test block + constraint 2 of its prompt), step 13 and step 14.
-- **The rule:** `colourRows` — and every `states: [ … ]` inside it — is ONE atomic literal: never
-  partially extracted, never rebuilt by `.map()` / `.filter()` / `.concat()` / `Array.from()` / a
-  spread of a variable, never split across a module boundary. A later grouping must be multiple
-  COMPLETE literal `ArrayExpression`s in the SAME file that mounts `<SgsColourPanel>`. **Its test:**
-  `node scripts/inspector-scan/run.js --check` reports IDENTICAL per-row state counts before and
-  after any split, both runs pasted — a differing count, **including one that silently becomes
-  zero**, fails the step.
-- ⚠ **NEW FINDING while applying this: atomicity is NECESSARY BUT NOT SUFFICIENT.**
-  `31-golden-colour-control.js` has two corpora and a block-folder sibling is in neither. Its
-  per-block walk builds `entryEditFile` as `<blocksDir>/<name>/edit.js` and parses nothing else; its
-  shared-owner fallback (`core/components.js::getSharedOwnerScan` → `::resolveComponentFiles`)
-  enumerates owner files only from `ctx.componentsDir`, which `run.js` sets to `src/components`. So
-  an IMPORTED `colourRows` hits `resolveArrayLike`'s `Identifier` branch, matches neither
-  `pushedRows` nor `declaredArrays`, and returns `[]` — every row scores zero states, silently, while
-  the editor renders perfectly. D738's shape; this rule's own header records the same class of
-  blindness costing a 33-row undercount once already.
-  **Commands:** `grep -n "entryEditFile" .../rules/31-golden-colour-control.js` ·
-  `grep -n "componentsDir" .../inspector-scan/run.js` ·
-  `grep -n "resolveComponentFiles" .../inspector-scan/core/components.js` ·
-  `grep -n "const colourRows" plugins/sgs-blocks/src/blocks/nav-menu/edit.js` (→ a literal
-  `ArrayExpression`, mounted `rows={ colourRows }` — the rule's own supported shape (b)).
-- **So: there is no `colour-rows.js`.** Step 7 extracts PANEL COMPONENTS; the array stays in
-  `edit.js`. Steps 13/14 corrected to match, and PD-1's `import metadata from './block.json'` goes
-  into `edit.js` for the same reason.
-- ⛔ **That reading is a static hypothesis until QA-1 question (b) proves it** with a real
-  before/after run. If the detector DOES follow a block-folder sibling, the extraction is permitted —
-  and the atomicity rule still binds unchanged. **Cost if got wrong:** a blind golden-colour gate is
-  invisible — every row renders correctly and the detector reports the wrong count indefinitely.
+- **RULED: the atomicity rule is a hard requirement with its own test**, now written into step 7 (`Atomicity:` in its Test block + constraint 2 of its prompt), step 13 and step 14.
+- **The rule:** `colourRows` — and every `states: [ … ]` inside it — is ONE atomic literal: never partially extracted, never rebuilt by `.map()` / `.filter()` / `.concat()` / `Array.from()` / a spread of a variable, never split across a module boundary. A later grouping must be multiple COMPLETE literal `ArrayExpression`s in the SAME file that mounts `<SgsColourPanel>`. **Its test:** `node scripts/inspector-scan/run.js --check` reports IDENTICAL per-row state counts before and after any split, both runs pasted — a differing count, **including one that silently becomes zero**, fails the step.
+- ⚠ **NEW FINDING while applying this: atomicity is NECESSARY BUT NOT SUFFICIENT.** `31-golden-colour-control.js` has two corpora and a block-folder sibling is in neither. Its per-block walk builds `entryEditFile` as `<blocksDir>/<name>/edit.js` and parses nothing else; its shared-owner fallback (`core/components.js::getSharedOwnerScan` → `::resolveComponentFiles`) enumerates owner files only from `ctx.componentsDir`, which `run.js` sets to `src/components`. So an IMPORTED `colourRows` hits `resolveArrayLike`'s `Identifier` branch, matches neither `pushedRows` nor `declaredArrays`, and returns `[]` — every row scores zero states, silently, while the editor renders perfectly. D738's shape; this rule's own header records the same class of blindness costing a 33-row undercount once already. **Commands:** `grep -n "entryEditFile" .../rules/31-golden-colour-control.js` · `grep -n "componentsDir" .../inspector-scan/run.js` · `grep -n "resolveComponentFiles" .../inspector-scan/core/components.js` · `grep -n "const colourRows" plugins/sgs-blocks/src/blocks/nav-menu/edit.js` (→ a literal `ArrayExpression`, mounted `rows={ colourRows }` — the rule's own supported shape (b)).
+- **So: there is no `colour-rows.js`.** Step 7 extracts PANEL COMPONENTS; the array stays in `edit.js`. Steps 13/14 corrected to match, and PD-1's `import metadata from './block.json'` goes into `edit.js` for the same reason.
+- ⛔ **That reading is a static hypothesis until QA-1 question (b) proves it** with a real before/after run. If the detector DOES follow a block-folder sibling, the extraction is permitted — and the atomicity rule still binds unchanged. **Cost if got wrong:** a blind golden-colour gate is invisible — every row renders correctly and the detector reports the wrong count indefinitely.
 
 **Ruling 4 — the detector's first landing is `sgs/nav-menu`-scoped and WARN-ONLY. (was KJC-3)**
-- **RULED: CONFIRMED as already planned, with the enforcement scope now explicit.** Two things were
-  conflated and are now permanently separated: the detector's **LOGIC** stays generic and
-  framework-wide (keys on selector shape and `supports.sgs`, never a block name; `--survey` with no
-  filter still enumerates every block; step 11's `grep -c "sgs-nav-menu" …` → 0 is unchanged), while
-  its **ENFORCEMENT** lands on `sgs/nav-menu` alone — WARN-ONLY at step 11, hardened at step 26
-  scoped to that one block.
-- **Framework-wide rollout is EXPLICITLY SEPARATE FUTURE WORK**, triaged with Bean against a real
-  no-filter `--survey` run. Not bundled here, not implied. ⛔ Do not add a parking entry for it
-  without asking Bean first.
-- **Why:** `--survey` will almost certainly find real ungated paint rules elsewhere — this defect
-  class was found three times on nav-menu alone — and turning the build red framework-wide for every
-  concurrent session, on work nobody scoped, produces a gate nobody reads (recorded:
-  `wp-pre-merge-gate` printed FAIL on every commit for months, 220 of 228 findings from a vendored
-  competitor plugin). ⚠ Scope lives in `gates.json` config with an expiry-condition comment, never a
-  dict inside the script (R-31-1). Step 26 carries a `Scope:` negative control proving it BOTH ways.
-  **Spec:** §11 G20c gains (f).
+- **RULED: CONFIRMED as already planned, with the enforcement scope now explicit.** Two things were conflated and are now permanently separated: the detector's **LOGIC** stays generic and framework-wide (keys on selector shape and `supports.sgs`, never a block name; `--survey` with no filter still enumerates every block; step 11's `grep -c "sgs-nav-menu" …` → 0 is unchanged), while its **ENFORCEMENT** lands on `sgs/nav-menu` alone — WARN-ONLY at step 11, hardened at step 26 scoped to that one block.
+- **Framework-wide rollout is EXPLICITLY SEPARATE FUTURE WORK**, triaged with Bean against a real no-filter `--survey` run. Not bundled here, not implied. ⛔ Do not add a parking entry for it without asking Bean first.
+- **Why:** `--survey` will almost certainly find real ungated paint rules elsewhere — this defect class was found three times on nav-menu alone — and turning the build red framework-wide for every concurrent session, on work nobody scoped, produces a gate nobody reads (recorded: `wp-pre-merge-gate` printed FAIL on every commit for months, 220 of 228 findings from a vendored competitor plugin). ⚠ Scope lives in `gates.json` config with an expiry-condition comment, never a dict inside the script (R-31-1). Step 26 carries a `Scope:` negative control proving it BOTH ways. **Spec:** §11 G20c gains (f).
 
 **Ruling 5 — test the G5a migration directly against the canary. (was KJC-4)**
-- **RULED: run it against the canary's actual current content. The "duplicate the pages first" step
-  is REMOVED — not deferred, not kept as an option.**
-- **Why:** the canary is pre-production and there is no real client content to protect. This
-  project's standing rule — never reason from what the canary currently renders (Bean-locked
-  2026-08-31) — applies in this direction too: hedging against a risk that does not exist spends
-  effort for nothing and leaves an extra confusing state on the site.
-- **What already provides the safety:** WordPress post revisions (step 24's `On-Fail:`), and step 1's
-  captured pre-build baseline under `.claude/verify/spec-41-baseline/`, which is where G13's
-  before/after pair comes from (PD-11). Neither needs a duplicated page. **Unchanged:** every G5a and
-  G20b assertion stands — the precedence rule (never silently overwrite a non-empty stored
-  `itemBgHover`, per-KEY not per-post) and the UNSET-SOURCE case.
+- **RULED: run it against the canary's actual current content. The "duplicate the pages first" step is REMOVED — not deferred, not kept as an option.**
+- **Why:** the canary is pre-production and there is no real client content to protect. This project's standing rule — never reason from what the canary currently renders (Bean-locked 2026-08-31) — applies in this direction too: hedging against a risk that does not exist spends effort for nothing and leaves an extra confusing state on the site.
+- **What already provides the safety:** WordPress post revisions (step 24's `On-Fail:`), and step 1's captured pre-build baseline under `.claude/verify/spec-41-baseline/`, which is where G13's before/after pair comes from (PD-11). Neither needs a duplicated page. **Unchanged:** every G5a and G20b assertion stands — the precedence rule (never silently overwrite a non-empty stored `itemBgHover`, per-KEY not per-post) and the UNSET-SOURCE case.
 
 **Ruling 6 — the `sgs/nav-drawer` close-button work is IN SCOPE, as a mirrored follow-on. (was KJC-5)**
-- **RULED: fold it in.** New **step 14a**, immediately after step 14 (the Menu Button panel), built
-  by mirroring it — same shared helpers, same control shape, copied not redesigned.
-- **The scope match was CHECKED against the real files, and it is a PARTIAL mirror — step 14a
-  carries the full capability table.** In short: the 2-state COLOUR pairing
-  (`toggleCloseColour` / `…Hover` / `…Gradient`) already exists and must not be rebuilt; the LABEL and
-  the ICON are clean mirrors (→ new `closeLabel`, `closeIcon`); the magnet trio is explicitly NOT
-  mirrored. ⚠ **The one real divergence:** `closeStyle` conflates two orthogonal axes —
-  `separate-x`/`text-swap` are the icon/text display axis, but **`burger-morph` is a GLYPH choice**
-  (a CSS-drawn two-bar span, no icon and no text), so a one-to-one rename onto `triggerMode`'s three
-  values would silently delete a shipped look. **Resolution: keep the name, default and three values;
-  ADD a fourth, `icon-and-text`** — in the JSON enum AND in
-  `render.php::$sgs_nd_allowed_close_styles`, same commit, or a stored value is accepted by one side
-  and coerced away by the other with no error on either.
-- **Cost accepted:** a second block's manifest enters this phase, with its own byte-identity proof
-  (`closeIcon` unset renders markup identical to today's hardcoded `x`) and enum-parity assertion.
-  Against that, the open/close pair stops reading half-finished — the operator-visible defect
-  FR-41-12 recorded and then deferred. **Spec:** FR-41-12 records it in scope; §12 item 1 becomes a
-  tombstone.
+- **RULED: fold it in.** New **step 14a**, immediately after step 14 (the Menu Button panel), built by mirroring it — same shared helpers, same control shape, copied not redesigned.
+- **The scope match was CHECKED against the real files, and it is a PARTIAL mirror — step 14a carries the full capability table.** In short: the 2-state COLOUR pairing (`toggleCloseColour` / `…Hover` / `…Gradient`) already exists and must not be rebuilt; the LABEL and the ICON are clean mirrors (→ new `closeLabel`, `closeIcon`); the magnet trio is explicitly NOT mirrored. ⚠ **The one real divergence:** `closeStyle` conflates two orthogonal axes — `separate-x`/`text-swap` are the icon/text display axis, but **`burger-morph` is a GLYPH choice** (a CSS-drawn two-bar span, no icon and no text), so a one-to-one rename onto `triggerMode`'s three values would silently delete a shipped look. **Resolution: keep the name, default and three values; ADD a fourth, `icon-and-text`** — in the JSON enum AND in `render.php::$sgs_nd_allowed_close_styles`, same commit, or a stored value is accepted by one side and coerced away by the other with no error on either.
+- **Cost accepted:** a second block's manifest enters this phase, with its own byte-identity proof (`closeIcon` unset renders markup identical to today's hardcoded `x`) and enum-parity assertion. Against that, the open/close pair stops reading half-finished — the operator-visible defect FR-41-12 recorded and then deferred. **Spec:** FR-41-12 records it in scope; §12 item 1 becomes a tombstone.
 
 **Ruling 7 — `edit.js` and `render.php` DO run as two concurrent lanes, and a split must REDUCE. (was KJC-6)**
-- **RULED: yes, two concurrent subagent lanes**, once step 9's manifest is done and step 10 has
-  reviewed it. Lane 5 (`edit.js` + sub-modules) ∥ Lane 6 (`render.php` + `includes/` + `style.css`).
-  They write genuinely disjoint file sets and share only *declarative data*
-  (`block.json::supports.sgs.sweepEligibility`), which neither writes — the shape parallel dispatch
-  exists for, and it roughly halves the critical path through the two largest steps.
-- **Hard preconditions, unchanged:** one writable directory/file-set per lane, named in its prompt;
-  the dispatching session runs `git diff --stat` between every step and reviews it itself. ⚠ Parallel
-  agents destroy each other's work in four recorded ways and `git diff --stat` catches all four; an
-  agent told "do NOT run any git command" once ran `git stash`/`pop` in the shared tree anyway.
-  **A prohibition in a brief is not enforcement** — the dispatcher's diff review is.
-- ⛔ **The file-size expectation is CORRECTED, and this is the half that was wrong.** This plan
-  implicitly accepted that the split files would simply be "large". They should not be. Proper
-  reliance on what the framework already ships — SGS atoms, shared `includes/helpers-*.php`, the
-  `src/components/` barrel and `primitives/`, universal injector/extension files — must make the
-  split files **meaningfully smaller than a naive line-count reduction**, not the same bulk under
-  more filenames. Extract-and-rename is not the deliverable.
-- **Made structural rather than aspirational, in three places:** (1) **per-file size assertions**
-  in steps 7, 8, 14 and 14a against the project limits (250 JS/TS on raw `wc -l`; **300 PHP on CODE
-  LINES ONLY** — see the addendum below), individually, never on a total — step 7 additionally names
-  any file within 10 lines of the limit, because it will not survive step 14; (2) an explicit **"find the shared component first"** instruction in each of those
-  steps, naming the real files to read; (3) **`.claude/verify/spec-41-reuse-ledger.md`** as a phase
-  deliverable — one row per sub-file: final line count, the shared atom/helper/extension it leans on,
-  and the count it would have had without. Where something was hand-rolled anyway, the row says which
-  shared component was checked first and why it did not fit; "did not check" is not acceptable. In
-  the phase success criteria, asserted at step 12.
-- **Cost of the alternative:** sequential lanes ≈ +3.5h of critical path; a mis-run parallel dispatch
-  = two agents' edits interleaved on `main` and a forensic unwind.
+- **RULED: yes, two concurrent subagent lanes**, once step 9's manifest is done and step 10 has reviewed it. Lane 5 (`edit.js` + sub-modules) ∥ Lane 6 (`render.php` + `includes/` + `style.css`). They write genuinely disjoint file sets and share only *declarative data* (`block.json::supports.sgs.sweepEligibility`), which neither writes — the shape parallel dispatch exists for, and it roughly halves the critical path through the two largest steps.
+- **Hard preconditions, unchanged:** one writable directory/file-set per lane, named in its prompt; the dispatching session runs `git diff --stat` between every step and reviews it itself. ⚠ Parallel agents destroy each other's work in four recorded ways and `git diff --stat` catches all four; an agent told "do NOT run any git command" once ran `git stash`/`pop` in the shared tree anyway. **A prohibition in a brief is not enforcement** — the dispatcher's diff review is.
+- ⛔ **The file-size expectation is CORRECTED, and this is the half that was wrong.** This plan implicitly accepted that the split files would simply be "large". They should not be. Proper reliance on what the framework already ships — SGS atoms, shared `includes/helpers-*.php`, the `src/components/` barrel and `primitives/`, universal injector/extension files — must make the split files **meaningfully smaller than a naive line-count reduction**, not the same bulk under more filenames. Extract-and-rename is not the deliverable.
+- **Made structural rather than aspirational, in three places:** (1) **per-file size assertions** in steps 7, 8, 14 and 14a against the project limits (250 JS/TS on raw `wc -l`; **300 PHP on CODE LINES ONLY** — see the addendum below), individually, never on a total — step 7 additionally names any file within 10 lines of the limit, because it will not survive step 14; (2) an explicit **"find the shared component first"** instruction in each of those steps, naming the real files to read; (3) **`.claude/verify/spec-41-reuse-ledger.md`** as a phase deliverable — one row per sub-file: final line count, the shared atom/helper/extension it leans on, and the count it would have had without. Where something was hand-rolled anyway, the row says which shared component was checked first and why it did not fit; "did not check" is not acceptable. In the phase success criteria, asserted at step 12.
+- **Cost of the alternative:** sequential lanes ≈ +3.5h of critical path; a mis-run parallel dispatch = two agents' edits interleaved on `main` and a forensic unwind.
 
 **Ruling 7 addendum — RAW LINES vs CODE LINES, and the resulting file-count floors. (Bean, 2026-09-11)**
-- **The question:** a `/qc` pass found steps 7 and 8 each prescribing fewer modules than their own
-  size limits require, and offered two shapes — derive the floors from raw `wc -l` (giving 7 JS +
-  7 PHP files), or from code lines only. A `/qc-council` was run on it because it changes step
-  structure, not step prose.
-- **RULED — `render.php` is measured on CODE LINES ONLY, excluding comments.** Consistent with
-  Bean's own prior ruling **D722**, which already rejected a raw-line-count gate on *this exact
-  file* for being comment-heavy (48% comments then, **52% now**). ⛔ **Do not re-litigate this in a
-  future revision without a fresh decision from Bean.**
+- **The question:** a `/qc` pass found steps 7 and 8 each prescribing fewer modules than their own size limits require, and offered two shapes — derive the floors from raw `wc -l` (giving 7 JS + 7 PHP files), or from code lines only. A `/qc-council` was run on it because it changes step structure, not step prose.
+- **RULED — `render.php` is measured on CODE LINES ONLY, excluding comments.** Consistent with Bean's own prior ruling **D722**, which already rejected a raw-line-count gate on *this exact file* for being comment-heavy (48% comments then, **52% now**). ⛔ **Do not re-litigate this in a future revision without a fresh decision from Bean.**
 - **The resulting floors** (derivation and commands in step 8's callout):
-  - **`edit.js` → 7 files minimum, expect 8 after step 14.** Measured raw, deliberately: 1,536 lines
-    of which 1,303 are code — only 11% comments, so this file's bulk is genuinely real and the raw
-    number is the honest one. `ceil(1535/250) = 7`.
-  - **`render.php` → exactly 4 files, floor AND ceiling.** 845 code lines (428 markup half / 417 CSS
-    half) at 300/file → 2 + 2. ⛔ **Not the 8 a raw-line reading would demand.**
-- **The asymmetry is the point, not an inconsistency:** the same rule (measure what a reader
-  actually has to hold in their head) gives a raw reading on an 11%-comment file and a code reading
-  on a 52%-comment one.
-- **One consequence worth stating:** step 8's reuse lever is already spent (27 shared-helper call
-  sites; both migration surveys return 0 plugin-wide), so *"none applies"* is the correct ledger row
-  there — whereas step 7's `fillRow`/`textRow` lever is real, unspent, and worth ~145 lines.
+  - **`edit.js` → 7 files minimum, expect 8 after step 14.** Measured raw, deliberately: 1,536 lines of which 1,303 are code — only 11% comments, so this file's bulk is genuinely real and the raw number is the honest one. `ceil(1535/250) = 7`.
+  - **`render.php` → exactly 4 files, floor AND ceiling.** 845 code lines (428 markup half / 417 CSS half) at 300/file → 2 + 2. ⛔ **Not the 8 a raw-line reading would demand.**
+- **The asymmetry is the point, not an inconsistency:** the same rule (measure what a reader actually has to hold in their head) gives a raw reading on an 11%-comment file and a code reading on a 52%-comment one.
+- **One consequence worth stating:** step 8's reuse lever is already spent (27 shared-helper call sites; both migration surveys return 0 plugin-wide), so *"none applies"* is the correct ledger row there — whereas step 7's `fillRow`/`textRow` lever is real, unspent, and worth ~145 lines.
 
 
 ---
 
 ### Pre-emptive decisions (Hidden Decisions pass) — MOVED TO A COMPANION FILE
 
-✅ **The Stage 6 Hidden Decisions pass was RUN** (two cold peer reviewers with distinct personas —
-a conscientious senior engineer who hates being blocked, and a pedantically literal junior who
-refuses to infer intent — dispatched via `/dispatching-parallel-agents` against this plan with
-Step 15 as the representative step). It produced **14 pre-answers (PD-1 … PD-14)**, one genuine
-blocker (the `sgs_border_states_css()` edge-blindness, now owner ruling 1) and two corrections to
-this plan's own factual claims. **Every factual claim either reviewer made about the real code was
-re-verified with a command before being acted on.**
+✅ **The Stage 6 Hidden Decisions pass was RUN** (two cold peer reviewers with distinct personas — a conscientious senior engineer who hates being blocked, and a pedantically literal junior who refuses to infer intent — dispatched via `/dispatching-parallel-agents` against this plan with Step 15 as the representative step). It produced **14 pre-answers (PD-1 … PD-14)**, one genuine blocker (the `sgs_border_states_css()` edge-blindness, now owner ruling 1) and two corrections to this plan's own factual claims. **Every factual claim either reviewer made about the real code was re-verified with a command before being acted on.**
 
-**The full record now lives at
-[`.claude/plans/phase-nav-menu-colour-state-hidden-decisions.md`](phase-nav-menu-colour-state-hidden-decisions.md)**
-— split out on 2026-09-11 to keep this file under its 3,000-line doc-shape cap. ⛔ **Nothing was
-deleted.** The `PD-n` IDs are unchanged and stable, so every `PD-n` citation in the steps above
-still resolves. Read it before dispatching any of steps 7, 8, 9, 13, 14 or 15 — six of the
-pre-answers are the reason those steps read the way they do.
+**The full record now lives at [`.claude/plans/phase-nav-menu-colour-state-hidden-decisions.md`](phase-nav-menu-colour-state-hidden-decisions.md)** — split out on 2026-09-11 to keep this file under its 3,000-line doc-shape cap. ⛔ **Nothing was deleted.** The `PD-n` IDs are unchanged and stable, so every `PD-n` citation in the steps above still resolves. Read it before dispatching any of steps 7, 8, 9, 13, 14 or 15 — six of the pre-answers are the reason those steps read the way they do.
 
-⚠ **Three entries were corrected by the owner rulings above and say so in place:** PD-1 (the
-`block.json` import goes into `edit.js`, because there is no `colour-rows.js`), PD-2 (the FR-41-21
-emitter stays block-private in `render.php`), PD-6 (a `colourRows` GROUPING may not leave
-`edit.js` either).
+⚠ **Three entries were corrected by the owner rulings above and say so in place:** PD-1 (the `block.json` import goes into `edit.js`, because there is no `colour-rows.js`), PD-2 (the FR-41-21 emitter stays block-private in `render.php`), PD-6 (a `colourRows` GROUPING may not leave `edit.js` either).
 
 ---
 
@@ -3489,100 +2211,41 @@ emitter stays block-private in `render.php`), PD-6 (a `colourRows` GROUPING may 
 | ~~G20b (a)-(e)~~ | ~~Step 24~~ | ⛔ **WITHDRAWN 2026-09-11** — no notice mechanism exists to gate; see FR-41-34's WITHDRAWN box and `.claude/decisions.md` D1036 |
 | G20c (a)-(e) | Step 26 | detector exists, reachable, can still fail — **plus its own scope negative control** (owner ruling 4): hard-fails on `sgs/nav-menu`, warns-and-passes elsewhere |
 
-⚠ **Two steps carry acceptance criteria that are NOT one of the spec's 23 gates, deliberately.**
-Step 6a's zero-blast-radius proof is folded into **G1(c)** rather than given a new number (ruling 1).
-**Step 14a has no spec gate at all** — it lands on `sgs/nav-drawer`, and Spec 41's gate set is scoped
-to `sgs/nav-menu`; its acceptance conditions live in its own `Test:` block (enum parity across
-`block.json` and `$sgs_nd_allowed_close_styles`, a non-empty accessible name, and the
-`closeIcon`-unset byte-identity proof — G15's shape on the open side). ⛔ Do not count it among the
-23, and do not invent a G24 for it.
+⚠ **Two steps carry acceptance criteria that are NOT one of the spec's 23 gates, deliberately.** Step 6a's zero-blast-radius proof is folded into **G1(c)** rather than given a new number (ruling 1). **Step 14a has no spec gate at all** — it lands on `sgs/nav-drawer`, and Spec 41's gate set is scoped to `sgs/nav-menu`; its acceptance conditions live in its own `Test:` block (enum parity across `block.json` and `$sgs_nd_allowed_close_styles`, a non-empty accessible name, and the `closeIcon`-unset byte-identity proof — G15's shape on the open side). ⛔ Do not count it among the 23, and do not invent a G24 for it.
 
 ---
 
 ## Docscore (Stage 7)
 
-Run against the `archived-plan` template (the in-flight `plans/phase-*.md` location has no dedicated
-`plan` doc_type; per the skill this is acceptable for in-flight work, and the file moves to
-`plans/archive/` on completion where it picks up the template correctly).
+Run against the `archived-plan` template (the in-flight `plans/phase-*.md` location has no dedicated `plan` doc_type; per the skill this is acceptable for in-flight work, and the file moves to `plans/archive/` on completion where it picks up the template correctly).
 
-**Tool grade after the 2026-09-11 QC + council fold-in: A- (94.3%)** — Structural **85.7% (6/7)** /
-Completeness 100 / Quality 100 / Freshness 100. **Honest qualitative self-assessment: A-** (up from
-B+ — the four defects that made the previous edition non-executable as written are closed).
+**Tool grade after the 2026-09-11 QC + council fold-in: A- (94.3%)** — Structural **85.7% (6/7)** / Completeness 100 / Quality 100 / Freshness 100. **Honest qualitative self-assessment: A-** (up from B+ — the four defects that made the previous edition non-executable as written are closed).
 
-⚠ **The single structural failure is the 3,000-line cap, and it is DISCLOSED rather than chased.**
-`structural_max_lines: 3,409 lines exceeds cap of 3000` (re-derive with `wc -l`; the figure moves
-every time this file is touched). Folding in 7 MUST-FIXes and 13 SHOULD-FIXes added ~510 lines to a
-file that was already at 2,896 after the previous split. **The tool's remedy
-("move detail to references/") was considered and DELIBERATELY NOT TAKEN this time**, for a reason
-worth recording:
+⚠ **The single structural failure is the 3,000-line cap, and it is DISCLOSED rather than chased.** `structural_max_lines: 3,409 lines exceeds cap of 3000` (re-derive with `wc -l`; the figure moves every time this file is touched). Folding in 7 MUST-FIXes and 13 SHOULD-FIXes added ~510 lines to a file that was already at 2,896 after the previous split. **The tool's remedy ("move detail to references/") was considered and DELIBERATELY NOT TAKEN this time**, for a reason worth recording:
 
-- The obvious candidates are §Resolved judgement calls (189 lines) and this §Docscore section (42).
-  Moving both lands the file at **~3,160 — still over the cap**, so the split buys no grade and
-  costs a cold executor the rulings they are told in three places never to re-open mid-execution.
-- Getting genuinely under 3,000 would mean splitting the **pre-written subagent prompts** away from
-  their steps. Those prompts are the plan's primary deliverable — paste-and-run, beside the step
-  they run — and separating them converts a one-read dispatch into a two-file lookup.
-- ⛔ This is a cap on a DOC SHAPE, not on correctness. Trading executability for a template
-  threshold is the wrong trade, and the honest move is to say so here rather than to score higher by
-  making the plan harder to run. **The previous split (the Hidden Decisions annex) WAS worth it and
-  stands; a second one is not.**
+- The obvious candidates are §Resolved judgement calls (189 lines) and this §Docscore section (42). Moving both lands the file at **~3,160 — still over the cap**, so the split buys no grade and costs a cold executor the rulings they are told in three places never to re-open mid-execution.
+- Getting genuinely under 3,000 would mean splitting the **pre-written subagent prompts** away from their steps. Those prompts are the plan's primary deliverable — paste-and-run, beside the step they run — and separating them converts a one-read dispatch into a two-file lookup.
+- ⛔ This is a cap on a DOC SHAPE, not on correctness. Trading executability for a template threshold is the wrong trade, and the honest move is to say so here rather than to score higher by making the plan harder to run. **The previous split (the Hidden Decisions annex) WAS worth it and stands; a second one is not.**
 
 The tool grades structure against the template; the qualitative caveats below are mine, not its.
 
-⚠ **One structural change was forced by that revision and is disclosed rather than hidden.** Applying
-the seven rulings added two steps and ~500 lines, which pushed the file past the template's
-3,000-line cap (measured: 3,030 lines, Structural 6/7, grade **A-**). The Stage 6 Hidden Decisions
-record was therefore **split into
-[`phase-nav-menu-colour-state-hidden-decisions.md`](phase-nav-menu-colour-state-hidden-decisions.md)**
-— the tool's own remedy ("move detail to references/"), and lossless: every `PD-n` entry is unchanged
-except where a ruling corrected it, the IDs are stable, and every citation in the steps still
-resolves. ⛔ It is a SPLIT, not a deletion; do not treat the annex as optional reading.
+⚠ **One structural change was forced by that revision and is disclosed rather than hidden.** Applying the seven rulings added two steps and ~500 lines, which pushed the file past the template's 3,000-line cap (measured: 3,030 lines, Structural 6/7, grade **A-**). The Stage 6 Hidden Decisions record was therefore **split into [`phase-nav-menu-colour-state-hidden-decisions.md`](phase-nav-menu-colour-state-hidden-decisions.md)** — the tool's own remedy ("move detail to references/"), and lossless: every `PD-n` entry is unchanged except where a ruling corrected it, the IDs are stable, and every citation in the steps still resolves. ⛔ It is a SPLIT, not a deletion; do not treat the annex as optional reading.
 
-Strengths: every step carries all nine required annotation fields plus a four-layer Test block;
-every QA gate's `Check` is a runnable command; all 23 acceptance gates map to a named owning step;
-every pre-written prompt is paste-and-run and cites code by SYMBOL, never by line; the Hidden
-Decisions pass was RUN and produced one genuine blocker (the `sgs_border_states_css()`
-edge-blindness, now ruling 1) plus two corrections to this plan's own factual claims, all re-verified
-with commands; and **all seven judgement calls are now RULED**, each keeping its option set and
-reasoning.
+Strengths: every step carries all nine required annotation fields plus a four-layer Test block; every QA gate's `Check` is a runnable command; all 23 acceptance gates map to a named owning step; every pre-written prompt is paste-and-run and cites code by SYMBOL, never by line; the Hidden Decisions pass was RUN and produced one genuine blocker (the `sgs_border_states_css()` edge-blindness, now ruling 1) plus two corrections to this plan's own factual claims, all re-verified with commands; and **all seven judgement calls are now RULED**, each keeping its option set and reasoning.
 
-Deductions: (1) 30 steps is past the upper bound of a single phase, and the `[HANDOFF]` markers at
-25 and 27 are the only two natural boundaries in work that will realistically span four sessions;
-(2) time estimates are optimistic by policy (`~/.claude/rules/time-estimates.md`) with no per-step
-confidence band; (3) **step 14a lands on a SECOND block (`sgs/nav-drawer`)**, widening the blast
-radius onto a manifest Spec 41 does not govern — accepted on ruling 6, mitigated by running it last
-in its lane with its own enum-parity and byte-identity assertions; (4) one of ruling 3's load-bearing
-inputs (rule 31's two-corpus limitation) is a STATIC READ, not yet an empirical run — QA-1 question
-(b) converts it, and the plan sets the safe default meanwhile rather than acting on the inference.
+Deductions: (1) 30 steps is past the upper bound of a single phase, and the `[HANDOFF]` markers at 25 and 27 are the only two natural boundaries in work that will realistically span four sessions; (2) time estimates are optimistic by policy (`~/.claude/rules/time-estimates.md`) with no per-step confidence band; (3) **step 14a lands on a SECOND block (`sgs/nav-drawer`)**, widening the blast radius onto a manifest Spec 41 does not govern — accepted on ruling 6, mitigated by running it last in its lane with its own enum-parity and byte-identity assertions; (4) one of ruling 3's load-bearing inputs (rule 31's two-corpus limitation) is a STATIC READ, not yet an empirical run — QA-1 question (b) converts it, and the plan sets the safe default meanwhile rather than acting on the inference.
 
-✅ **The previous edition's fourth deduction — "the plan is not fully executable as it stands, Step
-15 rule 5 is blocked on an owner ruling" — is CLOSED.** Ruling 1 resolves it, step 6a builds the API
-it needs, and Spec 41 v0.4.7 rewrites FR-41-8 to describe the real mechanism.
+✅ **The previous edition's fourth deduction — "the plan is not fully executable as it stands, Step 15 rule 5 is blocked on an owner ruling" — is CLOSED.** Ruling 1 resolves it, step 6a builds the API it needs, and Spec 41 v0.4.7 rewrites FR-41-8 to describe the real mechanism.
 
 ---
 
 ## ADHD anchors
 
-- **Rule 1 (full map + ranked menu):** the execution-shape diagram and the gate→step map make the
-  whole phase visible before step 1; every judgement call was put as a ranked menu with a
-  recommendation, never a forced choice, and each ruling keeps that menu beside the answer.
-- **Rule 2 (smallest first action <5 min, zero dependencies):** Step 1 is re-running one Python
-  snippet and one grep. Nothing depends on anything.
-- **Rule 3 / 7 (motivation layer):** the USP at the top — this is the block on every page of every
-  client site, and the 3-state shape built here is the shape every future stateful block copies.
-- **Rule 4 (verification before completion):** every step proposes its verification command in its
-  own prompt; no step reports done on a claim.
+- **Rule 1 (full map + ranked menu):** the execution-shape diagram and the gate→step map make the whole phase visible before step 1; every judgement call was put as a ranked menu with a recommendation, never a forced choice, and each ruling keeps that menu beside the answer.
+- **Rule 2 (smallest first action <5 min, zero dependencies):** Step 1 is re-running one Python snippet and one grep. Nothing depends on anything.
+- **Rule 3 / 7 (motivation layer):** the USP at the top — this is the block on every page of every client site, and the 3-state shape built here is the shape every future stateful block copies.
+- **Rule 4 (verification before completion):** every step proposes its verification command in its own prompt; no step reports done on a claim.
 - **Rule 5 (scope check after 5+ file edits):** QA-3, QA-5 and QA-6 are exactly that, three times.
 - **Rule 8 (scores ship with remediations):** every gate's `Fail:` names the step to return to.
-- **Rule 9 (negotiated decisions):** all seven judgement calls went to Bean as ranked menus and all
-  seven are now RULED (2026-09-11). Both positions are logged in each ruling, including the two where
-  Bean's call overrode this plan's own recommendation (ruling 1: extend the shared helper, not a
-  block-private override; ruling 6: fold the close-button work in rather than defer it).
-- **Rule 13 (session sprawl):** `[SESSION-START]` at steps 1, 13, 15, 21 and `[HANDOFF]` at 25, 27.
-  Realistically this is **four SESSIONS** — ⚠ and these are session boundaries, **not** the
-  execution diagram's WAVE labels, which mean something different and narrower. Deliberately named
-  by number so a reader cross-referencing "Wave C" between the two sections gets one answer, not two
-  (S10): **Session 1** = steps 1–12 (Wave A, including 6a and 16a's sibling gates) · **Session 2** =
-  steps 13–20 (Waves B + C, including 14a and 16a) · **Session 3** = steps 21–24 (deploy +
-  verification) · **Session 4** = steps 25–27 (close). The diagram's own scopes are unchanged:
-  WAVE A = 1–12, WAVE B = 13–17, WAVE C = 18–20, WAVE D = 21–27.
+- **Rule 9 (negotiated decisions):** all seven judgement calls went to Bean as ranked menus and all seven are now RULED (2026-09-11). Both positions are logged in each ruling, including the two where Bean's call overrode this plan's own recommendation (ruling 1: extend the shared helper, not a block-private override; ruling 6: fold the close-button work in rather than defer it).
+- **Rule 13 (session sprawl):** `[SESSION-START]` at steps 1, 13, 15, 21 and `[HANDOFF]` at 25, 27. Realistically this is **four SESSIONS** — ⚠ and these are session boundaries, **not** the execution diagram's WAVE labels, which mean something different and narrower. Deliberately named by number so a reader cross-referencing "Wave C" between the two sections gets one answer, not two (S10): **Session 1** = steps 1–12 (Wave A, including 6a and 16a's sibling gates) · **Session 2** = steps 13–20 (Waves B + C, including 14a and 16a) · **Session 3** = steps 21–24 (deploy + verification) · **Session 4** = steps 25–27 (close). The diagram's own scopes are unchanged: WAVE A = 1–12, WAVE B = 13–17, WAVE C = 18–20, WAVE D = 21–27.

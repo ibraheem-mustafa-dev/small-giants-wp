@@ -19,5 +19,4 @@ pixel_diff_skip_reason: Defaults preserve prior output byte-for-byte on existing
 verified_by: spec30-p1-theme-thread (live Playwright DOM probes + screenshots)
 ---
 
-Evidence: .claude/reports/spec30-p1/wave2-final-shop3-1440.png; button-baseline
-probe [786, 786, 786, 1421, 1421]; picker-count probe 0 on /shop/.
+Evidence: .claude/reports/spec30-p1/wave2-final-shop3-1440.png; button-baseline probe [786, 786, 786, 1421, 1421]; picker-count probe 0 on /shop/.

@@ -1,7 +1,6 @@
 # R1 ledger: the Indus Foods handoff folder
 
-Slice: `C:\Users\Bean\Projects\small-giants-wp\.claude\Indus-Foods-Claude-Design-Files\design_handoff_indus_foods_website\` (15 files, read-only).
-Reviewer: R1. Date: 2026-10-10. Everything below cites a file plus a quote or a command. Anything I could not check is marked UNVERIFIED.
+Slice: `C:\Users\Bean\Projects\small-giants-wp\.claude\Indus-Foods-Claude-Design-Files\design_handoff_indus_foods_website\` (15 files, read-only). Reviewer: R1. Date: 2026-10-10. Everything below cites a file plus a quote or a command. Anything I could not check is marked UNVERIFIED.
 
 Scratch evidence (all in the same scratchpad `council\` folder): `r1-pages.js` (page roster extractor), `r1-probe.mjs`, `r1-bisect.mjs`, `r1-bisect2.mjs`, `r1-timing.mjs` (crash reproduction), `r1-shots2.mjs` plus `r1-home-1440.png` and `r1-about-1440.png` (successful render screenshots).
 

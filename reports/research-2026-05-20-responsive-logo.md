@@ -92,14 +92,11 @@
 ```
 Works with static files. No JS. Screen readers get the `<img alt>`. SVG files stay external (cacheable). Cannot animate paths (external file).
 
-**Option B — CSS `display` on three inline SVGs**
-Three `<svg>` blocks in markup, CSS hides two at a time per breakpoint. All three load on every request — only worth it if files are tiny (<5KB each). Enables animation on whichever is visible.
+**Option B — CSS `display` on three inline SVGs** Three `<svg>` blocks in markup, CSS hides two at a time per breakpoint. All three load on every request — only worth it if files are tiny (<5KB each). Enables animation on whichever is visible.
 
-**Option C — WP block composition (current SGS capability)**
-Three `core/site-logo` blocks each wrapped with `sgsHideOnDesktop` / `sgsHideOnTablet` / `sgsHideOnMobile`. Works today but clunky for operators — three separate blocks to configure.
+**Option C — WP block composition (current SGS capability)** Three `core/site-logo` blocks each wrapped with `sgsHideOnDesktop` / `sgsHideOnTablet` / `sgsHideOnMobile`. Works today but clunky for operators — three separate blocks to configure.
 
-**Option D — Single block with three upload slots (ideal)**
-A custom `sgs/responsive-logo` block exposes Desktop / Tablet / Mobile image pickers in one control surface. On the front end it emits the `<picture>` element. No operator confusion; one block to place.
+**Option D — Single block with three upload slots (ideal)** A custom `sgs/responsive-logo` block exposes Desktop / Tablet / Mobile image pickers in one control surface. On the front end it emits the `<picture>` element. No operator confusion; one block to place.
 
 ### Competitor handling
 

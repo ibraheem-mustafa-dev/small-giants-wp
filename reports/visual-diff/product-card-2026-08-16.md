@@ -1,8 +1,6 @@
 # Visual diff — sgs/product-card — 2026-08-16
 
-verdict: PASS
-intent_capture_passed: true
-source_sha: b9a2e441e6cca870
+verdict: PASS intent_capture_passed: true source_sha: b9a2e441e6cca870
 
 ## What changed
 
@@ -10,36 +8,20 @@ Added block-level "Card text colour" + "Card background colour" rows to the exis
 
 ## Assertion
 
-Flipping `supports.color`'s sub-flags cannot change this block's frontend markup, because
-`__experimentalSkipSerialization: true` was ALREADY set on this block's `color` support before this
-change (verified directly in `block.json`). Skip-serialization means WordPress core never emits a
-native inline colour style into rendered markup regardless of whether the sub-flags are `true` or
-`false` — the flags only control whether the editor SHOWS the corresponding native control. The
-colour VALUES themselves are unchanged: the new panel rows read from and write to the exact same
-`style.color.*` attribute path the native controls used, so any value a client had already set is
-read back by the same `render.php` code as before.
+Flipping `supports.color`'s sub-flags cannot change this block's frontend markup, because `__experimentalSkipSerialization: true` was ALREADY set on this block's `color` support before this change (verified directly in `block.json`). Skip-serialization means WordPress core never emits a native inline colour style into rendered markup regardless of whether the sub-flags are `true` or `false` — the flags only control whether the editor SHOWS the corresponding native control. The colour VALUES themselves are unchanged: the new panel rows read from and write to the exact same `style.color.*` attribute path the native controls used, so any value a client had already set is read back by the same `render.php` code as before.
 
-Corroborating: `git diff --cached -- src/blocks/product-card/render.php` is **0 lines** — the only file
-that determines this block's frontend output is byte-identical to `HEAD`.
+Corroborating: `git diff --cached -- src/blocks/product-card/render.php` is **0 lines** — the only file that determines this block's frontend output is byte-identical to `HEAD`.
 
 ## Live result
 
-`npm run build` exits 0 with these changes. `check-element-manifest-conformance` returns GATE PASS
-(style-defect 10/10, state-without-base 2/2) — both at the post-PR-#28 baseline, with **zero new
-findings attributable to this change**. The block's own `edit.js` babel-parses clean and its
-`block.json` is valid JSON.
+`npm run build` exits 0 with these changes. `check-element-manifest-conformance` returns GATE PASS (style-defect 10/10, state-without-base 2/2) — both at the post-PR-#28 baseline, with **zero new findings attributable to this change**. The block's own `edit.js` babel-parses clean and its `block.json` is valid JSON.
 
 ## Why before/after doesn't apply
 
-`render.php` has a byte-for-byte empty diff, and the mechanism that would have to carry a visual
-change (native colour serialisation) was already disabled on this block before the change. There is
-no "before" rendered state distinguishable from "after" to diff — the assertion above is that the
-frontend is untouched, and the evidence is the empty render diff plus the pre-existing
-skip-serialisation flag, not a pixel comparison of two identical states.
+`render.php` has a byte-for-byte empty diff, and the mechanism that would have to carry a visual change (native colour serialisation) was already disabled on this block before the change. There is no "before" rendered state distinguishable from "after" to diff — the assertion above is that the frontend is untouched, and the evidence is the empty render diff plus the pre-existing skip-serialisation flag, not a pixel comparison of two identical states.
 
 This is an EDITOR-surface change: what moved is which panel the client finds the control in.
 
 ## Gates
 
-`npm run build` exit 0 · cheat-gate 18 baselined / 0 new · F5 db-consistency passes on its own merit
-(post-PR-#28, no bypass token) · element-manifest GATE PASS at baseline.
+`npm run build` exit 0 · cheat-gate 18 baselined / 0 new · F5 db-consistency passes on its own merit (post-PR-#28, no bypass token) · element-manifest GATE PASS at baseline.

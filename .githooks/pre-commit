@@ -29,4 +29,14 @@ if git diff --cached --name-only | grep -Eq 'plugins/sgs-blocks/src/blocks/exten
 	fi
 fi
 
+# 2. Markdown is never hard-wrapped: each paragraph and list item is one line (Bean reads these on screens of every
+#    width). The checker names each wrapped staged file and the command that fixes it.
+if git diff --cached --name-only --diff-filter=AM | grep -q '\.md$'; then
+	if command -v python >/dev/null 2>&1; then
+		python scripts/check-md-wrap.py --check || exit 1
+	else
+		echo "pre-commit: python not found on PATH — skipping the Markdown wrap check." >&2
+	fi
+fi
+
 exit 0

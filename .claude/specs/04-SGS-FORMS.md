@@ -155,10 +155,7 @@ The visual tile selector inspired by the Indus Foods V2 trade application mockup
 
 ### Number (`sgs/form-field-number`)
 
-**Additional attributes:** `min`, `max`, `step`, and for boxes laid out as a small table (a prescription's SPH / CYL /
-AXIS): `columnHeading` (a short heading above the box, set on the first row) and `rowHeading` (a short heading in a
-32px gutter to the left, set on the first box of each row). Both are visual only; the label stays the accessible name.
-Row-headed boxes sit 8px apart with no spinner arrows (`plugins/sgs-blocks/includes/forms/field-render-helpers.php::field_headings`).
+**Additional attributes:** `min`, `max`, `step`, and for boxes laid out as a small table (a prescription's SPH / CYL / AXIS): `columnHeading` (a short heading above the box, set on the first row) and `rowHeading` (a short heading in a 32px gutter to the left, set on the first box of each row). Both are visual only; the label stays the accessible name. Row-headed boxes sit 8px apart with no spinner arrows (`plugins/sgs-blocks/includes/forms/field-render-helpers.php::field_headings`).
 
 ### Address with Postcode Lookup (`sgs/form-field-address`)
 
@@ -253,8 +250,7 @@ Every email goes through `wp_mail()`, which FluentSMTP sends over the client's o
 
 - **Owner notification:** to the form's `notifyEmail`, else the Site Info email, else `admin_email` (`Sgs_Mailer::owner_recipient`). Subject "New form submission: <form name>", every submitted field in an escaped table, `Reply-To` the submitter's email field when it is valid.
 - **Confirmation:** only when `confirmationEmail` is on and the submission has a valid email field; `confirmationSubject` and `confirmationMessage`, or their defaults.
-- **Header injection:** `Form_Processor::sanitise_fields` blanks any email-named value holding a line break (core `sanitize_email()` would rebuild `a@b.com
-Bcc: x@y.com` as the valid-looking `a@b.comBccxy.com`), and `Sgs_Mailer` refuses CR/LF in a recipient or `Reply-To`.
+- **Header injection:** `Form_Processor::sanitise_fields` blanks any email-named value holding a line break (core `sanitize_email()` would rebuild `a@b.com Bcc: x@y.com` as the valid-looking `a@b.comBccxy.com`), and `Sgs_Mailer` refuses CR/LF in a recipient or `Reply-To`.
 - **Template:** `Sgs_Mail_Template::wrap` uses WooCommerce's email header, footer and CSS inliner when WooCommerce is active, else `plugins/sgs-blocks/includes/mail/templates/email.php` (site name, logo, theme text/surface/primary colours).
 
 The choice-flow email terminal (Spec 43 FR-43-4) goes through the same path. PECR: confirmations and owner notifications are service messages while they carry no promotional copy.

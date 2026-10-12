@@ -424,5 +424,4 @@ In 2026, the websites that stand out are the ones that talk to their visitors. W
 
 #### Niloy
 
-Niloy is a seasoned WordPress plugin developer with 10+ years of experience, specializing in custom builds, optimizations, and client-focused solutions. Since 2014, he’s delivered everything from quick fixes to full-featured plugins. Whether you need development, troubleshooting, or expert advice — Niloy’s here to help.
-Don’t hesitate to [get in touch](https://www.codeixer.com/custom-service/)!
+Niloy is a seasoned WordPress plugin developer with 10+ years of experience, specializing in custom builds, optimizations, and client-focused solutions. Since 2014, he’s delivered everything from quick fixes to full-featured plugins. Whether you need development, troubleshooting, or expert advice — Niloy’s here to help. Don’t hesitate to [get in touch](https://www.codeixer.com/custom-service/)!

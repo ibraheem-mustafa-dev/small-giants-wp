@@ -814,8 +814,7 @@ Single PHASE C+1 (cheat-removal architectural cleanup) covers all 20 cheats in o
 - **Data-driven migrations** (DB seed + script swap; mechanical):  Q5 (_ABSORB_GAP_PROPS → property_suffixes flags), Q6 (_CORE_BLOCK_STYLE_MAP → DB), Q8 (_STYLE_KEY_TO_ROLE → DB), Q9 (_infer_role string-matching → read kind from DB), Q10 (enum_vals → block_attributes.enum_values), Q11 (badge→pill-wrap → slot_synonyms.default_variant), Q12 (_BREAKPOINT_SUFFIXES → DB), Q14 (ATOMIC_TAG_MAP → DB), Q15 (per-target-block emit chain → DB dispatch).
 - **Hot-path migrations** (require care; carry production behaviour):  Q1+Q2 (hero per-slug guard + VARIANT_MODIFIERS — DB-backed split-image + per-block variant rows; HISTORICAL, low priority per Bean), Q3 (ARRAY_LIFT_PATTERNS → DB extraction recipes), Q4 (_lift_inner_block_attrs per-block branches — generalise sgs/button + sgs/info-box via slot_synonyms data), Q7 (_STR_PASSTHROUGH_ALLOWED → block_attributes.attr_type generalisation), Q18b (populate patterns.block_composition).
 
-**Acceptance gate per commit (track ALL body sections, not just hero):**
-Bean directive: *"It's not just the hero section that has the cheats, should also track other sections being affected by the removal and fix."*
+**Acceptance gate per commit (track ALL body sections, not just hero):** Bean directive: *"It's not just the hero section that has the cheats, should also track other sections being affected by the removal and fix."*
 
 Per Stage 11 pixel-diff on canary page 144 (sandybrown), record per-section deltas at 375/768/1440 BEFORE and AFTER each commit:
 
@@ -1048,10 +1047,7 @@ Bean explicitly designed the council methodology across three messages:
 ### J6 — "Dictionary definition of cheating" failure mode
 - **Source:** Bean's entry 1566 + captured as blub.db row 285
 - **Severity:** BINDING RULE
-- **Pattern:** Head-of-council recommendations that:
-  (a) Reference blocks/slots that no longer exist (named sgs/trust-bar after D72 retired it; named sgs/label slot in trust-bar after Bean said label isn't used there);
-  (b) Propose data patches (DB seeds) that silence diagnostic messages without invoking the architectural primitive (Spec 16 §15);
-  (c) Don't directly invoke the primitive in plain English BEFORE proposing the fix — surface fix territory.
+- **Pattern:** Head-of-council recommendations that: (a) Reference blocks/slots that no longer exist (named sgs/trust-bar after D72 retired it; named sgs/label slot in trust-bar after Bean said label isn't used there); (b) Propose data patches (DB seeds) that silence diagnostic messages without invoking the architectural primitive (Spec 16 §15); (c) Don't directly invoke the primitive in plain English BEFORE proposing the fix — surface fix territory.
 - **Trigger phrases on my output that should stop me:** "seed parent_block for [slugs]", "register [retired-slug] as a block", "add [retired-slot-name] synonym".
 
 ---
@@ -1537,8 +1533,11 @@ if ( '' !== $custom_width && null !== $custom_width ) {
 ```
 
 **Cost:** ~5 minutes (edit + build + deploy + measure).
+
 **Predicted impact:** brand 1440 drops from 50.8% → ≤30% (probably much lower; the blockquote width collapse was the dominant defect). Mobile/tablet also improve (additional ~5-10pp drop each).
+
 **Risk:** zero — defensive null-and-empty check, no behaviour change for instances where customWidth IS set.
+
 **Phase 1 gate:** brand likely passes ≤30% × 3 viewports after this commit alone.
 
 **Option B — Fix all empty-string-vs-null patterns in `quote/render.php`.**
@@ -1546,8 +1545,11 @@ if ( '' !== $custom_width && null !== $custom_width ) {
 Audit the entire render.php for `null !==` checks on string-default attrs (likely also affects border-radius, padding-*, margin-* emissions). Replace with helper `sgs_attr_has_value($val)` that excludes both null and empty string.
 
 **Cost:** ~20 minutes (audit + helper + replace + build + deploy + measure).
+
 **Predicted impact:** same brand visual fix as Option A + removes ~10 redundant `0px` declarations from inline style (cosmetic only — they collapsed to 0 anyway, no layout change).
+
 **Risk:** low — defensive checks across one file.
+
 **Recommendation:** subsume into Option C — same pattern is system-wide, not just quote.
 
 **Option C — Universal sweep of all sgs/*/render.php files for empty-string-vs-null pattern.**
@@ -1555,8 +1557,11 @@ Audit the entire render.php for `null !==` checks on string-default attrs (likel
 The empty-string-default-treated-as-real-value pattern almost certainly exists in other sgs blocks too. Audit every render.php that uses `null !== $foo` after `isset()` against a string-default attr. Add `sgs_attr_has_value()` helper to `includes/render-helpers.php`. Replace pattern across all blocks. Add Phase 1H-style integration test to catch regressions.
 
 **Cost:** ~60-90 minutes (full audit + helper + 25+ block edits + build + deploy + multi-section measure).
+
 **Predicted impact:** Option A's visual fix + prevents future regressions in any block that ships with optional max-width / similar layout-affecting attrs.
+
 **Risk:** medium — touches many blocks; needs canary deploy per `feedback_verify_wp_api_surface_before_dismissing_static_analyser`.
+
 **Phase 1 cadence fit:** would be its own commit (per blub.db row 288), gated by `/qc-council` pre-commit because it's a multi-block edit.
 
 ### S4. Recommendation

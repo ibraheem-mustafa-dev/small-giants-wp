@@ -19,28 +19,16 @@ related:
 
 ## Purpose
 
-This is the authoritative reference for every SGS feature that wraps, extends, or bridges WooCommerce.
-Spec 24 owns the card/query/bindings detail; this spec provides the cross-cutting architecture, the
-per-feature status table, and the design principles that govern how the SGS layer and WooCommerce
-relate to each other.
+This is the authoritative reference for every SGS feature that wraps, extends, or bridges WooCommerce. Spec 24 owns the card/query/bindings detail; this spec provides the cross-cutting architecture, the per-feature status table, and the design principles that govern how the SGS layer and WooCommerce relate to each other.
 
 ## Design principles
 
-1. **WC is optional at the framework level.** A marketing site that installs no WooCommerce pays zero
-   penalty: no CPT, no extra CSS, no extra JS. Per-site capability flags govern registration.
-2. **The SGS card is always the authoring wrapper.** Clients design, configure, and publish via SGS
-   block inspector controls — never via WooCommerce's block editor or classic meta boxes.
-3. **WC is the primary commerce backing store.** When WooCommerce is present, it owns price/image/stock/
-   variants/cart. The SGS layer reads from WC and bridges those values into SGS blocks. Duplicating WC
-   data in custom meta would create two sources of truth — always wrong.
-4. **Graceful degradation, not feature gating.** When WooCommerce is absent, the same blocks fall back to
-   the `sgs_product` CPT. The client UX is identical; only the data source changes.
-5. **No WC bundle on marketing pages.** The `sgs/*` card blocks never load WooCommerce's React bundle.
-   WP Interactivity API + the WC Store REST API replace it at ~12 KB.
-6. **SGS-specific config always lives in custom meta.** Variation-set display modes, content-impact maps,
-   SKU matrix (`_sgs_variation_sets`, `_sgs_sku_matrix`) are SGS concepts WC does not model — they live
-   in custom meta regardless of whether WC is present. This is NOT a storage mirror; it is
-   WC-complementary metadata (D149, D151).
+1. **WC is optional at the framework level.** A marketing site that installs no WooCommerce pays zero penalty: no CPT, no extra CSS, no extra JS. Per-site capability flags govern registration.
+2. **The SGS card is always the authoring wrapper.** Clients design, configure, and publish via SGS block inspector controls — never via WooCommerce's block editor or classic meta boxes.
+3. **WC is the primary commerce backing store.** When WooCommerce is present, it owns price/image/stock/ variants/cart. The SGS layer reads from WC and bridges those values into SGS blocks. Duplicating WC data in custom meta would create two sources of truth — always wrong.
+4. **Graceful degradation, not feature gating.** When WooCommerce is absent, the same blocks fall back to the `sgs_product` CPT. The client UX is identical; only the data source changes.
+5. **No WC bundle on marketing pages.** The `sgs/*` card blocks never load WooCommerce's React bundle. WP Interactivity API + the WC Store REST API replace it at ~12 KB.
+6. **SGS-specific config always lives in custom meta.** Variation-set display modes, content-impact maps, SKU matrix (`_sgs_variation_sets`, `_sgs_sku_matrix`) are SGS concepts WC does not model — they live in custom meta regardless of whether WC is present. This is NOT a storage mirror; it is WC-complementary metadata (D149, D151).
 7. **R-22-14 clean.** render.php branches on the explicit `sourceMode` attr — never on `empty($content)`.
 
 ---
@@ -88,28 +76,25 @@ Primary files: `src/blocks/cart/` (block.json, render.php, view.js, style.css).
 ## `sgs-product/field` binding source
 
 **Registered name:** `sgs-product/field`
+
 **File:** `plugins/sgs-blocks/includes/class-product-bindings.php`
+
 **Registered on:** `init` priority 15 (after CPT registration at priority 5).
 
 `uses_context: ['postId', 'postType']`
 
 `source_args.source` controls the data backend per instance:
 - `'auto'` — derives from the linked product type (WC product → WC path; `sgs_product` post → CPT path).
-- `'wc'` — WooCommerce path: `wc_get_product()` → price via `get_price_html()` (yields ranges "£10–£30" for
-  variable products); image via `get_image_id()`; stock via `get_availability()`.
+- `'wc'` — WooCommerce path: `wc_get_product()` → price via `get_price_html()` (yields ranges "£10–£30" for variable products); image via `get_image_id()`; stock via `get_availability()`.
 - `'cpt'` — CPT path: `get_post_meta($id, 'sgs_price', true)`, `get_post_meta($id, 'sgs_price_note', true)`.
 
-`_sgs_variation_sets` (`get_post_meta($id, '_sgs_variation_sets', true)`) is always read from CPT meta —
-it is SGS-specific config WooCommerce does not model.
+`_sgs_variation_sets` (`get_post_meta($id, '_sgs_variation_sets', true)`) is always read from CPT meta — it is SGS-specific config WooCommerce does not model.
 
 ---
 
 ## `sgs_product` CPT meta keys
 
-All registered via `register_meta()` with `show_in_rest => true` on the `sgs_product` post type.
-The CPT MUST declare `'supports' => [..., 'custom-fields']` so WordPress includes the `meta` object
-in the CPT's REST schema (without it `register_meta + show_in_rest` registers globally but the schema
-omits `meta` entirely — D148 bug found on first live test).
+All registered via `register_meta()` with `show_in_rest => true` on the `sgs_product` post type. The CPT MUST declare `'supports' => [..., 'custom-fields']` so WordPress includes the `meta` object in the CPT's REST schema (without it `register_meta + show_in_rest` registers globally but the schema omits `meta` entirely — D148 bug found on first live test).
 
 | Meta key | Type | Leading underscore? | Purpose |
 |----------|------|---------------------|---------|
@@ -120,9 +105,7 @@ omits `meta` entirely — D148 bug found on first live test).
 | `_sgs_variation_sets` | string (JSON-encoded array) | Yes — private | SGS display config: per-type `display_as` + `content_impact` |
 | `_sgs_sku_matrix` | string (JSON-encoded) | Yes — private | Phase 2 multi-variant pricing (planned) |
 
-**Note:** `_sgs_variation_sets` and `_sgs_sku_matrix` use leading underscores because they are
-SGS-internal config, not display data. All non-underscore keys are the public display fields that
-`sgs-product/field` bindings resolve.
+**Note:** `_sgs_variation_sets` and `_sgs_sku_matrix` use leading underscores because they are SGS-internal config, not display data. All non-underscore keys are the public display fields that `sgs-product/field` bindings resolve.
 
 ---
 
@@ -130,12 +113,9 @@ SGS-internal config, not display data. All non-underscore keys are the public di
 
 The cloning converter emits `sgs/option-picker` for any draft pill group. Mechanism:
 
-1. A `slots` DB row aliases `pill-group`, `pills`, `option-group`, `picker` → `sgs/option-picker`
-   with `has_inner_blocks=0` (populated via `seed-slot-synonyms.py`).
-2. `convert.py` G3 path: when `composition_role='content-block'` and `has_inner_blocks=0`, the walker
-   calls `_atomic_attrs_for(node, slug, allow_text_fallback=False)`.
-3. The `sgs/option-picker` handler inside `_atomic_attrs_for` extracts `optionItems` (array of
-   `{key, label}`), `defaultSelected`, and `typeKey` from child `<li>`/`<label>`/pill elements.
+1. A `slots` DB row aliases `pill-group`, `pills`, `option-group`, `picker` → `sgs/option-picker` with `has_inner_blocks=0` (populated via `seed-slot-synonyms.py`).
+2. `convert.py` G3 path: when `composition_role='content-block'` and `has_inner_blocks=0`, the walker calls `_atomic_attrs_for(node, slug, allow_text_fallback=False)`.
+3. The `sgs/option-picker` handler inside `_atomic_attrs_for` extracts `optionItems` (array of `{key, label}`), `defaultSelected`, and `typeKey` from child `<li>`/`<label>`/pill elements.
 4. Emits: `<!-- wp:sgs/option-picker {"optionItems":[...],"defaultSelected":"...","typeKey":"..."} /-->`.
 
 Live-verified emitting the correct self-closing block markup (Phase D, uncommitted).
@@ -145,6 +125,7 @@ Live-verified emitting the correct self-closing block markup (Phase D, uncommitt
 ## `sgs/content-collection` — selection rules
 
 **File:** `src/blocks/content-collection/` (block.json v1.1.0, render.php)
+
 **Status:** SHIPPED (uncommitted — Phase E)
 
 Selection rules, implemented as PHP `WP_Query` args in render.php:
@@ -159,26 +140,20 @@ Selection rules, implemented as PHP `WP_Query` args in render.php:
 | `handpicked` | `post__in: handpickedIds[]`, ordered by the IDs array |
 | `category` | `tax_query` on `sgs_product_cat`, `orderby: date DESC` |
 
-Server-side cap: `count` clamped to 1–24 (performance budget). `contentType` whitelisted via
-`sgs_content_collection_post_types` filter (default: `['sgs_product', 'product']`). Empty state
-renders the operator-editable `emptyMessage` attribute — never blank, always server-rendered.
+Server-side cap: `count` clamped to 1–24 (performance budget). `contentType` whitelisted via `sgs_content_collection_post_types` filter (default: `['sgs_product', 'product']`). Empty state renders the operator-editable `emptyMessage` attribute — never blank, always server-rendered.
 
 ---
 
 ## Per-site WC-optional architecture
 
-A site enables or disables the WooCommerce layer via a per-site capability flag (mechanism TBD —
-`wp_options` or theme support flag; see Spec 24 open question #4). When disabled:
+A site enables or disables the WooCommerce layer via a per-site capability flag (mechanism TBD — `wp_options` or theme support flag; see Spec 24 open question #4). When disabled:
 
 - `sgs_product` CPT does not register.
-- `class-product-bindings.php` still loads but the WC branch in `get_value()` is unreachable
-  (no WC products exist).
+- `class-product-bindings.php` still loads but the WC branch in `get_value()` is unreachable (no WC products exist).
 - `sgs/cart` renders nothing (renders a comment node, no visible output) unless WC is active.
-- No WooCommerce plugin dependency is declared in `sgs-blocks.php` — the plugin runs clean on
-  non-WC sites.
+- No WooCommerce plugin dependency is declared in `sgs-blocks.php` — the plugin runs clean on non-WC sites.
 
-When WooCommerce is active, the SGS layer detects it via `function_exists('wc_get_product')` —
-no hard `require` or plugin header dependency.
+When WooCommerce is active, the SGS layer detects it via `function_exists('wc_get_product')` — no hard `require` or plugin header dependency.
 
 ---
 

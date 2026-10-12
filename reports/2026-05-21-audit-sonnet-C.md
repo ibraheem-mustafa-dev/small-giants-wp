@@ -1,8 +1,11 @@
 # SGS Cloning Pipeline — Consistency + Coverage Audit
 
 **Audit date:** 2026-05-21
+
 **Auditor:** Sonnet (independent read-only pass, sub-agent C)
+
 **Scope:** Internal consistency across 17 specified documents + requirements coverage against 9 defined criteria.
+
 **Status at time of audit:** Phase 2A complete on `main` (0201c0d9). Cloning pipeline paused; next session returns to Spec 16 Phase 7 / orchestrator work.
 
 ---

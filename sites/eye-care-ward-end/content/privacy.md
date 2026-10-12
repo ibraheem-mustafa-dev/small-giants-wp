@@ -119,5 +119,4 @@ If we change this policy we will update the date at the top, and if the change m
 
 ## Contact
 
-Ward End Eye Care, 644 Washwood Heath Rd, Birmingham B8 2HQ
-Use the contact form on this site to reach us.
+Ward End Eye Care, 644 Washwood Heath Rd, Birmingham B8 2HQ Use the contact form on this site to reach us.

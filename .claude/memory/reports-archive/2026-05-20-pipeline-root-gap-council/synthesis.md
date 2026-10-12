@@ -1,7 +1,9 @@
 # Council Synthesis — Pipeline Root Gaps
 
 **Date:** 2026-05-20
+
 **Raters:** Sonnet (rater-sonnet.md), Haiku (rater-haiku.md), Gemini Flash (rater-gemini-flash.md), Opus (rater-opus.md). Cerebras stalled in queue (known free-tier behaviour); will be folded in if it returns.
+
 **Verification:** Every cross-rater citation grep-confirmed by Opus per the verify-Gemini-claims-by-grep binding rule. Live HTML curled for variation-activation check.
 
 ## Headline finding

@@ -9,10 +9,7 @@ plan: .claude/plans/archive/2026-10-06-spec47-route-cleanup.md
 
 ## Diagnosis
 
-Properties driven by an **infinite** animation have no resting value: whatever the walker reads is a timing
-accident. `unfinishedAnimations` cannot settle them (an infinite animation has no finite `endTime`), so they
-are read mid-flight and compared as though stable. `animation-name` is compared too, which is a
-name-identity check rather than a painted-output check and so reports differences that are not visual.
+Properties driven by an **infinite** animation have no resting value: whatever the walker reads is a timing accident. `unfinishedAnimations` cannot settle them (an infinite animation has no finite `endTime`), so they are read mid-flight and compared as though stable. `animation-name` is compared too, which is a name-identity check rather than a painted-output check and so reports differences that are not visual.
 
 ## The fix
 
@@ -26,11 +23,7 @@ name-identity check rather than a painted-output check and so reports difference
 
 ## Negative control
 
-- **Red on revert:** a case with a property driven by an infinite animation asserting it produces **no** row.
-  Reverting must turn it red.
-- **Not over-suppressing:** a **finite** animation's final value must still be compared normally, and a
-  property that merely *sits beside* an infinite animation on the same element must still be compared. Prove
-  `loops` is scoped to properties the infinite animation actually drives - an over-broad `loops` would hide
-  real differences on `sgs/brand-strip`, which is precisely the block under investigation.
+- **Red on revert:** a case with a property driven by an infinite animation asserting it produces **no** row. Reverting must turn it red.
+- **Not over-suppressing:** a **finite** animation's final value must still be compared normally, and a property that merely *sits beside* an infinite animation on the same element must still be compared. Prove `loops` is scoped to properties the infinite animation actually drives - an over-broad `loops` would hide real differences on `sgs/brand-strip`, which is precisely the block under investigation.
 
 Expected to clear 2 F rows (marquee dynamic).

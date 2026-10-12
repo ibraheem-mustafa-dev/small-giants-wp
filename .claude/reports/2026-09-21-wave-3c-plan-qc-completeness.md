@@ -28,8 +28,7 @@ Severity key: critical = a fresh session would act without Bean where his rules 
 
 **Change to.** In §1 replace the heading and parenthesis with:
 
-> ### Two questions Bean has not answered. They gate U-1 and U-3; nothing is built on them until he answers.
-> Step 0f: put both to Bean as a menu with one recommendation (force-solid: fix in U-1 for every header; the clamp: clamp inside the viewport in U-3, with the FR-36-6 trigger-anchor wording amended in the same commit). U-1's design gate and U-3's design gate each carry his answer. If he has not answered when U-1 reaches its design gate, ship U-1 without the force-solid change and record it as open in the U-1 row; do the same for U-3.
+> ### Two questions Bean has not answered. They gate U-1 and U-3; nothing is built on them until he answers. Step 0f: put both to Bean as a menu with one recommendation (force-solid: fix in U-1 for every header; the clamp: clamp inside the viewport in U-3, with the FR-36-6 trigger-anchor wording amended in the same commit). U-1's design gate and U-3's design gate each carry his answer. If he has not answered when U-1 reaches its design gate, ship U-1 without the force-solid change and record it as open in the U-1 row; do the same for U-3.
 
 Strategic plan W3C-1 row: change "force-solid and the drawer clamp folded into U-1 and U-3" to "force-solid and the drawer clamp are asked at Step 0f and land in U-1 and U-3 only on Bean's answer". D1135's sentence should be corrected the same way when decisions.md is next touched.
 

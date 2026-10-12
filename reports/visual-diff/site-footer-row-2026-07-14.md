@@ -11,12 +11,7 @@ change: "gap + grid columns → FR-S9-6 {desktop,tablet,mobile} object model via
 # Visual-diff / live-verify — sgs/site-footer-row (D327, FR-S9-6)
 
 ## What changed
-`gap` → object `{desktop:"48px", mobile:"32px"}`; the columns/`gridTemplateColumns`
-flat attrs → one `gridTemplateColumns` object `{desktop:"repeat(3, 1fr)", mobile:"1fr"}`
-(preserves the D325 3→1 collapse). `render.php` passes `responsive_model=object`; the
-shared `SGS_Container_Wrapper` emits the responsive grid + gap via `sgs_emit_responsive_css()`
-(wrapper-owned, R-31-9 mirror). `edit.js` columns + gap controls → `ResponsiveOverride`
-(columns exposed as a client-friendly number mapped to the grid template).
+`gap` → object `{desktop:"48px", mobile:"32px"}`; the columns/`gridTemplateColumns` flat attrs → one `gridTemplateColumns` object `{desktop:"repeat(3, 1fr)", mobile:"1fr"}` (preserves the D325 3→1 collapse). `render.php` passes `responsive_model=object`; the shared `SGS_Container_Wrapper` emits the responsive grid + gap via `sgs_emit_responsive_css()` (wrapper-owned, R-31-9 mirror). `edit.js` columns + gap controls → `ResponsiveOverride` (columns exposed as a client-friendly number mapped to the grid template).
 
 ## Live verification (sandybrown homepage footer; caches cleared OPcache+LiteSpeed+CDN)
 
@@ -30,11 +25,7 @@ shared `SGS_Container_Wrapper` emits the responsive grid + gap via `sgs_emit_res
 | Console errors | none ✅ | none ✅ |
 
 ## Graceful migration
-The wrapper's legacy columns/grid suppression is gated on `$object_grid` (object model
-AND an object `gridTemplateColumns` actually present), so this block renders correctly
-whether the stored instance carries the object default or still-flat D325 attrs — the
-3→1 collapse + 48→32px gap hold either way. Un-migrated instances switch to the object
-path on re-save (D270 re-clone).
+The wrapper's legacy columns/grid suppression is gated on `$object_grid` (object model AND an object `gridTemplateColumns` actually present), so this block renders correctly whether the stored instance carries the object default or still-flat D325 attrs — the 3→1 collapse + 48→32px gap hold either way. Un-migrated instances switch to the object path on re-save (D270 re-clone).
 
 ## Verdict: PASS — footer row wired to the FR-S9-6 engine, live-verified per tier, no regression.
 
@@ -43,20 +34,13 @@ path on re-save (D270 re-clone).
 # ADDENDUM — D328 Task 1: live pattern instances migrated flat→object (fidelity bug fixed)
 
 ## What changed (D328)
-The D327 work made the BLOCK support the object model, but the live pattern INSTANCES still
-stored **flat** legacy values (`gap:"48px"`, `gridTemplateColumns:"2fr 1fr 1fr"`, bottom
-`gap:"8px"`, nav `gap:"28px"`). Because the attrs are declared object-type, WP's
-`prepare_attributes_for_render` rejected the flat strings and **substituted the block.json
-defaults** — silently discarding the authored values. Converted the pattern markup to the
-object shape (values preserved):
+The D327 work made the BLOCK support the object model, but the live pattern INSTANCES still stored **flat** legacy values (`gap:"48px"`, `gridTemplateColumns:"2fr 1fr 1fr"`, bottom `gap:"8px"`, nav `gap:"28px"`). Because the attrs are declared object-type, WP's `prepare_attributes_for_render` rejected the flat strings and **substituted the block.json defaults** — silently discarding the authored values. Converted the pattern markup to the object shape (values preserved):
 - `theme/sgs-theme/patterns/framework-footer-default.php` (columns + bottom rows)
 - `theme/sgs-theme/patterns/framework-header-default.php` + `parts/header.html` (adaptive-nav)
 - `theme/sgs-theme/style.css` Version 1.5.12 → 1.5.13 (cache-bust)
 
 ## Fidelity bug this exposed + fixed (draft-backed)
-Draft ground truth `sites/mamas-munches/mockups/homepage/index.html:711` = `grid-template-columns: 2fr 1fr 1fr`.
-The D327 table above recorded `394 394 394` (equal thirds) as PASS — that was the **coerced
-default `repeat(3,1fr)`, NOT the draft's asymmetric layout**. Now corrected:
+Draft ground truth `sites/mamas-munches/mockups/homepage/index.html:711` = `grid-template-columns: 2fr 1fr 1fr`. The D327 table above recorded `394 394 394` (equal thirds) as PASS — that was the **coerced default `repeat(3,1fr)`, NOT the draft's asymmetric layout**. Now corrected:
 
 | Element | BEFORE (D327, coerced default) | AFTER (D328, authored/draft) |
 |---|---|---|
@@ -66,14 +50,10 @@ default `repeat(3,1fr)`, NOT the draft's asymmetric layout**. Now corrected:
 | Nav `<ul>` gap | 28px | 28px (unchanged; now explicit object) |
 
 ## Live verification (sandybrown, full cache clear OPcache+LiteSpeed+CDN, 2026-07-14)
-1440: cols `592 296 296px`, gap 48px; bottom gap 8px; nav 28px. 375: cols `312px` (1 col),
-gap 32px; bottom gap 8px (inherits desktop — null-inherit cascade proven live); no overflow
-(360 ≤ 375); 0 console errors. Tier-diff proven live (bottom 8px inherits to mobile; columns
-gap diverges 48→32).
+1440: cols `592 296 296px`, gap 48px; bottom gap 8px; nav 28px. 375: cols `312px` (1 col), gap 32px; bottom gap 8px (inherits desktop — null-inherit cascade proven live); no overflow (360 ≤ 375); 0 console errors. Tier-diff proven live (bottom 8px inherits to mobile; columns gap diverges 48→32).
 
 ## uid note (STOP-NO-KSORT)
-uids changed (footer cols `bfbbac9b`→`dfc82464`) because the stored attributes genuinely
-changed shape + values — an EXPECTED content-driven hash change, NOT ksort churn.
+uids changed (footer cols `bfbbac9b`→`dfc82464`) because the stored attributes genuinely changed shape + values — an EXPECTED content-driven hash change, NOT ksort churn.
 
 ## Verdict (D328 Task 1): PASS — instances on the object path; footer layout now draft-faithful.
 

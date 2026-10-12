@@ -28,12 +28,10 @@ verified_by: opus-main-thread-live-cdp
 # Mobile-Nav Full-Screen Overlay Fix — Visual Verification (2026-06-01)
 
 ## Bug (Bean report)
-Mobile nav opened to a tiny box (~208x158px), showed no menu, and could not be
-closed.
+Mobile nav opened to a tiny box (~208x158px), showed no menu, and could not be closed.
 
 ## Before (deployed 3.0.1, logged-out, 375x812)
-- Overlay rect: `{x:0, y:-142, w:208, h:158}` — content-sized box (Popover UA
-  `width/height:fit-content` never overridden).
+- Overlay rect: `{x:0, y:-142, w:208, h:158}` — content-sized box (Popover UA `width/height:fit-content` never overridden).
 - Menu: `menuItems: 0`, no `.sgs-mobile-nav__menu` element rendered.
 
 ## After (deployed 3.0.3, logged-out, 375x812)
@@ -50,20 +48,10 @@ closed.
 | Drawer auto-closes on navigation | `drawerOpenOnNewPage: false` |
 | Dropdown identity | `<nav id="sgs-mobile-nav" class="...wp-block-sgs-mobile-nav">` |
 
-Screenshots: `c:/tmp/mobile-nav-open-test.png` (before menu fix — full-screen but
-empty menu + 16px strip), `c:/tmp/mobile-nav-fixed-final.png` (after — full-screen,
-flush, 13-item menu: Cart / Checkout / Hero Clone PoC / Mamas Munches Homepage /
-… / Shop).
+Screenshots: `c:/tmp/mobile-nav-open-test.png` (before menu fix — full-screen but empty menu + 16px strip), `c:/tmp/mobile-nav-fixed-final.png` (after — full-screen, flush, 13-item menu: Cart / Checkout / Hero Clone PoC / Mamas Munches Homepage / … / Shop).
 
 ## Note
-CDP `dispatchMouseEvent` synthetic clicks on top-layer popover content do not
-reliably trigger anchor navigation in headless Chrome (a known harness quirk);
-programmatic `.click()` and real user taps follow the href correctly — confirmed
-by the successful navigation to `/hero-clone-poc/`.
+CDP `dispatchMouseEvent` synthetic clicks on top-layer popover content do not reliably trigger anchor navigation in headless Chrome (a known harness quirk); programmatic `.click()` and real user taps follow the href correctly — confirmed by the successful navigation to `/hero-clone-poc/`.
 
 ## Inserter scope (Task C)
-`mobile-nav-inserter-scope.php` (`allowed_block_types_all`, fail-open) is
-logic-reviewed (returns `$allowed` unchanged on unclear context / Site-Editor;
-diffs only the 2 chrome blocks when `$allowed===true`). Editor-inserter E2E
-(open post editor, confirm the 2 blocks absent) deferred — low risk given the
-fail-open design cannot break the editor.
+`mobile-nav-inserter-scope.php` (`allowed_block_types_all`, fail-open) is logic-reviewed (returns `$allowed` unchanged on unclear context / Site-Editor; diffs only the 2 chrome blocks when `$allowed===true`). Editor-inserter E2E (open post editor, confirm the 2 blocks absent) deferred — low risk given the fail-open design cannot break the editor.

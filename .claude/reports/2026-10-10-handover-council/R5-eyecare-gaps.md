@@ -330,22 +330,27 @@ Grouped by the top-10 problem each targets.
 3. Can each export carry a version number, generated date and content hash, and can the hosted standalone and the "Handoff to Claude Code" folder be guaranteed byte-identical in markup?
 
 **States and behaviour (P5, P6, P24)**
+
 4. Can the export list every state the design has (each `sc-if` condition in plain terms: menu open, drawer open, modal open, filter applied, form error, empty cart), with the action that reaches it and a URL flag or API to force it for testing?
 5. Can behaviour rules be exported as structured data (trigger, effect, target), for example "after add to bag show a toast for 5s", "advance to the next step on pick", "skip adds the frame to the bag", instead of prose?
 
 **Motion and time (P7, P8)**
+
 6. Can motion be exported as data or CSS rather than script steps: for each reveal, entrance, hover transition, parallax and marquee, its property, duration, delay, stagger, easing, distance and trigger?
 7. Can the runtime offer a deterministic measurement mode (all reveals shown at their end state, loops paused at phase 0, timers frozen, no view-swap fades), switched on by a URL flag?
 8. Will reveals fire at every width? (Eye Care's scroll reveal never fired below 1440 in the hosted draft; ledger D-72 to D-85.)
 
 **Responsive and values (P9, P10, P11)**
+
 9. Can width-dependent values use standard CSS (`@media` at stated breakpoints, `clamp()`, `grid-template-columns: repeat(4, 1fr)`, `ch` widths) instead of values computed in script per width? If script is required, can the breakpoints and each responsive value be exported as named data (for example `secPad: { mobile: '56px 20px', desktop: '104px 52px' }`)?
 10. Can shared values (section padding, page padding, card padding, radii, gaps) be exported as named CSS custom properties so the design's "one setting" is visible, rather than repeated inline values?
 
 **Tokens and brand (P18)**
+
 11. Can colour, type and spacing tokens be declared in `:root` with role names (primary, accent, surface, text, muted, border), plus a README token table in a fixed format, so the palette is never guessed from usage?
 
 **Content, data and links (P14 to P17, P21)**
+
 12. Can collection data (products, reviews, FAQs, brands) be exported as separate JSON files, each marked `static` or `live` with its intended source (product query by sales, Google reviews, Instagram feed)?
 13. Can business details (name, logo file, phone, email, address lines, opening hours, social profiles, WhatsApp number, Google Business URL) be one structured object in the export?
 14. Can links carry real hrefs and the export include a route table (page id, URL slug, page kind such as home, shop archive, single product, basket, checkout, confirmation, content page)?
@@ -353,7 +358,9 @@ Grouped by the top-10 problem each targets.
 16. Can brief-only or placeholder content (a "coming soon" line, a sketch map standing in for a real map, typed text standing in for a logo) be flagged as such?
 
 **Runtime (P20)**
+
 17. Can the export vendor React and Babel (or precompile) so it renders with no CDN access, and can Claude Design check that each exported page renders without console errors before handoff?
 
 **Decisions round-trip (P25)**
+
 18. Can Claude Design take a list of accepted changes from the built site ("the live footer is the ideal") and update the design to match, so the draft stays the single answer key?

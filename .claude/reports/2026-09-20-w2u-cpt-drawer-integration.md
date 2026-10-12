@@ -9,18 +9,11 @@ verdict: PASS on focus containment, ESC interplay, focus return and scroll lock,
 
 # W2-u — mega + drawer, same page, live
 
-The plan row this closes: *"Re-run the mega + drawer same-page integration probe
-(focus traps, ESC interplay, non-modal branch) on the CPT-rendered drawer."*
+The plan row this closes: *"Re-run the mega + drawer same-page integration probe (focus traps, ESC interplay, non-modal branch) on the CPT-rendered drawer."*
 
-`.claude/reports/visual-diff/nav-drawer-2026-09-10.md` recorded focus/ESC
-interplay as verified **"by reading"** and left the non-modal branch
-**not live-exercised**. Both gaps are closed here: every row below was produced by
-real `page.keyboard` presses and real `document.activeElement` reads in a live
-Chromium against the canary, never by an attribute read alone and never by reading
-source.
+`.claude/reports/visual-diff/nav-drawer-2026-09-10.md` recorded focus/ESC interplay as verified **"by reading"** and left the non-modal branch **not live-exercised**. Both gaps are closed here: every row below was produced by real `page.keyboard` presses and real `document.activeElement` reads in a live Chromium against the canary, never by an attribute read alone and never by reading source.
 
-All fetches carried `?cb=<epoch>`; every one returned `x-hcdn-cache-status: MISS`.
-No build, no deploy, no WordPress option changed.
+All fetches carried `?cb=<epoch>`; every one returned `x-hcdn-cache-status: MISS`. No build, no deploy, no WordPress option changed.
 
 ## Fixtures (created for this run — all prefixed `[QA] W2-u`)
 
@@ -30,34 +23,16 @@ No build, no deploy, no WordPress option changed.
 | **3694** | `qa-w2u-nonmodal-drawer` | mega bar + an in-content drawer with `modality:"non-modal"`, default (full-screen) anchor |
 | **3699** | `qa-w2u-nonmodal-partial-drawer` | mega bar + `modality:"non-modal"` with `anchor:{desktop:trigger,tablet:trigger,mobile:trigger}` + `panelSize` — the only shape that has an "outside" to click |
 
-Also present from the Gate 2 re-run: **3692** `qa-w2u-gate2-block-path-drawer`,
-**3695** `qa-w2u-gate2-negative-control`. **Tell me which of 3692–3699 to keep and
-which to trash** — none of them overwrote anything; every one was created new
-after a slug lookup that returned empty.
+Also present from the Gate 2 re-run: **3692** `qa-w2u-gate2-block-path-drawer`, **3695** `qa-w2u-gate2-negative-control`. **Tell me which of 3692–3699 to keep and which to trash** — none of them overwrote anything; every one was created new after a slug lookup that returned empty.
 
 ### Two design choices in the fixtures, and why
 
-1. **Two `sgs/nav-bar-menu` blocks per page.** A single bar cannot give both
-   surfaces at both widths: `collapsePoint:99999` (burger always reachable, needed
-   at 1440) also collapses the horizontal list, which hides the mega trigger
-   (measured: mega trigger `0×0` at both widths on the first attempt). So bar 1 is
-   `{ref:115, collapsePoint:99999}` — burger only, on a menu with no mega item —
-   and bar 2 is `{ref:100, collapsePoint:1, showBurger:false}` — never collapses,
-   carries the "Brands" `sgs_mega_menu` item. Measured result: burger `44×44` and
-   mega trigger `93×44` at **both** 375 and 1440, **1** dialog, **1** mega panel,
-   **0** duplicate element ids.
-2. **The non-modal branch is exercised on a block-rendered drawer, not the CPT
-   one.** `modality` is a per-drawer attribute and the site has exactly one Active
-   drawer; making the CPT drawer non-modal means writing the site-wide
-   `sgs_active_drawer_cpt_id` option (or editing post 3593), which would change
-   what every other session sees on the canary. The render path and the
-   interactivity store are shared, so the branch under test is the same code; the
-   difference is only which post supplies the block. **Stated, not hidden.**
+1. **Two `sgs/nav-bar-menu` blocks per page.** A single bar cannot give both surfaces at both widths: `collapsePoint:99999` (burger always reachable, needed at 1440) also collapses the horizontal list, which hides the mega trigger (measured: mega trigger `0×0` at both widths on the first attempt). So bar 1 is `{ref:115, collapsePoint:99999}` — burger only, on a menu with no mega item — and bar 2 is `{ref:100, collapsePoint:1, showBurger:false}` — never collapses, carries the "Brands" `sgs_mega_menu` item. Measured result: burger `44×44` and mega trigger `93×44` at **both** 375 and 1440, **1** dialog, **1** mega panel, **0** duplicate element ids.
+2. **The non-modal branch is exercised on a block-rendered drawer, not the CPT one.** `modality` is a per-drawer attribute and the site has exactly one Active drawer; making the CPT drawer non-modal means writing the site-wide `sgs_active_drawer_cpt_id` option (or editing post 3593), which would change what every other session sees on the canary. The render path and the interactivity store are shared, so the branch under test is the same code; the difference is only which post supplies the block. **Stated, not hidden.**
 
 ## Results — the CPT-rendered drawer (page 3693, `modality:modal`)
 
-Command, per width:
-`node scripts/nav-qa/w2u-probe.mjs qa-w2u-mega-plus-cpt-drawer <375|1440> content` (run from `plugins/sgs-blocks`; usage `[SGS_QA_BASE=<site url>] node scripts/nav-qa/w2u-probe.mjs <page-slug> <width> <content|header>`)
+Command, per width: `node scripts/nav-qa/w2u-probe.mjs qa-w2u-mega-plus-cpt-drawer <375|1440> content` (run from `plugins/sgs-blocks`; usage `[SGS_QA_BASE=<site url>] node scripts/nav-qa/w2u-probe.mjs <page-slug> <width> <content|header>`)
 
 | # | Check | Method | Measured (1440 / 375) | Negative control | Verdict |
 |---|---|---|---|---|---|
@@ -82,17 +57,9 @@ Command, per width:
 
 ## Results — the non-modal branch
 
-Commands:
-`node scripts/nav-qa/w2u-probe.mjs qa-w2u-nonmodal-drawer 1440 content` ·
-`… qa-w2u-nonmodal-drawer 375 header` ·
-`… qa-w2u-nonmodal-partial-drawer <1440|375> content`
+Commands: `node scripts/nav-qa/w2u-probe.mjs qa-w2u-nonmodal-drawer 1440 content` · `… qa-w2u-nonmodal-drawer 375 header` · `… qa-w2u-nonmodal-partial-drawer <1440|375> content`
 
-The contract (`store.js`, FR-36-6): `.show()` instead of `showModal()`; **no**
-hand-rolled Tab trap; `freezeBackground()` sets `inert` + `aria-hidden` on every
-body/`.wp-site-blocks` child **except the trigger's own row**, so containment is
-**emergent** and the legal Tab set is `{drawer + live trigger row}`; ESC is
-hand-rolled with `stopPropagation()`; focus return and scroll lock identical to
-modal; `aria-modal` must never be added.
+The contract (`store.js`, FR-36-6): `.show()` instead of `showModal()`; **no** hand-rolled Tab trap; `freezeBackground()` sets `inert` + `aria-hidden` on every body/`.wp-site-blocks` child **except the trigger's own row**, so containment is **emergent** and the legal Tab set is `{drawer + live trigger row}`; ESC is hand-rolled with `stopPropagation()`; focus return and scroll lock identical to modal; `aria-modal` must never be added.
 
 | # | Check | Method | Measured | Negative control | Verdict |
 |---|---|---|---|---|---|
@@ -111,56 +78,16 @@ modal; `aria-modal` must never be added.
 
 ## Findings
 
-**A. The mega and the drawer are never co-open — the drawer's open dismisses the
-mega.** Measured at both widths and both modalities: with the mega expanded
-(`aria-expanded=true`, panel `h≈1242`), pressing Enter on the burger yields
-`dialog.open=true`, `openDialogCount=1`, `megaExpanded=false`,
-`visibleMegaPanels=0`. Row 13 proves this is caused by the drawer OPEN and not by
-focus merely leaving the bar (the mega survives `.focus()` on the burger). This is
-a sound "no double-open" outcome, but it means the plan row's *"ESC closes only the
-top-most surface"* scenario **cannot be reached in the mega→drawer direction** —
-there is only ever one surface open by the time ESC is pressed. The reverse
-direction (drawer→mega) is blocked too: under `modal` the top layer refuses focus
-to the mega trigger, and under non-modal with a HEADER trigger `freezeBackground()`
-inerts it. **Recommendation:** record in Spec 36 that the two surfaces are mutually
-exclusive by design, so a future probe does not go looking for a two-surface ESC
-stack that the product deliberately cannot produce.
+**A. The mega and the drawer are never co-open — the drawer's open dismisses the mega.** Measured at both widths and both modalities: with the mega expanded (`aria-expanded=true`, panel `h≈1242`), pressing Enter on the burger yields `dialog.open=true`, `openDialogCount=1`, `megaExpanded=false`, `visibleMegaPanels=0`. Row 13 proves this is caused by the drawer OPEN and not by focus merely leaving the bar (the mega survives `.focus()` on the burger). This is a sound "no double-open" outcome, but it means the plan row's *"ESC closes only the top-most surface"* scenario **cannot be reached in the mega→drawer direction** — there is only ever one surface open by the time ESC is pressed. The reverse direction (drawer→mega) is blocked too: under `modal` the top layer refuses focus to the mega trigger, and under non-modal with a HEADER trigger `freezeBackground()` inerts it. **Recommendation:** record in Spec 36 that the two surfaces are mutually exclusive by design, so a future probe does not go looking for a two-surface ESC stack that the product deliberately cannot produce.
 
-**B. A drawer whose trigger lives in the page CONTENT leaves `main` live under
-non-modal.** `freezeBackground()` skips any body/`.wp-site-blocks` child that
-`contains(toggle)`. With the burger in the header that is the header row (correct:
-`[inert]=15`, `main` inert, mega trigger inert). With the burger inside
-`.entry-content` the skipped child is `main` itself, so the **whole page body stays
-focusable** while the drawer is open (`megaTriggerInert=false`, `mainInert=false`,
-and row 27's focus attempt succeeds). On the canary today every real burger is in
-the header, so this is not a live defect — but it is a real property of the
-mechanism and it is worth a guard or a documented constraint before anyone ships a
-non-modal drawer opened from an in-content trigger.
+**B. A drawer whose trigger lives in the page CONTENT leaves `main` live under non-modal.** `freezeBackground()` skips any body/`.wp-site-blocks` child that `contains(toggle)`. With the burger in the header that is the header row (correct: `[inert]=15`, `main` inert, mega trigger inert). With the burger inside `.entry-content` the skipped child is `main` itself, so the **whole page body stays focusable** while the drawer is open (`megaTriggerInert=false`, `mainInert=false`, and row 27's focus attempt succeeds). On the canary today every real burger is in the header, so this is not a live defect — but it is a real property of the mechanism and it is worth a guard or a documented constraint before anyone ships a non-modal drawer opened from an in-content trigger.
 
-**C. Observation for the owner's eye, not a verdict.** The trigger-anchored drawer
-on fixture 3699 renders with a **negative left edge**: rect `x=-376,y=475,w=420`
-at 1440 and `x=-256,y=643,w=300` at 375 — most of the panel is off-viewport. The
-geometry comes from `--sgs-drawer-trigger-top/right` computed from the trigger's
-rect, and the fixture's burger sits at the left of a full-width bar low in the
-page. Whether that is correct anchoring behaviour or a clamp that is missing is a
-design question, outside this probe's scope. It is flagged because it **silently
-made an earlier pass of the inside-click control vacuous** (the click landed at
-`x=-166`, off-screen, so nothing was clicked and the dialog "stayed open"); the
-probe now intersects the rect with the viewport and emits NOT RUN when the
-intersection is unclickable.
+**C. Observation for the owner's eye, not a verdict.** The trigger-anchored drawer on fixture 3699 renders with a **negative left edge**: rect `x=-376,y=475,w=420` at 1440 and `x=-256,y=643,w=300` at 375 — most of the panel is off-viewport. The geometry comes from `--sgs-drawer-trigger-top/right` computed from the trigger's rect, and the fixture's burger sits at the left of a full-width bar low in the page. Whether that is correct anchoring behaviour or a clamp that is missing is a design question, outside this probe's scope. It is flagged because it **silently made an earlier pass of the inside-click control vacuous** (the click landed at `x=-166`, off-screen, so nothing was clicked and the dialog "stayed open"); the probe now intersects the rect with the viewport and emits NOT RUN when the intersection is unclickable.
 
-**D. Not a product finding — a probe trap now documented.** The mega panel
-**reparents to `<body>`** when it opens, exactly as the drawer does. A
-content-scoped panel selector matches before the open and `null` after it, which
-reads as "the mega failed to open" on a mega that opened perfectly. Resolve the
-panel by the trigger's `aria-controls` id. Written into the nav-qa README.
+**D. Not a product finding — a probe trap now documented.** The mega panel **reparents to `<body>`** when it opens, exactly as the drawer does. A content-scoped panel selector matches before the open and `null` after it, which reads as "the mega failed to open" on a mega that opened perfectly. Resolve the panel by the trigger's `aria-controls` id. Written into the nav-qa README.
 
 ## What this does NOT claim
 
-- **No visual fidelity claim.** Nothing here says the drawer or the mega *looks*
-  right; that is Bean's eye (R-31-13).
-- **The mega panel measured `w≈50, h≈1242` once reparented** on these two-bar
-  fixtures. That number is recorded as context for the height/visibility reads, not
-  asserted as correct layout; it needs its own look.
-- **axe was not run** in this pass — this probe is keyboard, focus and state only.
-  `axe-run.mjs` remains the accessibility gate.
+- **No visual fidelity claim.** Nothing here says the drawer or the mega *looks* right; that is Bean's eye (R-31-13).
+- **The mega panel measured `w≈50, h≈1242` once reparented** on these two-bar fixtures. That number is recorded as context for the height/visibility reads, not asserted as correct layout; it needs its own look.
+- **axe was not run** in this pass — this probe is keyboard, focus and state only. `axe-run.mjs` remains the accessibility gate.

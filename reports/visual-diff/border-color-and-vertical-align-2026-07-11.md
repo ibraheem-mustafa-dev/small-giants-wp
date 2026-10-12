@@ -14,6 +14,7 @@ Live page 8 (sandybrown), fresh clone `mamas-munches-homepage-2026-07-11-121523`
 **Fix:** `converter/services/root_supports.py` — emit `style.border.color` as a DIRECT `var(--wp--preset--color--{slug})` instead of the `var:preset|color|{slug}` preset reference (WP 7.0.1 style engine drops the latter for shorthand border-color — no `css_vars`).
 
 LANDED (computed border-top-color, was `rgb(58,46,38)` dark on all):
+
 | Element | Before | After | Draft target |
 |---|---|---|---|
 | featured product card | rgb(58,46,38) | **rgb(232,213,192)** ✓ | #E8D5C0 |

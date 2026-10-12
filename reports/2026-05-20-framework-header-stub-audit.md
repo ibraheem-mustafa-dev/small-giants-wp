@@ -1,7 +1,9 @@
 # Framework Header Stub Pattern Audit — 2026-05-20
 
 **Scope:** P-S18-TRANSPARENT-PATTERN-IS-STUB (Branch J, Task J2)
+
 **Auditor:** Subagent, cold start.
+
 **Instruction:** Report only — do NOT delete stub files. Bean decides.
 
 ---

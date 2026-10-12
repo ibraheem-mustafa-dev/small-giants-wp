@@ -70,8 +70,7 @@ Recorded so it is not lost; explicitly NOT in F3-core's done-gate:
 
 ## 6. The F3→F5 contract (frozen)
 
-Per-fixture `_render-oracle/<fixture>.landed.json`:
-`{fixture, generated_by:{module,version}, sections:[{section_id, block_slug, guards:{empty,element,height,non_default}, element_selector, cells:[{property, tier, draft_value, computed_value, expected_default, verdict}]}]}`.
+Per-fixture `_render-oracle/<fixture>.landed.json`: `{fixture, generated_by:{module,version}, sections:[{section_id, block_slug, guards:{empty,element,height,non_default}, element_selector, cells:[{property, tier, draft_value, computed_value, expected_default, verdict}]}]}`.
 - **F5 join key = `(section_id, block_slug, property, tier)`.** `tier` uses F2's vocabulary exactly: `Base|Mobile|Tablet|Desktop|Other:<verbatim-condition>` (so the F2↔F3↔F5 keys line up; non-device breakpoints carry the raw condition both sides).
 - A cell `transferred` in F2/fate but `WRITTEN-not-LANDED` in F3 = hard fail. `LANDED` confirms. `UNVERIFIED`/`NOT-RENDERED`/`GUARD-FAIL` are reported explicitly, never silently counted as LANDED.
 - Plain-English summary alongside the JSON (MF-5 / non-coder QC): e.g. "Section 3 (hero) FAIL: background-color written #2D6A4F but rendered #3A7A5F (not landed). Section 7 (trust-bar) OK."

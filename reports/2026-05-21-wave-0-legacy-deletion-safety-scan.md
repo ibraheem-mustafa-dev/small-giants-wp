@@ -1,6 +1,8 @@
 # Wave 0 Legacy Deletion Safety Scan
 **Date:** 2026-05-21
+
 **Scope:** Pre-deletion coverage check for three legacy files scheduled for Wave 0 removal
+
 **Prepared by:** Automated safety scan (Claude Sonnet 4.6)
 
 ---

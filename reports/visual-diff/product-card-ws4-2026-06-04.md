@@ -1,7 +1,6 @@
 # Visual-diff — sgs/product-card WS-4 composite-mirror (content KIND) — 2026-06-04
 
-verdict: PASS
-first_paint_capture_passed: true
+verdict: PASS first_paint_capture_passed: true
 
 **Change:** WS-4 — product-card's outer element is now rendered by the shared `SGS_Container_Wrapper::render( …, 'content', opts )` across all 5 source-mode branches (typed / null-data / wc read-only / wc-product variable [the configurator] / wc-product non-variable). Each branch buffers ONLY its interior (`ob_start` after the wrapper point, `ob_get_clean` before the helper echo, no `return` in between); the block's own classes ride via `extra_classes`/`block_class`; the two Bound branches carry the configurator's `data-wp-interactive` + `data-wp-init` + `data-wp-context` (= `wp_json_encode($context)`) via `extra_attrs` so they land on the SAME wrapper element `get_block_wrapper_attributes()` controls. block.json v1.6.6 → 1.7.0 (+8 content-KIND width attrs); edit.js gains `ContainerWrapperControls kind="content"`.
 

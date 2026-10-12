@@ -1,7 +1,6 @@
 # Visual-diff — sgs/product-card shared-store island fallback (Spec 30 Step 10a, D218) — 2026-06-12
 
-verdict: PASS
-first_paint_capture_passed: true
+verdict: PASS first_paint_capture_passed: true
 
 **Change:** NON-VISUAL. `product-card/view.js` only — an additive gallery data-island fallback inside `applyPillSelection` (reads `script.sgs-buybox-galleries` from the cardRef when a seeded combo gallery has <2 images) + a `galleryIslandByRef` WeakMap. `product-card/block.json` version bump 1.16.7→1.16.8 (cache-bust for the shared view module). **No render.php / save.js / style.css / save-output change** — the product-card's rendered first paint is byte-identical.
 

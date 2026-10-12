@@ -20,8 +20,7 @@ All in `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`, one function (`ma
 
 1. Stage -2 (dc-import resolution): `_draft_dir = args.mockup.parent` is captured, then `resolve_dc_imports(...)` runs. If it resolved at least one `<dc-import>` (`_dc_count` truthy), it writes `run_dir / "dc-import-resolved.html"` and **reassigns `args.mockup`** to that file.
 2. Stage -1.5 (opt-in `--resolve-js-content`): same pattern, may reassign `args.mockup` again to `run_dir / "js-content-resolved.html"`.
-3. Stage 11.6 (block starting `# Stage 11.6 — computed-parity`, variable `cp_proc`): runs
-   `node computed-parity.js --draft str(args.mockup.resolve()) --clone <link= URL from Stage 10> --viewports 375,768,1440 --out run_dir/computed-parity.json`.
+3. Stage 11.6 (block starting `# Stage 11.6 — computed-parity`, variable `cp_proc`): runs `node computed-parity.js --draft str(args.mockup.resolve()) --clone <link= URL from Stage 10> --viewports 375,768,1440 --out run_dir/computed-parity.json`.
 4. In `plugins/sgs-blocks/scripts/parity/computed-parity.js`, the helper `toURL` leaves `http(s)://` values alone and turns anything else into a `file://` URL via `pathToFileURL(path.resolve(s))`.
 
 So the draft side is always `args.mockup` as it stands at Stage 11.6, opened as `file://`.

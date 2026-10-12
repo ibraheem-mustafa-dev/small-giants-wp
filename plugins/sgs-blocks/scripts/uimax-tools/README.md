@@ -42,11 +42,7 @@ Stage 3: sgs-update-uimax-sync.py --stage 3
 Stage 4: sgs-update-uimax-sync.py --stage 4 (animations gap-candidate report — dormant; sgs-framework.db animations table retired Step 6b)
 ```
 
-**Architecture invariant: DB is canonical, CSVs are regenerated mirrors.** Any future
-write to the uimax DB (whether from `/uimax-*` skills, `/sgs-clone` Stage 9 +REGISTER,
-or any new Python writer) MUST be followed by `update-db.py regenerate-csvs` so the
-CSV layer stays in sync. Don't write directly to CSVs — they will be overwritten on the
-next regen pass.
+**Architecture invariant: DB is canonical, CSVs are regenerated mirrors.** Any future write to the uimax DB (whether from `/uimax-*` skills, `/sgs-clone` Stage 9 +REGISTER, or any new Python writer) MUST be followed by `update-db.py regenerate-csvs` so the CSV layer stays in sync. Don't write directly to CSVs — they will be overwritten on the next regen pass.
 
 ## Captured 2026-05-10
 

@@ -1,11 +1,6 @@
 # Live verification: header colour follows the section, and the direction restyle (Wave 3C U-13, M-04 and M-03), 2026-09-26
 
-verdict: PASS
-intent_capture_passed: true
-source_commits: 0844bb1cf, 97b7df3a1, 93196a939, 31c2ed4c5, 51d80ff73 (U-13 build, see plan §4 U-13)
-source_sha: not computed; U-13 changed `src/header-behaviours/view.js` and `includes/class-sgs-header-behaviours.php` beside the block directories.
-design: `.claude/reports/2026-09-26-u13-header-ink-design.md`
-blocks: sgs/site-header (`sectionInk`, `inkOnLight`, `inkOnDark`, `fillOnLight`, `fillOnDark`, `scrolledTrigger`, `scrolledOffset`), sgs/nav-bar-menu links following the ink
+verdict: PASS intent_capture_passed: true source_commits: 0844bb1cf, 97b7df3a1, 93196a939, 31c2ed4c5, 51d80ff73 (U-13 build, see plan §4 U-13) source_sha: not computed; U-13 changed `src/header-behaviours/view.js` and `includes/class-sgs-header-behaviours.php` beside the block directories. design: `.claude/reports/2026-09-26-u13-header-ink-design.md` blocks: sgs/site-header (`sectionInk`, `inkOnLight`, `inkOnDark`, `fillOnLight`, `fillOnDark`, `scrolledTrigger`, `scrolledOffset`), sgs/nav-bar-menu links following the ink
 
 ## Environment and method
 - Site: sandybrown, repo at 84f04635e. Fixture `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php` cases `section-ink`, `section-ink-off` and `direction-fade` on test header 3777 over page `/qa-section-ink/` (light, dark, photo attachment 3459, a plain dark `core/group`, light again), applied, measured and restored to `two-bar` in one trapped command (`plugins/sgs-blocks/scripts/nav-qa/README.md` §11). Restore exit 0.

@@ -29,6 +29,7 @@ SGS is a standalone WordPress block framework and AI website-builder: theme + bl
 - Per-client tokens live in `sites/<client>/theme-snapshot.json` (Spec 32 Part C), deployed with `push-theme-snapshot.py`; `theme/sgs-theme/styles/` stays empty.
 - No client or reference-site name in code or file names outside `sites/<client>/` and `reference/` (docs, tests, fixtures and dated reports may carry them): `python scripts/check-no-client-names.py --check`, rules at the top of the script.
 - Naming (full rules: Spec 00): `.sgs-` BEM (`.sgs-<block>__<element>--<modifier>`), block namespace `sgs/`, PHP namespaces `SGS\…`, hook prefix `sgs_`, options `sgs_*`. UK English everywhere.
+- Markdown is never hard-wrapped: each paragraph and list item is one line. The git pre-commit hook refuses a wrapped `.md`; `python scripts/check-md-wrap.py --write <file>` fixes it.
 - A change to the sgs-booking REST API also updates `.claude/specs/03-SGS-BOOKING.md` and `plugins/sgs-booking/CLAUDE.md`.
 
 ## Git

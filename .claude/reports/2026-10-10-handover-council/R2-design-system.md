@@ -1,7 +1,6 @@
 # R2 ledger: the Claude Design "design system" skill output (Indus Foods export)
 
-Export root: `C:\Users\Bean\Projects\small-giants-wp\.claude\Indus-Foods-Claude-Design-Files\` (paths below are relative to it).
-Comparison baseline: `design_handoff_indus_foods_website/README.md` (12,782 bytes, 100 lines), called "handoff README" below. Ground truth for contradictions: `design_handoff_indus_foods_website/Indus Foods Website v2.dc.html` ("the draft"; byte-identical size, 223,543, to the root copy).
+Export root: `C:\Users\Bean\Projects\small-giants-wp\.claude\Indus-Foods-Claude-Design-Files\` (paths below are relative to it). Comparison baseline: `design_handoff_indus_foods_website/README.md` (12,782 bytes, 100 lines), called "handoff README" below. Ground truth for contradictions: `design_handoff_indus_foods_website/Indus Foods Website v2.dc.html` ("the draft"; byte-identical size, 223,543, to the root copy).
 
 ## Slice inventory (20 files, 18,686 bytes in total)
 

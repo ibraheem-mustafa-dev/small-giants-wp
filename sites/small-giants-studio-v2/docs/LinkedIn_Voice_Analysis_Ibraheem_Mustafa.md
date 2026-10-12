@@ -138,19 +138,16 @@
 > "Thanks to Fatima Shaikh for inviting me and Luke Tatchell to Walsall College to speak..." (Post 1)
 
 **Pattern 2: Bold Result/Statement**
-> "From 7 to 100 monthly clicks — and real business impact." (Post 2)
-> "Muslims In Construction just ruined networking for me yesterday." (Post 14)
+> "From 7 to 100 monthly clicks — and real business impact." (Post 2) "Muslims In Construction just ruined networking for me yesterday." (Post 14)
 
 **Pattern 3: Emotion + Story Setup**
-> "Last night I left my at-home creative cave to attend my first Social Circle marketing meetup..." (Post 4)
-> "My first workshop as a founder! 😅" (Post 17)
+> "Last night I left my at-home creative cave to attend my first Social Circle marketing meetup..." (Post 4) "My first workshop as a founder! 😅" (Post 17)
 
 **Pattern 4: Expectation vs. Reality**
 > "Of all the things I expected from a boardroom full of senior leaders... having this much fun wasn't one of them! 😊" (Post 3)
 
 **Pattern 5: Simple Announcement**
-> "🎉 Exciting news." (Post 10)
-> "Exciting news." (Post 10)
+> "🎉 Exciting news." (Post 10) "Exciting news." (Post 10)
 
 ### How I Structure the Middle
 
@@ -171,12 +168,10 @@
 ### How I Close Posts
 
 **Pattern 1: Looking Forward**
-> "Looking forward to coming back to Walsall College in the future..." (Post 1)
-> "Looking forward to seeing where all these new connections lead too InshaAllah! 🚀" (Comment)
+> "Looking forward to coming back to Walsall College in the future..." (Post 1) "Looking forward to seeing where all these new connections lead too InshaAllah! 🚀" (Comment)
 
 **Pattern 2: Values Restatement**
-> "When the right audience finds the right business, everybody wins. 🤝" (Post 2)
-> "And MIC is full of them! 🏆" (Post 14)
+> "When the right audience finds the right business, everybody wins. 🤝" (Post 2) "And MIC is full of them! 🏆" (Post 14)
 
 **Pattern 3: Community Call-Out**
 > "Calling 5 out: Umor Faruq, Zak Idriss, Eesa Khan, Walid Ahmed, Hamza Rashid!" (Post 16)

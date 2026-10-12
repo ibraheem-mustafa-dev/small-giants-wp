@@ -1,7 +1,9 @@
 # WebGL adoption research — cursor/fluid effects for the SGS motion doctrine
 
 **Date:** 2026-08-02
+
 **Method:** research-buddies (The Nerd + The Practical One), run inline after a background-agent handoff failed to resume automatically — see note at the bottom.
+
 **Question:** A QC council found Bean's cursor-field effect (CSS custom properties → `background-image`/`mask-image`) cannot do velocity-driven pixel warping. Award-tier cursor/fluid effects need WebGL/GLSL shaders. What does adopting WebGL actually entail — for a non-coder running an AI-assisted, npm-bundled, no-CDN WordPress block framework?
 
 **Bottom line up front:** Adopt WebGL as a **narrow, single-purpose exception** — not a new capability class. Use **OGL** (34 KB gzipped), not three.js (182 KB — already over your whole JS budget on its own). Treat it as an **extension of Tier G**, not a new tier, because GSAP already drives shader uniforms in the wild (Codrops has a whole tutorial on exactly this). It **cannot be cloned** from computed CSS — a shader has no computed-style representation — so it must become a new DB-declared block capability the draft signals explicitly (an SGS-BEM modifier class), not something the walker infers. First step to prove or kill it: **45 minutes**, no framework code touched (see §7).

@@ -3,8 +3,7 @@
 Policy: https://developers.google.com/maps/documentation/places/web-service/policies (logo or text "Google Maps" 16-19dp with clear space; author avatar/name/profile link; each review reachable on Google Maps via `googleMapsUri`). Place Details (New) is a GET; `authorAttribution{displayName,uri,photoUri}` and each review's `googleMapsUri` arrive inside `reviews`; the place `googleMapsUri` needs its own FieldMask entry.
 
 ## Status
-Done. Built, tested, deployed and measured live on eye-care-test and sandybrown (deploys at `b70e3688d`).
-Not verifiable live: the author profile link and the per-review and place "View on Google Maps" links. Neither test site has a Google API key, so its reviews are inline data with no links. The PHP render tests cover them.
+Done. Built, tested, deployed and measured live on eye-care-test and sandybrown (deploys at `b70e3688d`). Not verifiable live: the author profile link and the per-review and place "View on Google Maps" links. Neither test site has a Google API key, so its reviews are inline data with no links. The PHP render tests cover them.
 
 ## As built (all in `plugins/sgs-blocks`)
 - **Logo:** the Google Maps logo in Google's own colours (`assets/google-maps-logo-colour.png`, 262x48, supplied by Bean from Google Maps; Google's attribution pack has only monochrome files and says not to modify them, a risk Bean accepted) on a light ground, and Google's white official file (`assets/google-maps-logo-light.svg`) on a dark one, on every variant at a fixed 98x18 box that cannot shrink. `logoSize`, `logoOpacity`, `showAvatar` and `showGoogleLogo` are removed.

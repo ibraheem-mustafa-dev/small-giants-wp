@@ -9,38 +9,28 @@ date: 2026-09-26
 # Choice flow: Continue model, visual summary, option images, guided buybox
 
 **Status (2026-09-26): DONE.** Every wave is built, live on sandybrown and eye-care-test, and QA'd.
-- **Commits:** 60bde4b0a (the wave), 1d5071b4c, 03e5c1a33, 74e6546a9 (showcase fixes against the draft),
-  5c17a44d0 (answer-row fix, guided unchosen start, flow opener label); close-out f6da8fc09, f26c23146, 84c6fc505.
-- **Eye Care:** the lens configurator runs the showcase layout (post 463, `gen_lens_configurator.py`). Draft compared
-  at 1440, 768 and 375; six differences found and fixed in 74e6546a9. The £268 path, cart rows and Buy now to
-  checkout are proven. The draft is also hosted at mintcream-lyrebird-224487.hostingersite.com.
+- **Commits:** 60bde4b0a (the wave), 1d5071b4c, 03e5c1a33, 74e6546a9 (showcase fixes against the draft), 5c17a44d0 (answer-row fix, guided unchosen start, flow opener label); close-out f6da8fc09, f26c23146, 84c6fc505.
+- **Eye Care:** the lens configurator runs the showcase layout (post 463, `gen_lens_configurator.py`). Draft compared at 1440, 768 and 375; six differences found and fixed in 74e6546a9. The £268 path, cart rows and Buy now to checkout are proven. The draft is also hosted at mintcream-lyrebird-224487.hostingersite.com.
 - **Mama's (sandybrown):**
   - A: showcase flow 4008 on page 4012
   - B: product 3990 links flow 4010 (`_sgs_choice_flow`); per-product template 4014 deleted
   - C: guided buybox page 4083
   - prices 8, 20 and 40 at £9.50, £21.50 and £38.00; seven terms have swatch photos
 - **Found and fixed:**
-  - Answer rows were lost when a shopper re-tapped a pre-selected default. Proven by reproduction; fixed in
-    `flow-fields.js` and on Continue.
+  - Answer rows were lost when a shopper re-tapped a pre-selected default. Proven by reproduction; fixed in `flow-fields.js` and on Continue.
   - Guided groups started "chosen" because option-picker selects its first option by default (`requireChoice`).
   - A bare `layout` attribute collided with WordPress's layout support (now `flowLayout` / `buyboxLayout`).
   - Two panel names collided in the shared component map (now `FlowLayoutPanel` / `FlowNavigationPanel`).
 
 **Close-out (2026-09-26):**
-- Eye Care: `summaryBaseLabel` "Frame" and `closeStyle` "text" set; post 463 rebuilt (invalid [], no drift) and
-  compared with the draft at 1440, 768 and 375. The one structural difference was a second, round Close from the
-  popup itself; a flow's header Close now hides it (f26c23146). Accepted difference: the draft advances on tap at
-  step 1; the flow shows Continue on every step (D1).
+- Eye Care: `summaryBaseLabel` "Frame" and `closeStyle` "text" set; post 463 rebuilt (invalid [], no drift) and compared with the draft at 1440, 768 and 375. The one structural difference was a second, round Close from the popup itself; a flow's header Close now hides it (f26c23146). Accepted difference: the draft advances on tap at step 1; the flow shows Continue on every step (D1).
 - Mama's: flow 4010's `openerLabel` "Choose your flavours" drives product 3990's buybox button (f6da8fc09).
 - Batched QA, 1440 and 375 (evidence in `c:\tmp\qa-choiceflow-v180\` and `c:\tmp\qa-guided-probe\`):
   - journeys A, B and C reach the cart with every answer row, including a re-tapped default
   - Continue muted, early-press hint, then active; Add to basket and Buy now (to /checkout/)
-  - C's finish-choosing guard names the unchosen groups; it now also moves focus to the first one (84c6fc505; it
-    returned early when that group was already showing)
-  - editor round trips pass for every new setting: no invalid-content notice, values persist, the frontend follows.
-    `requireChoice` and `showTermDetails` were proven on a temporary page, deleted afterwards
-  - the Eye Care £268 path: one line at £268 with "Options: Thin · 1.6 · Distance · Polarised" and "Your
-    prescription: Send it later"
+  - C's finish-choosing guard names the unchosen groups; it now also moves focus to the first one (84c6fc505; it returned early when that group was already showing)
+  - editor round trips pass for every new setting: no invalid-content notice, values persist, the frontend follows. `requireChoice` and `showTermDetails` were proven on a temporary page, deleted afterwards
+  - the Eye Care £268 path: one line at £268 with "Options: Thin · 1.6 · Distance · Polarised" and "Your prescription: Send it later"
 - Next: Phase 5 of `2026-09-14-spec42-43-form-choiceflow-phase-plan.md`, in a fresh session.
 
 **Why:** Bean's review of the live Mama's journeys (2026-09-26). The flow works but reads as a quiz, not a shop:
@@ -50,12 +40,9 @@ date: 2026-09-26
 - Close is ugly
 - step titles are weak
 
-Bean also proposed building the flow into the buybox itself. The Eye Care draft's side panel (frame photo plus a
-running list of choices) is the same "show the finished product" feature and closes the lens-flow visual gap.
+Bean also proposed building the flow into the buybox itself. The Eye Care draft's side panel (frame photo plus a running list of choices) is the same "show the finished product" feature and closes the lens-flow visual gap.
 
-**Scope rule:** this track builds choice-flow capability. Client follow-ups are out of scope (memory:
-choice-flow-track-scope-is-functionality-only). Phase 5 of the form/choice-flow plan runs in a fresh session after
-this plan is clear.
+**Scope rule:** this track builds choice-flow capability. Client follow-ups are out of scope (memory: choice-flow-track-scope-is-functionality-only). Phase 5 of the form/choice-flow plan runs in a fresh session after this plan is clear.
 
 ## Decisions (made; say if any is wrong)
 
@@ -77,8 +64,7 @@ this plan is clear.
 | D12 | **Architecture (Spec 43 FR-43-25, Bean 2026-09-26).** The saved flow owns content and look (layout chosen on the flow, no per-placement overrides). Any purchasable product can link a flow, and its buybox then renders the popup and opener itself. The guided buybox stays product-options-only, with term-level image, badge and description plus buybox-level styling of its peripherals. | "Saved flow only"; "Product setting, buybox auto-wires"; "keep them separate". |
 
 ## Orchestration
-The main thread owns contracts, wiring, review, build, deploy and design judgement. Sonnet agents write code in
-parallel on file sets that don't overlap. There is one build and deploy per wave, and one batched QA pass per wave.
+The main thread owns contracts, wiring, review, build, deploy and design judgement. Sonnet agents write code in parallel on file sets that don't overlap. There is one build and deploy per wave, and one batched QA pass per wave.
 
 ## Wave 1: flow UX (four agents in parallel, about 20 min)
 | Agent | Owns | Delivers |
@@ -88,47 +74,37 @@ parallel on file sets that don't overlap. There is one build and deploy per wave
 | C: Options, titles, Close | `choice-flow-question/{render.php,style.css,block.json}`, `includes/choice-flow-product-attribute-step.php`, `includes/choice-flow-chrome.php`, `choice-flow/chrome.js` | D5, D6, D7, and D9's editor notice (in a new `choice-flow-question/VariationCoverageNotice.js`). |
 | D: Mama's option images (data only) | sandybrown media library + term meta | Find suitable existing photos for each Flavour, Topping, Dietary and Pack term and set `_sgs_swatch_image_id`; report any term with no suitable photo. |
 
-In parallel, the main thread runs the **D10 design gate**: load `/frontend-design`, name a direction, decide how the
-guided buybox reuses the flow's progress meter, footer and answer rows (a buybox layout, not an embedded flow), and
-write the design into Spec 43 as FR-43-23 before Wave 2.
+In parallel, the main thread runs the **D10 design gate**: load `/frontend-design`, name a direction, decide how the guided buybox reuses the flow's progress meter, footer and answer rows (a buybox layout, not an embedded flow), and write the design into Spec 43 as FR-43-23 before Wave 2.
 
 ## Wave 1.5: showcase layout (one agent, after Wave 1 lands, about 20 min)
 The main thread wires Wave 1 first. One agent then owns FR-43-24 on top of it: the root `flowLayout` setting, the frame and body grid CSS, the stage (extending Wave 1's summary panel), the question `intro` attribute, the large option-card styling and the narrow-container collapse.
 
-**Reference build: the Eye Care lens flow** (Bean, 2026-09-26: cloning it faithfully establishes the showcase layout
-and closes the lens-flow gap in one step).
+**Reference build: the Eye Care lens flow** (Bean, 2026-09-26: cloning it faithfully establishes the showcase layout and closes the lens-flow gap in one step).
 - The agent builds the showcase against the draft's `lensOpen` dialog.
 - It applies the layout to the Eye Care configurator (post 463).
-- Acceptance is the draft beside the live flow at 1440, 768 and 375, compared in screenshots with the differences
-  listed. It is not done while a structural difference remains.
+- Acceptance is the draft beside the live flow at 1440, 768 and 375, compared in screenshots with the differences listed. It is not done while a structural difference remains.
 - Mama's full-screen journeys then inherit the proven layout; only their content differs.
 
 ## Wave 2: guided buybox (one agent, running alongside Wave 1)
-- **E: server and editor** (`buybox/block.json`, a new `includes/buybox-guided.php`, a new `buybox/GuidedPanel.js`): the
-  `layout: guided` setting, groups from the manifest axes plus the product's non-variation attributes, and defaults.
-- **F: client** (a new `buybox/guided.js` and `buybox` style): one group at a time, Next / Back, the progress meter, the
-  finish-choosing guard, and answer rows sent as `fields` on the existing add-to-cart call.
+- **E: server and editor** (`buybox/block.json`, a new `includes/buybox-guided.php`, a new `buybox/GuidedPanel.js`): the `layout: guided` setting, groups from the manifest axes plus the product's non-variation attributes, and defaults.
+- **F: client** (a new `buybox/guided.js` and `buybox` style): one group at a time, Next / Back, the progress meter, the finish-choosing guard, and answer rows sent as `fields` on the existing add-to-cart call.
 
 ## Wave 2b: architecture (two agents in parallel with Wave 1.5, about 20 min)
 - **G: product link and buybox wiring.**
   - The product-screen "Customisation flow" picker (product meta `_sgs_choice_flow`, simple and variable products).
-  - The buybox: with a linked flow, it renders its opener plus a full-screen `sgs/modal` holding the flow (reusing
-    FR-43-22's opener and the linked-flow render).
+  - The buybox: with a linked flow, it renders its opener plus a full-screen `sgs/modal` holding the flow (reusing FR-43-22's opener and the linked-flow render).
   - The Choice Flows list gets a "Used by N products" column.
 - **H: term fields and guided peripherals.**
-  - Badge and description fields on attribute terms (`configurator-term-fields.php`), read by `sgs/option-picker`
-    (standard and guided buybox) and as the fallback for flow product-option steps.
+  - Badge and description fields on attribute terms (`configurator-term-fields.php`), read by `sgs/option-picker` (standard and guided buybox) and as the fallback for flow product-option steps.
   - The guided buybox's peripheral settings: button wording and style, meter style and colour.
   - The guided buybox takes its default from the product's default attributes.
 
 ## Wave 3: apply and prove (about 20 min)
 - **Mama's:**
   - Journey A (full flow with the summary and images)
-  - Journey B (pack on the page, flow for the rest), rebuilt on the product link; the per-product template
-    `single-product-classic-lactation-cookies` is deleted
+  - Journey B (pack on the page, flow for the rest), rebuilt on the product link; the per-product template `single-product-classic-lactation-cookies` is deleted
   - Journey C: product 3990's page with the guided buybox
-- **Eye Care:** the lens configurator with the summary panel as the draft's left aside, compared with the draft at
-  1440, 768 and 375 (this closes the lens-flow visual clone).
+- **Eye Care:** the lens configurator with the summary panel as the draft's left aside, compared with the draft at 1440, 768 and 375 (this closes the lens-flow visual clone).
 - **One batched QA pass:**
   - every journey at 1440 and 375
   - the Continue button muted then active, and its early-press hint

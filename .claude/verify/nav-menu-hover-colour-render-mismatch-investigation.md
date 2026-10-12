@@ -1,7 +1,9 @@
 # Investigation: nav-menu hover-colour full-page vs isolated `do_blocks()` mismatch
 
 **Date:** 2026-09-13
+
 **Trigger:** an aside from another agent during M2 (chevron-hover propagation) verification — not a confirmed repro, flagged for follow-up only.
+
 **Method:** systematic-debugging (Iron Law — no fix without proven cause). Investigation only, no code changes.
 
 ## Claim under test
@@ -13,8 +15,7 @@
 Checked the only live canary (sandybrown-nightingale-600381.hostingersite.com) for a real instance to test against:
 
 - `wp post list --post_type=wp_template_part` → exactly one template part, `Header` (post 2671).
-- `wp post get 2671 --field=post_content` → exactly **one** `wp:sgs/nav-menu` block on the whole site:
-  `wp:sgs/nav-menu {"gap":"28px","itemColour":"text"}`
+- `wp post get 2671 --field=post_content` → exactly **one** `wp:sgs/nav-menu` block on the whole site: `wp:sgs/nav-menu {"gap":"28px","itemColour":"text"}`
 - `itemColourHover` is **absent** from this instance's stored attrs (i.e. it is running on the FR-41-36 default path, `'accent'`, per `nav-menu-css.php::sgs_nav_menu_item_state_css()` lines 269-283 — see below), not an explicit non-default value.
 - No second `sgs/nav-menu` instance (drawer/footer) exists as a separately-stored block on this site — the "page has two instances" scenario the render.php docblock warns about (`function_exists()` guard comment, `render.php` top-of-file) is a real *possible* page shape but is **not the current canary's shape**.
 
@@ -24,22 +25,18 @@ Checked the only live canary (sandybrown-nightingale-600381.hostingersite.com) f
 
 Traced every candidate path-dependent mechanism named in the brief:
 
-**(a) Hooks/filters fired before resolution — none found that touch colour resolution.**
-`sgs_nav_menu_resolved_treatments()` (`plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_menu_resolved_treatments`) is a pure function: it reads `$attributes` (merged with `WP_Block_Type_Registry::get_instance()->get_registered('sgs/nav-menu')->attributes[...]['default']` for anything absent), evaluates `sgs_nav_menu_sweep_eligible()`, and returns a plain array. No filter/hook fires between "attribute arrives" and "treatment resolved" in either render path — this function is called directly from `render.php` line 809, not hooked.
+**(a) Hooks/filters fired before resolution — none found that touch colour resolution.** `sgs_nav_menu_resolved_treatments()` (`plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_menu_resolved_treatments`) is a pure function: it reads `$attributes` (merged with `WP_Block_Type_Registry::get_instance()->get_registered('sgs/nav-menu')->attributes[...]['default']` for anything absent), evaluates `sgs_nav_menu_sweep_eligible()`, and returns a plain array. No filter/hook fires between "attribute arrives" and "treatment resolved" in either render path — this function is called directly from `render.php` line 809, not hooked.
 
-**(b) Repeated-instance state leak — no `static` state exists anywhere in the colour path.**
-Grepped every `static $var` / persistent state across `render.php`, `nav-menu-css.php`, `nav-menu-markup.php`, `nav-menu-treatments.php`, `nav-menu-submenu-css.php`, `nav-menu-trigger-css.php`. Found only:
+**(b) Repeated-instance state leak — no `static` state exists anywhere in the colour path.** Grepped every `static $var` / persistent state across `render.php`, `nav-menu-css.php`, `nav-menu-markup.php`, `nav-menu-treatments.php`, `nav-menu-submenu-css.php`, `nav-menu-trigger-css.php`. Found only:
 - Two `static function(...)` closures in `nav-menu-css.php` (`$sgs_nm_hex`, `$smart_fg`, lines 180/291) — these are `static` in the OOP-binding sense (no `$this`), re-created fresh on every call, not persistent state.
 - `sgs_css_is_writable()` in `class-sgs-css-registry.php` (line 322-330) caches a boolean (`$writable`) across the request — this governs whether the consolidated-CSS *file* write is attempted, entirely unrelated to which colour value is computed.
 - No `static` variable anywhere caches a resolved colour, a resolved treatment, or an attribute value across block instances.
 
 The `class-sgs-css-registry.php` collector (`sgs_lift_block_css` / `sgs_collect_css`) dedupes by `md5()` of the **finished CSS string**, and since every rule is scoped to `.{uid}` (a per-instance selector), two instances with different attributes produce different CSS strings and different hash keys — this collector cannot make one instance's resolved colour leak into another's.
 
-**(c) Object cache / transients — none exist in this path.**
-No `wp_cache_get/set`, `get_transient/set_transient`, or `wp_options` read specific to per-item resolved treatments/colours anywhere in `nav-menu-treatments.php` or `nav-menu-css.php`. The only options read in the whole nav-menu CSS chain are the CSS-output-mode/epoch options in `class-sgs-css-registry.php`, which govern *where* the consolidated CSS is placed (file vs inline `<style>`), not its *content*.
+**(c) Object cache / transients — none exist in this path.** No `wp_cache_get/set`, `get_transient/set_transient`, or `wp_options` read specific to per-item resolved treatments/colours anywhere in `nav-menu-treatments.php` or `nav-menu-css.php`. The only options read in the whole nav-menu CSS chain are the CSS-output-mode/epoch options in `class-sgs-css-registry.php`, which govern *where* the consolidated CSS is placed (file vs inline `<style>`), not its *content*.
 
-**(d) Attribute-resolution order / wrong source — checked, found no divergence.**
-`itemColourHover`'s schema (`block.json` line 447-450) is `{"type":"string","default":""}` — a plain string with no `enum`, so it is not subject to the documented `blockjson-enum-coerces-invalid-to-default` WP-core gotcha (that fires only for `enum`-typed or object-typed attributes; this project's own memory file records exactly that class of bug elsewhere, but it requires an `enum` or object schema, which this attribute does not have). `WP_Block`'s attribute-default-fill runs identically whether the block is instantiated via a full-page `parse_blocks()` → `render_block()` walk or via a script calling `do_blocks()`/`render_block()` directly — both paths go through the same `WP_Block` constructor and the same registered `WP_Block_Type_Registry` entry, which is populated once at `init` regardless of which entry point triggered `init`.
+**(d) Attribute-resolution order / wrong source — checked, found no divergence.** `itemColourHover`'s schema (`block.json` line 447-450) is `{"type":"string","default":""}` — a plain string with no `enum`, so it is not subject to the documented `blockjson-enum-coerces-invalid-to-default` WP-core gotcha (that fires only for `enum`-typed or object-typed attributes; this project's own memory file records exactly that class of bug elsewhere, but it requires an `enum` or object schema, which this attribute does not have). `WP_Block`'s attribute-default-fill runs identically whether the block is instantiated via a full-page `parse_blocks()` → `render_block()` walk or via a script calling `do_blocks()`/`render_block()` directly — both paths go through the same `WP_Block` constructor and the same registered `WP_Block_Type_Registry` entry, which is populated once at `init` regardless of which entry point triggered `init`.
 
 ## What WOULD produce "explicit value looks discarded" (a live-verifiable alternative, not yet ruled in or out)
 

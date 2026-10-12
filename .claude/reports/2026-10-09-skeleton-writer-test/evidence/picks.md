@@ -15,5 +15,4 @@
 | 894 | Privacy/Terms wrapper | container | sgs/multi-button (container equal; decider: shared link style) | 0.55 |
 | 895/896 | Privacy / Terms | button | sgs/button, link style, real page URL required | 0.80/0.75 |
 
-Key finding: sgs/button renders a `<button>` when its URL is empty, so the "#" Privacy/Terms links must get a real destination or be hidden.
-Full reasons: picks.json.
+Key finding: sgs/button renders a `<button>` when its URL is empty, so the "#" Privacy/Terms links must get a real destination or be hidden. Full reasons: picks.json.

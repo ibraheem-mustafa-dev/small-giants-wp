@@ -1,8 +1,11 @@
 # Visual diff — Tier W surface treatments (first Tier W effect)
 
 **Date:** 2026-08-21 · **Branch:** `feat/tier-w-surface-treatments`
+
 **Commits:** `af2d7cdf` (build) · `481e6e55` (duotone ramp) · `2ad5d439` (colour fallback)
+
 **Canary:** https://sandybrown-nightingale-600381.hostingersite.com/tier-w-surface-canary/ (page 2591)
+
 **Spec:** 38 §1.2b (Tier W) · D479
 
 > **Written BEFORE the commit that claims it** (STOP-67).
@@ -11,9 +14,7 @@
 
 ## What is on the page
 
-Four `sgs/team-member` instances carrying the **same source photograph**
-(`/wp-content/uploads/2026/08/cookies-stacked-1.jpeg`, attachment 2150), so any visible
-difference is attributable to the treatment and nothing else.
+Four `sgs/team-member` instances carrying the **same source photograph** (`/wp-content/uploads/2026/08/cookies-stacked-1.jpeg`, attachment 2150), so any visible difference is attributable to the treatment and nothing else.
 
 | Instance | Treatment | `data-sgs-webgl-active` | Asset |
 |---|---|---|---|
@@ -22,8 +23,7 @@ difference is attributable to the treatment and nothing else.
 | C | `duotone` | `1` | `assets/tier-w-C-duotone.png` |
 | D | *(none — control)* | absent | `assets/tier-w-D-control.png` |
 
-Full page: `assets/tier-w-surface-desktop-full.png` (1440w) ·
-mobile: `assets/tier-w-surface-mobile.png` (375×812).
+Full page: `assets/tier-w-surface-desktop-full.png` (1440w) · mobile: `assets/tier-w-surface-mobile.png` (375×812).
 
 ---
 
@@ -31,15 +31,10 @@ mobile: `assets/tier-w-surface-mobile.png` (375×812).
 
 R-31-13 is co-authoritative: the numbers below do not close this on their own.
 
-- **B (halftone)** is the strongest result — a genuine editorial dot-screen. This is the
-  register's *"makes stock photography look art-directed"* claim, rendered.
-- **A (grain)** is deliberately subtle at the default `uIntensity` 0.08 — film grain plus a
-  slight contrast lift. Judge whether the default should be stronger out of the box.
-- **C (duotone)** now maps navy shadow → cream highlight. **Compare against the two earlier
-  captures in this session's history if you want to see why it changed** — it was muddy
-  brown until two defects were fixed (below).
-- **D (control)** must look exactly like an ordinary photo. If it does not, the effect is
-  leaking onto untreated blocks.
+- **B (halftone)** is the strongest result — a genuine editorial dot-screen. This is the register's *"makes stock photography look art-directed"* claim, rendered.
+- **A (grain)** is deliberately subtle at the default `uIntensity` 0.08 — film grain plus a slight contrast lift. Judge whether the default should be stronger out of the box.
+- **C (duotone)** now maps navy shadow → cream highlight. **Compare against the two earlier captures in this session's history if you want to see why it changed** — it was muddy brown until two defects were fixed (below).
+- **D (control)** must look exactly like an ordinary photo. If it does not, the effect is leaking onto untreated blocks.
 
 ---
 
@@ -78,9 +73,7 @@ R-31-13 is co-authoritative: the numbers below do not close this on their own.
 | Allowance used | **3.5%** |
 | Headroom | 118,555 bytes |
 
-Recorded in `scripts/motion-bundle-baseline.json`; enforced by
-`check-motion-bundle-budget.py --page-budget tier_w`, whose `--self-test` proves that mode
-can fail.
+Recorded in `scripts/motion-bundle-baseline.json`; enforced by `check-motion-bundle-budget.py --page-budget tier_w`, whose `--self-test` proves that mode can fail.
 
 ### Panel-roster containment (the D459 measurement, repeated)
 
@@ -95,40 +88,21 @@ can fail.
 
 Recorded because the pattern matters more than the fixes.
 
-**1. Duotone rendered muddy brown, not a duotone.** Canvas present, liveness flag set,
-build green, deploy verified — four green signals. The image was wrong.
-*Cause (proven live, not inferred):* `resolveColourVec3()` probed `var(--sgs-fx-shadow)` by
-setting a probe element's `color` and reading it back. With the property unset, CSS treats
-the declaration as invalid-at-computed-value-time and **inherits** rather than failing — so
-the probe returned `rgb(58,46,38)`, byte-identical to the element's inherited colour, the
-regex matched, and the preset-default fallback was **unreachable**. Both duotone colours
-collapsed to the body text colour. Fixed in `2ad5d439` by checking whether the property is
-declared before probing. **This was the DEFAULT path** (pick Duotone, don't choose colours).
+**1. Duotone rendered muddy brown, not a duotone.** Canvas present, liveness flag set, build green, deploy verified — four green signals. The image was wrong.
 
-**2. The duotone ramp was unstretched.** Raw sRGB luminance fed straight into
-`mix(shadow, highlight, lum)` meant a mid-key photograph only reached the bottom third of
-the ramp. Fixed in `481e6e55` with a `smoothstep(0.06, 0.78, lum)`.
+*Cause (proven live, not inferred):* `resolveColourVec3()` probed `var(--sgs-fx-shadow)` by setting a probe element's `color` and reading it back. With the property unset, CSS treats the declaration as invalid-at-computed-value-time and **inherits** rather than failing — so the probe returned `rgb(58,46,38)`, byte-identical to the element's inherited colour, the regex matched, and the preset-default fallback was **unreachable**. Both duotone colours collapsed to the body text colour. Fixed in `2ad5d439` by checking whether the property is declared before probing. **This was the DEFAULT path** (pick Duotone, don't choose colours).
 
-**3. The probe's own pixel arms were measuring the instrument.** Arms 1b/2/6 read the
-WebGL canvas back via `drawImage` and always got `[0,0,0,0]`, because the renderer has no
-`preserveDrawingBuffer` (correct for production). They reported FAIL on a working feature.
-Rewritten to compare browser-composited element screenshots with a same-element-twice
-stability control. **The renderer was NOT changed to suit the test.**
+**2. The duotone ramp was unstretched.** Raw sRGB luminance fed straight into `mix(shadow, highlight, lum)` meant a mid-key photograph only reached the bottom third of the ramp. Fixed in `481e6e55` with a `smoothstep(0.06, 0.78, lum)`.
+
+**3. The probe's own pixel arms were measuring the instrument.** Arms 1b/2/6 read the WebGL canvas back via `drawImage` and always got `[0,0,0,0]`, because the renderer has no `preserveDrawingBuffer` (correct for production). They reported FAIL on a working feature. Rewritten to compare browser-composited element screenshots with a same-element-twice stability control. **The renderer was NOT changed to suit the test.**
 
 ---
 
 ## Known gaps — stated, not hidden
 
-- **Naked-`<img>`-root blocks cannot use the effect.** `sgs/decorative-image` (and any
-  block rendering its image as the block root) is offered the treatment but no-ops, because
-  the boot module looks for a nested `img`. 13 of the 15 offered blocks nest theirs and
-  work. Fixing this needs a re-parent or a wrapper, and `decorative-image`'s responsive
-  tiers use compound selectors on the `<img>` itself — a design decision, not a patch.
-- **`sgs/media` is not offered at all** — it hosts no fx panel, and `creates_panel=0`
-  (correctly) will not create one. The documented escape hatch is
-  `supports.sgs.fx.motionSurface: true` on that block, which is Bean's call.
-- **`sgs/media` and `sgs/decorative-image` both violate a standing project rule**: they
-  render an `<img>` and neither declares `imageControls`. Pre-existing.
+- **Naked-`<img>`-root blocks cannot use the effect.** `sgs/decorative-image` (and any block rendering its image as the block root) is offered the treatment but no-ops, because the boot module looks for a nested `img`. 13 of the 15 offered blocks nest theirs and work. Fixing this needs a re-parent or a wrapper, and `decorative-image`'s responsive tiers use compound selectors on the `<img>` itself — a design decision, not a patch.
+- **`sgs/media` is not offered at all** — it hosts no fx panel, and `creates_panel=0` (correctly) will not create one. The documented escape hatch is `supports.sgs.fx.motionSurface: true` on that block, which is Bean's call.
+- **`sgs/media` and `sgs/decorative-image` both violate a standing project rule**: they render an `<img>` and neither declares `imageControls`. Pre-existing.
 - **Arm 7's primary GPU-tally assertion is unverifiable on a live page** (see table).
 
 ---

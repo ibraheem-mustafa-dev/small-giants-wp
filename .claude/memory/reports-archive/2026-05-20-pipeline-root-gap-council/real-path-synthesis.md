@@ -1,7 +1,9 @@
 # Real Pixel-Diff Path — Council Synthesis (no-cheating)
 
 **Date:** 2026-05-20 close-of-session
+
 **Raters:** A (visible eyeball + Playwright screenshots), B (structural DOM diff), C (pipeline output forensics)
+
 **Question Bean posed:** What truly closes pixel-diff to ≤ 1% per section WITHOUT cheating (i.e. without papering over root causes via piecemeal attribute promotion)?
 
 ## Headline finding

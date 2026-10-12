@@ -1,12 +1,10 @@
 # Draft normalisation council: revised plan (2026-09-20, v2)
 
-Status: done 2026-10-08 - A1 (`faaf79f0d`) and A2 (`3d0117569`) built; A3 to A9 and Tracks B, C and D retired, because Spec 31 sends every script-rendered draft to the Spec 47 computed route, whose `sites/<client>/build/surfaces.json` and block trees carry the page kind, target and collection decisions. Written for Bean; plain English first.
-v1 of this plan misread the brief (it proposed rewriting drafts to Mama's shape and a new normalise stage) and was rejected. This v2 answers what you actually asked, after a five-part council over the real drafts and code.
+Status: done 2026-10-08 - A1 (`faaf79f0d`) and A2 (`3d0117569`) built; A3 to A9 and Tracks B, C and D retired, because Spec 31 sends every script-rendered draft to the Spec 47 computed route, whose `sites/<client>/build/surfaces.json` and block trees carry the page kind, target and collection decisions. Written for Bean; plain English first. v1 of this plan misread the brief (it proposed rewriting drafts to Mama's shape and a new normalise stage) and was rejected. This v2 answers what you actually asked, after a five-part council over the real drafts and code.
 
 ## 1. Your questions, answered
 
-**"Haven't we already built functionality that translates the JS into CSS?"**
-Yes. It exists and works. It is not switched on. The evaluator turns the draft script's own width rules into mobile, tablet and desktop values (75 of 140 names, 0 mismatches against a real render); nothing calls it. So on the live Eye Care page padding is 0px and grids are one column because finished code is not wired in, not because the ability is missing.
+**"Haven't we already built functionality that translates the JS into CSS?"** Yes. It exists and works. It is not switched on. The evaluator turns the draft script's own width rules into mobile, tablet and desktop values (75 of 140 names, 0 mismatches against a real render); nothing calls it. So on the live Eye Care page padding is 0px and grids are one column because finished code is not wired in, not because the ability is missing.
 
 **"What is actually failing, and the true root cause?"** (run `eye-care-ward-end-eye-care-birmingham-2026-09-20-015848`)
 
@@ -26,16 +24,14 @@ Yes. It exists and works. It is not switched on. The evaluator turns the draft s
 5. The width evaluator is an orphan (Group 1).
 6. The 193KB base64 `LOGOS` blob is never uploaded (`media-sideload.py` skips `data:` URIs).
 7. `data-reveal`, `data-rm` motion attributes have no motion reader (`data-rv` count disputed between two counts, 5 vs 0; verify before acting).
-8. `draft-manifest` (handlers, state, overlays) is built but nothing calls it.
-Also read only in part: `ref=` (79), `onClick` (106; presence only), `<helmet>`, README beyond routes, section bullets and colour tables. And about ten blanket `except Exception: pass` blocks sit in the draft-reading path.
+8. `draft-manifest` (handlers, state, overlays) is built but nothing calls it. Also read only in part: `ref=` (79), `onClick` (106; presence only), `<helmet>`, README beyond routes, section bullets and colour tables. And about ten blanket `except Exception: pass` blocks sit in the draft-reading path.
 
 **"Evaluate the README section by section."** About 12 to 15 facts are unique to it and no code reads them (route URL patterns, section order and reuse claims, a few rules such as "zero-reviews state first", "keep trust signals", checkout step count). Code reads only: routes table, bold-named bullets under a screen, colour tables, font bullets, max width and radius. **It is also wrong in places:** Home section order and two missing sections (brand marquee, lens band), nav list, wordmark tracking (.14em not .26em), underline 1px not 2px, FAQ count (8 not 9), navy accent values, Frame Card padding, and it calls the bag a route when it is a drawer. **Consequence: the draft files are the source of truth; the README is a lossy, partly stale summary. Copying it blindly into the files would copy its errors.**
 
 **"Two layers: both Claude Design and a second layer?" Yes, and make the second layer deterministic.** Two AI passes can miss the same thing silently, because both read ambiguous prose. So:
 1. Claude Design writes the facts into the files (the closing prompt Bean gives Claude Design).
 2. A deterministic checker (plain code, no AI) verifies them: every checkable README claim (names, counts, numbers, routes, colours) against the files, every schema rule, and a coverage check that every draft construct has a reader or produces a gap row. It prints an exact list ("README says 9 FAQs, file has 8"), which you paste back to Claude Design or I fix in a reviewed diff.
-3. The pipeline's own gap logging and Stage 11.6 parity against the ORIGINAL draft remain the last net.
-The checker only catches what it has a rule for, so every rule ships with a planted violation that must make it fail, and the ignore audit (above) feeds it new rules.
+3. The pipeline's own gap logging and Stage 11.6 parity against the ORIGINAL draft remain the last net. The checker only catches what it has a rule for, so every rule ships with a planted violation that must make it fail, and the ignore audit (above) feeds it new rules.
 
 ## 1b. Code, README/schema, or ask: the split (decided here, on the evidence; not deferred)
 
@@ -84,8 +80,7 @@ The checker only catches what it has a rule for, so every rule ships with a plan
 - `rules[]`: short behavioural rules that cannot be read from code (e.g. "show the no-reviews strip when a product has zero reviews"), each tagged `clone-relevant` or `note`.
 - Outside the block: an SGS-BEM class on every section root (`sgs-<block>`; existing recogniser, zero new code) and the sections listed in page order; where convenient, width-dependent layout as ordinary `@media` at 768 and 1024, mobile-first (optional, since the evaluator already reads the script's own rules); no `{{ }}` inside a style value (optional for the same reason); no inline base64 (optional).
 - NOT required (code already reads them): datasets and their counts, scope-name kinds, breakpoints, colour and font tokens, site info, links between pages, entity kinds.
-- The README shrinks to intent that has no machine form ("do not paraphrase reviews").
-Not in the standard: `data-slot` (not in Spec 00; Mama's uses none). Lives at `.claude/specs/46-SGS-DRAFT-STANDARD.md` plus the checker at `plugins/sgs-blocks/scripts/draft-standard/`, reading class rules from `scripts/lint-naming-conventions.py` so it cannot drift from Spec 00.
+- The README shrinks to intent that has no machine form ("do not paraphrase reviews"). Not in the standard: `data-slot` (not in Spec 00; Mama's uses none). Lives at `.claude/specs/46-SGS-DRAFT-STANDARD.md` plus the checker at `plugins/sgs-blocks/scripts/draft-standard/`, reading class rules from `scripts/lint-naming-conventions.py` so it cannot drift from Spec 00.
 
 **Track C: layered verification** (the answer to your two-layer question, section 1). Plus one structural gate against silent ignores: a "draft construct coverage" test that lists every construct category in section 1 and asserts each has a reader or emits a gap row, with a negative control (remove a reader, the test must fail). This is the permanent fix for "functions that ignore parts of files".
 
@@ -117,8 +112,7 @@ Kill condition for Track B: if Claude Design ignores the closing prompt in two t
 
 ## 6. Risks against the seven rules (compact)
 
-Rule 1: no classes are generated; standard classes come from Claude Design and are consumed, not mirrored. Rule 2: none introduced. Rule 3: the fallback paths (evaluator, recognisers, guard) keep running on every draft, and both conforming and non-conforming drafts run on both controls each commit. Rule 4: the accounting unit for a classless draft is name x element x property; every unresolved one is logged with a reason; the coverage test makes silent drops fail. Rule 5: every phase closes on the live Eye Care page. Rule 6: values go to tier attributes, never inline. Rule 7: this document is the gate for Track A1; A2's ticker boundary and D each get their own. R-31-11: fidelity stays against the original draft (a small fix for static drafts).
-Earlier-council findings that survive: no generated classes (rejected design option (b)); Mama's is the wrong positive control for a strict breakpoint rule; snapping invents 8px of behaviour at 760 to 767 (probe first); a checker is both instruction and oracle, hence the planted-violation controls; the unproven items (P10 to P14) are tested in Phase 0 and Phase 1.
+Rule 1: no classes are generated; standard classes come from Claude Design and are consumed, not mirrored. Rule 2: none introduced. Rule 3: the fallback paths (evaluator, recognisers, guard) keep running on every draft, and both conforming and non-conforming drafts run on both controls each commit. Rule 4: the accounting unit for a classless draft is name x element x property; every unresolved one is logged with a reason; the coverage test makes silent drops fail. Rule 5: every phase closes on the live Eye Care page. Rule 6: values go to tier attributes, never inline. Rule 7: this document is the gate for Track A1; A2's ticker boundary and D each get their own. R-31-11: fidelity stays against the original draft (a small fix for static drafts). Earlier-council findings that survive: no generated classes (rejected design option (b)); Mama's is the wrong positive control for a strict breakpoint rule; snapping invents 8px of behaviour at 760 to 767 (probe first); a checker is both instruction and oracle, hence the planted-violation controls; the unproven items (P10 to P14) are tested in Phase 0 and Phase 1.
 
 ## 7. Open questions for you (only these)
 

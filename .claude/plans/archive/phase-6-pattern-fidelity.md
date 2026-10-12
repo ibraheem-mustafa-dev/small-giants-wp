@@ -28,7 +28,9 @@ recommended_model: opus
 **USP:** Phase 5 made the pipeline produce patterns end-to-end. Phase 6 makes the patterns produced ACTUALLY MATCH THE MOCKUP at the pixel level. Until this gate closes, every clone is a faithful structural copy but a styling mismatch. Closing it means the SGS Framework can clone any draft to a pixel-faithful WP site - the load-bearing capability that justifies the framework's existence vs Kadence / Spectra / GenerateBlocks.
 
 **Plan label:** [PLAN: opus]
+
 **Docscore:** B+ (estimated; refine after Stage 7 of phase-planner)
+
 **Aggregate cost estimate:** ~$0.45 (1x Sonnet for composer rewrite, 1x Cerebras for theme template, 3x Sonnet for multi-rater QC, rest inline)
 
 ## Phase success criteria (done when)

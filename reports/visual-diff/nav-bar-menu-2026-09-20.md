@@ -1,21 +1,10 @@
 # Editor verification — sgs/nav-bar-menu — 2026-09-20 (W2-b: create a menu panel inline)
 
-verdict: PASS
-editor_capture_passed: true
-source_sha: 89fd0978b9440baa
-commit_sha: 5993d3327 (feat(nav-bar-menu): create a new drawer post from the picker)
+verdict: PASS editor_capture_passed: true source_sha: 89fd0978b9440baa commit_sha: 5993d3327 (feat(nav-bar-menu): create a new drawer post from the picker)
 
-> `source_sha` is the `visual-report-sha.py` digest recipe (SHA-256 over
-> `name\0bytes` for each file under `src/blocks/nav-bar-menu/`, sorted, first 16 hex)
-> applied to the **committed** bytes of the 7 block files in 5993d3327 — the script
-> itself reads the git INDEX and returns `no staged files for block 'nav-bar-menu'`
-> here, because this feature had already landed before verification. Command:
-> `git diff-tree --no-commit-id --name-only -r 5993d3327 -- plugins/sgs-blocks/src/blocks/nav-bar-menu/`
-> piped through that digest.
+> `source_sha` is the `visual-report-sha.py` digest recipe (SHA-256 over `name\0bytes` for each file under `src/blocks/nav-bar-menu/`, sorted, first 16 hex) applied to the **committed** bytes of the 7 block files in 5993d3327 — the script itself reads the git INDEX and returns `no staged files for block 'nav-bar-menu'` here, because this feature had already landed before verification. Command: `git diff-tree --no-commit-id --name-only -r 5993d3327 -- plugins/sgs-blocks/src/blocks/nav-bar-menu/` piped through that digest.
 
-This is an editor-only change (inspector components + hooks; no `render.php`,
-`style.css`, `save.js` or `block.json` in the commit's block-side diff), so the
-frontend markup is unchanged and no first-paint capture applies.
+This is an editor-only change (inspector components + hooks; no `render.php`, `style.css`, `save.js` or `block.json` in the commit's block-side diff), so the frontend markup is unchanged and no first-paint capture applies.
 
 ## Environment + method
 
@@ -28,10 +17,7 @@ frontend markup is unchanged and no first-paint capture applies.
 | REST verification | `wp/v2/sgs_drawer` with Basic auth (`WP_APP_PWD_SANDYBROWN`), cache-buster `cb=$(date +%s)` on every fetch |
 | Server-side verification | `ssh -p 65002 u945238940@141.136.39.73`, `wp option get` / `wp post get` / `wp post list` under `domains/sandybrown-nightingale-600381.hostingersite.com/public_html` |
 
-Five independent editor runs were executed, each from a fresh login and a fresh
-unsaved copy of post 3648: **A** main flow, **B** double-click control, **C**
-injected-403 failure control, **D** burger-opens-nothing warning path, **E**
-empty-name default.
+Five independent editor runs were executed, each from a fresh login and a fresh unsaved copy of post 3648: **A** main flow, **B** double-click control, **C** injected-403 failure control, **D** burger-opens-nothing warning path, **E** empty-name default.
 
 ## Checks
 
@@ -63,36 +49,16 @@ empty-name default.
 
 ### The header's modified date moved — attribution
 
-The date check as written does not hold, so it is reported rather than smoothed over.
-The cause was proven before being claimed, not inferred:
+The date check as written does not hold, so it is reported rather than smoothed over. The cause was proven before being claimed, not inferred:
 
-1. **Content diff against the pre-session baseline revision.** `wp post get 3648 --field=post_content`
-   vs revision **3659** (`2026-09-18 21:29:45`, the baseline state) differs by exactly **one**
-   attribute on the root `sgs/site-header` block: `"shadowScrolled":"floating"` added. That is the
-   *site-header shadow-once-scrolled* feature (commit `737d205ba`), not anything this test touches.
-2. **My change is absent.** `grep -c drawerRef` on the current post content → **0**. Had this
-   session saved, `"drawerRef":3700` (or 3703/3707) would be serialised on the `sgs/nav-bar-menu`
-   block. It is not there, in any form.
-3. **Timing.** Server clock at the check was `Sun Sep 20 00:42:59 UTC`; the new revision **3709** is
-   stamped `00:42:36` — **23 seconds earlier**, by which point every browser this session launched
-   was already closed. The same canary shows a concurrent session creating `[QA]` posts 3692–3704
-   in those same minutes (3704 at `00:39:30`, 3701/3702 at `00:38`), and that session also held the
-   Playwright MCP browser profile lock which forced this run onto the repo's own Playwright.
-4. **In-editor state.** At the end of run A the editor reported `isDirty: true, isSaving: false,
-   isAutosaving: false` — dirty and never saved, which is the intended end state. Save was never
-   clicked in any of the five runs.
+1. **Content diff against the pre-session baseline revision.** `wp post get 3648 --field=post_content` vs revision **3659** (`2026-09-18 21:29:45`, the baseline state) differs by exactly **one** attribute on the root `sgs/site-header` block: `"shadowScrolled":"floating"` added. That is the *site-header shadow-once-scrolled* feature (commit `737d205ba`), not anything this test touches.
+2. **My change is absent.** `grep -c drawerRef` on the current post content → **0**. Had this session saved, `"drawerRef":3700` (or 3703/3707) would be serialised on the `sgs/nav-bar-menu` block. It is not there, in any form.
+3. **Timing.** Server clock at the check was `Sun Sep 20 00:42:59 UTC`; the new revision **3709** is stamped `00:42:36` — **23 seconds earlier**, by which point every browser this session launched was already closed. The same canary shows a concurrent session creating `[QA]` posts 3692–3704 in those same minutes (3704 at `00:39:30`, 3701/3702 at `00:38`), and that session also held the Playwright MCP browser profile lock which forced this run onto the repo's own Playwright.
+4. **In-editor state.** At the end of run A the editor reported `isDirty: true, isSaving: false, isAutosaving: false` — dirty and never saved, which is the intended end state. Save was never clicked in any of the five runs.
 
-Conclusion: post 3648 was modified by a **concurrent session working on `sgs/site-header`**. This
-session left it unsaved, and none of its edits reached the database.
+Conclusion: post 3648 was modified by a **concurrent session working on `sgs/site-header`**. This session left it unsaved, and none of its edits reached the database.
 
 ## Notes for the record
 
-- The old sibling block-insert affordance is gone at every level checked: absent from
-  `src/` and from the deployed `build/` bundle (`grep -c "Add the menu panel"` → 0 in both),
-  and absent from the rendered sidebar's `innerText` and button list in all five runs.
-- Screenshots captured (session-local, in the run scratchpad, not persisted to the repo — same
-  convention as `nav-bar-menu-2026-09-17.md`): `evidence-A1-panel-runA.png` (panel + control),
-  `evidence-A2-field-runA.png` (inline name field), `evidence-A3-created-runA.png` (picker
-  selected + success notice), `evidence-A4-editscreen-runA.png` (seeded drawer edit screen),
-  `evidence-dblclick-runB.png`, `evidence-fail403-runC.png`, `evidence-D-warnpath2.png`.
-  Machine-readable measurements alongside them as `evidence-*.json`.
+- The old sibling block-insert affordance is gone at every level checked: absent from `src/` and from the deployed `build/` bundle (`grep -c "Add the menu panel"` → 0 in both), and absent from the rendered sidebar's `innerText` and button list in all five runs.
+- Screenshots captured (session-local, in the run scratchpad, not persisted to the repo — same convention as `nav-bar-menu-2026-09-17.md`): `evidence-A1-panel-runA.png` (panel + control), `evidence-A2-field-runA.png` (inline name field), `evidence-A3-created-runA.png` (picker selected + success notice), `evidence-A4-editscreen-runA.png` (seeded drawer edit screen), `evidence-dblclick-runB.png`, `evidence-fail403-runC.png`, `evidence-D-warnpath2.png`. Machine-readable measurements alongside them as `evidence-*.json`.

@@ -1,23 +1,16 @@
 # FR-37-46 verification spike — post-level `template`/`template_lock` mechanism
 
-**Date:** 2026-09-17. **Scope:** proof-gathering only, per Task 2 of
-`.claude/plans/2026-09-17-front-d-wave-2-orchestration.md`. No FR-37-46 code built.
+**Date:** 2026-09-17. **Scope:** proof-gathering only, per Task 2 of `.claude/plans/2026-09-17-front-d-wave-2-orchestration.md`. No FR-37-46 code built.
 
 ## Verdict
 
 **Mechanism confirmed safe as-is. No guard needed before Task 3 builds FR-37-46.**
 
-The root-level (whole-post) template-application path is already gated on
-`post_status === 'auto-draft'` in WordPress core itself — the exact guard shape D393's
-own fix used at the block level. It does not share D393's defect (which was specific to
-the nested, per-mount `useInnerBlockTemplateSync` code path inside a block's own
-`InnerBlocks`, not this one).
+The root-level (whole-post) template-application path is already gated on `post_status === 'auto-draft'` in WordPress core itself — the exact guard shape D393's own fix used at the block level. It does not share D393's defect (which was specific to the nested, per-mount `useInnerBlockTemplateSync` code path inside a block's own `InnerBlocks`, not this one).
 
 ## Cited WP core mechanism (WP 7.1, live bundle on the canary)
 
-Two distinct WP code paths exist under the same `templateLock`/`template` vocabulary —
-this is the exact confusion D393's citation smuggled in. They were previously conflated;
-they are now traced separately:
+Two distinct WP code paths exist under the same `templateLock`/`template` vocabulary — this is the exact confusion D393's citation smuggled in. They were previously conflated; they are now traced separately:
 
 | | D393's path (block-level, proven buggy, already fixed) | FR-37-46's path (post-level, this spike) |
 |---|---|---|
@@ -45,26 +38,11 @@ they are now traced separately:
 
 ## Empirical test (sandybrown canary, live Chrome via Playwright, WP 7.1)
 
-Throwaway CPT `sgs_spike_test` (mu-plugin, deleted after the spike) registered with
-`template => [['core/paragraph', ['placeholder' => 'SPIKE TEMPLATE BLOCK']]]` and
-`template_lock => 'all'`.
+Throwaway CPT `sgs_spike_test` (mu-plugin, deleted after the spike) registered with `template => [['core/paragraph', ['placeholder' => 'SPIKE TEMPLATE BLOCK']]]` and `template_lock => 'all'`.
 
-1. **Fresh post opens pre-populated + locked — PASS.**
-   New `post-new.php?post_type=sgs_spike_test` opened with the paragraph block already
-   present (`SPIKE TEMPLATE BLOCK` placeholder rendered). Store-level checks:
-   `getTemplateLock() === 'all'`, `canInsertBlockType('core/heading') === false`,
-   `canRemoveBlock(clientId) === false`. Visual confirmation: the block toolbar showed an
-   "Unlock" button (WP's own lock-state UI) instead of the normal move/drag/delete
-   controls.
+1. **Fresh post opens pre-populated + locked — PASS.** New `post-new.php?post_type=sgs_spike_test` opened with the paragraph block already present (`SPIKE TEMPLATE BLOCK` placeholder rendered). Store-level checks: `getTemplateLock() === 'all'`, `canInsertBlockType('core/heading') === false`, `canRemoveBlock(clientId) === false`. Visual confirmation: the block toolbar showed an "Unlock" button (WP's own lock-state UI) instead of the normal move/drag/delete controls.
 
-2. **Re-open after adding content does not wipe it (the D393 failure mode, one level up) — PASS.**
-   Typed `REAL CONTENT TYPED BY SPIKE TEST` into the locked paragraph, saved
-   (`wp.data.dispatch('core/editor').savePost()` → post 3591, status transitioned
-   `auto-draft` → `draft`), then hard-navigated to `post.php?post=3591&action=edit`
-   (full editor remount, not an SPA transition — the strictest form of this test).
-   Store state after reload: 1 block, `content: "REAL CONTENT TYPED BY SPIKE TEST"`,
-   `rootLock: "all"` unchanged. DB-level confirmation (`wp post get 3591
-   --field=post_content`):
+2. **Re-open after adding content does not wipe it (the D393 failure mode, one level up) — PASS.** Typed `REAL CONTENT TYPED BY SPIKE TEST` into the locked paragraph, saved (`wp.data.dispatch('core/editor').savePost()` → post 3591, status transitioned `auto-draft` → `draft`), then hard-navigated to `post.php?post=3591&action=edit` (full editor remount, not an SPA transition — the strictest form of this test). Store state after reload: 1 block, `content: "REAL CONTENT TYPED BY SPIKE TEST"`, `rootLock: "all"` unchanged. DB-level confirmation (`wp post get 3591 --field=post_content`):
    ```
    <!-- wp:paragraph {"placeholder":"SPIKE TEMPLATE BLOCK"} -->
    <p>REAL CONTENT TYPED BY SPIKE TEST</p>
@@ -74,17 +52,8 @@ Throwaway CPT `sgs_spike_test` (mu-plugin, deleted after the spike) registered w
 
 ## Cleanup
 
-Test posts 3590 (unused `wp post create` scaffold) and 3591 deleted (`--force`);
-`wp-content/mu-plugins/sgs-spike-test-cpt.php` removed; `post_type_exists('sgs_spike_test')`
-confirmed `false` post-cleanup; caches flushed. No trace of the spike remains on the
-canary.
+Test posts 3590 (unused `wp post create` scaffold) and 3591 deleted (`--force`); `wp-content/mu-plugins/sgs-spike-test-cpt.php` removed; `post_type_exists('sgs_spike_test')` confirmed `false` post-cleanup; caches flushed. No trace of the spike remains on the canary.
 
 ## What this means for Task 3
 
-FR-37-46 can be built exactly as specified — `template`/`template_lock => 'all'` on the
-three CPTs' `register_post_type()` calls — with no extra guard (no `auto-draft` check
-needed in our own code; WordPress core already applies it at the layer this FR relies
-on). The one open item FR-37-46's own text already scopes correctly and this spike does
-not change: raw REST `post_content` writes bypass this editor-only mechanism entirely
-(a separate, already-accepted, low-probability gap behind the `edit_theme_options`
-capability bar — not a Done-when criterion).
+FR-37-46 can be built exactly as specified — `template`/`template_lock => 'all'` on the three CPTs' `register_post_type()` calls — with no extra guard (no `auto-draft` check needed in our own code; WordPress core already applies it at the layer this FR relies on). The one open item FR-37-46's own text already scopes correctly and this spike does not change: raw REST `post_content` writes bypass this editor-only mechanism entirely (a separate, already-accepted, low-probability gap behind the `edit_theme_options` capability bar — not a Done-when criterion).

@@ -1,13 +1,8 @@
 # Eye Care gap map re-check (Phase 0, 2026-09-24)
 
-**What this is.** Phase 0 of `plans/archive/2026-09-24-eye-care-hand-build-design.md`: every gap map row graded 1 to 4
-(91 rows, 8 areas) re-checked against the code on `main`. Eight Haiku agents did one area each (read-only); the
-main session then re-checked every doubtful or contradicting claim directly. **Section 2 is the build list Wave B
-and Wave C work from.** The per-area tables (Appendix) are the agents' raw evidence.
+**What this is.** Phase 0 of `plans/archive/2026-09-24-eye-care-hand-build-design.md`: every gap map row graded 1 to 4 (91 rows, 8 areas) re-checked against the code on `main`. Eight Haiku agents did one area each (read-only); the main session then re-checked every doubtful or contradicting claim directly. **Section 2 is the build list Wave B and Wave C work from.** The per-area tables (Appendix) are the agents' raw evidence.
 
-**How to read the Appendix's "Claim" column.** Most agents wrote FALSE to mean "the feature is missing", even
-where the gap map already said it was missing. So FALSE there does not mean the map was wrong. Judge a row by its
-"Corrected grade" against its "Map grade", and by the overrides in section 1.
+**How to read the Appendix's "Claim" column.** Most agents wrote FALSE to mean "the feature is missing", even where the gap map already said it was missing. So FALSE there does not mean the map was wrong. Judge a row by its "Corrected grade" against its "Map grade", and by the overrides in section 1.
 
 ## 1. Main-session overrides (verified directly; these win over the Appendix)
 
@@ -62,9 +57,7 @@ where the gap map already said it was missing. So FALSE there does not mean the 
 Unchanged from the plan: these are the same five builds §3 lists.
 
 ### Configuration and content only (grade 1, no code)
-Content pages (lenses, about, help, contact, map), size guide as an `sgs_modal` post, why-buy band, prescription strip,
-optician band, checkout sections (phone relabel, shipping and pickup, payment, terms), gallery images, shop header
-row, placeholder image, shape as product tag, mega-menu panels, footer, sticky header.
+Content pages (lenses, about, help, contact, map), size guide as an `sgs_modal` post, why-buy band, prescription strip, optician band, checkout sections (phone relabel, shipping and pickup, payment, terms), gallery images, shop header row, placeholder image, shape as product tag, mega-menu panels, footer, sticky header.
 
 ## Appendix: per-area evidence (agent output, unedited)
 

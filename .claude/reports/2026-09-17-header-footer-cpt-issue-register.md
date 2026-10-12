@@ -7,11 +7,7 @@ last_updated: 2026-09-17
 
 # Header/footer/nav-drawer builder — issue register
 
-Front D (`LEDGER.md`) closed out 5 visual issues in the header/footer builder. While checking
-the admin backend before Mama's/Indus branded content authoring starts, Bean found a larger set
-of architecture problems in how the Advanced Header / Advanced Footer / Nav Drawer CPTs work.
-This register tracks those, decomposed one issue per row. Full narrative + investigation plan:
-`.claude/plans/doc-type-next-session-prompt-project-magical-puppy.md`.
+Front D (`LEDGER.md`) closed out 5 visual issues in the header/footer builder. While checking the admin backend before Mama's/Indus branded content authoring starts, Bean found a larger set of architecture problems in how the Advanced Header / Advanced Footer / Nav Drawer CPTs work. This register tracks those, decomposed one issue per row. Full narrative + investigation plan: `.claude/plans/doc-type-next-session-prompt-project-magical-puppy.md`.
 
 | ID | Issue | Category | Root cause / status | Next action |
 |---|---|---|---|---|

@@ -1,7 +1,6 @@
 # Visual-diff — sgs/cta-section WS-4 composite-mirror (PoC) — 2026-06-04
 
-verdict: PASS
-first_paint_capture_passed: true
+verdict: PASS first_paint_capture_passed: true
 
 **Change:** WS-4 — cta-section's outer `<section>` is now the shared sgs/container element (via `SGS_Container_Wrapper::render(kind='section')`); 69 container attrs mirrored into block.json; `ContainerWrapperControls kind="section"` wired into edit.js. **Rename:** cta's own `layout` (centred/left/split) → `contentLayout` (the container owns `layout`=grid/flex); render.php + edit.js read `contentLayout ?? layout` for old-post fallback (dynamic block — no save-markup deprecation needed per council C4). **Double-emit guard (C3):** cta keeps its bespoke cover-image background (via `extra_styles`) + opacity overlay (in the interior) + `no_overlay` + nulled helper `backgroundImage` — so neither is double-emitted.
 

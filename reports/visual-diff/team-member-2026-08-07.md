@@ -13,25 +13,16 @@ first_paint_capture_passed: true
 
 Covers TWO changes that landed together:
 
-1. **Responsive photo tiers** (the art-direction track) — `block.json` declares
-   `photo` / `photoTablet` / `photoMobile` and drops `memberMedia`; `render.php`
-   emits a `<picture>` with `<source media>` alternates.
-2. **Shadow preset rename** — `md` -> `raised` in `style.css`, and the `render.php`
-   preset allowlist.
+1. **Responsive photo tiers** (the art-direction track) — `block.json` declares `photo` / `photoTablet` / `photoMobile` and drops `memberMedia`; `render.php` emits a `<picture>` with `<source media>` alternates.
+2. **Shadow preset rename** — `md` -> `raised` in `style.css`, and the `render.php` preset allowlist.
 
 ## Why both are in one report
 
-`render.php` landed in commit 43b5d44c ahead of its `block.json`, leaving main in
-a half state: the PHP read `$attributes['photoTablet']` while the block did not
-declare it, and WordPress silently DISCARDS an undeclared attribute — so the
-feature was inert on main with nothing failing. This report verifies the
-completed pair, which is the only state worth certifying.
+`render.php` landed in commit 43b5d44c ahead of its `block.json`, leaving main in a half state: the PHP read `$attributes['photoTablet']` while the block did not declare it, and WordPress silently DISCARDS an undeclared attribute — so the feature was inert on main with nothing failing. This report verifies the completed pair, which is the only state worth certifying.
 
 ## Why a probe page exists
 
-`sgs/team-member` is on no published canary page. Rather than stamp a field
-nobody measured, page 2175 was created with an instance exercising all three
-photo tiers and a renamed shadow preset.
+`sgs/team-member` is on no published canary page. Rather than stamp a field nobody measured, page 2175 was created with an instance exercising all three photo tiers and a renamed shadow preset.
 
 ## Measurement
 
@@ -49,18 +40,12 @@ First paint, no interaction:
 
 ## Result
 
-Both tier `<source>` elements are emitted with the right media queries in the
-right order, and the base `<img>` still paints — so a member with no tier
-override degrades to the desktop image rather than disappearing. The declared
-attributes now match what `render.php` reads, closing the half state.
+Both tier `<source>` elements are emitted with the right media queries in the right order, and the base `<img>` still paints — so a member with no tier override degrades to the desktop image rather than disappearing. The declared attributes now match what `render.php` reads, closing the half state.
 
-The shadow paints exactly what `--wp--preset--shadow--md` produced before the
-rename (`0 4px 12px rgba(0,0,0,0.1)`), so the rename is visually inert here too.
+The shadow paints exactly what `--wp--preset--shadow--md` produced before the rename (`0 4px 12px rgba(0,0,0,0.1)`), so the rename is visually inert here too.
 
 **PASS**
 
 ## Scope note
 
-`sgs/before-after` — the same track's sibling block — is NOT covered. It did not
-render on the probe page and none of it is committed to main, so it remains
-unlanded and unverified.
+`sgs/before-after` — the same track's sibling block — is NOT covered. It did not render on the probe page and none of it is committed to main, so it remains unlanded and unverified.

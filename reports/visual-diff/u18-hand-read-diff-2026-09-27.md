@@ -1,34 +1,14 @@
 # U-18 hand-read diff: the two header copies against their references (step 1 baseline)
 
-Plan: `.claude/plans/archive/2026-09-27-reference-capture-method-plan.md`, Method step 1. This is the diff the walker must reach
-or beat (steps 3 to 5). Every row names the reference value, the copy value and the widths it holds at.
+Plan: `.claude/plans/archive/2026-09-27-reference-capture-method-plan.md`, Method step 1. This is the diff the walker must reach or beat (steps 3 to 5). Every row names the reference value, the copy value and the widths it holds at.
 
-**How it was read.** The Indus draft source (`sites/Indus Foods Mega Menu Design/Indus Foods Mega Menu.dc.html`, markup,
-inline styles and its component script) was read rule by rule. Then every reference and copy was walked in a headed Chrome
-(the canary answers headless with a 403) by a DOM inventory dumper that is independent of the walker: every painting
-element under the header, panel or drawer root in DOM order with its type, colour, box, border, padding, transform and
-transition, `::before`/`::after`/`::marker`, the hover end state and a 60ms mid-transition sample of every link and
-button, text sampled at 60 and 200ms during hover (scramble), and opacity, transform, clip and box sampled at 30, 120,
-250, 450 and 900ms after each open action. The screenshots were then read by eye. Copies were measured only as the ACTIVE
-header, inside one trapped command (`wp sgs header set-active 4461|4435`, always restoring 3777 plus
-`qa-item-markup-fixture.php two-bar`). Widths: 1440, 768 and 375 (375 as an iPhone 13, touch), plus 1920 for lamalama's
-viewport scaling. Both sides were read in the same headed browser, so both carry the same device-pixel rounding (a 3px
-border reads 2.4px on both).
+**How it was read.** The Indus draft source (`sites/Indus Foods Mega Menu Design/Indus Foods Mega Menu.dc.html`, markup, inline styles and its component script) was read rule by rule. Then every reference and copy was walked in a headed Chrome (the canary answers headless with a 403) by a DOM inventory dumper that is independent of the walker: every painting element under the header, panel or drawer root in DOM order with its type, colour, box, border, padding, transform and transition, `::before`/`::after`/`::marker`, the hover end state and a 60ms mid-transition sample of every link and button, text sampled at 60 and 200ms during hover (scramble), and opacity, transform, clip and box sampled at 30, 120, 250, 450 and 900ms after each open action. The screenshots were then read by eye. Copies were measured only as the ACTIVE header, inside one trapped command (`wp sgs header set-active 4461|4435`, always restoring 3777 plus `qa-item-markup-fixture.php two-bar`). Widths: 1440, 768 and 375 (375 as an iPhone 13, touch), plus 1920 for lamalama's viewport scaling. Both sides were read in the same headed browser, so both carry the same device-pixel rounding (a 3px border reads 2.4px on both).
 
-The dumper is scratch tooling; this report is its durable output. Bean's floor (L1 to L10, I-1 to I-3) maps to the rows
-marked with it.
+The dumper is scratch tooling; this report is its durable output. Bean's floor (L1 to L10, I-1 to I-3) maps to the rows marked with it.
 
 ## A reference finding Bean must settle first: the Indus draft's entrance motion never runs
 
-The draft's source declares a panel entrance (340ms, `translateY(-8px) scale(.99)` to rest, `cubic-bezier(.16,.84,.32,1)`),
-a staggered link rise in each panel (460ms, 14px, 26ms apart, capped at 320ms) and a staggered drawer-item slide from the
-right (420ms, 24px, 55ms apart). None of it plays in the rendered draft. Proven: `Element.prototype.animate` was wrapped
-before hovering About and was never called, and `document.getAnimations()` showed only CSS transitions. Cause: the draft
-runtime (`support.js`) calls the component's `componentDidUpdate(prevProps)` with one argument, and the draft's
-`componentDidUpdate(pp, ps)` returns at once when `ps` is missing. So the draft **as rendered** has no panel or drawer
-entrance: panels appear instantly, and only the backdrop fades (300ms). **Decision for Bean:** is the reference what the draft renders
-(no entrance) or what its source intends (the three entrances above)? **Decided (Bean, 2026-09-28): source intent.**
-I-M1 to I-M3 are proved on the copy alone against the declared timings, not compared with the draft.
+The draft's source declares a panel entrance (340ms, `translateY(-8px) scale(.99)` to rest, `cubic-bezier(.16,.84,.32,1)`), a staggered link rise in each panel (460ms, 14px, 26ms apart, capped at 320ms) and a staggered drawer-item slide from the right (420ms, 24px, 55ms apart). None of it plays in the rendered draft. Proven: `Element.prototype.animate` was wrapped before hovering About and was never called, and `document.getAnimations()` showed only CSS transitions. Cause: the draft runtime (`support.js`) calls the component's `componentDidUpdate(prevProps)` with one argument, and the draft's `componentDidUpdate(pp, ps)` returns at once when `ps` is missing. So the draft **as rendered** has no panel or drawer entrance: panels appear instantly, and only the backdrop fades (300ms). **Decision for Bean:** is the reference what the draft renders (no entrance) or what its source intends (the three entrances above)? **Decided (Bean, 2026-09-28): source intent.** I-M1 to I-M3 are proved on the copy alone against the declared timings, not compared with the draft.
 
 ## Indus (draft vs page 4465, header 4461)
 
@@ -151,8 +131,7 @@ Classes of evidence this diff rests on (the walker's current reach is compared i
 
 ## Steps 2 to 5: the walker against this diff (2026-09-28)
 
-**Step 2, walker as it was** (configs `plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-indus.mjs` and `parity-lamalama.mjs`,
-using only the existing features). It found about half the rows. It missed:
+**Step 2, walker as it was** (configs `plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-indus.mjs` and `parity-lamalama.mjs`, using only the existing features). It found about half the rows. It missed:
 - every panel-link and card hover, because an earlier bar hover closed the panel and the pair was skipped silently;
 - all entrance motion, because running motion was read after the state's own wait;
 - `::before` and child grounds (read as transparent, which gave false positives);
@@ -161,12 +140,9 @@ using only the existing features). It found about half the rows. It missed:
 - the scramble (L5) and the hover marker (L4);
 - L10, because its 375 was a desktop window and the site hides the message by device.
 
-**Step 4, header mode added to the walker** (`scripts/parity/GAP-CHECKLIST.md` section 11). Each check has a
-self-baseline (a reference against itself reads 0 at every width) and a planted-CSS negative control that turns it
-red. Both are recorded in the commit messages.
+**Step 4, header mode added to the walker** (`scripts/parity/GAP-CHECKLIST.md` section 11). Each check has a self-baseline (a reference against itself reads 0 at every width) and a planted-CSS negative control that turns it red. Both are recorded in the commit messages.
 
-**Step 5, final runs** (`reports/visual-diff/u18-walker-indus-2026-09-28.md`, `u18-walker-lamalama-2026-09-28.md`;
-self-baselines 0 open at every width for both references):
+**Step 5, final runs** (`reports/visual-diff/u18-walker-indus-2026-09-28.md`, `u18-walker-lamalama-2026-09-28.md`; self-baselines 0 open at every width for both references):
 
 | Rows | Walker result |
 |---|---|
@@ -177,8 +153,7 @@ self-baselines 0 open at every width for both references):
 | lamalama L1 to L10 and L-O rows | all found: glyphs (dots/5 vs svg/6; Careers svg/4 vs none), "This is Us" presence, hover ground and marker, scramble, rise (`timeline:children`), grow-from-pill (`timeline:growth`), 1920 scaling, logo/burger/message offsets, pill text tap (opened vs nothing), message absent at 375 on a phone, text indent 43 vs 12 |
 
 **Found by the walker only (beyond the hand-read):**
-- the Indus copy's panel sits inside the header element where the draft's is a sibling of the bar (a structural
-  fact, nothing painted);
+- the Indus copy's panel sits inside the header element where the draft's is a sibling of the bar (a structural fact, nothing painted);
 - the lamalama copy's first drawer link opens focused, with a gold glow (the dialog focuses it on open);
 - the message line-height is 20 against 16.
 
@@ -189,5 +164,4 @@ self-baselines 0 open at every width for both references):
 - video content;
 - the reference's hidden in-pill contact form (Cancel/Next, dropped from the inventory).
 
-Next is step 6 (sort each row into composition or framework capability, then plan the fixes). Its first input is
-Bean's decision on the draft's entrances.
+Next is step 6 (sort each row into composition or framework capability, then plan the fixes). Its first input is Bean's decision on the draft's entrances.

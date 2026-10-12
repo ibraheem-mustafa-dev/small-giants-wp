@@ -19,5 +19,4 @@ Deployed `build/blocks/nav-drawer/render.php` on the server contains the trigger
 No page on the canary currently uses `anchor='trigger'`, so the panel-follows-burger behaviour is NOT yet proven live. Stated as unproven rather than claimed.
 
 ## Limits
-Measured on the canary only. This report evidences the FIRST-PAINT rest state;
-hover and focus states were not captured.
+Measured on the canary only. This report evidences the FIRST-PAINT rest state; hover and focus states were not captured.

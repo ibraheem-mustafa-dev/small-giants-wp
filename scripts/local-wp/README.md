@@ -8,8 +8,7 @@ Three local copies of the Hostinger test sites (database and `wp-content`; Eye C
 | Sandybrown | http://localhost:8082 | `/var/www/local-sandybrown` | `wp_sandybrown` |
 | Indus | http://localhost:8083 | `/var/www/local-indus` | `wp_indus` |
 
-Windows can read the files at `\\wsl.localhost\Ubuntu\var\www\local-<site>\wp-content\...` (Node also accepts `//wsl.localhost/Ubuntu/...`).
-Logins are the same as the live sites; the values are in `.claude/secrets/local-eye-care.env`, `.claude/secrets/local-sandybrown.env` and `.claude/secrets/local-indus.env` (gitignored).
+Windows can read the files at `\\wsl.localhost\Ubuntu\var\www\local-<site>\wp-content\...` (Node also accepts `//wsl.localhost/Ubuntu/...`). Logins are the same as the live sites; the values are in `.claude/secrets/local-eye-care.env`, `.claude/secrets/local-sandybrown.env` and `.claude/secrets/local-indus.env` (gitignored).
 
 Calibration (Spec 48) targets them as `local-eye-care`, `local-sandybrown` and `local-indus` in `scripts/computed-route/calibration-targets.json`. Their `pluginDir` is read directly, so the deploy check needs no SSH. For the same build and snapshot they measure the same as the Hostinger sites (google-reviews: 228 settings and 5 dead on both, 2026-10-05).
 

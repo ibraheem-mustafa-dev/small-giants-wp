@@ -1,9 +1,13 @@
 # Lead Research — Mama's Munches (2026-04-30, v3.3)
 
 **Brand:** Mama's Munches — handmade lactation cookies, Birmingham
+
 **Owner:** Zainab
+
 **Brief:** B2C strategy + pricing validation + B2B prospect identification + gifting market sizing + opportunity audit + thesis triangulation
+
 **Sources:** SerpAPI, Brave Search, direct site fetch (Boobbix, TheMilkBooster, Milk It Bakehouse, Don't Buy Her Flowers). Cross-checked against `~/.openclaw/workspace/memory/research/2026-03-17-DEEP-mamas-munches.md` (26-source dual-expert prior analysis). All searches dated 2026-04-30.
+
 **Version history:** v1 (early 2026-04-30 — defect audit found 3 critical errors). v2 (mid 2026-04-30 — patched + opportunity audit folded in; QC verdict avg 85/100, SHIP). **v3 (late 2026-04-30 — 6 patches from prior-research cross-check + reviewer pressure-test).** See "What changed v2→v3" at end of document.
 
 ---
@@ -537,6 +541,7 @@ Apply now. First live within 2–3 weeks. Bilingual (English + Urdu/Punjabi food
 ## Suggested next actions (sequenced, revised v3)
 
 **Priority 0 — TODAY (before any other action):**
+
 0. **£5 demand-validation taste-test** — Zainab WhatsApp-DMs 5 mum-friends in her network (mixed cohort, not segmented by community) with sample-offer + honest-feedback ask. Specifically test: would they buy a premium ingredient cookie range AND a 40-Day Care Bundle? — **15 min, blocks all S1/S4 spend if it fails**
 
 **This week:**
@@ -550,6 +555,7 @@ Apply now. First live within 2–3 weeks. Bilingual (English + Urdu/Punjabi food
 8. **Confirm 40-Day Care Bundle concept** with 2–3 trusted mum-friends — does this resonate as a gift to give or receive? — 30 min phone calls
 
 **Within 2 weeks:**
+
 9. **Get free ASA/CAP Copy Advice** on homepage + product-page copy — bake science-honest framing in from day one
 10. **Apply to Etsy UK** + list 3 SKUs (8-pack, 20-pack, Aqiqah Gift Box) — bypass Phase 2 ecom blocker for soft launch
 11. **Apply to Not On The High Street** — free seller application
@@ -559,17 +565,20 @@ Apply now. First live within 2–3 weeks. Bilingual (English + Urdu/Punjabi food
 15. **First TikTok Shop live bake** — phone, kitchen counter, no script. 30-minute test session
 
 **Within 4 weeks:**
+
 16. **Mockup direction (Phase 3 of Track 1)** — homepage hero leads with founder origin story + mum-honest framing + universal-brand tone (no cultural theming); product page leads with variant flexibility + ingredient quality + RCT acknowledged honestly; 40-Day Care Bundle + New Baby Gift Box both prominent; "Send to Ward" CTA in nav; TikTok Shop link prominent; halal cert badge as quiet quality signal. Compliant tagline only.
 17. **Email exhibitor enquiry to Baby Show NEC May 2026** — defer commitment until £1,500–3,000 stand cost confirmed
 18. **Zainab prototypes Heritage Cookies (Panjiri-inspired + Sonth Bite)** for Inner Circle feedback (Priority 0 cohort + 5 more)
 
 **Within 8 weeks:**
+
 19. **HFA certification expected complete** — update site + B2B materials with HFA logo
 20. **Pitch Halal Street UK** with halal-cert badge in hand
 21. **Review Aqiqah Gift Box + Arba'een Bundle first sales + adjust pricing**
 22. **Begin HMC-compatible reformulation R&D** if HFA path was chosen — 6–12 month parallel track
 
 **Within 6 months:**
+
 23. **Decide on second-segment expansion** (Bangladeshi / Indian Muslim / Arab Muslim / Somali) only if Priority 0 + S1 validated in segment 4a Birmingham Pakistani audience
 24. **HMC re-application** (if reformulation path chosen)
 25. **Subscription / 40-Day Bundle infrastructure shipped via SGS Ecom Plugin Phase 2**

@@ -9,11 +9,9 @@
 
 ## CORE IDENTITY
 
-**Who You Are:**
-Digital Transformation Consultant running Small Giants Studio in Birmingham. You help service-driven UK businesses â€” SMEs, charities, social enterprises â€” build systems that let them compete with larger players while staying human.
+**Who You Are:** Digital Transformation Consultant running Small Giants Studio in Birmingham. You help service-driven UK businesses â€” SMEs, charities, social enterprises â€” build systems that let them compete with larger players while staying human.
 
-**Your Mission:**
-Help values-driven businesses reach more people without losing what makes them human. Be an asset to your clients and community, not a value extractor.
+**Your Mission:** Help values-driven businesses reach more people without losing what makes them human. Be an asset to your clients and community, not a value extractor.
 
 **Your Communities:**
 - Muslims in Construction (website builder, volunteer)
@@ -116,9 +114,7 @@ Use these as you actually speak â€” naturally, not performatively:
 > "From 7 to 100 monthly clicks â€” and real business impact."
 
 **Parenthetical Asides:** Your signature move â€” self-aware, often with emoji
-> "(ADHDers will know ðŸ˜…)"
-> "(No promises, haha)"
-> "(even the food was top tier)"
+> "(ADHDers will know ðŸ˜…)" "(No promises, haha)" "(even the food was top tier)"
 
 **Emoji Usage:** Sparingly but characterfully
 - Often inside parentheses
@@ -135,12 +131,10 @@ Use these as you actually speak â€” naturally, not performatively:
 > "Thanks to Fatima Shaikh for inviting me and Luke Tatchell to Walsall College to speak with computing students..."
 
 **2. Bold Statement/Result**
-> "From 7 to 100 monthly clicks â€” and real business impact."
-> "Muslims In Construction just ruined networking for me yesterday."
+> "From 7 to 100 monthly clicks â€” and real business impact." "Muslims In Construction just ruined networking for me yesterday."
 
 **3. Emotion + Story Setup**
-> "Last night I left my at-home creative cave to attend my first Social Circle marketing meetup..."
-> "My first workshop as a founder! ðŸ˜…"
+> "Last night I left my at-home creative cave to attend my first Social Circle marketing meetup..." "My first workshop as a founder! ðŸ˜…"
 
 **4. Expectation vs. Reality**
 > "Of all the things I expected from a boardroom full of senior leaders... having this much fun wasn't one of them! ðŸ˜Š"
@@ -186,26 +180,21 @@ Use these as you actually speak â€” naturally, not performatively:
 
 ### Primary Themes
 
-**1. Community & Network Events**
-Largest category. Your posts about events consistently perform well.
+**1. Community & Network Events** Largest category. Your posts about events consistently perform well.
 - Muslims in Construction events
 - OEMN alumni gatherings  
 - Birmingham Muslims In Tech
 - Industry meetups and workshops
 
-**2. Client Wins (Framed as Mutual Success)**
-Always credit the client. Focus on their transformation.
+**2. Client Wins (Framed as Mutual Success)** Always credit the client. Focus on their transformation.
 > "A brilliant client who made it feel effortless"
 
-**3. Personal Growth & Learning**
-First-time experiences, workshops, stepping outside comfort zone.
+**3. Personal Growth & Learning** First-time experiences, workshops, stepping outside comfort zone.
 > "My first workshop as a founder! ðŸ˜…"
 
-**4. Values-Driven Work**
-Being selective, community contribution, helping vs. extracting.
+**4. Values-Driven Work** Being selective, community contribution, helping vs. extracting.
 
-**5. ADHD & Neurodivergent Experience**
-Central to your authentic voice. Discuss openly with self-awareness.
+**5. ADHD & Neurodivergent Experience** Central to your authentic voice. Discuss openly with self-awareness.
 
 ### Secondary Themes
 

@@ -10,8 +10,7 @@ first_paint_capture_passed: true
 
 # sgs/site-footer — live verification (D325)
 
-Draft ground truth: `sites/mamas-munches/mockups/.../mamas-munches-mockup.html` `.mm-footer`
-(dark band `var(--text)`, 3 columns `2fr 1fr 1fr`, collapse to 1 below 768, centred bottom bar).
+Draft ground truth: `sites/mamas-munches/mockups/.../mamas-munches-mockup.html` `.mm-footer` (dark band `var(--text)`, 3 columns `2fr 1fr 1fr`, collapse to 1 below 768, centred bottom bar).
 
 ## Computed-value checks (live DOM, deployed + LiteSpeed/OPcache/CDN cleared)
 

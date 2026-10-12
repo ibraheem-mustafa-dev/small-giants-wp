@@ -15,12 +15,7 @@ parent_plan: null
 
 **PLANNING ONLY.** No code touched, no DB writes, no build run. This document is the plan; execution is a separate session.
 
-**Canonical product data: `sites/snooza-chair/CLAUDE.md` — read it before sizing anything here.**
-Three variant axes (size 4 × colour 6 × headrest 3 = **72 SKUs**) and **8 accessories**, two of which
-are not booleans: Medial Thigh Support carries its own 2 variants (standard / short pommel), and Leg
-Rest has 4 sizes **constrained to match the chosen chair size**. ⚠ **The dependent-option case (Leg
-Rest size follows chair size) is the hardest single item, is not modelled in the existing engine, and
-§6 below does not yet scope it — scope it before starting.**
+**Canonical product data: `sites/snooza-chair/CLAUDE.md` — read it before sizing anything here.** Three variant axes (size 4 × colour 6 × headrest 3 = **72 SKUs**) and **8 accessories**, two of which are not booleans: Medial Thigh Support carries its own 2 variants (standard / short pommel), and Leg Rest has 4 sizes **constrained to match the chosen chair size**. ⚠ **The dependent-option case (Leg Rest size follows chair size) is the hardest single item, is not modelled in the existing engine, and §6 below does not yet scope it — scope it before starting.**
 
 ## 1. Problem
 

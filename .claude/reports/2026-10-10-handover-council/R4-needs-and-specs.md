@@ -1,43 +1,20 @@
 # R4: what cloning needs from a draft, Spec 32's split, and the vocabulary a handover maps into
 
-Reviewer R4, 2026-10-10. Read-only on the repo. Every claim cites a file::symbol, a spec section or a command; anything not
-checked is marked UNVERIFIED. Companion data files in this folder: `r4-cites-byfile.txt` (every file outside Spec 32 that
-cites it, with the IDs it cites) and `r4-cites-raw.txt` (the raw `git grep` lines).
+Reviewer R4, 2026-10-10. Read-only on the repo. Every claim cites a file::symbol, a spec section or a command; anything not checked is marked UNVERIFIED. Companion data files in this folder: `r4-cites-byfile.txt` (every file outside Spec 32 that cites it, with the IDs it cites) and `r4-cites-raw.txt` (the raw `git grep` lines).
 
 ## Headline findings (proven in this review)
 
-1. **The extractor reads nothing from the Indus handoff README.** `declared_sources.py::read_readme_tokens` run on
-   `design_handoff_indus_foods_website/` returns `found: true, colours: [], fonts: [], layout: {}`; the same on the
-   design-system `readme.md`. Cause: colours are parsed only from Markdown **tables** (`_parse_tables`), fonts only from
-   bullets shaped `label: **Family**` (`_FONT_BULLET_RE`), layout only from bullets (`_parse_bullets`). The handoff README
-   writes colours and type as prose bullets ("Brand blue `#0A7EA8` (hover …)", "Headings: Montserrat 500/600/700/800").
-   Command: `python -I -c "import sys;sys.path.insert(0,'plugins/sgs-blocks/scripts/theme-extractor');import declared_sources as d;print(d.read_readme_tokens('<folder>'))"`.
-2. **The design-system `tokens/*.css` is never read by the extractor.** `extract.py::main` calls
-   `shared_utils.py::extract_css`, which concatenates inline `<style>` blocks only ("SGS drafts are single-file inline
-   CSS"). `styles.css` and `tokens/colors.css` are linked/imported files; the v2 draft has 1 `<style>` and 0 `:root`
-   (grep counts in this review). So Pass A finds nothing and Pass B's advisory guess is what lands.
-3. **The current Indus snapshot shows exactly that.** `sites/indus-foods/theme-snapshot.json`: `primary #0a7ea8` and
-   `surface #ffffff` are `_source: derived, advisory: true`; every other slug is the framework default (accent
-   `#F59E0B`, not gold `#D8CA50`; text `#1A202C`, not ink/slate). `push-theme-snapshot.py::apply_advisory_policy`
-   strips advisory entries (Spec 32 FR-33-5), so the live site would paint the framework palette, as Mama's did
-   (plan stage 5, "Advisory snapshot").
-4. **Nothing in the route reads the README's Breakpoints, State, Animations, Screens, Assets or contact sections.** The
-   only README reader in the repo is the extractor's (`git grep -l read_readme` hits only `theme-extractor/`,
-   `shared_utils.py` and the spec; under `scripts/computed-route` and `scripts/parity` the only "readme" hits are
-   `lint.mjs` and its tests, which check the route's own `README.md` for R-47-1). Spec 47 §2 names the README's
-   contents but no Spec 47 tool consumes them.
-5. **Six of nine `sites/*/theme-snapshot.json` files carry no `_sgsExtractor` block** (helping-doctors, mamas-munches,
-   sgs-construction, sgs-healthcare, sgs-mosque, sgs-professional), so the snapshot format (Spec 32 Part C) serves
-   hand-built and starter clients, not only cloned ones. It must stay outside the cloning spec.
+1. **The extractor reads nothing from the Indus handoff README.** `declared_sources.py::read_readme_tokens` run on `design_handoff_indus_foods_website/` returns `found: true, colours: [], fonts: [], layout: {}`; the same on the design-system `readme.md`. Cause: colours are parsed only from Markdown **tables** (`_parse_tables`), fonts only from bullets shaped `label: **Family**` (`_FONT_BULLET_RE`), layout only from bullets (`_parse_bullets`). The handoff README writes colours and type as prose bullets ("Brand blue `#0A7EA8` (hover …)", "Headings: Montserrat 500/600/700/800"). Command: `python -I -c "import sys;sys.path.insert(0,'plugins/sgs-blocks/scripts/theme-extractor');import declared_sources as d;print(d.read_readme_tokens('<folder>'))"`.
+2. **The design-system `tokens/*.css` is never read by the extractor.** `extract.py::main` calls `shared_utils.py::extract_css`, which concatenates inline `<style>` blocks only ("SGS drafts are single-file inline CSS"). `styles.css` and `tokens/colors.css` are linked/imported files; the v2 draft has 1 `<style>` and 0 `:root` (grep counts in this review). So Pass A finds nothing and Pass B's advisory guess is what lands.
+3. **The current Indus snapshot shows exactly that.** `sites/indus-foods/theme-snapshot.json`: `primary #0a7ea8` and `surface #ffffff` are `_source: derived, advisory: true`; every other slug is the framework default (accent `#F59E0B`, not gold `#D8CA50`; text `#1A202C`, not ink/slate). `push-theme-snapshot.py::apply_advisory_policy` strips advisory entries (Spec 32 FR-33-5), so the live site would paint the framework palette, as Mama's did (plan stage 5, "Advisory snapshot").
+4. **Nothing in the route reads the README's Breakpoints, State, Animations, Screens, Assets or contact sections.** The only README reader in the repo is the extractor's (`git grep -l read_readme` hits only `theme-extractor/`, `shared_utils.py` and the spec; under `scripts/computed-route` and `scripts/parity` the only "readme" hits are `lint.mjs` and its tests, which check the route's own `README.md` for R-47-1). Spec 47 §2 names the README's contents but no Spec 47 tool consumes them.
+5. **Six of nine `sites/*/theme-snapshot.json` files carry no `_sgsExtractor` block** (helping-doctors, mamas-munches, sgs-construction, sgs-healthcare, sgs-mosque, sgs-professional), so the snapshot format (Spec 32 Part C) serves hand-built and starter clients, not only cloned ones. It must stay outside the cloning spec.
 
 ---
 
 # PART 1. What the cloning process needs from a draft today
 
-Tools: skeleton writer `scripts/computed-route/skeleton.mjs` (+ `lib/skeleton-*.mjs`), Fill `fill.mjs` (+ `lib/fill-*.mjs`),
-draft server `lib/draft.mjs::serveDraft`, draft reader `lib/fill-read.mjs`, walker `scripts/parity/draft-live-walk.mjs`,
-generated walker config `lib/fill-config.mjs::baseConfigText`, theme extractor `plugins/sgs-blocks/scripts/theme-extractor/extract.py`,
-Site Info `plugins/sgs-blocks/scripts/sync-business-info.py` and `provision-site-info-from-draft.py`.
+Tools: skeleton writer `scripts/computed-route/skeleton.mjs` (+ `lib/skeleton-*.mjs`), Fill `fill.mjs` (+ `lib/fill-*.mjs`), draft server `lib/draft.mjs::serveDraft`, draft reader `lib/fill-read.mjs`, walker `scripts/parity/draft-live-walk.mjs`, generated walker config `lib/fill-config.mjs::baseConfigText`, theme extractor `plugins/sgs-blocks/scripts/theme-extractor/extract.py`, Site Info `plugins/sgs-blocks/scripts/sync-business-info.py` and `provision-site-info-from-draft.py`.
 
 | # | Need | Tool / step that reads it | Where it comes from today | Layout assumption | Known failure or gap |
 |---|---|---|---|---|---|
@@ -67,19 +44,13 @@ Site Info `plugins/sgs-blocks/scripts/sync-business-info.py` and `provision-site
 | 24 | Live site URL and credentials | `fill.mjs --live-url`; `surfaces.json` `envFile`/`envKey` | Hand flags; `.claude/secrets/<site>.env` | One WordPress test site per client (dev-setup) | A reset site serves a stale host cache until `hosting_cache_clear-website` (plan stage 5). |
 | 25 | Dark mode | `_sgsDark` opt-in in the snapshot (FR-33-20) | Hand | None | Not drawn from the draft. |
 
-**What a handover folder would need to carry to close these, in plain terms:** a machine-readable token file the
-extractor can parse (or a README in the table form it parses), the surface list with each surface's URL/route and
-root selector, the states with how to reach them, breakpoints including sub-tier rules, the motion list with triggers,
-business details as data, menu structure, asset inventory with which images are placeholders, and form field lists.
+**What a handover folder would need to carry to close these, in plain terms:** a machine-readable token file the extractor can parse (or a README in the table form it parses), the surface list with each surface's URL/route and root selector, the states with how to reach them, breakpoints including sub-tier rules, the motion list with triggers, business details as data, menu structure, asset inventory with which images are placeholders, and form field lists.
 
 ---
 
 # PART 2. Classification of every section of Spec 32
 
-Classes: **FRAMEWORK** (the styling contract every block follows), **CLONING-ONLY** (exists to get a draft's design
-into the framework), **FORMAT** (the snapshot format and its deployment, used by hand-built clients too: finding 5),
-**FAT** (dated status, history, answered questions, point-in-time measurements; `.claude/CLAUDE.md` and root
-`CLAUDE.md` "Docs state current truth only").
+Classes: **FRAMEWORK** (the styling contract every block follows), **CLONING-ONLY** (exists to get a draft's design into the framework), **FORMAT** (the snapshot format and its deployment, used by hand-built clients too: finding 5), **FAT** (dated status, history, answered questions, point-in-time measurements; `.claude/CLAUDE.md` and root `CLAUDE.md` "Docs state current truth only").
 
 | Section | Class | One-line reason | FR IDs held |
 |---|---|---|---|
@@ -148,24 +119,13 @@ into the framework), **FORMAT** (the snapshot format and its deployment, used by
 | FR-33-20 | FORMAT / FRAMEWORK | Dark palette opt-in, derived at push for any client; nothing draft-specific | FR-33-20 |
 | §15.4 Known limits | CLONING-ONLY | | none |
 
-**Net split:** Part A minus FR-32-7, FR-32-8 (second half), FR-32-10 (extraction half), §12.5-§12.7 extractor parts, and
-FAT sections stays FRAMEWORK. Part B Group B is FRAMEWORK; Groups A and D plus Part C plus FR-33-11, FR-33-13 (namespace)
-and FR-33-20 are FORMAT and are needed by hand-built clients, so they should stay with Spec 32 (or move to a format spec),
-**not** into the cloning Spec 48. Part D (FR-33-1 to -10, -12, -14 to -19, §15.1/15.2/15.4) is CLONING-ONLY and can move
-to Spec 48.
+**Net split:** Part A minus FR-32-7, FR-32-8 (second half), FR-32-10 (extraction half), §12.5-§12.7 extractor parts, and FAT sections stays FRAMEWORK. Part B Group B is FRAMEWORK; Groups A and D plus Part C plus FR-33-11, FR-33-13 (namespace) and FR-33-20 are FORMAT and are needed by hand-built clients, so they should stay with Spec 32 (or move to a format spec), **not** into the cloning Spec 48. Part D (FR-33-1 to -10, -12, -14 to -19, §15.1/15.2/15.4) is CLONING-ONLY and can move to Spec 48.
 
 ## Places outside Spec 32 that cite it
 
-Scope: `git grep -n -o -E "Spec 32 …(§…|Part …)|FR-3[23]-n|FR-26-[ABD]n|Spec 32"` across the repo, excluding
-`.claude/archive/`, `**/archive/**` and the spec itself. **431 files, 1,038 hits.** Full per-file list:
-`r4-cites-byfile.txt` in this folder; 105 of the 431 are dated records (`reports/`, `.claude/reports/`,
-`.claude/memory/`, `.claude/backups/`) that need no edit under "docs state current truth only".
+Scope: `git grep -n -o -E "Spec 32 …(§…|Part …)|FR-3[23]-n|FR-26-[ABD]n|Spec 32"` across the repo, excluding `.claude/archive/`, `**/archive/**` and the spec itself. **431 files, 1,038 hits.** Full per-file list: `r4-cites-byfile.txt` in this folder; 105 of the 431 are dated records (`reports/`, `.claude/reports/`, `.claude/memory/`, `.claude/backups/`) that need no edit under "docs state current truth only".
 
-Hit counts per ID: FR-32-4 107, FR-32-1 30, FR-32-11 22, FR-33-1 21, FR-33-4 19, FR-33-5 17, FR-33-18 15,
-FR-33-11 14, FR-33-12 13, FR-32-12 12, FR-33-3 12, FR-33-6 12, FR-33-14 12, FR-32-4a 9, FR-32-9 8, FR-33-19 7,
-FR-32-2 6, FR-32-13 6, FR-33-2 6, FR-26-D2 5, FR-33-9 5, FR-33-7 4, FR-33-8 3, FR-33-13 3, FR-32-5 2, FR-32-6 2,
-FR-33-10/15/17/20 1 each. Section cites: "Spec 32 §6.1…" about 50, "Part C" 12, "Part B" 5, "Part D" 3, "§6.2" 7,
-"§14" 1, "§13.2" 1, "§12.5" 1, "§12.2" 1. No current file cites FR-32-7, FR-32-8 or FR-32-10 by ID.
+Hit counts per ID: FR-32-4 107, FR-32-1 30, FR-32-11 22, FR-33-1 21, FR-33-4 19, FR-33-5 17, FR-33-18 15, FR-33-11 14, FR-33-12 13, FR-32-12 12, FR-33-3 12, FR-33-6 12, FR-33-14 12, FR-32-4a 9, FR-32-9 8, FR-33-19 7, FR-32-2 6, FR-32-13 6, FR-33-2 6, FR-26-D2 5, FR-33-9 5, FR-33-7 4, FR-33-8 3, FR-33-13 3, FR-32-5 2, FR-32-6 2, FR-33-10/15/17/20 1 each. Section cites: "Spec 32 §6.1…" about 50, "Part C" 12, "Part B" 5, "Part D" 3, "§6.2" 7, "§14" 1, "§13.2" 1, "§12.5" 1, "§12.2" 1. No current file cites FR-32-7, FR-32-8 or FR-32-10 by ID.
 
 **Citations that break if Parts B, C, D or FR-33/FR-26 IDs move or renumber** (live docs and code only):
 
@@ -196,12 +156,7 @@ FR-33-10/15/17/20 1 each. Section cites: "Spec 32 §6.1…" about 50, "Part C" 1
 | `plugins/sgs-blocks/src/blocks/button/style.css` | FR-33-4, FR-32-2 |
 | `sites/{eye-care-ward-end,indus-foods,mamas-munches,mamas-munches-redesign}/theme-extract-trace.json` | FR-33-3/4/18 (generated trace rows; regenerate rather than edit) |
 
-**Gate to respect:** `plugins/sgs-blocks/scripts/lints/lint-spec-drift.py` check `FR-ORPHAN` (advisory, `ADVISORY_CHECKS`)
-flags an FR-ID cited in code that appears in no spec (`_RE_FR_ID`). Renumbering FR-33-n to FR-48-n without a sweep
-of the 19 extractor files plus `push-theme-snapshot.py`, `shared_utils.py` and the business-info files would create
-orphans. Keeping the FR-33-n IDs verbatim inside Spec 48 (as Spec 32 did when it absorbed Spec 33, document map) avoids
-the sweep. Bare `§12`-`§14` cites in Spec 35, Spec 36 and `golden-controls.json` refer to those specs' own sections,
-not Spec 32's (checked: Spec 35 §12.3/§12.5/§12.8/§14, Spec 36 §14.9.6, Spec 31 §12.7).
+**Gate to respect:** `plugins/sgs-blocks/scripts/lints/lint-spec-drift.py` check `FR-ORPHAN` (advisory, `ADVISORY_CHECKS`) flags an FR-ID cited in code that appears in no spec (`_RE_FR_ID`). Renumbering FR-33-n to FR-48-n without a sweep of the 19 extractor files plus `push-theme-snapshot.py`, `shared_utils.py` and the business-info files would create orphans. Keeping the FR-33-n IDs verbatim inside Spec 48 (as Spec 32 did when it absorbed Spec 33, document map) avoids the sweep. Bare `§12`-`§14` cites in Spec 35, Spec 36 and `golden-controls.json` refer to those specs' own sections, not Spec 32's (checked: Spec 35 §12.3/§12.5/§12.8/§14, Spec 36 §14.9.6, Spec 31 §12.7).
 
 ---
 
@@ -234,60 +189,27 @@ not Spec 32's (checked: Spec 35 §12.3/§12.5/§12.8/§14, Spec 36 §14.9.6, Spe
 
 Gradients: framework `settings.color.gradients` is empty (read in this review); Spec 32 §14.2 lists no gradient slot.
 
-**Typography** (`theme.json`): font families `body`, `heading`, `display` (role slots, FR-33-3) plus one entry per
-loaded-and-rendered family (FR-33-18; framework ships `dm-sans`). Font sizes (non-fluid ladder): `small` 14px,
-`regular` 16px, `large` 20px, `x-large` 24px, `xx-large` 36px, `hero` 50px; a draft `clamp()` is emitted verbatim
-(§14.2). Elements: `styles.elements.{link, heading, h1…h6, button}`; base `styles.typography`, `styles.color`.
+**Typography** (`theme.json`): font families `body`, `heading`, `display` (role slots, FR-33-3) plus one entry per loaded-and-rendered family (FR-33-18; framework ships `dm-sans`). Font sizes (non-fluid ladder): `small` 14px, `regular` 16px, `large` 20px, `x-large` 24px, `xx-large` 36px, `hero` 50px; a draft `clamp()` is emitted verbatim (§14.2). Elements: `styles.elements.{link, heading, h1…h6, button}`; base `styles.typography`, `styles.color`.
 
-**Spacing:** `spacingSizes` slugs `10` 0.25rem, `20` 0.5rem, `30` 1rem, `40` 1.5rem, `50` 2rem, `60` 3rem, `70` 5rem,
-`80` 8rem. Layout: `contentSize` 1200px, `wideSize` 1400px (FR-33-19 derives them from the render). Device tiers
-768/1024 fixed; sub-tier rules via `sgsCustomCss` (FR-32-13).
+**Spacing:** `spacingSizes` slugs `10` 0.25rem, `20` 0.5rem, `30` 1rem, `40` 1.5rem, `50` 2rem, `60` 3rem, `70` 5rem, `80` 8rem. Layout: `contentSize` 1200px, `wideSize` 1400px (FR-33-19 derives them from the render). Device tiers 768/1024 fixed; sub-tier rules via `sgsCustomCss` (FR-32-13).
 
-**Radius:** `settings.custom.borderRadius` `small` 4px, `medium` 8px, `large` 16px, `pill` 9999px. The extractor fills
-only `medium` (or square 0) from a declared radius (FR-33-16).
+**Radius:** `settings.custom.borderRadius` `small` 4px, `medium` 8px, `large` 16px, `pill` 9999px. The extractor fills only `medium` (or square 0) from a declared radius (FR-33-16).
 
-**Shadow:** `settings.shadow.presets` `whisper, soft, lifted, floating, crisp, long, outline, grounded, glow, pressed,
-hard, diffuse`; `settings.custom.shadowColour`; `settings.custom.shadowHover` (rest-to-hover ladder). No role names
-(card/panel/button) exist for shadows.
+**Shadow:** `settings.shadow.presets` `whisper, soft, lifted, floating, crisp, long, outline, grounded, glow, pressed, hard, diffuse`; `settings.custom.shadowColour`; `settings.custom.shadowHover` (rest-to-hover ladder). No role names (card/panel/button) exist for shadows.
 
-**Component presets** (FR-32-9, §14.3): `buttonPresets.{primary, secondary, outline}` with roles `background, text,
-border, border-width, border-radius, padding, font-size, font-weight, min-height, hover-background, hover-text,
-hover-border` (+ optional `default` holding `hover-transform`, `hover-transition`, FR-33-4); `measuredDiagramPresets`
-own roles. `product-card` CTA reuses `buttonPresets` (§11). Reserved empty: `settings.custom.header`, `.footer`
-(FR-33-13). Also `sgs.headerPattern`, `sgs.footerPattern`, `accentSets`, `dark`, `darkInk`.
+**Component presets** (FR-32-9, §14.3): `buttonPresets.{primary, secondary, outline}` with roles `background, text, border, border-width, border-radius, padding, font-size, font-weight, min-height, hover-background, hover-text, hover-border` (+ optional `default` holding `hover-transform`, `hover-transition`, FR-33-4); `measuredDiagramPresets` own roles. `product-card` CTA reuses `buttonPresets` (§11). Reserved empty: `settings.custom.header`, `.footer` (FR-33-13). Also `sgs.headerPattern`, `sgs.footerPattern`, `accentSets`, `dark`, `darkInk`.
 
-**Motion tokens** (`settings.custom`): `transition` fast/medium/slow; `duration` instant 60ms, fast 150ms, medium
-300ms, slow 500ms, extra-slow 800ms; `easing` default, ease-out `cubic-bezier(0.16,1,0.3,1)`, ease-in, spring, linear;
-`entrance` {distance 30px, duration 500ms, easing}; `focus-ring`; `linkSweep` (listed in §14.3, absent from the
-framework file).
+**Motion tokens** (`settings.custom`): `transition` fast/medium/slow; `duration` instant 60ms, fast 150ms, medium 300ms, slow 500ms, extra-slow 800ms; `easing` default, ease-out `cubic-bezier(0.16,1,0.3,1)`, ease-in, spring, linear; `entrance` {distance 30px, duration 500ms, easing}; `focus-ring`; `linkSweep` (listed in §14.3, absent from the framework file).
 
-**Motion tiers** (Spec 38 §1): V vanilla/CSS (default), G GSAP (conditional, npm-bundled), H single-purpose helper
-(Lenis, Lottie), W WebGL substrate. **Effects** (`fx_effects`, read-only DB query in this review): V `carousel-loop,
-cursor-field, grid-dots, magnet, page-transitions, particles`; G `draggable, draw, flip, horizontal-panel,
-image-sequence, morph, motion-path, pin-scrub, scramble, scrub, split-reveal`; H `lottie, scroll-smoother`; W
-`generative-background, surface-treatment, wave-gradient`. Tier V entrances `sgsAnimation`: `fade-up, fade-down,
-fade-in, fade-left, fade-right, slide-up, slide-down, slide-left, slide-right, scale-in, scale-out, rotate-in,
-flip-in, blur-in, bounce-in, reveal-up`. Hover effects extension (`extensions/hover-effects/`): scale 1.02/1.05/1.1,
-duration and easing tokens, tilt (`attributes.js`). Parallax extension. Draft grammar `data-sgs-fx-*` (Spec 38 §11,
-not read by any route tool today).
+**Motion tiers** (Spec 38 §1): V vanilla/CSS (default), G GSAP (conditional, npm-bundled), H single-purpose helper (Lenis, Lottie), W WebGL substrate. **Effects** (`fx_effects`, read-only DB query in this review): V `carousel-loop, cursor-field, grid-dots, magnet, page-transitions, particles`; G `draggable, draw, flip, horizontal-panel, image-sequence, morph, motion-path, pin-scrub, scramble, scrub, split-reveal`; H `lottie, scroll-smoother`; W `generative-background, surface-treatment, wave-gradient`. Tier V entrances `sgsAnimation`: `fade-up, fade-down, fade-in, fade-left, fade-right, slide-up, slide-down, slide-left, slide-right, scale-in, scale-out, rotate-in, flip-in, blur-in, bounce-in, reveal-up`. Hover effects extension (`extensions/hover-effects/`): scale 1.02/1.05/1.1, duration and easing tokens, tilt (`attributes.js`). Parallax extension. Draft grammar `data-sgs-fx-*` (Spec 38 §11, not read by any route tool today).
 
-**Header/footer/nav structures:** header rows `top`/`middle`/`bottom`, footer rows `top`/`columns`/`bottom`, row
-`layout` flex|grid with per-device `columns` and `gridTemplateColumns` (Spec 37 §3.1-§3.3); header/footer/drawer are
-CPT posts with active pointers (Spec 37 §5, Spec 36 FR-36-2). Nav: `sgs/nav-bar-menu` (bar + burger below collapse
-point, split layout, trigger presentation), `sgs/nav-drawer` (native `<dialog>`) + `sgs/nav-drawer-menu`
-(accordion/drill-down), `sgs_mega_menu` CPT with `sgs/mega-panel`, `mega-group`, `mega-aside`, menus = native WP menus
-(FR-36-1), three responsive collapse modes (FR-36-8). Utilities: `sgs/cart`, `sgs/product-search`,
-`sgs/social-icons` (Site Info-bound `sgs/icon` children), `sgs/responsive-logo`, `sgs/business-info` (Site Info),
-link lists (FR-36-26), `sgs/whatsapp-cta`.
+**Header/footer/nav structures:** header rows `top`/`middle`/`bottom`, footer rows `top`/`columns`/`bottom`, row `layout` flex|grid with per-device `columns` and `gridTemplateColumns` (Spec 37 §3.1-§3.3); header/footer/drawer are CPT posts with active pointers (Spec 37 §5, Spec 36 FR-36-2). Nav: `sgs/nav-bar-menu` (bar + burger below collapse point, split layout, trigger presentation), `sgs/nav-drawer` (native `<dialog>`) + `sgs/nav-drawer-menu` (accordion/drill-down), `sgs_mega_menu` CPT with `sgs/mega-panel`, `mega-group`, `mega-aside`, menus = native WP menus (FR-36-1), three responsive collapse modes (FR-36-8). Utilities: `sgs/cart`, `sgs/product-search`, `sgs/social-icons` (Site Info-bound `sgs/icon` children), `sgs/responsive-logo`, `sgs/business-info` (Site Info), link lists (FR-36-26), `sgs/whatsapp-cta`.
 
 ## 3.2 Indus mapping
 
-Sources: `design_handoff_indus_foods_website/README.md` "Design Tokens", "Breakpoints", "Global layout", "Animations &
-Behaviour"; `tokens/colors.css`, `tokens/typography.css`, `tokens/spacing.css`; `guidelines/*.html` are specimen
-cards of the same values (`colors-brand.html` shows `#0A7EA8` "blue" etc.).
+Sources: `design_handoff_indus_foods_website/README.md` "Design Tokens", "Breakpoints", "Global layout", "Animations & Behaviour"; `tokens/colors.css`, `tokens/typography.css`, `tokens/spacing.css`; `guidelines/*.html` are specimen cards of the same values (`colors-brand.html` shows `#0A7EA8` "blue" etc.).
 
-Verdicts: **slot** = an existing framework slot (named); **missing** = no slot, and which spec would need an edit;
-**client** = lives only in the client's snapshot or as per-instance block settings.
+Verdicts: **slot** = an existing framework slot (named); **missing** = no slot, and which spec would need an edit; **client** = lives only in the client's snapshot or as per-instance block settings.
 
 ### Colours
 
@@ -395,8 +317,6 @@ Verdicts: **slot** = an existing framework slot (named); **missing** = no slot, 
 2. Shadow role names (card, panel, button, header) over `shadow.presets` (Spec 32 §14.2).
 3. Per-tier section padding and page gutter tokens (Spec 32 §14.2; Spec 48A would declare them).
 4. `settings.custom.header` keys (header height, scrolled shadow) reserved but undefined (Spec 37, FR-33-13).
-5. Extractor rules (Spec 48): all four radii, declared hover over derived `primary-dark`, body-text vs `text-muted`
-   precedence, README bullet/prose colour format, external `tokens/*.css` and `@import` fonts.
-6. Motion presets Spec 38 lacks or that are UNVERIFIED: combined translate+blur(+scale) entrance, shine sweep, ripple,
-   inline animated SVG sequences, marquee slow-on-hover.
+5. Extractor rules (Spec 48): all four radii, declared hover over derived `primary-dark`, body-text vs `text-muted` precedence, README bullet/prose colour format, external `tokens/*.css` and `@import` fonts.
+6. Motion presets Spec 38 lacks or that are UNVERIFIED: combined translate+blur(+scale) entrance, shine sweep, ripple, inline animated SVG sequences, marquee slow-on-hover.
 7. Selection colours (no `theme.json` element): snapshot `styles.css` string, client-only.

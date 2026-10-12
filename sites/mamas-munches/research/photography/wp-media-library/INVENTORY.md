@@ -1,9 +1,13 @@
 # Mama's Munches WP Media Library — pulled 2026-04-30
 
 **Source:** https://mamasmunches.com/wp-json/wp/v2/media
+
 **Total items in API:** 233
+
 **Downloaded:** 182
+
 **Filtered (theme junk / AI / thumbnails):** 51
+
 **Errored:** 0
 
 ## Filter rules applied

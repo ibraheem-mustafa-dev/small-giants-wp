@@ -14,6 +14,7 @@ authors: Bean + Claude
 > **Styling model: read [Spec 32](32-COMPONENT-STYLING-TOKEN-CONTRACT.md).** A button paints through a semantic BEM variant class plus custom properties fed by per-client tokens. This spec holds the two-block pair, the composition pattern and the button-specific rulings. The attribute surface is `plugins/sgs-blocks/src/blocks/button/block.json` and the framework DB (`/wp-blocks schema sgs/button`, `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/button`); never copy it into a doc.
 
 **Implements:** `sgs/button` (the canonical button block) and `sgs/multi-button` (its container).
+
 **Replaces:** every use of `core/button` inside SGS blocks, and the hand-coded CTA rendering that composite blocks (`sgs/hero`, `sgs/feature-grid`) once carried.
 
 ---

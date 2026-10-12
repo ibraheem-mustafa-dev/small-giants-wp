@@ -1,25 +1,16 @@
 # `sgs/google-reviews` — redesign to replicate the draft, plus ready-made looks
 
 **doc_type:** design · **date:** 2026-09-21 · **status:** PROPOSED (needs Bean's approval on §7 R1)
-**Scope:** `plugins/sgs-blocks/src/blocks/google-reviews/` + its DB rows. No converter change is
-proposed here except the one already flagged in D1141 and re-raised in §7 R1.
+
+**Scope:** `plugins/sgs-blocks/src/blocks/google-reviews/` + its DB rows. No converter change is proposed here except the one already flagged in D1141 and re-raised in §7 R1.
 
 ---
 
 ## Plain English first
 
-The draft's reviews panel is a **Google-styled card**: one bordered white box holding a header
-row (Google "G", the caption "Google Reviews", a big 4.7, gold stars, "15 reviews", and two
-pills on the right), a divider, a side-scrolling rail of review cards, then a footnote on the
-left and two round arrow buttons on the right.
+The draft's reviews panel is a **Google-styled card**: one bordered white box holding a header row (Google "G", the caption "Google Reviews", a big 4.7, gold stars, "15 reviews", and two pills on the right), a divider, a side-scrolling rail of review cards, then a footnote on the left and two round arrow buttons on the right.
 
-Our block already draws all the *pieces*. What it cannot do is **look like the draft**, because
-about twenty of the draft's measurements (card padding, avatar size, star size, pill radius, the
-divider colour, the big 4.7's font size, the logo's size and side) have **no attribute at all**
-— there is nothing for the pipeline to write into and nothing for the client to change in the
-editor. That is the whole job: add the missing attributes, declare where each one lives so the
-converter reaches it without a code change, and wrap the whole look up as one pickable preset
-alongside three other looks for other kinds of client.
+Our block already draws all the *pieces*. What it cannot do is **look like the draft**, because about twenty of the draft's measurements (card padding, avatar size, star size, pill radius, the divider colour, the big 4.7's font size, the logo's size and side) have **no attribute at all** — there is nothing for the pipeline to write into and nothing for the client to change in the editor. That is the whole job: add the missing attributes, declare where each one lives so the converter reaches it without a code change, and wrap the whole look up as one pickable preset alongside three other looks for other kinds of client.
 
 **Verified counts in this document** come from these commands:
 
@@ -30,17 +21,13 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT slug, varian
 grep -oE 'sgs-google-reviews__[a-z-]+' plugins/sgs-blocks/src/blocks/google-reviews/render.php | sort -u
 ```
 
-Draft source read in full: `sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html`
-lines 969–1034 (markup) and 2294–2307 (`static REVIEWS`), 2756–2791 (`secPad`/`h2`/`googlePad`/
-`revCardW`/`revPrev`/`revNext`). Emit read from
-`pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-21-175447/stage-4.json`.
+Draft source read in full: `sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html` lines 969–1034 (markup) and 2294–2307 (`static REVIEWS`), 2756–2791 (`secPad`/`h2`/`googlePad`/ `revCardW`/`revPrev`/`revNext`). Emit read from `pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-21-175447/stage-4.json`.
 
 ---
 
 ## 1. Draft anatomy → attribute map
 
-Column **Status**: ✓ = already covered · **GAP** = needs a new attribute · **OUT** = correctly a
-sibling block, not this block.
+Column **Status**: ✓ = already covered · **GAP** = needs a new attribute · **OUT** = correctly a sibling block, not this block.
 
 | # | Draft element (line) | Draft value | Status | Attribute |
 |---|---|---|---|---|
@@ -69,29 +56,20 @@ sibling block, not this block.
 | 23 | Footnote (1020) | "Scroll for more — 13 of the 15 reviews left a comment." 13px #5F6368, **bottom-left** | GAP | `footnote` (string, text-content) + `footnote*` typography + `footnoteColour`. **Recommend an attribute, not a sibling block** — it sits *inside* the bordered card and is laid out on the same flex row as the arrows, so a sibling could not be positioned there without mirroring the draft's DOM. |
 | 24 | Prev/next arrows (1022, 1025) | 40×40 circle, border 1px #DADCE0, colour #1A73E8, **below-right, in flow** | ✓ partly | `showArrows` ✓, `arrowColour*` ✓. **GAP:** `arrowSize`, `arrowBorderWidth`, `arrowBorderRadius`, `navPosition`. style.css:496–508 fixes them `position:absolute; top:50%` over the rail and 44×44. |
 
-**Totals:** 24 draft elements · 3 correctly OUT · 8 fully or partly covered by existing
-attributes · **19 rows carrying at least one gap.**
+**Totals:** 24 draft elements · 3 correctly OUT · 8 fully or partly covered by existing attributes · **19 rows carrying at least one gap.**
 
 ---
 
 ## 2. New attributes
 
-Every row below follows the block's own existing convention — `{elementPrefix}{PascalSuffix}` —
-which is exactly how `writeReviewColourBackground` and `arrowColourBorderHover` are already
-named, and which `sgs_button_element_style_css()` reads by `$prefix . 'Suffix'` concatenation.
-Mechanism for all of them: **a rule in the block's own scoped `<style>`** built in `render.php`
-into `$gr_responsive_css` and printed once — never an inline `style=` property (Spec 32).
+Every row below follows the block's own existing convention — `{elementPrefix}{PascalSuffix}` — which is exactly how `writeReviewColourBackground` and `arrowColourBorderHover` are already named, and which `sgs_button_element_style_css()` reads by `$prefix . 'Suffix'` concatenation. Mechanism for all of them: **a rule in the block's own scoped `<style>`** built in `render.php` into `$gr_responsive_css` and printed once — never an inline `style=` property (Spec 32).
 
-**Shared components reused, nothing reinvented:** `TypographyControls` (one call per prefix —
-it already drives font size/family/weight/style/line-height/letter-spacing/decoration/case/align
-+ tiers), `SgsColourPanel` + `DesignTokenPicker` for colours, `SgsBoxControl` /
-`ResponsiveBoxControl` for every box family, `ResponsiveControl` + `ResponsiveOverride` for
-tiered scalars, `SgsBorderControl` for border shorthand, `SgsLengthControl` for single lengths.
+**Shared components reused, nothing reinvented:** `TypographyControls` (one call per prefix — it already drives font size/family/weight/style/line-height/letter-spacing/decoration/case/align
++ tiers), `SgsColourPanel` + `DesignTokenPicker` for colours, `SgsBoxControl` / `ResponsiveBoxControl` for every box family, `ResponsiveControl` + `ResponsiveOverride` for tiered scalars, `SgsBorderControl` for border shorthand, `SgsLengthControl` for single lengths.
 
 ### 2a. Named attributes
 
-`css_tier` is `desktop` for every responsive-object attribute below (the tier is carried inside
-the object, as `borderRadius` already does); `css_state` is `null` unless the name ends `Hover`.
+`css_tier` is `desktop` for every responsive-object attribute below (the tier is carried inside the object, as `borderRadius` already does); `css_state` is `null` unless the name ends `Hover`.
 
 | Attribute | Type / default | Control | `css_property` | `css_element` | `derived_selector` | `role` | `box_family` |
 |---|---|---|---|---|---|---|---|
@@ -156,11 +134,7 @@ the object, as `borderRadius` already does); `css_state` is `null` unless the na
 
 ### 2b. Typography families (one `TypographyControls` call each, no bespoke controls)
 
-Each prefix expands to the component's standard attribute set
-(`{p}FontSize`, `{p}FontSizeUnit`, `{p}FontSizeTablet`, `{p}FontSizeMobile`, `{p}FontFamily`,
-`{p}FontWeight`, `{p}FontStyle`, `{p}LineHeight`, `{p}LineHeightUnit`, `{p}LetterSpacing`,
-`{p}LetterSpacingUnit`, `{p}TextTransform`, `{p}TextDecoration`, `{p}TextAlign`, `{p}TextWrap`),
-rendered server-side by the one shared `sgs_typography_css_rule()` helper.
+Each prefix expands to the component's standard attribute set (`{p}FontSize`, `{p}FontSizeUnit`, `{p}FontSizeTablet`, `{p}FontSizeMobile`, `{p}FontFamily`, `{p}FontWeight`, `{p}FontStyle`, `{p}LineHeight`, `{p}LineHeightUnit`, `{p}LetterSpacing`, `{p}LetterSpacingUnit`, `{p}TextTransform`, `{p}TextDecoration`, `{p}TextAlign`, `{p}TextWrap`), rendered server-side by the one shared `sgs_typography_css_rule()` helper.
 
 | Prefix | `derived_selector` for every member (one `attr-classification-overrides.json` entry per attr) | Draft value it carries |
 |---|---|---|
@@ -178,29 +152,19 @@ rendered server-side by the one shared `sgs_typography_css_rule()` helper.
 | `writeReview` | `.sgs-google-reviews__write-review` | 14px / 500 |
 | `seeAll` | `.sgs-google-reviews__see-all` | 14px / 500 |
 
-**Count: 74 new named attributes (2a) + 13 typography families (2b).** Inspector cost is only
-**13 extra panel rows**, because each typography family is one component call.
+**Count: 74 new named attributes (2a) + 13 typography families (2b).** Inspector cost is only **13 extra panel rows**, because each typography family is one component call.
 
 ### 2c. New BEM classes `render.php` must emit (none exist today)
 
-`__source-label` · `__score` (on the existing `<strong>`) · `__card-logo` · `__review-link` ·
-`__footnote` · `__see-all`. Verified absent by
-`grep -oE 'sgs-google-reviews__[a-z-]+' render.php | sort -u`.
+`__source-label` · `__score` (on the existing `<strong>`) · `__card-logo` · `__review-link` · `__footnote` · `__see-all`. Verified absent by `grep -oE 'sgs-google-reviews__[a-z-]+' render.php | sort -u`.
 
 ---
 
 ## 3. Presets — ready-made looks
 
-**Mechanism: extend the existing `cardStyle` attribute. No new mechanism, no new code.**
-`cardStyle` is already declared in `block.json::supports.sgs.presetSelectors` and already has
-three auto-derived `preset_implications` rows (`bordered`→`border` present, `elevated`→
-`box-shadow` present, `flat`→neutral). `/sgs-update` re-derives those rows from `style.css`, so
-adding a `.sgs-google-reviews--card-{slug}` rule block is all that is needed for the DB to learn
-the new preset. Relabel the control "Card look".
+**Mechanism: extend the existing `cardStyle` attribute. No new mechanism, no new code.** `cardStyle` is already declared in `block.json::supports.sgs.presetSelectors` and already has three auto-derived `preset_implications` rows (`bordered`→`border` present, `elevated`→ `box-shadow` present, `flat`→neutral). `/sgs-update` re-derives those rows from `style.css`, so adding a `.sgs-google-reviews--card-{slug}` rule block is all that is needed for the DB to learn the new preset. Relabel the control "Card look".
 
-`blocks.variant_attr` is **NULL** for this block and `variant` is the *display type*, not a look
-— so the `variant_slots` route is the wrong one here (that table stores the discriminating slots
-of a composite's structural variants, e.g. `sgs/hero` `split`).
+`blocks.variant_attr` is **NULL** for this block and `variant` is the *display type*, not a look — so the `variant_slots` route is the wrong one here (that table stores the discriminating slots of a composite's structural variants, e.g. `sgs/hero` `split`).
 
 | Preset slug | Who it suits | Implied values |
 |---|---|---|
@@ -213,19 +177,11 @@ of a composite's structural variants, e.g. `sgs/hero` `split`).
 
 ### How a draft value still beats a preset
 
-A preset rule is written at **two classes**:
-`.sgs-google-reviews--card-google-card .sgs-google-reviews__review { … }` → specificity (0,2,0).
+A preset rule is written at **two classes**: `.sgs-google-reviews--card-google-card .sgs-google-reviews__review { … }` → specificity (0,2,0).
 
-An attribute-driven rule is written by `render.php` into the block's scoped `<style>` at
-**three classes**: `.{$gr_uid}.wp-block-sgs-google-reviews .sgs-google-reviews__review { … }`
-→ specificity (0,3,0), using the existing `$gr_root_sel` that `render.php` already builds.
+An attribute-driven rule is written by `render.php` into the block's scoped `<style>` at **three classes**: `.{$gr_uid}.wp-block-sgs-google-reviews .sgs-google-reviews__review { … }` → specificity (0,3,0), using the existing `$gr_root_sel` that `render.php` already builds.
 
-**(0,3,0) > (0,2,0), so any value the pipeline writes into an attribute always paints over the
-preset.** Presets are therefore pure starting points and need no converter policy change — the
-converter can keep emitting whatever `cardStyle` it detects (the Eye Care run already emits
-`"cardStyle":"bordered"`) without ever contesting a routed draft value. Gate this claim in
-Task 4 with a negative control: set `cardStyle:"elevated"` **and** `cardBorderRadius 8px`, assert
-the live computed `border-radius` is `8px`.
+**(0,3,0) > (0,2,0), so any value the pipeline writes into an attribute always paints over the preset.** Presets are therefore pure starting points and need no converter policy change — the converter can keep emitting whatever `cardStyle` it detects (the Eye Care run already emits `"cardStyle":"bordered"`) without ever contesting a routed draft value. Gate this claim in Task 4 with a negative control: set `cardStyle:"elevated"` **and** `cardBorderRadius 8px`, assert the live computed `border-radius` is `8px`.
 
 ---
 
@@ -241,13 +197,7 @@ the live computed `border-radius` is `8px`.
 | `wall` | Dense masonry of short cards; pairs with `wall-tile` | ✓ |
 | `badge` / `floating-badge` | Compact aggregate-only chip; breakdown suppressed | ✓ |
 
-**Editor canvas:** no plan change is needed. `edit.js` already mounts `<ServerSideRender>` and
-`preview-plan.js` + `editor-preview.js` already sanitise attributes and provide Sample / Empty /
-Loading / Error states, so the canvas is **the real `render.php` output for every variant**, with
-real reviews (written, live Google, or the clearly-labelled `dataSource:"placeholder"` set).
-Because the canvas is the server render, every new attribute above appears in the canvas the
-moment `render.php` emits it — no second copy of the layout to keep in step. Task 3's only job is
-the inspector UI plus `editor.css` rules for the new element classes inside the canvas iframe.
+**Editor canvas:** no plan change is needed. `edit.js` already mounts `<ServerSideRender>` and `preview-plan.js` + `editor-preview.js` already sanitise attributes and provide Sample / Empty / Loading / Error states, so the canvas is **the real `render.php` output for every variant**, with real reviews (written, live Google, or the clearly-labelled `dataSource:"placeholder"` set). Because the canvas is the server render, every new attribute above appears in the canvas the moment `render.php` emits it — no second copy of the layout to keep in step. Task 3's only job is the inspector UI plus `editor.css` rules for the new element classes inside the canvas iframe.
 
 ---
 
@@ -261,19 +211,12 @@ the inspector UI plus `editor.css` rules for the new element classes inside the 
 
 **Recommendations on the three "absent" items from D1141:**
 
-- **"See all reviews" → an attribute (`seeAllUrl`/`seeAllLabel`), not a sibling block.** It sits
-  inside the bordered card, on the same flex row as the "Write a review" pill. A sibling block
-  could not be placed there without mirroring the draft's DOM, which R-31-1/rule 1 forbids.
-- **Caption "Google Reviews" → an attribute (`sourceLabel`), not `businessName`.** `block.json`
-  already documents (and the annotator already enforces) that a caption equal to the block's own
-  name is skipped; a dedicated source-label attribute is the honest home for it.
+- **"See all reviews" → an attribute (`seeAllUrl`/`seeAllLabel`), not a sibling block.** It sits inside the bordered card, on the same flex row as the "Write a review" pill. A sibling block could not be placed there without mirroring the draft's DOM, which R-31-1/rule 1 forbids.
+- **Caption "Google Reviews" → an attribute (`sourceLabel`), not `businessName`.** `block.json` already documents (and the annotator already enforces) that a caption equal to the block's own name is skipped; a dedicated source-label attribute is the honest home for it.
 - **Footnote → an attribute (`footnote`).** Same in-card layout argument as "See all reviews".
-- **Scrollbar → an attribute (`scrollbar` + `scrollbarColour`).** It is pure presentation of the
-  block's own rail; there is nothing for a sibling block to be.
+- **Scrollbar → an attribute (`scrollbar` + `scrollbarColour`).** It is pure presentation of the block's own rail; there is nothing for a sibling block to be.
 
-Nothing here needs a hardcoded dict: every routing decision is a `block_attributes` row
-(`css_property`/`css_element`/`css_state`/`derived_selector`/`role`) plus one
-`attr-classification-overrides.json` entry per attribute, seeded by `/sgs-update`.
+Nothing here needs a hardcoded dict: every routing decision is a `block_attributes` row (`css_property`/`css_element`/`css_state`/`derived_selector`/`role`) plus one `attr-classification-overrides.json` entry per attribute, seeded by `/sgs-update`.
 
 ---
 
@@ -283,12 +226,9 @@ Nothing here needs a hardcoded dict: every routing decision is a `block_attribut
 
 ### T1 — Schema + DB (blocking)
 **Files:** `src/blocks/google-reviews/block.json` · `scripts/attr-classification-overrides.json`
-**Do:** add all §2a + §2b attributes; add `elements` entries for the new prefixes (`header`,
-`review`, `avatar`, `author`, `meta`, `date`, `text`, `score`, `count`, `source-label`,
-`footnote`, `review-link`, `card-logo`, `see-all`, `list`, `google-logo`, `aggregate-star`) with
-their `attrMap`; extend `supports.sgs.boxFamilies`; extend the `cardStyle` enum with the five new
-preset slugs; add one override entry per attribute carrying `derived_selector` (+ `role` where
-the suffix rule would mis-derive it).
+
+**Do:** add all §2a + §2b attributes; add `elements` entries for the new prefixes (`header`, `review`, `avatar`, `author`, `meta`, `date`, `text`, `score`, `count`, `source-label`, `footnote`, `review-link`, `card-logo`, `see-all`, `list`, `google-logo`, `aggregate-star`) with their `attrMap`; extend `supports.sgs.boxFamilies`; extend the `cardStyle` enum with the five new preset slugs; add one override entry per attribute carrying `derived_selector` (+ `role` where the suffix rule would mis-derive it).
+
 **Accept:**
 ```bash
 python plugins/sgs-blocks/scripts/sgs-update-v2.py            # reseed
@@ -297,44 +237,26 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \
   "SELECT enum_value, implied_property, is_neutral FROM preset_implications WHERE block_slug='sgs/google-reviews'"
 ```
-Pass = every §2a/§2b attribute has a non-null `derived_selector`; `preset_implications` shows
-8 `cardStyle` rows; `python plugins/sgs-blocks/scripts/consistency/check_db_consistency.py` green.
+Pass = every §2a/§2b attribute has a non-null `derived_selector`; `preset_implications` shows 8 `cardStyle` rows; `python plugins/sgs-blocks/scripts/consistency/check_db_consistency.py` green.
 
 ### T2 — Server render + stylesheet
 **Files:** `src/blocks/google-reviews/render.php` · `src/blocks/google-reviews/style.css`
-**Do:** emit the six new BEM classes (§2c); emit every §2a/§2b value into `$gr_responsive_css` at
-`$gr_root_sel` scope; call `sgs_button_element_style_css($attributes,'seeAll', …)` alongside the
-two existing calls; call `sgs_typography_css_rule()` once per §2b prefix; delete the hardcoded
-`width:60px`/`opacity:.7` on `__google-logo`, the `-webkit-line-clamp:4`, the `40px`/`50%` avatar
-box, the `44px` arrow box and the unconditional scrollbar hiding, replacing each with a
-`:where()`-wrapped zero-specificity default; add the five new `--card-{slug}` preset rule blocks.
-**Accept:** `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 ·
-`php -l` on render.php · `composer run phpcs -- src/blocks/google-reviews` ·
-`python plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py` green.
+
+**Do:** emit the six new BEM classes (§2c); emit every §2a/§2b value into `$gr_responsive_css` at `$gr_root_sel` scope; call `sgs_button_element_style_css($attributes,'seeAll', …)` alongside the two existing calls; call `sgs_typography_css_rule()` once per §2b prefix; delete the hardcoded `width:60px`/`opacity:.7` on `__google-logo`, the `-webkit-line-clamp:4`, the `40px`/`50%` avatar box, the `44px` arrow box and the unconditional scrollbar hiding, replacing each with a `:where()`-wrapped zero-specificity default; add the five new `--card-{slug}` preset rule blocks.
+
+**Accept:** `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 · `php -l` on render.php · `composer run phpcs -- src/blocks/google-reviews` · `python plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py` green.
 
 ### T3 — Editor UI
-**Files:** `src/blocks/google-reviews/edit.js` · `editor-preview.js` · `preview-plan.js` ·
-`editor.css` · `components/WrittenReviewsPanel.js`
-**Do:** add ToolsPanel sections — *Card*, *Header*, *Reviewer*, *Review text*, *Buttons*,
-*Navigation* — each built from `TypographyControls` / `SgsColourPanel` / `SgsBoxControl` /
-`ResponsiveControl` / `DesignTokenPicker`; no bespoke control. Import `ToolsPanel` /
-`ToolsPanelItem` from `../../components/primitives` **only** (D1141: the unprefixed import is the
-crash). Add a "Card look" `SelectControl` for the extended `cardStyle`.
-**Accept:** `npm --prefix plugins/sgs-blocks run build` clean ·
-`npx jest plugins/sgs-blocks/tests/js --testPathPattern google-reviews` ·
-`node plugins/sgs-blocks/scripts/survey-experimental-imports.js` exits 0 ·
-`node plugins/sgs-blocks/scripts/qa/check-editor-render-parity.js` reports every new attribute
-reflected in the canvas · `node plugins/sgs-blocks/scripts/check-dead-controls.js` 0 dead.
+**Files:** `src/blocks/google-reviews/edit.js` · `editor-preview.js` · `preview-plan.js` · `editor.css` · `components/WrittenReviewsPanel.js`
+
+**Do:** add ToolsPanel sections — *Card*, *Header*, *Reviewer*, *Review text*, *Buttons*, *Navigation* — each built from `TypographyControls` / `SgsColourPanel` / `SgsBoxControl` / `ResponsiveControl` / `DesignTokenPicker`; no bespoke control. Import `ToolsPanel` / `ToolsPanelItem` from `../../components/primitives` **only** (D1141: the unprefixed import is the crash). Add a "Card look" `SelectControl` for the extended `cardStyle`.
+
+**Accept:** `npm --prefix plugins/sgs-blocks run build` clean · `npx jest plugins/sgs-blocks/tests/js --testPathPattern google-reviews` · `node plugins/sgs-blocks/scripts/survey-experimental-imports.js` exits 0 · `node plugins/sgs-blocks/scripts/qa/check-editor-render-parity.js` reports every new attribute reflected in the canvas · `node plugins/sgs-blocks/scripts/check-dead-controls.js` 0 dead.
 
 ### T4 — Tests + live verification
-**Files:** `plugins/sgs-blocks/tests/**` (new `google-reviews-attrs` suites) ·
-`reports/visual-diff/2026-09-21-google-reviews.md`
-**Do:** a unit test per §2a group asserting the emitted CSS; a **negative control** per preset
-(disable the preset rule, assert the test fails); the specificity negative control from §3.
-Then deploy and measure live.
-**Accept (live, `--target eye-care-test`, real headed Chrome, one window):**
-`python plugins/sgs-blocks/scripts/build-deploy.py --target eye-care-test`, then Playwright
-`getComputedStyle` keyed by text content, at **1440** and **375**:
+**Files:** `plugins/sgs-blocks/tests/**` (new `google-reviews-attrs` suites) · `reports/visual-diff/2026-09-21-google-reviews.md`
+
+**Do:** a unit test per §2a group asserting the emitted CSS; a **negative control** per preset (disable the preset rule, assert the test fails); the specificity negative control from §3. Then deploy and measure live. **Accept (live, `--target eye-care-test`, real headed Chrome, one window):** `python plugins/sgs-blocks/scripts/build-deploy.py --target eye-care-test`, then Playwright `getComputedStyle` keyed by text content, at **1440** and **375**:
 
 | Element | 1440 must equal | 375 must equal |
 |---|---|---|
@@ -355,48 +277,29 @@ Plus `Stage 11.6 computed-parity.json` for the reviews section, and Bean's eye (
 ## 7. Risks and open questions — ranked
 
 ### R1 ⛔ NEEDS BEAN'S APPROVAL — the inline-CSS fold is a shared-mechanism change
-**Problem.** The converter's per-area fold routes a declaration by **element name** only. The
-Eye Care draft styles every element **inline**, so a declaration whose target is identified by an
-attribute's `derived_selector` is reported skipped, never routed. This is already recorded in
-D1141 and in twelve `attr-classification-overrides.json` `_reason` fields.
-**Effect.** Without it, **every attribute in §2 stays at its default on this draft.** The block
-gains the controls (real client value, real editor UI) but the pipeline still produces a
-non-faithful clone — the gold stars stay taupe and the pill stays black.
-**Recommendation.** Approve the fold change: honour `derived_selector` for inline declarations
-exactly as `styling_content.py` already does for class CSS. It is one shared mechanism, it is the
-*only* thing standing between this design and a faithful clone, and it is gated by an existing
-test (`test_area_css_skip_reporting.py`) that will show the skip rows disappearing.
-**This is a converter change and must not be built before Bean says yes** (project rule 7).
+**Problem.** The converter's per-area fold routes a declaration by **element name** only. The Eye Care draft styles every element **inline**, so a declaration whose target is identified by an attribute's `derived_selector` is reported skipped, never routed. This is already recorded in D1141 and in twelve `attr-classification-overrides.json` `_reason` fields.
+
+**Effect.** Without it, **every attribute in §2 stays at its default on this draft.** The block gains the controls (real client value, real editor UI) but the pipeline still produces a non-faithful clone — the gold stars stay taupe and the pill stays black.
+
+**Recommendation.** Approve the fold change: honour `derived_selector` for inline declarations exactly as `styling_content.py` already does for class CSS. It is one shared mechanism, it is the *only* thing standing between this design and a faithful clone, and it is gated by an existing test (`test_area_css_skip_reporting.py`) that will show the skip rows disappearing. **This is a converter change and must not be built before Bean says yes** (project rule 7).
 
 ### R2 — 74 new attributes is a lot of surface
 **Problem.** The block already has 76 attributes; this roughly doubles it.
-**Effect.** Risk of an inspector a tech-illiterate client cannot navigate, and of a future
-"dead control" (an attribute with no visible effect).
-**Recommendation.** Ship it, but with two guards, both of which already exist in the tree:
-`check-dead-controls.js` in T3's acceptance (catches any attribute with no render path), and the
-six-section ToolsPanel grouping so the panel opens collapsed and shows ~13 rows, not 74. The
-alternative — fewer attributes — simply moves the gap back to "cannot clone the draft", which is
-the thing we are fixing.
+
+**Effect.** Risk of an inspector a tech-illiterate client cannot navigate, and of a future "dead control" (an attribute with no visible effect).
+
+**Recommendation.** Ship it, but with two guards, both of which already exist in the tree: `check-dead-controls.js` in T3's acceptance (catches any attribute with no render path), and the six-section ToolsPanel grouping so the panel opens collapsed and shows ~13 rows, not 74. The alternative — fewer attributes — simply moves the gap back to "cannot clone the draft", which is the thing we are fixing.
 
 ### R3 — Two header CTAs where the block has one
-**Problem.** The draft header carries **both** "See all reviews" (filled) and "Write a review"
-(outlined); the block has only `reviewRequestUrl`. The annotator currently maps one anchor, and
-in a previous run it lifted `"See all reviews"` into `reviewRequestUrl` as *text* (fixed by the
-`link-href` role).
-**Effect.** If the ladder is not extended, one of the two pills is silently lost, or the wrong
-URL lands in the wrong attribute.
-**Recommendation.** Add the `seeAll*` element (§2a) using the same `sgs_button_element_style_css()`
-prefix recipe — zero new mechanism — and extend the header ladder with an **order-keyed** rung
-(first header anchor → `seeAllUrl`, second → `reviewRequestUrl`), with both anchors' absence
-reported per class under rule 4. This is annotator work inside `manifest_annotation.py`'s existing
-header ladder, not a new shared mechanism, so it does **not** need a separate approval gate — but
-flag the ladder diff in the T1 review.
+**Problem.** The draft header carries **both** "See all reviews" (filled) and "Write a review" (outlined); the block has only `reviewRequestUrl`. The annotator currently maps one anchor, and in a previous run it lifted `"See all reviews"` into `reviewRequestUrl` as *text* (fixed by the `link-href` role).
+
+**Effect.** If the ladder is not extended, one of the two pills is silently lost, or the wrong URL lands in the wrong attribute.
+
+**Recommendation.** Add the `seeAll*` element (§2a) using the same `sgs_button_element_style_css()` prefix recipe — zero new mechanism — and extend the header ladder with an **order-keyed** rung (first header anchor → `seeAllUrl`, second → `reviewRequestUrl`), with both anchors' absence reported per class under rule 4. This is annotator work inside `manifest_annotation.py`'s existing header ladder, not a new shared mechanism, so it does **not** need a separate approval gate — but flag the ladder diff in the T1 review.
 
 ---
 
 ## Open, tracked
 
-- R1 blocks fidelity but **not** this build: T1–T4 are all valuable and all shippable without it.
-  Build them, then land the fold change once approved and re-run the Eye Care clone.
-- The two `dotColourGradient` / `dotColourHoverGradient` rows have `css_property` NULL in the DB
-  (verified by the §0 query) — pre-existing, out of scope here, worth a separate fix.
+- R1 blocks fidelity but **not** this build: T1–T4 are all valuable and all shippable without it. Build them, then land the fold change once approved and re-run the Eye Care clone.
+- The two `dotColourGradient` / `dotColourHoverGradient` rows have `css_property` NULL in the DB (verified by the §0 query) — pre-existing, out of scope here, worth a separate fix.

@@ -10,10 +10,7 @@ first_paint_capture_passed: true
 
 # sgs/site-footer-row — live verification (D325)
 
-The footer's row block (layout KIND) — a grid column-grid (columns row) or a
-flex cluster (top strip / bottom bar), delegating outer render to
-`SGS_Container_Wrapper` per composite-mirror. Verified live as the row inside
-`sgs/site-footer` (full detail + screenshot in `site-footer-2026-07-13.md`).
+The footer's row block (layout KIND) — a grid column-grid (columns row) or a flex cluster (top strip / bottom bar), delegating outer render to `SGS_Container_Wrapper` per composite-mirror. Verified live as the row inside `sgs/site-footer` (full detail + screenshot in `site-footer-2026-07-13.md`).
 
 ## Computed-value checks (live DOM, deployed + caches cleared)
 
@@ -25,6 +22,4 @@ flex cluster (top strip / bottom bar), delegating outer render to
 | empty `--top` row | zero DOM output | — | — | PASS |
 | no inline `style=""` on wrapper | none (scoped `<style>`) | — | — | PASS |
 
-first_paint_capture_passed: true — footer screenshot captured at desktop
-(`site-footer-desktop-2026-07-13.png`); dark band + 3-column layout render on
-first paint, matching the draft `.mm-footer`.
+first_paint_capture_passed: true — footer screenshot captured at desktop (`site-footer-desktop-2026-07-13.png`); dark band + 3-column layout render on first paint, matching the draft `.mm-footer`.

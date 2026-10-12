@@ -11,8 +11,7 @@ canary_page: /sgs-configurator-test-540/ (page 589, fixture product 540)
 
 ## verdict: PASS
 ## first_paint_capture_passed: true
-Bound variable card SSRs concrete default price/image/title + two option-pickers (no-JS safe);
-`data-wp-*` bindings are enhancement only and resolve to the seeded literals server-side (no wipe).
+Bound variable card SSRs concrete default price/image/title + two option-pickers (no-JS safe); `data-wp-*` bindings are enhancement only and resolve to the seeded literals server-side (no wipe).
 
 ## Evidence (live, canary page 589, fixture 540 = 48 SKUs)
 
@@ -53,8 +52,7 @@ Bound variable card SSRs concrete default price/image/title + two option-pickers
 Bean's visual review (the co-authoritative gate) caught what the automated gates missed:
 - **Card width** — the bound card stretched to the full 1200px content width (placeholder image became a 1198×220 strip). Root cause: WP's constrained-layout `.wp-container-… > :where(:not(.alignfull)){max-width:1200px}` ties the card's own `.product-card{max-width:380px}` (both (0,1,0)) and wins on source order. Fixed with `.product-card.product-card--bound{max-width:380px}` (0,2,0). **Live-verified: card offsetWidth 1200→380, image 1198→378.**
 - **Resting pill outline** — unchecked pills had a dark-brown (`#3a2e26`) border; only the selected pill was pink. Fixed: `.product-card--bound .sgs-option-picker{--sgs-op-border: var(--wp--preset--color--primary)}`. **Live-verified: unchecked border now rgb(230,138,149) pink.**
-- **Card hover** — none existed. Added a Bound-scoped lift + shadow (`translateY(-4px)` + deeper shadow), reduced-motion-guarded. **Live-verified: transition-property = transform, box-shadow.**
-All three are new `.product-card--bound`-scoped selectors — page-144 Typed clones byte-identical. product-card 1.6.3→1.6.4.
+- **Card hover** — none existed. Added a Bound-scoped lift + shadow (`translateY(-4px)` + deeper shadow), reduced-motion-guarded. **Live-verified: transition-property = transform, box-shadow.** All three are new `.product-card--bound`-scoped selectors — page-144 Typed clones byte-identical. product-card 1.6.3→1.6.4.
 
 ### Bean R-22-13 round 2 (product-page links + readability + cart feedback)
 Bean's second review pass + a `/research-buddies` study (Heydon Pickering Inclusive Components, Adrian Roselli, Kitty Giraudel, Smashing/Kalcevich, HTML spec, WooCommerce convention):
@@ -72,8 +70,4 @@ Bean's second review pass + a `/research-buddies` study (Heydon Pickering Inclus
 - New CSS selectors only; no shared `.price`/`.price-row`/option-picker rule modified → pixel-diff-safe for page-144 Typed clones.
 
 ## Review
-Opus line-by-line + multi-rater cross-model council per unit (Sonnet + Haiku; Gemini/Cerebras
-unavailable — billing/access). Fixes folded: U3 currency-entity decode + mod_ts-0 cache +
-pctOff floor + publish gate; U4 colon-event `data-wp-init` bridge (latent Phase-C wiring bug);
-U5 409 price-survival merge + absent-combo→OOS + selected-stock refresh + >200-variation
-resource guard. `npm run build` green; `php -l` clean; WPCS 0 errors; no save() change → no deprecation.
+Opus line-by-line + multi-rater cross-model council per unit (Sonnet + Haiku; Gemini/Cerebras unavailable — billing/access). Fixes folded: U3 currency-entity decode + mod_ts-0 cache + pctOff floor + publish gate; U4 colon-event `data-wp-init` bridge (latent Phase-C wiring bug); U5 409 price-survival merge + absent-combo→OOS + selected-stock refresh + >200-variation resource guard. `npm run build` green; `php -l` clean; WPCS 0 errors; no save() change → no deprecation.

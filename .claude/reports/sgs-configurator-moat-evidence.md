@@ -10,17 +10,12 @@ canary: https://sandybrown-nightingale-600381.hostingersite.com/sgs-configurator
 
 # SGS Configurator — moat-evidence sheet (FR-27-J1)
 
-Every claim SGS makes about the variable-product configurator carries (1) a concrete
-test, (2) the evidence, and (3) a **durability rating** so we know which claims are a
-defensible moat and which are copyable features we ship anyway.
+Every claim SGS makes about the variable-product configurator carries (1) a concrete test, (2) the evidence, and (3) a **durability rating** so we know which claims are a defensible moat and which are copyable features we ship anyway.
 
 **Durability legend**
-- **structural** — the end-to-end closed loop (SGS builds the shop AND it renders
-  accessibly + SEO-complete, no plugin-stitching). The real, hard-to-copy moat.
-- **first-mover** — true today, copyable in principle; the advantage is planting the
-  claim loudly first (and backing it with evidence).
-- **expiring** — a real edge now that erodes as the ecosystem catches up; ride it,
-  don't bank on it.
+- **structural** — the end-to-end closed loop (SGS builds the shop AND it renders accessibly + SEO-complete, no plugin-stitching). The real, hard-to-copy moat.
+- **first-mover** — true today, copyable in principle; the advantage is planting the claim loudly first (and backing it with evidence).
+- **expiring** — a real edge now that erodes as the ecosystem catches up; ride it, don't bank on it.
 - **feature** — a genuine user benefit a competitor can replicate; ship it anyway.
 
 ---

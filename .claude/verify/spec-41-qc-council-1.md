@@ -9,27 +9,15 @@ verdict: GO
 
 # QA-1 / qc-council #1 — Spec 41 nav-menu colour/state plan, steps 3–19
 
-**Verdict: GO.** Steps 3–19 as currently written may be dispatched. No step is an unproven
-hypothesis; every step cites a spec FR or an owner ruling with a runnable test. All three
-named pressure-tests resolve in the plan's favour, confirming the defaults it already chose.
+**Verdict: GO.** Steps 3–19 as currently written may be dispatched. No step is an unproven hypothesis; every step cites a spec FR or an owner ruling with a runnable test. All three named pressure-tests resolve in the plan's favour, confirming the defaults it already chose.
 
-**Disclosure on method:** this run did not use the full 9-stage multi-persona council with
-parallel independently-modelled raters voting to a certainty score. It ran as three
-Sonnet-model sub-agents dispatched in parallel for the three named pressure-tests
-(empirical, tool-verified, not opinion), plus a single inline reviewer (me) reading the
-plan's steps 3–19 in full, cross-checking each step's Action/Files/Test blocks against the
-live tree, and independently re-verifying one sub-agent's claim by hand where it looked
-overstated (see pressure-test (a) below). This is a lighter-weight version of Stage 1–5 than
-the full canonical-personas structure — flagged per this task's own instruction to disclose
-rather than silently skip the multi-rater shape.
+**Disclosure on method:** this run did not use the full 9-stage multi-persona council with parallel independently-modelled raters voting to a certainty score. It ran as three Sonnet-model sub-agents dispatched in parallel for the three named pressure-tests (empirical, tool-verified, not opinion), plus a single inline reviewer (me) reading the plan's steps 3–19 in full, cross-checking each step's Action/Files/Test blocks against the live tree, and independently re-verifying one sub-agent's claim by hand where it looked overstated (see pressure-test (a) below). This is a lighter-weight version of Stage 1–5 than the full canonical-personas structure — flagged per this task's own instruction to disclose rather than silently skip the multi-rater shape.
 
 ---
 
 ## Per-step table, steps 3–19
 
-Legend: **Grounded** = cites a spec FR/owner ruling and carries a runnable
-baseline+validation+commit-gate already in the plan's own Test/On-Fail blocks. **Hypothesis**
-= fix-shape asserted without a spec citation or without a runnable check.
+Legend: **Grounded** = cites a spec FR/owner ruling and carries a runnable baseline+validation+commit-gate already in the plan's own Test/On-Fail blocks. **Hypothesis** = fix-shape asserted without a spec citation or without a runnable check.
 
 | Step | Predicted outcome | Baseline command | Validation command | Commit gate | Status |
 |---|---|---|---|---|---|
@@ -54,12 +42,7 @@ baseline+validation+commit-gate already in the plan's own Test/On-Fail blocks. *
 | 18 parent-stays-hovered | 4 rules (mouse+keyboard × bar+drawer fork) | none exist today (new behaviour) | manual DOM interaction + selector-scope check | `:hover`/`:focus-visible` routed through the correct helper, `>` combinator present | Grounded (FR-41-13 verbatim selectors) |
 | 19 migration notice | `register_post_meta` on post+page; dismiss deletes record | none exist today (new mechanism) | REST/WP-CLI round-trip of the meta key | dismissal removes persistence; fresh block shows no notice | Grounded (FR-41-34), directly dependent on pressure-test (c) — CONFIRMED below |
 
-**No step in 3–19 is a bare hypothesis.** Every one traces to a spec FR or an already-ruled
-Hidden Decision, and every one carries a runnable Happy/Edge/Fail/Integration test in the
-plan itself, which is the plan's own internal Stage-5-equivalent validation. The plan has
-already been through one `/qc` pass (78→92) and one prior `/qc-council` fold-in per its own
-"QC + council closure" section — this council's job was to pressure-test the three named
-open questions and the two step-6a/step-7 dependencies, which is what follows.
+**No step in 3–19 is a bare hypothesis.** Every one traces to a spec FR or an already-ruled Hidden Decision, and every one carries a runnable Happy/Edge/Fail/Integration test in the plan itself, which is the plan's own internal Stage-5-equivalent validation. The plan has already been through one `/qc` pass (78→92) and one prior `/qc-council` fold-in per its own "QC + council closure" section — this council's job was to pressure-test the three named open questions and the two step-6a/step-7 dependencies, which is what follows.
 
 ---
 
@@ -83,36 +66,13 @@ grep -n "render-helpers|helpers-tokens|helpers-colour-variants|helpers-hover-sta
      plugins/sgs-blocks/sgs-blocks.php plugins/sgs-blocks/includes/*.php       → traced the real load chain
 ```
 
-**Answer: YES on all three sub-questions**, with one correction to the sub-agent's own
-diagnostic (fact-checked per this project's `prove-the-cause-before-fix` rule):
+**Answer: YES on all three sub-questions**, with one correction to the sub-agent's own diagnostic (fact-checked per this project's `prove-the-cause-before-fix` rule):
 
-1. **`--webpack-copy-php` is irrelevant to whether `includes/*.php` ships** — it only copies
-   each block's own `render.php` into `build/`. The `includes/` directory is not a build
-   artefact at all; it ships as plain plugin PHP. The real question is whether it's *loaded*.
-   There are **two different categories of `includes/` file** in this codebase, and the
-   sub-agent's first answer conflated them:
-   - **Shared, framework-wide helpers** (`helpers-tokens.php`, `helpers-colour-variants.php`,
-     `helpers-hover-state.php`) ARE loaded globally at plugin bootstrap, via
-     `render-helpers.php`, which is required by `hover-effects.php`
-     (`includes/hover-effects.php:226`), which IS in `sgs-blocks.php`'s bootstrap list
-     (line 93).
-   - **Per-block private includes files** (`product-card-builtin-render.php`, and the new
-     `nav-menu-css.php` / `nav-menu-markup.php` / `nav-menu-submenu-css.php` this plan
-     creates) are **NOT** in `sgs-blocks.php`'s bootstrap list at all. They are loaded
-     on-demand, per-instance, from their own block's `render.php` — exactly the pattern
-     step 8 proposes. This is the correct, established, working mechanism; no addition to
-     `sgs-blocks.php`'s loader is needed. The sub-agent's initial claim that "the whole
-     includes/ directory ships as-is, loaded once by sgs-blocks.php" was **wrong for this
-     category of file** — verified false by grep (`product-card-builtin-render.php` is
-     absent from the ~90-line bootstrap list).
-2. **`dirname(__DIR__,3)` path arithmetic is correct in both trees.** `src/blocks/nav-menu/`
-   and (post-build) `build/blocks/nav-menu/` sit at the same folder depth relative to the
-   plugin root, and `product-card`'s identical live call proves it empirically, not just
-   theoretically.
-3. **Survives a second instance on one page: YES.** `require_once` is path-idempotent, and
-   the precedent files additionally guard every function/class declaration with
-   `function_exists()`/`class_exists()`. Step 8's prompt already mandates this guard
-   explicitly and names the exact fatal it prevents.
+1. **`--webpack-copy-php` is irrelevant to whether `includes/*.php` ships** — it only copies each block's own `render.php` into `build/`. The `includes/` directory is not a build artefact at all; it ships as plain plugin PHP. The real question is whether it's *loaded*. There are **two different categories of `includes/` file** in this codebase, and the sub-agent's first answer conflated them:
+   - **Shared, framework-wide helpers** (`helpers-tokens.php`, `helpers-colour-variants.php`, `helpers-hover-state.php`) ARE loaded globally at plugin bootstrap, via `render-helpers.php`, which is required by `hover-effects.php` (`includes/hover-effects.php:226`), which IS in `sgs-blocks.php`'s bootstrap list (line 93).
+   - **Per-block private includes files** (`product-card-builtin-render.php`, and the new `nav-menu-css.php` / `nav-menu-markup.php` / `nav-menu-submenu-css.php` this plan creates) are **NOT** in `sgs-blocks.php`'s bootstrap list at all. They are loaded on-demand, per-instance, from their own block's `render.php` — exactly the pattern step 8 proposes. This is the correct, established, working mechanism; no addition to `sgs-blocks.php`'s loader is needed. The sub-agent's initial claim that "the whole includes/ directory ships as-is, loaded once by sgs-blocks.php" was **wrong for this category of file** — verified false by grep (`product-card-builtin-render.php` is absent from the ~90-line bootstrap list).
+2. **`dirname(__DIR__,3)` path arithmetic is correct in both trees.** `src/blocks/nav-menu/` and (post-build) `build/blocks/nav-menu/` sit at the same folder depth relative to the plugin root, and `product-card`'s identical live call proves it empirically, not just theoretically.
+3. **Survives a second instance on one page: YES.** `require_once` is path-idempotent, and the precedent files additionally guard every function/class declaration with `function_exists()`/`class_exists()`. Step 8's prompt already mandates this guard explicitly and names the exact fatal it prevents.
 
 **No plan-file fix needed.** Step 8 as written matches the verified-correct mechanism.
 
@@ -130,21 +90,9 @@ grep -n "31-golden-colour-control\|edit.js\|src/components" scripts/inspector-sc
   → line 257:   if ( ! fs.existsSync( editFile ) ) continue;
 ```
 
-**Answer: YES — moving `colourRows` to a block-folder sibling module WOULD break the
-detector.** The corpus is hardcoded to exactly two things: each block's own `edit.js` (built
-from `BLOCKS_DIR + entry.tail + 'edit.js'`, a fixed filename, not a glob) and the single
-fixed `COMPONENTS_DIR` (`src/components/`). There is no third path. A sub-module living
-beside `edit.js` in the same block folder (e.g. `ColourControls.js`) is in neither corpus —
-an imported `colourRows` would resolve to nothing and every row would silently score zero
-states while the editor renders correctly. This is exactly the D738 "code improved, gate
-went blind" failure the plan already names.
+**Answer: YES — moving `colourRows` to a block-folder sibling module WOULD break the detector.** The corpus is hardcoded to exactly two things: each block's own `edit.js` (built from `BLOCKS_DIR + entry.tail + 'edit.js'`, a fixed filename, not a glob) and the single fixed `COMPONENTS_DIR` (`src/components/`). There is no third path. A sub-module living beside `edit.js` in the same block folder (e.g. `ColourControls.js`) is in neither corpus — an imported `colourRows` would resolve to nothing and every row would silently score zero states while the editor renders correctly. This is exactly the D738 "code improved, gate went blind" failure the plan already names.
 
-This **confirms owner ruling 3 empirically** (previously a static read; now proven against
-the real `run.js` source, not inferred). Steps 7, 13 and 14 are all written consistently
-with this: step 7's prompt explicitly forbids moving `colourRows` out of `edit.js` and
-requires a before/after `inspector-scan/run.js --check` diff showing identical per-row state
-counts; step 13 restates the same constraint and the same test; step 14 explicitly repeats
-the prohibition a third time. **No plan-file fix needed.**
+This **confirms owner ruling 3 empirically** (previously a static read; now proven against the real `run.js` source, not inferred). Steps 7, 13 and 14 are all written consistently with this: step 7's prompt explicitly forbids moving `colourRows` out of `edit.js` and requires a before/after `inspector-scan/run.js --check` diff showing identical per-row state counts; step 13 restates the same constraint and the same test; step 14 explicitly repeats the prohibition a third time. **No plan-file fix needed.**
 
 ---
 
@@ -161,28 +109,14 @@ grep -rn "useEntityProp" plugins/sgs-blocks/src/ --include=*.js
   → exactly one usage: product-variation-sets/index.js, postType = sgs_product
 ```
 
-**Answer: YES, reachable — this is standard WordPress core-data/REST behaviour, independent
-of post type.** There is no structural reason `post`/`page` would behave differently from
-the plugin's existing `sgs_product`-family registrations, provided `show_in_rest` is set
-truthy on the registration (both `post` and `page` already expose `show_in_rest => true` by
-core default at the post-type level). The only registrations in this plugin that are NOT
-REST-reachable (`product`, `wp_template_part`) are ones that deliberately set
-`show_in_rest => false` — a chosen config, not a `post`/`page` limitation.
+**Answer: YES, reachable — this is standard WordPress core-data/REST behaviour, independent of post type.** There is no structural reason `post`/`page` would behave differently from the plugin's existing `sgs_product`-family registrations, provided `show_in_rest` is set truthy on the registration (both `post` and `page` already expose `show_in_rest => true` by core default at the post-type level). The only registrations in this plugin that are NOT REST-reachable (`product`, `wp_template_part`) are ones that deliberately set `show_in_rest => false` — a chosen config, not a `post`/`page` limitation.
 
-The one real gap is exactly what step 19's own prompt already discloses: **the IDIOM is
-precedented (the `useEntityProp('postType', postType, 'meta')` shape, copied from
-`product-variation-sets`), the REGISTRATION on `post`/`page` specifically is not** — this is
-new work, correctly scoped as such, not a hidden risk. **No plan-file fix needed.**
+The one real gap is exactly what step 19's own prompt already discloses: **the IDIOM is precedented (the `useEntityProp('postType', postType, 'meta')` shape, copied from `product-variation-sets`), the REGISTRATION on `post`/`page` specifically is not** — this is new work, correctly scoped as such, not a hidden risk. **No plan-file fix needed.**
 
 ---
 
 ## Overall verdict: GO
 
-Steps 3–19 may be dispatched as currently written. All three named pressure-tests confirm
-the plan's own chosen defaults (owner rulings 1–7) rather than contradicting them. The one
-finding worth carrying forward (not a plan-file defect, just a fact for the record): the
-`includes/` bootstrap-loading distinction between shared helpers and per-block private
-files, documented above under pressure-test (a), in case a future step's author assumes
-`sgs-blocks.php`'s loader needs a new line — it does not, for this category of file.
+Steps 3–19 may be dispatched as currently written. All three named pressure-tests confirm the plan's own chosen defaults (owner rulings 1–7) rather than contradicting them. The one finding worth carrying forward (not a plan-file defect, just a fact for the record): the `includes/` bootstrap-loading distinction between shared helpers and per-block private files, documented above under pressure-test (a), in case a future step's author assumes `sgs-blocks.php`'s loader needs a new line — it does not, for this category of file.
 
 No NO-GO items. No plan-file revision required before dispatching steps 3–19.

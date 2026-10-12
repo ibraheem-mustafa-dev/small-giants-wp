@@ -1,10 +1,6 @@
 # Visual-diff report — sgs/container (wrapper grid de-cheat) — 2026-06-16
 
-verdict: PASS
-first_paint_capture_passed: true
-block: container
-change: gate sgs-cols-* on empty ratio + unify device-tier breakpoints 599→767 (768/1024 standard)
-decision: D228
+verdict: PASS first_paint_capture_passed: true block: container change: gate sgs-cols-* on empty ratio + unify device-tier breakpoints 599→767 (768/1024 standard) decision: D228
 
 ## What changed (device-tier grid system only)
 - `class-sgs-container-wrapper.php`: emit `sgs-cols-{tablet,mobile}-N` shorthand classes ONLY when that tier has no explicit `gridTemplateColumns*` ratio (so the faithful `@media grid-template-columns` rule wins instead of being crushed by `repeat(N,1fr) !important`). Device-tier mobile breakpoint `599→767` everywhere; tablet `1023` kept.

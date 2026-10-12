@@ -11,18 +11,11 @@ verdict: PASS (for the starter-look surface itself — see scope note)
 
 ## Scope note (read before the verdict)
 
-FR-37-47's Done-when asks for the FR-37-26 proxy arm to be "re-run at least ... against this
-new flow" — i.e. against the Starter Look preset control, not a full re-litigation of the
-original 2026-07-26 test's three items (sticky / phone / drawer). That original test's
-recorded **FAIL** (drawer content unsettable from the header editor) is a separate, still-open
-finding and is NOT superseded here — it belongs to FR-37-49 (drawer post-picker), which is a
-different FR, still `NOT-BUILT`. This run scores the **Starter Look control's own
-operator-simplicity**, discovered live during this session's fix-verification pass.
+FR-37-47's Done-when asks for the FR-37-26 proxy arm to be "re-run at least ... against this new flow" — i.e. against the Starter Look preset control, not a full re-litigation of the original 2026-07-26 test's three items (sticky / phone / drawer). That original test's recorded **FAIL** (drawer content unsettable from the header editor) is a separate, still-open finding and is NOT superseded here — it belongs to FR-37-49 (drawer post-picker), which is a different FR, still `NOT-BUILT`. This run scores the **Starter Look control's own operator-simplicity**, discovered live during this session's fix-verification pass.
 
 ## The test, adapted to this surface
 
-Can a non-coder discover the Starter Look control and apply a complete, ready-made footer
-layout — without opening "Advanced" or touching any jargon field — well under 3 minutes?
+Can a non-coder discover the Starter Look control and apply a complete, ready-made footer layout — without opening "Advanced" or touching any jargon field — well under 3 minutes?
 
 ## Verdict: **PASS**
 
@@ -37,24 +30,14 @@ layout — without opening "Advanced" or touching any jargon field — well unde
 | Reconsider / switch to a different look | Clicking a different button (e.g. "Footer — Simple") re-applies cleanly; the previous choice is not "stuck". | **1 click, <1s** |
 | Undo a mistake | A single Undo (toolbar button / Ctrl+Z) cleanly reverts the whole change — content AND attributes — in one step, verified in this session as part of the Defect 2 fix. | **1 click** |
 
-**Total time from "root block selected" to "complete footer applied": under 10 seconds** — an
-order of magnitude inside the 3-minute floor. Button labels are all plain English pattern
-names ("Footer — Centred", "Footer — Multi-Column", "Footer — Minimal", "Footer — Simple",
-"Start from Scratch — Blank Footer Shell") with zero developer terminology (no `rowSlot`, no
-`sourceMode`, no raw attribute names) anywhere in the visible control.
+**Total time from "root block selected" to "complete footer applied": under 10 seconds** — an order of magnitude inside the 3-minute floor. Button labels are all plain English pattern names ("Footer — Centred", "Footer — Multi-Column", "Footer — Minimal", "Footer — Simple", "Start from Scratch — Blank Footer Shell") with zero developer terminology (no `rowSlot`, no `sourceMode`, no raw attribute names) anywhere in the visible control.
 
 ## What this does NOT prove
 
-- It does not re-test or reverse the original FR-37-26 drawer-content FAIL — that remains open
-  under FR-37-49.
-- It is the automated proxy arm only, same caveat as the 2026-07-26 run: a real blind-tester
-  screen-recorded pass remains the authoritative half and is still outstanding.
-- Root-block selection friction (canvas click landing on a child block) is pre-existing and
-  common to every locked-root block on this CPT family, not something FR-37-47 introduced or
-  is scoped to fix.
+- It does not re-test or reverse the original FR-37-26 drawer-content FAIL — that remains open under FR-37-49.
+- It is the automated proxy arm only, same caveat as the 2026-07-26 run: a real blind-tester screen-recorded pass remains the authoritative half and is still outstanding.
+- Root-block selection friction (canvas click landing on a child block) is pre-existing and common to every locked-root block on this CPT family, not something FR-37-47 introduced or is scoped to fix.
 
 ## Relation to FR-37-47's Done-when
 
-This satisfies the clause "FR-37-26's operator-simplicity test ... is re-run at least via the
-existing Claude-driven proxy arm against this new flow, result recorded pass/fail, not left
-unexercised." Recorded here: **PASS** for the Starter Look control's own simplicity.
+This satisfies the clause "FR-37-26's operator-simplicity test ... is re-run at least via the existing Claude-driven proxy arm against this new flow, result recorded pass/fail, not left unexercised." Recorded here: **PASS** for the Starter Look control's own simplicity.

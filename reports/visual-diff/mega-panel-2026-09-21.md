@@ -1,13 +1,8 @@
 # Live verification — sgs/mega-panel — 2026-09-21 (Wave 3C U-1 commit 4b, and the 4f-1 shadow set as it reaches the panel)
 
-verdict: PASS
-intent_capture_passed: true
-source_sha: e86507d553f5d38f
-commit_sha: 5abaa8981 (4b), deployed with 4f-1 steps 1 to 6 (c279c4aab, 1d5b3ac39)
+verdict: PASS intent_capture_passed: true source_sha: e86507d553f5d38f commit_sha: 5abaa8981 (4b), deployed with 4f-1 steps 1 to 6 (c279c4aab, 1d5b3ac39)
 
-> `source_sha` is the `visual-report-sha.py` recipe applied to the committed bytes of the three
-> mega-panel files changed by 5abaa8981 (`block.json`, `edit.js`, `render.php`). The script reads the
-> git index, which is empty after the commit, so it was recomputed from the commit with the same recipe.
+> `source_sha` is the `visual-report-sha.py` recipe applied to the committed bytes of the three mega-panel files changed by 5abaa8981 (`block.json`, `edit.js`, `render.php`). The script reads the git index, which is empty after the commit, so it was recomputed from the commit with the same recipe.
 
 ## Environment and method
 

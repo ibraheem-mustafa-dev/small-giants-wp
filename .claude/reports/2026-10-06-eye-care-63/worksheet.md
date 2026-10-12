@@ -1,8 +1,6 @@
 # The 63 `not walker-measurable` rows — Phase 1 partition
 
-**2026-10-06.** Source: `.claude/plans/2026-10-02-eye-care-fix-register.md` (read only).
-Count verified: `grep -c "not walker-measurable"` → **63**.
-Live block code: **`578a8830b`**, read from `~/.sgs-deploy-marker-eye-care-test.json`.
+**2026-10-06.** Source: `.claude/plans/2026-10-02-eye-care-fix-register.md` (read only). Count verified: `grep -c "not walker-measurable"` → **63**. Live block code: **`578a8830b`**, read from `~/.sgs-deploy-marker-eye-care-test.json`.
 
 ## The register's four schemas
 
@@ -24,13 +22,11 @@ So 47 rows can carry Fix-cell proof; **16 are report-only**.
 | Narrate a completion, all live | 8 | Verify live, do not rebuild |
 | To assess | 41 | Test, compare, categorise |
 
-**The 8 built:** S9, S10, S12, 18, N11, 59, N25, 91. All eight cite commits that are
-**ancestors of the live SHA** — verified with `git merge-base --is-ancestor` over all 21 cited hashes.
+**The 8 built:** S9, S10, S12, 18, N11, 59, N25, 91. All eight cite commits that are **ancestors of the live SHA** — verified with `git merge-base --is-ancestor` over all 21 cited hashes.
 
 ## The 41 collapse to ~25 independent units
 
-A third of the 41 are **aliases** whose Fix cell is just a pointer to a parent row. They are not separate
-work, and six of them point at a parent that is **already built and live** — those should verify closed.
+A third of the 41 are **aliases** whose Fix cell is just a pointer to a parent row. They are not separate work, and six of them point at a parent that is **already built and live** — those should verify closed.
 
 | Alias | Points at | Parent state |
 |---|---|---|

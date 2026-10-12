@@ -9,8 +9,11 @@ method: live computed-style + matched-rule enumeration on sandybrown page 8 (cac
 # Visual-diff — product-card CTA (Fix 2, page-8 programme) — 2026-07-11
 
 **Block:** `sgs/product-card` (typed clone CTA)
+
 **Change:** converter style-preset mirror + composite-mirror colour + editor merge (D310)
+
 **Canary:** sandybrown page 8 (Mama's Munches homepage). Draft = `sites/mamas-munches/mockups/homepage/index.html`.
+
 **Method:** live computed-style (cache-cleared) vs the draft's `.sgs-button--{primary,secondary}` rules. NOT the computed-parity % (STOP-PARITY-NOT-A-MEASURE).
 
 ## Before (baseline, live-measured pre-fix)
@@ -35,6 +38,7 @@ Root cause (proven live): converter never emitted `ctaStyle` (grep=0) → both d
 The first pass verified only resting-state contrast + class names — it did NOT test hover and mis-recorded the trial border. Root cause of the residual defects: the product-card's OWN `style.css` rules (`.product-card .sgs-button--primary/secondary` rest + `:hover`, 0,2,0) OVERRODE the shared button channel with divergent values (secondary border → primary-dark `#C56A7A` not primary `#E68A95`; secondary:hover text stayed dark not white; primary:hover border → `#8B3A47` not `#3A2E26`). The snapshot `buttonPresets` are perfect (match the draft), so removing these per-block divergences (R-31-9 composite-mirror) makes the CTA inherit the faithful channel. Version bumped 1.16.11→1.16.12 to cache-bust the version-pinned block stylesheet (a style.css-only change can't reach a cached browser otherwise).
 
 **Full live verification — rest AND hover (Playwright `.hover()`, fresh `?ver=1.16.12`):**
+
 | | Featured (primary) | Trial (secondary) | Draft |
 |---|---|---|---|
 | rest bg | #E68A95 | transparent | ✓ |

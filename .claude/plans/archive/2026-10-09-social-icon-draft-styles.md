@@ -1,8 +1,6 @@
 # Social icons: style sgs/social-icons + sgs/icon exactly like two draft footers
 
-Asked by Bean on 2026-10-09. Scope: the footer icon links only, of the Basket draft (`sites/mamas-munches/SiteFooter.dc.html`)
-and the Indus Foods draft (`sites/indus-foods/Indus Foods Website v2.dc.html`). Any client must be able to do this through
-block settings; nothing client-specific enters the theme or plugins.
+Asked by Bean on 2026-10-09. Scope: the footer icon links only, of the Basket draft (`sites/mamas-munches/SiteFooter.dc.html`) and the Indus Foods draft (`sites/indus-foods/Indus Foods Website v2.dc.html`). Any client must be able to do this through block settings; nothing client-specific enters the theme or plugins.
 
 ## Measured (rendered drafts, computed styles, CDP-forced :hover and :focus-visible, 1440 and 375, identical at both)
 
@@ -31,11 +29,8 @@ block settings; nothing client-specific enters the theme or plugins.
 ## Build
 
 - `includes/data/brand-registry.json`: Instagram gets `groundGradient`, read by `sgs/icon` (and the JS twin) when the colour mode is Brand colours; `sgs_brand_paint_hold()` keeps the hover ground and glyph.
-- `includes/helpers-icon-motion.php`: one place that turns hover offsets, rotation, durations, easing and the shadow
-  pair into declarations, with the `--sgs-icon-*` prefix for an icon and `--sgs-si-*` for a row.
-- `sgs/icon`: attributes `brandHover`, `offsetXHover`, `offsetYHover`, `iconRotateHover`, `transitionDuration`,
-  `paintDuration`, `transitionEasing`, `transitionEasingCustom`, `boxShadow`, `boxShadowColour`, `boxShadowHover`,
-  `boxShadowColourHover`, `shadowLiftOnHover`; panels Hover effects (extended) and Shadow (the shared `ShadowControl`).
+- `includes/helpers-icon-motion.php`: one place that turns hover offsets, rotation, durations, easing and the shadow pair into declarations, with the `--sgs-icon-*` prefix for an icon and `--sgs-si-*` for a row.
+- `sgs/icon`: attributes `brandHover`, `offsetXHover`, `offsetYHover`, `iconRotateHover`, `transitionDuration`, `paintDuration`, `transitionEasing`, `transitionEasingCustom`, `boxShadow`, `boxShadowColour`, `boxShadowHover`, `boxShadowColourHover`, `shadowLiftOnHover`; panels Hover effects (extended) and Shadow (the shared `ShadowControl`).
 - `sgs/social-icons`: the same set as `childIcon*` row defaults, printed as `--sgs-si-*`; `brandHover` through block context.
 - `icon/style.css` reads own, then row, then default; reduced motion drops the transforms; focus-visible shares hover.
 - Editor canvas twin gets the same custom properties.
@@ -47,16 +42,12 @@ block settings; nothing client-specific enters the theme or plugins.
 
 ## Proof
 
-Deploy to sandybrown, build a QA page with two rows (one per draft) from `plugins/sgs-blocks/scripts/qa/`,
-and run `plugins/sgs-blocks/scripts/qa/social-icon-draft-compare.mjs` (rest, hover, focus at 1440 and 375, every
-property side by side). Remaining differences are listed with their reason.
+Deploy to sandybrown, build a QA page with two rows (one per draft) from `plugins/sgs-blocks/scripts/qa/`, and run `plugins/sgs-blocks/scripts/qa/social-icon-draft-compare.mjs` (rest, hover, focus at 1440 and 375, every property side by side). Remaining differences are listed with their reason.
 
 ## Status
 
 - Built, tested and committed (PHPUnit `IconDraftStylesTest`, JS `icon-motion-parity` and brand parity, editor panels and canvas checked on the local sandybrown mirror).
-- Measured on the local sandybrown mirror (real WordPress, the repo build): `plugins/sgs-blocks/scripts/qa/social-icon-draft-compare.mjs`
-  against the QA page built from `plugins/sgs-blocks/scripts/qa/social-icon-draft-rows.tree.json`: 0 unexplained differences at 1440 and 375.
+- Measured on the local sandybrown mirror (real WordPress, the repo build): `plugins/sgs-blocks/scripts/qa/social-icon-draft-compare.mjs` against the QA page built from `plugins/sgs-blocks/scripts/qa/social-icon-draft-rows.tree.json`: 0 unexplained differences at 1440 and 375.
 - Deployed to the sandybrown canary and eye-care-test after the reseed (`9bca19170`) and the rule 21 fix in `social-icons/group-motion.js`. The QA page is canary page 5193 (`/qa-social-icon-draft-styles/`); `social-icon-draft-compare.mjs` against it: 0 unexplained differences at 1440 and 375, rest, hover and focus.
-- Not built here: the labelled "Follow along" pill in the first draft's footer is a call-to-action button (icon, label, border, hard shadow, hover
-  background), which is `sgs/button`'s job (its presets), not an icon.
+- Not built here: the labelled "Follow along" pill in the first draft's footer is a call-to-action button (icon, label, border, hard shadow, hover background), which is `sgs/button`'s job (its presets), not an icon.
 - The two drafts' glyph artwork (their own SVG paths) differs from the registry and Lucide glyphs; a client pastes the draft SVG as a custom glyph.

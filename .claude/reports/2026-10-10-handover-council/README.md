@@ -1,8 +1,6 @@
 # Handover council, 2026-10-10 (dated research record)
 
-Six reviewers read the full Indus Foods Claude Design export (`.claude/Indus-Foods-Claude-Design-Files/`, local, not in git)
-for the Claude Design handover standard (`.claude/plans/2026-10-10-claude-design-handover-standard.md`). The plan holds the
-verified conclusions; these ledgers are the evidence behind them.
+Six reviewers read the full Indus Foods Claude Design export (`.claude/Indus-Foods-Claude-Design-Files/`, local, not in git) for the Claude Design handover standard (`.claude/plans/2026-10-10-claude-design-handover-standard.md`). The plan holds the verified conclusions; these ledgers are the evidence behind them.
 
 | File | Slice |
 |---|---|

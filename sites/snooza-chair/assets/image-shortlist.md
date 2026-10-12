@@ -1,7 +1,6 @@
 # Snooza Chair — Image Shortlist for 3D Model Generation
 
-Generated: 2026-03-31
-Purpose: Select best reference images for Tripo Pro multi-photo 3D model input
+Generated: 2026-03-31 Purpose: Select best reference images for Tripo Pro multi-photo 3D model input
 
 
 ## 1. Best Images for Tripo Pro (Ranked)
@@ -99,8 +98,7 @@ These files have bad JPEG/PNG headers or are too small/low-quality to use:
 - The blue chair dominates (6 of 8 images), with the pink only for the overhead angle that no blue image provides
 - Person is behind the chair in video frames, not blocking geometry
 
-**Why not curated-cropped only:**
-The curated-cropped frames are well-cropped but all show very similar angles (front-right three-quarter, eye level). They lack side profiles and top-down views. The fortuna product shots fill those gaps.
+**Why not curated-cropped only:** The curated-cropped frames are well-cropped but all show very similar angles (front-right three-quarter, eye level). They lack side profiles and top-down views. The fortuna product shots fill those gaps.
 
 
 ## 6. Gaps — What Would Improve the 3D Model

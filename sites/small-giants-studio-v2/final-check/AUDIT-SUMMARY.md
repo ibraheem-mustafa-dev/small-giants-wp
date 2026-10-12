@@ -1,5 +1,6 @@
 # Final Site Audit — Light & Dark Mode Check
 **Date:** 14 February 2026
+
 **Commit:** e9c954c
 
 ## Summary

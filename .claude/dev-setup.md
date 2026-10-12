@@ -6,8 +6,7 @@ title: SGS WordPress Framework — Developer Setup & Operations
 
 # SGS WordPress Framework — Dev Setup
 
-⛔ **More than 3 blocks/files/call sites? The first deliverable is the
-DETECTOR, not the edit — `.claude/skills/migration-method/SKILL.md`.** Measured: a census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here.
+⛔ **More than 3 blocks/files/call sites? The first deliverable is the DETECTOR, not the edit — `.claude/skills/migration-method/SKILL.md`.** Measured: a census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here.
 
 ## Contents
 
@@ -236,33 +235,11 @@ For an above-the-fold hero image, the theme injects a `<link rel="preload" as="i
 | `eye-care-test` | `https://darkcyan-grouse-898606.hostingersite.com` | Dedicated Eye Care Birmingham test site (client `eye-care-ward-end`). Opt-in: `--target eye-care-test` |
 | `mamas-test` | `https://lightsalmon-tarsier-683012.hostingersite.com` | Dedicated Mama's Munches redesign test site (client `mamas-munches-redesign`), a fresh WordPress since 2026-10-10, independent of the canary. Opt-in: `--target mamas-test` |
 
-**Why each client has its own site.** The active header, footer, drawer and theme-snapshot pointers are
-single global options per WordPress site (`sgs_active_header_cpt_id`,
-`sgs_active_footer_cpt_id`, `sgs_active_drawer_cpt_id`, and the theme snapshot). Two clients
-cannot hold different active layouts on one site: activating an Indus header on the canary would
-replace the Mama's Munches header sitewide. Indus Foods therefore builds on its own site. Another
-client target is one `TARGETS` entry with `explicit_opt_in_required: True` (enforced in code).
+**Why each client has its own site.** The active header, footer, drawer and theme-snapshot pointers are single global options per WordPress site (`sgs_active_header_cpt_id`, `sgs_active_footer_cpt_id`, `sgs_active_drawer_cpt_id`, and the theme snapshot). Two clients cannot hold different active layouts on one site: activating an Indus header on the canary would replace the Mama's Munches header sitewide. Indus Foods therefore builds on its own site. Another client target is one `TARGETS` entry with `explicit_opt_in_required: True` (enforced in code).
 
-**Client drafts (the reference a build is compared with):** a draft comes out of Claude Design through its built-in
-"Handoff to Claude Code" skill and its design-system skill, run by pasting the standard prompt
-`.claude/claude-design-handoff/PROMPT.txt` after uploading that folder's `CLAUDE.md` (runtime traps, rules and the
-expected file map) and `handoff-schema/` into the project once. The
-result is one `design_handoff_<project>/` folder (Spec 48A: drafts, `support.js`, `assets/`, `tokens/`, README,
-`animations.json`, `surfaces.json`, `READING-DC-FILES.md`, `handoff-schema/`, `MANIFEST.json`); never the zip or
-standalone download, which carry no README. It is copied unchanged to `sites/<client>/handoff/` and must pass
-`node scripts/computed-route/handoff-check.mjs <folder>` before use. The route has its own pinned packages: run `npm ci` in
-`scripts/computed-route` (from PowerShell) once per checkout or worktree before any route command. Stage 1 intake is
-`node scripts/computed-route/intake.mjs <client> --record` (the first run records the fonts, stock images and runtime
-scripts into the gitignored `sites/<client>/build/intake/replay/<manifest hash>.har`; later runs drop `--record` and
-use no network; Indus takes about 97 minutes of machine time) and writes `sites/<client>/build/intake/intake.json`,
-`review.md` and `sites/<client>/build/page-map.json`; `--finalise`, `--apply-picks`, `--render` and `--apply-review`
-follow (Spec 48 FR-48-17). Plan: `plans/2026-10-10-claude-design-handover-standard.md`. Each Claude Design draft is a folder of `.dc.html` pages
-served locally by `scripts/computed-route/lib/draft.mjs::serveDraft`. `node scripts/computed-route/fill.mjs --serve
+**Client drafts (the reference a build is compared with):** a draft comes out of Claude Design through its built-in "Handoff to Claude Code" skill and its design-system skill, run by pasting the standard prompt `.claude/claude-design-handoff/PROMPT.txt` after uploading that folder's `CLAUDE.md` (runtime traps, rules and the expected file map) and `handoff-schema/` into the project once. The result is one `design_handoff_<project>/` folder (Spec 48A: drafts, `support.js`, `assets/`, `tokens/`, README, `animations.json`, `surfaces.json`, `READING-DC-FILES.md`, `handoff-schema/`, `MANIFEST.json`); never the zip or standalone download, which carry no README. It is copied unchanged to `sites/<client>/handoff/` and must pass `node scripts/computed-route/handoff-check.mjs <folder>` before use. The route has its own pinned packages: run `npm ci` in `scripts/computed-route` (from PowerShell) once per checkout or worktree before any route command. Stage 1 intake is `node scripts/computed-route/intake.mjs <client> --record` (the first run records the fonts, stock images and runtime scripts into the gitignored `sites/<client>/build/intake/replay/<manifest hash>.har`; later runs drop `--record` and use no network; Indus takes about 97 minutes of machine time) and writes `sites/<client>/build/intake/intake.json`, `review.md` and `sites/<client>/build/page-map.json`; `--finalise`, `--apply-picks`, `--render` and `--apply-review` follow (Spec 48 FR-48-17). Plan: `plans/2026-10-10-claude-design-handover-standard.md`. Each Claude Design draft is a folder of `.dc.html` pages served locally by `scripts/computed-route/lib/draft.mjs::serveDraft`. `node scripts/computed-route/fill.mjs --serve
 <folder> --draft-index <entry>` serves it until Ctrl-C on a new port each run, and a surface on another page of the draft
-is `<served url>/<Page>.dc.html`. Fill takes the folder as `--draft-dir <folder> --draft-index <entry>` (or the served
-page as `--draft-url`); `skeleton.mjs inventory` and `check-refs.mjs` read `surfaces.json[surface].draftUrl`, and the
-walker reads `SGS_DRAFT_URL`, so point both at the served page. A Claude Design draft loads React and Babel from
-unpkg.com (`support.js`), so Fill needs `--allow-external` or it renders nothing.
+is `<served url>/<Page>.dc.html`. Fill takes the folder as `--draft-dir <folder> --draft-index <entry>` (or the served page as `--draft-url`); `skeleton.mjs inventory` and `check-refs.mjs` read `surfaces.json[surface].draftUrl`, and the walker reads `SGS_DRAFT_URL`, so point both at the served page. A Claude Design draft loads React and Babel from unpkg.com (`support.js`), so Fill needs `--allow-external` or it renders nothing.
 
 | Client | Draft folder | Entry |
 |---|---|---|
@@ -270,8 +247,7 @@ unpkg.com (`support.js`), so Fill needs `--allow-external` or it renders nothing
 | Mama's Munches redesign | `sites/mamas-munches-redesign/handoff/` | `Home.dc.html` (one file per page, linked by file name) |
 | Eye Care Birmingham | `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/` | `Eye Care Birmingham.dc.html`; also hosted at `https://mintcream-lyrebird-224487.hostingersite.com`, which now serves a newer single-file bundle (footer links 44px) than the local folder |
 
-`sites/mamas-munches/` is the canary's folder (its live catalogue and trees); the redesign lives only in
-`sites/mamas-munches-redesign/`.
+`sites/mamas-munches/` is the canary's folder (its live catalogue and trees); the redesign lives only in `sites/mamas-munches-redesign/`.
 
 **SSH** (all targets share the one Hostinger account): `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias: `ssh hd`)
 
@@ -295,54 +271,23 @@ Gitignored; never committed.
 
 **Order matters, and getting it wrong costs a full build-and-deploy cycle**.
 
-1. **Reseed before building.** `check-wiring-fingerprint` fails the build when an
-   attribute is declared in a committed `block.json` but absent from the framework DB.
-   Run `/sgs-update` first; the gate's own message says so.
-2. **Commit the regenerated `css-property-classifications.json` before deploying.** The
-   reseed regenerates it, and `build-deploy.py` builds from an isolated worktree **at
-   HEAD** — so an uncommitted classifier means the deploy's build sees each new attribute
-   carrying a `css_property` in the DB with nothing declaring it in the derived layer. The
-   F6 check #8 Reseed-Survival gate (`db-consistency/run.py`, the `css_property_reseed` check; #9 is the `fx_effects`
-   twin, which the same sequence applies to) then fails them as rogue seeds that would
-   vanish on the next reseed, and the suite has **no baseline by design**. A local `npm run build` passes at this
-   point while the deploy's build fails, because only the deploy builds at HEAD.
+1. **Reseed before building.** `check-wiring-fingerprint` fails the build when an attribute is declared in a committed `block.json` but absent from the framework DB. Run `/sgs-update` first; the gate's own message says so.
+2. **Commit the regenerated `css-property-classifications.json` before deploying.** The reseed regenerates it, and `build-deploy.py` builds from an isolated worktree **at HEAD** — so an uncommitted classifier means the deploy's build sees each new attribute carrying a `css_property` in the DB with nothing declaring it in the derived layer. The F6 check #8 Reseed-Survival gate (`db-consistency/run.py`, the `css_property_reseed` check; #9 is the `fx_effects` twin, which the same sequence applies to) then fails them as rogue seeds that would vanish on the next reseed, and the suite has **no baseline by design**. A local `npm run build` passes at this point while the deploy's build fails, because only the deploy builds at HEAD.
 3. **Then deploy.**
 
-Both gates are correct; the sequence is the thing to remember. The same at-HEAD isolation
-is why an uncommitted fix cannot ship even though the deploy prints `[DONE]` with every
-gate green.
+Both gates are correct; the sequence is the thing to remember. The same at-HEAD isolation is why an uncommitted fix cannot ship even though the deploy prints `[DONE]` with every gate green.
 
 ### Removing or renaming a block attribute? Stage 1 does not delete
 
-Stage 1 of `sgs-update-v2.py` inserts the new rows and leaves the old ones in the DB, so
-`check-wiring-fingerprint` then flags each old name (L2, L3, L4) as a declared attribute no control
-writes. Run **`--stage 9`** (prune orphans) from the same clean detached worktree at `origin/main`
-after the stage-1 reseed; it deletes exactly the attribute rows no `block.json` declares . A name the same block's media element
-injects (`mediaElements` prefix plus `Size`, `Fit` and the like) must not be reused with another
-type: inspector-scan rule 38 fails it. A rename also trips the deploy's `oldshape-audit` while any
-stored post still carries the old name, and the live site's current schema rejects the new name, so
-the template cannot be rebuilt first: deploy with `--skip-oldshape-audit` (a test site only, naming
-the reason), then rebuild the tree at once.
+Stage 1 of `sgs-update-v2.py` inserts the new rows and leaves the old ones in the DB, so `check-wiring-fingerprint` then flags each old name (L2, L3, L4) as a declared attribute no control writes. Run **`--stage 9`** (prune orphans) from the same clean detached worktree at `origin/main` after the stage-1 reseed; it deletes exactly the attribute rows no `block.json` declares . A name the same block's media element injects (`mediaElements` prefix plus `Size`, `Fit` and the like) must not be reused with another type: inspector-scan rule 38 fails it. A rename also trips the deploy's `oldshape-audit` while any stored post still carries the old name, and the live site's current schema rejects the new name, so the template cannot be rebuilt first: deploy with `--skip-oldshape-audit` (a test site only, naming the reason), then rebuild the tree at once.
 
-**Prove a deploy by the host's marker, never by an exit code.** `ssh … cat
-~/.sgs-deploy-marker-<target>.json` must name your commit. A deploy piped through `tail` reports
-`tail`'s exit code, and one run ended with exit 0 after only packaging; the marker was unchanged.
-Run it with output to a log file and read `[DONE]` and the `[payload-verify]` line.
+**Prove a deploy by the host's marker, never by an exit code.** `ssh … cat ~/.sgs-deploy-marker-<target>.json` must name your commit. A deploy piped through `tail` reports `tail`'s exit code, and one run ended with exit 0 after only packaging; the marker was unchanged. Run it with output to a log file and read `[DONE]` and the `[payload-verify]` line.
 
 ### Full deployment (ALL targets) — always via `build-deploy.py`
 
-> **⛔ Use the script. Never hand-roll a tar/scp deploy.**
-> A raw deploy has no dirty-file gate, no post-deploy check, and no rollback copy: an
-> unfinished uncommitted edit reaches the live site and the deploy still reports success.
-> `build-deploy.py` carries three defences: a scoped dirty gate, a fail-closed post-deploy
-> smoke test, and a `.bak` rotation for one-command rollback.
+> **⛔ Use the script. Never hand-roll a tar/scp deploy.** A raw deploy has no dirty-file gate, no post-deploy check, and no rollback copy: an unfinished uncommitted edit reaches the live site and the deploy still reports success. `build-deploy.py` carries three defences: a scoped dirty gate, a fail-closed post-deploy smoke test, and a `.bak` rotation for one-command rollback.
 
-> **Take turns on a DB reseed, and on deploys to the same target.** Each deploy run uploads and
-> unpacks under its own name in the shared SSH home (`sgs-deploy-<pid>-<time>.tar` and folder), so
-> deploys to different targets can run at once. Two deploys to the SAME target still race on that
-> site's live-folder swap and `.bak` rotation. The build gates read the shared framework DB, so a
-> deploy during another session's stage-1 reseed fails its DB gates. Message the other active
-> sessions before a reseed or a same-target deploy; nothing is replaced when either abort happens.
+> **Take turns on a DB reseed, and on deploys to the same target.** Each deploy run uploads and unpacks under its own name in the shared SSH home (`sgs-deploy-<pid>-<time>.tar` and folder), so deploys to different targets can run at once. Two deploys to the SAME target still race on that site's live-folder swap and `.bak` rotation. The build gates read the shared framework DB, so a deploy during another session's stage-1 reseed fails its DB gates. Message the other active sessions before a reseed or a same-target deploy; nothing is replaced when either abort happens.
 
 ```bash
 # Canary (default — sandybrown)
@@ -352,20 +297,11 @@ python plugins/sgs-blocks/scripts/build-deploy.py
 python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test
 ```
 
-The script runs the pre-deploy `gate:full` tier, builds (from an isolated `git worktree` of
-`HEAD` by default, so a concurrent session's build or uncommitted files cannot collide with the
-deploy; `--no-isolate` opts out), tars, scps, extracts, rotates the previous copy to `<dir>.bak`,
-cleans up, purges all three cache layers, runs any pending SGS framework migrations (`wp sgs migrations run` as the site's first administrator; reported, never fatal), then **GETs the site and fails the run if it is broken**.
-Deploy a framework change to the canary first.
+The script runs the pre-deploy `gate:full` tier, builds (from an isolated `git worktree` of `HEAD` by default, so a concurrent session's build or uncommitted files cannot collide with the deploy; `--no-isolate` opts out), tars, scps, extracts, rotates the previous copy to `<dir>.bak`, cleans up, purges all three cache layers, runs any pending SGS framework migrations (`wp sgs migrations run` as the site's first administrator; reported, never fatal), then **GETs the site and fails the run if it is broken**. Deploy a framework change to the canary first.
 
-**A theme deploy ships the target's client `theme.json`.** Each `TARGETS` entry names its `client`
-(`sites/<client>/`, or `None` for the framework default). A theme deploy uploads that client's
-`theme-snapshot.json` as `themes/sgs-theme/theme.json`, using the same bytes
-`push-theme-snapshot.py` writes (`push-theme-snapshot.py::deploy_theme_json_bytes`). The disk layer lives inside the theme directory, and the deploy
-swaps that whole directory. It aborts with `[ABORTED] client-theme-json-unavailable` when the client's snapshot is missing or invalid (never falling back to the framework file), and with `[ABORTED] theme-json-guard` when the live `theme.json` is an uncommitted snapshot someone pushed (commit it, or pass `--takeover` to replace it deliberately). The snapshot is swapped into the staging copy before any live directory moves, and afterwards the live `theme.json` md5 must equal the payload or you get `[DEPLOYED-BUT-THEME-SETTINGS-LOST]` (`--skip-verify` does not skip this).
+**A theme deploy ships the target's client `theme.json`.** Each `TARGETS` entry names its `client` (`sites/<client>/`, or `None` for the framework default). A theme deploy uploads that client's `theme-snapshot.json` as `themes/sgs-theme/theme.json`, using the same bytes `push-theme-snapshot.py` writes (`push-theme-snapshot.py::deploy_theme_json_bytes`). The disk layer lives inside the theme directory, and the deploy swaps that whole directory. It aborts with `[ABORTED] client-theme-json-unavailable` when the client's snapshot is missing or invalid (never falling back to the framework file), and with `[ABORTED] theme-json-guard` when the live `theme.json` is an uncommitted snapshot someone pushed (commit it, or pass `--takeover` to replace it deliberately). The snapshot is swapped into the staging copy before any live directory moves, and afterwards the live `theme.json` md5 must equal the payload or you get `[DEPLOYED-BUT-THEME-SETTINGS-LOST]` (`--skip-verify` does not skip this).
 
-The deploy never touches `wp_global_styles` (the database user layer). `--self-test` cases 8-16 prove
-all of this against a temp repo and server, including a negative control that reproduces the old loss.
+The deploy never touches `wp_global_styles` (the database user layer). `--self-test` cases 8-16 prove all of this against a temp repo and server, including a negative control that reproduces the old loss.
 
 **The flags exist — know what you're giving up before using them:**
 
@@ -424,9 +360,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client eye-care-ward-
 # --no-push (alias --dry-run) prints the diff without pushing
 ```
 
-**Commit the snapshot you push.** The next theme deploy re-ships the target's **committed**
-snapshot. If you push an uncommitted one, that deploy aborts (`theme-json-guard`) rather than
-silently reverting it.
+**Commit the snapshot you push.** The next theme deploy re-ships the target's **committed** snapshot. If you push an uncommitted one, that deploy aborts (`theme-json-guard`) rather than silently reverting it.
 
 ### Container roster — container-wrapping blocks
 
@@ -451,34 +385,17 @@ python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
 
 ## Local WordPress mirrors (WSL)
 
-`http://localhost:8081` (Eye Care), `http://localhost:8082` (Sandybrown) and `http://localhost:8083` (Indus) are WSL
-copies of three Hostinger test sites (database and `wp-content`, WordPress 7.1.x), for browser-heavy runs Hostinger's edge would challenge.
-Calibration targets them as `local-eye-care` / `local-sandybrown` / `local-indus` (a mirror shares its test site's IDs and
-default paint through `mirrorOf` in `scripts/computed-route/calibration-targets.json`); one run opens one browser and logs in once
-(`scripts/lib/wp-session.js`). Start, sync and safety details: `scripts/local-wp/README.md`.
-Before measuring, refresh a mirror from its test site (`bash scripts/local-wp/refresh-from-remote.sh local-eye-care eye-care-test`, from Git Bash) and sync the build. Solve runs on a mirror with `solve.mjs --site local-eye-care` (about 40 seconds a walk, no edge challenge); run page surfaces one at a time, because parallel block-editor builds on the mirror time out.
+`http://localhost:8081` (Eye Care), `http://localhost:8082` (Sandybrown) and `http://localhost:8083` (Indus) are WSL copies of three Hostinger test sites (database and `wp-content`, WordPress 7.1.x), for browser-heavy runs Hostinger's edge would challenge. Calibration targets them as `local-eye-care` / `local-sandybrown` / `local-indus` (a mirror shares its test site's IDs and default paint through `mirrorOf` in `scripts/computed-route/calibration-targets.json`); one run opens one browser and logs in once (`scripts/lib/wp-session.js`). Start, sync and safety details: `scripts/local-wp/README.md`. Before measuring, refresh a mirror from its test site (`bash scripts/local-wp/refresh-from-remote.sh local-eye-care eye-care-test`, from Git Bash) and sync the build. Solve runs on a mirror with `solve.mjs --site local-eye-care` (about 40 seconds a walk, no edge challenge); run page surfaces one at a time, because parallel block-editor builds on the mirror time out.
 
-⚠️ **`curl http://localhost:8081/` times out even when the site is fine.** The WSL port proxy binds 8081,
-8082 and 8083 on **IPv6 loopback only** (`netstat -ano` shows `[::1]:8081`), and curl resolves `localhost` to IPv4
-first. `curl -6 localhost:8081` returns 200, and Chrome and Playwright try IPv6 anyway, so browser-driven
-runs are unaffected. SearXNG's `:8888` is bound on IPv4, which is why that one answers plain curl — same
-machine, same proxy, different address family. **Check reachability with `curl -6` or a real browser.**
+⚠️ **`curl http://localhost:8081/` times out even when the site is fine.** The WSL port proxy binds 8081, 8082 and 8083 on **IPv6 loopback only** (`netstat -ano` shows `[::1]:8081`), and curl resolves `localhost` to IPv4 first. `curl -6 localhost:8081` returns 200, and Chrome and Playwright try IPv6 anyway, so browser-driven runs are unaffected. SearXNG's `:8888` is bound on IPv4, which is why that one answers plain curl — same machine, same proxy, different address family. **Check reachability with `curl -6` or a real browser.**
 
-⚠️ **Do not run `wsl --shutdown` to "fix" the mirrors, and do not assume they are stopped.** SearXNG runs in
-that same WSL instance on port 8888 and `search.py` and the `/search` skill depend on it. Before believing
-they are down, check `systemctl is-active apache2 mariadb` and `ss -ltnp` inside WSL: the services
-can be running and listening while plain curl reports the ports unreachable, so the "start
-after a reboot" command would report success and change nothing.
+⚠️ **Do not run `wsl --shutdown` to "fix" the mirrors, and do not assume they are stopped.** SearXNG runs in that same WSL instance on port 8888 and `search.py` and the `/search` skill depend on it. Before believing they are down, check `systemctl is-active apache2 mariadb` and `ss -ltnp` inside WSL: the services can be running and listening while plain curl reports the ports unreachable, so the "start after a reboot" command would report success and change nothing.
 
 ---
 
 ## WP-CLI
 
-The `wp sgs` namespace is the developer and pipeline command surface for SGS sites: Site Info,
-template-part seeding and reset, conditional header/footer rules, migrations, the CPT-backed
-header / footer / drawer lifecycle (`wp sgs header|footer|drawer set-active | clear-active | list
-| seed-starter`), `wp sgs audit-colour-tokens` and `wp sgs media measure-tone` (photo brightness for section tone). It runs on the server over SSH (`ssh hd`),
-and write commands need `--user=<id>`. Full reference: `.claude/wp-sgs-cli.md`.
+The `wp sgs` namespace is the developer and pipeline command surface for SGS sites: Site Info, template-part seeding and reset, conditional header/footer rules, migrations, the CPT-backed header / footer / drawer lifecycle (`wp sgs header|footer|drawer set-active | clear-active | list | seed-starter`), `wp sgs audit-colour-tokens` and `wp sgs media measure-tone` (photo brightness for section tone). It runs on the server over SSH (`ssh hd`), and write commands need `--user=<id>`. Full reference: `.claude/wp-sgs-cli.md`.
 
 ---
 

@@ -1,8 +1,6 @@
 # Phase 7 Skills Audit — WP 7.0 Alignment
 
-Generated: 2026-05-22
-Source-of-truth: developer.wordpress.org/reference/since/7.0.0/, make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/, make.wordpress.org/core/2026/02/23/changes-to-the-interactivity-api-in-wordpress-7-0/
-Audit dispatched: Phase 7 Step 7.2 (audit-only pass — NO edits to skill files in this dispatch)
+Generated: 2026-05-22 Source-of-truth: developer.wordpress.org/reference/since/7.0.0/, make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/, make.wordpress.org/core/2026/02/23/changes-to-the-interactivity-api-in-wordpress-7-0/ Audit dispatched: Phase 7 Step 7.2 (audit-only pass — NO edits to skill files in this dispatch)
 
 ---
 

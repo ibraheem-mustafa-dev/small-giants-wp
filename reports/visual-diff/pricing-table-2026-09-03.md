@@ -1,35 +1,16 @@
 # Visual diff — sgs/pricing-table — 2026-09-03 (colour-codemod hover sibling: priceColourHover) (bugfix re-verification)
 
-verdict: PASS
-intent_capture_passed: true
-source_sha: d2304f74d2ca0239
+verdict: PASS intent_capture_passed: true source_sha: d2304f74d2ca0239
 
-Re-verification of the FAIL below. `render.php` was hand-fixed since that report: `priceColourHover`
-now gets its own independent `sgs_emit_state_colour_css()` call on `.sgs-pricing-table__price`,
-placed right after the existing base `priceColour`/`priceColourGradient` emission — no longer
-nested inside the unrelated billing-toggle-label-hover code block, no longer gated on
-`toggleLabelHoverColour` being set, no longer misrouted to
-`.sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label`.
+Re-verification of the FAIL below. `render.php` was hand-fixed since that report: `priceColourHover` now gets its own independent `sgs_emit_state_colour_css()` call on `.sgs-pricing-table__price`, placed right after the existing base `priceColour`/`priceColourGradient` emission — no longer nested inside the unrelated billing-toggle-label-hover code block, no longer gated on `toggleLabelHoverColour` being set, no longer misrouted to `.sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label`.
 
 ## Deploy notes for this section
 
-Same deploy as card-grid's re-verification section in `reports/visual-diff/card-grid-2026-09-03.md`
-(top of that file) — read there for the full explanation of the unrelated `prebuild` gate ceiling
-breach and the direct `wp-scripts build` + `build-deploy.py --skip-build --allow-dirty
---skip-oldshape-audit` workaround. Same deploy run covered all 4 blocks in this wave. (Note: the
-unrelated editor-canvas-desync ratchet breach documented there includes one finding for
-`[sgs/pricing-table] priceColourHover` itself — that gate checks whether a control has a live
-EDITOR-CANVAS preview effect, a different question from whether render.php emits correct CSS,
-which is what this report verifies. Not the same defect, not fixed or fixable from this dispatch.)
+Same deploy as card-grid's re-verification section in `reports/visual-diff/card-grid-2026-09-03.md` (top of that file) — read there for the full explanation of the unrelated `prebuild` gate ceiling breach and the direct `wp-scripts build` + `build-deploy.py --skip-build --allow-dirty --skip-oldshape-audit` workaround. Same deploy run covered all 4 blocks in this wave. (Note: the unrelated editor-canvas-desync ratchet breach documented there includes one finding for `[sgs/pricing-table] priceColourHover` itself — that gate checks whether a control has a live EDITOR-CANVAS preview effect, a different question from whether render.php emits correct CSS, which is what this report verifies. Not the same defect, not fixed or fixable from this dispatch.)
 
 ## Live re-verification (lifted CSS, probe page 3227, deleted after)
 
-Authored two pricing-table instances: the first with `priceColourHover:"#ab00cd"` set and
-`toggleLabelHoverColour` deliberately LEFT UNSET (to prove independence from that unrelated
-attribute — this is the exact combination the FAIL report showed as broken, since the old code
-only ran when `toggleLabelHoverColour` was ALSO set); the second with nothing set (negative
-control). Both instances render with the block's own default `plans` array (block.json declares a
-real default, no manual authoring needed).
+Authored two pricing-table instances: the first with `priceColourHover:"#ab00cd"` set and `toggleLabelHoverColour` deliberately LEFT UNSET (to prove independence from that unrelated attribute — this is the exact combination the FAIL report showed as broken, since the old code only ran when `toggleLabelHoverColour` was ALSO set); the second with nothing set (negative control). Both instances render with the block's own default `plans` array (block.json declares a real default, no manual authoring needed).
 
 ```
 positive (uid sgs-pricing-5313e184, priceColourHover:"#ab00cd", toggleLabelHoverColour UNSET):
@@ -54,18 +35,13 @@ negative (uid sgs-pricing-6071d41c, nothing set):
 
 # Visual diff — sgs/pricing-table — 2026-09-03 (colour-codemod hover sibling: priceColourHover)
 
-verdict: FAIL
-intent_capture_passed: true
-source_sha: PLACEHOLDER
+verdict: FAIL intent_capture_passed: true source_sha: PLACEHOLDER
 
-Covers the colour-conformance codemod's addition of `priceColourHover` as a Hover sibling to the
-pre-existing `priceColour` attribute. Deploy method identical to card-grid's 2026-09-03 section —
-see that file for the full "Deploy notes".
+Covers the colour-conformance codemod's addition of `priceColourHover` as a Hover sibling to the pre-existing `priceColour` attribute. Deploy method identical to card-grid's 2026-09-03 section — see that file for the full "Deploy notes".
 
 ## Assertions — stated before measuring
 
-1. `priceColourHover` set to a test colour renders a `:hover` rule on `.sgs-pricing-table__price`
-   (the actual class, confirmed by reading `render.php` rather than assumed).
+1. `priceColourHover` set to a test colour renders a `:hover` rule on `.sgs-pricing-table__price` (the actual class, confirmed by reading `render.php` rather than assumed).
 2. **Negative control:** default instance (no hover colour set) shows no such rule.
 
 ## Live results — measured on the canary (lifted stylesheet)
@@ -88,8 +64,7 @@ negative (uid sgs-pricing-6071d41c, nothing set): byte-identical CSS shape to th
 
 ## Root cause (read directly in `render.php:505-523`, confirmed live via the emission above)
 
-The codemod inserted `priceColourHover`'s handling INSIDE the pre-existing billing-toggle
-label-hover-tint block, not as its own independent emission:
+The codemod inserted `priceColourHover`'s handling INSIDE the pre-existing billing-toggle label-hover-tint block, not as its own independent emission:
 
 ```php
 $pt_toggle_label_hover_decl = sgs_background_paint_decl( $toggle_label_hover_colour, $toggle_label_hover_colour_gradient );
@@ -107,30 +82,18 @@ if ( '' !== ( $attributes['priceColourHover'] ?? '' ) ) {
 
 Two independent defects, either one alone would already be a FAIL:
 
-1. **Wrong selector.** Even when it does run, `priceColourHover`'s declaration lands on
-   `.sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label` — the
-   billing-period toggle label — not `.sgs-pricing-table__price`.
-2. **Wrong gate.** The whole block is gated on `'' !== $pt_toggle_label_hover_decl` — i.e. it
-   only runs at all when the UNRELATED `toggleLabelHoverColour`/`toggleLabelHoverColourGradient`
-   attributes are also set. In this test (and in any normal client use of `priceColourHover` in
-   isolation) that attribute is empty, so the gate is false and `priceColourHover` never reaches
-   any CSS emission at all — confirmed live: identical output with and without it set.
+1. **Wrong selector.** Even when it does run, `priceColourHover`'s declaration lands on `.sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label` — the billing-period toggle label — not `.sgs-pricing-table__price`.
+2. **Wrong gate.** The whole block is gated on `'' !== $pt_toggle_label_hover_decl` — i.e. it only runs at all when the UNRELATED `toggleLabelHoverColour`/`toggleLabelHoverColourGradient` attributes are also set. In this test (and in any normal client use of `priceColourHover` in isolation) that attribute is empty, so the gate is false and `priceColourHover` never reaches any CSS emission at all — confirmed live: identical output with and without it set.
 
-This needs its own independent `if` block, mirroring how `titleColour` (`render.php:503-505`)
-gets its own unconditional emission — not something fixable from this dispatch (render.php
-off-limits per brief).
+This needs its own independent `if` block, mirroring how `titleColour` (`render.php:503-505`) gets its own unconditional emission — not something fixable from this dispatch (render.php off-limits per brief).
 
 ---
 
 # Visual diff — sgs/pricing-table — 2026-09-03 (gradient support)
 
-verdict: PASS
-intent_capture_passed: true
-source_sha: c54094cbbe116c57
+verdict: PASS intent_capture_passed: true source_sha: c54094cbbe116c57
 
-Covers this session's fill(background) GRADIENT support layered on top of the hover-colour
-migration below (billing-toggle inactive label, hover-only), via the block's existing direct
-`sgs_background_paint_decl()` call now also reading `toggleLabelHoverColourGradient`.
+Covers this session's fill(background) GRADIENT support layered on top of the hover-colour migration below (billing-toggle inactive label, hover-only), via the block's existing direct `sgs_background_paint_decl()` call now also reading `toggleLabelHoverColourGradient`.
 
 ## What changed (this session, on top of the hover-colour work)
 
@@ -143,8 +106,7 @@ migration below (billing-toggle inactive label, hover-only), via the block's exi
 ## Assertions — stated before measuring
 
 1. A gradient-set instance emits `background-image:<gradient>` on hover, not `background-color`.
-2. A negative-control instance (gradient unset) falls back to the flat-colour path (or the
-   pre-existing `color-mix()` default if nothing is set at all).
+2. A negative-control instance (gradient unset) falls back to the flat-colour path (or the pre-existing `color-mix()` default if nothing is set at all).
 
 ## Results
 
@@ -155,30 +117,18 @@ migration below (billing-toggle inactive label, hover-only), via the block's exi
 
 ## What is NOT verified — stated, not buried
 
-- No live test-page instance of `sgs/pricing-table` was created this session for the gradient
-  work specifically — verification relies on the shared-mechanism argument above. The sibling
-  variant selector (`--style-toggle`, not exercised even in the earlier hover-colour report) is
-  correspondingly also not independently verified for gradient.
-- Deploy used `--allow-dirty` (7 unrelated `form-field-*/edit.js` files, a different track's WIP),
-  `--skip-oldshape-audit` (HIGH finding was `sgs/text` on post 3212, unrelated),
-  `--skip-gate-full` (confirmed via full-output grep: zero mentions of `sgs/pricing-table` across
-  the entire advisory output; both ratchet breaches are pre-existing debt in unrelated blocks).
+- No live test-page instance of `sgs/pricing-table` was created this session for the gradient work specifically — verification relies on the shared-mechanism argument above. The sibling variant selector (`--style-toggle`, not exercised even in the earlier hover-colour report) is correspondingly also not independently verified for gradient.
+- Deploy used `--allow-dirty` (7 unrelated `form-field-*/edit.js` files, a different track's WIP), `--skip-oldshape-audit` (HIGH finding was `sgs/text` on post 3212, unrelated), `--skip-gate-full` (confirmed via full-output grep: zero mentions of `sgs/pricing-table` across the entire advisory output; both ratchet breaches are pre-existing debt in unrelated blocks).
 
 ---
 
-⚠ AN EARLIER REPORT FOLLOWS, kept deliberately, not superseded. It covers the hover-colour
-migration (verdict PASS, source_sha sentinel, still uncommitted). Read the section above for the
-current (gradient-support) change.
+⚠ AN EARLIER REPORT FOLLOWS, kept deliberately, not superseded. It covers the hover-colour migration (verdict PASS, source_sha sentinel, still uncommitted). Read the section above for the current (gradient-support) change.
 
 # Visual diff — sgs/pricing-table — 2026-09-03
 
-verdict: PASS
-intent_capture_passed: true
-source_sha: uncommitted-payload (deployed via build-deploy.py --payload plugins/sgs-blocks/src/blocks/pricing-table/)
+verdict: PASS intent_capture_passed: true source_sha: uncommitted-payload (deployed via build-deploy.py --payload plugins/sgs-blocks/src/blocks/pricing-table/)
 
-Covers Category B's hover-colour migration for `sgs/pricing-table`'s billing-toggle inactive
-label, moving from a hardcoded `color-mix()` CSS `:hover` background to a real
-block-attribute-driven control via the shared `sgs_emit_state_colour_css()` helper.
+Covers Category B's hover-colour migration for `sgs/pricing-table`'s billing-toggle inactive label, moving from a hardcoded `color-mix()` CSS `:hover` background to a real block-attribute-driven control via the shared `sgs_emit_state_colour_css()` helper.
 
 ## What changed
 
@@ -191,12 +141,9 @@ block-attribute-driven control via the shared `sgs_emit_state_colour_css()` help
 
 ## Assertions — stated before measuring
 
-1. Resting-state parity: with the new attr unset, the static deployed stylesheet still carries
-   the exact pre-migration `color-mix()` tint (and its no-color-mix fallback), now wrapped in
-   `:where()`.
+1. Resting-state parity: with the new attr unset, the static deployed stylesheet still carries the exact pre-migration `color-mix()` tint (and its no-color-mix fallback), now wrapped in `:where()`.
 2. Negative control: an instance with the attr unset gets no PHP-emitted competing rule.
-3. Override: setting the hover attr to a distinct test colour on a live page produces a
-   real-specificity `:hover`/`:focus-visible` rule (touch-guarded) carrying that colour.
+3. Override: setting the hover attr to a distinct test colour on a live page produces a real-specificity `:hover`/`:focus-visible` rule (touch-guarded) carrying that colour.
 
 ## Results
 
@@ -208,17 +155,9 @@ block-attribute-driven control via the shared `sgs_emit_state_colour_css()` help
 
 ## What is NOT verified — stated, not buried
 
-- No physical mouse-hover simulation with pixel-colour screenshot; lifted-CSS-text inspection was
-  used instead (this project's own precedent).
-- The test page used the block's `--style-button` billing-toggle variant only (the variant the
-  attribute's live selector targeted); the sibling `--style-toggle` selector variant emitted by
-  the same render.php call was not independently exercised on a live instance this session — its
-  static `:where()` default fallback was verified (assertion 1), but its override path relies on
-  the identical code path as the button variant already proven live, not on a second live probe.
-- The gate-full advisory-ratchet failure was bypassed with `--skip-gate-full` — confirmed via grep
-  that `sgs/pricing-table` never appears in that failure's finding list (pre-existing debt in
-  unrelated blocks).
+- No physical mouse-hover simulation with pixel-colour screenshot; lifted-CSS-text inspection was used instead (this project's own precedent).
+- The test page used the block's `--style-button` billing-toggle variant only (the variant the attribute's live selector targeted); the sibling `--style-toggle` selector variant emitted by the same render.php call was not independently exercised on a live instance this session — its static `:where()` default fallback was verified (assertion 1), but its override path relies on the identical code path as the button variant already proven live, not on a second live probe.
+- The gate-full advisory-ratchet failure was bypassed with `--skip-gate-full` — confirmed via grep that `sgs/pricing-table` never appears in that failure's finding list (pre-existing debt in unrelated blocks).
 - `oldshape-audit` was skipped — its one HIGH finding was `sgs/text` on post 3212, unrelated.
-- `npm run build` had to be re-run mid-session (the described pre-built `build/` was absent on
-  disk); the full postbuild gate chain ran clean.
+- `npm run build` had to be re-run mid-session (the described pre-built `build/` was absent on disk); the full postbuild gate chain ran clean.
 - Test pages were deleted after verification.

@@ -1,10 +1,6 @@
 # Visual-diff report — sgs/container (exact-match width model, widthMode retired) — 2026-06-18
 
-verdict: PASS
-first_paint_capture_passed: true
-block: container
-change: retire widthMode → 3 independent layers (align / maxWidth literal / contentWidth token-or-literal); token rename narrow=content-size, default=wide-size
-decision: D230
+verdict: PASS first_paint_capture_passed: true block: container change: retire widthMode → 3 independent layers (align / maxWidth literal / contentWidth token-or-literal); token rename narrow=content-size, default=wide-size decision: D230
 
 ## What changed
 - `class-sgs-container-wrapper.php`: removed all `widthMode` rendering. OUTER box = literal `maxWidth` only (or `align:full/wide` → `alignfull/alignwide` WP-native breakout). INNER band = `contentWidth` resolved as token (`narrow`→`var(--wp--style--global--content-size)`, `default`→`var(--wp--style--global--wide-size)`, `full`→no cap) or literal. Responsive `maxWidthTablet/Mobile` deferred to `.uid` rule when tiers exist (so `@media` wins — the specificity fix). contentWidth base sanitiser unified onto `$sgs_css_length`.

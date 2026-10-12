@@ -1,7 +1,9 @@
 # Parity Fluid-Equivalence Fix — 2026-08-04
 
 **doc_type:** report
+
 **scope:** `plugins/sgs-blocks/scripts/parity/computed-parity.js` only (per task constraints — no other files modified, DB read-only, nothing committed)
+
 **process:** `/subagent-driven-development` (implement → 2 independent reviewers → address findings → `/qc-inline`)
 
 ## What changed

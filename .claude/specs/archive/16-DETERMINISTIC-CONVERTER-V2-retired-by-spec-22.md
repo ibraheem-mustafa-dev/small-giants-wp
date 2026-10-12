@@ -95,9 +95,7 @@ Total legacy code retired: ~1,942 lines. Replacement: ~1,140 lines across 3 Pyth
 
 ### R1 — Container rule (refined per Bean 2026-05-14)
 
-> sgs/container is **MANDATORY** at the top-level section boundary (one container per section, wrapping the whole pattern).
-> sgs/container is **AVAILABLE** anywhere else when a container block's functionality (background, max-width, columns, shape dividers, etc.) provides utility.
-> sgs/container is **NOT auto-emitted** for nested wrappers without functionality. Those pass through.
+> sgs/container is **MANDATORY** at the top-level section boundary (one container per section, wrapping the whole pattern). sgs/container is **AVAILABLE** anywhere else when a container block's functionality (background, max-width, columns, shape dividers, etc.) provides utility. sgs/container is **NOT auto-emitted** for nested wrappers without functionality. Those pass through.
 
 The converter only auto-emits sgs/container at the top-level section. Operators / pattern authors can still nest containers manually when wanted. Captured 2026-05-14.
 
@@ -550,13 +548,9 @@ Items 1-6 are next-session work. Item 7 is the production validation that happen
 
 ## 11. Spec 17 pattern-target extension (added 2026-05-19, not yet implemented)
 
-Spec 17 ships 9 framework header/footer patterns + a `sgs/site-info` block binding source.
-Stage 6 emission should be extended to recognise when an extracted header/footer subtree
-substantially matches a framework pattern, then emit a `wp:pattern` reference + Site Info
-bindings instead of bespoke markup.
+Spec 17 ships 9 framework header/footer patterns + a `sgs/site-info` block binding source. Stage 6 emission should be extended to recognise when an extracted header/footer subtree substantially matches a framework pattern, then emit a `wp:pattern` reference + Site Info bindings instead of bespoke markup.
 
-**Acceptance gate:** when running `/sgs-clone` on a mockup whose header is structurally
-identical to `sgs/framework-header-default`, the output should contain:
+**Acceptance gate:** when running `/sgs-clone` on a mockup whose header is structurally identical to `sgs/framework-header-default`, the output should contain:
 
 ```
 <!-- wp:pattern {"slug":"sgs/framework-header-default"} /-->
@@ -564,11 +558,7 @@ identical to `sgs/framework-header-default`, the output should contain:
 
 at the header slot, NOT bespoke `<header>...</header>` markup.
 
-**Match algorithm:** compare extracted slot tree against the pattern's structural
-fingerprint (allowed nesting + child-block count + text-content shape). Differences in
-content values (logo file, social links, copyright text) are routed through `sgs/site-info`
-block bindings to the central Site Info store rather than being baked into the emitted
-markup.
+**Match algorithm:** compare extracted slot tree against the pattern's structural fingerprint (allowed nesting + child-block count + text-content shape). Differences in content values (logo file, social links, copyright text) are routed through `sgs/site-info` block bindings to the central Site Info store rather than being baked into the emitted markup.
 
 **Cross-reference:**
 - Spec 17 §S6 — the framework pattern definitions

@@ -1,7 +1,9 @@
 # FR-30-5 — SGS Product Search — Design Gate + Build Contract
 
 **Status:** Design gate COMPLETE (Step 7a). Verdict: **GO — conditional** on the must-fixes below being built in from the start. This is the build contract for Step 7b — the sonnet implementer builds to THIS, verbatim.
+
 **Date:** 2026-06-12 · **Thread:** sgs-theme · **Spec:** Spec 30 §FR-30-5
+
 **Gate inputs:** /adversarial-council (6 personas) + the shipped `class-cart-proxy.php` hardened-REST pattern.
 
 ## End goal
@@ -20,11 +22,9 @@ A guest typing ≥2 chars into a shop search box gets product suggestions (title
 
 **Endpoint:** `GET /sgs/v1/product-search?q={query}` — `final class Product_Search_REST` (namespace `SGS\Blocks`), `includes/class-product-search-rest.php`. Lazy-load inside `woocommerce_loaded` + parse-time `class_exists('WooCommerce')` guard; route on `rest_api_init`. `permission_callback => '__return_true'` (declared explicitly). Arg `q`: `sanitize_text_field` + `validate_callback` (non-string + length reject).
 
-**Query — SINGLE pass (cut the two-pass):** one `WP_Query`, `fields=>'ids'`, then hydrate only {id,title,permalink,thumbnail}:
-`post_type=product, post_status='publish'` (STRING never array — pinned+asserted), `has_password=false, s=>q, fields=>ids, posts_per_page=20` (over-fetch→cap 10), `no_found_rows=true, update_post_meta_cache=false, update_post_term_cache=false, tax_query=[visibility], ignore_sticky_posts=true`. Then PHP `usort`: titles starting with the query (lowercased) float to top, tie-break title ASC; cap 10. No custom `posts_where`, no global hook, no `%q%` scan.
+**Query — SINGLE pass (cut the two-pass):** one `WP_Query`, `fields=>'ids'`, then hydrate only {id,title,permalink,thumbnail}: `post_type=product, post_status='publish'` (STRING never array — pinned+asserted), `has_password=false, s=>q, fields=>ids, posts_per_page=20` (over-fetch→cap 10), `no_found_rows=true, update_post_meta_cache=false, update_post_term_cache=false, tax_query=[visibility], ignore_sticky_posts=true`. Then PHP `usort`: titles starting with the query (lowercased) float to top, tie-break title ASC; cap 10. No custom `posts_where`, no global hook, no `%q%` scan.
 
-**Visibility exclusion — fail CLOSED + WC's real rule:**
-`if (!function_exists('wc_get_product_visibility_term_ids')) return 503;` → `$vis = wc_get_product_visibility_term_ids();` → `$exclude = array_filter([$vis['exclude-from-search'] ?? 0]);` → if `woocommerce_hide_out_of_stock_items === 'yes'` and `$vis['outofstock']` add it → **`if (empty($exclude)) return 503;`** (FAIL CLOSED — never run an unfiltered query) → `tax_query NOT IN $exclude` on `product_visibility`/`term_taxonomy_id`.
+**Visibility exclusion — fail CLOSED + WC's real rule:** `if (!function_exists('wc_get_product_visibility_term_ids')) return 503;` → `$vis = wc_get_product_visibility_term_ids();` → `$exclude = array_filter([$vis['exclude-from-search'] ?? 0]);` → if `woocommerce_hide_out_of_stock_items === 'yes'` and `$vis['outofstock']` add it → **`if (empty($exclude)) return 503;`** (FAIL CLOSED — never run an unfiltered query) → `tax_query NOT IN $exclude` on `product_visibility`/`term_taxonomy_id`.
 
 **Result-level RE-GATE — defence in depth (most important add):** after the query, re-validate EACH id independently — `get_post_status===publish` && `!post_password_required($id)` && `wc_get_product($id)->is_visible()`; (rate-limited) log any REJECTED id as a near-miss canary (means the query-level filter missed).
 

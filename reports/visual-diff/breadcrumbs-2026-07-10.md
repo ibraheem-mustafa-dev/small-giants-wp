@@ -10,24 +10,17 @@ first_paint_capture_passed: true
 
 # sgs/breadcrumbs — no-inline + box-object migration (LANDED)
 
-**Verdict: PASS.** Migrated block-private to the no-inline styling contract (D294 pattern
-selector: single <nav> root → block-private). Verified LANDED live on the sandybrown canary test page
-(page 1356, `/sgs-box-object-test/`) at 375 / 768 / 1440 via the reusable harness
-`plugins/sgs-blocks/scripts/no-inline-land-verify.js` + `no-inline-wave1-manifest.json`.
+**Verdict: PASS.** Migrated block-private to the no-inline styling contract (D294 pattern selector: single <nav> root → block-private). Verified LANDED live on the sandybrown canary test page (page 1356, `/sgs-box-object-test/`) at 375 / 768 / 1440 via the reusable harness `plugins/sgs-blocks/scripts/no-inline-land-verify.js` + `no-inline-wave1-manifest.json`.
 
 ## Evidence (harness, all breakpoints)
-- **Zero inline** (condition #1): `getAttribute('style')` on the block root + every descendant
-  carries NO CSS property declaration (only permitted `--var:value` values). Harness inline-scan clean.
+- **Zero inline** (condition #1): `getAttribute('style')` on the block root + every descendant carries NO CSS property declaration (only permitted `--var:value` values). Harness inline-scan clean.
 - **Box computed values** (condition #10, asymmetric instance — 4 distinct sides):
   - padding: `5px 17px 9px 23px` @1440 → `4px 12px 6px 16px` @768 → `2px 8px 4px 10px` @375 (tier cascade lands).
-  - margin (block-controlled axis top/bottom): `10px` top / `6px` bottom lands. (margin left/right is owned by
-    WP core's `is-layout-constrained` centering `!important` on every top-level block — not a block-fidelity signal, unchanged pre/post migration.)
+  - margin (block-controlled axis top/bottom): `10px` top / `6px` bottom lands. (margin left/right is owned by WP core's `is-layout-constrained` centering `!important` on every top-level block — not a block-fidelity signal, unchanged pre/post migration.)
 
 ## Migration summary
-- **Supports skip-serialised** (`__experimentalSkipSerialization: true`): spacing, color, typography. render.php reads
-  `$attributes['style']` and emits scoped `#uid`/`.uid` CSS via `wp_style_engine_get_styles`.
-- **New box-object attrs**: paddingTablet, paddingMobile, marginTablet, marginMobile. Flat per-side/per-corner attrs + `*Unit` companions removed; `box_family`
-  seeded centrally in `sgs-update-v2.py`.
+- **Supports skip-serialised** (`__experimentalSkipSerialization: true`): spacing, color, typography. render.php reads `$attributes['style']` and emits scoped `#uid`/`.uid` CSS via `wp_style_engine_get_styles`.
+- **New box-object attrs**: paddingTablet, paddingMobile, marginTablet, marginMobile. Flat per-side/per-corner attrs + `*Unit` companions removed; `box_family` seeded centrally in `sgs-update-v2.py`.
 - **Device tiers only**: `@media(max-width:1023px)` + `@media(max-width:767px)`.
 - **No version bump, no deprecations** (D293). Block-private (no shared-wrapper hack).
 - Block-specific: added 3 missing colour controls (were dead attrs); wired anchor id; BreadcrumbList schema preserved

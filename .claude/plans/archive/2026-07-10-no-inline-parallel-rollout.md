@@ -1,32 +1,18 @@
 > ARCHIVED 2026-07-28 — LEDGER: 'No-inline styling roster — effectively COMPLETE (11-condition DONE audit, 2026-07-26)' — this rollout phase-plan's scope has landed; real remaining = 5 named block-fixes tracked elsewhere.
 
 ---
-doc_type: phase-plan
-project: small-giants-wp
-title: "No-inline rollout — PARALLEL edit / serial land (the remaining 35 blocks + 6 reconcile)"
-created: 2026-07-10
-status: ACTIVE
-model: split-edit (parallel worktree sessions) → serial-land (one integration session)
-governs: the completion of the universal no-inline styling rollout (Spec 32 / Spec 31 FR-31-22)
+doc_type: phase-plan project: small-giants-wp title: "No-inline rollout — PARALLEL edit / serial land (the remaining 35 blocks + 6 reconcile)" created: 2026-07-10 status: ACTIVE model: split-edit (parallel worktree sessions) → serial-land (one integration session) governs: the completion of the universal no-inline styling rollout (Spec 32 / Spec 31 FR-31-22)
 ---
 
 # No-inline rollout — PARALLEL edit / serial land
 
 ## Why this shape (read first)
-The **editing** of block files is parallel-safe — each block is its own folder, no two tracks touch the
-same source. **LANDED verification is NOT parallel-safe:** it needs the block deployed to the ONE canary
-(sandybrown) and rendered on the ONE test page, and `build-deploy.py` ships the **whole** `sgs-blocks`
-build — so two sessions deploying at once clobber each other's blocks on the server. Therefore:
+The **editing** of block files is parallel-safe — each block is its own folder, no two tracks touch the same source. **LANDED verification is NOT parallel-safe:** it needs the block deployed to the ONE canary (sandybrown) and rendered on the ONE test page, and `build-deploy.py` ships the **whole** `sgs-blocks` build — so two sessions deploying at once clobber each other's blocks on the server. Therefore:
 
-- **EDIT phase = parallel.** N sessions, each a disjoint block set, each in its OWN git worktree/branch,
-  **files only** — NO deploy, NO harness, NO central-file edits, NO commit to `main`. Each REPORTS its new
-  box-object attrs so the integration session seeds them centrally.
-- **LAND phase = serial.** ONE integration session merges every track branch, adds ALL `box_family` seeds
-  centrally (one edit), builds, deploys ONCE, runs `/sgs-update`, purges, and LANDS every block through one
-  big harness manifest, then gates + reports + docs + pushes.
+- **EDIT phase = parallel.** N sessions, each a disjoint block set, each in its OWN git worktree/branch, **files only** — NO deploy, NO harness, NO central-file edits, NO commit to `main`. Each REPORTS its new box-object attrs so the integration session seeds them centrally.
+- **LAND phase = serial.** ONE integration session merges every track branch, adds ALL `box_family` seeds centrally (one edit), builds, deploys ONCE, runs `/sgs-update`, purges, and LANDS every block through one big harness manifest, then gates + reports + docs + pushes.
 
-Wall-clock win: the heavy migration (35 blocks) runs across as many parallel windows as you open; only the
-~1 integration pass is serial. No deploy-clobber, no corrupted LANDED proof.
+Wall-clock win: the heavy migration (35 blocks) runs across as many parallel windows as you open; only the ~1 integration pass is serial. No deploy-clobber, no corrupted LANDED proof.
 
 ## MANDATORY shared how-to (every track + the integrator reads these IN FULL)
 - `.claude/plans/block-migration-DONE-checklist.md` — the 11 end conditions (definition of done per block).
@@ -53,20 +39,16 @@ Wall-clock win: the heavy migration (35 blocks) runs across as many parallel win
 DB-authoritative as of 2026-07-10 (blocks declaring styling supports, not yet fully skip-serialised, minus the 25 done). Re-derive each session — don't trust a cached list: `grep -lE '__experimentalSkipSerialization' src/blocks/*/block.json` for done; a block declaring an *enabled* `color`/`typography`/`spacing`/`__experimentalBorder`/`shadow` support without skip-serialisation is a target.
 
 ### Track A — leaf / simple → BLOCK-PRIVATE (8)
-`audio, buybox, cart, filter-search, mobile-nav-toggle, product-search, responsive-logo, multi-button`
-Pattern: like `label`/`button`. Small support sets; single semantic root or a thin wrapper. multi-button keeps its button children.
+`audio, buybox, cart, filter-search, mobile-nav-toggle, product-search, responsive-logo, multi-button` Pattern: like `label`/`button`. Small support sets; single semantic root or a thin wrapper. multi-button keeps its button children.
 
 ### Track B — content-KIND composites → BLOCK-PRIVATE (7, like quote)
-`info-box, testimonial, team-member, product-faq, product-faq-item, notice-banner, option-picker`
-Pattern: content-KIND (box+width only) → drop `SGS_Container_Wrapper`, semantic element as root, all CSS scoped (exemplar `quote`). VERIFY per block (info-box/testimonial declare `container_kind='content'`). product-faq + product-faq-item are a parent/child pair — do together. STOP-and-ask if any wrapper looks structurally load-bearing.
+`info-box, testimonial, team-member, product-faq, product-faq-item, notice-banner, option-picker` Pattern: content-KIND (box+width only) → drop `SGS_Container_Wrapper`, semantic element as root, all CSS scoped (exemplar `quote`). VERIFY per block (info-box/testimonial declare `container_kind='content'`). product-faq + product-faq-item are a parent/child pair — do together. STOP-and-ask if any wrapper looks structurally load-bearing.
 
 ### Track C — section/layout composites → KEEP-WRAPPER, grid family (8, like hero)
-`card-grid, feature-grid, cta-section, gallery, post-grid, google-reviews, trustpilot-reviews, modal`
-Pattern: genuine grid/section → KEEP the (already-scoped) wrapper; emit only the block's OWN extras block-private-scoped. cta-section carries `shadow`. modal is `container_kind='section'`, `containerMirror:false` (like mobile-nav — keep-structure).
+`card-grid, feature-grid, cta-section, gallery, post-grid, google-reviews, trustpilot-reviews, modal` Pattern: genuine grid/section → KEEP the (already-scoped) wrapper; emit only the block's OWN extras block-private-scoped. cta-section carries `shadow`. modal is `container_kind='section'`, `containerMirror:false` (like mobile-nav — keep-structure).
 
 ### Track D — composites with child items + forms + F3 (11)
-`accordion, accordion-item, tabs, tab, testimonial-slider, content-collection, trust-bar, pricing-table, form, form-step, form-field-tiles`
-Pattern: keep-wrapper composites + parent/child pairs kept TOGETHER (accordion+item, tabs+tab, form+step+field-tiles). **F3-drain in this track:** content-collection, form, pricing-table have hardcoded-defaults baseline rows — drain the REAL dead-control overrides; if a row traces to structural CSS / a safety clamp it is MIS-TAGGED (do NOT force-wire — report it for the `P-F3-NAV-MISTAG-GATE` gate fix). Note the D298 lesson: `var(--x, <literal>)` does NOT zero a baseline row (the literal must move to render.php).
+`accordion, accordion-item, tabs, tab, testimonial-slider, content-collection, trust-bar, pricing-table, form, form-step, form-field-tiles` Pattern: keep-wrapper composites + parent/child pairs kept TOGETHER (accordion+item, tabs+tab, form+step+field-tiles). **F3-drain in this track:** content-collection, form, pricing-table have hardcoded-defaults baseline rows — drain the REAL dead-control overrides; if a row traces to structural CSS / a safety clamp it is MIS-TAGGED (do NOT force-wire — report it for the `P-F3-NAV-MISTAG-GATE` gate fix). Note the D298 lesson: `var(--x, <literal>)` does NOT zero a baseline row (the literal must move to render.php).
 
 ### Track E — product-card → verify pattern (1, complex, own window)
 `product-card` — dual-mode (typed/bound), arrayContentLift, imageControls, F3 debt. Give it a dedicated session; `/qc-council` before its commit (touches a lot). Verify block-private vs keep-wrapper per D294.

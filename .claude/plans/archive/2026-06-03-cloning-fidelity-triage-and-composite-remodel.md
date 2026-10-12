@@ -104,6 +104,7 @@ Memories: `composite-mirror-is-separate-from-cloning-fidelity`, `universal-lift-
 - memory: `feedback_no_composite_evades_universal_rule`, `feedback_pipeline_transfers_draft_css_not_converter_detection_hacks`, `empty-section-false-pixel-diff-win`, measurement-vs-eye rule + STOP #46
 
 **Tooling Index:**
+
 | Type | Name | Used in |
 |------|------|---------|
 | skill | /systematic-debugging | Wave 1a investigations |
@@ -152,93 +153,17 @@ WAVE 3 (independent, schedule anytime) — image sideload (#5 + hero/product img
 
 > Dispatched together in ONE message (5 parallel agents). Each is READ-ONLY, returns a structured fix-shape: {issue, root_cause (file:line), draft_vs_clone_evidence, proposed_fix (file:line + change), predicted_post_fix (live-DOM), risk}. NO edits, NO commits. Cite `extract.json`/`trace.jsonl`/`leftover-buckets.json` + draft-vs-clone live DOM.
 
-Step 1 — Investigate: product grid root-cause (your point 1)
-  Model:    sonnet  (delegate: code-path trace + live-DOM)
-  Action:   Root-cause why `.sgs-products` cards sit centred in each half instead of filling 5fr/3fr cells. Trace: does the converter lift the RESPONSIVE @media `grid-template-columns:5fr 3fr` onto the `.sgs-products` container (it becomes its own sgs/container per FR-22-4.1 rule 4), or only the base `1fr`? Check the emitted markup in extract.json + the live grid element's gridTemplateColumns AND each card's width + max-width/justify-self. Distinguish: (i) grid-template not lifted (extraction layer — your hypothesis), vs (ii) product-card has a max-width capping it at ~380, vs (iii) the card isn't `justify-self:stretch`. 
-  Files:    READ convert.py (_detect_grid_container_from_css, _collect_responsive_grid_from_css ~2338-2416, _emit_wrapper_container, _fold_layout_into_attrs), db_lookup.py, product-card/{render.php,style.css,block.json}, extract.json, mockup index.html (.sgs-products + @media)
-  Inputs:   run artefacts + draft truth
-  Outcome:  A file:line root cause naming WHICH layer drops the desktop grid-template OR caps the card, + a proposed fix (likely WS-2 B3: responsive grid-template typed-lift onto the wrapper container) + predicted post-fix card widths (640/384).
-  Exec:     PARALLEL with steps 2,3,4,5
-  Deps:     none
-  Marker:   (none)
-  Time:     ~6 min
-  Tooling:  /systematic-debugging, Playwright (draft-vs-clone grid measure), /sgs-db, /wp-blocks
-  On-Fail:  if root cause ambiguous, return the 2 candidate hypotheses + the discriminating measurement for the main thread to run.
-  Prompt:   [pre-written — see Appendix P1]
-  Test:
-    Happy:       returns file:line + a discriminating measurement (grid-template value on the wrapper vs card max-width) that isolates the layer.
-    Edge:        if BOTH grid-not-lifted AND card-max-width are present, returns both with priority order.
-    Fail:        artefact missing → names which artefact + falls back to live-DOM-only diagnosis.
-    Integration: cross-checks emitted markup (extract.json) against live DOM (R-22-11).
+Step 1 — Investigate: product grid root-cause (your point 1) Model:    sonnet  (delegate: code-path trace + live-DOM) Action:   Root-cause why `.sgs-products` cards sit centred in each half instead of filling 5fr/3fr cells. Trace: does the converter lift the RESPONSIVE @media `grid-template-columns:5fr 3fr` onto the `.sgs-products` container (it becomes its own sgs/container per FR-22-4.1 rule 4), or only the base `1fr`? Check the emitted markup in extract.json + the live grid element's gridTemplateColumns AND each card's width + max-width/justify-self. Distinguish: (i) grid-template not lifted (extraction layer — your hypothesis), vs (ii) product-card has a max-width capping it at ~380, vs (iii) the card isn't `justify-self:stretch`. Files:    READ convert.py (_detect_grid_container_from_css, _collect_responsive_grid_from_css ~2338-2416, _emit_wrapper_container, _fold_layout_into_attrs), db_lookup.py, product-card/{render.php,style.css,block.json}, extract.json, mockup index.html (.sgs-products + @media) Inputs:   run artefacts + draft truth Outcome:  A file:line root cause naming WHICH layer drops the desktop grid-template OR caps the card, + a proposed fix (likely WS-2 B3: responsive grid-template typed-lift onto the wrapper container) + predicted post-fix card widths (640/384). Exec:     PARALLEL with steps 2,3,4,5 Deps:     none Marker:   (none) Time:     ~6 min Tooling:  /systematic-debugging, Playwright (draft-vs-clone grid measure), /sgs-db, /wp-blocks On-Fail:  if root cause ambiguous, return the 2 candidate hypotheses + the discriminating measurement for the main thread to run. Prompt:   [pre-written — see Appendix P1] Test: Happy:       returns file:line + a discriminating measurement (grid-template value on the wrapper vs card max-width) that isolates the layer. Edge:        if BOTH grid-not-lifted AND card-max-width are present, returns both with priority order. Fail:        artefact missing → names which artefact + falls back to live-DOM-only diagnosis. Integration: cross-checks emitted markup (extract.json) against live DOM (R-22-11).
 
-Step 2 — Investigate: ingredients `__disclaimer` → empty notice-banner (#6)
-  Model:    sonnet
-  Action:   Root-cause why the draft disclaimer (text + no icon + specific border) clones to an EMPTY notice-banner with an unwanted icon + wrong border. Trace the `disclaimer`→sgs/notice-banner slot routing (D141) + notice-banner render.php + whether the text content is dropped at extraction (leaf-routing) or at render (FR-22-6 null-save / scalar drop). Check draft markup of `.sgs-ingredients-section__disclaimer`.
-  Files:    READ convert.py (_route_text_leaf, content-leaf step), db_lookup.py (disclaimer slot), notice-banner/{render.php,block.json,deprecated.js}, extract.json, mockup
-  Outcome:  file:line root cause (extraction drop vs render drop vs slot mis-route) + fix-shape + predicted post-fix (text present, no spurious icon, correct border).
-  Exec:     PARALLEL with 1,3,4,5
-  Deps:     none
-  Marker:   (none)
-  Time:     ~6 min
-  Tooling:  /systematic-debugging, /wp-blocks, Playwright
-  On-Fail:  return candidate layer + discriminating check.
-  Prompt:   [pre-written — see Appendix P2]
-  Test:
-    Happy:       isolates the layer dropping the text (extract.json shows it present/absent).
-    Edge:        distinguishes "icon added by block default" from "icon added by converter".
-    Fail:        slot missing in DB → reports via /sgs-db, not assumption.
-    Integration: emitted markup vs live DOM.
+Step 2 — Investigate: ingredients `__disclaimer` → empty notice-banner (#6) Model:    sonnet Action:   Root-cause why the draft disclaimer (text + no icon + specific border) clones to an EMPTY notice-banner with an unwanted icon + wrong border. Trace the `disclaimer`→sgs/notice-banner slot routing (D141) + notice-banner render.php + whether the text content is dropped at extraction (leaf-routing) or at render (FR-22-6 null-save / scalar drop). Check draft markup of `.sgs-ingredients-section__disclaimer`. Files:    READ convert.py (_route_text_leaf, content-leaf step), db_lookup.py (disclaimer slot), notice-banner/{render.php,block.json,deprecated.js}, extract.json, mockup Outcome:  file:line root cause (extraction drop vs render drop vs slot mis-route) + fix-shape + predicted post-fix (text present, no spurious icon, correct border). Exec:     PARALLEL with 1,3,4,5 Deps:     none Marker:   (none) Time:     ~6 min Tooling:  /systematic-debugging, /wp-blocks, Playwright On-Fail:  return candidate layer + discriminating check. Prompt:   [pre-written — see Appendix P2] Test: Happy:       isolates the layer dropping the text (extract.json shows it present/absent). Edge:        distinguishes "icon added by block default" from "icon added by converter". Fail:        slot missing in DB → reports via /sgs-db, not assumption. Integration: emitted markup vs live DOM.
 
-Step 3 — Investigate: announcement-bar content wrong (#7)
-  Model:    sonnet
-  Action:   Root-cause why `sgs-announcement-bar` clones with completely different content (lost outline, icon, box bg, button). Determine: is the draft section even SUPPOSED to be an announcement-bar block, or is it mis-routed? Compare draft markup/CSS vs the emitted block + announcement-bar render.php capabilities. (NB: announcement-bar may be a composite needing variant routing per FR-22-20, or a mis-classification.)
-  Files:    READ convert.py (boundary/voter + leaf routing), db_lookup.py, announcement-bar/{render.php,block.json}, voter.json/stage-2.json, extract.json, mockup
-  Outcome:  file:line root cause (mis-route vs dropped attrs vs block-capability gap) + fix-shape + predicted post-fix.
-  Exec:     PARALLEL with 1,2,4,5
-  Deps:     none
-  Marker:   (none)
-  Time:     ~6 min
-  Tooling:  /systematic-debugging, /wp-blocks, Playwright
-  On-Fail:  return candidate root causes.
-  Prompt:   [pre-written — see Appendix P3]
-  Test: Happy: names whether it's routing or attr-drop. Edge: flags if the block genuinely lacks the capability (gap-candidate). Fail: reports voter confusion. Integration: voter.json vs emitted markup.
+Step 3 — Investigate: announcement-bar content wrong (#7) Model:    sonnet Action:   Root-cause why `sgs-announcement-bar` clones with completely different content (lost outline, icon, box bg, button). Determine: is the draft section even SUPPOSED to be an announcement-bar block, or is it mis-routed? Compare draft markup/CSS vs the emitted block + announcement-bar render.php capabilities. (NB: announcement-bar may be a composite needing variant routing per FR-22-20, or a mis-classification.) Files:    READ convert.py (boundary/voter + leaf routing), db_lookup.py, announcement-bar/{render.php,block.json}, voter.json/stage-2.json, extract.json, mockup Outcome:  file:line root cause (mis-route vs dropped attrs vs block-capability gap) + fix-shape + predicted post-fix. Exec:     PARALLEL with 1,2,4,5 Deps:     none Marker:   (none) Time:     ~6 min Tooling:  /systematic-debugging, /wp-blocks, Playwright On-Fail:  return candidate root causes. Prompt:   [pre-written — see Appendix P3] Test: Happy: names whether it's routing or attr-drop. Edge: flags if the block genuinely lacks the capability (gap-candidate). Fail: reports voter confusion. Integration: voter.json vs emitted markup.
 
-Step 4 — Investigate: reviews / testimonial-slider section (#8)
-  Model:    sonnet
-  Action:   Root-cause why the reviews slider renders "very different" from the draft. Compare draft `.sgs-social-proof` slider structure/CSS vs the emitted testimonial-slider (or container) markup. Determine routing + whether the slider's grid/track is transferred (links to P-G5 testimonial-slider + the carousel-vs-grid variant).
-  Files:    READ testimonial-slider/{render.php,style.css,block.json}, convert.py, extract.json, mockup (.sgs-testimonial-slider + @media)
-  Outcome:  file:line root cause + fix-shape + predicted post-fix (structure matches draft).
-  Exec:     PARALLEL with 1,2,3,5
-  Deps:     none
-  Marker:   (none)
-  Time:     ~6 min
-  Tooling:  /systematic-debugging, /wp-blocks, Playwright
-  On-Fail:  candidate causes.
-  Prompt:   [pre-written — see Appendix P4]
-  Test: Happy: isolates structural divergence. Edge: separates "carousel-by-design" from "broken". Fail: reports if slider block absent. Integration: emitted vs live DOM.
+Step 4 — Investigate: reviews / testimonial-slider section (#8) Model:    sonnet Action:   Root-cause why the reviews slider renders "very different" from the draft. Compare draft `.sgs-social-proof` slider structure/CSS vs the emitted testimonial-slider (or container) markup. Determine routing + whether the slider's grid/track is transferred (links to P-G5 testimonial-slider + the carousel-vs-grid variant). Files:    READ testimonial-slider/{render.php,style.css,block.json}, convert.py, extract.json, mockup (.sgs-testimonial-slider + @media) Outcome:  file:line root cause + fix-shape + predicted post-fix (structure matches draft). Exec:     PARALLEL with 1,2,3,5 Deps:     none Marker:   (none) Time:     ~6 min Tooling:  /systematic-debugging, /wp-blocks, Playwright On-Fail:  candidate causes. Prompt:   [pre-written — see Appendix P4] Test: Happy: isolates structural divergence. Edge: separates "carousel-by-design" from "broken". Fail: reports if slider block absent. Integration: emitted vs live DOM.
 
-Step 5 — Investigate: featured-product heading centred (#3)
-  Model:    haiku  (narrow, single-attr trace — cheap)
-  Action:   Confirm + locate why `.wp-block-sgs-heading` emits `text-align:center` for the Zookies heading when the draft is `start`/left. Is it (i) sgs/heading render.php/block default, (ii) converter emitting a centre align attr, or (iii) a deployed variation CSS rule? Draft heading is `start` (verified). Find the exact source + the one-line fix.
-  Files:    READ heading/{render.php,block.json}, convert.py (heading emission), variation-d0-d2.css (in run dir), extract.json, mockup
-  Outcome:  exact source (file:line) of the centre + a one-line fix-shape + predicted post-fix (heading left).
-  Exec:     PARALLEL with 1,2,3,4
-  Deps:     none
-  Marker:   (none)
-  Time:     ~4 min
-  Tooling:  /systematic-debugging, /wp-blocks
-  On-Fail:  return the 3 candidates ranked.
-  Prompt:   [pre-written — see Appendix P5]
-  Test: Happy: pinpoints the centre source. Edge: distinguishes block-default vs converter-emitted. Fail: n/a. Integration: emitted attr vs live computed style.
+Step 5 — Investigate: featured-product heading centred (#3) Model:    haiku  (narrow, single-attr trace — cheap) Action:   Confirm + locate why `.wp-block-sgs-heading` emits `text-align:center` for the Zookies heading when the draft is `start`/left. Is it (i) sgs/heading render.php/block default, (ii) converter emitting a centre align attr, or (iii) a deployed variation CSS rule? Draft heading is `start` (verified). Find the exact source + the one-line fix. Files:    READ heading/{render.php,block.json}, convert.py (heading emission), variation-d0-d2.css (in run dir), extract.json, mockup Outcome:  exact source (file:line) of the centre + a one-line fix-shape + predicted post-fix (heading left). Exec:     PARALLEL with 1,2,3,4 Deps:     none Marker:   (none) Time:     ~4 min Tooling:  /systematic-debugging, /wp-blocks On-Fail:  return the 3 candidates ranked. Prompt:   [pre-written — see Appendix P5] Test: Happy: pinpoints the centre source. Edge: distinguishes block-default vs converter-emitted. Fail: n/a. Integration: emitted attr vs live computed style.
 
-QA Gate A — Council the fix-shapes before any code
-  Model:   inline (Opus orchestrates) + /qc-council (cross-model raters)
-  Exec:    SEQUENTIAL
-  Deps:    steps 1–5 complete
-  Check:   Run /qc-council on the 5 returned fix-shapes — each gets a measured baseline + falsifiable predicted post-fix + commit-gate (R-22-7, blub.db 255). Drop any fix-shape no rater can defend with file:line. Verify each against ground truth (STOP #34/#44 — subagent findings are hypotheses).
-  Pass:    every surviving fix-shape has: file:line root cause + baseline + falsifiable live-DOM prediction + a commit gate. No unverified "fix all instances" sweep.
-  Fail:    a fix-shape's baseline already matches predicted (diagnosis wrong) → return to investigation. Council HOLD (<50 certainty) → surface to Bean.
-  Marker:  QA
+QA Gate A — Council the fix-shapes before any code Model:   inline (Opus orchestrates) + /qc-council (cross-model raters) Exec:    SEQUENTIAL Deps:    steps 1–5 complete Check:   Run /qc-council on the 5 returned fix-shapes — each gets a measured baseline + falsifiable predicted post-fix + commit-gate (R-22-7, blub.db 255). Drop any fix-shape no rater can defend with file:line. Verify each against ground truth (STOP #34/#44 — subagent findings are hypotheses). Pass:    every surviving fix-shape has: file:line root cause + baseline + falsifiable live-DOM prediction + a commit gate. No unverified "fix all instances" sweep. Fail:    a fix-shape's baseline already matches predicted (diagnosis wrong) → return to investigation. Council HOLD (<50 certainty) → surface to Bean. Marker:  QA
 
 ---
 
@@ -246,54 +171,13 @@ QA Gate A — Council the fix-shapes before any code
 
 > Only the council-validated fix-shapes from Gate A. Each dispatched agent edits ONLY its named files, returns uncommitted (no commit authority — STOP per dispatched-agents rule). Main thread builds/deploys/verifies/commits by explicit path. /qc-inline per small change; /qc-council before the batched commit.
 
-Step 6 — Implement the validated fixes
-  Model:    sonnet ×N (one per disjoint fix; PARALLEL via /dispatching-parallel-agents or /subagent-driven-development)
-  Action:   Apply each validated fix-shape (grid-template lift / disclaimer text / announcement-bar / reviews-slider / heading-align) to its named files. Each agent: read the fix-shape, apply, run the local self-test (npm build for block changes; python -c import for converter), return diff + the falsifiable prediction it expects.
-  Files:    per fix-shape (disjoint — verified non-overlapping at Gate A); converter changes to convert.py SERIALISE (shared file — one agent or sequential) while block changes parallelise.
-  Inputs:   Gate A validated fix-shapes
-  Outcome:  each fix applied + self-test green; returned uncommitted.
-  Exec:     PARALLEL where files disjoint; convert.py edits SEQUENTIAL (shared file).
-  Deps:     Gate A
-  Marker:   (none)
-  Time:     ~10 min
-  Tooling:  /subagent-prompt (cold prompts embed the fix-shape + commit gate), /wp-block-development, /sgs-wp-engine
-  On-Fail:  revert the single file (git checkout -- <file>); re-investigate that issue. No git stash in subagents.
-  Prompt:   [generated per fix at Gate A close via /subagent-prompt — embeds the validated fix-shape + the verbatim commit gate]
-  Test:
-    Happy:       self-test green per agent; converter import clean.
-    Edge:        shared convert.py edits don't collide (serialised).
-    Fail:        build fails → revert that file only.
-    Integration: combined build compiles; converter smoke test passes.
+Step 6 — Implement the validated fixes Model:    sonnet ×N (one per disjoint fix; PARALLEL via /dispatching-parallel-agents or /subagent-driven-development) Action:   Apply each validated fix-shape (grid-template lift / disclaimer text / announcement-bar / reviews-slider / heading-align) to its named files. Each agent: read the fix-shape, apply, run the local self-test (npm build for block changes; python -c import for converter), return diff + the falsifiable prediction it expects. Files:    per fix-shape (disjoint — verified non-overlapping at Gate A); converter changes to convert.py SERIALISE (shared file — one agent or sequential) while block changes parallelise. Inputs:   Gate A validated fix-shapes Outcome:  each fix applied + self-test green; returned uncommitted. Exec:     PARALLEL where files disjoint; convert.py edits SEQUENTIAL (shared file). Deps:     Gate A Marker:   (none) Time:     ~10 min Tooling:  /subagent-prompt (cold prompts embed the fix-shape + commit gate), /wp-block-development, /sgs-wp-engine On-Fail:  revert the single file (git checkout -- <file>); re-investigate that issue. No git stash in subagents. Prompt:   [generated per fix at Gate A close via /subagent-prompt — embeds the validated fix-shape + the verbatim commit gate] Test: Happy:       self-test green per agent; converter import clean. Edge:        shared convert.py edits don't collide (serialised). Fail:        build fails → revert that file only. Integration: combined build compiles; converter smoke test passes.
 
 ## WAVE 1c — WS-1c container gaps (independent; parallel with 1a/1b)
 
-Step 7 — WS-1c: A3 custom-width centring + A4 raw-px gap + A5 min-height + A6 gridItem* (+ confirm A7 moot)
-  Model:    sonnet  (one cohesive sgs/container build; render.php + convert.py)
-  Action:   A3: custom widthMode adds margin:auto centring (verify render.php custom path centres). A4: render.php:150 raw-px gap — accept a raw px value (e.g. "16px") instead of forcing var(--wp--preset--spacing--X); detect token vs literal. A5: add min-height to the section fold lift (_root_lift_rules / the slug-None section path). A6: converter writes gridItem* defaults when a grid's items share uniform box CSS. Confirm A7 MOOT (_lift_core_block_style is dead code — grep 0 call sites; A2 inlined its logic) — if confirmed, delete the dead function or leave noted.
-  Files:    container/{render.php,block.json,edit.js,style.css}, convert.py (_root_lift_rules ~498, fold, grid-item collection), db_lookup.py
-  Inputs:   plan WS-1c gap register (Appendix B of the standardisation plan)
-  Outcome:  4 gaps closed; each live-verifiable; A7 status resolved.
-  Exec:     PARALLEL with Wave 1a/1b (independent files except convert.py — serialise convert.py edits with Step 6)
-  Deps:     none (but convert.py edits serialise with Step 6)
-  Marker:   (none)
-  Time:     ~25 min
-  Tooling:  /wp-block-development, /sgs-db, /wp-blocks, Playwright
-  On-Fail:  per-gap revert; each gap is independent.
-  Prompt:   [pre-written — see Appendix P7]
-  Test:
-    Happy:       A3 brand-like custom-width section centres; A4 a raw "16px" gap renders as 16px not an invalid token; A5 a min-height section gets the value; A6 uniform grid items get gridItem defaults.
-    Edge:        A4 token value (e.g. "40") still maps to the preset var; only literals pass through raw.
-    Fail:        invalid gap value → sanitised/skipped, not emitted raw-unsafe.
-    Integration: full container render + a re-clone section using each.
+Step 7 — WS-1c: A3 custom-width centring + A4 raw-px gap + A5 min-height + A6 gridItem* (+ confirm A7 moot) Model:    sonnet  (one cohesive sgs/container build; render.php + convert.py) Action:   A3: custom widthMode adds margin:auto centring (verify render.php custom path centres). A4: render.php:150 raw-px gap — accept a raw px value (e.g. "16px") instead of forcing var(--wp--preset--spacing--X); detect token vs literal. A5: add min-height to the section fold lift (_root_lift_rules / the slug-None section path). A6: converter writes gridItem* defaults when a grid's items share uniform box CSS. Confirm A7 MOOT (_lift_core_block_style is dead code — grep 0 call sites; A2 inlined its logic) — if confirmed, delete the dead function or leave noted. Files:    container/{render.php,block.json,edit.js,style.css}, convert.py (_root_lift_rules ~498, fold, grid-item collection), db_lookup.py Inputs:   plan WS-1c gap register (Appendix B of the standardisation plan) Outcome:  4 gaps closed; each live-verifiable; A7 status resolved. Exec:     PARALLEL with Wave 1a/1b (independent files except convert.py — serialise convert.py edits with Step 6) Deps:     none (but convert.py edits serialise with Step 6) Marker:   (none) Time:     ~25 min Tooling:  /wp-block-development, /sgs-db, /wp-blocks, Playwright On-Fail:  per-gap revert; each gap is independent. Prompt:   [pre-written — see Appendix P7] Test: Happy:       A3 brand-like custom-width section centres; A4 a raw "16px" gap renders as 16px not an invalid token; A5 a min-height section gets the value; A6 uniform grid items get gridItem defaults. Edge:        A4 token value (e.g. "40") still maps to the preset var; only literals pass through raw. Fail:        invalid gap value → sanitised/skipped, not emitted raw-unsafe. Integration: full container render + a re-clone section using each.
 
-QA Gate B — Deploy + live-DOM verify + Bean sign-off
-  Model:   inline (Opus) + Playwright
-  Exec:    SEQUENTIAL
-  Deps:    steps 6,7 complete
-  Check:   build-deploy.py --blocks-only + OPcache reset; re-clone page 144 (sgs-clone-orchestrator --skip-autonomy-gate --skip-register); Playwright @1440/768/375: (a) `.sgs-products` cards = ~640/384 filling cells; (b) #3 heading left; (c) #6 disclaimer text present + correct; (d) #7 announcement-bar matches draft; (e) #8 reviews structure matches; (f) WS-1c gaps render; (g) no regression on the 4 WS-1 sections (still full-bleed + capped). textLen sanity floors per section (no empty-section false win). /verify-loop 2-attestation on each.
-  Pass:    every (a)–(g) live-DOM matches the falsifiable prediction; Bean visual sign-off on the cropped pairs (R-22-13, measurement-vs-eye — full-page draft-vs-clone diff, not width-only, per STOP #46).
-  Fail:    any miss → root-cause that one (STOP #19 roll back fast); do NOT iterate a failing sensitive fix inline under context pressure.
-  Marker:  QA  → [HANDOFF candidate — commit Wave 1 by explicit path; visual-diff reports per changed block; this is a clean session boundary]
+QA Gate B — Deploy + live-DOM verify + Bean sign-off Model:   inline (Opus) + Playwright Exec:    SEQUENTIAL Deps:    steps 6,7 complete Check:   build-deploy.py --blocks-only + OPcache reset; re-clone page 144 (sgs-clone-orchestrator --skip-autonomy-gate --skip-register); Playwright @1440/768/375: (a) `.sgs-products` cards = ~640/384 filling cells; (b) #3 heading left; (c) #6 disclaimer text present + correct; (d) #7 announcement-bar matches draft; (e) #8 reviews structure matches; (f) WS-1c gaps render; (g) no regression on the 4 WS-1 sections (still full-bleed + capped). textLen sanity floors per section (no empty-section false win). /verify-loop 2-attestation on each. Pass:    every (a)–(g) live-DOM matches the falsifiable prediction; Bean visual sign-off on the cropped pairs (R-22-13, measurement-vs-eye — full-page draft-vs-clone diff, not width-only, per STOP #46). Fail:    any miss → root-cause that one (STOP #19 roll back fast); do NOT iterate a failing sensitive fix inline under context pressure. Marker:  QA  → [HANDOFF candidate — commit Wave 1 by explicit path; visual-diff reports per changed block; this is a clean session boundary]
 
 ---
 
@@ -303,56 +187,13 @@ QA Gate B — Deploy + live-DOM verify + Bean sign-off
 
 > The big architectural one — Bean's directive. Sensitive + touches the 29-block roster → design-gate FIRST, /subagent-driven-development for the per-composite build, proof-of-propagation gate. Detailed but gated; a fresh session executes it with this plan + Gate B's committed state as cold-entry.
 
-Step 8 [SESSION-START] — Design-gate the shared-wrapper mechanism
-  Model:    inline (Opus) + /brainstorming + /qc-council
-  Action:   Decide the mechanism (KJC-1 below): (a) a SHARED PHP render helper (`includes/class-container-render.php`) that emits the exact sgs/container wrapper markup, which every composite render.php calls — single source of truth; + (b) block.json attr-mirror so each composite EXPOSES the container's editor controls (propagated by /sgs-update from the container's attr set, KIND-scoped via `block_composition.container_kind`). Settle: helper signature, how a composite passes its inner content through, how KIND-scoping limits which attrs mirror (section=full / layout=grid+width / content=width). Pressure-test against hero (split variant), trust-bar (bound grid), cta-section (layout enum collision C8), modal.
-  Files:    READ container/{render.php,block.json}, hero/trust-bar/cta-section/modal render.php + block.json, includes/render-helpers.php (precedent), sync-container-wrapping-blocks.py
-  Outcome:  a locked mechanism spec (helper signature + mirror rule + KIND scope) + a /qc-council-validated fix-shape.
-  Exec:     SEQUENTIAL
-  Deps:     Gate B
-  Marker:   SESSION-START
-  Time:     ~30 min
-  Tooling:  /brainstorming, /qc-council, /wp-block-development, /library-docs (WP block render best-practice)
-  On-Fail:  if mechanism contested, present options to Bean (KJC-1).
-  Cold-Entry: this plan + `.claude/decisions.md` D159/D152 + Spec 22 §FR-22-21 + the committed Wave-1 state + parking P-CONTAINER-WRAPPER-STANDARDISATION.
-  Test: Happy: mechanism handles all 4 SECTION composites without per-block special-casing. Edge: hero split + trust-bar bound-grid both fit the helper. Fail: a composite can't use the helper → it's a real divergence to resolve in the spec, not a workaround. Integration: helper + one composite renders identically pre/post.
+Step 8 [SESSION-START] — Design-gate the shared-wrapper mechanism Model:    inline (Opus) + /brainstorming + /qc-council Action:   Decide the mechanism (KJC-1 below): (a) a SHARED PHP render helper (`includes/class-container-render.php`) that emits the exact sgs/container wrapper markup, which every composite render.php calls — single source of truth; + (b) block.json attr-mirror so each composite EXPOSES the container's editor controls (propagated by /sgs-update from the container's attr set, KIND-scoped via `block_composition.container_kind`). Settle: helper signature, how a composite passes its inner content through, how KIND-scoping limits which attrs mirror (section=full / layout=grid+width / content=width). Pressure-test against hero (split variant), trust-bar (bound grid), cta-section (layout enum collision C8), modal. Files:    READ container/{render.php,block.json}, hero/trust-bar/cta-section/modal render.php + block.json, includes/render-helpers.php (precedent), sync-container-wrapping-blocks.py Outcome:  a locked mechanism spec (helper signature + mirror rule + KIND scope) + a /qc-council-validated fix-shape. Exec:     SEQUENTIAL Deps:     Gate B Marker:   SESSION-START Time:     ~30 min Tooling:  /brainstorming, /qc-council, /wp-block-development, /library-docs (WP block render best-practice) On-Fail:  if mechanism contested, present options to Bean (KJC-1). Cold-Entry: this plan + `.claude/decisions.md` D159/D152 + Spec 22 §FR-22-21 + the committed Wave-1 state + parking P-CONTAINER-WRAPPER-STANDARDISATION. Test: Happy: mechanism handles all 4 SECTION composites without per-block special-casing. Edge: hero split + trust-bar bound-grid both fit the helper. Fail: a composite can't use the helper → it's a real divergence to resolve in the spec, not a workaround. Integration: helper + one composite renders identically pre/post.
 
-Step 9 — Build the shared helper + the propagation WRITER + /sgs-update wiring
-  Model:    sonnet (wp-sgs-developer agent) — heavy build
-  Action:   Extract the container's wrapper render into the shared helper (Step 8 spec). Rewrite `sync-container-wrapping-blocks.py` from report-only → a WRITER that, for each block in `block_composition` with `wraps_block='sgs/container'`, mirrors the KIND-scoped container attr set into the composite's block.json (idempotent, dry-run default, --apply gated). Wire /sgs-update Stage 1 to run it after block_composition reconciliation.
-  Files:    NEW includes/class-container-render.php; sync-container-wrapping-blocks.py; sgs-update-v2.py (Stage wiring); container/render.php (extract → call helper)
-  Outcome:  helper exists + container uses it (renders identically); writer mirrors attrs in dry-run; /sgs-update wired.
-  Exec:     SEQUENTIAL
-  Deps:     Step 8
-  Marker:   (none)
-  Time:     ~45 min
-  Tooling:  /wp-block-development, /sgs-db, /subagent-prompt
-  On-Fail:  helper extraction must keep container output byte-identical (deprecated-safe) — if it diverges, revert + re-spec.
-  Prompt:   [generated at Step 8 close via /subagent-prompt — embeds the locked mechanism spec]
-  Test: Happy: container renders byte-identical pre/post helper extraction. Edge: dry-run writer reports the per-composite attr diff without writing. Fail: writer never auto-edits without --apply. Integration: /sgs-update runs the writer clean.
+Step 9 — Build the shared helper + the propagation WRITER + /sgs-update wiring Model:    sonnet (wp-sgs-developer agent) — heavy build Action:   Extract the container's wrapper render into the shared helper (Step 8 spec). Rewrite `sync-container-wrapping-blocks.py` from report-only → a WRITER that, for each block in `block_composition` with `wraps_block='sgs/container'`, mirrors the KIND-scoped container attr set into the composite's block.json (idempotent, dry-run default, --apply gated). Wire /sgs-update Stage 1 to run it after block_composition reconciliation. Files:    NEW includes/class-container-render.php; sync-container-wrapping-blocks.py; sgs-update-v2.py (Stage wiring); container/render.php (extract → call helper) Outcome:  helper exists + container uses it (renders identically); writer mirrors attrs in dry-run; /sgs-update wired. Exec:     SEQUENTIAL Deps:     Step 8 Marker:   (none) Time:     ~45 min Tooling:  /wp-block-development, /sgs-db, /subagent-prompt On-Fail:  helper extraction must keep container output byte-identical (deprecated-safe) — if it diverges, revert + re-spec. Prompt:   [generated at Step 8 close via /subagent-prompt — embeds the locked mechanism spec] Test: Happy: container renders byte-identical pre/post helper extraction. Edge: dry-run writer reports the per-composite attr diff without writing. Fail: writer never auto-edits without --apply. Integration: /sgs-update runs the writer clean.
 
-Step 10 — Remodel the composites (parallel /subagent-driven-development, batched by KIND)
-  Model:    sonnet ×batches (implementer + spec-reviewer + quality-reviewer per batch)
-  Action:   For each composite (SECTION: hero/cta-section/modal/trust-bar first — the visible ones; then LAYOUT; then CONTENT), remove its drifted built-in wrapper and replace with the shared helper call + the mirrored block.json attrs. Each composite keeps its OWN unique interior (hero split, trust-bar badges) but its WRAPPER is the exact mirror. deprecated.js where save() output changes.
-  Files:    per-composite src/blocks/<slug>/{render.php,block.json,deprecated.js} — disjoint per agent; NO shared-file edits (FR-22-6.1)
-  Outcome:  each composite mirrors the container wrapper; live-editor validated (old posts migrate, new persist).
-  Exec:     PARALLEL per batch (one agent per block; SECTION batch first → Bean sign-off → LAYOUT/CONTENT)
-  Deps:     Step 9
-  Marker:   (none)
-  Time:     ~90 min
-  Tooling:  /subagent-driven-development, /dispatching-parallel-agents, /wp-block-development, Playwright
-  On-Fail:  per-composite revert; a composite that loses content on re-save fails its gate.
-  Prompt:   [generated per composite at Step 9 close — embeds the helper API + the composite's current interior to preserve]
-  Test: Happy: hero no longer collapses to left half + image fills its half; trust-bar badges = grid items. Edge: hero split variant preserved. Fail: re-save content loss → block's gate fails. Integration: re-clone page 144 → hero/trust-bar render correctly.
+Step 10 — Remodel the composites (parallel /subagent-driven-development, batched by KIND) Model:    sonnet ×batches (implementer + spec-reviewer + quality-reviewer per batch) Action:   For each composite (SECTION: hero/cta-section/modal/trust-bar first — the visible ones; then LAYOUT; then CONTENT), remove its drifted built-in wrapper and replace with the shared helper call + the mirrored block.json attrs. Each composite keeps its OWN unique interior (hero split, trust-bar badges) but its WRAPPER is the exact mirror. deprecated.js where save() output changes. Files:    per-composite src/blocks/<slug>/{render.php,block.json,deprecated.js} — disjoint per agent; NO shared-file edits (FR-22-6.1) Outcome:  each composite mirrors the container wrapper; live-editor validated (old posts migrate, new persist). Exec:     PARALLEL per batch (one agent per block; SECTION batch first → Bean sign-off → LAYOUT/CONTENT) Deps:     Step 9 Marker:   (none) Time:     ~90 min Tooling:  /subagent-driven-development, /dispatching-parallel-agents, /wp-block-development, Playwright On-Fail:  per-composite revert; a composite that loses content on re-save fails its gate. Prompt:   [generated per composite at Step 9 close — embeds the helper API + the composite's current interior to preserve] Test: Happy: hero no longer collapses to left half + image fills its half; trust-bar badges = grid items. Edge: hero split variant preserved. Fail: re-save content loss → block's gate fails. Integration: re-clone page 144 → hero/trust-bar render correctly.
 
-QA Gate C — Proof-of-propagation + per-composite + Bean sign-off
-  Model:   inline (Opus) + Playwright + /verify-loop
-  Exec:    SEQUENTIAL
-  Deps:    steps 8–10
-  Check:   Add a dummy attr to container/block.json → run /sgs-update → confirm all KIND-matching composites gained it (proof the writer propagates). Live-editor: load an old post with each remodelled composite → no deprecation errors, content preserved; new post persists. Re-clone page 144: hero (#1) + trust-bar (#2) live-DOM correct. Bean visual sign-off (R-22-13).
-  Pass:    propagation proven (dummy attr lands everywhere); zero composite re-save content loss; #1/#2 visually correct; Bean signs off.
-  Fail:    propagation misses a composite (KIND mismatch) → fix the writer, not the block. Re-save loss → fix that deprecated.js.
-  Marker:  QA  → [HANDOFF — WS-4 complete; remove the dummy attr; commit by explicit path]
+QA Gate C — Proof-of-propagation + per-composite + Bean sign-off Model:   inline (Opus) + Playwright + /verify-loop Exec:    SEQUENTIAL Deps:    steps 8–10 Check:   Add a dummy attr to container/block.json → run /sgs-update → confirm all KIND-matching composites gained it (proof the writer propagates). Live-editor: load an old post with each remodelled composite → no deprecation errors, content preserved; new post persists. Re-clone page 144: hero (#1) + trust-bar (#2) live-DOM correct. Bean visual sign-off (R-22-13). Pass:    propagation proven (dummy attr lands everywhere); zero composite re-save content loss; #1/#2 visually correct; Bean signs off. Fail:    propagation misses a composite (KIND mismatch) → fix the writer, not the block. Re-save loss → fix that deprecated.js. Marker:  QA  → [HANDOFF — WS-4 complete; remove the dummy attr; commit by explicit path]
 
 ---
 

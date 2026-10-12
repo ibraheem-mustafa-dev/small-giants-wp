@@ -1,9 +1,6 @@
 # Wave 4: the canvas-settable claims, grouped into families
 
-Built offline on 2026-10-06 from `sites/eye-care-ward-end/build/qa/triage/*.json`, so the host
-window is spent measuring rather than organising. Regenerate by re-running the grouping over the
-same triage verdicts: a claim is a verdict whose `decidedBy` is `canvas-settable`, and its family is
-(the cited block, the cited setting, the row property).
+Built offline on 2026-10-06 from `sites/eye-care-ward-end/build/qa/triage/*.json`, so the host window is spent measuring rather than organising. Regenerate by re-running the grouping over the same triage verdicts: a claim is a verdict whose `decidedBy` is `canvas-settable`, and its family is (the cited block, the cited setting, the row property).
 
 ## What the grouping says
 
@@ -14,19 +11,13 @@ same triage verdicts: a claim is a verdict whose `decidedBy` is `canvas-settable
 | Families spanning more than one surface | **28** |
 | Live reads at 2 per family | **138**, against 209 one-per-claim |
 
-The claim count of 209 matches the figure the plan carried. **The family count does not: the plan says
-68, and the grouping gives 69.** Use 69.
+The claim count of 209 matches the figure the plan carried. **The family count does not: the plan says 68, and the grouping gives 69.** Use 69.
 
-**28 of the 69 families span more than one surface**, which is the evidence for the plan's
-instruction to sample by family and never by surface: a per-surface sweep would read the same family
-repeatedly and still leave others untouched.
+**28 of the 69 families span more than one surface**, which is the evidence for the plan's instruction to sample by family and never by surface: a per-surface sweep would read the same family repeatedly and still leave others untouched.
 
 ## R1 closes a named sub-set of these
 
-**20 claims across 3 families cite a `bgHoverZoom*` setting.** R1 makes `canvasSettable` respect the
-emission selector, and `container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css` emits only to
-`.<uid> > .sgs-container__image-bg` and `.<uid>::before`. These families are the positive control for
-R1 on real data: after R1 they should no longer be classed `W/canvas-settable`.
+**20 claims across 3 families cite a `bgHoverZoom*` setting.** R1 makes `canvasSettable` respect the emission selector, and `container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css` emits only to `.<uid> > .sgs-container__image-bg` and `.<uid>::before`. These families are the positive control for R1 on real data: after R1 they should no longer be classed `W/canvas-settable`.
 
 - `sgs/container::bgHoverZoomDuration` on `transition-duration` - 13 claims
 - `sgs/container::bgHoverZoomEasing` on `transition-timing-function` - 5 claims

@@ -9,29 +9,15 @@ date:   2026-08-19
 branch: feat/header-completeness @ 86ef63f3 (+ merge fc125dd8)
 ```
 
-Discharges the scoped visual-gate skips logged in `manual-skips.log` for
-`a721a841`, `bf3b5ebb`, `602bbb94` and `eaf07931`. Single capture after all five
-tasks landed, rather than four half-built ones — and batched deliberately, because
-a second session was live on the same canary and each deploy overwrites the other's
-build.
+Discharges the scoped visual-gate skips logged in `manual-skips.log` for `a721a841`, `bf3b5ebb`, `602bbb94` and `eaf07931`. Single capture after all five tasks landed, rather than four half-built ones — and batched deliberately, because a second session was live on the same canary and each deploy overwrites the other's build.
 
-`intent_capture` rather than a before/after diff: there is no meaningful "before"
-for a control that did not exist. Each assertion below is a stated intent measured
-against the live painted element.
+`intent_capture` rather than a before/after diff: there is no meaningful "before" for a control that did not exist. Each assertion below is a stated intent measured against the live painted element.
 
 ## How it was verified
 
-The header comes from the theme FILE, not a `wp_template_part` post (`wp post list
---post_type=wp_template_part` returns zero rows), so header attributes cannot be
-set through the DB. Verification used a probe page (page 2522,
-`/header-verification-probe-2026-08-19/`) carrying three `sgs/site-header`
-instances configured to exercise every new control, plus the real site header on
-the homepage as the regression control.
+The header comes from the theme FILE, not a `wp_template_part` post (`wp post list --post_type=wp_template_part` returns zero rows), so header attributes cannot be set through the DB. Verification used a probe page (page 2522, `/header-verification-probe-2026-08-19/`) carrying three `sgs/site-header` instances configured to exercise every new control, plus the real site header on the homepage as the regression control.
 
-⚠ **Block CSS is LIFTED to `uploads/sgs-css/`, not inlined.** Grepping the page
-HTML for a `<style>` block returns nothing and proves nothing. Every rule below was
-read from the lifted stylesheet and then re-confirmed as a COMPUTED value on the
-painted element.
+⚠ **Block CSS is LIFTED to `uploads/sgs-css/`, not inlined.** Grepping the page HTML for a `<style>` block returns nothing and proves nothing. Every rule below was read from the lifted stylesheet and then re-confirmed as a COMPUTED value on the painted element.
 
 ## Assertions
 
@@ -57,35 +43,19 @@ painted element.
 
 ## Screenshots
 
-`reports/visual-diff/site-header-2026-08-19/` — `header-probe-{375,768,1440}.png` (probe page,
-full-page) and `home-{375,1440}.png` (the real site header).
+`reports/visual-diff/site-header-2026-08-19/` — `header-probe-{375,768,1440}.png` (probe page, full-page) and `home-{375,1440}.png` (the real site header).
 
-⚠ Those PNGs are NOT in git — `.gitignore:77` excludes `*.png` repo-wide, so they exist only in
-the working tree that captured them (`C:/tmp/sgs-header`). The measured values in the table above
-are the durable evidence; the images are corroboration.
+⚠ Those PNGs are NOT in git — `.gitignore:77` excludes `*.png` repo-wide, so they exist only in the working tree that captured them (`C:/tmp/sgs-header`). The measured values in the table above are the durable evidence; the images are corroboration.
 
 ## Honest caveats
 
-1. **One reading is unreliable and is excluded.** `getComputedStyle` returns a LIVE
-   declaration, so the "at rest" background captured at mobile was read after the
-   test had already added `is-header-scrolled` to the same element and reflects the
-   scrolled state, not the resting one. The desktop resting reading (taken before
-   any class mutation) is the trustworthy one and showed `rgba(0,0,0,0)`.
-2. **The scrolled state was forced by adding the class, not by scrolling.** That
-   tests the CSS contract, which is what changed. `view.js`'s scroll listener that
-   toggles the class was not itself modified by this work.
-3. **Task 3 (row control renames) is editor-only** and is not covered here — the
-   pre-commit gate classified it `editor-only (edit.js) — visual gate N/A`.
-4. **The Task 1 editor advisory was not exercised in the editor.** Its logic is
-   verified by construction (it reads the same `resolveTier` cascade the PHP uses)
-   but a client-facing notice deserves an editor capture before it is called done.
+1. **One reading is unreliable and is excluded.** `getComputedStyle` returns a LIVE declaration, so the "at rest" background captured at mobile was read after the test had already added `is-header-scrolled` to the same element and reflects the scrolled state, not the resting one. The desktop resting reading (taken before any class mutation) is the trustworthy one and showed `rgba(0,0,0,0)`.
+2. **The scrolled state was forced by adding the class, not by scrolling.** That tests the CSS contract, which is what changed. `view.js`'s scroll listener that toggles the class was not itself modified by this work.
+3. **Task 3 (row control renames) is editor-only** and is not covered here — the pre-commit gate classified it `editor-only (edit.js) — visual gate N/A`.
+4. **The Task 1 editor advisory was not exercised in the editor.** Its logic is verified by construction (it reads the same `resolveTier` cascade the PHP uses) but a client-facing notice deserves an editor capture before it is called done.
 
 ## Cleanup
 
-Probe page 2522 was DELETED from the canary (`wp post delete 2522 --force`; confirmed by
-`Could not find the post with ID 2522`). The measured values in the table above are the durable
-evidence — the page itself was scaffolding.
+Probe page 2522 was DELETED from the canary (`wp post delete 2522 --force`; confirmed by `Could not find the post with ID 2522`). The measured values in the table above are the durable evidence — the page itself was scaffolding.
 
-⚠ This paragraph originally read "left published deliberately". It was already gone by then, and an
-independent QC pass on the handoff caught this report contradicting the LEDGER, which said deleted.
-Corrected rather than left as two committed docs disagreeing about the same fact.
+⚠ This paragraph originally read "left published deliberately". It was already gone by then, and an independent QC pass on the handoff caught this report contradicting the LEDGER, which said deleted. Corrected rather than left as two committed docs disagreeing about the same fact.

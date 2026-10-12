@@ -1,9 +1,13 @@
 # Hero PoC — QC report (measured deltas vs Mama's mockup)
 
 **Date:** 2026-05-04
+
 **Mockup:** `sites/mamas-munches/mockups/homepage/index.html` lines 245-313
+
 **SGS render:** sandybrown post 29 (`https://sandybrown-nightingale-600381.hostingersite.com/?page_id=29`)
+
 **Viewports measured:** 1440px desktop, 375px mobile
+
 **Screenshots:** `qc-mockup-1440-hero.png`, `qc-sgs-1440-hero.png`, `hero-poc-FINAL2-1440.png`, `hero-poc-FINAL4-375.png` (mobile)
 
 ## Verdict

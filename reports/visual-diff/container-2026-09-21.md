@@ -1,13 +1,8 @@
 # Live verification — sgs/container — 2026-09-21 (U-1 commit 4f-1: the layered shadow control in the editor)
 
-verdict: PASS
-intent_capture_passed: true
-source_sha: 821388432ae8658e
-commit_sha: c279c4aab (control), with bf0d60af78ada556 = the `ContainerWrapperControls.js` bytes changed by 1d5b3ac39
+verdict: PASS intent_capture_passed: true source_sha: 821388432ae8658e commit_sha: c279c4aab (control), with bf0d60af78ada556 = the `ContainerWrapperControls.js` bytes changed by 1d5b3ac39
 
-> `source_sha` is the recipe applied to the committed bytes of `container/edit.js` at c279c4aab.
-> Change: the canvas preview composes through the shared composer with the block's own colour list, and
-> the block's Shadow panel is the new Simple / Layers / Raw CSS control.
+> `source_sha` is the recipe applied to the committed bytes of `container/edit.js` at c279c4aab. Change: the canvas preview composes through the shared composer with the block's own colour list, and the block's Shadow panel is the new Simple / Layers / Raw CSS control.
 
 ## Environment and method
 
@@ -43,10 +38,7 @@ commit_sha: c279c4aab (control), with bf0d60af78ada556 = the `ContainerWrapperCo
 
 # Live verification: dark-background shadows (U-1 4f, follow-on) - 2026-09-22
 
-verdict: PASS with two defects found and fixed during the run, and one known gap (below)
-intent_capture_passed: true
-commit_sha: ca5621aa6 (feature), 662b7235f (enqueue fix), ba01058ee (light-reset colour fix)
-source files (not under `src/blocks/container/`, so no container `source_sha`): `includes/class-sgs-container-wrapper.php` (adds `sgs-on-dark` / `sgs-on-light`), `includes/helpers-shadow-dark.php`, `includes/shadow-dark-assets.php`, `includes/helpers-colour-wcag.php`, theme `functions.php` + `assets/css/dark-mode.css`.
+verdict: PASS with two defects found and fixed during the run, and one known gap (below) intent_capture_passed: true commit_sha: ca5621aa6 (feature), 662b7235f (enqueue fix), ba01058ee (light-reset colour fix) source files (not under `src/blocks/container/`, so no container `source_sha`): `includes/class-sgs-container-wrapper.php` (adds `sgs-on-dark` / `sgs-on-light`), `includes/helpers-shadow-dark.php`, `includes/shadow-dark-assets.php`, `includes/helpers-colour-wcag.php`, theme `functions.php` + `assets/css/dark-mode.css`.
 
 ## Environment and method
 - Site: eye-care-test (`darkcyan-grouse-898606.hostingersite.com`), theme 1.5.93, plugin deployed with `--payload plugins/sgs-blocks/src/blocks/google-reviews/ --skip-gate-full`. That ships another session's UNFINISHED reviews block to this test site only (not to the canary). `gate:full` failed on that block's files only: 3 pytest failures all name `sgs/google-reviews`; the inspector ratchet was 27 against 25 with 3 findings in google-reviews files (24 without them); the third gate passed.

@@ -60,35 +60,13 @@ Read in full: `plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py`, its ca
 
 ### Ranked menu
 
-**Tier 0 — wire the existing output into the gate (recommended first step). ✅ SHIPPED 2026-09-11 — D1034, commit `63e4713e2`; C1-corrected same day — D1035.**
-`lingua_franca.py` already computes a usable `primary_sgs_bem` for every Bootstrap-5, bare-BEM, and kebab-semantic class it recognises. Today that computation is discarded at `stage_4_5_6_7_8_extract`'s canonical-check gate. Making the gate consult `primary_sgs_bem` (or an "is convertible" flag derived from it) when the raw `class_signature` fails the canonical check would let already-recognised conventions through without writing a single new recognition rule.
-**Shipped as scoped: `stage_4_5_6_7_8_extract` falls back to `boundary.get("primary_sgs_bem")`. A second wiring fix was needed beyond the gate itself: `converter/recognition.py::recognise_section` re-derives block identity from the HTML node's own `class` attribute, not from `voter.json`, so the converted class is also appended (never replacing the original, which variation-CSS selector matching still needs) onto the root element in the parsed mockup HTML before `convert_section` runs.**
-**CORRECTED (D1035, same day, caught by task review executing the code): the eligibility check does NOT key on `source_convention in ("BEM", "Bootstrap 5", "kebab-semantic")` — that was proven wrong by execution. All three "safe" conventions also carry their own `default_block: "container"` fallback, so a class matching the convention's regex SHAPE but missing its real `slot_map` (e.g. `promo-banner`/`services-grid` under kebab-semantic) still produced a truthy `primary_sgs_bem` of `sgs-container`, indistinguishable from a genuine hit — the exact hazard the convention exclusion was meant to prevent, now happening to the "safe" conventions too. The gate now checks `boundary.get("primary_is_slot_map_hit")` — a new `lingua_franca.py::ConversionResult.is_slot_map_hit` discriminator, True only for a genuine slot_map hit or canonical identity match — which is a strict superset of the old exclusion (Tailwind/shadcn's permanently-empty slot_map still never passes). Fail-closed unchanged: no `primary_sgs_bem`, or `primary_is_slot_map_hit` False, still hard-halts. Full detail + test list: `.claude/decisions.md` D1034/D1035.**
-**Scope note: the class-injection touches only the boundary's ROOT element. Per R-31-2, descendant/child elements inside an admitted boundary keep their original non-BEM classes and stay unrecognised until Tier 2 (DOM-shape inference) exists — an admitted section is not expected to convert as richly as a native BEM section. Do not read "SHIPPED" as "non-BEM drafts now convert fully."**
-**Measurement against a real non-BEM source (the next step this tier was meant to enable) is NOT done in this pass — Tier 1 should not be started until that measurement exists, per the Recommendation below.**
+**Tier 0 — wire the existing output into the gate (recommended first step). ✅ SHIPPED 2026-09-11 — D1034, commit `63e4713e2`; C1-corrected same day — D1035.** `lingua_franca.py` already computes a usable `primary_sgs_bem` for every Bootstrap-5, bare-BEM, and kebab-semantic class it recognises. Today that computation is discarded at `stage_4_5_6_7_8_extract`'s canonical-check gate. Making the gate consult `primary_sgs_bem` (or an "is convertible" flag derived from it) when the raw `class_signature` fails the canonical check would let already-recognised conventions through without writing a single new recognition rule. **Shipped as scoped: `stage_4_5_6_7_8_extract` falls back to `boundary.get("primary_sgs_bem")`. A second wiring fix was needed beyond the gate itself: `converter/recognition.py::recognise_section` re-derives block identity from the HTML node's own `class` attribute, not from `voter.json`, so the converted class is also appended (never replacing the original, which variation-CSS selector matching still needs) onto the root element in the parsed mockup HTML before `convert_section` runs.** **CORRECTED (D1035, same day, caught by task review executing the code): the eligibility check does NOT key on `source_convention in ("BEM", "Bootstrap 5", "kebab-semantic")` — that was proven wrong by execution. All three "safe" conventions also carry their own `default_block: "container"` fallback, so a class matching the convention's regex SHAPE but missing its real `slot_map` (e.g. `promo-banner`/`services-grid` under kebab-semantic) still produced a truthy `primary_sgs_bem` of `sgs-container`, indistinguishable from a genuine hit — the exact hazard the convention exclusion was meant to prevent, now happening to the "safe" conventions too. The gate now checks `boundary.get("primary_is_slot_map_hit")` — a new `lingua_franca.py::ConversionResult.is_slot_map_hit` discriminator, True only for a genuine slot_map hit or canonical identity match — which is a strict superset of the old exclusion (Tailwind/shadcn's permanently-empty slot_map still never passes). Fail-closed unchanged: no `primary_sgs_bem`, or `primary_is_slot_map_hit` False, still hard-halts. Full detail + test list: `.claude/decisions.md` D1034/D1035.** **Scope note: the class-injection touches only the boundary's ROOT element. Per R-31-2, descendant/child elements inside an admitted boundary keep their original non-BEM classes and stay unrecognised until Tier 2 (DOM-shape inference) exists — an admitted section is not expected to convert as richly as a native BEM section. Do not read "SHIPPED" as "non-BEM drafts now convert fully."** **Measurement against a real non-BEM source (the next step this tier was meant to enable) is NOT done in this pass — Tier 1 should not be started until that measurement exists, per the Recommendation below.**
 - *Cost:* smallest — no new heuristics, no new data, just reading a value that's already computed.
 - *Risk:* provably bounded — it can only affect boundaries that currently hard-halt anyway (`_is_sgs_bem_canonical` is unchanged for the canonical branch), so it cannot regress a boundary that passes today.
 - *Value:* immediate, and gives real measurement — running this against one real Bootstrap-ish or bare-BEM source tells you what fraction of non-BEM content the existing three real rules already rescue, before spending anything on Tier 2/3.
 - *Not this brainstorm's job:* the wiring fix itself is implementation, not design — flagged here only so it's visible as the obvious first rung, not designed in detail.
 
-**Tier 1 — fill in the weak rules (still string-only, no new capability class). ✅ SHIPPED 2026-09-14 — D1053, commit `d1d99e83c`.**
-Bean-directed 2026-09-14: skipped the Recommendation section's own "measure Tier 0 first" gate as
-a deliberate choice, not an oversight. **Shipped exactly as scoped below** — `_TAILWIND_UTILITY`/
-`_SHADCN` slot-maps populated (shared `_UTILITY_COMPONENT_SLOT_MAP`), `data_slot_attrs` wired
-(new `data_slot` field threaded `per-section-convention-voter.py::build_boundary()` →
-`stage1_boundary_hook.py::enrich_boundary()` → `lingua_franca.py::_try_data_slot()`, promoted to
-primary only when the class-token pass produced no genuine hit), Webflow + Elementor/Divi added
-as new convention rules. **One follow-on fix needed, same session (D1053/D1054):** a same-day
-`/qc-council` pass found the Webflow/Elementor/Divi `RULES`-list ordering claim was false for the
-no-hint default path (never live in production, since `stage1_boundary_hook` always supplies a
-heuristic hint first) — fixed. A SECOND follow-on, resolved properly via `/research-buddies`
-rather than patched blind (D1054, commit `cb83ef301`): the naive Webflow heuristic pattern (`^w-`)
-collided with Tailwind's own `w-`/`h-` sizing utilities — replaced with a document-level primary
-signal (`data-wf-site`/generator-meta, per Wappalyzer's real detection method) plus two closed,
-GitHub-verified vocabularies for the class-list fallback (zero real collision found between
-them). Full research: `C:/Users/Bean/.claude/memory/research/
-2026-09-14-webflow-vs-tailwind-class-detection.md`.
-Concrete, bounded gaps in the existing architecture, each a data addition not a new mechanism:
+**Tier 1 — fill in the weak rules (still string-only, no new capability class). ✅ SHIPPED 2026-09-14 — D1053, commit `d1d99e83c`.** Bean-directed 2026-09-14: skipped the Recommendation section's own "measure Tier 0 first" gate as a deliberate choice, not an oversight. **Shipped exactly as scoped below** — `_TAILWIND_UTILITY`/ `_SHADCN` slot-maps populated (shared `_UTILITY_COMPONENT_SLOT_MAP`), `data_slot_attrs` wired (new `data_slot` field threaded `per-section-convention-voter.py::build_boundary()` → `stage1_boundary_hook.py::enrich_boundary()` → `lingua_franca.py::_try_data_slot()`, promoted to primary only when the class-token pass produced no genuine hit), Webflow + Elementor/Divi added as new convention rules. **One follow-on fix needed, same session (D1053/D1054):** a same-day `/qc-council` pass found the Webflow/Elementor/Divi `RULES`-list ordering claim was false for the no-hint default path (never live in production, since `stage1_boundary_hook` always supplies a heuristic hint first) — fixed. A SECOND follow-on, resolved properly via `/research-buddies` rather than patched blind (D1054, commit `cb83ef301`): the naive Webflow heuristic pattern (`^w-`) collided with Tailwind's own `w-`/`h-` sizing utilities — replaced with a document-level primary signal (`data-wf-site`/generator-meta, per Wappalyzer's real detection method) plus two closed, GitHub-verified vocabularies for the class-list fallback (zero real collision found between them). Full research: `C:/Users/Bean/.claude/memory/research/ 2026-09-14-webflow-vs-tailwind-class-detection.md`. Concrete, bounded gaps in the existing architecture, each a data addition not a new mechanism:
 - Populate `_TAILWIND_UTILITY`'s and `_SHADCN`'s slot-maps with real component-name tokens (Tailwind component libraries and shadcn primitives do carry recognisable names even inside utility soup — `card`, `dialog`, `badge`, etc. — they're just not captured yet).
 - Wire the `data_slot_attrs` flag that `_SHADCN` already declares: read `data-slot="..."` attributes (shadcn's real identity signal, per its own convention) instead of relying on class names for that convention alone.
 - **Two new conventions, added 2026-09-11 (Bean-directed research pass) — both have a genuinely distinct, predictable class-name signature, same cost shape as the Tailwind/shadcn fill-in:**
@@ -99,82 +77,35 @@ Concrete, bounded gaps in the existing architecture, each a data addition not a 
 - *Risk:* none for BEM drafts (same untouched fast path); low elsewhere since it only adds recognition where there is currently none.
 - *Value:* directly targets the conventions AI-builder output and scraped competitor pages are most likely to use — see the source-priority table added below for which sources actually matter most for THIS pipeline's real inputs.
 
-**Tier 2 — heuristic tag-role inference by DOM shape. ✅ SHIPPED 2026-09-14 — D1053, commit `f7eef6d2c`.**
-Bean-directed, built directly alongside Tier 1 rather than waiting on measurement. New module
-`recogniser/dom_shape_classifier.py` implements all four signals below plus repeated-sibling
-detection (reusing Q2 Tier 1's `repeated_sibling_detector.detect_repeater_groups` directly, per
-that module's own design intent). **Both hard constraints below shipped as structural
-enforcement, not just documentation** — the "never consult when even partially canonical" gate
-is `_any_class_already_canonical()` (deliberately ANY not ALL); output only ever lands as an
-advisory `dom_shape_hint` via `leftover-bucket-router.py::route_dom_shape_hints()`, mirroring the
-R8 motion-signal precedent, never a block assignment. **A same-day `/qc-council` pass found one
-real, HIGH-severity violation of the first constraint** — the wiring's first-child heading check
-passed `[]` instead of the child's real `class_signature`, letting a shape guess override an
-authored `sgs-hero__headline` class; fixed same session (commit `080d495dc`), regression-guarded
-in `test_dom_shape_hint_wiring.py`. Landmark-tag detection extends the walker's existing
-`SKIP_TOP_LEVEL_TAGS` precedent by running entirely OUTSIDE the walker (at boundary-build/
-leftover-routing time, per R-31-3's "no 4th walker conditional" rule) rather than adding a new
-exception to it — infers block identity from structural signal instead of class name: heading
-level and position → hero/section-header candidate; `<button>`/anchor-styled-as-button → CTA; N
-near-identical sibling `<article>`/`<div>` nodes under one parent → card-grid; landmark tags
-(`<nav>`, `<header>`, `<footer>`) → header/footer.
+**Tier 2 — heuristic tag-role inference by DOM shape. ✅ SHIPPED 2026-09-14 — D1053, commit `f7eef6d2c`.** Bean-directed, built directly alongside Tier 1 rather than waiting on measurement. New module `recogniser/dom_shape_classifier.py` implements all four signals below plus repeated-sibling detection (reusing Q2 Tier 1's `repeated_sibling_detector.detect_repeater_groups` directly, per that module's own design intent). **Both hard constraints below shipped as structural enforcement, not just documentation** — the "never consult when even partially canonical" gate is `_any_class_already_canonical()` (deliberately ANY not ALL); output only ever lands as an advisory `dom_shape_hint` via `leftover-bucket-router.py::route_dom_shape_hints()`, mirroring the R8 motion-signal precedent, never a block assignment. **A same-day `/qc-council` pass found one real, HIGH-severity violation of the first constraint** — the wiring's first-child heading check passed `[]` instead of the child's real `class_signature`, letting a shape guess override an authored `sgs-hero__headline` class; fixed same session (commit `080d495dc`), regression-guarded in `test_dom_shape_hint_wiring.py`. Landmark-tag detection extends the walker's existing `SKIP_TOP_LEVEL_TAGS` precedent by running entirely OUTSIDE the walker (at boundary-build/ leftover-routing time, per R-31-3's "no 4th walker conditional" rule) rather than adding a new exception to it — infers block identity from structural signal instead of class name: heading level and position → hero/section-header candidate; `<button>`/anchor-styled-as-button → CTA; N near-identical sibling `<article>`/`<div>` nodes under one parent → card-grid; landmark tags (`<nav>`, `<header>`, `<footer>`) → header/footer.
 
-**Why Tier 2 matters more than Tier 0/1 for Claude-Code-authored sources specifically (added 2026-09-11).**
-Two real, common sources carry ZERO usable signal in the class string at all — Tier 0/1's whole
-model (recognise a convention from the class name) cannot reach them, only DOM shape can:
-- **CSS Modules** — classes compile to hashed names (`Button_primary__x7f2a`) that change every
-  build. No token in the string is stable.
-- **styled-components / Emotion** (CSS-in-JS) — classes compile to opaque generated strings
-  (`sc-bdVaJa`) with no semantic content whatsoever.
+**Why Tier 2 matters more than Tier 0/1 for Claude-Code-authored sources specifically (added 2026-09-11).** Two real, common sources carry ZERO usable signal in the class string at all — Tier 0/1's whole model (recognise a convention from the class name) cannot reach them, only DOM shape can:
+- **CSS Modules** — classes compile to hashed names (`Button_primary__x7f2a`) that change every build. No token in the string is stable.
+- **styled-components / Emotion** (CSS-in-JS) — classes compile to opaque generated strings (`sc-bdVaJa`) with no semantic content whatsoever.
 
-Both are common output shapes from Claude Code's own React/Next.js scaffolding — arguably a
-higher-priority real-world source for this pipeline than scraped competitor sites, since it's
-the tool actively generating drafts today. This is the concrete evidence Tier 2 needs eventually,
-not speculative — it just doesn't change the ranked order (Tier 0/1 still ship first and cheapest;
-Tier 2 is still not started until they're measured).
+Both are common output shapes from Claude Code's own React/Next.js scaffolding — arguably a higher-priority real-world source for this pipeline than scraped competitor sites, since it's the tool actively generating drafts today. This is the concrete evidence Tier 2 needs eventually, not speculative — it just doesn't change the ranked order (Tier 0/1 still ship first and cheapest; Tier 2 is still not started until they're measured).
 - *Cost:* moderate — new classifier logic, needs its own test suite against real (not synthetic) non-BEM fixtures.
 - *Risk:* **must feed the pipeline's existing gap-candidate / operator-review flow** (`leftover-buckets.json`, bucket-c classifier) rather than silently asserting a block identity — a shape guess is lower-confidence than an authored class and should be treated that way. **Hard constraint for whenever this is built:** DOM-shape inference must never be consulted when an element's `class_signature` is already SGS-BEM canonical, even partially — otherwise a Bean draft mixing one authored BEM class with one incidental utility class on the same element could have its role silently overridden by a shape guess instead of respecting the authored identity. This is a design constraint to carry into the eventual build, not something to resolve now.
 - *Value:* the only option here that helps genuinely classless plain-HTML sources, which Tier 0/1 cannot touch at all.
 
 ### Addendum (2026-09-14) — Claude Design `sc-for`/`sc-if`: a source outside this tier system's original scope, handled as a sibling pair of mechanisms
 
-**✅ SHIPPED 2026-09-14 — D1057 (identity, commit `093af7329`+`8b6952751`), D1058 (values,
-commit `5afc455ee`).** Full detail: `.claude/reports/2026-09-14-claude-design-draft-pipeline-
-harmonisation.md` §7/§8 (corrected same day against what building it actually found) and
-`.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md`.
+**✅ SHIPPED 2026-09-14 — D1057 (identity, commit `093af7329`+`8b6952751`), D1058 (values, commit `5afc455ee`).** Full detail: `.claude/reports/2026-09-14-claude-design-draft-pipeline- harmonisation.md` §7/§8 (corrected same day against what building it actually found) and `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md`.
 
-Claude Design (`.dc.html`) drafts are not a Tier 0/1/2 case in the sense above — Tiers 0-2 all
-recognise identity from something readable off the SAME rendered/parsed element (a class
-string, or the element's own DOM shape). Claude Design splits into two SEPARATE problems that
-turned out to need two separate tools reading two DIFFERENT DOMs:
+Claude Design (`.dc.html`) drafts are not a Tier 0/1/2 case in the sense above — Tiers 0-2 all recognise identity from something readable off the SAME rendered/parsed element (a class string, or the element's own DOM shape). Claude Design splits into two SEPARATE problems that turned out to need two separate tools reading two DIFFERENT DOMs:
 
-- **Identity** — `recogniser/sc_var_classifier.py`. The only identity signal is the free-text
-  variable name bound by the nearest `<sc-for list="{{ name }}">` ANCESTOR wrapper (a tag
-  name, not an attribute — corrected from an earlier "mirrors `data-slot`" assumption before
-  any code was written). `/research-buddies` confirmed generic names (`reasons`/`featured`/
-  `ticker`/`marquee`) recur reliably across independent drafts; compound names don't and fall
-  back to a count-based structural hint. Advisory-only, same confidence-cap/gap-candidate-
-  gated shape as Tier 2 above; never writes to the authoritative `slots.aliases` table.
-- **Values** — `orchestrator/draft-responsive-probe.js`. Responsiveness is JS-computed
-  (ResizeObserver-driven), not CSS `@media` — nothing for the converter to read at extraction
-  time unless the draft is rendered and measured first. Renders one route at this project's
-  fixed device-tier widths, diffs computed values keyed by content.
-- **The two cannot be merged into one pass**: verified live that `<sc-for>`/`<sc-if>` do NOT
-  survive rendering (0 custom-element tags in the rendered DOM) — Piece 1 reads the SOURCE
-  file, Piece 2 reads the RENDERED page. Correlating a Piece 2 result back to a Piece 1
-  boundary is real, unbuilt follow-up work.
+- **Identity** — `recogniser/sc_var_classifier.py`. The only identity signal is the free-text variable name bound by the nearest `<sc-for list="{{ name }}">` ANCESTOR wrapper (a tag name, not an attribute — corrected from an earlier "mirrors `data-slot`" assumption before any code was written). `/research-buddies` confirmed generic names (`reasons`/`featured`/ `ticker`/`marquee`) recur reliably across independent drafts; compound names don't and fall back to a count-based structural hint. Advisory-only, same confidence-cap/gap-candidate- gated shape as Tier 2 above; never writes to the authoritative `slots.aliases` table.
+- **Values** — `orchestrator/draft-responsive-probe.js`. Responsiveness is JS-computed (ResizeObserver-driven), not CSS `@media` — nothing for the converter to read at extraction time unless the draft is rendered and measured first. Renders one route at this project's fixed device-tier widths, diffs computed values keyed by content.
+- **The two cannot be merged into one pass**: verified live that `<sc-for>`/`<sc-if>` do NOT survive rendering (0 custom-element tags in the rendered DOM) — Piece 1 reads the SOURCE file, Piece 2 reads the RENDERED page. Correlating a Piece 2 result back to a Piece 1 boundary is real, unbuilt follow-up work.
 
-**Tier 3 — visual/computed-style clustering.**
-Render candidate elements (via Playwright) and cluster by rendered box size, position, and typography to group repeating structures or identify a hero region, independent of markup entirely.
+**Tier 3 — visual/computed-style clustering.** Render candidate elements (via Playwright) and cluster by rendered box size, position, and typography to group repeating structures or identify a hero region, independent of markup entirely.
 - *Cost:* highest — a real headless-render pass per candidate element, new infrastructure, slow.
 - *Risk:* unproven need — nothing measured so far shows Tier 2 is insufficient, because Tier 2 doesn't exist yet to measure against.
 - *Value:* speculative until Tier 2 is shipped and shown to still miss real cases.
 
 ### Real-world source priority (added 2026-09-11, Bean-directed research pass)
 
-Ranked by how often this pipeline will actually hit each source — Claude-Code-authored drafts
-are the highest-priority non-BEM input, not scraped sites, since it's the tool actively
-generating drafts today:
+Ranked by how often this pipeline will actually hit each source — Claude-Code-authored drafts are the highest-priority non-BEM input, not scraped sites, since it's the tool actively generating drafts today:
 
 | Source | Convention | Tier that reaches it |
 |---|---|---|
@@ -188,22 +119,9 @@ generating drafts today:
 
 ### Recommendation — Bean-decided 2026-09-11: Tier 0 first
 
-Ship Tier 0 alone, measure against a real non-BEM source, THEN decide on Tier 1 — not bundled.
-Tier 0 is near-free and the only step that also produces a real number (what fraction of the
-gap the existing rules already rescue), so it's the right first rung even before Tier 1's own
-low cost is weighed. Tier 1 (now including Webflow/Elementor/Divi above) follows once Tier 0's
-measurement is in. Only invest in Tier 2 if, after Tier 0+1 ship and get run against a real
-scraped page or two, a meaningful fraction of boundaries still hard-halt — though the CSS
-Modules/styled-components finding above means Tier 2 has a concrete, real motivating case
-already, not just a speculative one. Do not start Tier 3 without first shipping and measuring
-Tier 2 — there is currently zero evidence it's needed.
+Ship Tier 0 alone, measure against a real non-BEM source, THEN decide on Tier 1 — not bundled. Tier 0 is near-free and the only step that also produces a real number (what fraction of the gap the existing rules already rescue), so it's the right first rung even before Tier 1's own low cost is weighed. Tier 1 (now including Webflow/Elementor/Divi above) follows once Tier 0's measurement is in. Only invest in Tier 2 if, after Tier 0+1 ship and get run against a real scraped page or two, a meaningful fraction of boundaries still hard-halt — though the CSS Modules/styled-components finding above means Tier 2 has a concrete, real motivating case already, not just a speculative one. Do not start Tier 3 without first shipping and measuring Tier 2 — there is currently zero evidence it's needed.
 
-**Superseded 2026-09-14 (Bean-directed, deliberate override, not an oversight):** Tier 1 AND
-Tier 2 were both built the same session, explicitly skipping the "measure Tier 0 first" gate
-above. **The overdue measurement step this section calls for is STILL not done** — running
-Tier 0 against a real non-BEM source (e.g. the Mama's Munches PRODUCT draft's non-BEM hard-halt,
-carried in `LEDGER.md`'s "Prior work" section) remains open. Tier 3 is still correctly out of
-scope — nobody asked for it, zero evidenced need, unchanged from this recommendation.
+**Superseded 2026-09-14 (Bean-directed, deliberate override, not an oversight):** Tier 1 AND Tier 2 were both built the same session, explicitly skipping the "measure Tier 0 first" gate above. **The overdue measurement step this section calls for is STILL not done** — running Tier 0 against a real non-BEM source (e.g. the Mama's Munches PRODUCT draft's non-BEM hard-halt, carried in `LEDGER.md`'s "Prior work" section) remains open. Tier 3 is still correctly out of scope — nobody asked for it, zero evidenced need, unchanged from this recommendation.
 
 ### Explicit non-choice, for completeness
 
@@ -223,8 +141,7 @@ Any detection signal that is itself platform- or client-specific — e.g. "if th
 
 ### Ranked menu
 
-**Tier 1 — structural repeated-sibling detection (recommended). ✅ SHIPPED 2026-09-11 — D1037, commit `e250ff6d9`.**
-Detect, at boundary level, whether a container has N or more near-identical sibling children — same tag shape and near-identical class signature — above a tunable threshold. This reuses the same fingerprinting idea `/uimax-sgs-scrape-pattern` already computes for pattern dedup (`sha256(normalised_html + sorted_css_var_dump)`, per its Stage 3), applied sibling-to-sibling within one boundary instead of pattern-to-library. When it fires, convert **one** representative sibling fully, verify its fidelity, and apply the same converted structure as a loop (a native repeating block — Query Loop/Product Collection-equivalent for CPT archives, a repeated InnerBlocks template for a plain hand-authored card grid) instead of hand-converting every sibling individually.
+**Tier 1 — structural repeated-sibling detection (recommended). ✅ SHIPPED 2026-09-11 — D1037, commit `e250ff6d9`.** Detect, at boundary level, whether a container has N or more near-identical sibling children — same tag shape and near-identical class signature — above a tunable threshold. This reuses the same fingerprinting idea `/uimax-sgs-scrape-pattern` already computes for pattern dedup (`sha256(normalised_html + sorted_css_var_dump)`, per its Stage 3), applied sibling-to-sibling within one boundary instead of pattern-to-library. When it fires, convert **one** representative sibling fully, verify its fidelity, and apply the same converted structure as a loop (a native repeating block — Query Loop/Product Collection-equivalent for CPT archives, a repeated InnerBlocks template for a plain hand-authored card grid) instead of hand-converting every sibling individually.
 
 This also covers the "optional recurring sections" half of the question (e.g. "related products" present on some pages of a template family, absent on others): once a page is recognised as belonging to a repeating template family, diff its boundary set against sibling pages of the same family. A section present in every instance is core; a section present in only some becomes a conditionally-rendered optional slot (matching an existing role from the `roles`/`slot_synonyms` DB tables) instead of being treated as a fresh gap candidate every time it happens to be missing.
 
@@ -233,35 +150,21 @@ This is Rule-3-compliant precisely because the condition is "repeated near-ident
 - *Risk:* needs a real operator/Bean sign-off step on the ONE representative converted instance before it's stamped across N siblings (per R-31-13, Bean's eye is co-authoritative on fidelity) — never a fully silent bulk-apply.
 - *Value:* generalises a proven, shipped precedent to every repeating-content page, not just WooCommerce.
 
-**Tier 2 — explicit operator flag, as a fallback/override only.**
-Let Bean force template-mode on or off at clone time for edge cases the structural detector gets wrong — e.g. only 2 cards visible above the fold with more below, or a grid that looks repeating but is deliberately hand-varied per item.
+**Tier 2 — explicit operator flag, as a fallback/override only.** Let Bean force template-mode on or off at clone time for edge cases the structural detector gets wrong — e.g. only 2 cards visible above the fold with more below, or a grid that looks repeating but is deliberately hand-varied per item.
 - *Cost:* trivial — one CLI flag.
 - *Risk:* none; it's a safety valve, not the detector.
 - *Value:* cheap insurance, but adds no automation on its own — per CLAUDE.md's "AI independence" philosophy (get it right first time, need less manual intervention over time), this should sit alongside Tier 1, not replace it.
 
-**Bean-decided 2026-09-11: Tier 1 approved.** Note logged for future reference: `/uimax-sgs-scrape-pattern`
-(the manual harvester Tier 1's fingerprinting technique reuses) has seen near-zero operational use
-since it was built, beyond initial testing — this doesn't block Tier 1 (only the technique's code
-is reused, not the skill as a live workflow), but is worth a fresh look separately at some point.
+**Bean-decided 2026-09-11: Tier 1 approved.** Note logged for future reference: `/uimax-sgs-scrape-pattern` (the manual harvester Tier 1's fingerprinting technique reuses) has seen near-zero operational use since it was built, beyond initial testing — this doesn't block Tier 1 (only the technique's code is reused, not the skill as a live workflow), but is worth a fresh look separately at some point.
 
 ### Addendum (2026-09-10, research-buddies) — two concrete tools for Tier 1's build
 
-Found via a condensed research-buddies pass while researching Claude Design's compatibility
-(separate question, same session) — kept here rather than a new doc since both bear directly
-on Tier 1's open questions:
+Found via a condensed research-buddies pass while researching Claude Design's compatibility (separate question, same session) — kept here rather than a new doc since both bear directly on Tier 1's open questions:
 
-- **DOM-shape repetition, no class names needed.** A real scraping-community tool pattern
-  (`extract-repetitions`-style: finds repeated content purely from tag/depth shape) — relevant
-  if Tier 1 needs to fire on a draft where the repeated cards don't even share a class
-  signature, which the "near-identical class signature" half of Tier 1's current definition
-  above doesn't cover on its own.
-- **Answers the open "what threshold" question (see open question 2 below).** Rather than
-  hand-picking a sibling count, compute a blended structural+style similarity score between
-  candidate siblings (`html-similarity`/`niteru`-style libraries) and pick a cutoff
-  empirically against real drafts, instead of guessing a number up front.
+- **DOM-shape repetition, no class names needed.** A real scraping-community tool pattern (`extract-repetitions`-style: finds repeated content purely from tag/depth shape) — relevant if Tier 1 needs to fire on a draft where the repeated cards don't even share a class signature, which the "near-identical class signature" half of Tier 1's current definition above doesn't cover on its own.
+- **Answers the open "what threshold" question (see open question 2 below).** Rather than hand-picking a sibling count, compute a blended structural+style similarity score between candidate siblings (`html-similarity`/`niteru`-style libraries) and pick a cutoff empirically against real drafts, instead of guessing a number up front.
 
-Not evaluated for licensing/dependency fit yet — flagged as a build-time input for whoever
-picks up Tier 1, not vetted or committed to here.
+Not evaluated for licensing/dependency fit yet — flagged as a build-time input for whoever picks up Tier 1, not vetted or committed to here.
 
 ### Addendum 2 (2026-09-10, research-buddies via the R8 motion-recognition brainstorm) — the `_SHADCN.data_slot_attrs` dead flag has a cheap fix
 

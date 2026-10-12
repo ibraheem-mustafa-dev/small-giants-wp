@@ -13,17 +13,11 @@ references:
 
 **Written for:** Bean, and whoever picks this up next session.
 
-**What this is.** The fix register holds every Eye Care fix, and most of them are *values* (a spacing, a
-colour, a weight) which belong to the page trees and to Solve. This document holds only the open rows that
-change what the site can **do**: a feature that does not exist, a control that exists but paints nothing, or
-a behaviour that is broken. Every item is already decided in the register, which stays the source of truth;
-if an item below disagrees with its register row, the register wins. Page-tree values, content, pure styling
-and the Spec 48 measuring route are excluded.
+**What this is.** The fix register holds every Eye Care fix, and most of them are *values* (a spacing, a colour, a weight) which belong to the page trees and to Solve. This document holds only the open rows that change what the site can **do**: a feature that does not exist, a control that exists but paints nothing, or a behaviour that is broken. Every item is already decided in the register, which stays the source of truth; if an item below disagrees with its register row, the register wins. Page-tree values, content, pure styling and the Spec 48 measuring route are excluded.
 
 CR6 (padding and margin longhands) is done, see `plans/archive/2026-10-07-cr6-box-longhand-migration.md`.
 
-**How to read the tiers.** Tier 2 is a feature that does not exist. Tier 3 is a control that exists and does
-nothing. Tier 4 is small setting additions. Within a tier, the order is the order to build in.
+**How to read the tiers.** Tier 2 is a feature that does not exist. Tier 3 is a control that exists and does nothing. Tier 4 is small setting additions. Within a tier, the order is the order to build in.
 
 ---
 
@@ -56,8 +50,7 @@ nothing. Tier 4 is small setting additions. Within a tier, the order is the orde
 
 ### Checkout and confirmation
 
-The least-started area. Eye Care gets its own checkout template; nothing here changes the checkout other SGS
-clients get.
+The least-started area. Eye Care gets its own checkout template; nothing here changes the checkout other SGS clients get.
 
 | Ref | The feature | Notes |
 |---|---|---|

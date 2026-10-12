@@ -45,12 +45,9 @@ The consolidation is substantially complete and accurate. Two issues require a f
 
 ## Issues found
 
-**Issue 1 — Broken cross-doc link (C.12)**
-`cloning-pipeline-flow.md` line 1010: link target `plans/phase-6-pattern-fidelity.md` resolves to `.claude/plans/phase-6-pattern-fidelity.md` which does not exist. The file was moved to `.claude/plans/archive/phase-6-pattern-fidelity.md`.
-Proposed fix: Update line 1010 to `[.claude/plans/archive/phase-6-pattern-fidelity.md](plans/archive/phase-6-pattern-fidelity.md)`.
+**Issue 1 — Broken cross-doc link (C.12)** `cloning-pipeline-flow.md` line 1010: link target `plans/phase-6-pattern-fidelity.md` resolves to `.claude/plans/phase-6-pattern-fidelity.md` which does not exist. The file was moved to `.claude/plans/archive/phase-6-pattern-fidelity.md`. Proposed fix: Update line 1010 to `[.claude/plans/archive/phase-6-pattern-fidelity.md](plans/archive/phase-6-pattern-fidelity.md)`.
 
-**Issue 2 — `/research-buddies` absent from skill dispatch chain (A.2)**
-The audit rubric lists `/research-buddies` as a skill to verify in the dispatch chain. It is absent from the flow doc. This is CONDITIONAL rather than FAIL because: (a) the rubric prompt may list it as an expected pipeline skill it was never in, or (b) it was omitted from skills-commands-map.md before absorption. Without access to the pre-absorption skills-commands-map.md content (the stub only confirms the stub exists, not the original content), this cannot be ruled out as a genuine omission. If `/research-buddies` is actively used anywhere in the pipeline, it needs a dispatch chain entry.
+**Issue 2 — `/research-buddies` absent from skill dispatch chain (A.2)** The audit rubric lists `/research-buddies` as a skill to verify in the dispatch chain. It is absent from the flow doc. This is CONDITIONAL rather than FAIL because: (a) the rubric prompt may list it as an expected pipeline skill it was never in, or (b) it was omitted from skills-commands-map.md before absorption. Without access to the pre-absorption skills-commands-map.md content (the stub only confirms the stub exists, not the original content), this cannot be ruled out as a genuine omission. If `/research-buddies` is actively used anywhere in the pipeline, it needs a dispatch chain entry.
 
 ---
 

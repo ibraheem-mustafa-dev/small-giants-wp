@@ -1,8 +1,11 @@
 # Chrome DevTools MCP — Stage 8 Integration Spec
 
 **Status:** Design only. No implementation yet.
+
 **Date:** 2026-05-05
+
 **Owner:** Bean / SGS Framework
+
 **Scope:** Stage 8 (measurement layer) of the SGS clone pipeline — extending current Playwright-based QA harness with Chrome DevTools MCP (Model Context Protocol — the new tool channel that exposes Chrome DevTools capabilities to Claude).
 
 ## Why this exists
@@ -111,6 +114,7 @@ Ranked by impact × inverse-effort. Suggested staging across 2 sessions.
 3. `scripts/network-errors-audit.js` — ~20 min. One list call, optional per-request detail, classify.
 
 **Session 2 (skill wiring + optional layer):**
+
 4. visual-qa SKILL.md edits — wire 3 new scripts into 9-layer pipeline (now 11). ~15 min.
 5. `scripts/a11y-tree-snapshot.js` (optional) — ~15 min.
 

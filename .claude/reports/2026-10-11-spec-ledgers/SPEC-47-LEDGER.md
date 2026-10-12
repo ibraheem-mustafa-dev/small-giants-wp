@@ -1,22 +1,12 @@
 # Spec 47 retirement ledger (into Spec 48)
 
-Date 2026-10-11. Source: `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md` v0.18.0 (781 lines, read in full) at HEAD `6b4b8c19e`.
-Inputs: `.claude/plans/2026-10-10-claude-design-handover-standard.md` (Task B4), `.claude/plans/2026-10-04-spec47-full-coverage.md`
-(route-accuracy R1 to R6), `scripts/computed-route/README.md`, `.claude/reports/2026-10-10-handover-council/R4-needs-and-specs.md`
-and `R6-dc-format.md`, `.claude/specs/48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md`.
+Date 2026-10-11. Source: `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md` v0.18.0 (781 lines, read in full) at HEAD `6b4b8c19e`. Inputs: `.claude/plans/2026-10-10-claude-design-handover-standard.md` (Task B4), `.claude/plans/2026-10-04-spec47-full-coverage.md` (route-accuracy R1 to R6), `scripts/computed-route/README.md`, `.claude/reports/2026-10-10-handover-council/R4-needs-and-specs.md` and `R6-dc-format.md`, `.claude/specs/48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md`.
 
-**Verdicts.** CARRY = into Spec 48 as is or reworded. REWORK = carries, but changes because the draft's code is now the
-primary source or because Spec 48A now owns the input. RETIRE = not carried, with the reason and where its content goes.
+**Verdicts.** CARRY = into Spec 48 as is or reworded. REWORK = carries, but changes because the draft's code is now the primary source or because Spec 48A now owns the input. RETIRE = not carried, with the reason and where its content goes.
 
-**Spec 48 section names used below are proposals** (the outline Spec 48 is written against), not yet a document:
-§Rules · §Inputs (the 48A handoff) · §Intake · §Reading the draft (code first, measuring what code cannot state) ·
-§Tokens and extractor (absorbed FR-33-n) · §Skeleton writer · §Calibration · §Resolver · §Fill · §Solve (verify and
-repair) · §Walker and pairing · §Deliberate differences · §Canvas surfaces · §Site Info and handover · §States and
-behaviour · §Triage and gap reports · §Route accuracy · §Safety and tooling · §Acceptance · §Deferred.
+**Spec 48 section names used below are proposals** (the outline Spec 48 is written against), not yet a document: §Rules · §Inputs (the 48A handoff) · §Intake · §Reading the draft (code first, measuring what code cannot state) · §Tokens and extractor (absorbed FR-33-n) · §Skeleton writer · §Calibration · §Resolver · §Fill · §Solve (verify and repair) · §Walker and pairing · §Deliberate differences · §Canvas surfaces · §Site Info and handover · §States and behaviour · §Triage and gap reports · §Route accuracy · §Safety and tooling · §Acceptance · §Deferred.
 
-**Citer counts** come from `git grep -l -E "<ID>([^0-9]|$)" -- ':!.claude/archive' ':!.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md'`
-(so `.claude/plans/archive/` and dated reports are included; `.claude/archive/` is not). "code" = files not ending `.md`.
-Spec 47 as a whole (`Spec 47|spec47|47-COMPUTED-ROUTE`): 160 files, 89 of them not `.md`.
+**Citer counts** come from `git grep -l -E "<ID>([^0-9]|$)" -- ':!.claude/archive' ':!.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md'` (so `.claude/plans/archive/` and dated reports are included; `.claude/archive/` is not). "code" = files not ending `.md`. Spec 47 as a whole (`Spec 47|spec47|47-COMPUTED-ROUTE`): 160 files, 89 of them not `.md`.
 
 ---
 

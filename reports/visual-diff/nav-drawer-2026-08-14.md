@@ -11,33 +11,23 @@ source_sha: 4c9bfd1addbeec87
 
 # `sgs/nav-drawer` — closeStyle editor-canvas preview
 
-**Verdict: PASS.** Captured live on the sandybrown canary, editor canvas, on a
-fresh page load.
+**Verdict: PASS.** Captured live on the sandybrown canary, editor canvas, on a fresh page load.
 
 ## What changed on the visitor-facing surface
 
-Nothing. `render.php` already correctly rendered three distinct close-button
-markups depending on `closeStyle` (`separate-x` → × icon, `text-swap` →
-"Close" text, `burger-morph` → a 2-bar icon). The editor canvas's close
-preview always rendered the × icon regardless of the setting, and the
-`sgs-nav-drawer--close-{style}` modifier class (which the block's own
-`style.css` scopes the text-swap/burger-morph styling under) was never
-applied to the canvas root at all.
+Nothing. `render.php` already correctly rendered three distinct close-button markups depending on `closeStyle` (`separate-x` → × icon, `text-swap` → "Close" text, `burger-morph` → a 2-bar icon). The editor canvas's close preview always rendered the × icon regardless of the setting, and the `sgs-nav-drawer--close-{style}` modifier class (which the block's own `style.css` scopes the text-swap/burger-morph styling under) was never applied to the canvas root at all.
 
 ## Live DOM evidence
 
-Probe page: `sgs/nav-drawer` with `closeStyle: "text-swap"`. Read directly
-from the editor canvas iframe's live DOM.
+Probe page: `sgs/nav-drawer` with `closeStyle: "text-swap"`. Read directly from the editor canvas iframe's live DOM.
 
 | State | Rendered |
 |---|---|
 | Before fix | `<span class="sgs-nav-drawer__close-preview"><Icon/></span>` — always the × icon |
 | After fix, `closeStyle: "text-swap"` | `<span class="sgs-nav-drawer__close-preview sgs-nav-drawer__close"><span class="sgs-nav-drawer__close-text">Close</span></span>` |
 
-Matches render.php:487-493's `text-swap` branch exactly (a
-`.sgs-nav-drawer__close-text` span containing "Close").
+Matches render.php:487-493's `text-swap` branch exactly (a `.sgs-nav-drawer__close-text` span containing "Close").
 
 ## Scope check
 
-Only `sgs/nav-drawer/edit.js` touched (plus the detector's baseline file,
-unrelated to this block's render surface). `render.php` untouched.
+Only `sgs/nav-drawer/edit.js` touched (plus the detector's baseline file, unrelated to this block's render surface). `render.php` untouched.

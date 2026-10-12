@@ -1,8 +1,6 @@
 # Live verification: sgs/nav-drawer, 2026-09-23 (U-1 4c surface ground and shadow, non-modal on a blurred header)
 
-verdict: PASS
-intent_capture_passed: true
-commit_sha: 0980e8b1d (4c), 298f7e45c (drawer surface tone)
+verdict: PASS intent_capture_passed: true commit_sha: 0980e8b1d (4c), 298f7e45c (drawer surface tone)
 
 ## Environment and method
 - Site: eye-care-test, active drawer post 14 set temporarily to `surfaceBlur:12px`, `surfaceSaturate:150`, `surfaceOpacity:0.8`, `shadow:lifted`, `modality:non-modal`, then restored byte for byte from a saved copy (verified).

@@ -1,6 +1,7 @@
 # :user-valid overrides the focus ring — reproduce, diagnose, fix
 
 **Date:** 2026-08-01
+
 **Scope:** `plugins/sgs-blocks/src/blocks/form/style.css` only. Not deployed — canary/production still run the pre-fix CSS until the next `build-deploy.py` pass.
 
 ## 1. The problem

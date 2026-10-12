@@ -228,9 +228,7 @@ The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`
 - **WebP/AVIF** via WordPress native image handling (6.1+)
 - **Lazy loading** via native `loading="lazy"` (WordPress adds this automatically)
 - **Explicit width/height** on all images to prevent CLS
-- **SVG support** (BUILT, in the blocks plugin: `plugins/sgs-blocks/includes/svg-upload.php`) — SVG uploads for any
-  user who can upload files, sanitised on both upload and sideload (`sgs_svg_upload_sanitise`: allowlisted elements,
-  no scripts or event handlers, no outside `href` or `url()`, the SVG's mixed-case attribute names kept)
+- **SVG support** (BUILT, in the blocks plugin: `plugins/sgs-blocks/includes/svg-upload.php`) — SVG uploads for any user who can upload files, sanitised on both upload and sideload (`sgs_svg_upload_sanitise`: allowlisted elements, no scripts or event handlers, no outside `href` or `url()`, the SVG's mixed-case attribute names kept)
 
 ### Fonts
 - **Two font files maximum** per site (heading + body)
@@ -303,8 +301,7 @@ WordPress compiles the page's `global-styles-inline-css` by merging the `wp_glob
 
 **To change live per-client styles, update BOTH:**
 1. `sites/<client>/theme-snapshot.json` (`styles.css` field) — the version-controlled source of truth, AND
-2. the live `wp_global_styles` post via REST: `POST /wp-json/wp/v2/global-styles/<id>` (app-password Basic auth).
-Then bump `theme/sgs-theme/style.css` `Version:` to bust WP's compiled-styles cache.
+2. the live `wp_global_styles` post via REST: `POST /wp-json/wp/v2/global-styles/<id>` (app-password Basic auth). Then bump `theme/sgs-theme/style.css` `Version:` to bust WP's compiled-styles cache.
 
 ### theme.json raw custom values + overridable defaults
 

@@ -12,58 +12,35 @@ references:
 
 # Eye Care: the register-proven framework repairs (parallel track)
 
-**Outcome (2026-10-05, `a62ae6fdb`): achieved, with three measurement limits stated below.** All twelve items are
-built, gates P1 to P3 ran, and the work is verified on sandybrown and pushed to `main`: 38 (+130) `7689ebb70`,
-87 `9776e7d86`, N3+17B `4aff6c3f0`, 68 `2ec85d5bc`, S1 `c1c660428`, 15 `31aa51090`, N11(b) `35e8b94d4`,
-N25 `3b0407324`, N46 `9e8581ad9` corrected by `5d26ee6e4`, N17b `39daf2656`, S12 `8aa7274ef`, and the register
-update `a62ae6fdb`. Item 76 needed no work. Each row in the register carries its own hash and what was measured.
+**Outcome (2026-10-05, `a62ae6fdb`): achieved, with three measurement limits stated below.** All twelve items are built, gates P1 to P3 ran, and the work is verified on sandybrown and pushed to `main`: 38 (+130) `7689ebb70`, 87 `9776e7d86`, N3+17B `4aff6c3f0`, 68 `2ec85d5bc`, S1 `c1c660428`, 15 `31aa51090`, N11(b) `35e8b94d4`, N25 `3b0407324`, N46 `9e8581ad9` corrected by `5d26ee6e4`, N17b `39daf2656`, S12 `8aa7274ef`, and the register update `a62ae6fdb`. Item 76 needed no work. Each row in the register carries its own hash and what was measured.
 
 **Three things could not be measured on the canary, and are not claims of success:**
-1. **38 and 68** — no canary page renders `.sgs-business-hours__day` or a tile-style option picker, so WordPress
-   never enqueues those stylesheets and the rules cannot be exercised there. Both are content-verified in the
-   deployed files. Eye Care renders both, so Session C's Wave 3 sweep is where they get exercised.
-2. **S1 end to end** — sandybrown sets no `buttonPresets.default.hover-transition`, so its buttons fell to the
-   stylesheet's 0.18s fallback. That a site's own 0.25s reaches a button can only be shown on a site that sets
-   one. Session C has agreed to read one computed `transitionDuration` on an Eye Care button after its Wave 3
-   deploy and report it.
-3. **N25** — the register's test passes (choose, clear, group count matches), but the defect did not reproduce in
-   the before-state either: this canary shop has three filter groups and no "Gender" filter. The invariant holds
-   and nothing regressed; a reproduced break was not repaired.
+1. **38 and 68** — no canary page renders `.sgs-business-hours__day` or a tile-style option picker, so WordPress never enqueues those stylesheets and the rules cannot be exercised there. Both are content-verified in the deployed files. Eye Care renders both, so Session C's Wave 3 sweep is where they get exercised.
+2. **S1 end to end** — sandybrown sets no `buttonPresets.default.hover-transition`, so its buttons fell to the stylesheet's 0.18s fallback. That a site's own 0.25s reaches a button can only be shown on a site that sets one. Session C has agreed to read one computed `transitionDuration` on an Eye Care button after its Wave 3 deploy and report it.
+3. **N25** — the register's test passes (choose, clear, group count matches), but the defect did not reproduce in the before-state either: this canary shop has three filter groups and no "Gender" filter. The invariant holds and nothing regressed; a reproduced break was not repaired.
 
-**The original goal, for reference:** every fix the register has already investigated, whose cause is written down
-in code terms and whose fix is already decided, is built and verified on the canary.
+**The original goal, for reference:** every fix the register has already investigated, whose cause is written down in code terms and whose fix is already decided, is built and verified on the canary.
 
-**Why this track exists.** Session C repairs the measuring route and touches only `scripts/`. Session C2 then judges
-the walker's findings, which is where investigation and Bean's approval belong. The items below need neither: the
-register already names the cause in the code and states the fix, so they can be built while Session C runs. Same
-shape as the Google reviews track beside Session B.
+**Why this track exists.** Session C repairs the measuring route and touches only `scripts/`. Session C2 then judges the walker's findings, which is where investigation and Bean's approval belong. The items below need neither: the register already names the cause in the code and states the fix, so they can be built while Session C runs. Same shape as the Google reviews track beside Session B.
 
 ## Why these items and not others
 
 The register was read end to end. An item qualifies only when **all four** hold:
 
-1. Its remaining work is **framework code**, not a page-tree value. A tree value needs a Solve run, which is
-   Session D, and the trees are the route's write target.
-2. The register states the **cause in code terms**: a named file, selector, function or attribute, or a measured
-   value. A symptom is not a cause.
+1. Its remaining work is **framework code**, not a page-tree value. A tree value needs a Solve run, which is Session D, and the trees are the route's write target.
+2. The register states the **cause in code terms**: a named file, selector, function or attribute, or a measured value. A symptom is not a cause.
 3. The register states **the fix**, specifically enough to act on.
-4. It is **outstanding**. Where a row carries a "Framework done" note, the outstanding part is its `Open:` clause,
-   and that clause must itself be framework code.
+4. It is **outstanding**. Where a row carries a "Framework done" note, the outstanding part is its `Open:` clause, and that clause must itself be framework code.
 
-**48 further register items were examined and left out** because the cause is not stated in code terms, so they
-need investigating first. They are not dropped: they belong to Session C2, which investigates, or to Session D,
-which writes tree values. The list is in "What was left out, and why" below.
+**48 further register items were examined and left out** because the cause is not stated in code terms, so they need investigating first. They are not dropped: they belong to Session C2, which investigates, or to Session D, which writes tree values. The list is in "What was left out, and why" below.
 
 ## The work
 
-Each item cites the register id. **The register's fix stands**: this track implements the decided fix, and does not
-redesign it. If an item's cause turns out to be wrong, stop, record what you found against that register row, and
-move on; do not invent a replacement fix.
+Each item cites the register id. **The register's fix stands**: this track implements the decided fix, and does not redesign it. If an item's cause turns out to be wrong, stop, record what you found against that register row, and move on; do not invent a replacement fix.
 
 ### Verified in the code before this plan was written
 
-For these five the cause was re-checked against the source, and the citation below is the result, not the
-register's claim.
+For these five the cause was re-checked against the source, and the citation below is the result, not the register's claim.
 
 | id | The defect | The cause, verified | The decided fix |
 |---|---|---|---|
@@ -75,9 +52,7 @@ register's claim.
 
 ### Register-stated, locate the rule first
 
-The register names a mechanism for each of these, but the exact rule was not located while writing this plan. **The
-first task on each is a two-minute locate**, and if the cause is not where the register says, that item stops and is
-recorded rather than guessed.
+The register names a mechanism for each of these, but the exact rule was not located while writing this plan. **The first task on each is a two-minute locate**, and if the cause is not where the register says, that item stops and is recorded rather than guessed.
 
 | id | The defect | The cause the register states | The decided fix |
 |---|---|---|---|
@@ -107,17 +82,13 @@ This track shares a worktree and a test site with Session C. These are not style
 
 ### The deploy and reseed rule, and why
 
-Session C's entire output is a framework-gap count measured on the repaired route, against the 2026-10-05 baseline
-taken at block code `4726700c1`. **If block code changes under it, that count moves for reasons that have nothing
-to do with the route, and the measurement Session C exists to produce is worthless.** A reseed is worse: Session C's
-resolver and calibration lanes read the framework database, and `/sgs-update` rebuilds it.
+Session C's entire output is a framework-gap count measured on the repaired route, against the 2026-10-05 baseline taken at block code `4726700c1`. **If block code changes under it, that count moves for reasons that have nothing to do with the route, and the measurement Session C exists to produce is worthless.** A reseed is worse: Session C's resolver and calibration lanes read the framework database, and `/sgs-update` rebuilds it.
 
 So this track:
 
 1. Builds, runs the gates, and verifies **on sandybrown**, the canary. That is the designated place for this.
 2. Commits to `main` with an explicit pathspec, as normal. Committing is safe; deploying to the measured site is not.
-3. **Handed its reseed and its eye-care-test deploy to Session C's Wave 3**, which ran exactly one of each (done 2026-10-06),
-   or runs them itself after Session C's Gate 3 has passed. Message the other session either way.
+3. **Handed its reseed and its eye-care-test deploy to Session C's Wave 3**, which ran exactly one of each (done 2026-10-06), or runs them itself after Session C's Gate 3 has passed. Message the other session either way.
 
 **sandybrown is deployed** at `a62ae6fdb`. Its oldshape audit passed without intervention: calibration had already replaced the Spec 47 calibration page (post 4750) with an empty tree, which Session C confirmed by running the audit itself (483 posts, exit 0). The only deploy still owed is eye-care-test, in Deferred above.
 
@@ -181,10 +152,7 @@ Nothing here is dropped; each has an owner.
 | `sgs/google-reviews` | its attribution work | Built and closed. The block is available to build again (2026-10-05); N24, the per-card logo link, is DONE (`4aa477507`, verified live at `0cc773b19`). |
 | The Spec 47 route and its unbuilt parts | all of it | Session C |
 
-**What to build next is no longer this list.** The whole register was read for functional work and the result is
-`plans/2026-10-05-eye-care-functionality-backlog.md`, which supersedes this section: it tiers every feature, dead
-control and broken behaviour in the register by what it costs a user, and carries the six items named above inside
-Tier 2. Start there, not here.
+**What to build next is no longer this list.** The whole register was read for functional work and the result is `plans/2026-10-05-eye-care-functionality-backlog.md`, which supersedes this section: it tiers every feature, dead control and broken behaviour in the register by what it costs a user, and carries the six items named above inside Tier 2. Start there, not here.
 
 ## Deferred, with the task each item serves
 
@@ -212,10 +180,8 @@ Headline figures are the optimistic ones. Every item is first-attempt.
 | Gate P2, including the canary before-and-after | 25 min | Block |
 | Gate P3, register update | 10 min | Quick |
 
-**About 2 h 30 in total**, and it is parallelisable by block if dispatched as subagents, since no two items above
-share a file. The critical path is the locate-first group.
+**About 2 h 30 in total**, and it is parallelisable by block if dispatched as subagents, since no two items above share a file. The critical path is the locate-first group.
 
 ## First action (under 5 minutes, no dependencies)
 
-Settle item 76 by reading the colour tile's transition list for `transform`, and item 87 by reading the breadcrumb
-render for its current-item marker. Both are read-only greps and both may remove themselves from the list.
+Settle item 76 by reading the colour tile's transition list for `transform`, and item 87 by reading the breadcrumb render for its current-item marker. Both are read-only greps and both may remove themselves from the list.

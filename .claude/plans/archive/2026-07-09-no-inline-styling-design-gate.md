@@ -40,11 +40,9 @@ Before touching more than one block, PROVE on the real page-8 DOM that `skipSeri
 **qc-council correction:** `sgs/container` alone is NOT a sufficient pilot — it has NO corner-radius attrs and NO `:hover` state, so it can't exercise the corner-radius merge (different WP API: `style.border.radius` object) or the `:hover`-scoped path (the CORE motivating defect). The pilot must be REPRESENTATIVE of every distinct mechanism before "go full universal."
 1. **PILOT = 2 blocks covering all distinct mechanisms:**
    - **`sgs/container`** — 4-side padding/margin, tier-without-base base-attr top-up, the shared wrapper, skipSerialization on a section wrapper.
-   - **`sgs/button`** (or `sgs/quote`) — 4-CORNER border-radius object (different WP API + control), the custom-attr border path, **`:hover`** scoped, and the **editor BoxControl** in the Gutenberg canvas.
-   Run the full Pilot Acceptance Test below on BOTH. Do NOT proceed until every assertion passes live.
+   - **`sgs/button`** (or `sgs/quote`) — 4-CORNER border-radius object (different WP API + control), the custom-attr border path, **`:hover`** scoped, and the **editor BoxControl** in the Gutenberg canvas. Run the full Pilot Acceptance Test below on BOTH. Do NOT proceed until every assertion passes live.
 2. **THEN full universal rollout** (Bean: "go for the universal setup completely" once the pilot is a proven success) — the same proven pattern across the whole roster: shared-helper-routed blocks, block-private render.php `style="…"` conversions (hero/cta/media/quote/card-grid…), the box-object merge on all 10 families, route/gap the DROP set — each block LANDED via the same test.
-3. **Gate:** wire `audit-inline-styling.js` (`--check` mode) into prebuild as zero-tolerance once the roster is green; ALSO add a static AST gate that FAILS the build if a per-side/per-corner grouping/migration operation runs without a `box_family` DB check in its call path (makes the collision guard structural, not just convention — qc-council Claim 2 fix).
-Deterministic auto-fix is NO-GO — detection → human/agent apply, per-block validated. **No block deprecations (D270): pre-production; reshaped blocks are re-cloned/recovered, NEVER given a `deprecated.js`.**
+3. **Gate:** wire `audit-inline-styling.js` (`--check` mode) into prebuild as zero-tolerance once the roster is green; ALSO add a static AST gate that FAILS the build if a per-side/per-corner grouping/migration operation runs without a `box_family` DB check in its call path (makes the collision guard structural, not just convention — qc-council Claim 2 fix). Deterministic auto-fix is NO-GO — detection → human/agent apply, per-block validated. **No block deprecations (D270): pre-production; reshaped blocks are re-cloned/recovered, NEVER given a `deprecated.js`.**
 
 ## Pilot Acceptance Test — the LANDED gate — hardened per qc-council (Claim 5) to not give a false pass/fail
 Passes ONLY when ALL hold on the **real, freshly-served** live page 8 (deploy → re-clone → **purge LiteSpeed + OPcache reset** → anonymous Playwright with cache-bust). Every check = live-DOM/computed-style, never emit/markup (STOP-4/21/44).
@@ -66,6 +64,7 @@ Freshness is itself a guard: LiteSpeed + OPcache + anonymous + cache-bust (the s
 
 ## Model routing for the build (Bean: use Haiku/Sonnet where beneficial)
 Main session = Opus (design judgement, pilot verification, qc-council synthesis, Bean interaction). Subagents (STOP-39: solo coding subagent for shared-file changes, foreground, main-session re-verifies; read-only analysis may run parallel):
+
 | Task | Model | Why |
 |---|---|---|
 | Seed `box_family`/`box_side` `ATTR_CLASSIFICATION_OVERRIDES` rows (enumeration is done; write the per-attr entries) | **Haiku** | mechanical, well-scoped from the finished family list |
@@ -145,17 +144,15 @@ Note: `sgs/button` and `sgs/heading`/`text`/`quote` do their **border via CUSTOM
 
 ### Converter/editor change sites (8, all verified — the engineering seam is the accumulator)
 1-2. `root_supports.py:423-428` + `:459-500` — emit `paddingTablet:{...}` object instead of flat `paddingTopTablet`, gated on `box_family`.
+
 3. `root_supports.py:145-166` (`_set_in`) — already object-shaped; reuse for the tier object.
-4. `db_lookup.py:2970-3010` (`attr_for_layer_property`) — add an object-attr branch.
-5-6. `resolvers/outer_box.py:172-286` + `content_band.py:71-146` — **THE key change**: `Decl`/`Write` are strictly per-declaration (1 side → 1 write); an object destination needs a **cross-declaration accumulator** (4 side-Decls → 1 object write) or a post-pass merge.
+4. `db_lookup.py:2970-3010` (`attr_for_layer_property`) — add an object-attr branch. 5-6. `resolvers/outer_box.py:172-286` + `content_band.py:71-146` — **THE key change**: `Decl`/`Write` are strictly per-declaration (1 side → 1 write); an object destination needs a **cross-declaration accumulator** (4 side-Decls → 1 object write) or a post-pass merge.
 7. `services/fold_helpers.py:138-185` (`_expand_box_shorthand`) — the shorthand-expansion seam that must re-aggregate for an object destination.
-8. `services/css_pass.py:130-159` — the STOP-43 consumed-partition keys off per-property names; the object path must still mark all 4 sides consumed per tier.
-Plus the block side: one shared responsive **BoxControl** editor component; `helpers-responsive.php` reads `paddingTablet.top` from the object; render.php reads the object; no-deprecations (D270) → existing clones re-cloned.
+8. `services/css_pass.py:130-159` — the STOP-43 consumed-partition keys off per-property names; the object path must still mark all 4 sides consumed per tier. Plus the block side: one shared responsive **BoxControl** editor component; `helpers-responsive.php` reads `paddingTablet.top` from the object; render.php reads the object; no-deprecations (D270) → existing clones re-cloned.
 
 ## Decisions — ALL APPROVED by Bean 2026-07-09
 1. ✅ **Mechanism** — Style-Engine-scoped in shared helpers, keep supports.
 2. ✅ **Box-object schema merge** — named object + WP BoxControl for the 10 four-side/four-corner families; the 10 scalar/shapeDivider families stay scalar.
 3. ✅ **DB categorisation guard** — `box_family`/`box_side` via `ATTR_CLASSIFICATION_OVERRIDES`; absence = scalar; migration filters on `box_family`, never a name-regex.
-4. ✅ **Rollout** — pilot container first; once it's a proven success (Pilot Acceptance Test passes), go FULL universal rollout completely (Bean's directive), not incremental.
-Build status: NOT started — next session executes the pilot. No deprecations (D270).
+4. ✅ **Rollout** — pilot container first; once it's a proven success (Pilot Acceptance Test passes), go FULL universal rollout completely (Bean's directive), not incremental. Build status: NOT started — next session executes the pilot. No deprecations (D270).
 3. Then I reconcile the specs/docs (Spec 31 §2/§13.4, Spec 32, CLAUDE.md, architecture.md, sgs-wp-engine skill) to the approved design, and we scope the first build session.

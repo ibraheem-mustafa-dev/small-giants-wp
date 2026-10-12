@@ -9,17 +9,11 @@ created: 2026-07-07
 
 ## Why (Bean, 2026-07-07)
 
-The button (and "a huge amount of our blocks") emits block settings as **inline
-`style=""` on the HTML element**. This is wrong:
+The button (and "a huge amount of our blocks") emits block settings as **inline `style=""` on the HTML element**. This is wrong:
 
-1. **Hover is broken.** Inline styles (specificity 1,0,0,0) beat every stylesheet
-   rule including `#uid.sgs-button:hover` (1,2,0). A primary button with inline
-   `color`/`background`/`border` therefore has **zero** hover; secondary (empty bg,
-   not inline) hovers only its background. Proven live 2026-07-07.
-2. **Not reusable.** Baking brand colours into the block markup means the same
-   block can't re-skin per client by changing `theme.json`.
-3. **Not the WP way.** WP themes don't inline every hex/px/string set in the block
-   editor — they apply it as external CSS. Inline hardcoding obstructs that.
+1. **Hover is broken.** Inline styles (specificity 1,0,0,0) beat every stylesheet rule including `#uid.sgs-button:hover` (1,2,0). A primary button with inline `color`/`background`/`border` therefore has **zero** hover; secondary (empty bg, not inline) hovers only its background. Proven live 2026-07-07.
+2. **Not reusable.** Baking brand colours into the block markup means the same block can't re-skin per client by changing `theme.json`.
+3. **Not the WP way.** WP themes don't inline every hex/px/string set in the block editor — they apply it as external CSS. Inline hardcoding obstructs that.
 
 ## The correct model (APPROVED — Bean + the component-library pattern)
 
@@ -31,9 +25,7 @@ The button (and "a huge amount of our blocks") emits block settings as **inline
 | **Editor / per-instance override** | **Option 2, but STILL external CSS — never inline.** A custom value (editor-entered OR a genuine per-block draft exception) is emitted as a scoped `#uid.sgs-button{…}` / `#uid.sgs-button:hover{…}` rule in a `<style>` block. `#uid` outspecs the class default; hover override goes in `:hover`. HTML stays clean. |
 | **Pipeline / converter** | Emits the clean class + **extracts the draft's real preset values ACCURATELY — base AND hover, including `primary-dark`** — into the client snapshot `buttonPresets`. No manual authoring, no asking Bean. Divergences → generated theme CSS or scoped `#uid` override (external). |
 
-**Iron rule:** a block setting NEVER becomes an inline `style=""` value. Defaults =
-class-based external CSS (theme tokens). Overrides = scoped `#uid` external CSS.
-This is the standard for the later framework-wide sweep; the button is the reference.
+**Iron rule:** a block setting NEVER becomes an inline `style=""` value. Defaults = class-based external CSS (theme tokens). Overrides = scoped `#uid` external CSS. This is the standard for the later framework-wide sweep; the button is the reference.
 
 ## The 9 live defects this fixes (mamas homepage, 2026-07-07)
 

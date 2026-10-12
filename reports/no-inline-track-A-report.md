@@ -9,11 +9,7 @@ governs_handoff_to: the INTEGRATION / LAND session (see .claude/plans/2026-07-10
 
 # Track A — no-inline edit-track report
 
-All 8 Track-A blocks migrated to the no-inline styling contract on `feat/no-inline-track-A`,
-files only. Every block: `npm run build` GREEN (all prebuild gates pass), `php -l` clean,
-zero inline CSS **property declarations** in server render, view.js free of `.style.<property>`
-writes (var-only `setProperty` / classes / text only). **NOT deployed, NOT LANDED, NOT committed
-to main** — the integration session merges, seeds the DB centrally, deploys once, and LANDED-verifies.
+All 8 Track-A blocks migrated to the no-inline styling contract on `feat/no-inline-track-A`, files only. Every block: `npm run build` GREEN (all prebuild gates pass), `php -l` clean, zero inline CSS **property declarations** in server render, view.js free of `.style.<property>` writes (var-only `setProperty` / classes / text only). **NOT deployed, NOT LANDED, NOT committed to main** — the integration session merges, seeds the DB centrally, deploys once, and LANDED-verifies.
 
 ## Verification done here (files-only bar)
 - `npm run build` (worktree) — GREEN after each batch (prebuild: dead-controls / hardcoded-defaults / box-family AST all pass; webpack compiles).
@@ -101,6 +97,4 @@ Same dict shape as the D298 Wave-2 batches. `(block_slug, attr, box_family)`:
 5. **No version bumps / no deprecations** (D293) — honoured across all 8.
 
 ## Commit status
-Files are complete + build-green in the worktree. See the operator note re: the pre-commit
-visual-diff gate (STOP-67) vs the files-only edit-track model — the LANDED visual-diff reports
-are the integration session's deliverable, not this track's.
+Files are complete + build-green in the worktree. See the operator note re: the pre-commit visual-diff gate (STOP-67) vs the files-only edit-track model — the LANDED visual-diff reports are the integration session's deliverable, not this track's.

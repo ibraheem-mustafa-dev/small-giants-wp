@@ -55,6 +55,7 @@ These are drafts. They get reviewed + merged into `specs/31-UNIVERSAL-CLONING-PI
 **DB dependency:** NONE on `canonical_slot` (D194). The per-slot box attrs (`contentPadding*`, `contentWidth`, `mediaPadding*`, …) are reached NAME-FREE via layer-prefix + their box-property `property_suffixes` rows (already present). The ~41 content-area rows are tagged `canonical_slot='content'` + `role='layout'` as convention-consistent **metadata only** (maintained deterministically by `/sgs-update` Stage 1 `assign-canonical.py`); the former "Commit-0a `seed-canonical-slots.py` pre-gate" is **OBSOLETE as a build gate** — the cross-node commit does not require it. Design-gate: `WRAPPER-CSS-ROUTING-DESIGN-GATE.md`.
 
 **PASS test:** hero `contentPadding*` set from `.sgs-hero__content` padding (today lands on the outer section); trust-bar `contentWidth` set from `.sgs-trust-bar__inner` max-width (today absent). A `.sgs-X__Y` whose `equivalent_block_for(X,Y)` is non-NULL attributes to the child block, NOT the parent's `Y`.
+
 **FAIL test:** box CSS dropped for a non-equivalent interior slot; OR a child-block slot's CSS mis-routed to a parent scalar attr (the FR-22-5 D1 FAIL case); OR `display`/`grid-template` lifted cross-node as inline.
 
 ---

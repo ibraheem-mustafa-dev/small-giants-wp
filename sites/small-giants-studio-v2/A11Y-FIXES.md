@@ -1,8 +1,11 @@
 # Accessibility Fixes Tracker
 
 **Audit date:** 12 Feb 2026
+
 **Engine:** axe-core 4.10.2 via Playwright
+
 **Standard:** WCAG 2.2 AA
+
 **Result:** ALL 8 PAGES PASS — 0 violations in both light and dark mode
 
 ---
@@ -73,6 +76,7 @@
 | **Total** | **0** | **0** |
 
 **Before:** 69 violations (16 light + 53 dark)
+
 **After:** 0 violations
 
 ### Files changed (10 total)

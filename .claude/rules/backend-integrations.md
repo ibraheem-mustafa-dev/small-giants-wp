@@ -14,17 +14,6 @@ paths:
 | Trustpilot Sync | Settings > SGS Trustpilot Sync | `sgs_trustpilot_data` (sgs/trustpilot-reviews block, `dataSource: synced`) | WP-cron `sgs_trustpilot_sync_event` weekly/daily |
 | Font Library Collection | Site Editor > Styles > Typography > Manage fonts | n/a — `wp_register_font_collection( 'sgs-google-fonts' )` on init | Manifest fetched on modal open only |
 
-**Font Library Collection.** `includes/class-font-collection.php`
-(`SGS\Blocks\Font_Collection`) — see its own docblock for the registration and zero-frontend-cost
-mechanism. Critical constraint: do NOT add fonts from the collection to `theme.json`
-`settings.typography.fontFamilies` to make them "available" — WordPress enqueues every entry in
-`fontFamilies` on every page (WP Core issue #39332). The collection is the available-fonts
-catalogue; theme.json is the active-fonts list. The manifest `assets/font-collections/google-fonts.json` is a committed file, and the catalogue registers only when `sgs_register_google_fonts_catalogue` returns true (off by default).
+**Font Library Collection.** `includes/class-font-collection.php` (`SGS\Blocks\Font_Collection`) — see its own docblock for the registration and zero-frontend-cost mechanism. Critical constraint: do NOT add fonts from the collection to `theme.json` `settings.typography.fontFamilies` to make them "available" — WordPress enqueues every entry in `fontFamilies` on every page (WP Core issue #39332). The collection is the available-fonts catalogue; theme.json is the active-fonts list. The manifest `assets/font-collections/google-fonts.json` is a committed file, and the catalogue registers only when `sgs_register_google_fonts_catalogue` returns true (off by default).
 
-**Trustpilot Sync.** `includes/trustpilot/` — see `class-trustpilot-sync.php`'s own docblock for
-the one-option/one-writer/one-reader shape. The Browserless `/content` REST endpoint uses
-`?token=<key>` auth (NOT `Authorization: Bearer` — that returns HTTP 500 on this endpoint). Key is
-encrypted AES-256-CBC at rest, keyed off `wp_salt('auth')`. JSON-LD parser harvests standalone
-`Review` entities from `@graph` (Trustpilot's reference pattern — `LocalBusiness.review[]` holds
-`@id` pointers, not inline entities). Activity log (last 5 attempts) + `last_sync_status` badge on
-the settings page is the operator failure surface — no Telegram/n8n side channel.
+**Trustpilot Sync.** `includes/trustpilot/` — see `class-trustpilot-sync.php`'s own docblock for the one-option/one-writer/one-reader shape. The Browserless `/content` REST endpoint uses `?token=<key>` auth (NOT `Authorization: Bearer` — that returns HTTP 500 on this endpoint). Key is encrypted AES-256-CBC at rest, keyed off `wp_salt('auth')`. JSON-LD parser harvests standalone `Review` entities from `@graph` (Trustpilot's reference pattern — `LocalBusiness.review[]` holds `@id` pointers, not inline entities). Activity log (last 5 attempts) + `last_sync_status` badge on the settings page is the operator failure surface — no Telegram/n8n side channel.

@@ -7,23 +7,13 @@ status: findings + agreed decisions — no code changed
 
 # Eye Care draft: what's a cloning target, what's exempt, and what we decided
 
-Grounding document for the fresh-session prompt at
-`.claude/prompts/2026-09-14-modal-cpt-form-frame-card-checkout-upgrade.md`. Everything below
-came from direct file reads and parallel-agent code audits this session, cross-checked against
-`.claude/reports/2026-09-14-claude-design-draft-pipeline-harmonisation.md` (a same-day, more
-rigorous adversarial-council investigation into the same draft — read that report too for the
-render-based measurement methodology and the open risks it found).
+Grounding document for the fresh-session prompt at `.claude/prompts/2026-09-14-modal-cpt-form-frame-card-checkout-upgrade.md`. Everything below came from direct file reads and parallel-agent code audits this session, cross-checked against `.claude/reports/2026-09-14-claude-design-draft-pipeline-harmonisation.md` (a same-day, more rigorous adversarial-council investigation into the same draft — read that report too for the render-based measurement methodology and the open risks it found).
 
 ## The draft
 
-`sites/eye-care-ward-end/design_handoff_ward_end_eye_care/` — a Claude Design `.dc.html`
-handoff (`Eye Care Birmingham.dc.html`, 2,220 lines). Zero CSS classes, 815 inline styles.
-Identity comes from Claude Design's own template DSL (`sc-for`/`sc-if` attribute names), not
-class names — Tier 0/1 (class-name recognition) can't reach it at all.
+`sites/eye-care-ward-end/design_handoff_ward_end_eye_care/` — a Claude Design `.dc.html` handoff (`Eye Care Birmingham.dc.html`, 2,220 lines). Zero CSS classes, 815 inline styles. Identity comes from Claude Design's own template DSL (`sc-for`/`sc-if` attribute names), not class names — Tier 0/1 (class-name recognition) can't reach it at all.
 
-Responsiveness is computed in JS (a `ResizeObserver` measures container width, derives
-`mob`/`narrow`/`wide` booleans, picks between two hardcoded style strings) rather than CSS
-`@media` queries — confirmed this is the shape of every Claude Design draft, not a one-off.
+Responsiveness is computed in JS (a `ResizeObserver` measures container width, derives `mob`/`narrow`/`wide` booleans, picks between two hardcoded style strings) rather than CSS `@media` queries — confirmed this is the shape of every Claude Design draft, not a one-off.
 
 ## Universal-pipeline targets vs. exempt
 
@@ -39,8 +29,7 @@ Responsiveness is computed in JS (a `ResizeObserver` measures container width, d
 | Google reviews slider | `sgs/google-reviews` block — direct match | Home page only, not actually an exception. |
 | Frame Card component | No direct match yet | Task 4 closes this gap on `sgs/product-card`. |
 
-**Genuinely universal-pipeline content** (no existing SGS destination, no cross-page sharing):
-Home's hero/shape-tiles/about-strip/four-reasons-panel, About, Help/FAQ, Contact.
+**Genuinely universal-pipeline content** (no existing SGS destination, no cross-page sharing): Home's hero/shape-tiles/about-strip/four-reasons-panel, About, Help/FAQ, Contact.
 
 ## CPT inventory (complete, verified via `grep -rn "register_post_type"`)
 
@@ -53,85 +42,40 @@ Home's hero/shape-tiles/about-strip/four-reasons-panel, About, Help/FAQ, Contact
 | `sgs_product` | Lightweight product content type (Spec 24), opt-in | No |
 | `sgs_product_template` | Internal agency tool, REST-managed only | N/A — not a draft destination |
 
-No `wp_block` (WordPress core synced patterns) usage anywhere in this codebase for shared
-content. Confirms there was no existing "one piece of content, many referrers" mechanism
-before this session's modal-CPT decision.
+No `wp_block` (WordPress core synced patterns) usage anywhere in this codebase for shared content. Confirms there was no existing "one piece of content, many referrers" mechanism before this session's modal-CPT decision.
 
 ## Modal findings
 
-`sgs/modal` today is a plain open/close overlay — no step logic, no CPT, content lives inline
-per instance.
+`sgs/modal` today is a plain open/close overlay — no step logic, no CPT, content lives inline per instance.
 
-**Real cross-page example found** (not hypothetical): the size guide modal opens from six
-different places — footer, product page (twice), Help/FAQ, header mega-menu, mobile nav
-drawer — with byte-identical content every time. Exactly the shape a shared-content mechanism
-exists to solve.
+**Real cross-page example found** (not hypothetical): the size guide modal opens from six different places — footer, product page (twice), Help/FAQ, header mega-menu, mobile nav drawer — with byte-identical content every time. Exactly the shape a shared-content mechanism exists to solve.
 
-**Decision agreed this session:** give `sgs/modal` the same CPT treatment as
-header/footer/drawer/mega-menu (`sgs_modal`, own edit screen). Unlike header/footer's
-singleton "Active" pointer, use the nav-drawer's **per-trigger picker** precedent — a site
-holds several distinct modals at once, so each trigger needs its own post-ID attribute naming
-which modal it opens.
+**Decision agreed this session:** give `sgs/modal` the same CPT treatment as header/footer/drawer/mega-menu (`sgs_modal`, own edit screen). Unlike header/footer's singleton "Active" pointer, use the nav-drawer's **per-trigger picker** precedent — a site holds several distinct modals at once, so each trigger needs its own post-ID attribute naming which modal it opens.
 
 ## `sgs/form` findings
 
-`sgs/form` + `sgs/form-step` is a genuine, already-shipped multi-step wizard: per-step
-visibility toggling, a validation gate before advancing, a live progress bar,
-`nextStep`/`prevStep`/`goToStep` navigation, step state persisted in `sessionStorage`.
-`sgs/form-field-tiles` gives icon/image option-picking — a strong fit for lens-type selection.
+`sgs/form` + `sgs/form-step` is a genuine, already-shipped multi-step wizard: per-step visibility toggling, a validation gate before advancing, a live progress bar, `nextStep`/`prevStep`/`goToStep` navigation, step state persisted in `sessionStorage`. `sgs/form-field-tiles` gives icon/image option-picking — a strong fit for lens-type selection.
 
-**Confirmed gap:** no running-total/price computation exists anywhere in the form ecosystem,
-nor in `sgs-booking` or `sgs-configurator-pro` — both of those plugins contain zero built code
-(planning markdown only), so neither offers a structural precedent either.
+**Confirmed gap:** no running-total/price computation exists anywhere in the form ecosystem, nor in `sgs-booking` or `sgs-configurator-pro` — both of those plugins contain zero built code (planning markdown only), so neither offers a structural precedent either.
 
-**Unverified loose thread:** `form/view.js::updateStepVisibility()` hides inactive steps via
-the `sgs-form-step--hidden` CSS class, not the `disabled` attribute. Whether that class sets
-`display:none` (correctly excluding hidden fields from submission) was not checked — Task 2 in
-the fresh-session prompt closes this.
+**Unverified loose thread:** `form/view.js::updateStepVisibility()` hides inactive steps via the `sgs-form-step--hidden` CSS class, not the `disabled` attribute. Whether that class sets `display:none` (correctly excluding hidden fields from submission) was not checked — Task 2 in the fresh-session prompt closes this.
 
 ## Lens configurator, corrected against the README
 
-The README undercounts at 3 steps. The real `lens` state has **4**: lens type/use, thickness,
-finish/tint, prescription capture — plus a persistent running-total footer, not a separate
-summary screen. Opens from 2 real contexts (product page directly, bag drawer via `fromBag`),
-with slightly different commit behaviour depending on origin.
+The README undercounts at 3 steps. The real `lens` state has **4**: lens type/use, thickness, finish/tint, prescription capture — plus a persistent running-total footer, not a separate summary screen. Opens from 2 real contexts (product page directly, bag drawer via `fromBag`), with slightly different commit behaviour depending on origin.
 
 ## Frame Card vs `sgs/product-card`
 
-Frame Card renders on Home, Shop, and both product-page recommendation rails — **not** the bag
-drawer, which uses separate hand-rolled markup (the README's "every grid and rail" claim
-overstates this by one surface). `sgs/product-card` is missing: swatch row, rating/review
-count, brand wordmark overlay, saving badge. Task 4 closes this on the existing block, shipping
-Frame Card's look and Mama's Munches' current look as two style variations of the same block.
+Frame Card renders on Home, Shop, and both product-page recommendation rails — **not** the bag drawer, which uses separate hand-rolled markup (the README's "every grid and rail" claim overstates this by one surface). `sgs/product-card` is missing: swatch row, rating/review count, brand wordmark overlay, saving badge. Task 4 closes this on the existing block, shipping Frame Card's look and Mama's Munches' current look as two style variations of the same block.
 
 ## Shipped this session (2026-09-14, D1057/D1058)
 
-- **Claude Design identity recognition** — `recogniser/sc_var_classifier.py`, commit
-  `093af7329` (+ fix `8b6952751`). NOT "attribute names reusing `data_slot_attrs`" as
-  originally planned here — corrected during the build: `sc-for`/`sc-if` are ANCESTOR TAG
-  NAMES, not same-element attributes like shadcn's `data-slot`, so this shipped as its own
-  advisory module (mirroring the DOM-shape-classifier Tier 2 shape) rather than a
-  `data_slot_attrs`-style reuse. Scoped to `sc-for` only (`sc-if` names a boolean state flag,
-  not a collection). Advisory-only, never authoritative — never writes to `slots.aliases`.
-- **Draft-only render-and-measure primitive** — `orchestrator/draft-responsive-probe.js`,
-  commit `5afc455ee`. Renders one already-loaded route at 375/768/1440, reports genuinely
-  responsive elements. Verified: 46 of 616 on the real Home route.
-- **Real finding, not originally anticipated:** `<sc-for>`/`<sc-if>` do not survive
-  rendering at all (0 in the rendered DOM). The two mechanisms above read DIFFERENT DOMs
-  (source parse vs rendered page) and cannot be trivially linked — see "Not yet designed"
-  below.
+- **Claude Design identity recognition** — `recogniser/sc_var_classifier.py`, commit `093af7329` (+ fix `8b6952751`). NOT "attribute names reusing `data_slot_attrs`" as originally planned here — corrected during the build: `sc-for`/`sc-if` are ANCESTOR TAG NAMES, not same-element attributes like shadcn's `data-slot`, so this shipped as its own advisory module (mirroring the DOM-shape-classifier Tier 2 shape) rather than a `data_slot_attrs`-style reuse. Scoped to `sc-for` only (`sc-if` names a boolean state flag, not a collection). Advisory-only, never authoritative — never writes to `slots.aliases`.
+- **Draft-only render-and-measure primitive** — `orchestrator/draft-responsive-probe.js`, commit `5afc455ee`. Renders one already-loaded route at 375/768/1440, reports genuinely responsive elements. Verified: 46 of 616 on the real Home route.
+- **Real finding, not originally anticipated:** `<sc-for>`/`<sc-if>` do not survive rendering at all (0 in the rendered DOM). The two mechanisms above read DIFFERENT DOMs (source parse vs rendered page) and cannot be trivially linked — see "Not yet designed" below.
 
 ## Not yet designed (explicitly deferred, not forgotten)
 
-- **Correlating a Piece 2 (rendered-value) measurement back to a Piece 1 (source-identity)
-  boundary** — real, separate, unbuilt work discovered while building the two pieces above;
-  they read different DOMs (source `.dc.html` parse vs the rendered page), so linking them
-  needs a structural DOM-path or content-overlap correlation step that doesn't exist yet.
-- **Route coverage beyond one already-loaded page** — driving interaction states (mega-menu
-  open, filter drawer, lens modal, bag) to reach the other nine routes. Named risk in the
-  harmonisation report §8, confirmed still unsolved.
-- The clone-time detector that recognises a draft section as header/footer/drawer/mega-menu/
-  shop/product-shaped and routes it into the right CPT/template, instead of the walker's
-  current chrome-skip-and-discard. Real, named, unbuilt work — not covered by this session's
-  pipeline work (which only covers the genuinely blank-canvas pages) or by the fresh-session
-  prompt's 5 tasks.
+- **Correlating a Piece 2 (rendered-value) measurement back to a Piece 1 (source-identity) boundary** — real, separate, unbuilt work discovered while building the two pieces above; they read different DOMs (source `.dc.html` parse vs the rendered page), so linking them needs a structural DOM-path or content-overlap correlation step that doesn't exist yet.
+- **Route coverage beyond one already-loaded page** — driving interaction states (mega-menu open, filter drawer, lens modal, bag) to reach the other nine routes. Named risk in the harmonisation report §8, confirmed still unsolved.
+- The clone-time detector that recognises a draft section as header/footer/drawer/mega-menu/ shop/product-shaped and routes it into the right CPT/template, instead of the walker's current chrome-skip-and-discard. Real, named, unbuilt work — not covered by this session's pipeline work (which only covers the genuinely blank-canvas pages) or by the fresh-session prompt's 5 tasks.

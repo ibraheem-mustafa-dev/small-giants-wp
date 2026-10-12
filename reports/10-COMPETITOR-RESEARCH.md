@@ -1,16 +1,17 @@
 # Deep Competitor Research — SGS WordPress Framework
 
-> **Date:** 2026-02-21
-> **Purpose:** Comprehensive competitive analysis to inform SGS Framework build priorities.
-> **Related:** [`09-GOLD-STANDARD-AUDIT.md`](reference/09-GOLD-STANDARD-AUDIT.md) contains per-block feature parity tables.
+> **Date:** 2026-02-21 **Purpose:** Comprehensive competitive analysis to inform SGS Framework build priorities. **Related:** [`09-GOLD-STANDARD-AUDIT.md`](reference/09-GOLD-STANDARD-AUDIT.md) contains per-block feature parity tables.
 
 ---
 
 ## 1. Kadence Theme + Kadence Blocks
 
 **Developer:** StellarWP (The Events Calendar parent company)
+
 **Pricing:** Blocks Pro $119/yr (5 sites), Plus $169/yr (10 sites), Ultimate $299/yr (25 sites), Lifetime $899 one-time
+
 **Active Installs:** 400,000+ (blocks plugin), 300,000+ (theme)
+
 **WP.org Rating:** 4.9/5 (blocks), 5/5 (theme)
 
 ### A. Feature Inventory
@@ -186,8 +187,7 @@
 
 5. PHP memory errors when combined with other block plugins (Stackable).
 
-**Trustpilot (5/5 stars, 666 reviews):**
-Overwhelmingly positive. Minimal complaints. Support praised repeatedly.
+**Trustpilot (5/5 stars, 666 reviews):** Overwhelmingly positive. Minimal complaints. Support praised repeatedly.
 
 **General review sites:**
 - Block spacing issues -- paragraphs stick to Kadence blocks without manual margin
@@ -227,8 +227,11 @@ Overwhelmingly positive. Minimal complaints. Support praised repeatedly.
 ## 2. Spectra (formerly Ultimate Addons for Gutenberg)
 
 **Developer:** Brainstorm Force (also makes Astra theme)
+
 **Pricing:** Free, Pro $49/yr (1 site), $69/yr (3 sites), $89/yr (1,000 sites), Lifetime $209 (1 site)
+
 **Active Installs:** 1,000,000+
+
 **WP.org Rating:** 4.7/5 (98 one-star reviews out of 1,833 -- 5.3% complaint rate)
 
 ### A. Feature Inventory
@@ -251,11 +254,13 @@ Overwhelmingly positive. Minimal complaints. Support praised repeatedly.
 13. Lottie Animations
 
 *Slider/Timeline Blocks:*
+
 14. Sliders
 15. Content Timelines
 16. Post Timeline
 
 *Utility Blocks:*
+
 17. Google Maps
 18. Inline Notices
 19. Tabs
@@ -263,12 +268,14 @@ Overwhelmingly positive. Minimal complaints. Support praised repeatedly.
 21. Price Lists
 
 *Post Blocks:*
+
 22. Counter
 23. Modal Popup
 24. Post Carousel
 25. Post Grid
 
 *Social Blocks:*
+
 26. Instagram Feed
 27. Blockquote
 28. Social Share
@@ -276,11 +283,13 @@ Overwhelmingly positive. Minimal complaints. Support praised repeatedly.
 30. Testimonials
 
 *Form Blocks:*
+
 31. Contact Form
 32. Newsletter Signup
 33. Suggestion Form
 
 *SEO Blocks:*
+
 34. FAQ (with schema)
 35. How-To (with schema)
 36. Review (with schema)
@@ -452,8 +461,11 @@ Overwhelmingly positive. Minimal complaints. Support praised repeatedly.
 ## 3. GeneratePress + GenerateBlocks
 
 **Developer:** Tom Usborne (solo developer, Edge22 Studios)
+
 **Pricing:** GenerateBlocks Pro $99/yr (500 sites), GeneratePress Premium $59/yr (500 sites), GP One bundle $149/yr
+
 **Active Installs:** 80,000+ (GenerateBlocks), 400,000+ (GeneratePress)
+
 **WP.org Rating:** 5/5 (GenerateBlocks), 5/5 (GeneratePress)
 
 ### A. Feature Inventory
@@ -566,8 +578,7 @@ Overwhelmingly positive. Minimal complaints. Support praised repeatedly.
 
 **Per-element granularity:** Very high for Pro users. The Style Builder provides 100+ CSS properties. You can target any element inside any block using CSS selectors. But this requires understanding CSS selector syntax -- not beginner-friendly.
 
-**CSS properties from editor:**
-Virtually any CSS property via the Style Builder (Pro). 80+ commonly used properties with UI controls. Custom selectors for targeting sub-elements. This is the most powerful styling system among block plugins but also the most complex.
+**CSS properties from editor:** Virtually any CSS property via the Style Builder (Pro). 80+ commonly used properties with UI controls. Custom selectors for targeting sub-elements. This is the most powerful styling system among block plugins but also the most complex.
 
 **Responsive controls:** Best in class. **Every style property is 100% responsive.** 5 breakpoints: Base, Desktop-only, Tablet-only, <1024px, <768px. More granular than Kadence's 3 breakpoints.
 
@@ -580,8 +591,7 @@ Virtually any CSS property via the Style Builder (Pro). 80+ commonly used proper
 
 ### C. Bad Reviews and Complaints
 
-**WordPress.org (5/5 stars -- very few reviews, niche audience):**
-Community forums are the primary feedback channel.
+**WordPress.org (5/5 stars -- very few reviews, niche audience):** Community forums are the primary feedback channel.
 
 1. **Translation/i18n problems:** The .pot file is incomplete, lots of strings missing. Not translatable for non-English users. Multiple reports from different language communities.
 
@@ -626,8 +636,11 @@ Community forums are the primary feedback channel.
 ## 4. Flavor (by the Flavor Starter team)
 
 **Developer:** Flavor Starter team (independent)
+
 **Pricing:** Free (basic), Pro EUR 49/yr (unlimited sites)
+
 **Active Installs:** Low (not in WordPress.org top themes)
+
 **WP.org Rating:** Not prominently rated
 
 > **Note on "Developer Developer":** Extensive searching found no WordPress theme company called "Developer Developer" producing themes named "Flavor" or "Flavstarter." The closest match is the **Flavor Starter** theme by the Flavor Starter team. If "Developer Developer" refers to a specific company not found in public searches, additional details would be needed to research them.
@@ -655,17 +668,29 @@ Community forums are the primary feedback channel.
 - Lifetime updates
 
 **Header/Footer:** Basic (free), Advanced builder (Pro)
+
 **Typography:** Theme-level via theme.json, focus on readability
+
 **Colour:** Standard block theme colour palette via theme.json
+
 **Spacing:** Standard WordPress spacing controls
+
 **Layout:** FSE templates and template parts
+
 **Design Library:** 30 patterns (free), 150+ (Pro)
+
 **Dynamic Content:** None beyond WordPress core
+
 **Conditional Visibility:** None
+
 **Animation:** None
+
 **Performance:** Excellent -- consistently scores 90+ on PageSpeed. No heavy JS libraries. Minimal code.
+
 **WooCommerce:** Basic compatibility
+
 **Form Builder:** None
+
 **Popup:** None
 
 ### B. Customisation Depth

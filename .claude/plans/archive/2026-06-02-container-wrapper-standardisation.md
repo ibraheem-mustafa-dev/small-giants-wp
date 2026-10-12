@@ -115,9 +115,7 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 
 ### WS-1 — sgs/container capability completion
 
-> **WS-1a (A1) + WS-1b (A2) SHIPPED 2026-06-03, commit `2f86d9e6` (D159), live-DOM verified @1440.**
-> A7 MOOT — `_lift_core_block_style` is dead code; A2 inlined its own max-width→widthMode logic.
-> **Remaining: WS-1c (A3/A4/A5/A6).** Live triage register + WS-4 build spec now in `.claude/plans/archive/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`.
+> **WS-1a (A1) + WS-1b (A2) SHIPPED 2026-06-03, commit `2f86d9e6` (D159), live-DOM verified @1440.** A7 MOOT — `_lift_core_block_style` is dead code; A2 inlined its own max-width→widthMode logic. **Remaining: WS-1c (A3/A4/A5/A6).** Live triage register + WS-4 build spec now in `.claude/plans/archive/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`.
 
 **Purpose:** Build the capabilities `sgs/container` currently lacks so composites have something concrete to mirror and the converter has attributes to write into.
 

@@ -1,10 +1,10 @@
 # Separator visual-diff — page 13 (Indus Foods homepage) migration
 
 **Date:** 2026-07-18
+
 **Page:** 13 (`palestine-lives.org` homepage)
-**Section:** "Our Partners Love Us!" — the `core/separator` (`is-style-wide`, alpha-channel opacity) migrated to `sgs/separator`.
-**verdict: PASS**
-**first_paint_capture_passed: true**
+
+**Section:** "Our Partners Love Us!" — the `core/separator` (`is-style-wide`, alpha-channel opacity) migrated to `sgs/separator`. **verdict: PASS** **first_paint_capture_passed: true**
 
 ## What changed
 

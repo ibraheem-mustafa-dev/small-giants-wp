@@ -1,10 +1,6 @@
 # Live verification: how a menu closes (Wave 3C U-9 + U-11), 2026-09-24
 
-verdict: PASS
-intent_capture_passed: true
-commit_sha: c36105939 (feat(nav): how a menu closes)
-design: `.claude/reports/2026-09-24-u9-u11-design.md`
-blocks: nav-drawer, nav-bar-menu, nav-drawer-menu (nav-bar-menu and nav-drawer-menu reports point here)
+verdict: PASS intent_capture_passed: true commit_sha: c36105939 (feat(nav): how a menu closes) design: `.claude/reports/2026-09-24-u9-u11-design.md` blocks: nav-drawer, nav-bar-menu, nav-drawer-menu (nav-bar-menu and nav-drawer-menu reports point here)
 
 ## Environment and method
 - Site: sandybrown, deployed with `build-deploy.py --target sandybrown` from an isolated worktree at c36105939 (full build: 124 of 124 fast gates, postbuild, live motion probes green). Before the deploy, eight stored `sgs/nav-drawer` posts (3685 to 3691, 3695) were migrated from a flat `closeStyle` to `{desktop}` with `migrate-stored-tier-scalars.py` (survey 8 FLAT, 0 needing a decision; `--check` clean; each post re-read from the live site after writing).
@@ -76,10 +72,7 @@ Screenshot: `fb-drawer-after.png` (scratchpad): panel over the header's phone ro
 
 ## U-5: how the drawer and the menu panels arrive and leave (Wave 3C U-5, 2026-09-24)
 
-verdict: PASS
-commit_sha: 01e4b5a5f (feat(nav): how the drawer and menu panels arrive and leave); Escape fix 35d98e413
-design: `.claude/reports/2026-09-24-u5-motion-design.md`
-blocks: nav-drawer, nav-bar-menu, nav-drawer-menu, mega-panel (their reports point here)
+verdict: PASS commit_sha: 01e4b5a5f (feat(nav): how the drawer and menu panels arrive and leave); Escape fix 35d98e413 design: `.claude/reports/2026-09-24-u5-motion-design.md` blocks: nav-drawer, nav-bar-menu, nav-drawer-menu, mega-panel (their reports point here)
 
 Method: deployed with `build-deploy.py --target sandybrown --blocks-only` from an isolated worktree (124 of 124 fast gates). Before the deploy, sandybrown mega post 1745 ("SPIKE Brands Panel") had its stored `staggerOnOpen: true` stripped (the oldshape audit's one HIGH finding; no header references the post, so no bar took its stagger). Fixture: `scripts/nav-qa/qa-motion-fixture.php exit-cells` on test drawer 3778 and test header 3777 (backups in `_sgs_qa_motion_backup`). Page `/qa-scrim/`, one headed Chrome window (chrome-devtools), real clicks and pointer hovers, `getAnimations()`, `getComputedStyle` and `getBoundingClientRect` sampled every frame.
 

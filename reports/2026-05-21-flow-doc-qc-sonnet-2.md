@@ -1,6 +1,8 @@
 # Flow Doc QC — Rater: Sonnet 2
 **Target:** `.claude/cloning-pipeline-flow.md` (1301 lines)
+
 **Date:** 2026-05-21
+
 **Scope:** 15-check rubric across absorption completeness (A), wave accuracy (B), and internal consistency (C)
 
 ---

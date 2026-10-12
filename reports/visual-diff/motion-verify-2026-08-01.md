@@ -1,6 +1,7 @@
 # Motion fix verification — D451 (motion-path repeat-pass) + D453 (pin-focus keyboard reveal)
 
 **Date:** 2026-08-01
+
 **Scope:** Both fixes already deployed to the canary (`sandybrown-nightingale-600381.hostingersite.com`). Read-only on block source; `plugins/sgs-blocks/scripts/motion-qa/probe-step13-pin-focus.mjs` was extended per the task's permission (two probe-reliability bugs found and fixed, documented in the file's own comments). No source fix files touched, no deploy run.
 
 ---

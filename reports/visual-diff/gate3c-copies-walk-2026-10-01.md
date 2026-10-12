@@ -95,21 +95,11 @@ Caveats: the "same paint" calls rest on box rows (width, height, position) being
 
 # Corrections after the tree rebuild and second walk (2026-10-01, main thread)
 
-The first walk ran before the five changed trees were rebuilt (4456, 4426, 4430, 4461, 4428 were last saved
-2026-09-29, before `scrimFadeEasing` and the drawer settings existed). After the rebuild, the second walk read Indus
-380 open (112 unique) and lamalama 253 open (89 unique). Reconciled against the classification above:
+The first walk ran before the five changed trees were rebuilt (4456, 4426, 4430, 4461, 4428 were last saved 2026-09-29, before `scrimFadeEasing` and the drawer settings existed). After the rebuild, the second walk read Indus 380 open (112 unique) and lamalama 253 open (89 unique). Reconciled against the classification above:
 
-- **Fixed by the rebuild:** I29 and I30 (scrim easing), I52 (About frame ground), the five drawer-home rule rows, and
-  three 30ms panel opacity samples.
-- **Reclassified:** I21-I23 (CTA hover lift) are a walker blind spot, not a bug. `button/render.php` paints the lift on
-  the independent `translate` property (`translate:0 -Npx`); the walker reads only `transform`.
-- **New rows, Indus:** logo hover fades to 0.75 where the draft does not fade (violation: the logo's `opacityHover` in
-  `indus-header.tree.json`); About tag 5px lower than the draft, y 180 vs 175 (violation: the tag's top margin in
-  `indus-mega-about.tree.json`); About panel inventory order (same paint: DOM order, the aside sits beside the rows);
-  bar children at 250ms (blind); About, Sectors and Brands panel opacity at 30ms now read 0.39/0.28/0.28 where the first
-  walk read 0.27/0.15/0.27 (jitter: the same sample moves between runs).
-- **New rows, lamalama:** message box width 82/62 (same paint, as L13/L82); drawer item and CTA transitions now read the
-  tree's 650ms and 350ms quart-out curves against the draft's script-driven motion (blind).
+- **Fixed by the rebuild:** I29 and I30 (scrim easing), I52 (About frame ground), the five drawer-home rule rows, and three 30ms panel opacity samples.
+- **Reclassified:** I21-I23 (CTA hover lift) are a walker blind spot, not a bug. `button/render.php` paints the lift on the independent `translate` property (`translate:0 -Npx`); the walker reads only `transform`.
+- **New rows, Indus:** logo hover fades to 0.75 where the draft does not fade (violation: the logo's `opacityHover` in `indus-header.tree.json`); About tag 5px lower than the draft, y 180 vs 175 (violation: the tag's top margin in `indus-mega-about.tree.json`); About panel inventory order (same paint: DOM order, the aside sits beside the rows); bar children at 250ms (blind); About, Sectors and Brands panel opacity at 30ms now read 0.39/0.28/0.28 where the first walk read 0.27/0.15/0.27 (jitter: the same sample moves between runs).
+- **New rows, lamalama:** message box width 82/62 (same paint, as L13/L82); drawer item and CTA transitions now read the tree's 650ms and 350ms quart-out curves against the draft's script-driven motion (blind).
 
-Final counts: Indus 18 blind, 81 same paint, 10 violations, 0 foundational, 3 jitter (112). lamalama 28 blind, 53 same
-paint, 7 violations, 1 foundational (G8, parked), 0 jitter (89).
+Final counts: Indus 18 blind, 81 same paint, 10 violations, 0 foundational, 3 jitter (112). lamalama 28 blind, 53 same paint, 7 violations, 1 foundational (G8, parked), 0 jitter (89).

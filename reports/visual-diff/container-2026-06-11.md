@@ -1,7 +1,6 @@
 # Visual-diff — sgs/container Step 2 responsive-spacing controls (container 4-layer programme) — 2026-06-11
 
-verdict: PASS
-first_paint_capture_passed: true
+verdict: PASS first_paint_capture_passed: true
 
 **Change:** Step 2 of the container 4-layer fix programme — wired the 16 previously-dead responsive spacing attrs (`padding{Top,Right,Bottom,Left}{Tablet,Mobile}` + `margin{…}{Tablet,Mobile}`) to a new shared `ResponsiveSpacingPanel` (named export from `ContainerWrapperControls.js`), mounted in all three KIND panels (section/layout/content) and in `container/edit.js`. Controls follow the canonical pattern: `ResponsiveControl` device-icon switcher + 4-side `SpacingControl freeInput` (UnitControl) per tier; desktop tier defers to the native Dimensions panel (help note, no duplicate control — HC2). Frontend render path untouched (the wrapper PHP already rendered these attrs at `class-sgs-container-wrapper.php:700-776`).
 
@@ -17,8 +16,7 @@ Live DOM verified at two viewports; editor controls reachable for all 16 attrs; 
 
 # Addendum — Step 3 content band + universal inline-vs-@media cascade fix (same day)
 
-verdict: PASS
-first_paint_capture_passed: true
+verdict: PASS first_paint_capture_passed: true
 
 **Change:** (1) Layer-2 content band shipped end-to-end: 17 new attrs (`contentBandPadding{side}{,Tablet,Mobile}` ×12 + `contentBandBackground` + `contentWidthTablet/Mobile`), wrapper renders them on `__inner`, shared `ContentBandPanel` (section+layout kinds) in the inspector + edit.js. (2) Two render bugs found live and fixed in the main thread: the `<style>` tag used `esc_html()` which turned the band selector's `>` into `&gt;` (rules matched nothing) → `wp_strip_all_tags()`; the band base was inline on `__inner` so @media tiers could never win → base now emitted via the uid stylesheet when tiers exist. (3) The SAME inline-beats-@media class bug was then probed and confirmed on the ROOT tiers and fixed universally: WP-native inline base padding/margin → tier decls now `!important`; our own inline bases (gap, grid-template-columns, grid-template-rows) → deferred to the uid stylesheet when tiers exist (the file's existing min-height convention).
 
@@ -35,8 +33,7 @@ first_paint_capture_passed: true
 
 # Addendum — Step 4 inspector dedup (same day)
 
-verdict: PASS
-first_paint_capture_passed: true
+verdict: PASS first_paint_capture_passed: true
 
 **Change:** container/edit.js refactored from 1375 → 276 lines: inline duplicate panels (Layout, Width, Grid item defaults, Background, Shape Dividers) replaced by the shared ContainerWrapperControls exports (`LayoutPanel`/`WidthPanel`/`BackgroundPanel`/`ShapeDividersPanel`/`GridItemDefaultsPanel` + shared `MIN_HEIGHT_OPTIONS`/`SHADOW_OPTIONS`). Container-specific panels (min-height, HTML tag, Template mode, Shadow body) stay inline. Zero frontend render change (editor-only refactor).
 
@@ -44,8 +41,7 @@ first_paint_capture_passed: true
 
 # Addendum — Step 5 flex controls (same day)
 
-verdict: PASS
-first_paint_capture_passed: true
+verdict: PASS first_paint_capture_passed: true
 
 **Change:** the 3 dead flex attrs (`flexDirection`/`flexWrap`/`justifyContent` — rendered by the wrapper, zero controls) wired as SelectControls in the shared `LayoutPanel`, visible when layout=flex. Found + fixed during live verify: the wrapper allowlist (`'', row, column`) and block.json enums silently dropped valid CSS values — both widened to the full set (row/column-reverse, wrap-reverse, space-evenly).
 
@@ -59,8 +55,7 @@ first_paint_capture_passed: true
 
 # Addendum — Step 6 per-area grid layer + hero alignment (same day)
 
-verdict: PASS
-first_paint_capture_passed: true
+verdict: PASS first_paint_capture_passed: true
 
 **Change:** official Layer-4-per-area standard (Spec 22 §FR-22-21.3): shared `GridAreaPanel` (generic `<areaName>+<Suffix>` controls — 4-side × 3-tier padding writing number + shared `<area>PaddingUnit`, background) + `gridAreas` prop through `ContainerWrapperControls`; KIND_PANELS.section reordered to the 4-layer standard. Hero: `supports.sgs.gridAreas:["content","media"]`; `contentBackground`/`mediaBackground` added + rendered; `splitColumnRatio*` retired → `gridTemplateColumns*` (deprecated.js v7 migrate; render.php explicit '1fr 1fr' default); duplicate `mediaBackgroundColour` + bespoke contentPadding controls removed (one control per setting).
 

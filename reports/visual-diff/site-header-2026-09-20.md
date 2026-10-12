@@ -9,15 +9,9 @@ date:   2026-09-20
 branch: main @ 737d205ba ("feat(site-header): shadow once scrolled")
 ```
 
-Before/after/restore capture against the ACTIVE header (`sgs_header` post **3648**,
-`Mamas Munches Header`, `wp sgs header list` → Active=yes) rendering site-wide on the
-canary homepage. Every fetch carried a `?qacb=<unique>` cache-buster; every state change
-was followed by `wp litespeed-purge all`; `x-hcdn-cache-status: MISS` on every capture.
+Before/after/restore capture against the ACTIVE header (`sgs_header` post **3648**, `Mamas Munches Header`, `wp sgs header list` → Active=yes) rendering site-wide on the canary homepage. Every fetch carried a `?qacb=<unique>` cache-buster; every state change was followed by `wp litespeed-purge all`; `x-hcdn-cache-status: MISS` on every capture.
 
-⚠ Per-instance header CSS is **lifted** to `uploads/sgs-css/sgs-<n>-<hash>.css`, not
-inlined — the `<style id="sgs-site-header-style-inline-css">` block is the shared
-stylesheet, not the instance rules. Every rule below was read from the lifted file and
-then re-confirmed as a COMPUTED value on the painted element.
+⚠ Per-instance header CSS is **lifted** to `uploads/sgs-css/sgs-<n>-<hash>.css`, not inlined — the `<style id="sgs-site-header-style-inline-css">` block is the shared stylesheet, not the instance rules. Every rule below was read from the lifted file and then re-confirmed as a COMPUTED value on the painted element.
 
 ## State touched, and its restore proof
 
@@ -30,17 +24,13 @@ then re-confirmed as a COMPUTED value on the painted element.
 | Header element UID | `sgs-sh-686e3e7c` before **and** after (`88839fb7` while modified) | the uid is attribute-hash derived, so its return proves the attribute set round-tripped exactly |
 | `[QA]` page 3710 (plain-header probe) | deleted `--force` | absent from `wp post list --s="[QA]"` |
 
-Writes used `wp eval-file` with `wp_update_post()` + `wp_slash()` on a `str_replace` of the
-opening block comment; no other post, option or theme mod was touched.
+Writes used `wp eval-file` with `wp_update_post()` + `wp_slash()` on a `str_replace` of the opening block comment; no other post, option or theme mod was touched.
 
 ## Emitted-CSS diff (check 5)
 
-BEFORE — 5 rules on `.sgs-sh-686e3e7c.sgs-site-header`: background-color; position/top/z-index;
-`@media (prefers-reduced-motion: reduce){transition:none !important;animation:none !important}`;
-border-style/width; border-color.
+BEFORE — 5 rules on `.sgs-sh-686e3e7c.sgs-site-header`: background-color; position/top/z-index; `@media (prefers-reduced-motion: reduce){transition:none !important;animation:none !important}`; border-style/width; border-color.
 
-AFTER (`"shadowScrolled":"floating"`) — the same 5, **plus exactly two**, nothing removed,
-nothing altered:
+AFTER (`"shadowScrolled":"floating"`) — the same 5, **plus exactly two**, nothing removed, nothing altered:
 
 ```css
 .sgs-sh-UID.sgs-site-header{transition:box-shadow 200ms ease;}
@@ -69,23 +59,11 @@ nothing altered:
 
 ## Defect found (pre-existing, out of this commit's scope)
 
-**A SECOND `sgs/site-header` instance on the same page never receives
-`is-header-scrolled`, so its `shadowScrolled` never paints.**
-`src/header-behaviours/view.js::getHeaderEl` is
-`document.querySelector('header.sgs-site-header')` — first match only. Reproduced: a page
-carrying an in-content `sgs/site-header` with `"shadowScrolled":"raised"` rendered the
-per-instance CSS **and** `data-sgs-header-scroll-behaviours="1"`, but at scrollY 500 only
-the real site header (first in document order) toggled the class; the in-content one stayed
-`is-header-scrolled: false`, `box-shadow: none`.
+**A SECOND `sgs/site-header` instance on the same page never receives `is-header-scrolled`, so its `shadowScrolled` never paints.** `src/header-behaviours/view.js::getHeaderEl` is `document.querySelector('header.sgs-site-header')` — first match only. Reproduced: a page carrying an in-content `sgs/site-header` with `"shadowScrolled":"raised"` rendered the per-instance CSS **and** `data-sgs-header-scroll-behaviours="1"`, but at scrollY 500 only the real site header (first in document order) toggled the class; the in-content one stayed `is-header-scrolled: false`, `box-shadow: none`.
 
-This is a single-site-header assumption that predates 737d205ba, not a regression. It
-matters now only because `shadowScrolled` is emitted per instance, which makes the control
-look per-instance in the editor. Not fixed here (read-only verification dispatch).
+This is a single-site-header assumption that predates 737d205ba, not a regression. It matters now only because `shadowScrolled` is emitted per instance, which makes the control look per-instance in the editor. Not fixed here (read-only verification dispatch).
 
-⚠ Method note: the first run of that probe was a **false negative for a different reason** —
-the probe page's `scrollHeight` equalled `innerHeight`, so `window.scrollTo(0,500)` moved
-nothing and every header read "not scrolled". Any scroll-state probe must assert
-`window.scrollY` actually changed before trusting a negative.
+⚠ Method note: the first run of that probe was a **false negative for a different reason** — the probe page's `scrollHeight` equalled `innerHeight`, so `window.scrollTo(0,500)` moved nothing and every header read "not scrolled". Any scroll-state probe must assert `window.scrollY` actually changed before trusting a negative.
 
 ## Screenshots
 
@@ -96,9 +74,7 @@ nothing and every header read "not scrolled". Any scroll-state probe must assert
 
 ## Addendum — shrink cancel on off tiers and scroll behaviours on every header (commit 91444e40b)
 
-Live check on the canary after deploying 91444e40b, using a temporary page `[QA] header multi` (id 3714, created and
-deleted through REST) that carries a second `sgs/site-header` with `headerShrink` on for desktop and off for tablet and
-mobile, plus `shadowScrolled`. Script: an inline Playwright run, 1440px and 800px, scrolling 800px.
+Live check on the canary after deploying 91444e40b, using a temporary page `[QA] header multi` (id 3714, created and deleted through REST) that carries a second `sgs/site-header` with `headerShrink` on for desktop and off for tablet and mobile, plus `shadowScrolled`. Script: an inline Playwright run, 1440px and 800px, scrolling 800px.
 
 | Check | Measured | Verdict |
 |---|---|---|
@@ -107,5 +83,4 @@ mobile, plus `shadowScrolled`. Script: an inline Playwright run, 1440px and 800p
 | Tablet (shrink off): padding does not shrink even though the class is set | 0px before, 0px after (class present) | PASS |
 | State restored | the QA page was deleted (HTTP 200); no other content was touched | PASS |
 
-Not measurable in this browser: the legacy path (browsers without `animation-timeline`), where the off value restores the
-resting padding. That path was checked with the PHP emitter harness only.
+Not measurable in this browser: the legacy path (browsers without `animation-timeline`), where the off value restores the resting padding. That path was checked with the PHP emitter harness only.

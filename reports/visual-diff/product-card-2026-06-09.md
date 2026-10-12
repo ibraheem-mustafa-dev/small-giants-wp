@@ -1,7 +1,6 @@
 # Visual diff — sgs/product-card — 2026-06-09 (F3 image-height var fix)
 
-verdict: PASS
-first_paint_capture_passed: true
+verdict: PASS first_paint_capture_passed: true
 
 ## Change under review
 `src/blocks/product-card/style.css`: two `height: 220px` literals → `height: var( --sgs-product-card-image-height, 220px )` on `.product-card .product-card-img` (typed-mode image) and `.product-card--live .product-card__no-image` (no-image box). Goal: the existing `imageHeight` editor control reaches the typed-mode image; rendered output identical at defaults.

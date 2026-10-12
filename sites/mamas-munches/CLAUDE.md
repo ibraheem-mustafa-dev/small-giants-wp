@@ -3,11 +3,17 @@
 **Status:** Built and live on the SGS framework — the canary (`sandybrown-nightingale-600381.hostingersite.com`) runs the real WooCommerce catalogue through `sgs-theme` + `sgs-blocks`. Current status lives in `.claude/LEDGER.md`; accepted design differences in `sites/mamas-munches/accepted-differences.md`; this file is brand/product reference.
 
 **Public/marketing site:** https://mamasmunches.com/ (brand facts below were captured from it)
+
 **Owner email:** Zainab@mamasmunches.com
+
 **Instagram:** [@mamasmunches](https://www.instagram.com/mamasmunches/) — high-quality product media
+
 **Tally form (ordering on the public site):** https://tally.so/r/xXMQLk — manual flavour confirmation by Zainab
+
 **Trustpilot:** 4 real 5-star reviews at https://uk.trustpilot.com/review/mamasmunches.com (TrustScore 4.0, "Great"). Paste the URL into Settings > SGS Trustpilot Sync; the `sgs/trustpilot-reviews` block in `synced` mode renders them, and a weekly cron keeps them fresh.
+
 **Payments:** Stripe AND PayPal are both set up; the ecom layer supports both gateways.
+
 **Brand assets:** `sites/mamas-munches/research/brand/` (PNG + WebP horizontal lockup; SVG/vector source outstanding)
 
 ## What they sell
@@ -23,18 +29,13 @@
 | **Topping** | Chocolate Chip / White Chocolate Chip / No Topping | 3 |
 | **Dietary Requirements** | Regular / Vegan | 2 |
 
-Only the pack size changes the price, so only **Number in Pack** creates WooCommerce variations (3). Flavour, Topping
-and Dietary are product attributes that don't create variations: the shopper picks them in a choice flow and they
-travel to the bag line as answers (Spec 43 FR-43-7, FR-43-21).
+Only the pack size changes the price, so only **Number in Pack** creates WooCommerce variations (3). Flavour, Topping and Dietary are product attributes that don't create variations: the shopper picks them in a choice flow and they travel to the bag line as answers (Spec 43 FR-43-7, FR-43-21).
 
-On sandybrown this is product **3990** "Classic Lactation Cookies" (`sites/mamas-munches/build/seed-lactation-cookies.php`).
-Pack prices (Bean, 2026-09-26): 8 = £9.50 (£1.19 each), 20 = £21.50 (£1.08 each), 40 = £38.00 (£0.95 each); there is
-no 12-pack.
+On sandybrown this is product **3990** "Classic Lactation Cookies" (`sites/mamas-munches/build/seed-lactation-cookies.php`). Pack prices (Bean, 2026-09-26): 8 = £9.50 (£1.19 each), 20 = £21.50 (£1.08 each), 40 = £38.00 (£0.95 each); there is no 12-pack.
 
 Choice-flow demos on sandybrown (Spec 43):
 - **Full customisation:** saved flow 4008 (`mamas-build-your-box`, showcase) in a popup on page 4012.
-- **Product page:** product 3990 links flow 4010 (`mamas-choose-flavours`) through `_sgs_choice_flow`, so its buybox
-  opens the flow.
+- **Product page:** product 3990 links flow 4010 (`mamas-choose-flavours`) through `_sgs_choice_flow`, so its buybox opens the flow.
 - **Guided buybox:** page 4083.
 - **Trees:** the trees for all three are in `build/`.
 

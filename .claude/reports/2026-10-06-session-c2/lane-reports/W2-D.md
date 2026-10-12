@@ -3,8 +3,7 @@
 Status: all four tasks done, export done. Nothing committed or staged.
 
 ## Files touched
-scripts/parity/lib/collect.mjs, compare.mjs, chrome-walk.mjs, state-passes.mjs, ref-trace.mjs;
-scripts/computed-route/tests/walker-l2.test.mjs, walker-reads.test.mjs (walker-devtools.test.mjs unchanged).
+scripts/parity/lib/collect.mjs, compare.mjs, chrome-walk.mjs, state-passes.mjs, ref-trace.mjs; scripts/computed-route/tests/walker-l2.test.mjs, walker-reads.test.mjs (walker-devtools.test.mjs unchanged).
 
 ## P3a (false green)
 - `collect.mjs::hoverPointOf` (new): rect intersect viewport, 9 candidate points (centre first), `document.elementFromPoint` must be the element or inside it. Returns `null` (missing), `{ unreached: true }`, or `{ x, y, clamped }`.

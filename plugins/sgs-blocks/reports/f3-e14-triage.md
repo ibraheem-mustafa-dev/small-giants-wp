@@ -1,6 +1,7 @@
 # F3 gate: E14 triage and baseline retriage
 
 Subject: `plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js` (Gate B), baseline `plugins/sgs-blocks/scripts/hardcoded-render-defaults-baseline.json`.
+
 Status: the analysis stands. Its highest-reach recommendations shipped in `6f1963c28` (2026-10-06), `75a583e23` and `53ba85750` (2026-10-07); section 6 carries the measured ceilings. The triage itself (sections 1 to 3 and the section 4.3 listing) was written 2026-10-06 against a 137-finding survey; the baseline edits of section 2.3 were the only repository change it made. Last updated 2026-10-07.
 
 ## 0. Method, and what the numbers rest on
@@ -680,23 +681,11 @@ Gaps 1, 4 (tag names, bare tag on an unknown-tag element, JS-built leaf controls
 
 ## 8. Scope limits and CANNOT-TELL
 
-**E14 covers the INHERITANCE half of this family only, and that is deliberate.** A hardcode beats a
-control either because it sits on a descendant of the control's element (inheritance — what E14
-detects, and only for inherited properties), or because it out-specifies the control on the SAME
-element (specificity — NOT detected). CLASS 1 assumes an SGS control always wins at `(0,2,0)` over a
-`(0,1,0)` base rule. A block stylesheet that uses an element+class selector breaks that assumption.
+**E14 covers the INHERITANCE half of this family only, and that is deliberate.** A hardcode beats a control either because it sits on a descendant of the control's element (inheritance — what E14 detects, and only for inherited properties), or because it out-specifies the control on the SAME element (specificity — NOT detected). CLASS 1 assumes an SGS control always wins at `(0,2,0)` over a `(0,1,0)` base rule. A block stylesheet that uses an element+class selector breaks that assumption.
 
-**A proven live instance of the uncovered half exists**, found independently by the Spec 48 route
-session on 2026-10-06: `sgs/hero`'s `maxWidth` paints nothing, because the shared wrapper emits the
-base value as `.uid` `(0,1,0)` while `hero/style.css`'s `section.sgs-hero{max-width:none}` is
-`(0,1,1)` and wins. It was proven by inserting each selector into the page's CSSOM: `.uid` does not
-apply, `.uid.wp-block-sgs-hero` does. `max-width` is not an inherited property, so E14 correctly
-never looks at it. Proofs and the reason the offending CSS must NOT simply be deleted (D725: removing
-it shifts the section 24px off-screen) are in `HERO-DEAD-SETTINGS.md` §9.
+**A proven live instance of the uncovered half exists**, found independently by the Spec 48 route session on 2026-10-06: `sgs/hero`'s `maxWidth` paints nothing, because the shared wrapper emits the base value as `.uid` `(0,1,0)` while `hero/style.css`'s `section.sgs-hero{max-width:none}` is `(0,1,1)` and wins. It was proven by inserting each selector into the page's CSSOM: `.uid` does not apply, `.uid.wp-block-sgs-hero` does. `max-width` is not an inherited property, so E14 correctly never looks at it. Proofs and the reason the offending CSS must NOT simply be deleted (D725: removing it shifts the section 24px off-screen) are in `HERO-DEAD-SETTINGS.md` §9.
 
-Whoever extends this gate next should start there: the specificity half needs the control's emitted
-selector compared against the competing rule's, not just their elements, and hero is a ready-made
-positive control with a live proof already attached.
+Whoever extends this gate next should start there: the specificity half needs the control's emitted selector compared against the competing rule's, not just their elements, and hero is a ready-made positive control with a live proof already attached.
 
 
 - **Reach is per block instance.** Instances per page and pages per site are content; I cannot derive them from code. Counts that depend on a loop assume 4 items (6 for form fields) and say so. Where a count is a range from the markup ("at most 7 rows", "up to 4 units") the bound is stated.

@@ -24,32 +24,20 @@ evidence_screenshot: reports/visual-diff/option-picker-2026-06-01-frontend.png
 
 ## What was verified (live on canary frontend)
 
-Two instances were rendered on a temporary published page and screenshotted
-(`option-picker-2026-06-01-frontend.png`):
+Two instances were rendered on a temporary published page and screenshotted (`option-picker-2026-06-01-frontend.png`):
 
-1. **Outlined picker "Pack size"** — pills `250g / 500g / 1kg`, default `500g`
-   rendered with the selected (pink) state. Outlined resting pills.
-2. **Filled picker "Flavour"** — pills `Vanilla / Chocolate`, default `Vanilla`
-   rendered selected. Filled style.
+1. **Outlined picker "Pack size"** — pills `250g / 500g / 1kg`, default `500g` rendered with the selected (pink) state. Outlined resting pills.
+2. **Filled picker "Flavour"** — pills `Vanilla / Chocolate`, default `Vanilla` rendered selected. Filled style.
 
 ## First-paint (no-JS) state — PASS
-Server render bakes the `defaultSelected` `checked` attribute, so the correct
-pill is selected on first paint before any JS runs (verified in the screenshot
-and via the earlier REST block-renderer markup: `role="radiogroup"`,
-`aria-labelledby`→legend, shared radio `name`, `checked` on the default).
+Server render bakes the `defaultSelected` `checked` attribute, so the correct pill is selected on first paint before any JS runs (verified in the screenshot and via the earlier REST block-renderer markup: `role="radiogroup"`, `aria-labelledby`→legend, shared radio `name`, `checked` on the default).
 
 ## Interaction — PASS (CDP eval)
-- Clicking the `250g` pill moved `input:checked` to `250g` (CSS `:checked ~ .pill`
-  drives the visual state — no JS needed for appearance). Selected-pill computed
-  `background-color` = `rgb(230,138,149)` (the active state).
-- Selection dispatches the bubbling event with the exact D144 contract:
-  `sgs:option-selected` → `{ typeKey:"pack-size", selectedKey:"1kg", contentImpact:[] }`,
-  caught at `document` level (confirms `bubbles:true`).
+- Clicking the `250g` pill moved `input:checked` to `250g` (CSS `:checked ~ .pill` drives the visual state — no JS needed for appearance). Selected-pill computed `background-color` = `rgb(230,138,149)` (the active state).
+- Selection dispatches the bubbling event with the exact D144 contract: `sgs:option-selected` → `{ typeKey:"pack-size", selectedKey:"1kg", contentImpact:[] }`, caught at `document` level (confirms `bubbles:true`).
 
 ## Accessibility
-Native radio-group (real `<input type=radio>`, single tab stop, browser-native
-arrow/Home/End), 44px min targets, `:focus-visible` ring, `prefers-reduced-motion`
-honoured. axe-style structure: `role="radiogroup"` + `aria-labelledby` legend.
+Native radio-group (real `<input type=radio>`, single tab stop, browser-native arrow/Home/End), 44px min targets, `:focus-visible` ring, `prefers-reduced-motion` honoured. axe-style structure: `role="radiogroup"` + `aria-labelledby` legend.
 
 ## Console
 Zero console errors on the rendered page.

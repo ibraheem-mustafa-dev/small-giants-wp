@@ -1,22 +1,12 @@
 # Visual-diff report — preset font-size gap (sgs/heading + sgs/text), 2026-07-15
 
-verdict: PASS
-first_paint_capture_passed: true
+verdict: PASS first_paint_capture_passed: true
 
 ## What changed
-Track C preset-gap closure (qc-council design-gated). A theme preset font-size
-slug stored on `sgs/heading` / `sgs/text` (`"fontSize":"small"` — the shape a
-migrated core block carries) now survives WP schema validation and renders as
-`var(--wp--preset--font-size--{slug})` in the block's scoped `<style>`.
-Changeset: block.json type union ×2, render.php preset branch ×2 (the numeric
-emitter provably skips strings), `_canonical_attr_type()` in sgs-update-v2.py
-(list-typed block.json `type` crashed the DB regen — reproduced pre-fix, dry-run
-clean post-fix), TypographyControls opt-in preset dropdown, edit.js canvas
-preview via `fontSizeVar()`. Zero inline styles (Spec 32); no version bumps (D293).
+Track C preset-gap closure (qc-council design-gated). A theme preset font-size slug stored on `sgs/heading` / `sgs/text` (`"fontSize":"small"` — the shape a migrated core block carries) now survives WP schema validation and renders as `var(--wp--preset--font-size--{slug})` in the block's scoped `<style>`. Changeset: block.json type union ×2, render.php preset branch ×2 (the numeric emitter provably skips strings), `_canonical_attr_type()` in sgs-update-v2.py (list-typed block.json `type` crashed the DB regen — reproduced pre-fix, dry-run clean post-fix), TypographyControls opt-in preset dropdown, edit.js canvas preview via `fontSizeVar()`. Zero inline styles (Spec 32); no version bumps (D293).
 
 ## Live evidence (canary probe page 1468, /tc-preset-gap-probe/)
-Computed font-size, measured pre- and post-deploy (Playwright headless,
-OPcache + server/CDN cache cleared before each measurement):
+Computed font-size, measured pre- and post-deploy (Playwright headless, OPcache + server/CDN cache cleared before each measurement):
 
 | Probe | Stored | Baseline (pre-fix) | Post-fix | Predicted | Result |
 |---|---|---|---|---|---|

@@ -1,8 +1,5 @@
 # Design Review — Mama's Munches: Live vs Mockup
-Reviewer: design-reviewer agent (Claude Sonnet 4.6)
-Date: 2026-05-01
-Live site: https://sandybrown-nightingale-600381.hostingersite.com/
-Mockup: sites/mamas-munches/mockups/homepage/index.html
+Reviewer: design-reviewer agent (Claude Sonnet 4.6) Date: 2026-05-01 Live site: https://sandybrown-nightingale-600381.hostingersite.com/ Mockup: sites/mamas-munches/mockups/homepage/index.html
 
 ---
 
@@ -48,6 +45,7 @@ The hero background computes as `rgb(15, 76, 76)` — that is `has-primary-dark-
 
 ### Header — D (not F)
 **Gemini verdict:** complete failure, generic page titles, no logo, no cart.
+
 **My read:** Partially agree, but softer. The navigation is rendering real nav items (the mockup items appear to be present in the HTML). The main failures are: no logo image set, no cart icon configured, the nav background picks up the wrong primary colour (teal instead of coral). These are content/settings gaps, not structural build failures. The hamburger menu works on mobile. Trust-signal icons below the nav are present.
 
 ### Hero — F
@@ -111,25 +109,19 @@ Placeholder pollution is the most urgent fix here — it signals an incomplete s
 ## Top 5 Priority Fixes (impact-to-effort ratio)
 
 ### 1. Activate the Mamas-Munches style variation
-**Effort: 2 minutes. Impact: 60% of visual fidelity recovered immediately.**
-WP Admin → Appearance → Editor → Styles → Browse styles → "Mama's Munches" → Save.
-This applies the full brand palette (coral pink, cream, warm yellow, Fraunces serif headings) site-wide via the existing `mamas-munches.json` file. No code change needed.
+**Effort: 2 minutes. Impact: 60% of visual fidelity recovered immediately.** WP Admin → Appearance → Editor → Styles → Browse styles → "Mama's Munches" → Save. This applies the full brand palette (coral pink, cream, warm yellow, Fraunces serif headings) site-wide via the existing `mamas-munches.json` file. No code change needed.
 
 ### 2. Remove footer placeholder text
-**Effort: 5 minutes. Impact: site becomes stageable for client review.**
-Go to Settings → SGS Business Details (or whatever the settings page is) and fill in: business name, address, phone, email, social links. Alternatively, if the block editor controls these, update them directly. The "Set in Settings > Business Details" strings appearing verbatim on a client-facing URL is a credibility failure that overrides all other concerns.
+**Effort: 5 minutes. Impact: site becomes stageable for client review.** Go to Settings → SGS Business Details (or whatever the settings page is) and fill in: business name, address, phone, email, social links. Alternatively, if the block editor controls these, update them directly. The "Set in Settings > Business Details" strings appearing verbatim on a client-facing URL is a credibility failure that overrides all other concerns.
 
 ### 3. Add hero image and fix hero background colour
-**Effort: 10 minutes. Impact: hero goes from brand-wrong to brand-correct.**
-Set a hero image in the block editor (cookies/product shot). The background colour will correct itself once the style variation is active (see Fix 1). These are block attribute changes only.
+**Effort: 10 minutes. Impact: hero goes from brand-wrong to brand-correct.** Set a hero image in the block editor (cookies/product shot). The background colour will correct itself once the style variation is active (see Fix 1). These are block attribute changes only.
 
 ### 4. Add testimonials section
-**Effort: 30 minutes. Impact: social proof restored — critical for D2C conversion.**
-Build the testimonials section using SGS blocks (testimonials or a manual grid). Three review cards with name, text, and star rating. Add Trustpilot widget or static Trustpilot badge. This is a full content build, not a styling fix.
+**Effort: 30 minutes. Impact: social proof restored — critical for D2C conversion.** Build the testimonials section using SGS blocks (testimonials or a manual grid). Three review cards with name, text, and star rating. Add Trustpilot widget or static Trustpilot badge. This is a full content build, not a styling fix.
 
 ### 5. Add product feature / Zookies section (desktop)
-**Effort: 60 minutes. Impact: primary e-commerce CTA restored.**
-Build the Zookies signature cookie product card with Add to Cart functionality, quantity selector, and The Trial Pack card. This is the highest-revenue section on the page and is absent on desktop. Investigate first whether this is a mobile-only rendering bug (the mobile screenshot hints at its existence) or a full build omission.
+**Effort: 60 minutes. Impact: primary e-commerce CTA restored.** Build the Zookies signature cookie product card with Add to Cart functionality, quantity selector, and The Trial Pack card. This is the highest-revenue section on the page and is absent on desktop. Investigate first whether this is a mobile-only rendering bug (the mobile screenshot hints at its existence) or a full build omission.
 
 ---
 

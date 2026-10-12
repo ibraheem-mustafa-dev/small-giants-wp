@@ -10,25 +10,15 @@ commit: main @ 245e6a07e ("feat(site-header): floating header pill mode")
         + 1fa7fb583 ("fix(site-header): name the float attributes at the editor preview call site")
 ```
 
-Live verification of the deployed pill feature against the ACTIVE header (`sgs_header`
-post **3648**, `Mamas Munches Header`, `wp sgs header list` → Active=yes) rendering
-site-wide on the canary homepage. Every fetch carried a unique `?qacb=` cache-buster and
-returned `x-hcdn-cache-status: MISS`; every state change was followed by
-`wp litespeed-purge all`. No source file was edited, built or deployed in this dispatch.
+Live verification of the deployed pill feature against the ACTIVE header (`sgs_header` post **3648**, `Mamas Munches Header`, `wp sgs header list` → Active=yes) rendering site-wide on the canary homepage. Every fetch carried a unique `?qacb=` cache-buster and returned `x-hcdn-cache-status: MISS`; every state change was followed by `wp litespeed-purge all`. No source file was edited, built or deployed in this dispatch.
 
-**Deploy confirmed before measuring:** `includes/sgs-header-float-css.php` is present on
-the server, and the deployed `build/header-behaviours/view.js` carries the new publisher
-(`parseFloat(window.getComputedStyle(t).top) … Math.max(0,e)+s`), i.e. the bottom-edge
-value, not the bare height.
+**Deploy confirmed before measuring:** `includes/sgs-header-float-css.php` is present on the server, and the deployed `build/header-behaviours/view.js` carries the new publisher (`parseFloat(window.getComputedStyle(t).top) … Math.max(0,e)+s`), i.e. the bottom-edge value, not the bare height.
 
 ---
 
 ## State touched, and its restore proof
 
-Everything below was done by rewriting post 3648's `post_content` with `$wpdb->update()`
-from a byte snapshot taken first, then restoring from that snapshot (`post_modified`
-written back in the same statement, so WordPress never bumped it). **No option, theme mod,
-page, post or revision was created or altered.**
+Everything below was done by rewriting post 3648's `post_content` with `$wpdb->update()` from a byte snapshot taken first, then restoring from that snapshot (`post_modified` written back in the same statement, so WordPress never bumped it). **No option, theme mod, page, post or revision was created or altered.**
 
 | Thing | Value | Proof |
 |---|---|---|
@@ -97,31 +87,9 @@ page, post or revision was created or altered.**
 
 ## Observations (no defect; recorded so the next session does not re-derive them)
 
-1. **The header's uid changed for every existing header at this deploy.** Pre-pill the
-   canary header was `sgs-sh-686e3e7c`; it is now `sgs-sh-facd3ef0`. The uid is
-   `md5( wp_json_encode( $attributes ) )`, and `block.json` gained three attributes with
-   non-empty defaults (`headerFloatInset`, `headerFloatCollapse`, `backdropBlur`), so the
-   hash moved. **The emitted rules and every computed value are identical** — only the
-   selector name and the lifted-CSS filename changed. Effect: one-off cache-file churn in
-   `uploads/sgs-css/`, and any hardcoded uid in an old report or fixture is stale.
-2. **`--sgs-header-height` does not drop to 0 while a floating header is hidden by
-   hide-on-scroll** (measured: stays 106px at scrollY 600/1400 with `rect.bottom` 0). The
-   shipped publisher computes *declared `top` + height* rather than the design doc §3.2's
-   proposed `Math.max(0, rect.bottom)`; `view.js`'s docblock states this choice explicitly
-   ("Computed from the declared offset, not from where the header is on screen"). For
-   every `top:0` header the two formulas agree, which is what A2/A4 measured (90px,
-   unchanged). Flagged as a **deliberate deviation from the design document**, not a
-   defect — but the design doc's §3.2 snippet and test row P1 describe the other formula
-   and should be reconciled.
-3. **`maxWidth` must be the tier object the editor writes** — `{"desktop":"1120px"}`. A
-   hand-authored scalar `"maxWidth":"1120px"` silently produces **no** `max-width` at all
-   (block.json declares the attribute as `object`, so WordPress replaces the wrong-typed
-   value with the `{}` default before render). Measured both ways: tier object → `max-width:
-   1120px`, left 160, right gap 160; scalar string → no rule emitted, header 1408px wide.
-   `style.dimensions.maxWidth` is a third, equivalent path. This is pre-existing
-   attribute-schema behaviour (D338 class), not introduced by this commit, and the client's
-   "Header width" control writes the correct shape — but it will bite any hand-written
-   fixture or converter emit.
+1. **The header's uid changed for every existing header at this deploy.** Pre-pill the canary header was `sgs-sh-686e3e7c`; it is now `sgs-sh-facd3ef0`. The uid is `md5( wp_json_encode( $attributes ) )`, and `block.json` gained three attributes with non-empty defaults (`headerFloatInset`, `headerFloatCollapse`, `backdropBlur`), so the hash moved. **The emitted rules and every computed value are identical** — only the selector name and the lifted-CSS filename changed. Effect: one-off cache-file churn in `uploads/sgs-css/`, and any hardcoded uid in an old report or fixture is stale.
+2. **`--sgs-header-height` does not drop to 0 while a floating header is hidden by hide-on-scroll** (measured: stays 106px at scrollY 600/1400 with `rect.bottom` 0). The shipped publisher computes *declared `top` + height* rather than the design doc §3.2's proposed `Math.max(0, rect.bottom)`; `view.js`'s docblock states this choice explicitly ("Computed from the declared offset, not from where the header is on screen"). For every `top:0` header the two formulas agree, which is what A2/A4 measured (90px, unchanged). Flagged as a **deliberate deviation from the design document**, not a defect — but the design doc's §3.2 snippet and test row P1 describe the other formula and should be reconciled.
+3. **`maxWidth` must be the tier object the editor writes** — `{"desktop":"1120px"}`. A hand-authored scalar `"maxWidth":"1120px"` silently produces **no** `max-width` at all (block.json declares the attribute as `object`, so WordPress replaces the wrong-typed value with the `{}` default before render). Measured both ways: tier object → `max-width: 1120px`, left 160, right gap 160; scalar string → no rule emitted, header 1408px wide. `style.dimensions.maxWidth` is a third, equivalent path. This is pre-existing attribute-schema behaviour (D338 class), not introduced by this commit, and the client's "Header width" control writes the correct shape — but it will bite any hand-written fixture or converter emit.
 
 ## Not run
 
@@ -138,11 +106,9 @@ page, post or revision was created or altered.**
 
 - `pill-rest-{1440,390}.png` — the pill at rest (inset 16, 1120 cap centred at 1440)
 - `pill-scrolled-{1440,390}.png` — scrolled 600px, `shadowScrolled` painted, inset unchanged
-- `pill-mega-open-{1440,390}.png` — mega panel matching the pill's box (taken during the
-  temporary two-nav E-check fixture, hence the taller bar)
+- `pill-mega-open-{1440,390}.png` — mega panel matching the pill's box (taken during the temporary two-nav E-check fixture, hence the taller bar)
 - `editor-float-controls.png` — "Float as a pill" toggled on in the Header behaviour panel
-- `editor-float-controls-recheck.png` — the same panel after the QC fixes, with all four
-  float items enabled (re-verification run below)
+- `editor-float-controls-recheck.png` — the same panel after the QC fixes, with all four float items enabled (re-verification run below)
 
 ---
 
@@ -155,27 +121,13 @@ commit:  526784068 ("fix(site-header): QC fixes for the floating pill")
 target:  sandybrown-nightingale-600381.hostingersite.com
 ```
 
-No source file was edited, built or deployed in this dispatch. Every fetch carried a unique
-`?qacb=` cache-buster (all `x-hcdn-cache-status: MISS`, HTTP 200); every state change was
-followed by `wp litespeed-purge all`.
+No source file was edited, built or deployed in this dispatch. Every fetch carried a unique `?qacb=` cache-buster (all `x-hcdn-cache-status: MISS`, HTTP 200); every state change was followed by `wp litespeed-purge all`.
 
-**Deploy of 526784068 confirmed on the server before measuring** — not assumed from the
-commit: `includes/sgs-header-float-css.php` md5 `c533f6a5c04578281e438d3924ecfd85` matches
-the local working tree byte-for-byte; `build/blocks/site-header/render.php` carries the new
-four-argument call `sgs_header_float_css( $root_sel, $attributes, $sh_transparent_effective,
-$sh_solid_first )`; the minified `build/header-behaviours/view.js` carries the clamped SUM
-`Math.max(0,(Number.isFinite(e)?e:0)+s)` (not the old clamp-then-add); and
-`build/blocks/nav-bar-menu/view.js` carries
-`s=!o&&r.floating&&null!==r.bottom?r.bottom:n.top` feeding `--sgs-mm-panel-max-h`.
+**Deploy of 526784068 confirmed on the server before measuring** — not assumed from the commit: `includes/sgs-header-float-css.php` md5 `c533f6a5c04578281e438d3924ecfd85` matches the local working tree byte-for-byte; `build/blocks/site-header/render.php` carries the new four-argument call `sgs_header_float_css( $root_sel, $attributes, $sh_transparent_effective, $sh_solid_first )`; the minified `build/header-behaviours/view.js` carries the clamped SUM `Math.max(0,(Number.isFinite(e)?e:0)+s)` (not the old clamp-then-add); and `build/blocks/nav-bar-menu/view.js` carries `s=!o&&r.floating&&null!==r.bottom?r.bottom:n.top` feeding `--sgs-mm-panel-max-h`.
 
 ## State touched, and its restore proof
 
-Same discipline as the first pass. A throwaway `[QA]` page could not carry this work — the
-header is site chrome rendered from the active `sgs_header` post, not from page content — so
-post **3648** was rewritten with `$wpdb->update()` (which takes unslashed data directly, so no
-`wp_slash()`/`wp_unslash()` round-trip can mangle a byte) from a snapshot taken first, with
-`post_modified` written back in the same statement. **No option, theme mod, page, post or
-revision was created or altered.**
+Same discipline as the first pass. A throwaway `[QA]` page could not carry this work — the header is site chrome rendered from the active `sgs_header` post, not from page content — so post **3648** was rewritten with `$wpdb->update()` (which takes unslashed data directly, so no `wp_slash()`/`wp_unslash()` round-trip can mangle a byte) from a snapshot taken first, with `post_modified` written back in the same statement. **No option, theme mod, page, post or revision was created or altered.**
 
 | Thing | BEFORE | AFTER | Proof |
 |---|---|---|---|
@@ -212,20 +164,8 @@ revision was created or altered.**
 
 ## Observations (no defect attributable to this commit)
 
-1. **`contrastSafe: force-solid` suppresses the shadow correctly but does NOT make the
-   background solid.** At 390 with `headerTransparent` on and `contrastSafe:{"mobile":
-   "force-solid"}` the resting background measured `rgba(0,0,0,0)`. **This is pre-existing
-   and unrelated to float** — proven by re-measuring with `headerFloat` removed entirely:
-   the background is still `rgba(0,0,0,0)` at 390. The same shape appears with an explicit
-   `headerTransparent:{"tablet":"off","mobile":"off"}` (check 1d): the shadow restates per
-   tier, the background does not. The cause is the transparent merge's cancel path (a
-   narrower tier resolved `off` emits no `background` cancel against the desktop rule's
-   `background:transparent !important`), i.e. `sgs_merge_tri_state_declarations`, not
-   `sgs_header_float_css()`. The QC fix's own subject — the SHADOW following the effective
-   transparent state — is correct at every tier measured. Worth its own ticket.
-2. `--sgs-header-height` is published rounded to the integer px (`Math.round`), so a pill at
-   `top:16px` with an 89.58px height publishes `106px` against a `rect.bottom` of 105.58.
-   Unchanged behaviour, recorded so the 0.42 delta is not re-investigated.
+1. **`contrastSafe: force-solid` suppresses the shadow correctly but does NOT make the background solid.** At 390 with `headerTransparent` on and `contrastSafe:{"mobile": "force-solid"}` the resting background measured `rgba(0,0,0,0)`. **This is pre-existing and unrelated to float** — proven by re-measuring with `headerFloat` removed entirely: the background is still `rgba(0,0,0,0)` at 390. The same shape appears with an explicit `headerTransparent:{"tablet":"off","mobile":"off"}` (check 1d): the shadow restates per tier, the background does not. The cause is the transparent merge's cancel path (a narrower tier resolved `off` emits no `background` cancel against the desktop rule's `background:transparent !important`), i.e. `sgs_merge_tri_state_declarations`, not `sgs_header_float_css()`. The QC fix's own subject — the SHADOW following the effective transparent state — is correct at every tier measured. Worth its own ticket.
+2. `--sgs-header-height` is published rounded to the integer px (`Math.round`), so a pill at `top:16px` with an 89.58px height publishes `106px` against a `rect.bottom` of 105.58. Unchanged behaviour, recorded so the 0.42 delta is not re-investigated.
 
 ## Not run
 

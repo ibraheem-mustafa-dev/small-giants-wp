@@ -1,18 +1,10 @@
 > ARCHIVED 2026-07-28 — superseded by the 2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md and the P1 'full clean rebuild' verdict (D344) — this doc's narrower 'container-only + P0 in-progress' scope was overtaken by the full-rebuild decision.
 
 ---
-doc_type: design-gate
-project: small-giants-wp
-title: Header + Footer + Navigation SYSTEM (sgs/site-header, sgs/site-footer, adaptive nav, off-canvas drawer)
-date: 2026-07-13
-status: APPROVED (Bean sign-off 2026-07-13, all recommended defaults) — build in progress: P0 (drawer fix) SHIPPED + live-verified
-supersedes: .claude/plans/2026-07-13-header-footer-container-design-gate.md (container-only; folded in here)
-governing_specs:
+doc_type: design-gate project: small-giants-wp title: Header + Footer + Navigation SYSTEM (sgs/site-header, sgs/site-footer, adaptive nav, off-canvas drawer) date: 2026-07-13 status: APPROVED (Bean sign-off 2026-07-13, all recommended defaults) — build in progress: P0 (drawer fix) SHIPPED + live-verified supersedes: .claude/plans/2026-07-13-header-footer-container-design-gate.md (container-only; folded in here) governing_specs:
   - specs/17-HEADER-FOOTER-ARCHITECTURE.md (template-part + CPT + rules architecture)
   - specs/31-UNIVERSAL-CLONING-PIPELINE.md §13.6 (composite-mirror), R-31-1 (DB-first)
-  - specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md (no-inline / token contract)
-enforced_constraint_being_evolved: .claude/hooks/no-header-footer-block.py + memory header-footer-are-template-parts-not-blocks
-research_basis: 5 documented systems (Bricks, Elementor, Blocksy, Material 3, GOV.UK) + Indus Foods live reference + research-council (per-breakpoint model) + SGS nav code analysis + live drawer-bug root-cause
+  - specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md (no-inline / token contract) enforced_constraint_being_evolved: .claude/hooks/no-header-footer-block.py + memory header-footer-are-template-parts-not-blocks research_basis: 5 documented systems (Bricks, Elementor, Blocksy, Material 3, GOV.UK) + Indus Foods live reference + research-council (per-breakpoint model) + SGS nav code analysis + live drawer-bug root-cause
 ---
 
 # Design-gate — Header + Footer + Navigation system
@@ -139,8 +131,7 @@ Deploy → OPcache + `wp litespeed-purge all` + Hostinger CDN clear + version bu
 3. **P2 — `sgs/adaptive-nav`** (one-tree collapse, 4 tiers, mega-menu drill-down) integrated with the drawer.
 4. **P3 — `sgs/site-footer`** (rows + columns).
 5. **P4 — per-device content adaptation** polish (iconOnly/showLabel, move-to-drawer) + transparent-on-scroll no-code toggle.
-6. **P5 — pipeline Part 2** (draft header/footer → the new blocks).
-Each phase: DB reseed + doc updates + the §12 QC gate.
+6. **P5 — pipeline Part 2** (draft header/footer → the new blocks). Each phase: DB reseed + doc updates + the §12 QC gate.
 
 ## 13a. Execution routing — model + effort per task (efficiency WITHOUT fidelity loss)
 
@@ -165,11 +156,9 @@ Each phase: DB reseed + doc updates + the §12 QC gate.
 | §12 QC tool RUNS (Playwright 320→1440 reflow loop, axe-core capture) | Haiku | low | Mechanical evidence capture. |
 | §12 QC INTERPRETATION + `/gap-analysis` + pre-build `/adversarial-council` | Opus | high→max | Judgment on whether it actually meets your intent, not just passes a script. |
 
-**Requirements-traceability gate (the structural defence — Rule 10, not a promise to "try harder"):**
-Before ANY phase closes, maintain a ledger row per end-goal requirement you stated (this plan **+** the originating chat): `requirement → where it's specced (file+FR) → phase that builds it → LIVE evidence it works`. **No phase closes with an unmapped or evidence-less requirement, and no "done" message is sent for a requirement whose live evidence is missing.** This is the structural block on "it barely works but the message says it's done" — a requirement with no live-DOM evidence row cannot be reported complete.
+**Requirements-traceability gate (the structural defence — Rule 10, not a promise to "try harder"):** Before ANY phase closes, maintain a ledger row per end-goal requirement you stated (this plan **+** the originating chat): `requirement → where it's specced (file+FR) → phase that builds it → LIVE evidence it works`. **No phase closes with an unmapped or evidence-less requirement, and no "done" message is sent for a requirement whose live evidence is missing.** This is the structural block on "it barely works but the message says it's done" — a requirement with no live-DOM evidence row cannot be reported complete.
 
-**Spec-to-code conformance gate (the OTHER leak — a correct spec that gets half-built):**
-The documented history is: whole spec sections not built, others partially built, requirements skipped *inside* a section — invisible for months because the aggregate signal ("it builds / looks right / X% parity") stayed green (R-31-4). Operationalised defence, per FR being built:
+**Spec-to-code conformance gate (the OTHER leak — a correct spec that gets half-built):** The documented history is: whole spec sections not built, others partially built, requirements skipped *inside* a section — invisible for months because the aggregate signal ("it builds / looks right / X% parity") stayed green (R-31-4). Operationalised defence, per FR being built:
 1. **Decompose each FR into atomic acceptance clauses BEFORE coding** — each clause a single checkable live behaviour, not prose (e.g. the §6 drawer contract → `focus-trap-active` / `ESC-closes` / `backdrop-dismiss` / `scroll-locked` / `background-inert-but-drawer-NOT-inert` / `aria-expanded-toggles` / `aria-current-set` / `SR-labels-configurable` / `44px-targets` / `focus-lands-first-interactive`). A half-built section shows RED rows; it cannot hide behind "the drawer opens".
 2. **The conformance verifier is FRESH-CONTEXT and never sees the implementer's account** — a separate reviewer gets ONLY the clause list + the live page and checks each clause against live-DOM behaviour. The implementer does not mark its own homework; a self-report is not evidence (`/subagent-driven-development` spec-reviewer + `/verify-loop` 2-attestation).
 3. **Closing gate = every clause GREEN with its own live evidence — NEVER an aggregate.** No phase closes on "builds clean / looks right / parity %".

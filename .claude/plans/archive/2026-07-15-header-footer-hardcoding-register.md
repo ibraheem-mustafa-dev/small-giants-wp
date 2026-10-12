@@ -4,28 +4,19 @@
 
 ## What this is / is NOT
 
-**IS:** removal of *content* hardcoding — client copy, client URLs, ecommerce assumptions, and one
-broken attribute name. Every item below is a NAMED edit with an exact replacement. **Independent of
-the FR-S9-6 responsive model and the capability roster, so nothing here gets overwritten later.**
+**IS:** removal of *content* hardcoding — client copy, client URLs, ecommerce assumptions, and one broken attribute name. Every item below is a NAMED edit with an exact replacement. **Independent of the FR-S9-6 responsive model and the capability roster, so nothing here gets overwritten later.**
 
-**IS NOT:** the 36 capability literals in `adaptive-nav/style.css` (`width:min(85%,400px)` =
-`drawerWidth`+`drawerMaxWidth`, etc). **DO NOT TOUCH `adaptive-nav/style.css`.** Those literals are
-the capability roster + FR-S9-6 work and are being handled separately. Touching them here = rework.
+**IS NOT:** the 36 capability literals in `adaptive-nav/style.css` (`width:min(85%,400px)` = `drawerWidth`+`drawerMaxWidth`, etc). **DO NOT TOUCH `adaptive-nav/style.css`.** Those literals are the capability roster + FR-S9-6 work and are being handled separately. Touching them here = rework.
 
 ## ⛔ RULES FOR THE EXECUTING AGENT
 
-1. **Make ONLY the edits listed below.** No judgment calls. No "while I was there" fixes. If a line
-   does not appear in this register, do not touch it.
-2. **If any edit does not match** (line moved, text differs), **STOP and report** — do not improvise a
-   near-match. A wrong guess here ships client data into a framework file.
+1. **Make ONLY the edits listed below.** No judgment calls. No "while I was there" fixes. If a line does not appear in this register, do not touch it.
+2. **If any edit does not match** (line moved, text differs), **STOP and report** — do not improvise a near-match. A wrong guess here ships client data into a framework file.
 3. **Never edit `post_content`** — `wp-content-guard.py` blocks it and it breaks block validation.
-4. **`parts/header.html` and `patterns/framework-header-default.php` must stay BYTE-IDENTICAL**
-   in their shared region (§S1). Any edit to one = the same edit to the other. Verify with a diff.
+4. **`parts/header.html` and `patterns/framework-header-default.php` must stay BYTE-IDENTICAL** in their shared region (§S1). Any edit to one = the same edit to the other. Verify with a diff.
 5. **No block version bumps, no `deprecated.js`** (D270/D293).
-6. **Bump `theme/sgs-theme/style.css` `Version:` 1.5.24 → 1.5.25** as the LAST edit (WP caches the
-   pattern list + CDN caches theme CSS against it; without the bump your change is invisible).
-7. Do NOT commit the pre-existing dirt: `lucide-icons.php`, `package-lock.json`, `phase4-*.txt`,
-   root `.db`, `rr.json`.
+6. **Bump `theme/sgs-theme/style.css` `Version:` 1.5.24 → 1.5.25** as the LAST edit (WP caches the pattern list + CDN caches theme CSS against it; without the bump your change is invisible).
+7. Do NOT commit the pre-existing dirt: `lucide-icons.php`, `package-lock.json`, `phase4-*.txt`, root `.db`, `rr.json`.
 
 ## Checklist this must satisfy (per `.claude/plans/archive/block-migration-DONE-checklist.md`)
 
@@ -40,8 +31,7 @@ the capability roster + FR-S9-6 work and are being handled separately. Touching 
 
 **File: `plugins/sgs-blocks/src/blocks/site-footer/edit.js`** (the TEMPLATE, ~lines 21-94)
 
-The docblock at :15 says *"Three rows matching the draft `.mm-footer`"* — `mm` = Mama's Munches.
-The framework's default footer is a copy of ONE client's draft.
+The docblock at :15 says *"Three rows matching the draft `.mm-footer`"* — `mm` = Mama's Munches. The framework's default footer is a copy of ONE client's draft.
 
 | # | Line | Current | Replace with |
 |---|---|---|---|
@@ -93,5 +83,4 @@ The framework's default footer is a copy of ONE client's draft.
 
 ## Known-failing baseline (do not chase)
 
-`plugins/sgs-blocks/scripts/tests/` = **61 failed, 112 passed, 2 skipped on a CLEAN tree** as of
-2026-07-14. Pre-existing. A/B against a stash before blaming your change. Do not "fix" them here.
+`plugins/sgs-blocks/scripts/tests/` = **61 failed, 112 passed, 2 skipped on a CLEAN tree** as of 2026-07-14. Pre-existing. A/B against a stash before blaming your change. Do not "fix" them here.

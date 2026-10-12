@@ -1,8 +1,6 @@
 # Gold Standard Audit — SGS Blocks vs Competitors
 
-> **STATUS: VERIFIED** — Research conducted 2026-02-14 using live scrapes of competitor
-> product pages (kadencewp.com, wpspectra.com, generatepress.com/blocks, elementor.com/widgets).
-> All pricing, block lists, and feature claims verified against current public pages.
+> **STATUS: VERIFIED** — Research conducted 2026-02-14 using live scrapes of competitor product pages (kadencewp.com, wpspectra.com, generatepress.com/blocks, elementor.com/widgets). All pricing, block lists, and feature claims verified against current public pages.
 
 ## Overview
 

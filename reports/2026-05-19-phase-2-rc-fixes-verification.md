@@ -1,6 +1,7 @@
 # Phase 2 — RC Fixes Pipeline Verification
 
 **Run ID:** `mamas-munches-homepage-2026-05-19-020927`
+
 **Commits:** `79196c52` (RC-4 + bundled RC-1/RC-2 convert.py diff) + `f52b3173` (RC-1/2/3 closure with tests + seeder)
 
 ## Headline numbers

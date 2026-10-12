@@ -10,18 +10,11 @@ first_paint_capture_passed: true
 
 # sgs/button — icon width/height/colour no-inline fix (LANDED)
 
-**Verdict: PASS.** Button was declared no-inline at D293, but its ICON path still inlined
-`width`/`height`/`color` on the `<span class="sgs-button__icon">` whenever an operator set an icon
-size or colour — and even the default path emitted an inline `width:var(...)`. Any button with an
-icon therefore failed the zero-inline bar.
+**Verdict: PASS.** Button was declared no-inline at D293, but its ICON path still inlined `width`/`height`/`color` on the `<span class="sgs-button__icon">` whenever an operator set an icon size or colour — and even the default path emitted an inline `width:var(...)`. Any button with an icon therefore failed the zero-inline bar.
 
 ## Fix (`src/blocks/button/render.php`)
-- Removed the inline `style="%s"` on the icon span. Icon size → scoped
-  `#{$uid} .sgs-button__icon svg{width;height}` (only when an explicit size is set; else style.css's
-  `.sgs-button__icon svg{width:1em}` default applies). Resting icon colour → scoped
-  `#{$uid} .sgs-button__icon{color}`. Mirrors the block's existing hover-icon-colour scoped rule (l.359).
-- Icon size + colour stay full client controls — just scoped, never inline. `:hover` icon colour
-  unchanged (already scoped, higher specificity, still wins on hover).
+- Removed the inline `style="%s"` on the icon span. Icon size → scoped `#{$uid} .sgs-button__icon svg{width;height}` (only when an explicit size is set; else style.css's `.sgs-button__icon svg{width:1em}` default applies). Resting icon colour → scoped `#{$uid} .sgs-button__icon{color}`. Mirrors the block's existing hover-icon-colour scoped rule (l.359).
+- Icon size + colour stay full client controls — just scoped, never inline. `:hover` icon colour unchanged (already scoped, higher specificity, still wins on hover).
 
 ## Evidence
 - **Static audit** (`audit-inline-styling.js`): button `inlineViaRender` 1 → **0**.

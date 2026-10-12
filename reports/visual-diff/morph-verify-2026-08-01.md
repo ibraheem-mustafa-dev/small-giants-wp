@@ -1,8 +1,11 @@
 # Morph FX (D452) — verification report
 
 **Date:** 2026-08-01
+
 **Canary:** https://sandybrown-nightingale-600381.hostingersite.com/morph-fx-qa-canary/ (post 2113, sandybrown)
+
 **Fix under test:** `plugins/sgs-blocks/includes/fx-shape-routes.php` — `data-sgs-fx="morph"` moved from the `<svg>` wrapper onto the inner `<path>` (D452).
+
 **Verdict: PASS.** Morph now animates on this canary. Evidence below; hypothesis confirmed, not assumed.
 
 Every measurement was cache-busted (`?cachebustN` query param on each navigate) and `window.location.href` was re-asserted before trusting any evaluate() result — the session is shared with other agents and was in fact hijacked mid-session (see Note on session collision below), so this check is load-bearing, not decorative.

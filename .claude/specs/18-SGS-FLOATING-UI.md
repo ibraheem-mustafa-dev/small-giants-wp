@@ -22,42 +22,21 @@ references:
 
 ## 1. Overview
 
-Provides a Customiser-based floating UI layer (back-to-top button and reading-progress
-bar). Both elements render via `wp_footer` — they are site-wide, not per-page, so they
-belong in the Customiser rather than the block editor.
+Provides a Customiser-based floating UI layer (back-to-top button and reading-progress bar). Both elements render via `wp_footer` — they are site-wide, not per-page, so they belong in the Customiser rather than the block editor.
 
 ### 1.1 Scope claim — persistent bottom bars belong HERE, not in the footer
 
-Nothing below is built yet; this records WHERE the work belongs so it is not routed into the
-header/footer builder.
+Nothing below is built yet; this records WHERE the work belongs so it is not routed into the header/footer builder.
 
-**Persistent bottom CTA / cart / sale bars are Spec 18 territory, not `sgs/site-footer-row`.**
-Spec 37 §7 and FR-37-40 point here.
+**Persistent bottom CTA / cart / sale bars are Spec 18 territory, not `sgs/site-footer-row`.** Spec 37 §7 and FR-37-40 point here.
 
 Why:
-1. **State, not scroll.** These bars are driven by what a footer row cannot reach — basket
-   contents, whether a sale is live, session state. This spec's own founding rationale already
-   says it: *"site-wide, not per-page, so they belong in the Customiser rather than the block
-   editor."*
-2. **Purpose changes the rules.** Authorities treat persistent bottom chrome as legitimate for
-   navigation or ONE transactional action, but promotional bars must be small and dismissible
-   (Google's intrusive-interstitial guidance). Material has no persistent promotional bottom
-   component at all. **A cart bar and a sale bar are therefore different classes**, not one feature
-   with different text.
+1. **State, not scroll.** These bars are driven by what a footer row cannot reach — basket contents, whether a sale is live, session state. This spec's own founding rationale already says it: *"site-wide, not per-page, so they belong in the Customiser rather than the block editor."*
+2. **Purpose changes the rules.** Authorities treat persistent bottom chrome as legitimate for navigation or ONE transactional action, but promotional bars must be small and dismissible (Google's intrusive-interstitial guidance). Material has no persistent promotional bottom component at all. **A cart bar and a sale bar are therefore different classes**, not one feature with different text.
 
-**Build the shared bottom stacking container BEFORE adding a second bottom-anchored element.**
-This spec already ships ONE (back-to-top). Cookie banners, chat widgets, back-to-top buttons and
-CTA bars all default to the same corner, and there is no cross-vendor convention — every vendor's
-own docs prescribe hand-written `!important` offsets. The technique is a single
-`position:fixed; bottom:0; display:flex; flex-direction:column-reverse` wrapper that every element
-mounts into, not per-component z-index.
+**Build the shared bottom stacking container BEFORE adding a second bottom-anchored element.** This spec already ships ONE (back-to-top). Cookie banners, chat widgets, back-to-top buttons and CTA bars all default to the same corner, and there is no cross-vendor convention — every vendor's own docs prescribe hand-written `!important` offsets. The technique is a single `position:fixed; bottom:0; display:flex; flex-direction:column-reverse` wrapper that every element mounts into, not per-component z-index.
 
-**Implementation notes carried from the research:** `position:fixed` +
-`env(safe-area-inset-bottom)` is the load-bearing pair; `dvh` solves content-height drift, NOT bar
-occlusion (conflating them is a common error); anchor positioning is too new to be load-bearing;
-`popover`'s light-dismiss fights persistence; `interestfor` is not ready. **WCAG 2.4.11** names
-sticky footers as the failure mode (technique F110) — the mitigation is `scroll-padding` sized to
-the bar, and this framework currently has the TOP-edge equivalent but no bottom one.
+**Implementation notes carried from the research:** `position:fixed` + `env(safe-area-inset-bottom)` is the load-bearing pair; `dvh` solves content-height drift, NOT bar occlusion (conflating them is a common error); anchor positioning is too new to be load-bearing; `popover`'s light-dismiss fights persistence; `interestfor` is not ready. **WCAG 2.4.11** names sticky footers as the failure mode (technique F110) — the mitigation is `scroll-padding` sized to the bar, and this framework currently has the TOP-edge equivalent but no bottom one.
 
 No official Google percentage exists for "small fraction of the screen"; any threshold adopted here is our design rule, not a citation.
 
@@ -67,8 +46,7 @@ No official Google percentage exists for "small fraction of the screen"; any thr
 
 Accessible at: *Appearance → Customise → SGS Floating UI*
 
-Registered as a Customiser section with `type => 'option'` (not theme_mod) so the data
-survives theme switches.
+Registered as a Customiser section with `type => 'option'` (not theme_mod) so the data survives theme switches.
 
 ### 2.1 Controls
 
@@ -90,8 +68,7 @@ Each value is its own `wp_options` row, written by a Customiser setting of `type
 
 ### 3.1 Hook
 
-`Sgs_Floating_UI_Renderer` attaches to `wp_footer` at the default priority. When both elements are
-disabled, the hook outputs nothing and skips enqueueing assets entirely.
+`Sgs_Floating_UI_Renderer` attaches to `wp_footer` at the default priority. When both elements are disabled, the hook outputs nothing and skips enqueueing assets entirely.
 
 ### 3.2 Markup emitted
 
@@ -148,15 +125,11 @@ All layout rules live in `plugins/sgs-blocks/assets/floating-ui/floating-ui.css`
 | Hidden when off-screen | `hidden` attribute toggled via JS (respects display:none) |
 | Reduced motion | `floating-ui.css` disables the transitions under `prefers-reduced-motion: reduce`; `floating-ui.js` scrolls instantly (`behavior: 'auto'`) under the same preference |
 
-The SVG chevron carries `aria-hidden="true"` and `focusable="false"` to avoid duplicate
-announcement.
+The SVG chevron carries `aria-hidden="true"` and `focusable="false"` to avoid duplicate announcement.
 
 ## 5. Customiser live preview
 
-Both elements use `postMessage` transport so the Customiser preview iframe updates without
-a full reload. The registered `Sgs_Floating_UI_Customiser` settings call
-`$setting->transport = 'postMessage'` and a matching JS partial re-applies the CSS
-variables inline.
+Both elements use `postMessage` transport so the Customiser preview iframe updates without a full reload. The registered `Sgs_Floating_UI_Customiser` settings call `$setting->transport = 'postMessage'` and a matching JS partial re-applies the CSS variables inline.
 
 ## 6. Files
 
@@ -171,11 +144,7 @@ variables inline.
 
 ## 8. Council N1 compliance note
 
-Spec 37 Council Norm N1 governs writes to `wp_global_styles`. This spec does not write to
-`wp_global_styles` — it uses `wp_options` for its own `sgs_floating_ui_*` keys. The spirit
-of N1 (no operator-supplied post_id routing, no trust escalation) is honoured: the
-Customiser sanitiser runs under standard WordPress capability checks, and the renderer
-reads a static option with no user-supplied routing.
+Spec 37 Council Norm N1 governs writes to `wp_global_styles`. This spec does not write to `wp_global_styles` — it uses `wp_options` for its own `sgs_floating_ui_*` keys. The spirit of N1 (no operator-supplied post_id routing, no trust escalation) is honoured: the Customiser sanitiser runs under standard WordPress capability checks, and the renderer reads a static option with no user-supplied routing.
 
 ## 8b. Canonical Customiser pattern reference
 

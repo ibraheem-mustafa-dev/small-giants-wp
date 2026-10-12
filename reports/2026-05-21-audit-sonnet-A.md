@@ -1,5 +1,6 @@
 # Pipeline consistency + requirements audit — Sonnet A
 **Generated:** 2026-05-21
+
 **Auditor:** Sonnet (subagent A)
 
 ---
@@ -91,23 +92,19 @@ The pipeline documentation is broadly internally consistent across its primary s
 
 ## Gaps / missing coverage
 
-**Gap A — Requirement 3: Header/footer/hero not routed to framework patterns (Spec 17 extension)**
-Stage 6 in the flow-doc (lines 466-475) notes that when a header/footer matches a Spec 17 framework pattern (`sgs/framework-header-*`), the converter should emit `wp:pattern` reference + Site Info bindings. This is explicitly marked "not yet implemented" (Spec 16 §11). Until this lands, headers and footers get bespoke markup rather than being routed to the reusable framework patterns, breaking the stated architectural goal.
+**Gap A — Requirement 3: Header/footer/hero not routed to framework patterns (Spec 17 extension)** Stage 6 in the flow-doc (lines 466-475) notes that when a header/footer matches a Spec 17 framework pattern (`sgs/framework-header-*`), the converter should emit `wp:pattern` reference + Site Info bindings. This is explicitly marked "not yet implemented" (Spec 16 §11). Until this lands, headers and footers get bespoke markup rather than being routed to the reusable framework patterns, breaking the stated architectural goal.
 
 Suggested fit: Phase 7 Spec 16 Phase 2 (block creation) → extend to pattern-level Stage 6 emission as an additional sub-task.
 
-**Gap B — Requirement 7: Array-typed attribute extraction**
-Spec 16 §FR1 mentions "Array-typed attrs (e.g. `packSizes` on product-card) use special-case extractors" but these are not listed as LIVE in the flow-doc or tooling-map. The tooling-map has no entry for array-attr handling. This affects any block whose content is a repeating data structure (product cards, team members with multiple items, FAQs).
+**Gap B — Requirement 7: Array-typed attribute extraction** Spec 16 §FR1 mentions "Array-typed attrs (e.g. `packSizes` on product-card) use special-case extractors" but these are not listed as LIVE in the flow-doc or tooling-map. The tooling-map has no entry for array-attr handling. This affects any block whose content is a repeating data structure (product cards, team members with multiple items, FAQs).
 
 Suggested fit: a dedicated extractor module or a generic `array_slot_extractor` callable in `converter_v2/convert.py`, populated from `block_attributes.attr_type='array'` rows.
 
-**Gap C — Requirement 8: No automated path from attribute gap candidate to attribute addition**
-The pipeline correctly writes `attribute_gap_candidates` rows. But Stage 9b's autonomy chain has only "2 of N rails laid" (flow-doc line 702). There is no automated step that proposes a `block.json` diff for the operator. The operator must inspect the DB table manually and decide what to add.
+**Gap C — Requirement 8: No automated path from attribute gap candidate to attribute addition** The pipeline correctly writes `attribute_gap_candidates` rows. But Stage 9b's autonomy chain has only "2 of N rails laid" (flow-doc line 702). There is no automated step that proposes a `block.json` diff for the operator. The operator must inspect the DB table manually and decide what to add.
 
 Suggested fit: a new Stage 9b sub-step that reads `attribute_gap_candidates` and emits a proposed `block.json` patch in `pipeline-state/<run>/proposed-block-attrs/` per block, ready for operator review and one-command application.
 
-**Gap D — sgs/update not run after Phase 2A: 3 new blocks not in recogniser**
-The state.md (line 7) and handoff.md (line 37) both flag that `/sgs-update` has not been run since Phase 2A shipped three new blocks (`sgs/responsive-logo`, `sgs/icon`, `sgs/timeline`). The recogniser's `sgs-framework.db` does not yet contain canonical_slot rows for these blocks. Any draft using these blocks will fall through to the autonomy fallback path until this is remediated.
+**Gap D — sgs/update not run after Phase 2A: 3 new blocks not in recogniser** The state.md (line 7) and handoff.md (line 37) both flag that `/sgs-update` has not been run since Phase 2A shipped three new blocks (`sgs/responsive-logo`, `sgs/icon`, `sgs/timeline`). The recogniser's `sgs-framework.db` does not yet contain canonical_slot rows for these blocks. Any draft using these blocks will fall through to the autonomy fallback path until this is remediated.
 
 Suggested fit: first task of the next session before any clone pipeline run (already the #1 priority in `handoff.md`).
 
@@ -115,55 +112,41 @@ Suggested fit: first task of the next session before any clone pipeline run (alr
 
 ## Items where the pipeline over-covers or has dead code
 
-**1. Five dead DB tables in `sgs-framework.db`**
-Flow-doc (lines 860-869) identifies `sections_detected`, `extraction_cache`, `block_opportunities`, `weaknesses`, and `animations` as empty with no live writers. These tables are loaded into DB connections on every pipeline run. The `animations` table is superseded by `uimax.animations` (live). The others appear abandoned. They add schema noise without contributing to pipeline outputs.
+**1. Five dead DB tables in `sgs-framework.db`** Flow-doc (lines 860-869) identifies `sections_detected`, `extraction_cache`, `block_opportunities`, `weaknesses`, and `animations` as empty with no live writers. These tables are loaded into DB connections on every pipeline run. The `animations` table is superseded by `uimax.animations` (live). The others appear abandoned. They add schema noise without contributing to pipeline outputs.
 
-**2. `tools/recogniser-v2/overrides/hero.py` (908 lines) — retirement gated on FR8**
-Spec 16 §FR8 defines three preconditions for deletion. Precondition 1 (tests green on cv2 orchestrator wiring) and Precondition 2 (Mama's passes visual QA end-to-end) are not yet met. The file is still consulted by the legacy `extract.py` path. 908 lines of per-block hand-coded overrides for a single block that the cv2 converter now handles generically — architectural debt with a clear deletion plan.
+**2. `tools/recogniser-v2/overrides/hero.py` (908 lines) — retirement gated on FR8** Spec 16 §FR8 defines three preconditions for deletion. Precondition 1 (tests green on cv2 orchestrator wiring) and Precondition 2 (Mama's passes visual QA end-to-end) are not yet met. The file is still consulted by the legacy `extract.py` path. 908 lines of per-block hand-coded overrides for a single block that the cv2 converter now handles generically — architectural debt with a clear deletion plan.
 
-**3. `composer_fallback.py` — removed from LIVE path but possibly reachable**
-Flow-doc Stage 7 (lines 499-508) notes `composer_fallback.py:compose_atomic_pattern()` is "FALLBACK ONLY — fires when matched block is core/group or confidence == 0." But the orchestrator comment (line 1009-1020) says the composer fallback was "retired per the 2026-05-14 decision." If `composer_fallback.py` still exists on disk but the LIVE path no longer calls it, it is dead code. The flow-doc contradicts itself on this point — it calls it "FALLBACK ONLY" while the inline comment says "retired." Needs verification.
+**3. `composer_fallback.py` — removed from LIVE path but possibly reachable** Flow-doc Stage 7 (lines 499-508) notes `composer_fallback.py:compose_atomic_pattern()` is "FALLBACK ONLY — fires when matched block is core/group or confidence == 0." But the orchestrator comment (line 1009-1020) says the composer fallback was "retired per the 2026-05-14 decision." If `composer_fallback.py` still exists on disk but the LIVE path no longer calls it, it is dead code. The flow-doc contradicts itself on this point — it calls it "FALLBACK ONLY" while the inline comment says "retired." Needs verification.
 
-**4. `router-pattern.md` — `--resume` flag documented but not implemented**
-Described above under Inconsistency 7. The reference doc specifies a feature the SKILL.md and orchestrator both explicitly say does not exist. The doc is dead specification.
+**4. `router-pattern.md` — `--resume` flag documented but not implemented** Described above under Inconsistency 7. The reference doc specifies a feature the SKILL.md and orchestrator both explicitly say does not exist. The doc is dead specification.
 
 ---
 
 ## Notable findings outside the 9 requirements
 
-**Finding 1 — The canary client (Mama's Munches) has not yet passed the closure gate**
-The system is described as pipeline-architecture complete (Phase 6 v2 wiring done 2026-05-14), but the only real test client has never passed the ≤1% section-by-section pixel-diff gate. Spec 16 §10 lists 7 closure criteria and only item 1 (prototype clean markup) is checked. Items 2-7 are all ⏳. This means the pipeline is architecturally credible but not yet empirically validated on even a single client. The "99% accuracy" claim in the end-goal rubric is aspirational, not evidenced.
+**Finding 1 — The canary client (Mama's Munches) has not yet passed the closure gate** The system is described as pipeline-architecture complete (Phase 6 v2 wiring done 2026-05-14), but the only real test client has never passed the ≤1% section-by-section pixel-diff gate. Spec 16 §10 lists 7 closure criteria and only item 1 (prototype clean markup) is checked. Items 2-7 are all ⏳. This means the pipeline is architecturally credible but not yet empirically validated on even a single client. The "99% accuracy" claim in the end-goal rubric is aspirational, not evidenced.
 
-**Finding 2 — `--converter-v2` is default OFF but all binding rules say it is required**
-Production quality work requires `--converter-v2`. Default OFF means any invocation without the flag runs the legacy `extract.py` path, which the flow-doc describes as "unreliable across section shapes." Any subagent that forgets the flag silently runs the worse code path. The risk is low for experienced users but high for delegated subagents who copy the older CLI invocation pattern from docs.
+**Finding 2 — `--converter-v2` is default OFF but all binding rules say it is required** Production quality work requires `--converter-v2`. Default OFF means any invocation without the flag runs the legacy `extract.py` path, which the flow-doc describes as "unreliable across section shapes." Any subagent that forgets the flag silently runs the worse code path. The risk is low for experienced users but high for delegated subagents who copy the older CLI invocation pattern from docs.
 
-**Finding 3 — Stage 0.7 CSS dump is architecturally wrong but has no removal plan**
-The flow-doc marks Stage 0.7 as "LIVE - working but wrong-architecture" and tracks it as architectural debt. Spec 16 captures `pass-through-wrappers-lift-css-to-variation` as a known correction. But no phase plan names Stage 0.7 refactoring as a deliverable. The correct split (universal vs per-instance vs bespoke CSS) is specified in the `feedback_cloning_preserves_intentional_bespoke_detail` lesson but has no implementation ticket.
+**Finding 3 — Stage 0.7 CSS dump is architecturally wrong but has no removal plan** The flow-doc marks Stage 0.7 as "LIVE - working but wrong-architecture" and tracks it as architectural debt. Spec 16 captures `pass-through-wrappers-lift-css-to-variation` as a known correction. But no phase plan names Stage 0.7 refactoring as a deliverable. The correct split (universal vs per-instance vs bespoke CSS) is specified in the `feedback_cloning_preserves_intentional_bespoke_detail` lesson but has no implementation ticket.
 
-**Finding 4 — `recognition_log` REST endpoint is a TODO**
-`references/recognition-log.md` (line 43) notes: "Every action POSTs to `/sgs-blocks/v1/recognition-log/<id>/decide` (REST endpoint TODO for next session per known-issues list)." The operator-review HTML action buttons therefore cannot post decisions back. This means the four action options (promote, file-gap, park, dismiss) are visually present but functionally inert. The loop that grows the pattern library depends on this endpoint.
+**Finding 4 — `recognition_log` REST endpoint is a TODO** `references/recognition-log.md` (line 43) notes: "Every action POSTs to `/sgs-blocks/v1/recognition-log/<id>/decide` (REST endpoint TODO for next session per known-issues list)." The operator-review HTML action buttons therefore cannot post decisions back. This means the four action options (promote, file-gap, park, dismiss) are visually present but functionally inert. The loop that grows the pattern library depends on this endpoint.
 
-**Finding 5 — Phase 2A blocks (responsive-logo, icon, timeline) unregistered in sgs-framework.db**
-Three new blocks shipped to main in the most recent session (2026-05-20). The `/sgs-update` sync has not been run (confirmed in state.md and handoff.md). The recogniser's `block_attributes` table does not have canonical_slot rows for these blocks, so drafts referencing them will fail recognition entirely. This is a known blocker rather than a surprise, but the gap between block creation and recogniser coverage is a recurring process weakness.
+**Finding 5 — Phase 2A blocks (responsive-logo, icon, timeline) unregistered in sgs-framework.db** Three new blocks shipped to main in the most recent session (2026-05-20). The `/sgs-update` sync has not been run (confirmed in state.md and handoff.md). The recogniser's `block_attributes` table does not have canonical_slot rows for these blocks, so drafts referencing them will fail recognition entirely. This is a known blocker rather than a surprise, but the gap between block creation and recogniser coverage is a recurring process weakness.
 
 ---
 
 ## Recommended actions (ordered by impact)
 
-**1. Run `/sgs-update` immediately — before any pipeline work (5 min)**
-Three new blocks (responsive-logo, icon, timeline) are on main but not in `sgs-framework.db`. Every subsequent pipeline run on a draft using those blocks will fail Stage 2 matching until this is done. Zero code changes required.
+**1. Run `/sgs-update` immediately — before any pipeline work (5 min)** Three new blocks (responsive-logo, icon, timeline) are on main but not in `sgs-framework.db`. Every subsequent pipeline run on a draft using those blocks will fail Stage 2 matching until this is done. Zero code changes required.
 
-**2. Flip `--converter-v2` to default ON (or add a deprecation warning on the legacy path) — 30 min**
-The binding rule already says production runs must use `--converter-v2`. Default OFF means human error (forgetting the flag) silently runs inferior code. Either flip the default in the argparse definition (`orchestrator.py:1858`) to `default=True`, or print a `DeprecationWarning` when `--converter-v2` is absent. This eliminates the most common subagent mistake identified in the memory file.
+**2. Flip `--converter-v2` to default ON (or add a deprecation warning on the legacy path) — 30 min** The binding rule already says production runs must use `--converter-v2`. Default OFF means human error (forgetting the flag) silently runs inferior code. Either flip the default in the argparse definition (`orchestrator.py:1858`) to `default=True`, or print a `DeprecationWarning` when `--converter-v2` is absent. This eliminates the most common subagent mistake identified in the memory file.
 
-**3. Wire the pattern-level matcher at Stage 2 — effort: 2-4 hours**
-SKILL.md Hard Rule 3 promises pattern-level routing; the flow-doc confirms it is a gap. 6 of 9 Mama's sections currently fall through to the autonomy chain because Stage 2 only does block-level matching. Adding a `block_compositions` table lookup before falling through to block-level matching would catch sections that map to known patterns (e.g. a `sgs-products` section → the products pattern which contains `sgs/card-grid`). This is the single highest-impact gap for improving recognition coverage.
+**3. Wire the pattern-level matcher at Stage 2 — effort: 2-4 hours** SKILL.md Hard Rule 3 promises pattern-level routing; the flow-doc confirms it is a gap. 6 of 9 Mama's sections currently fall through to the autonomy chain because Stage 2 only does block-level matching. Adding a `block_compositions` table lookup before falling through to block-level matching would catch sections that map to known patterns (e.g. a `sgs-products` section → the products pattern which contains `sgs/card-grid`). This is the single highest-impact gap for improving recognition coverage.
 
-**4. Wire the `recognition_log` REST endpoint — effort: ~1 hour**
-Without it, the operator-review HTML action buttons are inert. The loop that compounds pattern-library value across clones never closes. This is a prerequisite for the pipeline's stated long-term value proposition (self-improving recogniser).
+**4. Wire the `recognition_log` REST endpoint — effort: ~1 hour** Without it, the operator-review HTML action buttons are inert. The loop that compounds pattern-library value across clones never closes. This is a prerequisite for the pipeline's stated long-term value proposition (self-improving recogniser).
 
-**5. Remove `--resume` from `router-pattern.md` and retire dead DB tables — effort: 30 min**
-Two small but high-confusion items: `router-pattern.md` documents a non-existent flag, and 5 dead DB tables add noise to every schema inspection. Both are pure documentation/cleanup tasks with zero code risk.
+**5. Remove `--resume` from `router-pattern.md` and retire dead DB tables — effort: 30 min** Two small but high-confusion items: `router-pattern.md` documents a non-existent flag, and 5 dead DB tables add noise to every schema inspection. Both are pure documentation/cleanup tasks with zero code risk.
 
 ---
 

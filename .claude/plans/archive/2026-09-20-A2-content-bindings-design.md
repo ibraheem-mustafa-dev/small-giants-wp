@@ -4,8 +4,7 @@ Status: BUILT (D1134); approved by Bean 2026-09-20. Follows A1 (D1132). Two chan
 
 ## Measured starting point
 
-Run `eye-care-ward-end-eye-care-birmingham-2026-09-20-201202` (v2 bundle, A1 on): 116 raw `{{ }}` occurrences, 33 names, all in text and labels.
-Command: parse `stage-4.json`, collect every `block_markup`, regex `\{\{\s*([^}]*?)\s*\}\}`.
+Run `eye-care-ward-end-eye-care-birmingham-2026-09-20-201202` (v2 bundle, A1 on): 116 raw `{{ }}` occurrences, 33 names, all in text and labels. Command: parse `stage-4.json`, collect every `block_markup`, regex `\{\{\s*([^}]*?)\s*\}\}`.
 
 | Group | Names (occurrences) | Where the value lives |
 |---|---|---|

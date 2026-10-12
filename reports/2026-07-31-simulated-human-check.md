@@ -1,8 +1,6 @@
 # Simulated human check — 2026-07-31
 
-Site: sandybrown-nightingale-600381.hostingersite.com
-Pages checked: `/motion-canary-wave-c/` (2083), `/motion-roster-canary/` (2086), block editor for 2083.
-Method: Chrome DevTools MCP, own isolated browser tab, cache-busted navigations, screenshots saved under `.claude/reports/screenshots/2026-07-31-*.png`.
+Site: sandybrown-nightingale-600381.hostingersite.com Pages checked: `/motion-canary-wave-c/` (2083), `/motion-roster-canary/` (2086), block editor for 2083. Method: Chrome DevTools MCP, own isolated browser tab, cache-busted navigations, screenshots saved under `.claude/reports/screenshots/2026-07-31-*.png`.
 
 ---
 

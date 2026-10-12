@@ -16,11 +16,7 @@ companions:
 
 ## 0. What this is, in one sentence
 
-A step-by-step wizard block: each step asks one thing, any step can route to a different
-next step based on the answer, and the whole thing ends in a recommendation, an
-email-capture handoff, or a real WooCommerce purchase — the same mechanism whether it's a
-dentist's "which treatment suits you" quiz, an eyewear shop's priced lens builder, or a
-cookie shop's flavour-then-pack-size picker.
+A step-by-step wizard block: each step asks one thing, any step can route to a different next step based on the answer, and the whole thing ends in a recommendation, an email-capture handoff, or a real WooCommerce purchase — the same mechanism whether it's a dentist's "which treatment suits you" quiz, an eyewear shop's priced lens builder, or a cookie shop's flavour-then-pack-size picker.
 
 ## Rulings (Bean)
 
@@ -50,82 +46,31 @@ A qualification quiz and a priced configurator are the same block with different
 
 **FR-43-16 -- per-option help text (universal, not lens-specific).** Each option MAY carry an optional `helpText` string. When set, a small `?` toggle button renders overlaid on the option card (floating, top-right corner; it does not affect the card's own click target or layout flow); toggling it reveals `helpText` in a panel directly beneath that option, dismissed by toggling again. Optional: an option with no `helpText` renders with no `?` button at all, not a disabled one.
 
-**FR-43-17 -- add-on price list.** One site-wide list of add-on groups, each a list of options
-`{key, label, price}` (price in the shop's currency, entered the same way product prices are), kept on one settings
-page (WooCommerce > Add-on prices, capability `manage_woocommerce`, nonce-checked, every field sanitised). A priced
-add-on step names one group (`priceGroup`); its option values are that group's option keys, and the price each
-option shows is read from the list at render time, never typed into the block. It reads "+£30.00" (`pricePrefix`
-`plus`, the default), "from £59.00" (`from`, a starting price later choices add to; the stage line then shows it
-without the "+"), or "included" at no cost; a "no add-ons" option in a priced step reads "£0.00". Changing a price on the settings
-page changes every flow and every cart line from the next recalculation (FR-43-18).
+**FR-43-17 -- add-on price list.** One site-wide list of add-on groups, each a list of options `{key, label, price}` (price in the shop's currency, entered the same way product prices are), kept on one settings page (WooCommerce > Add-on prices, capability `manage_woocommerce`, nonce-checked, every field sanitised). A priced add-on step names one group (`priceGroup`); its option values are that group's option keys, and the price each option shows is read from the list at render time, never typed into the block. It reads "+£30.00" (`pricePrefix` `plus`, the default), "from £59.00" (`from`, a starting price later choices add to; the stage line then shows it without the "+"), or "included" at no cost; a "no add-ons" option in a priced step reads "£0.00". Changing a price on the settings page changes every flow and every cart line from the next recalculation (FR-43-18).
 
-**FR-43-18 -- the list is the only price authority.** The browser sends only `{group, key}` pairs with the
-add-to-cart request (the `/sgs/v1/cart/add-item` proxy's optional `addons` argument, or the Store API's
-`woocommerce_store_api_add_to_cart_data`). The server resolves each pair against the list: an unknown group or key,
-or two options from one group, rejects the request. The resolved lines (group, key, label, price) are stored as cart
-item data; `woocommerce_before_calculate_totals` sets the line's price to the product's own price plus the sum of
-its add-on prices re-read from the list; the lines are copied to the order item's meta and shown in the bag, the
-checkout and the order as one line, e.g. "Single vision · Thin 1.67 · Polarised grey". No client-sent price,
-total or label is ever used.
+**FR-43-18 -- the list is the only price authority.** The browser sends only `{group, key}` pairs with the add-to-cart request (the `/sgs/v1/cart/add-item` proxy's optional `addons` argument, or the Store API's `woocommerce_store_api_add_to_cart_data`). The server resolves each pair against the list: an unknown group or key, or two options from one group, rejects the request. The resolved lines (group, key, label, price) are stored as cart item data; `woocommerce_before_calculate_totals` sets the line's price to the product's own price plus the sum of its add-on prices re-read from the list; the lines are copied to the order item's meta and shown in the bag, the checkout and the order as one line, e.g. "Single vision · Thin 1.67 · Polarised grey". No client-sent price, total or label is ever used.
 
-**FR-43-19 -- summary panel.** A flow can show a summary beside its questions
-(`showPricePanel`). It holds:
+**FR-43-19 -- summary panel.** A flow can show a summary beside its questions (`showPricePanel`). It holds:
 - the product's image, swapped for the resolved variation's image
-- the product's brand (WooCommerce `product_brand`), its name, and its chosen options joined by " · " (the page
-  buybox's variation, named from the product's own attribute terms, plus the flow's product-option answers; a value
-  starting with a digit carries its attribute's label, e.g. "Black · Frame size 56")
+- the product's brand (WooCommerce `product_brand`), its name, and its chosen options joined by " · " (the page buybox's variation, named from the product's own attribute terms, plus the flow's product-option answers; a value starting with a digit carries its attribute's label, e.g. "Black · Frame size 56")
 - the base row (label `summaryBaseLabel`, default "Base price")
-- one row per chosen priced option, in question order (the option's `summaryText` or label, and its price;
-  "included" for 0)
-- one muted row per other unpriced answer (the question's `summaryLabel` or step label, and the option's
-  `summaryText` or label, e.g. "Prescription · Sending it later")
-- a placeholder row until the first priced choice (`summaryPendingLabel`, `summaryPendingText`: "Lenses · not
-  chosen yet")
+- one row per chosen priced option, in question order (the option's `summaryText` or label, and its price; "included" for 0)
+- one muted row per other unpriced answer (the question's `summaryLabel` or step label, and the option's `summaryText` or label, e.g. "Prescription · Sending it later")
+- a placeholder row until the first priced choice (`summaryPendingLabel`, `summaryPendingText`: "Lenses · not chosen yet")
 - the total
-- an optional help note (`stageNote`, `stageNoteLink` = `{url,text,source}` where `source` is `url` (the typed url),
-  `phone`, `email` or `whatsapp` (the last three read live from Site Info and fall back to the typed url), `stageNoteIcon`;
-  its text and sub-line colour is `summaryNoteColour`)
+- an optional help note (`stageNote`, `stageNoteLink` = `{url,text,source}` where `source` is `url` (the typed url), `phone`, `email` or `whatsapp` (the last three read live from Site Info and fall back to the typed url), `stageNoteIcon`; its text and sub-line colour is `summaryNoteColour`)
 
-A pre-selected default (`isDefault`) counts as an answer from the start (Continue is live and the purchase carries
-it), but its row appears only once the shopper has reached its question.
+A pre-selected default (`isDefault`) counts as an answer from the start (Continue is live and the purchase carries it), but its row appears only once the shopper has reached its question.
 
-It sits beside the steps on wide containers (`summaryPosition` start or end) and collapses to a "Your box · total"
-row on narrow ones. It is the stage of the showcase layout (FR-43-24). Display only; FR-43-18 is the authority.
-Code: `plugins/sgs-blocks/includes/choice-flow-summary.php`, `plugins/sgs-blocks/src/blocks/choice-flow/summary.js`.
+It sits beside the steps on wide containers (`summaryPosition` start or end) and collapses to a "Your box · total" row on narrow ones. It is the stage of the showcase layout (FR-43-24). Display only; FR-43-18 is the authority. Code: `plugins/sgs-blocks/includes/choice-flow-summary.php`, `plugins/sgs-blocks/src/blocks/choice-flow/summary.js`.
 
-**FR-43-20 -- what is being bought.** A purchase terminal in a flow with add-on steps adds the page's
-current product: on a product page, the variation the shopper has chosen there (colour, size), which the buybox
-publishes when it changes; otherwise a product set on the flow. A step's option may end the flow as "no add-ons"
-(the draft's "No prescription": the frame alone goes in the bag).
+**FR-43-20 -- what is being bought.** A purchase terminal in a flow with add-on steps adds the page's current product: on a product page, the variation the shopper has chosen there (colour, size), which the buybox publishes when it changes; otherwise a product set on the flow. A step's option may end the flow as "no add-ons" (the draft's "No prescription": the frame alone goes in the bag).
 
-**FR-43-21 -- answers and fields travel with the purchase.** A purchase terminal also sends (a) the answer
-to every unpriced question on the path actually taken (label = the step's label, value = the chosen option's
-label; priced answers already travel as FR-43-18 pairs) and (b) every text, number or file field placed in the
-terminal's own step (a result step may hold form fields beside the result, so an option can route to "a result
-that asks for a photo" with no extra navigation). Required fields are checked in the browser before the request.
-The server sanitises every entry (at most 16; a label up to 60 characters, a value up to 200), stores them on the
-cart line, shows each as its own row on the line (bag, cart, checkout) and copies them to the order line. A file
-field uploads through a cart-scoped endpoint (`POST /sgs/v1/cart/upload`: the rest nonce, the forms rate limit,
-the private uploader) that stamps the file with the shopper's cart session; the server accepts a file ID only
-when that stamp matches the adding session, shows it as "Photo uploaded", and gives staff a download link on the
-order screen and in the new-order email (capability and nonce checked). Generic: engraving text, a photo for a
-custom print, a prescription.
+**FR-43-21 -- answers and fields travel with the purchase.** A purchase terminal also sends (a) the answer to every unpriced question on the path actually taken (label = the step's label, value = the chosen option's label; priced answers already travel as FR-43-18 pairs) and (b) every text, number or file field placed in the terminal's own step (a result step may hold form fields beside the result, so an option can route to "a result that asks for a photo" with no extra navigation). Required fields are checked in the browser before the request. The server sanitises every entry (at most 16; a label up to 60 characters, a value up to 200), stores them on the cart line, shows each as its own row on the line (bag, cart, checkout) and copies them to the order line. A file field uploads through a cart-scoped endpoint (`POST /sgs/v1/cart/upload`: the rest nonce, the forms rate limit, the private uploader) that stamps the file with the shopper's cart session; the server accepts a file ID only when that stamp matches the adding session, shows it as "Photo uploaded", and gives staff a download link on the order screen and in the new-order email (capability and nonce checked). Generic: engraving text, a photo for a custom print, a prescription.
 
-**FR-43-2 — branching.** Any step gains a `nextStepMap` attribute: answer value → target
-step ID. This is the one genuinely new mechanism this spec introduces (per-step routing,
-distinct from `sgs/form`'s existing per-FIELD `conditionalField`/`conditionalOperator`/
-`conditionalValue` show/hide logic, which stays exactly as-is and serves a different
-purpose). Default (no map, or answer not matched) is "advance to the next step in order" —
-so a flow with zero branching behaves identically to a plain linear wizard.
+**FR-43-2 — branching.** Any step gains a `nextStepMap` attribute: answer value → target step ID. This is the one genuinely new mechanism this spec introduces (per-step routing, distinct from `sgs/form`'s existing per-FIELD `conditionalField`/`conditionalOperator`/ `conditionalValue` show/hide logic, which stays exactly as-is and serves a different purpose). Default (no map, or answer not matched) is "advance to the next step in order" — so a flow with zero branching behaves identically to a plain linear wizard.
 
-**FR-43-2a -- editor-time integrity.** On publish/save, the
-editor validates every `nextStepMap` entry against the flow's own step tree: a target ID
-that doesn't resolve to a live step in the same flow blocks publish with a named error
-(never a silent fall-through to "advance in order" — that hides a broken branch from the
-client who just built it); a routing cycle with no terminal exit is flagged the same way.
-This is a straightforward integrity check against the block's own attribute tree — cheap
-to build, and it is the difference between a client seeing a red editor warning and a real
-site visitor getting stranded mid-flow with no error at all.
+**FR-43-2a -- editor-time integrity.** On publish/save, the editor validates every `nextStepMap` entry against the flow's own step tree: a target ID that doesn't resolve to a live step in the same flow blocks publish with a named error (never a silent fall-through to "advance in order" — that hides a broken branch from the client who just built it); a routing cycle with no terminal exit is flagged the same way. This is a straightforward integrity check against the block's own attribute tree — cheap to build, and it is the difference between a client seeing a red editor warning and a real site visitor getting stranded mid-flow with no error at all.
 
 **FR-43-2b -- skipping a priced step cannot under-price.** Every priced step resolves to a real WooCommerce attribute axis (FR-43-10), so a `nextStepMap` path that skips a priced step cannot produce an under-priced purchase: WooCommerce's own variation resolution requires every attribute on the product to be matched to a real, purchasable variation, and the `/sgs/v1/cart/add-item` proxy validates the submitted attribute set against `get_attributes()` server-side (Spec 27). An incomplete or skipped axis fails to resolve to a purchasable variation and the add-to-cart call is rejected, not under-priced.
 
@@ -139,139 +84,55 @@ site visitor getting stranded mid-flow with no error at all.
 
 ## 4. Delivery — inline or full-screen modal
 
-**FR-43-6 -- linked flow.** A flow is saved once as a `sgs_choice_flow` post (Choice Flows admin
-screen) and shown wherever it is needed by a `sgs/choice-flow` block linked to it: the block's
-"Linked flow" picker (`LinkPopoverField` filtered to `sgs_choice_flow`, the same picker as Spec 42
-FR-42-4's "Linked Form") writes the post's slug into `flowId` and sets `flowIsLinked`, and
-render.php draws that post's own `sgs/choice-flow` (steps, pricing, styling) in its place. A link
-whose post is gone renders a fallback message (plus an editor notice for `edit_sgs_forms`
-holders), the same two-audience degrade as FR-42-7a; the flow post's own block never carries
-`flowIsLinked`, which is what stops a flow rendering itself. Delivery is either inline (the linked
-block placed on a page) or full-screen (the linked block inside a `sgs/modal`, `size: fullscreen`,
-opened by any link to the modal's anchor or by its own trigger). The Choice Flows list's
-"Embedded on N pages" column counts `flowId` references.
+**FR-43-6 -- linked flow.** A flow is saved once as a `sgs_choice_flow` post (Choice Flows admin screen) and shown wherever it is needed by a `sgs/choice-flow` block linked to it: the block's "Linked flow" picker (`LinkPopoverField` filtered to `sgs_choice_flow`, the same picker as Spec 42 FR-42-4's "Linked Form") writes the post's slug into `flowId` and sets `flowIsLinked`, and render.php draws that post's own `sgs/choice-flow` (steps, pricing, styling) in its place. A link whose post is gone renders a fallback message (plus an editor notice for `edit_sgs_forms` holders), the same two-audience degrade as FR-42-7a; the flow post's own block never carries `flowIsLinked`, which is what stops a flow rendering itself. Delivery is either inline (the linked block placed on a page) or full-screen (the linked block inside a `sgs/modal`, `size: fullscreen`, opened by any link to the modal's anchor or by its own trigger). The Choice Flows list's "Embedded on N pages" column counts `flowId` references.
 
-**FR-43-7 -- Mama's Munches.** One variable product with four choices: Number in Pack creates the
-variations (and the price); Flavour, Topping and Dietary are product attributes that do not, so they travel as
-answers on the bag line. Two journeys, both a sequential, one-decision-per-screen flow in a full-screen `sgs/modal`:
-(A) full customisation: Flavour, Topping, Dietary, then Number in Pack, then add to bag; (B) the pack is picked on the
-product page, whose buybox button reads "Choose your flavours" and opens the flow for the other three (FR-43-22).
-Neither uses branching.
+**FR-43-7 -- Mama's Munches.** One variable product with four choices: Number in Pack creates the variations (and the price); Flavour, Topping and Dietary are product attributes that do not, so they travel as answers on the bag line. Two journeys, both a sequential, one-decision-per-screen flow in a full-screen `sgs/modal`: (A) full customisation: Flavour, Topping, Dietary, then Number in Pack, then add to bag; (B) the pack is picked on the product page, whose buybox button reads "Choose your flavours" and opens the flow for the other three (FR-43-22). Neither uses branching.
 
-**FR-43-22 -- the buybox button can open a popup.** `sgs/buybox` `addToCartAction` (`cart` | `modal`) and
-`addToCartModalId` (the `sgs/modal`'s anchor): in `modal` mode the button opens that modal through the modal's own
-open-anywhere listener (`data-sgs-modal-open`) instead of adding to the cart, keeps the in-stock gate and keeps
-announcing the chosen variation, so a flow inside the modal buys it. No modal named falls back to `cart`.
+**FR-43-22 -- the buybox button can open a popup.** `sgs/buybox` `addToCartAction` (`cart` | `modal`) and `addToCartModalId` (the `sgs/modal`'s anchor): in `modal` mode the button opens that modal through the modal's own open-anywhere listener (`data-sgs-modal-open`) instead of adding to the cart, keeps the in-stock gate and keeps announcing the chosen variation, so a flow inside the modal buys it. No modal named falls back to `cart`.
 
-**FR-43-23 -- guided buybox.** `sgs/buybox` `layout: guided` (default `standard`) turns the buy box into a
-short flow on the page itself. Design direction: *the meter is the receipt*: calm and token-driven (every colour,
-font and radius comes from the client's theme), and the one memorable detail is a segmented progress meter whose
-finished segments carry the chosen value ("Chocolate · Chip · Vegan · 20") and jump back to that group when pressed.
-- **Groups:** every variation-forming attribute from `Product_Manifest::build()` axes, plus (setting
-  `guidedAnswerAttributes`, default on) the product's other visible attributes, in the product's own attribute
-  order. Answer groups never enter variation resolution; their choices travel as answer rows (the cart proxy's
-  `fields`, shown on the bag line as FR-43-21 rows).
-- **Layout (top to bottom):** the live price (unchanged); the meter (one segment per group; on narrow containers,
-  dots plus "2 of 4 · Topping"); the active group (bold group title, the group's options as the existing pickers
-  with term swatch images); a nav row with Back (left, hidden on the first group) and Next (right, muted with
-  `aria-disabled` until the group has a choice); the Add to basket button stays where it is.
+**FR-43-23 -- guided buybox.** `sgs/buybox` `layout: guided` (default `standard`) turns the buy box into a short flow on the page itself. Design direction: *the meter is the receipt*: calm and token-driven (every colour, font and radius comes from the client's theme), and the one memorable detail is a segmented progress meter whose finished segments carry the chosen value ("Chocolate · Chip · Vegan · 20") and jump back to that group when pressed.
+- **Groups:** every variation-forming attribute from `Product_Manifest::build()` axes, plus (setting `guidedAnswerAttributes`, default on) the product's other visible attributes, in the product's own attribute order. Answer groups never enter variation resolution; their choices travel as answer rows (the cart proxy's `fields`, shown on the bag line as FR-43-21 rows).
+- **Layout (top to bottom):** the live price (unchanged); the meter (one segment per group; on narrow containers, dots plus "2 of 4 · Topping"); the active group (bold group title, the group's options as the existing pickers with term swatch images); a nav row with Back (left, hidden on the first group) and Next (right, muted with `aria-disabled` until the group has a choice); the Add to basket button stays where it is.
 - **Behaviour:**
-  - Picking an option moves to the next group after a short beat (setting `guidedAutoAdvance`, default on;
-    instant under reduced motion).
+  - Picking an option moves to the next group after a short beat (setting `guidedAutoAdvance`, default on; instant under reduced motion).
   - A default choice counts as made, and the flow opens on the first group without one.
   - The active-group region keeps a stable minimum height, so nothing jumps.
-  - Add to basket or Buy now pressed with groups unfinished shows "Finish choosing: Topping, Dietary"
-    (`aria-live`), then moves to and focuses the first unfinished group. It never adds a partial choice.
+  - Add to basket or Buy now pressed with groups unfinished shows "Finish choosing: Topping, Dietary" (`aria-live`), then moves to and focuses the first unfinished group. It never adds a partial choice.
 - **Code:** `plugins/sgs-blocks/includes/buybox-guided.php`, `plugins/sgs-blocks/src/blocks/buybox/guided.js`, `plugins/sgs-blocks/src/blocks/buybox/GuidedPanel.js`.
 
-**FR-43-24 -- showcase layout for full-screen flows.** `sgs/choice-flow` `flowLayout:
-compact | showcase`, set on the saved flow (FR-43-25). `compact` is the single column for a flow inline on a page.
-`showcase` is for a flow shown full screen and spends the screen the way the Eye Care draft's lens flow does (the
-draft's `lensOpen` dialog); it ignores the compact box (`maxWidth`, `padding`) and fills its full-screen modal edge
-to edge (the modal's own padding drops, and a full-screen modal fades in rather than scales).
-- **Frame:** a full-height column on the page background (surface). At the top, a header bar on the raised
-  background (surface-alt) with a bottom border: the logo (`headerLogo`, `headerLogoHeight`), the step name in
-  small spaced capitals, and Close (`closeStyle`); from the second question the step name reads "<Brand> <Product> —
+**FR-43-24 -- showcase layout for full-screen flows.** `sgs/choice-flow` `flowLayout: compact | showcase`, set on the saved flow (FR-43-25). `compact` is the single column for a flow inline on a page. `showcase` is for a flow shown full screen and spends the screen the way the Eye Care draft's lens flow does (the draft's `lensOpen` dialog); it ignores the compact box (`maxWidth`, `padding`) and fills its full-screen modal edge to edge (the modal's own padding drops, and a full-screen modal fades in rather than scales).
+- **Frame:** a full-height column on the page background (surface). At the top, a header bar on the raised background (surface-alt) with a bottom border: the logo (`headerLogo`, `headerLogoHeight`), the step name in small spaced capitals, and Close (`closeStyle`); from the second question the step name reads "<Brand> <Product> —
   <Step name>". A 3px progress line runs full width beneath it (`progressColour`; `progressCounts`: `finished`
-  counts answered questions, `current` the one on screen, so question 1 of 4 fills a quarter). In the middle, the
-  body grid, the only part that scrolls. At the bottom, the footer bar on the raised background with a top border:
-  Back left, the optional skip link on the first question ("Frame only? Skip the lenses": `skipPrompt`, `skipLabel`;
-  it takes the route of the flow's "no add-ons" option and shows only when one exists; with `skipAddsToBag` it
-  instead adds the bare frame through the shared `plugins/sgs-blocks/src/blocks/choice-flow/add-to-bag.js::addFlowToBag` and closes the pop-up; wide
-  containers only), the step's actions right. Footer buttons share one small uppercase style at the theme button preset's height.
-- **Body grid:** a sticky "stage" aside (`minmax(300px, .8fr)`; `minmax(250px, .7fr)` under a 1100px container)
-  beside the step pane (`minmax(0, 1.55fr)`; `1.6fr` under 1100px).
-  - The stage (FR-43-19) fills its column on the stage colour (`stageColour`, default surface-alt): a bordered square
-    photo that swaps with the resolved variation, the brand, name and chosen options (which take the slack, so the
-    lines sit low), the running lines, a large total in the heading font, and the help note at the bottom edge.
-  - An option can carry a photo treatment (`stageEffect`: dim, deepen, soften, brighten) that the stage photo shows
-    while it is chosen, named in a small tag on the photo (a lens finish); the option's own card previews it too,
-    the product's photo treated the same way over the option's picture.
-  - The help note is a bordered card; with a link the whole card is the link, with an optional round icon badge
-    (`stageNoteIcon`: WhatsApp, phone, email, chat) and its own icon, border and hover colours.
+  counts answered questions, `current` the one on screen, so question 1 of 4 fills a quarter). In the middle, the body grid, the only part that scrolls. At the bottom, the footer bar on the raised background with a top border: Back left, the optional skip link on the first question ("Frame only? Skip the lenses": `skipPrompt`, `skipLabel`; it takes the route of the flow's "no add-ons" option and shows only when one exists; with `skipAddsToBag` it instead adds the bare frame through the shared `plugins/sgs-blocks/src/blocks/choice-flow/add-to-bag.js::addFlowToBag` and closes the pop-up; wide containers only), the step's actions right. Footer buttons share one small uppercase style at the theme button preset's height.
+- **Body grid:** a sticky "stage" aside (`minmax(300px, .8fr)`; `minmax(250px, .7fr)` under a 1100px container) beside the step pane (`minmax(0, 1.55fr)`; `1.6fr` under 1100px).
+  - The stage (FR-43-19) fills its column on the stage colour (`stageColour`, default surface-alt): a bordered square photo that swaps with the resolved variation, the brand, name and chosen options (which take the slack, so the lines sit low), the running lines, a large total in the heading font, and the help note at the bottom edge.
+  - An option can carry a photo treatment (`stageEffect`: dim, deepen, soften, brighten) that the stage photo shows while it is chosen, named in a small tag on the photo (a lens finish); the option's own card previews it too, the product's photo treated the same way over the option's picture.
+  - The help note is a bordered card; with a link the whole card is the link, with an optional round icon badge (`stageNoteIcon`: WhatsApp, phone, email, chat) and its own icon, border and hover colours.
 - **Step pane:** padded 40/44/56. It holds:
-  - a position line in the accent ink ("Question 1 of 3": `stepCountLabel`; a question's own `eyebrow` replaces it
-    and leaves that question out of the count; a result step shows none)
+  - a position line in the accent ink ("Question 1 of 3": `stepCountLabel`; a question's own `eyebrow` replaces it and leaves that question out of the count; a result step shows none)
   - the step title in the heading font (38px from a 600px container, 28px under), wrapping plainly
-  - an intro paragraph (the question's `intro` attribute), 56 characters wide unless the question's "Intro width"
-    (`introWidth`: 52, 56, 58, 60, 64 or the full column) sets its own
-  - the options as large cards: two columns once the flow is 620px wide, one under; a step whose options carry no
-    pictures runs three across from 768px as text cards. A picture card has a full-width 16:9 image band, then the
-    title with its price aligned right (accent ink), then the description, then its badge as a solid accent tag; a
-    text card carries its badge as a soft tag beside the title. The selected card gets a 2px border in the text
-    colour on the stage colour. The picture band shows the stage colour; the option's own picture is drawn at
-    `optionMediaSize` per device ({desktop, tablet, mobile}, % of the band's width, 100 = fills the band), centred,
-    so a smaller one shows the band around it and a larger one is cropped by it (a finish card's frame photo is never
-    scaled). The '?' help toggle is a 30px disc that fills dark on hover (`infoToggleColour`,
-    `infoToggleBorderColour`); its answer opens as a dark panel under the card. The header's step name takes
-    `headerEyebrowColour` (default the muted text colour).
-  - A result step reads as a quiet confirmation panel; a result can put the running total on its purchase button
-    (`buttonShowsTotal`: "Add to bag £418.00"), and a lone purchase button takes the primary style.
-- **Narrow containers (under 600px):** the stage collapses to a slim row above the steps (a 72px thumbnail, the
-  brand, name and options, and the total); the running lines move to the final step's summary and the help note to
-  the end of the step pane.
-- **Opening:** the flow takes focus when its dialog opens (not Close, which would show a focus ring unprompted), and
-  the total pops.
-- **Motion** (the draft's values, all off under reduced motion): the progress fill eases over 0.5s
-  (cubic-bezier(.2,.7,.2,1)); a step rises 18px in over 0.4s; the total pops (scale .6 to 1.15 to 1) over 0.35s when
-  it changes; the stage photo's treatment eases over 0.6s; option cards move border and lift over 0.25s and shadow
-  over 0.3s; Close and Back over 0.25s; the '?' over 0.2s; a help panel fades in over 0.25s.
-- Every colour, font, radius and spacing comes from the client's theme tokens or a setting above, so any client's
-  flow gets the same structure.
+  - an intro paragraph (the question's `intro` attribute), 56 characters wide unless the question's "Intro width" (`introWidth`: 52, 56, 58, 60, 64 or the full column) sets its own
+  - the options as large cards: two columns once the flow is 620px wide, one under; a step whose options carry no pictures runs three across from 768px as text cards. A picture card has a full-width 16:9 image band, then the title with its price aligned right (accent ink), then the description, then its badge as a solid accent tag; a text card carries its badge as a soft tag beside the title. The selected card gets a 2px border in the text colour on the stage colour. The picture band shows the stage colour; the option's own picture is drawn at `optionMediaSize` per device ({desktop, tablet, mobile}, % of the band's width, 100 = fills the band), centred, so a smaller one shows the band around it and a larger one is cropped by it (a finish card's frame photo is never scaled). The '?' help toggle is a 30px disc that fills dark on hover (`infoToggleColour`, `infoToggleBorderColour`); its answer opens as a dark panel under the card. The header's step name takes `headerEyebrowColour` (default the muted text colour).
+  - A result step reads as a quiet confirmation panel; a result can put the running total on its purchase button (`buttonShowsTotal`: "Add to bag £418.00"), and a lone purchase button takes the primary style.
+- **Narrow containers (under 600px):** the stage collapses to a slim row above the steps (a 72px thumbnail, the brand, name and options, and the total); the running lines move to the final step's summary and the help note to the end of the step pane.
+- **Opening:** the flow takes focus when its dialog opens (not Close, which would show a focus ring unprompted), and the total pops.
+- **Motion** (the draft's values, all off under reduced motion): the progress fill eases over 0.5s (cubic-bezier(.2,.7,.2,1)); a step rises 18px in over 0.4s; the total pops (scale .6 to 1.15 to 1) over 0.35s when it changes; the stage photo's treatment eases over 0.6s; option cards move border and lift over 0.25s and shadow over 0.3s; Close and Back over 0.25s; the '?' over 0.2s; a help panel fades in over 0.25s.
+- Every colour, font, radius and spacing comes from the client's theme tokens or a setting above, so any client's flow gets the same structure.
 
-**FR-43-26 -- a question can open the chosen option's next step underneath** (Bean, 2026-09-28).
-`sgs/choice-flow-question` `showNextStepInline` ("Open the chosen option's next step underneath"). In `continue`
-advance mode the step an option leads to (`nextStepId`) shows under the question on the same screen, replacing any
-step another option opened; the default option opens its step on arrival. The footer follows the opened step: an
-add-to-bag result there shows Add to bag with the running total and hides Continue; Add to bag validates and sends
-that step's fields as when it is shown on its own. It fades in over 0.3s (none under reduced motion). In the
-showcase layout an opened step holding fields is one bordered panel whose boxes take the panel's colour, and a file
-drop zone stands alone. `plugins/sgs-blocks/src/blocks/choice-flow/flow-inline.js::openInlineStep` (every step change goes through
-`::showStep`). The Eye Care lens draft's last question is the reference: Send it later, Upload a photo and Type it
-in each open their panel under the options.
+**FR-43-26 -- a question can open the chosen option's next step underneath** (Bean, 2026-09-28). `sgs/choice-flow-question` `showNextStepInline` ("Open the chosen option's next step underneath"). In `continue` advance mode the step an option leads to (`nextStepId`) shows under the question on the same screen, replacing any step another option opened; the default option opens its step on arrival. The footer follows the opened step: an add-to-bag result there shows Add to bag with the running total and hides Continue; Add to bag validates and sends that step's fields as when it is shown on its own. It fades in over 0.3s (none under reduced motion). In the showcase layout an opened step holding fields is one bordered panel whose boxes take the panel's colour, and a file drop zone stands alone. `plugins/sgs-blocks/src/blocks/choice-flow/flow-inline.js::openInlineStep` (every step change goes through `::showStep`). The Eye Care lens draft's last question is the reference: Send it later, Upload a photo and Type it in each open their panel under the options.
 
 **FR-43-25 -- architecture: one saved flow, its placements, and the product link** (Bean, 2026-09-26).
-- **The saved flow (`sgs_choice_flow`) is the single source.** It holds questions, options, images, pricing sources,
-  endings, behaviour and the whole look, including its layout (compact or showcase), header, footer, progress bar
-  and summary. A linking block (FR-43-6) shows it exactly as saved; placements carry no overrides. To show a flow
-  differently, save a second flow.
-- **A product links to a flow.** Every purchasable product (simple or variable) gets a "Customisation flow" picker
-  on its edit screen (product meta `_sgs_choice_flow`, a flow slug). With a flow linked, the product page's buybox
-  wires itself:
+- **The saved flow (`sgs_choice_flow`) is the single source.** It holds questions, options, images, pricing sources, endings, behaviour and the whole look, including its layout (compact or showcase), header, footer, progress bar and summary. A linking block (FR-43-6) shows it exactly as saved; placements carry no overrides. To show a flow differently, save a second flow.
+- **A product links to a flow.** Every purchasable product (simple or variable) gets a "Customisation flow" picker on its edit screen (product meta `_sgs_choice_flow`, a flow slug). With a flow linked, the product page's buybox wires itself:
   - the Add to Cart button becomes the flow's opener (FR-43-22, labelled from the buybox)
   - the buybox renders the full-screen `sgs/modal` holding the linked flow
   - no per-product template or hand-placed popup is needed
   - a simple product's flow has no variation steps; it adds answers, fields and add-ons to that product
   - the Choice Flows list shows "Used by N products" beside "Embedded on N pages"
-- **The guided buybox (FR-43-23) is separate.** It never runs a saved flow: its groups are always the product's own
-  attributes. It gets the essentials from WooCommerce itself:
-  - each option's image, badge and one-line description are attribute-term fields beside the existing swatch fields
-    (`plugins/sgs-blocks/includes/configurator-term-fields.php`: `_sgs_swatch_image_id`, `_sgs_term_badge`, `_sgs_term_description`),
-    set once per term and shown everywhere: buybox pickers, the guided buybox, and flow product-option steps that
-    don't override them
+- **The guided buybox (FR-43-23) is separate.** It never runs a saved flow: its groups are always the product's own attributes. It gets the essentials from WooCommerce itself:
+  - each option's image, badge and one-line description are attribute-term fields beside the existing swatch fields (`plugins/sgs-blocks/includes/configurator-term-fields.php`: `_sgs_swatch_image_id`, `_sgs_term_badge`, `_sgs_term_description`), set once per term and shown everywhere: buybox pickers, the guided buybox, and flow product-option steps that don't override them
   - the default option is the product's own WooCommerce default attributes
-  - its peripherals are buybox settings: Back / Next / Add to basket / Buy now wording and styling, and the
-    meter's style and colour
+  - its peripherals are buybox settings: Back / Next / Add to basket / Buy now wording and styling, and the meter's style and colour
   - rich features (custom questions, add-ons, stage, endings) belong to a saved flow in a popup
 
 ## 5. CPT -- `sgs_choice_flow`
@@ -288,11 +149,7 @@ in each open their panel under the options.
 
 ## 7. Client-facing disambiguation
 
-**FR-43-11.** `sgs/form` and `sgs/choice-flow` need distinct, plain-English inserter
-descriptions naming the actual behavioural difference (branches to different questions
-vs. collects information in one flexible form) — not just distinct names — so a client
-building "which treatment suits you" doesn't reach for the wrong block by guessing from
-a name alone.
+**FR-43-11.** `sgs/form` and `sgs/choice-flow` need distinct, plain-English inserter descriptions naming the actual behavioural difference (branches to different questions vs. collects information in one flexible form) — not just distinct names — so a client building "which treatment suits you" doesn't reach for the wrong block by guessing from a name alone.
 
 ## 7a. Known cross-cutting gap -- shared with Spec 42, not resolved here
 
