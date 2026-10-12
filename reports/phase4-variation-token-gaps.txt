@@ -1,8 +1,8 @@
-# Stage 3 Style Variation Sync — 2026-10-09 03:39:00 UTC
+# Stage 3 Style Variation Sync — 2026-10-12 02:14:24 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 8 | Missing: 5 | Inserted: 0 | Skipped: 250 | Conflicts: 161
+Snapshots found: 9 | Missing: 5 | Inserted: 0 | Skipped: 283 | Conflicts: 237
 
 ## Per-client results
 
@@ -12,7 +12,7 @@ _(theme-snapshot.json not found)_
 
 ### eye-care-ward-end
 
-Inserted: 0 | Skipped: 39 | Conflicts: 25
+Inserted: 0 | Skipped: 44 | Conflicts: 25
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#141414') → inserted as eye-care-ward-end-color-primary
 - CONFLICT: color-primary-text (framework='#FFFFFF', client='#FAF8F5') → inserted as eye-care-ward-end-color-primary-text
@@ -42,7 +42,7 @@ Inserted: 0 | Skipped: 39 | Conflicts: 25
 
 ### helping-doctors
 
-Inserted: 0 | Skipped: 19 | Conflicts: 18
+Inserted: 0 | Skipped: 19 | Conflicts: 23
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#2d6e5e') → inserted as helping-doctors-color-primary
 - CONFLICT: color-primary-text (framework='#FFFFFF', client='#ffffff') → inserted as helping-doctors-color-primary-text
@@ -58,6 +58,11 @@ Inserted: 0 | Skipped: 19 | Conflicts: 18
 - CONFLICT: color-border-light (framework='#E5E7EB', client='#e5e7eb') → inserted as helping-doctors-color-border-light
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#1a4139') → inserted as helping-doctors-color-footer-bg
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#92400E') → inserted as helping-doctors-color-accent-text
+- CONFLICT: color-heading (framework='#141414', client='#1a4139') → inserted as helping-doctors-color-heading
+- CONFLICT: color-link (framework='#141414', client='#2d6e5e') → inserted as helping-doctors-color-link
+- CONFLICT: color-link-hover (framework='#0F0F0F', client='#1a4139') → inserted as helping-doctors-color-link-hover
+- CONFLICT: color-section (framework='#FFFFFF', client='#e8f5f2') → inserted as helping-doctors-color-section
+- CONFLICT: color-section-text (framework='#141414', client='#1a1a1a') → inserted as helping-doctors-color-section-text
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Inter, system-ui, -apple-system, sans-serif') → inserted as helping-doctors-font-family-heading
 - CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Inter, system-ui, -apple-system, sans-serif') → inserted as helping-doctors-font-family-body
 - CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as helping-doctors-shadow-floating
@@ -69,27 +74,42 @@ _(theme-snapshot.json not found)_
 
 ### indus-foods
 
-Inserted: 0 | Skipped: 27 | Conflicts: 15
+Inserted: 0 | Skipped: 27 | Conflicts: 30
 
-- CONFLICT: color-primary (framework='#0D1B2A', client='#0A7EA8') → inserted as indus-foods-color-primary
-- CONFLICT: color-primary-dark (framework='#060D14', client='#075E80') → inserted as indus-foods-color-primary-dark
-- CONFLICT: color-accent (framework='#C9A84C', client='#D8CA50') → inserted as indus-foods-color-accent
-- CONFLICT: color-accent-light (framework='#F0E4C3', client='#E7D768') → inserted as indus-foods-color-accent-light
-- CONFLICT: color-border (framework='#C9A84C', client='#2EADE2') → inserted as indus-foods-color-border
+- CONFLICT: color-primary (framework='#0D1B2A', client='#0a7ea8') → inserted as indus-foods-color-primary
+- CONFLICT: color-primary-text (framework='#FFFFFF', client='#F1F5F9') → inserted as indus-foods-color-primary-text
+- CONFLICT: color-primary-dark (framework='#060D14', client='#0F4C4C') → inserted as indus-foods-color-primary-dark
+- CONFLICT: color-accent (framework='#C9A84C', client='#F59E0B') → inserted as indus-foods-color-accent
+- CONFLICT: color-accent-text (framework='#7A6B00', client='#92400E') → inserted as indus-foods-color-accent-text
+- CONFLICT: color-accent-light (framework='#F0E4C3', client='#FEF3C7') → inserted as indus-foods-color-accent-light
 - CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as indus-foods-color-success
-- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F8F7F4') → inserted as indus-foods-color-surface-alt
-- CONFLICT: color-text (framework='#1a1a1a', client='#2C3E50') → inserted as indus-foods-color-text
-- CONFLICT: color-text-muted (framework='#6B6B6B', client='#5A6070') → inserted as indus-foods-color-text-muted
-- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#2C3E50') → inserted as indus-foods-color-footer-bg
-- CONFLICT: font-size-hero (framework='50px', client='clamp(2.5rem, calc(2.5rem + (100vw - 1024px) * 0.02404), 3.125rem)') → inserted as indus-foods-font-size-hero
-- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Montserrat, system-ui, sans-serif') → inserted as indus-foods-font-family-heading
-- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client="'Source Sans 3', system-ui, sans-serif") → inserted as indus-foods-font-family-body
+- CONFLICT: color-surface (framework='#FFFFFF', client='#ffffff') → inserted as indus-foods-color-surface
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F1F0EC') → inserted as indus-foods-color-surface-alt
+- CONFLICT: color-text (framework='#1a1a1a', client='#1A202C') → inserted as indus-foods-color-text
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#606D80') → inserted as indus-foods-color-text-muted
+- CONFLICT: color-text-inverse (framework='#FFFFFF', client='#F1F5F9') → inserted as indus-foods-color-text-inverse
+- CONFLICT: color-border (framework='#C9A84C', client='#D4DBE5') → inserted as indus-foods-color-border
+- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#0F172A') → inserted as indus-foods-color-footer-bg
+- CONFLICT: color-heading (framework='#141414', client='#1A202C') → inserted as indus-foods-color-heading
+- CONFLICT: color-link (framework='#141414', client='#0a7ea8') → inserted as indus-foods-color-link
+- CONFLICT: color-link-hover (framework='#0F0F0F', client='#0F4C4C') → inserted as indus-foods-color-link-hover
+- CONFLICT: color-section (framework='#FFFFFF', client='#F1F0EC') → inserted as indus-foods-color-section
+- CONFLICT: color-section-text (framework='#141414', client='#1A202C') → inserted as indus-foods-color-section-text
+- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='"Source Sans 3", "Source Sans Pro", system-ui, sans-serif') → inserted as indus-foods-font-family-body
+- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Montserrat, sans-serif') → inserted as indus-foods-font-family-heading
+- CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='Montserrat, sans-serif') → inserted as indus-foods-font-family-display
+- CONFLICT: spacing-30 (framework='0.75rem', client='1rem') → inserted as indus-foods-spacing-30
+- CONFLICT: spacing-40 (framework='1rem', client='1.5rem') → inserted as indus-foods-spacing-40
+- CONFLICT: spacing-50 (framework='1.5rem', client='2rem') → inserted as indus-foods-spacing-50
+- CONFLICT: spacing-60 (framework='2rem', client='3rem') → inserted as indus-foods-spacing-60
+- CONFLICT: spacing-70 (framework='3rem', client='5rem') → inserted as indus-foods-spacing-70
+- CONFLICT: spacing-80 (framework='4rem', client='8rem') → inserted as indus-foods-spacing-80
 - CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as indus-foods-shadow-floating
 - CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as indus-foods-shadow-glow
 
 ### mamas-munches
 
-Inserted: 0 | Skipped: 34 | Conflicts: 26
+Inserted: 0 | Skipped: 34 | Conflicts: 31
 
 - CONFLICT: color-accent (framework='#C9A84C', client='#f5d050') → inserted as mamas-munches-color-accent
 - CONFLICT: color-border (framework='#C9A84C', client='#e8d5c0') → inserted as mamas-munches-color-border
@@ -106,6 +126,11 @@ Inserted: 0 | Skipped: 34 | Conflicts: 26
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#7A6500') → inserted as mamas-munches-color-accent-text
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#3A2E26') → inserted as mamas-munches-color-footer-bg
 - CONFLICT: color-accent-light (framework='#F0E4C3', client='#FEF3C7') → inserted as mamas-munches-color-accent-light
+- CONFLICT: color-heading (framework='#141414', client='#3a2e26') → inserted as mamas-munches-color-heading
+- CONFLICT: color-link (framework='#141414', client='#b7475b') → inserted as mamas-munches-color-link
+- CONFLICT: color-link-hover (framework='#0F0F0F', client='#8c3343') → inserted as mamas-munches-color-link-hover
+- CONFLICT: color-section (framework='#FFFFFF', client='#fff9f0') → inserted as mamas-munches-color-section
+- CONFLICT: color-section-text (framework='#141414', client='#3a2e26') → inserted as mamas-munches-color-section-text
 - CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Inter, sans-serif') → inserted as mamas-munches-font-family-body
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Fraunces, serif') → inserted as mamas-munches-font-family-heading
 - CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='Fraunces, serif') → inserted as mamas-munches-font-family-display
@@ -118,13 +143,49 @@ Inserted: 0 | Skipped: 34 | Conflicts: 26
 - CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as mamas-munches-shadow-floating
 - CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as mamas-munches-shadow-glow
 
+### mamas-munches-redesign
+
+Inserted: 0 | Skipped: 28 | Conflicts: 31
+
+- CONFLICT: color-primary (framework='#0D1B2A', client='#a8404f') → inserted as mamas-munches-redesign-color-primary
+- CONFLICT: color-primary-text (framework='#FFFFFF', client='#F1F5F9') → inserted as mamas-munches-redesign-color-primary-text
+- CONFLICT: color-primary-dark (framework='#060D14', client='#0F4C4C') → inserted as mamas-munches-redesign-color-primary-dark
+- CONFLICT: color-accent (framework='#C9A84C', client='#F59E0B') → inserted as mamas-munches-redesign-color-accent
+- CONFLICT: color-accent-text (framework='#7A6B00', client='#92400E') → inserted as mamas-munches-redesign-color-accent-text
+- CONFLICT: color-accent-light (framework='#F0E4C3', client='#FEF3C7') → inserted as mamas-munches-redesign-color-accent-light
+- CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as mamas-munches-redesign-color-success
+- CONFLICT: color-surface (framework='#FFFFFF', client='#fbf3dc') → inserted as mamas-munches-redesign-color-surface
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F1F0EC') → inserted as mamas-munches-redesign-color-surface-alt
+- CONFLICT: color-text (framework='#1a1a1a', client='#3a2a22') → inserted as mamas-munches-redesign-color-text
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#606D80') → inserted as mamas-munches-redesign-color-text-muted
+- CONFLICT: color-text-inverse (framework='#FFFFFF', client='#F1F5F9') → inserted as mamas-munches-redesign-color-text-inverse
+- CONFLICT: color-border (framework='#C9A84C', client='#D4DBE5') → inserted as mamas-munches-redesign-color-border
+- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#0F172A') → inserted as mamas-munches-redesign-color-footer-bg
+- CONFLICT: color-heading (framework='#141414', client='#3a2a22') → inserted as mamas-munches-redesign-color-heading
+- CONFLICT: color-link (framework='#141414', client='#a8404f') → inserted as mamas-munches-redesign-color-link
+- CONFLICT: color-link-hover (framework='#0F0F0F', client='#0F4C4C') → inserted as mamas-munches-redesign-color-link-hover
+- CONFLICT: color-section (framework='#FFFFFF', client='#F1F0EC') → inserted as mamas-munches-redesign-color-section
+- CONFLICT: color-section-text (framework='#141414', client='#3a2a22') → inserted as mamas-munches-redesign-color-section-text
+- CONFLICT: font-size-regular (framework='16px', client='17px') → inserted as mamas-munches-redesign-font-size-regular
+- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Karla, system-ui, sans-serif') → inserted as mamas-munches-redesign-font-family-body
+- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='"Young Serif", Georgia, serif') → inserted as mamas-munches-redesign-font-family-heading
+- CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='"Young Serif", Georgia, serif') → inserted as mamas-munches-redesign-font-family-display
+- CONFLICT: spacing-30 (framework='0.75rem', client='1rem') → inserted as mamas-munches-redesign-spacing-30
+- CONFLICT: spacing-40 (framework='1rem', client='1.5rem') → inserted as mamas-munches-redesign-spacing-40
+- CONFLICT: spacing-50 (framework='1.5rem', client='2rem') → inserted as mamas-munches-redesign-spacing-50
+- CONFLICT: spacing-60 (framework='2rem', client='3rem') → inserted as mamas-munches-redesign-spacing-60
+- CONFLICT: spacing-70 (framework='3rem', client='5rem') → inserted as mamas-munches-redesign-spacing-70
+- CONFLICT: spacing-80 (framework='4rem', client='8rem') → inserted as mamas-munches-redesign-spacing-80
+- CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as mamas-munches-redesign-shadow-floating
+- CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as mamas-munches-redesign-shadow-glow
+
 ### Mega-menu design
 
 _(theme-snapshot.json not found)_
 
 ### sgs-construction
 
-Inserted: 0 | Skipped: 32 | Conflicts: 20
+Inserted: 0 | Skipped: 32 | Conflicts: 25
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1C1C1C') → inserted as sgs-construction-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#0A0A0A') → inserted as sgs-construction-color-primary-dark
@@ -138,6 +199,11 @@ Inserted: 0 | Skipped: 32 | Conflicts: 20
 - CONFLICT: color-border (framework='#C9A84C', client='#E8700A') → inserted as sgs-construction-color-border
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#92400E') → inserted as sgs-construction-color-accent-text
 - CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as sgs-construction-color-success
+- CONFLICT: color-heading (framework='#141414', client='#1C1C1C') → inserted as sgs-construction-color-heading
+- CONFLICT: color-link (framework='#141414', client='#92400E') → inserted as sgs-construction-color-link
+- CONFLICT: color-link-hover (framework='#0F0F0F', client='#1C1C1C') → inserted as sgs-construction-color-link-hover
+- CONFLICT: color-section (framework='#FFFFFF', client='#F5F3F0') → inserted as sgs-construction-color-section
+- CONFLICT: color-section-text (framework='#141414', client='#1C1C1C') → inserted as sgs-construction-color-section-text
 - CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-construction-font-size-small
 - CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-construction-font-size-medium
 - CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as sgs-construction-font-size-large
@@ -149,7 +215,7 @@ Inserted: 0 | Skipped: 32 | Conflicts: 20
 
 ### sgs-healthcare
 
-Inserted: 0 | Skipped: 33 | Conflicts: 19
+Inserted: 0 | Skipped: 33 | Conflicts: 24
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1A5F6B') → inserted as sgs-healthcare-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#124550') → inserted as sgs-healthcare-color-primary-dark
@@ -163,6 +229,11 @@ Inserted: 0 | Skipped: 33 | Conflicts: 19
 - CONFLICT: color-border (framework='#C9A84C', client='#4CAF88') → inserted as sgs-healthcare-color-border
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#92400E') → inserted as sgs-healthcare-color-accent-text
 - CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as sgs-healthcare-color-success
+- CONFLICT: color-heading (framework='#141414', client='#1A2E35') → inserted as sgs-healthcare-color-heading
+- CONFLICT: color-link (framework='#141414', client='#1A5F6B') → inserted as sgs-healthcare-color-link
+- CONFLICT: color-link-hover (framework='#0F0F0F', client='#124550') → inserted as sgs-healthcare-color-link-hover
+- CONFLICT: color-section (framework='#FFFFFF', client='#F0F9F7') → inserted as sgs-healthcare-color-section
+- CONFLICT: color-section-text (framework='#141414', client='#1A2E35') → inserted as sgs-healthcare-color-section-text
 - CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-healthcare-font-size-small
 - CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-healthcare-font-size-medium
 - CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as sgs-healthcare-font-size-large
@@ -173,7 +244,7 @@ Inserted: 0 | Skipped: 33 | Conflicts: 19
 
 ### sgs-mosque
 
-Inserted: 0 | Skipped: 33 | Conflicts: 19
+Inserted: 0 | Skipped: 33 | Conflicts: 24
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1A3D2B') → inserted as sgs-mosque-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#102519') → inserted as sgs-mosque-color-primary-dark
@@ -187,6 +258,11 @@ Inserted: 0 | Skipped: 33 | Conflicts: 19
 - CONFLICT: color-border (framework='#C9A84C', client='#C9A035') → inserted as sgs-mosque-color-border
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#92400E') → inserted as sgs-mosque-color-accent-text
 - CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as sgs-mosque-color-success
+- CONFLICT: color-heading (framework='#141414', client='#1A2E22') → inserted as sgs-mosque-color-heading
+- CONFLICT: color-link (framework='#141414', client='#92400E') → inserted as sgs-mosque-color-link
+- CONFLICT: color-link-hover (framework='#0F0F0F', client='#1A3D2B') → inserted as sgs-mosque-color-link-hover
+- CONFLICT: color-section (framework='#FFFFFF', client='#F5FBF7') → inserted as sgs-mosque-color-section
+- CONFLICT: color-section-text (framework='#141414', client='#1A2E22') → inserted as sgs-mosque-color-section-text
 - CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-mosque-font-size-small
 - CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-mosque-font-size-medium
 - CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as sgs-mosque-font-size-large
@@ -197,7 +273,7 @@ Inserted: 0 | Skipped: 33 | Conflicts: 19
 
 ### sgs-professional
 
-Inserted: 0 | Skipped: 33 | Conflicts: 19
+Inserted: 0 | Skipped: 33 | Conflicts: 24
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1E2D5E') → inserted as sgs-professional-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#131D3E') → inserted as sgs-professional-color-primary-dark
@@ -211,6 +287,11 @@ Inserted: 0 | Skipped: 33 | Conflicts: 19
 - CONFLICT: color-border (framework='#C9A84C', client='#8B4A6B') → inserted as sgs-professional-color-border
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#92400E') → inserted as sgs-professional-color-accent-text
 - CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as sgs-professional-color-success
+- CONFLICT: color-heading (framework='#141414', client='#1E2D5E') → inserted as sgs-professional-color-heading
+- CONFLICT: color-link (framework='#141414', client='#8B4A6B') → inserted as sgs-professional-color-link
+- CONFLICT: color-link-hover (framework='#0F0F0F', client='#1E2D5E') → inserted as sgs-professional-color-link-hover
+- CONFLICT: color-section (framework='#FFFFFF', client='#F8F7F9') → inserted as sgs-professional-color-section
+- CONFLICT: color-section-text (framework='#141414', client='#1E2D5E') → inserted as sgs-professional-color-section-text
 - CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-professional-font-size-small
 - CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-professional-font-size-medium
 - CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as sgs-professional-font-size-large

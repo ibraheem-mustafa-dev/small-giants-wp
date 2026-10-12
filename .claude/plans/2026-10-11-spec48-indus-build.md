@@ -125,11 +125,23 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
   existing slot map reaches is refused, not written (a slot map is shared by every client).
 
 ### Phase 2. Spec 32 framework halves (steps 9 to 12, session B)
-- [ ] **9. Palette slugs.** FR-32-14's done-when (five slugs in the framework palette and every snapshot with today's
-  rendering kept; the completeness gate and the push guard each with negative controls). Every snapshot is migrated (Decisions).
-- [ ] **10. Per-tier section padding and gutter tokens.** FR-32-15's done-when.
-- [ ] **11. `sgsCustomCss` hardening.** FR-32-20's done-when.
-- [ ] **12. Framework refresh loop** (Appendix B), once for 9 to 11, through the serial queue.
+- [x] **9. Palette slugs** (code done 2026-10-12, commits 7815a2b9b, 8caab9757, 25a761b5b). FR-32-14: the five slugs in
+  the framework and all nine snapshots, the completeness gate and push guard with negative controls, the container's
+  Section ground toggle. Four non-client snapshots linked below 4.5:1 and take the darker shade of the same hue (Spec 32
+  FR-32-14 status). The rendered colour check runs after step 12's deploy.
+- [x] **10. Per-tier section padding and gutter tokens** (code done 2026-10-12, commits 2c9f4f5ed, 039c21622,
+  2d4a1b876). FR-32-15: six tokens in every snapshot at today's values, `theme/sgs-theme/assets/css/layout-tokens.css`
+  as their reader, the wrapper's `.sgs-container--section-pad`, the placeholder, the push guard. The Indus 375/768/1440
+  parity check needs step 17's snapshot; the nested-section and token-change checks run after step 12's deploy.
+- [x] **11. `sgsCustomCss` hardening** (code done 2026-10-12, commit d6c1d3968; its gate folded in 2d4a1b876). FR-32-20: parsed and scoped per instance (PHP and JS twins
+  on one shared case table, one gate), stable instance key, core-block lift, `edit_css` save check, route label; three
+  raw unscoped readers removed (the nav link helper, `nav-drawer`), guarded. The canvas-versus-page and head-collector
+  checks run after step 12's deploy.
+- [ ] **12. Framework refresh loop** (Appendix B), once for 9 to 11, through the serial queue. Split agreed with the
+  route lane (2026-10-12): session B reseeds the DB from a detached HEAD worktree (first, because the deploy's
+  wiring-fingerprint gate needs the new `sgs/container::ground` row) and deploys `indus-test`; session A then refreshes
+  `local-indus`, syncs the build and runs stage 0, which recalibrates every stale Indus block (container and the nav
+  blocks included) under its lossy-write guard; session B then recalibrates only what `stage0 --plan` still lists.
 
 ### Phase 3. Stage 1 intake (steps 13 to 15, session C, then the join)
 - [ ] **13. Intake 4a.** FR-48-23 and FR-48-28 done-whens; FR-48-24's census with `construct-registry.json`; the
