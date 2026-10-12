@@ -110,6 +110,8 @@ class SandboxRunner:
         env["HOMEDRIVE"] = drive or ""
         env["HOMEPATH"] = tail or str(self.home)
         env.pop("XDG_CONFIG_HOME", None)
+        # A DB override would point a replayed migration past the redirected HOME at the real database.
+        env.pop("SGS_FRAMEWORK_DB", None)
         return env
 
     def run(self, args: list[str], **kwargs) -> subprocess.CompletedProcess:

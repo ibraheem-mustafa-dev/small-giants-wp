@@ -36,13 +36,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sqlite3
 import sys
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-DB_PATH = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+# $SGS_FRAMEWORK_DB points a run at a copy of the framework DB.
+DB_PATH = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
 OUTPUT_FILE = Path(__file__).resolve().parent.parent / "includes" / "generated-fx-effects.php"
 # Editor-side mirror of the per-effect facts the inspector needs (D416).
 JSON_OUTPUT_FILE = (
@@ -83,8 +85,17 @@ def _load_rows() -> list[tuple]:
         )
         raise SystemExit(1)
 
+    if not {"owned_properties", "panels"} <= {r[1] for r in cur.execute("PRAGMA table_info(fx_effects)")}:
+        con.close()
+        print(
+            f"[generate-fx-effects-php] fx_effects in {DB_PATH} has no owned_properties/panels columns — "
+            "run plugins/sgs-blocks/scripts/seed-motion-fx-registry.py first.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+
     rows = cur.execute(
-        "SELECT effect, plugin_set, owns_scroll_transform, pins, triggers, in_picker "
+        "SELECT effect, plugin_set, owns_scroll_transform, pins, triggers, in_picker, owned_properties, panels "
         "FROM fx_effects ORDER BY effect"
     ).fetchall()
     con.close()
@@ -161,7 +172,7 @@ def _render(rows: list[tuple]) -> tuple[str, str]:
         "\t\t$effects = array(",
     ]
 
-    for effect, plugin_set_json, owns_scroll_transform, pins, triggers, _in_picker in rows:
+    for effect, plugin_set_json, owns_scroll_transform, pins, triggers, _in_picker, _owned, _panels in rows:
         plugin_set = json.loads(plugin_set_json)
         owns_bool = "true" if int(owns_scroll_transform) else "false"
         pins_bool = "true" if int(pins) else "false"
@@ -227,14 +238,20 @@ def _render(rows: list[tuple]) -> tuple[str, str]:
     #                directions. Mirrored here rather than read from the DB so
     #                the gate needs no database — a clean checkout must still
     #                be able to run `npm run build`.
+    #   · owned_properties, panels — Spec 38A section 6.4: the channels and paint slots an
+    #                effect writes and the panels (hover, entrance, effects) that may offer it.
+    #                The editor's Effects panel and the refusal checks read them here instead of
+    #                keeping a second list.
     meta = {
         effect: {
             "pins": bool(int(pins)),
             "triggers": [t for t in str(triggers).split(",") if t],
             "owns_scroll_transform": bool(int(owns)),
             "in_picker": bool(int(in_picker)),
+            "owned_properties": json.loads(owned),
+            "panels": json.loads(panels),
         }
-        for effect, _plugin_set_json, owns, pins, triggers, in_picker in rows
+        for effect, _plugin_set_json, owns, pins, triggers, in_picker, owned, panels in rows
     }
     json_source = json.dumps(meta, indent="\t", sort_keys=True) + "\n"
 

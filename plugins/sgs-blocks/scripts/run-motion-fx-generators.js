@@ -2,7 +2,8 @@
 /**
  * run-motion-fx-generators.js — build-reproducibility wrapper for the Spec 38
  * motion-fx generator chain (seed-motion-fx-registry.py,
- * generate-fx-effects-php.py, generate-fx-qualifying-blocks.py).
+ * generate-fx-effects-php.py, generate-fx-qualifying-blocks.py,
+ * generate-motion-presets-json.py).
  *
  * WHY THIS EXISTS
  * ----------------------------------------------------------------------
@@ -18,9 +19,10 @@
  * error). Both were deleted from git as part of this fix — never resurrect
  * either path.
  *
- * The three generated artefacts these scripts produce
+ * The generated artefacts these scripts produce
  * (includes/generated-fx-effects.php, src/blocks/extensions/generated-fx-qualifying-blocks.json,
- * src/blocks/extensions/generated-fx-effect-meta.json) are already committed
+ * src/blocks/extensions/generated-fx-effect-meta.json, which now also carries each effect's
+ * owned_properties and panels, and src/components/motion/generated-motion-presets.json) are already committed
  * build INPUTS. (A fourth artefact, includes/generated-fx-qualifying-blocks.php, was a dead PHP
  * mirror with zero callers and was DELETED at 1ac16ec9 — the generator no longer emits it; only
  * the JSON twin above is live.) This wrapper's job:
@@ -32,6 +34,10 @@
  *        - seed-motion-fx-registry.py always runs (idempotent DB seeding).
  *        - generate-fx-effects-php.py runs with --check (that script owns
  *          its own regenerate-and-diff mode — see its own file).
+ *        - validate-motion-presets.mjs checks scripts/data/motion-presets.json against the motion
+ *          schema, then generate-motion-presets-json.py --check compares it with the committed
+ *          generated-motion-presets.json (the presets come from that file, which the DB table is
+ *          seeded from, so the generated copy does not depend on the DB's contents).
  *        - generate-fx-qualifying-blocks.py ALSO runs with --check (2026-07-31
  *          — it used to have no --check mode, so this wrapper emulated one
  *          externally via a snapshot/diff/restore dance; that external
@@ -52,11 +58,14 @@ const path = require("node:path");
 const SCRIPTS_DIR = __dirname;
 const PLUGIN_ROOT = path.resolve(SCRIPTS_DIR, "..");
 
-// Same path all three python generators use (Path.home() / ".agents" / "skills"
+// Same path the python generators use (Path.home() / ".agents" / "skills"
 // / "sgs-wp-engine" / "sgs-framework.db") — kept in sync manually since this is
 // a Node wrapper around Python scripts with no shared config file. If a
-// generator's DB_PATH ever changes, update this constant too.
-const DB_PATH = path.join(os.homedir(), ".agents", "skills", "sgs-wp-engine", "sgs-framework.db");
+// generator's DB_PATH ever changes, update this constant too. $SGS_FRAMEWORK_DB
+// points the whole chain (the child processes inherit it) at a copy.
+const DB_PATH =
+	process.env.SGS_FRAMEWORK_DB ||
+	path.join(os.homedir(), ".agents", "skills", "sgs-wp-engine", "sgs-framework.db");
 
 function log(msg) {
 	process.stdout.write(`[run-motion-fx-generators] ${msg}\n`);
@@ -64,6 +73,13 @@ function log(msg) {
 
 function runPython(scriptRelPath, extraArgs = []) {
 	execFileSync("python", [path.join(SCRIPTS_DIR, scriptRelPath), ...extraArgs], {
+		cwd: PLUGIN_ROOT,
+		stdio: "inherit",
+	});
+}
+
+function runNode(scriptRelPath, extraArgs = []) {
+	execFileSync(process.execPath, [path.join(SCRIPTS_DIR, scriptRelPath), ...extraArgs], {
 		cwd: PLUGIN_ROOT,
 		stdio: "inherit",
 	});
@@ -87,6 +103,10 @@ function main() {
 	//    exit) on failure, which propagates as this wrapper's own failure.
 	runPython("generate-fx-effects-php.py", ["--check"]);
 	runPython("generate-fx-qualifying-blocks.py", ["--check"]);
+
+	// 4. The motion presets: schema-validate the source file, then compare the generated editor copy.
+	runNode("validate-motion-presets.mjs");
+	runPython("generate-motion-presets-json.py", ["--check"]);
 
 	log("OK — motion-fx generator chain ran clean, no drift.");
 	return 0;

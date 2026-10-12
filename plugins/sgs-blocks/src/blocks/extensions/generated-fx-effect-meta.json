@@ -1,7 +1,13 @@
 {
 	"carousel-loop": {
 		"in_picker": false,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [],
 		"pins": false,
 		"triggers": [
 			"load"
@@ -9,7 +15,33 @@
 	},
 	"cursor-field": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [
+				"::before",
+				"injected"
+			],
+			"properties": [
+				"--sgs-cursor-field-radius",
+				"--sgs-ring-x",
+				"--sgs-ring-y",
+				"--sgs-ring-s"
+			],
+			"slots": [
+				{
+					"label": "Cursor field",
+					"slot": "::before"
+				},
+				{
+					"label": "Cursor field ring",
+					"slot": "injected",
+					"when": "ring"
+				}
+			]
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"hover"
@@ -17,7 +49,17 @@
 	},
 	"draggable": {
 		"in_picker": false,
+		"owned_properties": {
+			"channels": [
+				"transform"
+			],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"load"
@@ -25,7 +67,17 @@
 	},
 	"draw": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [],
+			"inner": "the SVG stroke",
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"entrance",
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"scroll",
@@ -35,7 +87,17 @@
 	},
 	"flip": {
 		"in_picker": false,
+		"owned_properties": {
+			"channels": [
+				"transform"
+			],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"scroll"
@@ -43,7 +105,15 @@
 	},
 	"generative-background": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"load"
@@ -51,7 +121,15 @@
 	},
 	"grid-dots": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"hover"
@@ -59,7 +137,21 @@
 	},
 	"horizontal-panel": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [
+				"scale",
+				"opacity"
+			],
+			"properties": [
+				"--sgs-focus-s",
+				"--sgs-focus-op"
+			],
+			"slots": []
+		},
 		"owns_scroll_transform": true,
+		"panels": [
+			"effects"
+		],
 		"pins": true,
 		"triggers": [
 			"scroll"
@@ -67,7 +159,15 @@
 	},
 	"image-sequence": {
 		"in_picker": false,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"scroll"
@@ -75,7 +175,15 @@
 	},
 	"lottie": {
 		"in_picker": false,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"load",
@@ -86,7 +194,20 @@
 	},
 	"magnet": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [
+				"translate"
+			],
+			"properties": [
+				"--sgs-mag-x",
+				"--sgs-mag-y"
+			],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"hover"
+		],
 		"pins": false,
 		"triggers": [
 			"hover"
@@ -94,7 +215,15 @@
 	},
 	"morph": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"scroll",
@@ -104,7 +233,17 @@
 	},
 	"motion-path": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [
+				"transform"
+			],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": true,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"scroll"
@@ -112,7 +251,13 @@
 	},
 	"page-transitions": {
 		"in_picker": false,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [],
 		"pins": false,
 		"triggers": [
 			"load"
@@ -120,7 +265,15 @@
 	},
 	"particles": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"hover"
@@ -128,7 +281,17 @@
 	},
 	"pin-scrub": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [
+				"transform"
+			],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": true,
+		"panels": [
+			"effects"
+		],
 		"pins": true,
 		"triggers": [
 			"scroll"
@@ -136,7 +299,17 @@
 	},
 	"scramble": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [],
+			"inner": "the text characters",
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"entrance",
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"scroll",
@@ -146,7 +319,13 @@
 	},
 	"scroll-smoother": {
 		"in_picker": false,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [],
 		"pins": false,
 		"triggers": [
 			"scroll"
@@ -154,7 +333,24 @@
 	},
 	"scrub": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [
+				"translate",
+				"rotate",
+				"scale",
+				"transform",
+				"opacity",
+				"filter",
+				"clip-path",
+				"background-position"
+			],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": true,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"scroll",
@@ -164,7 +360,16 @@
 	},
 	"split-reveal": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [],
+			"inner": "the unit spans it creates",
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": true,
+		"panels": [
+			"entrance"
+		],
 		"pins": false,
 		"triggers": [
 			"scroll",
@@ -174,7 +379,15 @@
 	},
 	"surface-treatment": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"load"
@@ -182,7 +395,27 @@
 	},
 	"wave-gradient": {
 		"in_picker": true,
+		"owned_properties": {
+			"channels": [
+				"::before",
+				"::after"
+			],
+			"properties": [],
+			"slots": [
+				{
+					"label": "Wave gradient",
+					"slot": "::before"
+				},
+				{
+					"label": "Wave gradient",
+					"slot": "::after"
+				}
+			]
+		},
 		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
 		"pins": false,
 		"triggers": [
 			"load"

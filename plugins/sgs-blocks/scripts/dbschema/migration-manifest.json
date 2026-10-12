@@ -3,7 +3,7 @@
   "source_dir": "plugins/sgs-blocks/scripts/migrations",
   "file_count_found": 3,
   "counts": {
-    "DB-MIGRATION": 30,
+    "DB-MIGRATION": 31,
     "NOT-A-DB-MIGRATION": 1,
     "UNCLASSIFIED": 0
   },
@@ -198,6 +198,12 @@
       "filename": "2026-09-10-add-tier-shape-column.py",
       "classification": "DB-MIGRATION",
       "evidence": "sqlite3.connect(DB) then ALTER TABLE block_attributes ADD COLUMN tier_shape TEXT. Idempotent — skips if column already present.",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-10-13-motion-presets-and-fx-columns.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) then CREATE TABLE motion_presets and ALTER TABLE fx_effects ADD COLUMN owned_properties and panels. Idempotent: skips a table or column already present. DB is $SGS_FRAMEWORK_DB when set.",
       "also_writes_files": false
     }
   ],

@@ -78,6 +78,13 @@ if not hasattr(_seeder_mod, "FX_EFFECTS"):
 
 FX_EFFECTS: list[dict] = _seeder_mod.FX_EFFECTS
 
+# Spec 38A section 6.4: owned_properties and panels are read from the motion schema by the same helper the seeder
+# uses, and motion_presets is compared with the source file the seeder loads it from (R-22-1, no second copy).
+_MOTION_COLUMNS = _seeder_mod.effect_columns()
+_EMPTY_COLUMNS = (_seeder_mod.EMPTY_OWNED, _seeder_mod.EMPTY_PANELS)
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "dbschema"))
+import motion_presets_seed as _presets_seed  # noqa: E402
+
 
 def _table_exists(conn: sqlite3.Connection) -> bool:
     return conn.execute(
@@ -130,9 +137,13 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
         for r in conn.execute("PRAGMA table_info(fx_effects)").fetchall()
     )
     in_picker_column = "in_picker" if has_in_picker else "0"
+    # owned_properties and panels (2026-10-13): an absent column reads as '' so it fails closed against the schema values.
+    fx_cols = {r[1] for r in conn.execute("PRAGMA table_info(fx_effects)").fetchall()}
+    owned_column = "owned_properties" if "owned_properties" in fx_cols else "''"
+    panels_column = "panels" if "panels" in fx_cols else "''"
     db_rows = conn.execute(
         "SELECT effect, tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story, "
-        f"scope, requires, pins, triggers, {creates_panel_column}, {in_picker_column} FROM fx_effects"
+        f"scope, requires, pins, triggers, {creates_panel_column}, {in_picker_column}, {owned_column}, {panels_column} FROM fx_effects"
     ).fetchall()
     db_by_effect = {r[0]: r for r in db_rows}
 
@@ -152,7 +163,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
         (
             _, db_tier, db_plugin_set_json, db_owns, db_reduced, db_editor,
             db_scope, db_requires, db_pins, db_triggers, db_creates_panel,
-            db_in_picker,
+            db_in_picker, db_owned, db_panels,
         ) = db_row
         try:
             db_plugin_set = json.loads(db_plugin_set_json)
@@ -221,6 +232,14 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
                 f"in_picker: db={db_in_picker!r} expected={expected.get('in_picker', 0)!r}"
             )
 
+        # Spec 38A section 6.4: the channels/slots an effect writes and the panels that may offer it come from the
+        # motion schema, so a hand edit, or a schema change without a reseed, shows up here.
+        want_owned, want_panels = _MOTION_COLUMNS.get(effect, _EMPTY_COLUMNS)
+        if db_owned != want_owned:
+            mismatches.append(f"owned_properties: db={db_owned!r} expected={want_owned!r}")
+        if db_panels != want_panels:
+            mismatches.append(f"panels: db={db_panels!r} expected={want_panels!r}")
+
         if mismatches:
             violations.append(Violation(
                 check="motion_fx_reseed",
@@ -245,7 +264,40 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             key=motion_fx_reseed_key(effect, "rogue"),
         ))
 
+    violations.extend(_motion_presets_violations(conn))
     return violations
+
+
+def _motion_presets_violations(conn: sqlite3.Connection) -> list[Violation]:
+    """C. motion_presets holds exactly the rows scripts/data/motion-presets.json lists, value for value."""
+    fix = (
+        "Run python plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py "
+        "(the migration 2026-10-13-motion-presets-and-fx-columns.py creates the table)."
+    )
+    if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='motion_presets'").fetchone() is None:
+        return [Violation(
+            check="motion_fx_reseed", block="motion_presets", detail="motion_presets table does not exist.", fix=fix,
+            key=motion_fx_reseed_key("motion_presets", "no-table"),
+        )]
+    want = {r[0]: r for r in _presets_seed._rows(_presets_seed.presets_file())}
+    have = {
+        r[0]: tuple(r) for r in conn.execute(
+            "SELECT " + ", ".join(_presets_seed._COLUMNS) + " FROM motion_presets"  # noqa: S608 - fixed column names
+        ).fetchall()
+    }
+    out: list[Violation] = []
+    for slug in sorted(set(want) | set(have)):
+        if slug not in have:
+            kind, detail = "missing-preset", f"motion_presets.{slug}: listed in motion-presets.json but missing from the DB."
+        elif slug not in want:
+            kind, detail = "rogue-preset", f"motion_presets.{slug}: in the DB but not listed in motion-presets.json."
+        elif have[slug] != want[slug]:
+            cols = [c for c, a, b in zip(_presets_seed._COLUMNS, have[slug], want[slug]) if a != b]
+            kind, detail = "preset-mismatch", f"motion_presets.{slug}: differs from motion-presets.json in {', '.join(cols)}."
+        else:
+            continue
+        out.append(Violation(check="motion_fx_reseed", block=slug, detail=detail, fix=fix, key=motion_fx_reseed_key(slug, kind)))
+    return out
 
 
 def _self_test() -> int:
@@ -321,6 +373,13 @@ def _self_test() -> int:
                     f"its fallback literal."
                 )
 
+        # owned_properties and panels (Spec 38A section 6.4), gated the same way.
+        for _new in ("owned_properties", "panels"):
+            if _new in _existing_cols:
+                columns.append(_new)
+            else:
+                print(f"[check_motion_fx_reseed --self-test] {_new}: column absent from this DB -- injection skipped.")
+
         unguarded: list[str] = []
         for column in columns:
             original = cur.execute(
@@ -376,6 +435,30 @@ def _self_test() -> int:
             f"[check_motion_fx_reseed --self-test] all {len(columns)} guarded column(s) "
             f"detected their injected drift — OK"
         )
+
+        # motion_presets: change one row's values, then plant a rogue row; each must be caught, then reverted.
+        if cur.execute("SELECT 1 FROM sqlite_master WHERE name='motion_presets'").fetchone():
+            slug = cur.execute("SELECT slug FROM motion_presets ORDER BY position LIMIT 1").fetchone()[0]
+            original = cur.execute("SELECT values_json FROM motion_presets WHERE slug = ?", (slug,)).fetchone()[0]
+            cur.execute("UPDATE motion_presets SET values_json = ? WHERE slug = ?", ('{"selftest":1}', slug))
+            con.commit()
+            caught_values = any(v.block == slug for v in run(con))
+            cur.execute("UPDATE motion_presets SET values_json = ? WHERE slug = ?", (original, slug))
+            cur.execute(
+                "INSERT INTO motion_presets (slug, panel, family, kind, label, values_json, trigger, target_level, source) "
+                "VALUES ('selftest-rogue', 'hover', 'selftest', 'preset', 'x', '{}', 'hover', 'part', 'selftest')"
+            )
+            con.commit()
+            caught_rogue = any(v.block == "selftest-rogue" for v in run(con))
+            cur.execute("DELETE FROM motion_presets WHERE slug = 'selftest-rogue'")
+            con.commit()
+            print(
+                f"[check_motion_fx_reseed --self-test] motion_presets: changed values caught={caught_values}, "
+                f"rogue row caught={caught_rogue}; reverted"
+            )
+            if not (caught_values and caught_rogue):
+                print("[check_motion_fx_reseed --self-test] FAIL -- the motion_presets comparison did not detect injected drift.")
+                return 1
 
         # Final: confirm the revert actually restored the clean state.
         post_revert_violations = run(con)

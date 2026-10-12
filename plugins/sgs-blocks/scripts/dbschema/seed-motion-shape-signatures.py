@@ -47,9 +47,10 @@ Queried `sgs-framework.db` directly:
     magnet, particles, grid-dots — six JS/canvas-driven interaction effects
     with NO fixed CSS keyframe shape (var()-only magnitudes, or canvas-drawn).
     Deliberately NOT seeded here — see "Documented gaps" below.
-  * `animation_tokens` (8 rows: fade-in/fade-out/slide-up/zoom-in/bounce/
-    pulse/spin/fade-up) is a SEPARATE, older token table, not the live
-    entrance-preset system a real draft's `sgsAnimation` attribute drives.
+  * The `motion_presets` table (its `keyframe` rows are the eight former
+    `animation_tokens` presets) is authoring data for the editor and the
+    cloner, not the live entrance-preset system a real draft's `sgsAnimation`
+    attribute drives; this script reads no DB table, only the files below.
   * The REAL, live entrance-preset closed vocabulary (confirmed via
     `plugins/sgs-blocks/src/components/AnimationControl.js`) is exactly 16
     values — matches the brainstorm doc's "entrance x16" figure precisely:
@@ -116,7 +117,8 @@ GALLERY_BLOCK_JSON = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks" / "
 # Same resolution convention as ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py
 # (DB_PATH = <script dir>/../sgs-framework.db) — this script lives elsewhere,
 # so the path is spelled out via the user's home directory instead.
-DB_PATH = os.path.expanduser(os.path.join("~", ".claude", "skills", "sgs-wp-engine", "sgs-framework.db"))
+# $SGS_FRAMEWORK_DB points a run at a copy of the framework DB.
+DB_PATH = os.environ.get("SGS_FRAMEWORK_DB") or os.path.expanduser(os.path.join("~", ".claude", "skills", "sgs-wp-engine", "sgs-framework.db"))
 
 TABLE = "motion_shape_signatures"
 

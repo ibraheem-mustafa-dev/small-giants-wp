@@ -1,0 +1,1747 @@
+{
+	"presets": [
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-none",
+			"intensity": null,
+			"kind": "preset",
+			"label": "None",
+			"panel": "hover",
+			"slug": "hover-none",
+			"target": "part",
+			"trigger": "hover",
+			"values": {}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-lift",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Lift",
+			"panel": "hover",
+			"slug": "hover-lift",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": "token:duration.fast",
+				"easing": "token:easing.ease-out",
+				"translateY": "-token:distance.sm"
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-scale",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Scale",
+			"panel": "hover",
+			"slug": "hover-scale",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": "token:duration.fast",
+				"easing": "token:easing.ease-out",
+				"scale": 1.05
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-rotate",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Rotate",
+			"panel": "hover",
+			"slug": "hover-rotate",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": "token:duration.fast",
+				"easing": "token:easing.ease-out",
+				"rotate": 3
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-translate",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Translate",
+			"panel": "hover",
+			"slug": "hover-translate",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": "token:duration.fast",
+				"easing": "token:easing.ease-out",
+				"translateX": "token:distance.md"
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-scale",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Image zoom",
+			"panel": "hover",
+			"slug": "hover-image-zoom",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": "token:duration.medium",
+				"easing": "token:easing.ease-out",
+				"scale": 1.05
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-indent",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Indent",
+			"panel": "hover",
+			"slug": "hover-indent",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": "token:duration.fast",
+				"easing": "token:easing.ease-out",
+				"indent": "token:distance.md"
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-up",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Fade up",
+			"panel": "entrance",
+			"slug": "entrance-fade-up",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"opacity": 0,
+					"translateY": "token:entrance.distance"
+				},
+				"to": {
+					"opacity": 1,
+					"translateY": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-down",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Fade down",
+			"panel": "entrance",
+			"slug": "entrance-fade-down",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"opacity": 0,
+					"translateY": "-token:entrance.distance"
+				},
+				"to": {
+					"opacity": 1,
+					"translateY": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-in",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Fade in",
+			"panel": "entrance",
+			"slug": "entrance-fade-in",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"opacity": 0
+				},
+				"to": {
+					"opacity": 1
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-left",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Fade left",
+			"panel": "entrance",
+			"slug": "entrance-fade-left",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"opacity": 0,
+					"translateX": "token:entrance.distance"
+				},
+				"to": {
+					"opacity": 1,
+					"translateX": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-right",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Fade right",
+			"panel": "entrance",
+			"slug": "entrance-fade-right",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"opacity": 0,
+					"translateX": "-token:entrance.distance"
+				},
+				"to": {
+					"opacity": 1,
+					"translateX": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-up",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Slide up",
+			"panel": "entrance",
+			"slug": "entrance-slide-up",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"translateY": 100
+				},
+				"to": {
+					"translateY": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-down",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Slide down",
+			"panel": "entrance",
+			"slug": "entrance-slide-down",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"translateY": -100
+				},
+				"to": {
+					"translateY": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-left",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Slide left",
+			"panel": "entrance",
+			"slug": "entrance-slide-left",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"translateX": -100
+				},
+				"to": {
+					"translateX": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-right",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Slide right",
+			"panel": "entrance",
+			"slug": "entrance-slide-right",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"translateX": 100
+				},
+				"to": {
+					"translateX": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-scale-in",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Scale in",
+			"panel": "entrance",
+			"slug": "entrance-scale-in",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"opacity": 0,
+					"scale": 0.9
+				},
+				"to": {
+					"opacity": 1,
+					"scale": 1
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-scale-out",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Scale out",
+			"panel": "entrance",
+			"slug": "entrance-scale-out",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"opacity": 0,
+					"scale": 1.1
+				},
+				"to": {
+					"opacity": 1,
+					"scale": 1
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-rotate-in",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Rotate in",
+			"panel": "entrance",
+			"slug": "entrance-rotate-in",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"opacity": 0,
+					"rotate": -10
+				},
+				"to": {
+					"opacity": 1,
+					"rotate": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-blur-in",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Blur in",
+			"panel": "entrance",
+			"slug": "entrance-blur-in",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"blur": 8,
+					"opacity": 0
+				},
+				"to": {
+					"blur": 0,
+					"opacity": 1
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-bounce-in",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Bounce in",
+			"panel": "entrance",
+			"slug": "entrance-bounce-in",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:easing.spring-bouncy",
+				"from": {
+					"opacity": 0,
+					"scale": 0.3
+				},
+				"to": {
+					"opacity": 1,
+					"scale": 1
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-reveal-up",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Reveal up",
+			"panel": "entrance",
+			"slug": "entrance-reveal-up",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"clip": 100
+				},
+				"to": {
+					"clip": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "keyframe-fade-in",
+			"intensity": null,
+			"kind": "keyframe",
+			"label": "Fade in (keyframe)",
+			"panel": "entrance",
+			"slug": "keyframe-fade-in",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:duration.medium",
+				"easing": "token:easing.default",
+				"from": {
+					"opacity": 0
+				},
+				"to": {
+					"opacity": 1
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "keyframe-fade-out",
+			"intensity": null,
+			"kind": "keyframe",
+			"label": "Fade out (keyframe)",
+			"panel": "entrance",
+			"slug": "keyframe-fade-out",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:duration.medium",
+				"easing": "token:easing.default",
+				"from": {
+					"opacity": 1
+				},
+				"to": {
+					"opacity": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "keyframe-slide-up",
+			"intensity": null,
+			"kind": "keyframe",
+			"label": "Slide up (keyframe)",
+			"panel": "entrance",
+			"slug": "keyframe-slide-up",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": 400,
+				"easing": "token:easing.ease-out",
+				"from": {
+					"opacity": 0,
+					"translateY": "token:distance.lg"
+				},
+				"to": {
+					"opacity": 1,
+					"translateY": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "keyframe-zoom-in",
+			"intensity": null,
+			"kind": "keyframe",
+			"label": "Zoom in (keyframe)",
+			"panel": "entrance",
+			"slug": "keyframe-zoom-in",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:duration.slow",
+				"easing": "token:easing.ease-out",
+				"from": {
+					"opacity": 0,
+					"scale": 0
+				},
+				"to": {
+					"opacity": 1,
+					"scale": 1
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "keyframe-bounce",
+			"intensity": null,
+			"kind": "keyframe",
+			"label": "Bounce (keyframe)",
+			"panel": "entrance",
+			"slug": "keyframe-bounce",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:duration.slow",
+				"easing": "ease-in-out",
+				"keyframes": [
+					{
+						"offset": 0,
+						"translateY": 0
+					},
+					{
+						"offset": 50,
+						"translateY": "-token:distance.md"
+					},
+					{
+						"offset": 100,
+						"translateY": 0
+					}
+				]
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "keyframe-pulse",
+			"intensity": null,
+			"kind": "keyframe",
+			"label": "Pulse (keyframe)",
+			"panel": "entrance",
+			"slug": "keyframe-pulse",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": 2000,
+				"easing": "ease-in-out",
+				"keyframes": [
+					{
+						"offset": 0,
+						"opacity": 1,
+						"scale": 1
+					},
+					{
+						"offset": 50,
+						"opacity": 0.8,
+						"scale": 1.05
+					},
+					{
+						"offset": 100,
+						"opacity": 1,
+						"scale": 1
+					}
+				]
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "keyframe-spin",
+			"intensity": null,
+			"kind": "keyframe",
+			"label": "Spin (keyframe)",
+			"panel": "entrance",
+			"slug": "keyframe-spin",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:duration.extra-slow",
+				"easing": "token:easing.linear",
+				"from": {
+					"rotate": 0
+				},
+				"to": {
+					"rotate": 360
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "keyframe-fade-up",
+			"intensity": null,
+			"kind": "keyframe",
+			"label": "Fade up (keyframe)",
+			"panel": "entrance",
+			"slug": "keyframe-fade-up",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"opacity": 0,
+					"translateY": "token:entrance.distance"
+				},
+				"to": {
+					"opacity": 1,
+					"translateY": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": "scrub",
+			"family": "scrub",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Scrub: Subtle",
+			"panel": "effects",
+			"slug": "scrub-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"rows": [
+					{
+						"from": 0,
+						"property": "opacity",
+						"to": 1
+					},
+					{
+						"from": 16,
+						"property": "y",
+						"to": 0
+					}
+				]
+			}
+		},
+		{
+			"devices": {},
+			"effect": "scrub",
+			"family": "scrub",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Scrub: Standard",
+			"panel": "effects",
+			"slug": "scrub-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"rows": [
+					{
+						"from": 0,
+						"property": "opacity",
+						"to": 1
+					},
+					{
+						"from": 40,
+						"property": "y",
+						"to": 0
+					}
+				]
+			}
+		},
+		{
+			"devices": {},
+			"effect": "scrub",
+			"family": "scrub",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Scrub: Bold",
+			"panel": "effects",
+			"slug": "scrub-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"rows": [
+					{
+						"from": 0,
+						"property": "opacity",
+						"to": 1
+					},
+					{
+						"from": 80,
+						"property": "y",
+						"to": 0
+					},
+					{
+						"from": 0.95,
+						"property": "scale",
+						"to": 1
+					}
+				]
+			}
+		},
+		{
+			"devices": {},
+			"effect": "pin-scrub",
+			"family": "pin-scrub",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Pin scrub: Subtle",
+			"panel": "effects",
+			"slug": "pin-scrub-subtle",
+			"target": "block",
+			"trigger": "scroll",
+			"values": {
+				"rows": [
+					{
+						"from": 0,
+						"property": "opacity",
+						"to": 1
+					},
+					{
+						"from": 16,
+						"property": "y",
+						"to": 0
+					}
+				]
+			}
+		},
+		{
+			"devices": {},
+			"effect": "pin-scrub",
+			"family": "pin-scrub",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Pin scrub: Standard",
+			"panel": "effects",
+			"slug": "pin-scrub-standard",
+			"target": "block",
+			"trigger": "scroll",
+			"values": {
+				"rows": [
+					{
+						"from": 0,
+						"property": "opacity",
+						"to": 1
+					},
+					{
+						"from": 40,
+						"property": "y",
+						"to": 0
+					}
+				]
+			}
+		},
+		{
+			"devices": {},
+			"effect": "pin-scrub",
+			"family": "pin-scrub",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Pin scrub: Bold",
+			"panel": "effects",
+			"slug": "pin-scrub-bold",
+			"target": "block",
+			"trigger": "scroll",
+			"values": {
+				"rows": [
+					{
+						"from": 0,
+						"property": "opacity",
+						"to": 1
+					},
+					{
+						"from": 80,
+						"property": "y",
+						"to": 0
+					}
+				]
+			}
+		},
+		{
+			"devices": {},
+			"effect": "split-reveal",
+			"family": "split-reveal",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Split reveal: Subtle",
+			"panel": "entrance",
+			"slug": "split-reveal-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": "0.3em"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": "split-reveal",
+			"family": "split-reveal",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Split reveal: Standard",
+			"panel": "entrance",
+			"slug": "split-reveal-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": "0.6em"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": "split-reveal",
+			"family": "split-reveal",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Split reveal: Bold",
+			"panel": "entrance",
+			"slug": "split-reveal-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": "1em"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": "scramble",
+			"family": "scramble",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Scramble: Subtle",
+			"panel": "entrance",
+			"slug": "scramble-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": 800
+			}
+		},
+		{
+			"devices": {},
+			"effect": "scramble",
+			"family": "scramble",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Scramble: Standard",
+			"panel": "entrance",
+			"slug": "scramble-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": 1200
+			}
+		},
+		{
+			"devices": {},
+			"effect": "scramble",
+			"family": "scramble",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Scramble: Bold",
+			"panel": "entrance",
+			"slug": "scramble-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": 1800
+			}
+		},
+		{
+			"devices": {},
+			"effect": "draw",
+			"family": "draw",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Draw: Subtle",
+			"panel": "entrance",
+			"slug": "draw-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": 600
+			}
+		},
+		{
+			"devices": {},
+			"effect": "draw",
+			"family": "draw",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Draw: Standard",
+			"panel": "entrance",
+			"slug": "draw-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": 1000
+			}
+		},
+		{
+			"devices": {},
+			"effect": "draw",
+			"family": "draw",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Draw: Bold",
+			"panel": "entrance",
+			"slug": "draw-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": 1600
+			}
+		},
+		{
+			"devices": {},
+			"effect": "morph",
+			"family": "morph",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Morph: Subtle",
+			"panel": "effects",
+			"slug": "morph-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": 500
+			}
+		},
+		{
+			"devices": {},
+			"effect": "morph",
+			"family": "morph",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Morph: Standard",
+			"panel": "effects",
+			"slug": "morph-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": 800
+			}
+		},
+		{
+			"devices": {},
+			"effect": "morph",
+			"family": "morph",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Morph: Bold",
+			"panel": "effects",
+			"slug": "morph-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"duration": 1200
+			}
+		},
+		{
+			"devices": {},
+			"effect": "motion-path",
+			"family": "motion-path",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Motion path: Subtle",
+			"panel": "effects",
+			"slug": "motion-path-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"rangeEnd": 0.5
+			}
+		},
+		{
+			"devices": {},
+			"effect": "motion-path",
+			"family": "motion-path",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Motion path: Standard",
+			"panel": "effects",
+			"slug": "motion-path-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"rangeEnd": 1
+			}
+		},
+		{
+			"devices": {},
+			"effect": "motion-path",
+			"family": "motion-path",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Motion path: Bold",
+			"panel": "effects",
+			"slug": "motion-path-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"rangeEnd": 1
+			}
+		},
+		{
+			"devices": {},
+			"effect": "cursor-field",
+			"family": "cursor-field",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Cursor field: Subtle",
+			"panel": "effects",
+			"slug": "cursor-field-subtle",
+			"target": "surface",
+			"trigger": "hover",
+			"values": {
+				"radius": 160
+			}
+		},
+		{
+			"devices": {},
+			"effect": "cursor-field",
+			"family": "cursor-field",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Cursor field: Standard",
+			"panel": "effects",
+			"slug": "cursor-field-standard",
+			"target": "surface",
+			"trigger": "hover",
+			"values": {
+				"radius": 280
+			}
+		},
+		{
+			"devices": {},
+			"effect": "cursor-field",
+			"family": "cursor-field",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Cursor field: Bold",
+			"panel": "effects",
+			"slug": "cursor-field-bold",
+			"target": "surface",
+			"trigger": "hover",
+			"values": {
+				"radius": 480
+			}
+		},
+		{
+			"devices": {},
+			"effect": "magnet",
+			"family": "magnet",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Magnet: Subtle",
+			"panel": "hover",
+			"slug": "magnet-subtle",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"maxPullX": 4,
+				"maxPullY": 4,
+				"radius": 120
+			}
+		},
+		{
+			"devices": {},
+			"effect": "magnet",
+			"family": "magnet",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Magnet: Standard",
+			"panel": "hover",
+			"slug": "magnet-standard",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"maxPullX": 10,
+				"maxPullY": 10,
+				"radius": 120
+			}
+		},
+		{
+			"devices": {},
+			"effect": "magnet",
+			"family": "magnet",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Magnet: Bold",
+			"panel": "hover",
+			"slug": "magnet-bold",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"maxPullX": 24,
+				"maxPullY": 24,
+				"radius": 160
+			}
+		},
+		{
+			"devices": {},
+			"effect": "particles",
+			"family": "particles",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Particles: Subtle",
+			"panel": "effects",
+			"slug": "particles-subtle",
+			"target": "surface",
+			"trigger": "hover",
+			"values": {
+				"speed": 0.5
+			}
+		},
+		{
+			"devices": {},
+			"effect": "particles",
+			"family": "particles",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Particles: Standard",
+			"panel": "effects",
+			"slug": "particles-standard",
+			"target": "surface",
+			"trigger": "hover",
+			"values": {
+				"speed": 1
+			}
+		},
+		{
+			"devices": {},
+			"effect": "particles",
+			"family": "particles",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Particles: Bold",
+			"panel": "effects",
+			"slug": "particles-bold",
+			"target": "surface",
+			"trigger": "hover",
+			"values": {
+				"speed": 1.6
+			}
+		},
+		{
+			"devices": {},
+			"effect": "parallax",
+			"family": "parallax",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Parallax: Subtle",
+			"panel": "effects",
+			"slug": "parallax-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"speedRatio": 0.05
+			}
+		},
+		{
+			"devices": {},
+			"effect": "parallax",
+			"family": "parallax",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Parallax: Standard",
+			"panel": "effects",
+			"slug": "parallax-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"speedRatio": 0.1
+			}
+		},
+		{
+			"devices": {},
+			"effect": "parallax",
+			"family": "parallax",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Parallax: Bold",
+			"panel": "effects",
+			"slug": "parallax-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"speedRatio": 0.2
+			}
+		},
+		{
+			"devices": {},
+			"effect": "tilt",
+			"family": "tilt",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Tilt: Subtle",
+			"panel": "hover",
+			"slug": "tilt-subtle",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"maxAngle": 4
+			}
+		},
+		{
+			"devices": {},
+			"effect": "tilt",
+			"family": "tilt",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Tilt: Standard",
+			"panel": "hover",
+			"slug": "tilt-standard",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"maxAngle": 8
+			}
+		},
+		{
+			"devices": {},
+			"effect": "tilt",
+			"family": "tilt",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Tilt: Bold",
+			"panel": "hover",
+			"slug": "tilt-bold",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"maxAngle": 12
+			}
+		},
+		{
+			"devices": {},
+			"effect": "ripple",
+			"family": "ripple",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Ripple: Subtle",
+			"panel": "effects",
+			"slug": "ripple-subtle",
+			"target": "part",
+			"trigger": "click",
+			"values": {
+				"sizeFactor": 1.6
+			}
+		},
+		{
+			"devices": {},
+			"effect": "ripple",
+			"family": "ripple",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Ripple: Standard",
+			"panel": "effects",
+			"slug": "ripple-standard",
+			"target": "part",
+			"trigger": "click",
+			"values": {
+				"sizeFactor": 2.2
+			}
+		},
+		{
+			"devices": {},
+			"effect": "ripple",
+			"family": "ripple",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Ripple: Bold",
+			"panel": "effects",
+			"slug": "ripple-bold",
+			"target": "part",
+			"trigger": "click",
+			"values": {
+				"sizeFactor": 2.8
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-scale",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Hover scale: Subtle",
+			"panel": "hover",
+			"slug": "hover-scale-subtle",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"scale": 1.02
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-scale",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Hover scale: Standard",
+			"panel": "hover",
+			"slug": "hover-scale-standard",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"scale": 1.05
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-scale",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Hover scale: Bold",
+			"panel": "hover",
+			"slug": "hover-scale-bold",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"scale": 1.1
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-lift",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Hover lift: Subtle",
+			"panel": "hover",
+			"slug": "hover-lift-subtle",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"translateY": "-token:distance.xs"
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-lift",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Hover lift: Standard",
+			"panel": "hover",
+			"slug": "hover-lift-standard",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"translateY": "-token:distance.sm"
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-lift",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Hover lift: Bold",
+			"panel": "hover",
+			"slug": "hover-lift-bold",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"translateY": "-token:distance.md"
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-translate",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Hover translate: Subtle",
+			"panel": "hover",
+			"slug": "hover-translate-subtle",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"translateX": "token:distance.xs"
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-translate",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Hover translate: Standard",
+			"panel": "hover",
+			"slug": "hover-translate-standard",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"translateX": "token:distance.md"
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-translate",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Hover translate: Bold",
+			"panel": "hover",
+			"slug": "hover-translate-bold",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"translateX": "token:distance.lg"
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-rotate",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Hover rotate: Subtle",
+			"panel": "hover",
+			"slug": "hover-rotate-subtle",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"rotate": 1
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-rotate",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Hover rotate: Standard",
+			"panel": "hover",
+			"slug": "hover-rotate-standard",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"rotate": 3
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-rotate",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Hover rotate: Bold",
+			"panel": "hover",
+			"slug": "hover-rotate-bold",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"rotate": 6
+			}
+		},
+		{
+			"devices": {},
+			"effect": "sheen",
+			"family": "sheen",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Sheen: Subtle",
+			"panel": "hover",
+			"slug": "sheen-subtle",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"opacity": 0.2
+			}
+		},
+		{
+			"devices": {},
+			"effect": "sheen",
+			"family": "sheen",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Sheen: Standard",
+			"panel": "hover",
+			"slug": "sheen-standard",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"opacity": 0.35
+			}
+		},
+		{
+			"devices": {},
+			"effect": "sheen",
+			"family": "sheen",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Sheen: Bold",
+			"panel": "hover",
+			"slug": "sheen-bold",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"opacity": 0.5
+			}
+		},
+		{
+			"devices": {},
+			"effect": "ambient-float",
+			"family": "ambient-float",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Ambient float: Subtle",
+			"panel": "effects",
+			"slug": "ambient-float-subtle",
+			"target": "part",
+			"trigger": "load",
+			"values": {
+				"travel": 6
+			}
+		},
+		{
+			"devices": {},
+			"effect": "ambient-float",
+			"family": "ambient-float",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Ambient float: Standard",
+			"panel": "effects",
+			"slug": "ambient-float-standard",
+			"target": "part",
+			"trigger": "load",
+			"values": {
+				"travel": 12
+			}
+		},
+		{
+			"devices": {},
+			"effect": "ambient-float",
+			"family": "ambient-float",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Ambient float: Bold",
+			"panel": "effects",
+			"slug": "ambient-float-bold",
+			"target": "part",
+			"trigger": "load",
+			"values": {
+				"travel": 20
+			}
+		},
+		{
+			"devices": {},
+			"effect": "ken-burns",
+			"family": "ken-burns",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Ken Burns: Subtle",
+			"panel": "effects",
+			"slug": "ken-burns-subtle",
+			"target": "surface",
+			"trigger": "load",
+			"values": {
+				"zoomStart": 104
+			}
+		},
+		{
+			"devices": {},
+			"effect": "ken-burns",
+			"family": "ken-burns",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Ken Burns: Standard",
+			"panel": "effects",
+			"slug": "ken-burns-standard",
+			"target": "surface",
+			"trigger": "load",
+			"values": {
+				"zoomStart": 108
+			}
+		},
+		{
+			"devices": {},
+			"effect": "ken-burns",
+			"family": "ken-burns",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Ken Burns: Bold",
+			"panel": "effects",
+			"slug": "ken-burns-bold",
+			"target": "surface",
+			"trigger": "load",
+			"values": {
+				"zoomStart": 115
+			}
+		},
+		{
+			"devices": {},
+			"effect": "svg-loop",
+			"family": "svg-loop",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "SVG loop: Subtle",
+			"panel": "effects",
+			"slug": "svg-loop-subtle",
+			"target": "part",
+			"trigger": "load",
+			"values": {
+				"amplitude": 0.5
+			}
+		},
+		{
+			"devices": {},
+			"effect": "svg-loop",
+			"family": "svg-loop",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "SVG loop: Standard",
+			"panel": "effects",
+			"slug": "svg-loop-standard",
+			"target": "part",
+			"trigger": "load",
+			"values": {
+				"amplitude": 1
+			}
+		},
+		{
+			"devices": {},
+			"effect": "svg-loop",
+			"family": "svg-loop",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "SVG loop: Bold",
+			"panel": "effects",
+			"slug": "svg-loop-bold",
+			"target": "part",
+			"trigger": "load",
+			"values": {
+				"amplitude": 1.6
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "nav-panel-item",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Nav panel item travel: Subtle",
+			"panel": "entrance",
+			"slug": "nav-panel-item-subtle",
+			"target": "part",
+			"trigger": "open",
+			"values": {
+				"from": {
+					"translateY": "token:distance.md"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "nav-panel-item",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Nav panel item travel: Standard",
+			"panel": "entrance",
+			"slug": "nav-panel-item-standard",
+			"target": "part",
+			"trigger": "open",
+			"values": {
+				"from": {
+					"translateY": "token:distance.lg"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "nav-panel-item",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Nav panel item travel: Bold",
+			"panel": "entrance",
+			"slug": "nav-panel-item-bold",
+			"target": "part",
+			"trigger": "open",
+			"values": {
+				"from": {
+					"translateY": "token:distance.xl"
+				}
+			}
+		}
+	]
+}

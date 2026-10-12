@@ -13,6 +13,8 @@ the source of truth; the DB tables are the runtime query target, R-31-1):
                             rostered attrs; only a column, never a whole table)
   html_tag_to_core_block <- atomic-tag-map.json      (bare HTML tag -> SGS block slug; the file
                             is the single source of the key set, so keys it lacks are deleted)
+  motion_presets         <- motion-presets.json      (validated against the motion schema first; a bad
+                            preset aborts with a non-zero exit; rows the file lacks are deleted)
 
 Also exposes ``fx_attr_roster()``, the full ``fx*`` attribute roster read from
 ``includes/fx-attributes.php`` and ``includes/extension-attributes.generated.php``.
@@ -34,6 +36,9 @@ import re
 import sqlite3
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from motion_presets_seed import MotionPresetError, seed_motion_presets  # noqa: E402
 
 _SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 _DATA_DIR = _SCRIPTS_DIR / "data"
@@ -100,9 +105,7 @@ def _warn(message: str) -> None:
     sys.stderr.write(f"[seed_reference_data] {message}\n")
 
 
-# ---------------------------------------------------------------------------
-# roles
-# ---------------------------------------------------------------------------
+# --- roles ---
 
 def _load_roles_seed() -> dict[str, tuple[str, str]]:
     """``{role_name: (classification, description)}`` from roles.json.
@@ -163,9 +166,7 @@ def _seed_roles(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
-# ---------------------------------------------------------------------------
-# modifier_suffixes
-# ---------------------------------------------------------------------------
+# --- modifier_suffixes ---
 
 def _load_modifier_suffixes_seed() -> list[tuple[str, str, str | None]]:
     """The ordered ``[(suffix, kind, notes)]`` vocabulary; ``[]`` when the file is unreadable."""
@@ -204,9 +205,7 @@ def _seed_modifier_suffixes(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
-# ---------------------------------------------------------------------------
-# property_suffixes and slots
-# ---------------------------------------------------------------------------
+# --- property_suffixes and slots ---
 
 def _load_seeded_table(table: str) -> list[tuple]:
     """The ordered row list for ``table`` from its data file.
@@ -288,9 +287,7 @@ def _seed_property_suffixes_kind_override(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
-# ---------------------------------------------------------------------------
-# scalar-media role re-assertion
-# ---------------------------------------------------------------------------
+# --- scalar-media role re-assertion ---
 
 def _load_scalar_media_roles() -> list[tuple[str, str]]:
     """The ``[(block_slug, attr_name)]`` roster to re-assert; ``[]`` when the file is unreadable.
@@ -369,13 +366,7 @@ def _seed_scalar_media_roles(conn: sqlite3.Connection) -> None:
             )
 
 
-# ---------------------------------------------------------------------------
-# Public API
-# ---------------------------------------------------------------------------
-
-# ---------------------------------------------------------------------------
-# html_tag_to_core_block
-# ---------------------------------------------------------------------------
+# --- html_tag_to_core_block ---
 
 def _load_atomic_tag_seed() -> dict[str, tuple[str, str]]:
     """Load ``{html_tag: (target_sgs_slug, note)}`` from atomic-tag-map.json.
@@ -438,6 +429,7 @@ def seed_all(db_path: Path | str | None = None) -> None:
             ("property_suffixes.kind_override", _seed_property_suffixes_kind_override),
             ("scalar-media roles", _seed_scalar_media_roles),
             ("html_tag_to_core_block", _seed_html_tag_to_core_block),
+            ("motion_presets", seed_motion_presets),
         )
         for label, step in steps:
             try:
@@ -492,7 +484,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Seed the framework DB's reference tables.")
     parser.add_argument("--db", type=Path, help="Database to seed (default: $SGS_FRAMEWORK_DB or the shared DB).")
     args = parser.parse_args()
-    seed_all(args.db)
+    try:
+        seed_all(args.db)
+    except MotionPresetError as exc:
+        _warn(f"motion_presets refused: {exc}")
+        return 1
     return 0
 
 

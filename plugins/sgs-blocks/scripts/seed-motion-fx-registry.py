@@ -56,17 +56,11 @@ WHAT THIS SEEDS (§6 numbered list — each item below maps 1:1)
 4. `modifier_suffixes` — EXPLICITLY no new rows in v1 (§6 item 4: "fx params are
    base-tier; a per-tier fx value is a v2 candidate"). Not touched here, by design.
 
-5. `animation_tokens` reconciliation (§6 item 5) — add the missing `fade-up` row
-   (verified absent from the live 7-row table before writing this: fade-in, fade-out,
-   slide-up, zoom-in, bounce, pulse, spin — no fade-up) and wire `used_by` for every
-   token from the real `sgsAnimation` default-value usage recorded in block_attributes
-   (DB-first, not invented — see USED_BY reconciliation below). NOTE: the spec text
-   says fade-up is "used as a default by 10 blocks" — the live DB query below found 8
-   (sgs/card-grid, sgs/google-reviews, sgs/info-box, sgs/post-grid, sgs/process-steps,
-   sgs/team-member, sgs/testimonial, sgs/trustpilot-reviews). This is a spec-vs-DB
-   discrepancy (the "10" figure does not match ground truth) — flagged in the final
-   report per the project's fact-check-your-own-diagnostic-output rule; the seeder
-   uses the DB-verified 8, not the spec's estimate.
+5. `fx_effects.owned_properties` and `fx_effects.panels` (Spec 38A section 6.4) -- the channels and paint
+   slots each effect writes and the panels that may offer it, read from schemas/motion.schema.json by
+   dbschema/motion_registry_columns.py (never hand-typed here). `motion_presets` is seeded by
+   dbschema/seed_reference_data.py from scripts/data/motion-presets.json, and the retired
+   `animation_tokens` table is gone (its keyframe rows are `motion_presets` rows of kind 'keyframe').
 
 6. `design_tokens.token_type` CHECK migration (motion duration/easing tokens) —
    EXPLICITLY deferred (§6 item 6: "Wave A ships without it — theme.json
@@ -87,6 +81,7 @@ Run after any DB rebuild. Safe to re-run — a clean run reports zero changes bo
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 import sys
 from pathlib import Path
@@ -94,8 +89,10 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 # Canonical SGS DB (hard-linked between ~/.agents and ~/.claude — same physical file,
-# same derivation as seed-composition-roles.py).
-DB_PATH = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+# same derivation as seed-composition-roles.py). $SGS_FRAMEWORK_DB points a run at a copy.
+DB_PATH = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+sys.path.insert(0, str(Path(__file__).resolve().parent / "dbschema"))
+from motion_registry_columns import EMPTY_OWNED, EMPTY_PANELS, effect_columns  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # 1. fx_effects — the §11.2 grammar, in full (Spec 38 §6.1 + §2 + §9 + §10 + §4.3).
@@ -1344,6 +1341,13 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
     if "in_picker" not in existing_cols:
         cur.execute("ALTER TABLE fx_effects ADD COLUMN in_picker INTEGER NOT NULL DEFAULT 0")
         print("  [set]  fx_effects: added column 'in_picker' (migration)")
+    # Spec 38A section 6.4: the channels/slots an effect writes and the panels that may offer it.
+    if "owned_properties" not in existing_cols:
+        cur.execute("ALTER TABLE fx_effects ADD COLUMN owned_properties TEXT NOT NULL DEFAULT '{}'")
+        print("  [set]  fx_effects: added column 'owned_properties' (migration)")
+    if "panels" not in existing_cols:
+        cur.execute("ALTER TABLE fx_effects ADD COLUMN panels TEXT NOT NULL DEFAULT '[]'")
+        print("  [set]  fx_effects: added column 'panels' (migration)")
 
 
 def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
@@ -1393,6 +1397,23 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
     return changed
 
 
+def _seed_fx_motion_columns(cur: sqlite3.Cursor) -> int:
+    """Write owned_properties and panels per seeded effect from the motion schema (effects the schema lacks get empties)."""
+    schema_columns = effect_columns()
+    changed = 0
+    for row in FX_EFFECTS:
+        effect = row["effect"]
+        target = schema_columns.get(effect, (EMPTY_OWNED, EMPTY_PANELS))
+        existing = cur.execute("SELECT owned_properties, panels FROM fx_effects WHERE effect = ?", (effect,)).fetchone()
+        if existing is not None and tuple(existing) == target:
+            print(f"  [ok]   fx_effects.{effect}: owned_properties and panels already correct")
+            continue
+        cur.execute("UPDATE fx_effects SET owned_properties = ?, panels = ? WHERE effect = ?", (*target, effect))
+        changed += 1
+        print(f"  [set]  fx_effects.{effect}: owned_properties and panels from the motion schema")
+    return changed
+
+
 def _seed_fx_attr_namespace(cur: sqlite3.Cursor) -> int:
     """§6.2 / §11.3 — VERIFY (never write) that every block_attributes row
     declaring an fx:* attr name carries the correct css_property marker.
@@ -1431,60 +1452,6 @@ def _seed_fx_attr_namespace(cur: sqlite3.Cursor) -> int:
     return mismatches
 
 
-def _reconcile_animation_tokens(cur: sqlite3.Cursor) -> int:
-    """§6 item 5 — add the missing fade-up row + wire used_by from real
-    block_attributes.sgsAnimation default-value usage (DB-first, not invented)."""
-    changed = 0
-
-    existing = cur.execute("SELECT name FROM animation_tokens WHERE name = ?", ("fade-up",)).fetchone()
-    if existing is None:
-        cur.execute(
-            "INSERT INTO animation_tokens (name, keyframes, duration, easing, description, category) "
-            "VALUES (?, ?, ?, ?, ?, ?)",
-            (
-                "fade-up",
-                "@keyframes fade-up { from { transform: translateY(16px); opacity: 0; } "
-                "to { transform: translateY(0); opacity: 1; } }",
-                "400ms",
-                "ease-out",
-                "Fade up entrance (translateY + opacity) — the most common Tier V entrance default",
-                "entrance",
-            ),
-        )
-        changed += 1
-        print("  [set]  animation_tokens.fade-up: inserted")
-    else:
-        print("  [ok]   animation_tokens.fade-up: already present")
-
-    # Wire used_by for every token from real sgsAnimation default-value usage.
-    token_names = [
-        r[0] for r in cur.execute("SELECT name FROM animation_tokens ORDER BY name").fetchall()
-    ]
-    for name in token_names:
-        blocks = [
-            r[0] for r in cur.execute(
-                "SELECT block_slug FROM block_attributes "
-                "WHERE attr_name = 'sgsAnimation' AND default_value = ? ORDER BY block_slug",
-                (json.dumps(name),),
-            ).fetchall()
-        ]
-        if not blocks:
-            print(f"  [skip] animation_tokens.{name}: no block currently defaults sgsAnimation to it")
-            continue
-        used_by = ",".join(blocks)
-        current = cur.execute(
-            "SELECT used_by FROM animation_tokens WHERE name = ?", (name,)
-        ).fetchone()[0]
-        if current == used_by:
-            print(f"  [ok]   animation_tokens.{name}.used_by: already {used_by}")
-            continue
-        cur.execute("UPDATE animation_tokens SET used_by = ? WHERE name = ?", (used_by, name))
-        changed += 1
-        print(f"  [set]  animation_tokens.{name}.used_by: {current!r} -> {used_by!r}")
-
-    return changed
-
-
 def main() -> int:
     if not DB_PATH.exists():
         # Deliberately unversioned (13.9MB local dev knowledge base — see
@@ -1516,8 +1483,8 @@ def main() -> int:
     # wrote, not what it merely observed.
     fx_mismatches = _seed_fx_attr_namespace(cur)
 
-    print("== 5. animation_tokens reconciliation (§6 item 5) ==")
-    changed += _reconcile_animation_tokens(cur)
+    print("== 5. fx_effects owned_properties and panels (Spec 38A §6.4) ==")
+    changed += _seed_fx_motion_columns(cur)
 
     con.commit()
     con.close()
