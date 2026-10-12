@@ -1471,7 +1471,14 @@ template on the page, so it is loaded on its own in the sandbox. Indus's static 
 bindings, 115 `sc-if`, 53 `sc-for`, 2 imports, 103 `style-*` rules, 12 getters, 133 `renderVals()` keys, 86 handlers,
 29 timers, 5 observers, 49 Web Animations calls, 71 links, no unknown construct; the regex cross-check agrees in every
 category except observers (10 against 5: the regex also counts `typeof ResizeObserver` guards), kept as a gap row. Every
-registry entry is a gap naming the step that builds its reader. The runtime pass and control 5 are not built.
+registry entry is a gap naming the step that builds its reader. The runtime pass and control 5 are built
+(`lib/intake-census-runtime.mjs`, `-trace`, `-map`, `tests/intake-census-runtime.test.mjs`): V8 precise coverage for
+the logic's functions (the runtime evaluates the logic unchanged, so offsets map onto the static tree) and page
+wrappers for timers, observers and Web Animations calls. On Indus (24 visits at 375/768/1440, about 9 minutes) the
+2,746 rows are identical across two runs; 19 rows the trace cannot decide (handlers with several same-named
+candidates, `handleEvent` objects, two `sc-if`s with no stamped element) are `unreached: null` with a trace gap. Rest
+mode fires no event, so most handlers and transitions are `unreached` until FR-48-34's forced test fires their
+triggers.
 
 #### FR-48-25 — The inventory, re-derived (Spec 48A FR-48A-7)
 Intake writes its own `animations.json` and `surfaces.json` equivalents into `intake.json` by `METHOD.md` §0-§8,

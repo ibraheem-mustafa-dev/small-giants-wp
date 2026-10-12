@@ -4,7 +4,8 @@
 // { id, kind, draftId, component, detail, source, unreached }; runCensus joins the rows to the construct registry
 // (lib/intake-registry.mjs) and passes only when every kind found has an entry, no `unknown` construct exists, and
 // every reader returns a non-empty result for each construct of its kind. A reader that throws is a gap row and fails.
-// The runtime pass (a later step) adds its sightings with mergeSightings and decides `unreached` with markUnreached.
+// The runtime pass (lib/intake-census-runtime.mjs) adds its sightings with mergeSightings and decides `unreached` with
+// markUnreached (applyRuntime); runCensus runs it when given `runtime`.
 // METHOD.md §4's regex counts (regexCounts) are a cross-check only; a disagreement is a gap row, never a census row.
 import { draftSources, templateRows } from './intake-census-template.mjs';
 import { logicRows, scriptRows } from './intake-census-logic.mjs';
@@ -40,12 +41,15 @@ export function assignIds( rows ) {
 	return rows;
 }
 
-// Adds runtime sightings ({ kind, draftId, component, detail }) to the static rows: a sighting whose id a static row
-// holds makes that row `both`; any other becomes a `runtime` row. Returns the merged rows (the inputs are not changed).
+// Adds runtime sightings ({ kind, draftId, component, detail }, optionally the `id` of the row it saw) to the static
+// rows: a sighting whose id a static row holds makes that row `both`; any other becomes a `runtime` row. Sightings
+// without an id get one from assignIds. Returns the merged rows (the inputs are not changed).
 export function mergeSightings( rows, sightings ) {
 	const out = rows.map( ( r ) => ( { ...r } ) );
 	const byId = new Map( out.map( ( r ) => [ r.id, r ] ) );
-	for ( const s of assignIds( sightings.map( ( x ) => ( { ...x } ) ) ) ) {
+	const all = sightings.map( ( x ) => ( { ...x } ) );
+	assignIds( all.filter( ( x ) => ! x.id ) );
+	for ( const s of all ) {
 		const hit = byId.get( s.id );
 		if ( hit ) {
 			hit.source = 'static' === hit.source ? 'both' : hit.source;
@@ -63,6 +67,22 @@ export function mergeSightings( rows, sightings ) {
 export function markUnreached( rows, { kinds } ) {
 	const traced = new Set( kinds );
 	return rows.map( ( r ) => ( traced.has( r.kind ) ? { ...r, unreached: 'static' === r.source } : r ) );
+}
+
+// The census rows with a runtime pass applied (runtimeCensus's result): its sightings merged once per row, `unreached`
+// decided for the kinds it traces, and a row the trace could not decide (a trace gap) left `unreached: null` with
+// `traceGap` naming why (R-48-3).
+export function applyRuntime( rows, runtime ) {
+	const once = new Map();
+	for ( const s of runtime.sightings ) {
+		const key = s.id || `${ s.kind }@${ s.draftId }`;
+		if ( ! once.has( key ) ) {
+			once.set( key, { ...( s.id ? { id: s.id } : {} ), kind: s.kind, draftId: s.draftId, component: s.component, detail: s.detail } );
+		}
+	}
+	const gapOf = new Map( runtime.traceGaps.map( ( g ) => [ g.id, g.error ] ) );
+	return markUnreached( mergeSightings( rows, [ ...once.values() ] ), { kinds: runtime.kinds } )
+		.map( ( r ) => ( gapOf.has( r.id ) && r.unreached ? { ...r, unreached: null, traceGap: gapOf.get( r.id ) } : r ) );
 }
 
 // METHOD.md §4's occurrence counts over one text (a cross-check only, never the census).
@@ -162,14 +182,24 @@ const isEmpty = ( v ) => null == v || '' === v || ( Array.isArray( v ) && ! v.le
 
 // The census: joins the static rows (or `census`, an earlier staticCensus result) to the registry and runs each
 // reader on each construct of its kind. `readers` ({ kind: fn }) overrides a registry reader; `root` is where reader
-// modules resolve (readerFor). Returns { rows, gaps, problems, pass, sources, counts }: each row carries `reader`
+// modules resolve (readerFor). `runtime` ({ visits, widths, harPath, harness }) adds the runtime pass
+// (lib/intake-census-runtime.mjs): rows then carry source static|runtime|both and `unreached`, and a visit that fails
+// is a problem. Returns { rows, gaps, problems, pass, sources, counts, runtime }: each row carries `reader`
 // ('<module>#<fn>') or `gap` (the registry's reason, or the reader's error).
-export async function runCensus( { folder, entry, registry = null, root, readers = {}, harPath = null, sandbox = null, census = null, timeout = 60000 } ) {
+export async function runCensus( { folder, entry, registry = null, root, readers = {}, harPath = null, sandbox = null, census = null, timeout = 60000, runtime = null } ) {
 	const reg = registry || loadRegistry();
 	const base = census || await staticCensus( { folder, entry, harPath, sandbox, timeout } );
-	const rows = base.rows.map( ( r ) => ( { ...r } ) );
 	const gaps = [ ...base.gaps ];
 	const problems = [];
+	let run = null;
+	let rows = base.rows.map( ( r ) => ( { ...r } ) );
+	if ( runtime ) {
+		const { runtimeCensus } = await import( './intake-census-runtime.mjs' );
+		run = await runtimeCensus( { folder, entry, timeout, ...runtime, harPath: runtime.harPath ?? harPath, census: base } );
+		rows = applyRuntime( rows, run );
+		gaps.push( ...run.gaps );
+		run.gaps.filter( ( g ) => 'runtime-visit' === g.construct ).forEach( ( g ) => problems.push( `runtime visit ${ g.draftId } failed: ${ g.error }` ) );
+	}
 	const kinds = [ ...new Set( rows.map( ( r ) => r.kind ) ) ];
 	for ( const kind of kinds ) {
 		const of = rows.filter( ( r ) => r.kind === kind );
@@ -217,5 +247,5 @@ export async function runCensus( { folder, entry, registry = null, root, readers
 			}
 		}
 	}
-	return { rows, gaps, problems, pass: ! problems.length, sources: base.sources, counts: base.counts };
+	return { rows, gaps, problems, pass: ! problems.length, sources: base.sources, counts: base.counts, runtime: run };
 }

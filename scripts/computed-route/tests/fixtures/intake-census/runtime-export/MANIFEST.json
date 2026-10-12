@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-12",
+  "project": "Census runtime fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 1628,
+      "sha256": "fa28d3fdefa8a6d4bcc30545fda565c70a6c318b54707b3d896f8b03031b0195"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@keyframes runtime-in { from { opacity: 0; } to { opacity: 1; } }
+.runtime-title { animation: runtime-in .3s ease-out; }
+</style>
+</helmet>
+<main style="min-height:2400px;padding:24px;font-family:system-ui,sans-serif">
+  <h1 class="runtime-title" onAnimationStart="{{ onTitleStart }}">{{ title }}</h1>
+  <sc-if value="{{ wide }}" hint-placeholder-val="true">
+    <p class="wide">Wide layout</p>
+  </sc-if>
+  <sc-if value="{{ narrow }}" hint-placeholder-val="false">
+    <p class="narrow">Narrow layout</p>
+  </sc-if>
+  <sc-if value="{{ never }}" hint-placeholder-val="false">
+    <p>Never shown</p>
+  </sc-if>
+  <button type="button" onClick="{{ neverClicked }}">Never clicked</button>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { started: 0 };
+
+  get wide() {
+    return window.innerWidth >= 1000;
+  }
+
+  onTitleStart = () => { this.setState( { started: this.state.started + 1 } ); };
+  onScroll = () => { this._scrolled = true; };
+
+  neverClicked() {
+    this.setState( { started: 0 } );
+  }
+
+  componentDidMount() {
+    window.addEventListener( 'scroll', this.onScroll );
+    const later = window[ 'set' + 'Timeout' ];
+    later( () => {}, 20 );
+  }
+
+  renderVals() {
+    return { title: 'Runtime fixture', wide: this.wide, narrow: ! this.wide, never: false, onTitleStart: this.onTitleStart, neverClicked: this.neverClicked };
+  }
+}
+</script>
+</body>
+</html>
