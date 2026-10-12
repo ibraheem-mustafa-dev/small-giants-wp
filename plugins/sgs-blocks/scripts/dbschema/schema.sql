@@ -1,12 +1,12 @@
 -- SGS framework knowledge-base schema
--- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-10-09
+-- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-10-12
 -- by: python dbschema/check_schema_drift.py --regenerate
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
 -- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
 --
 -- EXCLUDED: SQLite-internal objects (sqlite_*) — SQLite creates these itself and
 -- REFUSES an explicit CREATE ('object name reserved for internal use').
--- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1, sqlite_autoindex_components_1
+-- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1, sqlite_autoindex_components_1, sqlite_autoindex_motion_presets_1
 
 -- table: animation_tokens
 CREATE TABLE animation_tokens (
@@ -152,7 +152,7 @@ CREATE TABLE fx_effects (
             reduced_motion          TEXT NOT NULL,
             editor_story            TEXT NOT NULL,
             created_at              TEXT DEFAULT (datetime('now'))
-        , scope TEXT NOT NULL DEFAULT 'block', requires TEXT NOT NULL DEFAULT 'none', pins INTEGER NOT NULL DEFAULT 0, triggers TEXT NOT NULL DEFAULT 'scroll', creates_panel INTEGER NOT NULL DEFAULT 1, in_picker INTEGER NOT NULL DEFAULT 0);
+        , scope TEXT NOT NULL DEFAULT 'block', requires TEXT NOT NULL DEFAULT 'none', pins INTEGER NOT NULL DEFAULT 0, triggers TEXT NOT NULL DEFAULT 'scroll', creates_panel INTEGER NOT NULL DEFAULT 1, in_picker INTEGER NOT NULL DEFAULT 0, "owned_properties" TEXT NOT NULL DEFAULT '{}', "panels" TEXT NOT NULL DEFAULT '[]');
 
 -- table: gotchas
 CREATE TABLE gotchas (
@@ -210,6 +210,26 @@ CREATE TABLE modifier_suffixes (
                 kind TEXT NOT NULL,
                 notes TEXT
             );
+
+-- table: motion_presets
+CREATE TABLE motion_presets (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug          TEXT NOT NULL UNIQUE,
+    panel         TEXT NOT NULL CHECK (panel IN ('hover', 'entrance', 'effects')),
+    effect        TEXT,
+    family        TEXT NOT NULL,
+    kind          TEXT NOT NULL CHECK (kind IN ('preset', 'intensity', 'keyframe')),
+    intensity     TEXT CHECK (intensity IN ('subtle', 'standard', 'bold')),
+    label         TEXT NOT NULL,
+    values_json   TEXT NOT NULL,
+    devices_json  TEXT NOT NULL DEFAULT '{}',
+    trigger       TEXT NOT NULL,
+    target_level  TEXT NOT NULL CHECK (target_level IN ('block', 'surface', 'part')),
+    source        TEXT NOT NULL,
+    position      INTEGER NOT NULL DEFAULT 0,
+    created_at    TEXT DEFAULT (datetime('now')),
+    CHECK ((kind = 'intensity') = (intensity IS NOT NULL))
+);
 
 -- table: motion_shape_signatures
 CREATE TABLE motion_shape_signatures (
@@ -373,6 +393,9 @@ CREATE INDEX idx_hooks_source ON hooks(source);
 
 -- index: idx_hooks_type
 CREATE INDEX idx_hooks_type ON hooks(hook_type);
+
+-- index: idx_motion_presets_family
+CREATE INDEX idx_motion_presets_family ON motion_presets (family, kind);
 
 -- index: idx_motion_shape_signatures_preset_slug
 CREATE UNIQUE INDEX idx_motion_shape_signatures_preset_slug ON motion_shape_signatures(preset_slug);
