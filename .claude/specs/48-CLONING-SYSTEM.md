@@ -1548,9 +1548,13 @@ Two runs of one surface at one width and mode give byte-identical records.
 makes a fixture with a clock, a random number, a stored key, a timer, an interval, a frame loop, an observer reveal or
 a late font differ between runs or never settle; and sample mode reads a 600ms fade at 0, 300 and 600ms with the
 expected opacities.
-Status: not built. The walker reads loop animations (`scripts/parity/lib/collect.mjs`) but freezes no clock, random
-number or storage. Indus's main draft has 2 `setInterval` calls, `requestAnimationFrame` loops and
-`IntersectionObserver` reveals, so neither a frozen clock nor a wall-clock settle would give stable reads.
+Status: built 2026-10-12 (`lib/intake-harness.mjs`, `lib/intake-harness-page.mjs`, `lib/intake-reading.mjs`,
+`tests/intake-harness.test.mjs`; each item MUST FAIL when removed). The clock is installed by `page.clock.pauseAt` alone
+(an `install` followed by `pauseAt` leaks real milliseconds into `performance.now()`), and one real rendering frame
+follows every 16ms step so observers see each step. Finite CSS and Web Animations run on the document timeline, which
+the clock does not move, so rest mode finishes them before reading. Each settle waits out intervals to 3 ticks, so
+Indus's 6500ms testimonial interval makes a rest read take about 20 s of virtual time. On Indus, home and `#/about` at
+375, 768 and 1440 in rest mode and the hero heading's 900ms entrance in sample mode are byte-identical across two runs.
 
 #### FR-48-29 — Prop variants
 A component draft mounted through `dc-import` with `data-props` can render several variants. The design is the render

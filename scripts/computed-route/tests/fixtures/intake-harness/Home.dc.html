@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+<style>
+@keyframes harness-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.harness-spin { animation: harness-spin 2s linear infinite; }
+.harness-bar { height: 8px; margin: 4px 0; background: #36c; }
+</style>
+</helmet>
+<main style="font-family:system-ui,sans-serif;padding:24px;color:#222">
+  <h1 style="margin:0 0 12px;font-size:24px">Harness fixture</h1>
+  <div data-h="date" class="harness-bar" style="width:{{ dateW }}px"></div>
+  <div data-h="random" class="harness-bar" style="width:{{ randomW }}px"></div>
+  <div data-h="visits" class="harness-bar" style="width:{{ visitsW }}px"></div>
+  <div data-h="timeout" class="harness-bar" style="width:{{ timeoutW }}px"></div>
+  <div data-h="interval" class="harness-bar" style="width:{{ intervalW }}px"></div>
+  <div data-h="frames" class="harness-bar" style="width:{{ framesW }}px"></div>
+  <p style="margin:12px 0"><span data-h="font" style="display:inline-block;font-family:'Lobster',monospace;font-size:28px">Harness font</span></p>
+  <div data-h="css-spin" class="harness-spin" style="width:24px;height:24px;background:#c33"></div>
+  <div data-h="loop" ref="{{ setLoopEl }}" style="width:24px;height:24px;margin-top:8px;background:#3a3"></div>
+  <div data-h="fade" ref="{{ setFadeEl }}" style="width:24px;height:24px;margin-top:8px;background:#333"></div>
+  <div style="height:1200px"></div>
+  <div data-h="reveal" ref="{{ setRevealEl }}" class="harness-bar" style="width:{{ revealW }}px"></div>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;600px&quot;}}">
+class Component extends DCLogic {
+  state = { dateW: 1, randomW: 1, visitsW: 1, timeoutW: 10, ticks: 0, frames: 0, revealW: 10 };
+  componentDidMount() {
+    const d = new Date();
+    const visits = Number(localStorage.getItem('harness-visits') || 0) + 1;
+    localStorage.setItem('harness-visits', String(visits));
+    this.setState({ dateW: (Math.floor(d.getTime() / 1000) % 997) + 1, randomW: Math.floor(Math.random() * 400) + 1, visitsW: visits * 10 });
+    setTimeout(() => this.setState({ timeoutW: Math.round(performance.now() / 10) }), 2000);
+    this._int = setInterval(() => this.setState({ ticks: this.state.ticks + 1 }), 200);
+    const loop = () => { this.setState({ frames: this.state.frames + 1 }); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  }
+  componentWillUnmount() {
+    clearInterval(this._int);
+    if (this._io) this._io.disconnect();
+  }
+  setLoopEl = (el) => {
+    if (el && !el._loop) el._loop = el.animate([{ transform: 'translateX(0px)' }, { transform: 'translateX(40px)' }], { duration: 1500, iterations: Infinity });
+  };
+  setFadeEl = (el) => {
+    if (el && !el._fade) el._fade = el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, easing: 'linear', fill: 'both' });
+  };
+  setRevealEl = (el) => {
+    if (!el || this._io) return;
+    this._io = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      this._io.unobserve(en.target);
+      this.setState({ revealW: 200 });
+    }));
+    this._io.observe(el);
+  };
+  renderVals() {
+    return {
+      dateW: this.state.dateW, randomW: this.state.randomW, visitsW: this.state.visitsW, timeoutW: this.state.timeoutW,
+      intervalW: this.state.ticks * 10, framesW: this.state.frames, revealW: this.state.revealW,
+      setLoopEl: this.setLoopEl, setFadeEl: this.setFadeEl, setRevealEl: this.setRevealEl,
+    };
+  }
+}
+</script>
+</body>
+</html>
