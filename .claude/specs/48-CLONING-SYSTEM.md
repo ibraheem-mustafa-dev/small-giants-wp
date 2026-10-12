@@ -2590,21 +2590,21 @@ One pass is about 10 minutes of agent time and 20 minutes of machine time.
 *Set-up (Bean and stage 0)*
 1. **Current export** (done 2026-10-11). `sites/indus-foods/handoff/` passes `handoff-check.mjs` after
    `handoff-repackage.mjs` (Spec 48A FR-48A-1); a design change from here means a fresh export.
-2. **Test-site email** (agent, 5 min). Appendix A step 6 on `indus-test` through the studio mailbox with
+2. **Test-site email** (done 2026-10-12). Appendix A step 6 on `indus-test` through the studio mailbox with
    `--redirect-all-to` Bean; nothing is needed from the client.
-3. **Route dependencies** (agent, 30 min). The route's `package.json` with pinned Playwright, Ajv 8, `ajv-formats`,
+3. **Route dependencies** (done 2026-10-11). The route's `package.json` with pinned Playwright, Ajv 8, `ajv-formats`,
    `saxes` and `@babel/parser`; every import repointed; the lint ban (FR-48-75).
-4. **Indus mirror and targets** (agent, 45 min). Appendix A step 13 for Indus: `local-indus`, its secrets file, the
+4. **Indus mirror and targets** (done 2026-10-11). Appendix A step 13 for Indus: `local-indus`, its secrets file, the
    calibration page, and the `indus-test` and `local-indus` entries in `calibration-targets.json`. Check first what
    `indus-test` already has (Appendix A steps 1 to 3).
-5. **Per-site default paint** (agent, 30 min). `cache/<site>/<block>.paint.json` beside the site-independent slot map,
+5. **Per-site default paint** (done 2026-10-11). `cache/<site>/<block>.paint.json` beside the site-independent slot map,
    and `lib/cache.mjs` reading and writing both (FR-48-3, §3.2). Needs 3.
-6. **Accepted value forms** (agent, 1 h). Calibration records `clamp`, `vw`, `repeat` and a column count per setting
+6. **Accepted value forms** (done 2026-10-11). Calibration records `clamp`, `vw`, `repeat` and a column count per setting
    (FR-48-2). Needs 3.
-7. **Indus calibration fixes and the desktop tier** (agent, 45 min). The `container.gridTemplateColumns` marker, the
+7. **Indus calibration fixes and the desktop tier** (done 2026-10-11). The `container.gridTemplateColumns` marker, the
    two resolver ties on `container.layout`'s discovered values (FR-48-3), and the resolver reading desktop at 1440 with 1920 as a
    confirmation (FR-48-74). Needs 3.
-8. **Stage 0 command and run** (agent 30 min, machine 30 min). The handoff check plus the slot-map calibration of the
+8. **Stage 0 command and run** (done 2026-10-12). The handoff check plus the slot-map calibration of the
    fixed block set on `local-indus`, writing `calibration-baseline.json` (FR-48-3, FR-48-16). Needs 1, 4 to 7.
 
 *Spec 32 framework halves (beside steps 9 to 11)*

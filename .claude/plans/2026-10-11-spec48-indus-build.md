@@ -14,7 +14,8 @@ closed by the done-when of the requirement it cites, and fixes who runs what, in
 reliability come first; a speed or cost gain is taken only where it adds no risk (Bean, 2026-10-11).
 
 **Where it stands (2026-10-12).** Phase 1 (steps 1 to 8) and steps 9 to 12 are done: all 17 Indus blocks are current
-and the stage-0 calibration baseline is written. Steps 13 to 25 are not started or are in the other lanes. Progress per step is marked in the phases below.
+and the stage-0 calibration baseline is written. Step 13 is done (intake lane); steps 14 to 25 are not started or are
+in the other lanes. Progress per step is marked in the phases below.
 
 ## Orchestration
 
@@ -56,7 +57,8 @@ Deploys, DB reseeds, `local-indus` mirror refreshes, calibration runs and live-s
 every session (they write the shared DB, the shared mirror or the live test site). Before each: `ListAgents`, then
 `SendMessage` to every active peer naming the operation; after it lands, say so. Expected order: (a) step 4's
 calibration page and mirror fill (done); (b) step 6's recalibration of heading and container on `local-indus` (done);
-(c) step 12's refresh loop; (d) step 8's stage-0 calibration run. If (c) lands after (d), (c)'s recalibration step refreshes the slot maps it made stale.
+(c) step 12's refresh loop (done); (d) step 8's stage-0 calibration run (done). Later live writes (step 16 on
+`indus-test`, stage 2's snapshot push and site build) go through the same queue.
 
 ### Model and QC per step
 Every diff is read on the main thread before its commit. Every commit keeps the guardrails green.
@@ -123,6 +125,11 @@ explicit-pathspec commits straight to `main`.
   a slot map that drops a reached setting unless `--allow-loss` names it; the refusals it raised on Indus, their proven
   causes and fixes (a badge menu item, `::before` media-layer reads, 16 typography `css_property` overrides, the
   `extensions.css` link-underline rule) and the open calibration debt are in FR-48-3's Status.
+  Left open: `chromeRatingColour` (sgs/nav-drawer) reads dead until a test site has a Site Info rating, which needs a
+  real rating source, never a planted one (it would show on the client's build); and `bgHoverZoomScale` has no
+  `css_property` on any of the seven blocks that declare it, so no hover zoom is calibrated. Owner: step 20 if the
+  Indus header or a header surface uses either, otherwise Phase 6 (a DB override per block naming the zoom layer's
+  `transform`, then recalibration through the refresh loop).
 
 ### Phase 2. Spec 32 framework halves (steps 9 to 12, session B)
 - [x] **9. Palette slugs** (code done 2026-10-12, commits 7815a2b9b, 8caab9757, 25a761b5b). FR-32-14: the five slugs in
@@ -163,7 +170,10 @@ explicit-pathspec commits straight to `main`.
   proposal reads the slugs from `theme/sgs-theme/theme.json`, so FR-32-14's new slugs reach it only once step 9 lands.
 
 ### Phase 4. Stage 2 site build (steps 16 to 19)
-- [ ] **16. Appendix A on `indus-test`**, the steps not already done (may start after step 4).
+- [ ] **16. Appendix A on `indus-test`**, the steps not already done (may start after step 4). Checked 2026-10-12 over
+  SSH: steps 1 to 3, 6, 8 and 13 are done; step 4 does not apply (Indus is a trade wholesaler, no WooCommerce); step 7
+  is open (`blog_public` is 1, so the test site is indexable) and step 9 is open (`site_icon` is 0, no icon); steps 5,
+  10, 11 and 12 follow stage 1 (snapshot, Site Info and site build need step 15).
 - [ ] **17. Snapshot** (needs 12 and 15): the extractor reads `tokens/*.css` with the confirmed roles; dry run, then
   push.
 - [ ] **18. Site build** (needs 15 and 16): FR-48-55, FR-48-58 and FR-48-59 done-whens.

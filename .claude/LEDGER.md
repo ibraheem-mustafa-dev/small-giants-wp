@@ -66,17 +66,19 @@ and snapshot format, new FR-32-14 to FR-32-20); Spec 27 gains FR-30-16/17. `scri
 every kept ID lands. Appendix B (the Indus critical path) is under way. Phase 2, the Spec 32 framework halves (steps 9 to 12), is done and
 live on `indus-test` at `3e1bdd9e9`: five palette slugs and a container Section ground (FR-32-14), per-tier section
 padding and gutter tokens read by `theme/sgs-theme/assets/css/layout-tokens.css` (FR-32-15), and `sgsCustomCss` parsed
-and scoped per instance (FR-32-20), each verified live. On the route side (HEAD `a41608067` at the last route handoff): the route has its own pinned packages (`npm ci` in `scripts/computed-route`), a per-site default paint,
+and scoped per instance (FR-32-20), each verified live. Phase 1 (steps 1 to 8) is done: the route has its own pinned packages (`npm ci` in `scripts/computed-route`), a per-site default paint,
 accepted value forms (`clamp`, `vw`, `repeat`), the 1440 desktop tier, the `container.layout` resolver fixes, portable
-calibration fixtures and a stage-0 command; the Indus mirror `local-indus` (port 8083) exists. Route suite 924/927 (the
-3 known `lint.test.mjs` brandName failures). Stage 0 has 13 of 17 Indus blocks current; four slot maps stay stale
-because recalibrating them on Indus would drop settings Eye Care reaches (plan step 8). Spec 48A v0.1 with `handoff-check.mjs`; the Indus and Mama's exports in `sites/<client>/handoff/`
+calibration fixtures, and a stage-0 run on the Indus mirror `local-indus` (port 8083) that has all 17 Indus blocks
+current and wrote `sites/indus-foods/build/intake/calibration-baseline.json` (`7e7a72c86`). `calibrate.mjs` now refuses a
+slot map that drops a setting the shared map reaches unless `--allow-loss` names it; its refusals on Indus exposed and
+fixed three framework defects (FR-48-3 Status). indus-test sends email through the studio mailbox, redirected to it
+(step 2). Route suite 1122/1125 (the 3 known `lint.test.mjs` brandName failures). Spec 48A v0.1 with `handoff-check.mjs`; the Indus and Mama's exports in `sites/<client>/handoff/`
 pass it (repackaged 2026-10-11 by `handoff-repackage.mjs`; no design change since export).
-**Blockers:** stage 0's exit (Appendix B step 8) waits on those four blocks' missing calibration content; nothing
-else blocks the intake lane (session C). **Time-critical:** the standalone Claude
+**Blockers:** none for the route lane; step 15 (the intake run) needs the intake lane's steps 14 and 14b. **Time-critical:** the standalone Claude
 Design site deletes its projects on 14 December 2026; export every project as a "Project archive" and test the
 artifact-based Claude Design once before then (plan B0; Spec 48A goes to 1.0 after it).
-**Resume from:** `plans/2026-10-11-spec48-indus-build.md` Phase 1 step 8 (route lane), plus Phase 3 in its own
+**Resume from:** `plans/2026-10-11-spec48-indus-build.md` Phase 4 step 16 (route lane: Appendix A's remaining
+pre-intake steps on `indus-test`), plus Phase 3 in its own
 session from `.claude/prompts/2026-10-11-spec48-intake-lane.md` and, as a separate session, B5 (mirror the live
 Eye Care site into its draft).
 **Bean-only tasks:** B0.
@@ -107,8 +109,8 @@ Eye Care site into its draft).
 - **Branch:** `main`. Read the commit with `git rev-parse --short HEAD`; many sessions share this tree.
 - **Deploy marker:** `.sgs-deploy-marker-<target>.json` in the server's SSH home (`plugins/sgs-blocks/scripts/build-deploy.py::marker_path`). Read the marker to see what each site runs.
 - **sandybrown (canary, default target):** WP 7.1; homepage page **2742**, posts page **2741**; fresh-clone verification page **3448**; motion-QA fixtures 2103, 2109, 2113, 2603, 2740, 3037 are never deleted.
-- **eye-care-test** (`darkcyan-grouse-898606`), **indus-test** (`lavender-dinosaur-183533`, brief `sites/indus-foods/CLAUDE.md`) and **mamas-test** (`lightsalmon-tarsier-683012`, brief `sites/mamas-munches-redesign/CLAUDE.md`): name them explicitly to deploy. indus-test and mamas-test are fresh WordPress 7.1.3 installs (reset 2026-10-10, media kept, backups in `~/backups/2026-10-10-reset/` on the server) running sgs-blocks and sgs-theme at `3340f0907`; indus-test has no content pages built (it holds the private `cr-calibration` page 15 and the calibration menu 3,
-drawer 20, panel and media made by `scripts/computed-route/provision-calibration-refs.mjs`), and mamas-test holds the zip-export footer run's `sgs_footer` post 19 as its active footer (`sgs_active_footer_cpt_id`), to clear when it is reset for Front H's replanned clone. A first deploy to a fresh site reports `[migrate]` and `[verify]` errors until sgs-blocks and sgs-theme are activated and `wp sgs migrations run` is run over SSH.
+- **eye-care-test** (`darkcyan-grouse-898606`), **indus-test** (`lavender-dinosaur-183533`, brief `sites/indus-foods/CLAUDE.md`) and **mamas-test** (`lightsalmon-tarsier-683012`, brief `sites/mamas-munches-redesign/CLAUDE.md`): name them explicitly to deploy. indus-test and mamas-test are fresh WordPress 7.1.3 installs (reset 2026-10-10, media kept, backups in `~/backups/2026-10-10-reset/` on the server) running sgs-blocks and sgs-theme (indus-test at `3e1bdd9e9`; read each site's deploy marker); indus-test has no content pages built (it holds the private `cr-calibration` page 15 and the calibration menu 3,
+drawer 20, panel and media made by `scripts/computed-route/provision-calibration-refs.mjs`) and sends mail through the studio mailbox with every email redirected to it, and mamas-test holds the zip-export footer run's `sgs_footer` post 19 as its active footer (`sgs_active_footer_cpt_id`), to clear when it is reset for Front H's replanned clone. A first deploy to a fresh site reports `[migrate]` and `[verify]` errors until sgs-blocks and sgs-theme are activated and `wp sgs migrations run` is run over SSH.
 - **D-ceiling:** `grep -oE '^## D[0-9]+' .claude/archive/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`.
 - **Parity figures:** run the parity walker (`scripts/parity/draft-live-walk.mjs`, see `scripts/parity/GAP-CHECKLIST.md`) fresh; never quote a cached figure.
 
