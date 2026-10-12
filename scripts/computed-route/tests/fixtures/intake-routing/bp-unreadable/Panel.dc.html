@@ -1,0 +1,18 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<x-dc>
+<div><div ref="{{ boxRef }}"></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { w: 0 };
+  boxRef = React.createRef();
+  sideRef = React.createRef();
+  componentDidMount() { this.setState({ w: this.sideRef.current.clientWidth }); }
+  renderVals() {
+    const limit = this.props.limit;
+    return { narrow: this.state.w < 900, custom: window.innerWidth < limit };
+  }
+}
+</script>
+</body></html>

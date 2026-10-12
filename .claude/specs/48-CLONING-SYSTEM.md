@@ -1500,7 +1500,11 @@ second router, and its arguments are read as `#<key>` links. Indus's main draft 
 `hashchange` listener, and `go(href)` writing `window.location.hash`). Any other double match stays a loud failure.
 *Done when:* each adapter passes on a fixture of its kind, and each refuses the other two kinds' fixtures; a hybrid
 fixture copying Indus's pattern resolves to adapter 1, and a fixture whose `go()` also sets `state.page` fails loudly.
-Status: not built.
+Status: built 2026-10-12 (`lib/intake-routing.mjs`, `lib/intake-ast.mjs`, `tests/intake-routing.test.mjs`). A `go()` counts
+as a router only when it sets `state.page` or writes `location.hash` (Mama's `SignIn` has a `go(mode)` view switcher).
+Indus resolves to adapter 1 with its 23 routes and 136 links (3 gap rows: two sector links built as `'#/' + s.key` and
+the `#/post-*` article links, which the `pages` getter does not hold); Mama's to adapter 3 (11 pages, no gap); Eye Care
+to adapter 2 (11 routes, 5 gap rows: a dynamic `go()` argument and bare `#` anchors).
 
 #### FR-48-27 — Two breakpoint width bases
 A draft's breakpoint logic reads one width basis: the window (`innerWidth`; Indus and Mama's) or the root element's
@@ -1508,7 +1512,8 @@ measured width (Eye Care). Intake records the basis per draft from the code that
 (`w < 1024`, `w >= 1260`) is recorded with its basis and comparison operator. Indus's main draft branches at 768,
 1024, 1200 and 1260 (`Indus Foods Website v2.dc.html`). The check (row 9, §10) tests each threshold at ±1px on that
 basis. A draft whose basis cannot be read is a gap row.
-Status: not built.
+Status: built 2026-10-12 (`lib/intake-breakpoints.mjs`, `tests/intake-breakpoints.test.mjs`). Indus and Mama's read the
+window, Eye Care its root's measured width (ResizeObserver `contentRect`); a `matchMedia` query is a gap row.
 
 #### FR-48-28 — The determinism harness
 Every render intake or the check takes runs with:

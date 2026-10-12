@@ -1,0 +1,52 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<x-dc>
+<script type="application/json" data-sgs-manifest>{ "pages": [ { "slug": "home" }, { "slug": "about" } ] }</script>
+<div ref="{{ rootRef }}">
+  <a href="#" onClick="{{ goHome }}">Home</a>
+  <a href="#" onClick="{{ goAbout }}">About</a>
+  <a href="#" onClick="{{ openBag }}">Bag</a>
+  <a href="#">Nowhere</a>
+  <sc-for each="{{ cats }}" as="c"><button onClick="{{ c.go }}">{{ c.name }}</button></sc-for>
+  <form onSubmit="{{ signIn }}"></form>
+  <a href="https://example.com/map">Map</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home', w: 1200, bagOpen: false, returnTo: null };
+  rootRef = React.createRef();
+  measure(w) {
+    const el = this.rootRef.current;
+    const width = w || (el && el.clientWidth) || window.innerWidth;
+    if (width && width !== this.state.w) this.setState({ w: width });
+    if (el && window.ResizeObserver && !this.ro) {
+      this.ro = new ResizeObserver(entries => {
+        const cr = entries && entries[0] && entries[0].contentRect;
+        this.measure(cr && cr.width ? Math.round(cr.width) : null);
+      });
+      this.ro.observe(el);
+    }
+  }
+  componentDidMount() { this.measure(); }
+  go(page, extra) {
+    this.setState(Object.assign({ page, bagOpen: false }, extra || {}));
+    window.scrollTo(0, 0);
+  }
+  renderVals() {
+    const S = this.state;
+    const effW = S.w;
+    const nav = page => e => { if (e && e.preventDefault) e.preventDefault(); this.go(page); };
+    const shopWith = (cat) => e => { this.go('shop', { cat }); };
+    return {
+      rootRef: this.rootRef,
+      goHome: nav('home'), goAbout: nav('about'),
+      openBag: () => this.setState({ bagOpen: true }),
+      cats: [ 'Sun', 'Optical' ].map(name => ({ name, go: shopWith(name) })),
+      signIn: e => { e.preventDefault(); this.go(this.state.returnTo || 'account'); },
+      mobile: effW < 768, wide: S.w >= 1280, stack: 620 > effW,
+    };
+  }
+}
+</script>
+</body></html>
