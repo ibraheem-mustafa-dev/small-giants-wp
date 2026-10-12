@@ -3,6 +3,9 @@
 //   node scripts/computed-route/calibrate.mjs --site eye-care-test --client eye-care-ward-end --blocks sgs/heading,sgs/text
 //   [--recalibrate] replaces a block's slot map measured on another site and re-measures this site's default paint.
 //   [--slot-map-only] writes no default paint, even when one is due (stage 0, FR-48-3).
+//   [--allow-loss sgs/a:settingX,sgs/b:discovered:layout] accepts a named loss. A new slot map that drops a setting the
+//   existing one reaches is not written (the candidate goes to cache/<block>.refused.json and the block fails) unless the
+//   setting is named here.
 // For each block: refuses to run when the deployed build/blocks/<block>/ differs from the local build (before any
 // write), builds the block's calibration tree on the site's calibration page (calibration-targets.json), reads every
 // instance at 375, 768 and 1440 (hover settings under a real mouse), and writes two files (lib/cache.mjs): the
@@ -22,7 +25,7 @@ import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { acquireCalibrationLock } from './lib/calibration-lock.mjs';
-import { slotMapSkip, paintSkip, dueOutputs, splitCalibration, writeSlotMap, writePaint } from './lib/cache.mjs';
+import { slotMapSkip, paintSkip, dueOutputs, splitCalibration, writeSlotMap, writePaint, readSlotMap, slotMapWriteDecision, parseAllowLoss, refusedFile } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
@@ -106,7 +109,7 @@ function readEnv( file, key ) {
 	return { url: o[ `WP_URL_${ key }` ].replace( /\/+$/, '' ), user: o[ `WP_USER_${ key }` ], pwd: o[ `WP_PWD_${ key }` ] };
 }
 
-async function calibrateBlock( block, { site, target, env, shared, fixtures, snapshot, rawSnapshot, db, slotKey, paintKey, due, rejectedOut, image } ) {
+async function calibrateBlock( block, { site, target, env, shared, fixtures, snapshot, rawSnapshot, db, slotKey, paintKey, due, rejectedOut, image, allowLoss = {} } ) {
 	const short = block.replace( /^sgs\//, '' );
 	const fixture = fixtures[ block ];
 	if ( ! fixture ) {
@@ -274,8 +277,15 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const file = { block, site, slotKey, paintKey, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
 	// The whole block is measured either way; only the output that is due is written.
 	const { slotMap, paint } = splitCalibration( file );
-	due.slotMap && writeSlotMap( CACHE, block, slotMap );
+	const decision = due.slotMap ? slotMapWriteDecision( readSlotMap( CACHE, block ), slotMap, allowLoss[ block ] || [] ) : { write: false, lost: [] };
+	decision.write && writeSlotMap( CACHE, block, slotMap );
+	decision.write && fs.rmSync( refusedFile( CACHE, block ), { force: true } );
 	due.paint && writePaint( CACHE, site, block, paint );
+	if ( decision.lost.length ) {
+		fs.writeFileSync( refusedFile( CACHE, block ), JSON.stringify( { ...slotMap, refusedBecause: { lost: decision.lost } }, null, 1 ) );
+		const names = decision.lost.map( ( l ) => l.setting ).join( ', ' );
+		return { block, error: `refused: the new slot map drops ${ names } that the existing one reaches; candidate kept in cache/${ block.replace( /^sgs\//, '' ) }.refused.json; pass --allow-loss ${ block }:<setting> to accept a named loss` };
+	}
 	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
 }
 
@@ -292,7 +302,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const client = flag( '--client' );
 	const asked = ( flag( '--blocks' ) || '' ).split( ',' ).filter( Boolean );
 	if ( ! site || ! client || ! asked.length ) {
-		console.error( 'Usage: calibrate.mjs --site <site> --client <client slug> --blocks sgs/a,sgs/b [--recalibrate] [--slot-map-only]' );
+		console.error( 'Usage: calibrate.mjs --site <site> --client <client slug> --blocks sgs/a,sgs/b [--recalibrate] [--slot-map-only] [--allow-loss sgs/a:setting,...]' );
 		process.exit( 2 );
 	}
 	const targets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) );
@@ -319,6 +329,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	// --recalibrate) and this site's own default paint (kept only when its file here carries the current key).
 	const recalibrate = argv.includes( '--recalibrate' );
 	const slotMapOnly = argv.includes( '--slot-map-only' );
+	const allowLoss = parseAllowLoss( flag( '--allow-loss' ) );
 	const due = {};
 	for ( const b of asked ) {
 		const slotWhy = slotMapSkip( CACHE, b, site, keys[ b ], recalibrate );
@@ -357,7 +368,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			// One block's failure (a page that never renders its instance, a host time-out) is that block's error; the
 			// rest of the run continues.
 			try {
-				results.push( await calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: `${ keys[ b ] }-${ paintSuffix }`, due: due[ b ] } ) );
+				results.push( await calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: `${ keys[ b ] }-${ paintSuffix }`, due: due[ b ], allowLoss } ) );
 			} catch ( e ) {
 				results.push( { block: b, error: String( e.message || e ).split( /\r?\n/ )[ 0 ] } );
 			}

@@ -1331,6 +1331,63 @@
       "imageUrl": "{{image.url}}",
       "imageAlt": "Person wearing sunglasses outdoors",
       "caption": "A short caption under the image."
+    },
+    "preconditions": {
+      "videoTimeFontSize": {
+        "mediaType": "video",
+        "videoSource": "external",
+        "videoUrl": "https://calibration.invalid/cr-calibration.mp4"
+      },
+      "videoTimeFontWeight": {
+        "mediaType": "video",
+        "videoSource": "external",
+        "videoUrl": "https://calibration.invalid/cr-calibration.mp4"
+      },
+      "videoTimeFontStyle": {
+        "mediaType": "video",
+        "videoSource": "external",
+        "videoUrl": "https://calibration.invalid/cr-calibration.mp4"
+      },
+      "videoTimeFontFamily": {
+        "mediaType": "video",
+        "videoSource": "external",
+        "videoUrl": "https://calibration.invalid/cr-calibration.mp4"
+      },
+      "videoTimeTextTransform": {
+        "mediaType": "video",
+        "videoSource": "external",
+        "videoUrl": "https://calibration.invalid/cr-calibration.mp4"
+      },
+      "videoTimeTextDecoration": {
+        "mediaType": "video",
+        "videoSource": "external",
+        "videoUrl": "https://calibration.invalid/cr-calibration.mp4"
+      },
+      "videoTimeLineHeight": {
+        "mediaType": "video",
+        "videoSource": "external",
+        "videoUrl": "https://calibration.invalid/cr-calibration.mp4"
+      },
+      "videoTimeLetterSpacing": {
+        "mediaType": "video",
+        "videoSource": "external",
+        "videoUrl": "https://calibration.invalid/cr-calibration.mp4"
+      },
+      "videoTimeTextWrap": {
+        "mediaType": "video",
+        "videoSource": "external",
+        "videoUrl": "https://calibration.invalid/cr-calibration.mp4"
+      },
+      "videoTimeTextColumns": {
+        "mediaType": "video",
+        "videoSource": "external",
+        "videoUrl": "https://calibration.invalid/cr-calibration.mp4"
+      },
+      "videoTimeWritingMode": {
+        "mediaType": "video",
+        "videoSource": "external",
+        "videoUrl": "https://calibration.invalid/cr-calibration.mp4"
+      }
     }
   },
   "sgs/mega-group": {
@@ -1814,7 +1871,19 @@
           "mobile": "separate-x"
         }
       }
-    ]
+    ],
+    "preconditions": {
+      "anchorOffset": {
+        "anchor": {
+          "desktop": "trigger",
+          "tablet": "trigger",
+          "mobile": "trigger"
+        }
+      },
+      "chromeRatingColour": {
+        "chromeRating": true
+      }
+    }
   },
   "sgs/process-steps": {
     "attributes": {
@@ -1987,7 +2056,12 @@
           "mobile": "on"
         }
       }
-    ]
+    ],
+    "preconditions": {
+      "bgHoverZoomScale": {
+        "bgHoverZoom": true
+      }
+    }
   },
   "sgs/site-header-row": {
     "attributes": {

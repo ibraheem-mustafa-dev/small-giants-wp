@@ -15,7 +15,7 @@ function provisioned() {
 	return {
 		woocommerce: true,
 		menu: 50,
-		items: MENU_ITEMS.map( ( it ) => ( { id: ids[ it.key ], title: it.title, parent: it.parent ? ids[ it.parent ] : 0, object: it.post ? 'sgs_mega_menu' : 'custom', objectId: 0 } ) ),
+		items: MENU_ITEMS.map( ( it ) => ( { id: ids[ it.key ], title: it.title, description: it.description ?? '', parent: it.parent ? ids[ it.parent ] : 0, object: it.post ? 'sgs_mega_menu' : 'custom', objectId: 0 } ) ),
 		posts: { panel: 60, drawer: 61 },
 		media: { image: null, logo: { id: 70, url: 'https://site.test/logo.png' } },
 		product: 80,
@@ -87,4 +87,24 @@ test( 'arguments: a site is required, files must be images, unknown flags are re
 	assert.match( parseArgs( [ '--dry-run' ] ).error, /--site is required/ );
 	assert.match( parseArgs( [ '--site', 's', '--image', 'x.wav' ] ).error, /an image file/ );
 	assert.match( parseArgs( [ '--site', 's', '--wipe' ] ).error, /unknown argument/ );
+} );
+
+test( 'the featured item carries the description the badge settings render, and create/set/no-op actions follow the site state', () => {
+	const featured = MENU_ITEMS.find( ( i ) => i.key === MENU_ITEM_ROLE_KEY );
+	assert.equal( featured.description, 'SOON' );
+	// Creating it names the description.
+	const created = planProvision( empty ).actions.find( ( a ) => a.startsWith( 'add menu item "Featured"' ) );
+	assert.match( created, /with description "SOON"/ );
+	// An existing item with no description is reported, and only that item.
+	const s = provisioned();
+	s.items.find( ( i ) => 'Featured' === i.title ).description = '';
+	assert.deepEqual( planProvision( s ).actions, [ 'set description of menu item "Featured" to "SOON"' ] );
+	// A state read from an older script (no description field) is also reported; a matching one is not.
+	delete s.items.find( ( i ) => 'Featured' === i.title ).description;
+	assert.equal( planProvision( s ).actions.length, 1 );
+	assert.deepEqual( planProvision( provisioned() ).actions, [] );
+	// The apply PHP creates with the description and syncs an existing item's post_content.
+	const php = applyPhp( { known: planProvision( s ).known } );
+	assert.match( php, /'menu-item-description' => \$it\['description'\]/ );
+	assert.match( php, /wp_update_post\( wp_slash\( array\( 'ID' => \$ids\['items'\]\[ \$it\['key'\] \], 'post_content' => \$it\['description'\]/ );
 } );

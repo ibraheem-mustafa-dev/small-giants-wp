@@ -2,7 +2,7 @@
 // under its state trigger. Element keys are elementPath() keys from the instance root; a pseudo-element layer is its
 // element's key plus `::before`, `::after`, `::placeholder` or `::first-letter`; a panel the instance controls through
 // aria-controls (a cart dialog moved to <body>, a drawer) is keyed `@controls > <path>` (`@controls:2` for a second).
-import { WIDTHS, CAL_PREFIX, READ_PROPS, PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from './calibrate-props.mjs';
+import { WIDTHS, CAL_PREFIX, READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from './calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 import { EDITOR_TIMEOUT_MS } from './calibrate-chunk.mjs';
 
@@ -141,7 +141,7 @@ export async function openToggle( page ) {
 	await toggle.evaluate( ( el ) => el.click() );
 }
 
-const args = ( count, only ) => [ count, CAL_PREFIX, READ_PROPS, elementPath.toString(), PSEUDO_PROPS, TEXT_PSEUDO_PROPS, only ];
+const args = ( count, only ) => [ count, CAL_PREFIX, READ_PROPS, elementPath.toString(), CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, only ];
 
 // One state instance under its trigger: hover or keyboard focus on the styled element (its panel opened first when
 // it is hidden), or the state's ancestor class added. Returns the read, or null when the element stays hidden.

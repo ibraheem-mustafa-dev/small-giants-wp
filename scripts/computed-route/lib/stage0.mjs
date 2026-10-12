@@ -125,8 +125,9 @@ export function baselineProblems( baseline, ajv = loadAjv() ) {
 }
 
 // The arguments for calibrate.mjs: slot maps only (no default paint is measured in stage 0).
-export function calibrateArgs( { site, client, blocks, recalibrate } ) {
-	return [ '--site', site, '--client', client, '--blocks', blocks.join( ',' ), '--slot-map-only', ...( recalibrate ? [ '--recalibrate' ] : [] ) ];
+// `allowLoss` is a list of block:setting entries (calibrate.mjs --allow-loss).
+export function calibrateArgs( { site, client, blocks, recalibrate, allowLoss = [] } ) {
+	return [ '--site', site, '--client', client, '--blocks', blocks.join( ',' ), '--slot-map-only', ...( recalibrate ? [ '--recalibrate' ] : [] ), ...( allowLoss.length ? [ '--allow-loss', allowLoss.join( ',' ) ] : [] ) ];
 }
 
 export const installedPlaywright = () => createRequire( import.meta.url )( 'playwright/package.json' ).version;
@@ -136,7 +137,7 @@ export const installedPlaywright = () => createRequire( import.meta.url )( 'play
 //   calibration-targets.json refs, lib/calibration-refs.mjs::refsFor); refsExist(roles) -> { role: true | reason } (a read
 //   on the site); hashesOf(block) -> { deployed, local } | { error }; runCalibrate(args) -> exit code; now() -> ISO time;
 //   playwright; writeBaseline(file, text).
-// `o` is { repo, client, site, cacheDir, plan, recalibrate }. Returns { code, lines, baseline }; `plan` reads and prints only.
+// `o` is { repo, client, site, cacheDir, plan, recalibrate, allowLoss }. Returns { code, lines, baseline }; `plan` reads and prints only.
 export async function runStage0( o, deps ) {
 	const lines = [];
 	const log = ( l ) => lines.push( l );
@@ -173,7 +174,7 @@ export async function runStage0( o, deps ) {
 	if ( due.length && ! blocked.length ) {
 		const before = paintSnapshot( o.cacheDir );
 		// Every block in `due` is stale, missing or asked for, so the run replaces its slot map whichever site measured it.
-		const code = await deps.runCalibrate( calibrateArgs( { site: o.site, client: o.client, blocks: due.map( ( s ) => s.block ), recalibrate: true } ) );
+		const code = await deps.runCalibrate( calibrateArgs( { site: o.site, client: o.client, blocks: due.map( ( s ) => s.block ), recalibrate: true, allowLoss: o.allowLoss || [] } ) );
 		code && log( `calibrate.mjs exited ${ code }` );
 		const wrote = paintChanges( before, paintSnapshot( o.cacheDir ) );
 		wrote.length && log( `FAIL stage 0 wrote default paint files: ${ wrote.join( ', ' ) }` );

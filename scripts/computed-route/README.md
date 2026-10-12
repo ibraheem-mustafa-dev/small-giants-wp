@@ -312,6 +312,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `slotMapSkip(dir, block, site, slotKey, recalibrate?)` → why the slot map must be left alone (another site measured it, or its key is current), or null.
 - `dueOutputs(slotWhy, paintWhy, slotMapOnly?)` → `{ slotMap, paint }`: which outputs a run writes; `slotMapOnly` (`calibrate.mjs --slot-map-only`, stage 0) never makes the paint due.
 - `paintSkip(dir, block, site, paintKey, recalibrate?)` → why the site's paint is kept (its own file carries the current key), or null. `paintStale(dir, block, site, paintKey)` → true when the site's paint exists with a different key.
+- `slotMapLosses(prev, next, allowed?)` → the sorted settings (and `discovered:<attr>` keys) the existing slot map reaches that a new one drops, minus `allowed`; none without an existing map. `lossDestination(name, next)` → where a lost setting went in the new map: `dead`, `oneWidth`, `noMarker`, `rejected`, `untestedStates` or `absent`.
+- `slotMapWriteDecision(prev, next, allowed?)` → `{ write, lost: [ { setting, wentTo } ] }`: a slot map is shared by every client, so `calibrate.mjs` refuses one that drops a reached setting unless `--allow-loss` names it. `parseAllowLoss(list)` → `{ 'sgs/a': [ names ] }` from `sgs/a:setting,…` (split on the first colon). `refusedFile(dir, block)` → `cache/<block>.refused.json`, where a refused candidate is kept with `refusedBecause.lost`.
 
 ### `split-cache.mjs`
 - `splitCache(dir, { dryRun, log })` → `{ split, unchanged, problems }`: splits every combined cache file in `dir`; a file already split is left alone.
@@ -320,7 +322,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 ### `lib/calibrate-props.mjs` (imports `scripts/parity/lib/collect.mjs` and `ref-trace.mjs`)
 - `WIDTHS`: 375, 768, 1440. `MARKER_HEX`, `MARKER_RGB`: the colour marker. `MARKER_GRADIENT`: the gradient marker. `CAL_PREFIX`: `cr-ref-cal-`.
 - `READ_PROPS`: the properties read per element: the walker's plus `CAL_EXTRA_PROPS` (height, stroke, fill, grid rows, writing-mode and others a setting can paint before the walker compares them). `INHERITED`: never recorded as default paint.
-- `PSEUDO_PROPS` (the walker's list) read on painting `::before`/`::after` layers; `TEXT_PSEUDO_PROPS` on `::placeholder` and `::first-letter`.
+- `PSEUDO_PROPS` (the walker's list); `CAL_EXTRA_PSEUDO_PROPS` (`background-size`, `background-attachment`, `background-position`: the container wrapper's `.uid::before` media layer paints them and the walker does not compare them); `CAL_PSEUDO_PROPS` (both), read on painting `::before`/`::after` layers; `TEXT_PSEUDO_PROPS` on `::placeholder` and `::first-letter`.
 - `longhands(cssProperty)` → the read properties a setting covers; a gradient text or border, a shadow colour and `flex`/`inset` map onto the properties the browser computes them under; a modifier row (`grid-template-columns:count`) is read under the property it modifies (`lib/db.mjs::modifierOf`).
 - `MARKER_REST_GRADIENT`: the resting gradient a hover border-gradient marker needs before it paints (`helpers-tokens.php::sgs_border_gradient_css` returns nothing for an empty resting paint).
 
@@ -446,7 +448,7 @@ object key becomes the id's text. An attachment id beside the URL its render fal
 - `selfTest()` → the failed cases (positive, definition, edge, negative control, idempotence, round trip, corpus control). `main(argv)` → the exit code.
 
 ### `lib/provision-refs.mjs`
-- `MENU_NAME`, `MENU_ITEMS`, `MENU_ITEM_ROLE_KEY`: the calibration menu (six top-level items, a two-item submenu, a mega-panel item, the menu-item role a plain `#` link fourth). `POSTS`: the mega panel and drawer posts. `MEDIA`: each media role's attachment title. `PRODUCT_TITLE`.
+- `MENU_NAME`, `MENU_ITEMS`, `MENU_ITEM_ROLE_KEY`: the calibration menu (six top-level items, a two-item submenu, a mega-panel item, the menu-item role a plain `#` link fourth whose Description "SOON" is the menu blocks' badge copy; an existing item's description is set when it differs). `POSTS`: the mega panel and drawer posts. `MEDIA`: each media role's attachment title. `PRODUCT_TITLE`.
 - `statePhp()` → read-only PHP describing what the site holds.
 - `planProvision(state, { refs, kept, files })` → `{ actions, refs, unsupplied, known }`; a role is `'new'`, `'same-as-image'` or its id.
 - `applyPhp({ known, media, product })` → PHP that finds or creates every object and prints the ids. `refsFromResult(plan, result)` → the refs to write.
@@ -455,6 +457,7 @@ object key becomes the id's text. An attachment id beside the URL its render fal
 - `parseArgs(argv)` → `{ site, dryRun, files }` or `{ error }`. `describePlan(site, state, plan)` → the printed lines.
 
 ### `calibrate.mjs` (runs `wp-build-page.js`, ssh, Playwright)
+- `--allow-loss sgs/a:setting,…`: accepts each named loss; any other drop refuses the block's slot map (`lib/cache.mjs::slotMapWriteDecision`), keeps the candidate in `cache/<block>.refused.json` and fails the block (exit 1).
 - `CHUNK`: the most instances one calibration page holds (150, or `SGS_CAL_CHUNK` for a run); a larger block is built and read in chunks, each carrying every variant's default instance.
 - Re-exports `lib/deploy-hash.mjs`'s key functions.
 
@@ -928,7 +931,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `parseArgs(argv)` → `{ folder, known, schemas, source, json, probe, add }` or `{ error }`. `main(argv, log?)` → the exit code.
 
 ### `stage0.mjs`
-- `parseArgs(argv)` → `{ client, site, plan, recalibrate }` or `{ error }`. Runs `lib/stage0.mjs::runStage0` with the real handoff check, framework DB, deploy hashes and `calibrate.mjs`.
+- `parseArgs(argv)` → `{ client, site, plan, recalibrate, allowLoss }` or `{ error }` (`--allow-loss` is passed to `calibrate.mjs`). Runs `lib/stage0.mjs::runStage0` with the real handoff check, framework DB, deploy hashes and `calibrate.mjs`.
 
 ### `lib/stage0.mjs`
 - `BASELINE_SCHEMA`: path of `data/calibration-baseline.schema.json`. `FIXED_BLOCKS`: the layout and content blocks every surface uses (the spec's fixed rule).
@@ -937,7 +940,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `blockState({ cacheDir, block, hashes, fixtures, refsWhy })` → `{ block, state, deployHash, cachedKey, why }`; `state` is `current`, `stale`, `missing`, `undeployed`, `no-fixture`, `needs-refs` (the fixture names a reference the target does not supply or the site does not hold; `refsWhy` says which) or `no-build`.
 - `paintSnapshot(cacheDir)` → every `.paint.json` with size and mtime; `paintChanges(before, after)` → the paint files added or changed.
 - `buildBaseline({ client, site, takenOn, playwright, cacheDir, blocks, hashes })` → the Appendix C object; `baselineProblems(baseline, ajv?)` → readable problems (empty when valid and a browser is named).
-- `calibrateArgs({ site, client, blocks, recalibrate })` → the `calibrate.mjs` argument list, always with `--slot-map-only`. `installedPlaywright()` → the installed Playwright version.
+- `calibrateArgs({ site, client, blocks, recalibrate, allowLoss? })` → the `calibrate.mjs` argument list, always with `--slot-map-only`, plus `--allow-loss` when `allowLoss` is non-empty. `installedPlaywright()` → the installed Playwright version.
 - `runStage0(o, deps)` → `{ code, lines, baseline }`; `o` is `{ repo, client, site, cacheDir, plan, recalibrate }`, `deps` the injected effects (`refs` and `refsExist(roles)` among them).
 
 ### `lib/intake-spec-sync.mjs`

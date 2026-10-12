@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { splitCalibration, writeSlotMap, writePaint, readPaint, readSlotMap, loadCalibration, slotMapSkip, paintSkip, paintStale, paintFile, paintSite } from '../lib/cache.mjs';
+import { splitCalibration, writeSlotMap, writePaint, readPaint, readSlotMap, loadCalibration, slotMapSkip, paintSkip, paintStale, paintFile, paintSite, slotMapLosses, lossDestination, slotMapWriteDecision, parseAllowLoss } from '../lib/cache.mjs';
 import { calibrationFor } from '../solve.mjs';
 import { splitCache, placeMirrorPaint } from '../split-cache.mjs';
 
@@ -116,4 +116,46 @@ test( 'placeMirrorPaint moves a mirror folder into its test site’s, keeping th
 	assert.ok( ! fs.existsSync( path.join( dir, 'local-eye-care' ) ) );
 	assert.equal( readPaint( dir, 'eye-care-test', 'sgs/heading' ).elements[ '' ][ 1440 ].color, 'new' );
 	assert.deepEqual( placeMirrorPaint( dir ), { moved: [], dropped: [] } );
+} );
+
+// A slot map that loses a reached setting must not replace the existing one unless the loss is named.
+const prevMap = { settings: { a: {}, b: {}, c: {} }, discovered: { layout: {}, gap: {} } };
+const nextMap = { settings: { a: {}, d: {} }, discovered: { layout: {} }, dead: [ 'b' ], untestedStates: [ 'c:hover (hidden)' ] };
+
+test( 'MUST FAIL: a new slot map missing a setting the old one reaches reports that setting', () => {
+	assert.deepEqual( slotMapLosses( prevMap, nextMap ), [ 'b', 'c', 'discovered:gap' ] );
+} );
+
+test( 'a discovered attribute that disappears is a loss named discovered:<attr>', () => {
+	assert.deepEqual( slotMapLosses( { discovered: { x: {} } }, { discovered: {} } ), [ 'discovered:x' ] );
+} );
+
+test( 'named losses are removed from the list; a setting new in the next map is not a loss; no old map is no loss', () => {
+	assert.deepEqual( slotMapLosses( prevMap, nextMap, [ 'b', 'discovered:gap' ] ), [ 'c' ] );
+	assert.equal( slotMapLosses( prevMap, nextMap ).includes( 'd' ), false );
+	assert.deepEqual( slotMapLosses( null, nextMap ), [] );
+	assert.deepEqual( slotMapLosses( undefined, nextMap ), [] );
+} );
+
+test( 'lossDestination says where a lost setting went', () => {
+	assert.equal( lossDestination( 'b', nextMap ), 'dead' );
+	assert.equal( lossDestination( 'c', nextMap ), 'untestedStates' );
+	assert.equal( lossDestination( 'discovered:gap', nextMap ), 'absent' );
+	assert.equal( lossDestination( 'w', { oneWidth: [ { key: 'w-tiers-v0', reachedAt: [ 375 ] } ] } ), 'oneWidth' );
+	assert.equal( lossDestination( 'r', { rejected: [ { key: 'r-v1', message: 'm' } ] } ), 'rejected' );
+	assert.equal( lossDestination( 'n', { noMarker: [ 'n' ] } ), 'noMarker' );
+	assert.equal( lossDestination( 'w', { oneWidth: [ { key: 'wide-v0' } ] } ), 'absent' );
+} );
+
+test( 'slotMapWriteDecision refuses a lossy write, accepts a named loss and a first write', () => {
+	const refused = slotMapWriteDecision( prevMap, nextMap );
+	assert.equal( refused.write, false );
+	assert.deepEqual( refused.lost.map( ( l ) => [ l.setting, l.wentTo ] ), [ [ 'b', 'dead' ], [ 'c', 'untestedStates' ], [ 'discovered:gap', 'absent' ] ] );
+	assert.equal( slotMapWriteDecision( prevMap, nextMap, [ 'b', 'c', 'discovered:gap' ] ).write, true );
+	assert.equal( slotMapWriteDecision( null, nextMap ).write, true );
+} );
+
+test( 'parseAllowLoss splits block:name on the first colon after the block slug', () => {
+	assert.deepEqual( parseAllowLoss( 'sgs/a:x,sgs/b:discovered:layout,sgs/a:y' ), { 'sgs/a': [ 'x', 'y' ], 'sgs/b': [ 'discovered:layout' ] } );
+	assert.deepEqual( parseAllowLoss( null ), {} );
 } );

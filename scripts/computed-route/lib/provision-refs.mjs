@@ -4,7 +4,10 @@
 //
 // The calibration menu gives the menu blocks what a real primary menu gives them: six top-level items, one with a
 // two-item submenu and one opening a mega panel, and a plain custom link fourth (the `menuItem` role, which the fixtures
-// split after, disable and feature). The drawer is a minimal sgs/nav-drawer post: a stacked nav of two buttons and a
+// split after, disable and feature). That item carries the description "SOON": the menu blocks render a menu item's
+// Description as its badge copy (includes/nav-menu-markup.php::sgs_nav_shared_badge_html), so the itemBadge* settings
+// have an element to paint only when it is set. WordPress stores the description in the item's post_content.
+// The drawer is a minimal sgs/nav-drawer post: a stacked nav of two buttons and a
 // two-link icon list.
 export const MENU_NAME = 'CR calibration';
 export const MENU_ITEMS = [
@@ -13,7 +16,7 @@ export const MENU_ITEMS = [
 	{ key: 'shopTwo', title: 'Child two', url: '/shop/two/', parent: 'shop' },
 	{ key: 'panel', title: 'Panel', post: 'panel' },
 	{ key: 'about', title: 'About', url: '/about/' },
-	{ key: 'featured', title: 'Featured', url: '#' },
+	{ key: 'featured', title: 'Featured', url: '#', description: 'SOON' },
 	{ key: 'help', title: 'Help', url: '/help/' },
 	{ key: 'contact', title: 'Contact', url: '/contact/' },
 ];
@@ -59,7 +62,7 @@ $m = wp_get_nav_menu_object( $spec['menu'] );
 if ( $m ) {
 	$s['menu'] = (int) $m->term_id;
 	foreach ( wp_get_nav_menu_items( $m->term_id, array( 'post_status' => 'any' ) ) ?: array() as $i ) {
-		$s['items'][] = array( 'id' => (int) $i->ID, 'title' => $i->title, 'parent' => (int) $i->menu_item_parent, 'object' => $i->object, 'objectId' => (int) $i->object_id );
+		$s['items'][] = array( 'id' => (int) $i->ID, 'description' => (string) get_post_field( 'post_content', $i->ID ), 'title' => $i->title, 'parent' => (int) $i->menu_item_parent, 'object' => $i->object, 'objectId' => (int) $i->object_id );
 	}
 }
 foreach ( $spec['posts'] as $k => $p ) {
@@ -97,8 +100,11 @@ export function planProvision( state, { refs = {}, kept = {}, files = {} } = {} 
 		const have = state.menu ? findItem( state, item, known.items ) : null;
 		if ( have ) {
 			known.items[ item.key ] = have.id;
+			if ( undefined !== item.description && ( have.description ?? '' ) !== item.description ) {
+				actions.push( `set description of menu item "${ item.title }" to "${ item.description }"` );
+			}
 		} else {
-			actions.push( `add menu item "${ item.title }"${ item.parent ? ` under "${ MENU_ITEMS.find( ( i ) => i.key === item.parent ).title }"` : '' }${ item.post ? ` opening ${ POSTS[ item.post ].type } "${ POSTS[ item.post ].slug }"` : ` (${ item.url })` }` );
+			actions.push( `add menu item "${ item.title }"${ item.parent ? ` under "${ MENU_ITEMS.find( ( i ) => i.key === item.parent ).title }"` : '' }${ item.post ? ` opening ${ POSTS[ item.post ].type } "${ POSTS[ item.post ].slug }"` : ` (${ item.url })` }${ item.description ? ` with description "${ item.description }"` : '' }` );
 		}
 	}
 	for ( const [ key, p ] of Object.entries( POSTS ) ) {
@@ -168,7 +174,7 @@ foreach ( $a['items'] as $it ) {
 	foreach ( $have as $h ) {
 		if ( $h->title === $it['title'] && (int) $h->menu_item_parent === $parent ) { $ids['items'][ $k ] = (int) $h->ID; continue 2; }
 	}
-	$args = array( 'menu-item-title' => $it['title'], 'menu-item-status' => 'publish', 'menu-item-parent-id' => $parent, 'menu-item-position' => $pos );
+	$args = array( 'menu-item-title' => $it['title'], 'menu-item-description' => $it['description'] ?? '', 'menu-item-status' => 'publish', 'menu-item-parent-id' => $parent, 'menu-item-position' => $pos );
 	if ( ! empty( $it['post'] ) ) {
 		$args += array( 'menu-item-type' => 'post_type', 'menu-item-object' => $a['posts'][ $it['post'] ]['type'], 'menu-item-object-id' => $ids['posts'][ $it['post'] ] );
 	} else {
@@ -177,6 +183,13 @@ foreach ( $a['items'] as $it ) {
 	$id = wp_update_nav_menu_item( $ids['menu'], 0, $args );
 	if ( is_wp_error( $id ) ) { $fail( "menu item {$it['title']}: " . $id->get_error_message() ); }
 	$ids['items'][ $k ] = (int) $id;
+}
+// An item that already existed gets its description set (WordPress keeps it in post_content).
+foreach ( $a['items'] as $it ) {
+	if ( ! isset( $it['description'] ) || empty( $ids['items'][ $it['key'] ] ) ) { continue; }
+	if ( get_post_field( 'post_content', $ids['items'][ $it['key'] ] ) === $it['description'] ) { continue; }
+	$r = wp_update_post( wp_slash( array( 'ID' => $ids['items'][ $it['key'] ], 'post_content' => $it['description'] ) ), true );
+	if ( is_wp_error( $r ) ) { $fail( "menu item {$it['title']} description: " . $r->get_error_message() ); }
 }
 require_once ABSPATH . 'wp-admin/includes/image.php';
 foreach ( $a['media'] as $role => $m ) {

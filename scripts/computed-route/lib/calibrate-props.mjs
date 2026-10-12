@@ -17,8 +17,13 @@ export const CAL_EXTRA_PROPS = [ 'height', 'min-width', 'max-height', 'stroke', 
 
 export const READ_PROPS = [ ...new Set( [ ...DEFAULT_PROPS.filter( ( p ) => ! /^icon-/.test( p ) ), ...REF_PROPS, ...HOVER_PROPS, ...CAL_EXTRA_PROPS ] ) ];
 
-// Properties read on ::before / ::after layers: the walker's own list, so both sides read a layer alike.
+// Properties read on ::before / ::after layers: the walker's own list (PSEUDO_PROPS) so both sides read a layer alike,
+// plus the ones the container wrapper's media layer paints (plugins/sgs-blocks/includes/class-sgs-container-wrapper.php,
+// the `.uid::before` rule: background-size, background-position and, under fixed attachment or parallax,
+// background-attachment) that the walker does not compare. Without them a setting whose only paint is that layer reads dead.
 export { PSEUDO_PROPS };
+export const CAL_EXTRA_PSEUDO_PROPS = [ 'background-size', 'background-attachment', 'background-position' ];
+export const CAL_PSEUDO_PROPS = [ ...new Set( [ ...PSEUDO_PROPS, ...CAL_EXTRA_PSEUDO_PROPS ] ) ];
 // Properties read on ::placeholder and ::first-letter.
 export const TEXT_PSEUDO_PROPS = [ 'color', 'font-size', 'font-family', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'opacity', 'float' ];
 

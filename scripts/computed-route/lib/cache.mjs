@@ -137,3 +137,62 @@ export function paintStale( dir, block, site, paintKey ) {
 	const have = readPaint( dir, site, block );
 	return !! have && have.paintKey !== paintKey;
 }
+
+// The settings a new slot map drops that the existing one reaches: every key of `prev.settings` missing from
+// `next.settings`, and every key of `prev.discovered` missing from `next.discovered` (named `discovered:<attr>`), minus the
+// names in `allowed`. Sorted. No existing slot map means nothing to lose.
+export function slotMapLosses( prev, next, allowed = [] ) {
+	if ( ! prev ) {
+		return [];
+	}
+	const lost = [
+		...Object.keys( prev.settings || {} ).filter( ( k ) => ! ( k in ( next?.settings || {} ) ) ),
+		...Object.keys( prev.discovered || {} ).filter( ( k ) => ! ( k in ( next?.discovered || {} ) ) ).map( ( k ) => `discovered:${ k }` ),
+	];
+	return lost.filter( ( n ) => ! allowed.includes( n ) ).sort();
+}
+
+// Where a lost setting went in the new slot map: 'dead', 'oneWidth', 'noMarker', 'rejected', 'untestedStates', or 'absent'
+// when the new run does not mention it. oneWidth and rejected entries are { key: '<setting>-<instance>' } objects;
+// untestedStates entries are 'name:state (reason)' strings.
+export function lossDestination( name, next ) {
+	const attr = name.replace( /^discovered:/, '' );
+	const byKey = ( list ) => ( list || [] ).some( ( e ) => {
+		const key = 'string' === typeof e ? e : e?.key;
+		return key === attr || String( key ).startsWith( `${ attr }-` );
+	} );
+	if ( ( next?.dead || [] ).includes( attr ) ) {
+		return 'dead';
+	}
+	if ( byKey( next?.oneWidth ) ) {
+		return 'oneWidth';
+	}
+	if ( ( next?.noMarker || [] ).includes( attr ) ) {
+		return 'noMarker';
+	}
+	if ( byKey( next?.rejected ) ) {
+		return 'rejected';
+	}
+	return ( next?.untestedStates || [] ).some( ( s ) => String( s ).startsWith( `${ attr }:` ) ) ? 'untestedStates' : 'absent';
+}
+
+// Whether a run may write the block's slot map: { write, lost: [ { setting, wentTo } ] }. It may not when the new map drops
+// a setting the existing one reaches and the loss is not named in `allowed` (calibrate.mjs --allow-loss).
+export function slotMapWriteDecision( prev, next, allowed = [] ) {
+	const lost = slotMapLosses( prev, next, allowed ).map( ( setting ) => ( { setting, wentTo: lossDestination( setting, next ) } ) );
+	return { write: ! lost.length, lost };
+}
+
+// The --allow-loss list as { 'sgs/a': [ 'settingX', 'discovered:layout' ] }; each entry is block:name, split on the first
+// colon after the block slug.
+export function parseAllowLoss( list ) {
+	const out = {};
+	for ( const entry of String( list || '' ).split( ',' ).filter( Boolean ) ) {
+		const m = entry.match( /^([^:]+):(.+)$/ );
+		m && ( out[ m[ 1 ] ] ||= [] ).push( m[ 2 ] );
+	}
+	return out;
+}
+
+// Where a refused candidate slot map is kept for review.
+export const refusedFile = ( dir, block ) => path.join( dir, `${ slugOf( block ) }.refused.json` );

@@ -8,6 +8,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { runStage0, blockSetFor, surfaceKinds, buildBaseline, baselineProblems, calibrateArgs, FIXED_BLOCKS } from '../lib/stage0.mjs';
+import { parseArgs } from '../stage0.mjs';
 import { dueOutputs, writeSlotMap, writePaint, readSlotMap } from '../lib/cache.mjs';
 
 const ROWS = [ 'sgs/form', 'sgs/form-field-text', 'sgs/form-step', 'sgs/nav-bar-menu', 'sgs/nav-drawer-menu', 'sgs/mega-panel', 'sgs/site-header', 'sgs/hero' ].map( ( block_slug ) => ( { block_slug } ) );
@@ -215,4 +216,13 @@ test( 'supplied references the site holds leave the block calibratable', async (
 	const r = await runStage0( opts( w, { plan: true } ), d );
 	assert.equal( r.code, 0, r.lines.join( '\n' ) );
 	assert.match( r.lines.join( '\n' ), /sgs\/nav-bar-menu: current/ );
+} );
+
+test( '--allow-loss passes from the command line through calibrateArgs to calibrate.mjs, and is absent when not given', () => {
+	const o = parseArgs( [ '--client', 'c', '--site', 's', '--allow-loss', 'sgs/a:x,sgs/b:discovered:layout' ] );
+	assert.deepEqual( o.allowLoss, [ 'sgs/a:x', 'sgs/b:discovered:layout' ] );
+	const args = calibrateArgs( { site: 's', client: 'c', blocks: [ 'sgs/a' ], recalibrate: true, allowLoss: o.allowLoss } );
+	assert.deepEqual( args.slice( -2 ), [ '--allow-loss', 'sgs/a:x,sgs/b:discovered:layout' ] );
+	assert.ok( ! calibrateArgs( { site: 's', client: 'c', blocks: [ 'sgs/a' ], recalibrate: true } ).includes( '--allow-loss' ) );
+	assert.deepEqual( parseArgs( [ '--client', 'c', '--site', 's' ] ).allowLoss, [] );
 } );

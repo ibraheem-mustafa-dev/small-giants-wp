@@ -25,11 +25,11 @@ import { refsFor, checkRefsExist, wpEvalRunner } from './lib/calibration-refs.mj
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
-const USAGE = 'usage: node scripts/computed-route/stage0.mjs --client <client> --site <mirror-target> [--plan] [--recalibrate]';
+const USAGE = 'usage: node scripts/computed-route/stage0.mjs --client <client> --site <mirror-target> [--plan] [--recalibrate] [--allow-loss sgs/a:setting,...]';
 
-// The command line as { client, site, plan, recalibrate }, or { error }.
+// The command line as { client, site, plan, recalibrate, allowLoss }, or { error }.
 export function parseArgs( argv ) {
-	const o = { client: null, site: null, plan: false, recalibrate: false };
+	const o = { client: null, site: null, plan: false, recalibrate: false, allowLoss: [] };
 	for ( let i = 0; i < argv.length; i++ ) {
 		const a = argv[ i ];
 		if ( '--client' === a || '--site' === a ) {
@@ -37,6 +37,11 @@ export function parseArgs( argv ) {
 				return { error: `${ a } needs a value` };
 			}
 			o[ a.slice( 2 ) ] = argv[ ++i ];
+		} else if ( '--allow-loss' === a ) {
+			if ( undefined === argv[ i + 1 ] || argv[ i + 1 ].startsWith( '--' ) ) {
+				return { error: `${ a } needs a value` };
+			}
+			o.allowLoss.push( ...argv[ ++i ].split( ',' ).filter( Boolean ) );
 		} else if ( '--plan' === a ) {
 			o.plan = true;
 		} else if ( '--recalibrate' === a ) {
@@ -92,7 +97,7 @@ async function run( argv ) {
 			fs.writeFileSync( file, text );
 		},
 	};
-	const r = await runStage0( { repo: REPO, client: o.client, site: o.site, cacheDir: path.join( HERE, 'cache' ), plan: o.plan, recalibrate: o.recalibrate }, deps );
+	const r = await runStage0( { repo: REPO, client: o.client, site: o.site, cacheDir: path.join( HERE, 'cache' ), plan: o.plan, recalibrate: o.recalibrate, allowLoss: o.allowLoss }, deps );
 	r.lines.forEach( ( l ) => console.log( l ) );
 	return r.code;
 }

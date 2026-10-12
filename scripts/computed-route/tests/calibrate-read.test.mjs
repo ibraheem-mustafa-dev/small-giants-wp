@@ -5,8 +5,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { slotFor, WIDTHS } from '../lib/calibrate.mjs';
 import { readInstancesInPage, openToggle, markTargetInPage } from '../lib/calibrate-read.mjs';
-import { READ_PROPS, PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from '../lib/calibrate-props.mjs';
+import { READ_PROPS, PSEUDO_PROPS, CAL_PSEUDO_PROPS, CAL_EXTRA_PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from '../lib/calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
@@ -92,4 +93,30 @@ test( 'MUST FAIL (triggerDetachBackgroundHover): a companion printed outside the
 	} finally {
 		await browser.close();
 	}
+} );
+
+test( 'MUST FAIL (site-header background size/attachment read dead): the media layer ::before background-size, -position and -attachment are read and give the setting a slot on that layer', async () => {
+	assert.ok( CAL_EXTRA_PSEUDO_PROPS.every( ( p ) => CAL_PSEUDO_PROPS.includes( p ) && ! PSEUDO_PROPS.includes( p ) ), 'the extras are new to the walker list' );
+	assert.equal( new Set( CAL_PSEUDO_PROPS ).size, CAL_PSEUDO_PROPS.length );
+	assert.ok( PSEUDO_PROPS.every( ( p ) => CAL_PSEUDO_PROPS.includes( p ) ) );
+	const { chromium } = await import( 'playwright' );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		await page.setContent( `<style>.cr-ref-cal-0::before{content:"";position:absolute;background-image:url(data:image/gif;base64,R0lGODlhAQABAAAAACw=);background-size:cover;background-attachment:fixed}</style><div class="cr-ref-cal-0">x</div>` );
+		const [ els ] = await page.evaluate( readInstancesInPage, [ 1, 'cr-ref-cal-', READ_PROPS, elementPath.toString(), CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS ] );
+		assert.equal( els[ '::before' ]?.[ 'background-size' ], 'cover' );
+		assert.equal( els[ '::before' ]?.[ 'background-attachment' ], 'fixed' );
+		const [ old ] = await page.evaluate( readInstancesInPage, [ 1, 'cr-ref-cal-', READ_PROPS, elementPath.toString(), PSEUDO_PROPS, TEXT_PSEUDO_PROPS ] );
+		assert.equal( old[ '::before' ]?.[ 'background-size' ], undefined, 'the walker list alone never reads it' );
+	} finally {
+		await browser.close();
+	}
+	// A reading that differs between the default and marked instance only in the layer's background-size yields a slot on the layer.
+	const reads = ( size ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, { '': { 'background-size': 'auto' }, '::before': { 'background-size': size, 'background-attachment': 'scroll' } } ] ) );
+	const slot = slotFor( { attr_name: 'backgroundSize', css_property: 'background-size', tier_shape: null }, { label: 'contain' }, reads( 'cover' ), reads( 'contain' ) );
+	assert.equal( slot.dead, undefined );
+	assert.equal( slot.slot, '::before' );
+	assert.equal( slot.property, 'background-size' );
+	assert.deepEqual( slotFor( { attr_name: 'backgroundSize', css_property: 'background-size', tier_shape: null }, { label: 'contain' }, reads( 'cover' ), reads( 'cover' ) ), { dead: true } );
 } );
