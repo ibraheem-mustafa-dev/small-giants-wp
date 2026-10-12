@@ -7094,6 +7094,150 @@
 				"role": "select-from-enum"
 			},
 			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+		},
+		{
+			"slug": "sgs/nav-drawer",
+			"attr": "chromeSlotFontFamily",
+			"fields": {
+				"css_property": "font-family",
+				"css_element": "chromeSlot",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by nav-drawer-chrome-css.php through sgs_typography_css_rule($attributes, 'chromeSlot', $slot_sel) onto the top-row slot (includes/helpers-typography.php::sgs_typography_css_rule emits each family/weight/style/line-height/letter-spacing/transform declaration). The emission scanner pairs only the slot's font-size and colour: the helper builds every other declaration from a prefix-derived attribute name, so no literal property/selector pair sits in one statement. Without a css_property calibration never plans the setting (a 2026-10-07 slot map reached chromeSlotFontStyle on .sgs-nav-drawer__chrome-slot at 375/768/1440; a later reseed dropped its row's css_property)."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer",
+			"attr": "chromeSlotFontWeight",
+			"fields": {
+				"css_property": "font-weight",
+				"css_element": "chromeSlot",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by nav-drawer-chrome-css.php through sgs_typography_css_rule($attributes, 'chromeSlot', $slot_sel) onto the top-row slot (includes/helpers-typography.php::sgs_typography_css_rule emits each family/weight/style/line-height/letter-spacing/transform declaration). The emission scanner pairs only the slot's font-size and colour: the helper builds every other declaration from a prefix-derived attribute name, so no literal property/selector pair sits in one statement. Without a css_property calibration never plans the setting (a 2026-10-07 slot map reached chromeSlotFontStyle on .sgs-nav-drawer__chrome-slot at 375/768/1440; a later reseed dropped its row's css_property)."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer",
+			"attr": "chromeSlotFontStyle",
+			"fields": {
+				"css_property": "font-style",
+				"css_element": "chromeSlot",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by nav-drawer-chrome-css.php through sgs_typography_css_rule($attributes, 'chromeSlot', $slot_sel) onto the top-row slot (includes/helpers-typography.php::sgs_typography_css_rule emits each family/weight/style/line-height/letter-spacing/transform declaration). The emission scanner pairs only the slot's font-size and colour: the helper builds every other declaration from a prefix-derived attribute name, so no literal property/selector pair sits in one statement. Without a css_property calibration never plans the setting (a 2026-10-07 slot map reached chromeSlotFontStyle on .sgs-nav-drawer__chrome-slot at 375/768/1440; a later reseed dropped its row's css_property)."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer",
+			"attr": "chromeSlotLineHeight",
+			"fields": {
+				"css_property": "line-height",
+				"css_element": "chromeSlot",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by nav-drawer-chrome-css.php through sgs_typography_css_rule($attributes, 'chromeSlot', $slot_sel) onto the top-row slot (includes/helpers-typography.php::sgs_typography_css_rule emits each family/weight/style/line-height/letter-spacing/transform declaration). The emission scanner pairs only the slot's font-size and colour: the helper builds every other declaration from a prefix-derived attribute name, so no literal property/selector pair sits in one statement. Without a css_property calibration never plans the setting (a 2026-10-07 slot map reached chromeSlotFontStyle on .sgs-nav-drawer__chrome-slot at 375/768/1440; a later reseed dropped its row's css_property)."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer",
+			"attr": "chromeSlotTextTransform",
+			"fields": {
+				"css_property": "text-transform",
+				"css_element": "chromeSlot",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by nav-drawer-chrome-css.php through sgs_typography_css_rule($attributes, 'chromeSlot', $slot_sel) onto the top-row slot (includes/helpers-typography.php::sgs_typography_css_rule emits each family/weight/style/line-height/letter-spacing/transform declaration). The emission scanner pairs only the slot's font-size and colour: the helper builds every other declaration from a prefix-derived attribute name, so no literal property/selector pair sits in one statement. Without a css_property calibration never plans the setting (a 2026-10-07 slot map reached chromeSlotFontStyle on .sgs-nav-drawer__chrome-slot at 375/768/1440; a later reseed dropped its row's css_property)."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer",
+			"attr": "chromeSlotLetterSpacing",
+			"fields": {
+				"css_property": "letter-spacing",
+				"css_element": "chromeSlot",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by nav-drawer-chrome-css.php through sgs_typography_css_rule($attributes, 'chromeSlot', $slot_sel) onto the top-row slot (includes/helpers-typography.php::sgs_typography_css_rule emits each family/weight/style/line-height/letter-spacing/transform declaration). The emission scanner pairs only the slot's font-size and colour: the helper builds every other declaration from a prefix-derived attribute name, so no literal property/selector pair sits in one statement. Without a css_property calibration never plans the setting (a 2026-10-07 slot map reached chromeSlotFontStyle on .sgs-nav-drawer__chrome-slot at 375/768/1440; a later reseed dropped its row's css_property)."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemBadgeFontSize",
+			"fields": {
+				"css_property": "font-size",
+				"css_element": "badge",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by includes/nav-menu-item-padding-css.php through sgs_typography_css_rule($attributes, 'itemBadge', $badge_sel) onto the menu item badge (the element padding, radius and gap already name 'badge'). The emission scanner cannot pair a helper-built, prefix-derived declaration with its selector, so the row carried no css_property and calibration never planned it."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemBadgeFontWeight",
+			"fields": {
+				"css_property": "font-weight",
+				"css_element": "badge",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by includes/nav-menu-item-padding-css.php through sgs_typography_css_rule($attributes, 'itemBadge', $badge_sel) onto the menu item badge (the element padding, radius and gap already name 'badge'). The emission scanner cannot pair a helper-built, prefix-derived declaration with its selector, so the row carried no css_property and calibration never planned it."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemBadgeLetterSpacing",
+			"fields": {
+				"css_property": "letter-spacing",
+				"css_element": "badge",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by includes/nav-menu-item-padding-css.php through sgs_typography_css_rule($attributes, 'itemBadge', $badge_sel) onto the menu item badge (the element padding, radius and gap already name 'badge'). The emission scanner cannot pair a helper-built, prefix-derived declaration with its selector, so the row carried no css_property and calibration never planned it."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemBadgeTextTransform",
+			"fields": {
+				"css_property": "text-transform",
+				"css_element": "badge",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by includes/nav-menu-item-padding-css.php through sgs_typography_css_rule($attributes, 'itemBadge', $badge_sel) onto the menu item badge (the element padding, radius and gap already name 'badge'). The emission scanner cannot pair a helper-built, prefix-derived declaration with its selector, so the row carried no css_property and calibration never planned it."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemFontFamily",
+			"fields": {
+				"css_property": "font-family",
+				"css_element": "item",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by includes/nav-menu-css.php through sgs_typography_css_rule($attributes, 'item', $link_sel) with the rest of the item typography, whose siblings (size, weight, style, line height, transform) the derived layer already maps to 'item'. Only the family row lacked a css_property, so calibration never planned it."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemBadgeFontSize",
+			"fields": {
+				"css_property": "font-size",
+				"css_element": "badge",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by includes/nav-menu-item-padding-css.php through sgs_typography_css_rule($attributes, 'itemBadge', $badge_sel) onto the menu item badge (the element padding, radius and gap already name 'badge'). The emission scanner cannot pair a helper-built, prefix-derived declaration with its selector, so the row carried no css_property and calibration never planned it."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemBadgeFontWeight",
+			"fields": {
+				"css_property": "font-weight",
+				"css_element": "badge",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by includes/nav-menu-item-padding-css.php through sgs_typography_css_rule($attributes, 'itemBadge', $badge_sel) onto the menu item badge (the element padding, radius and gap already name 'badge'). The emission scanner cannot pair a helper-built, prefix-derived declaration with its selector, so the row carried no css_property and calibration never planned it."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemBadgeLetterSpacing",
+			"fields": {
+				"css_property": "letter-spacing",
+				"css_element": "badge",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by includes/nav-menu-item-padding-css.php through sgs_typography_css_rule($attributes, 'itemBadge', $badge_sel) onto the menu item badge (the element padding, radius and gap already name 'badge'). The emission scanner cannot pair a helper-built, prefix-derived declaration with its selector, so the row carried no css_property and calibration never planned it."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemBadgeTextTransform",
+			"fields": {
+				"css_property": "text-transform",
+				"css_element": "badge",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by includes/nav-menu-item-padding-css.php through sgs_typography_css_rule($attributes, 'itemBadge', $badge_sel) onto the menu item badge (the element padding, radius and gap already name 'badge'). The emission scanner cannot pair a helper-built, prefix-derived declaration with its selector, so the row carried no css_property and calibration never planned it."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemFontFamily",
+			"fields": {
+				"css_property": "font-family",
+				"css_element": "item",
+				"_why": "2026-10-12 (Spec 48 step 8). Painted by includes/nav-menu-css.php through sgs_typography_css_rule($attributes, 'item', $link_sel) with the rest of the item typography, whose siblings (size, weight, style, line height, transform) the derived layer already maps to 'item'. Only the family row lacked a css_property, so calibration never planned it."
+			}
 		}
 	]
 }
