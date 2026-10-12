@@ -146,12 +146,55 @@ Lower rule 31's `openBacklog` to the measured floor with a stated reason, write 
 ## Step 1 — Pin the recipe contract as machine-readable data
 
     Model:       inline
-    Action:      Add a `recipes` block to golden-controls.json controls.colour: for each of the five members, record { paintHelper, rowShape, requiredSiblings, livesAs }. This is the single source both the detector and every migration agent read, so two agents cannot interpret the recipe differently. Files:       plugins/sgs-blocks/scripts/consistency/golden-controls.json Inputs:      The brief's family table; S-1..S-4 Outcome:     `python -c "import json;d=json.load(open(...));print(len(d['controls']['colour']['recipes']))"` prints 5 Exec:        SEQUENTIAL Deps:        none Marker:      SESSION-START Time:        10 min Tooling:     Bash, python On-Fail:     `git checkout -- golden-controls.json` Cold-Entry:  The brief (in full) + golden-controls.json controls.colour Test: Happy:       JSON parses; 5 recipes present, each naming a real PHP function Edge:        A recipe naming a helper that does not exist -> grep helpers-tokens.php proves each Fail:        Invalid JSON -> the file is the contract; a broken contract fails every gate Integration: `node scripts/inspector-scan/run.js --check` still exits 0
+    Action:      Add a `recipes` block to golden-controls.json controls.colour: for each of the five
+                 members, record { paintHelper, rowShape, requiredSiblings, livesAs }. This is the
+                 single source both the detector and every migration agent read, so two agents
+                 cannot interpret the recipe differently.
+    Files:       plugins/sgs-blocks/scripts/consistency/golden-controls.json
+    Inputs:      The brief's family table; S-1..S-4
+    Outcome:     `python -c "import json;d=json.load(open(...));print(len(d['controls']['colour']['recipes']))"` prints 5
+    Exec:        SEQUENTIAL
+    Deps:        none
+    Marker:      SESSION-START
+    Time:        10 min
+    Tooling:     Bash, python
+    On-Fail:     `git checkout -- golden-controls.json`
+    Cold-Entry:  The brief (in full) + golden-controls.json controls.colour
+    Test:
+      Happy:       JSON parses; 5 recipes present, each naming a real PHP function
+      Edge:        A recipe naming a helper that does not exist -> grep helpers-tokens.php proves each
+      Fail:        Invalid JSON -> the file is the contract; a broken contract fails every gate
+      Integration: `node scripts/inspector-scan/run.js --check` still exits 0
 
 ## Step 2 — Resolve each row's mechanism from the DB, NOT from scanning render.php
 
     Model:       sonnet
-    Action:      Rule 31 reads each colour row's PAINT MECHANISM from `block_attributes.css_property` — the declarative routing column that already exists — and maps it to a mechanism: color | color-gradient                                   -> TEXT background-color | background-image | *-gradient          -> FILL border-color | border-color-gradient | outline-color      -> BORDER box-shadow-color                                          -> SHADOW (no gradient) stroke                                                    -> SVG STROKE An attribute with an EMPTY css_property is UNRESOLVED — reported, never guessed. Files:       plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js Inputs:      Step 1's recipes; the `block_attributes` table via `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` Outcome:     Every colour row carries a resolved mechanism or an explicit UNRESOLVED, sourced from the DB Exec:        SEQUENTIAL Deps:        Step 1 Marker:      (none) Time:        25 min Tooling:     Bash, node, sgs-db.py On-Fail:     Revert the rule file; the ratchet must stay green Prompt:      `.claude/prompts/step-2-mechanism-resolver.md` (⚠ REWRITE IT FIRST — it still describes the render.php scan this step replaced) Test: Happy:       sgs/heading's three rows resolve TEXT / FILL / BORDER from their css_property Edge:        An attr with empty css_property -> UNRESOLVED, never inferred from its NAME Fail:        DB unreachable -> the rule fails closed, never silently resolves nothing Integration: Total finding count UNCHANGED (this step only makes mechanism VISIBLE)
+    Action:      Rule 31 reads each colour row's PAINT MECHANISM from `block_attributes.css_property`
+                 — the declarative routing column that already exists — and maps it to a mechanism:
+                   color | color-gradient                                   -> TEXT
+                   background-color | background-image | *-gradient          -> FILL
+                   border-color | border-color-gradient | outline-color      -> BORDER
+                   box-shadow-color                                          -> SHADOW (no gradient)
+                   stroke                                                    -> SVG STROKE
+                 An attribute with an EMPTY css_property is UNRESOLVED — reported, never guessed.
+    Files:       plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js
+    Inputs:      Step 1's recipes; the `block_attributes` table via
+                 `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`
+    Outcome:     Every colour row carries a resolved mechanism or an explicit UNRESOLVED, sourced
+                 from the DB
+    Exec:        SEQUENTIAL
+    Deps:        Step 1
+    Marker:      (none)
+    Time:        25 min
+    Tooling:     Bash, node, sgs-db.py
+    On-Fail:     Revert the rule file; the ratchet must stay green
+    Prompt:      `.claude/prompts/step-2-mechanism-resolver.md` (⚠ REWRITE IT FIRST — it still
+                 describes the render.php scan this step replaced)
+    Test:
+      Happy:       sgs/heading's three rows resolve TEXT / FILL / BORDER from their css_property
+      Edge:        An attr with empty css_property -> UNRESOLVED, never inferred from its NAME
+      Fail:        DB unreachable -> the rule fails closed, never silently resolves nothing
+      Integration: Total finding count UNCHANGED (this step only makes mechanism VISIBLE)
 
 ⭐ **THIS REPLACES A RENDER.PHP SCAN, ON BEAN'S STEER, AND THE COUNCIL HAD ALREADY KILLED THE OLD SHAPE.** The previous Step 2 proposed a cross-file, cross-language regex resolver over `render.php`. A council tracer measured it and returned *"not sound enough to build on as currently scoped"*: the shared wrapper contains **ZERO** calls to `sgs_background_paint_decl` or `sgs_text_colour_decl` across its 3,243 lines, so wrapper-routed blocks could never resolve their fill or text rows; and the 4-helper vocabulary could not see the dominant real pattern — a bare `sgs_colour_value()` hand-embedded in a CSS string (`team-member/render.php:544`, `label:138`, `separator:147`).
 
@@ -191,7 +234,31 @@ Regenerate with `python plugins/sgs-blocks/scripts/census-colour-paint-route.py 
 ## Step 2b — Seed the missing `css_property` values FROM THE CENSUS, not by hand
 
     Model:       sonnet
-    Action:      Fill the empty `block_attributes.css_property` cells using the colour-golden census as the evidence source. It already scanned the real render surface and recorded, per finding: `property`, `element_guess`, `selector`, `state`, `file`, `line`. That is exactly the field the DB is missing, derived from the code rather than assigned by judgement. Files:       `.claude/reports/2026-08-20-colour-golden-raw/colour-coverage.json` (READ), the DB via `sgs-db.py`, and a new seeding script under `plugins/sgs-blocks/scripts/` Inputs:      Step 2's UNRESOLVED list Outcome:     Every fillable gap carries a css_property traceable to a census file:line; every remaining gap is NAMED with why it could not be filled Exec:        SEQUENTIAL Deps:        Step 2 Marker:      (none) Time:        30 min Tooling:     Bash, python, sgs-db.py On-Fail:     The DB is shared across tracks — never reseed without `/sgs-update` first Prompt:      ⛔ NOT PRE-WRITTEN — its worklist is Step 2's UNRESOLVED output. Test: Happy:       A seeded attr resolves to the same mechanism the census observed at that file:line Edge:        A census `property` string that is DESCRIPTIVE, not a CSS property -> normalise or refuse; never write prose into the column Fail:        NEGATIVE CONTROL: seed a deliberately wrong property, confirm rule 31 resolves that row to the WRONG mechanism and flags it. Restore. Integration: `python scripts/dbschema/check_schema_drift.py --check` still passes
+    Action:      Fill the empty `block_attributes.css_property` cells using the colour-golden
+                 census as the evidence source. It already scanned the real render surface and
+                 recorded, per finding: `property`, `element_guess`, `selector`, `state`, `file`,
+                 `line`. That is exactly the field the DB is missing, derived from the code rather
+                 than assigned by judgement.
+    Files:       `.claude/reports/2026-08-20-colour-golden-raw/colour-coverage.json` (READ),
+                 the DB via `sgs-db.py`, and a new seeding script under
+                 `plugins/sgs-blocks/scripts/`
+    Inputs:      Step 2's UNRESOLVED list
+    Outcome:     Every fillable gap carries a css_property traceable to a census file:line; every
+                 remaining gap is NAMED with why it could not be filled
+    Exec:        SEQUENTIAL
+    Deps:        Step 2
+    Marker:      (none)
+    Time:        30 min
+    Tooling:     Bash, python, sgs-db.py
+    On-Fail:     The DB is shared across tracks — never reseed without `/sgs-update` first
+    Prompt:      ⛔ NOT PRE-WRITTEN — its worklist is Step 2's UNRESOLVED output.
+    Test:
+      Happy:       A seeded attr resolves to the same mechanism the census observed at that file:line
+      Edge:        A census `property` string that is DESCRIPTIVE, not a CSS property -> normalise
+                   or refuse; never write prose into the column
+      Fail:        NEGATIVE CONTROL: seed a deliberately wrong property, confirm rule 31 resolves
+                   that row to the WRONG mechanism and flags it. Restore.
+      Integration: `python scripts/dbschema/check_schema_drift.py --check` still passes
 
 ⭐ **Bean's steer: "the colour golden census should be able to provide that info." It can — MEASURED.** The census holds **189 records across 33 blocks**, each carrying a CSS `property` and an `element_guess`. Cross-referenced against the DB gaps:
 
@@ -210,65 +277,284 @@ Highest-yield: `cta-section` 10 · `product-card` 9 · `container` 8 · `hero` 6
 ## Step 2a — Give every rule-31 finding a machine-readable `kind`
 
     Model:       inline (trivial + additive; delegating costs more than doing it)
-    Action:      Add a `kind` string field to every rule-31 finding object, naming its axis: below-min-states | missing-gradient | native-colour-ui | banned-lookalike | roster-surface-unknown. Purely additive — no assertion changes. Files:       plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js Inputs:      none Outcome:     Every finding in --json carries a `kind`; classification stops being a substring grep on free-text `detail` Exec:        SEQUENTIAL Deps:        none (can run before or alongside Step 2) Marker:      (none) Time:        10 min Tooling:     Bash, node, python On-Fail:     Revert; no assertion depended on it Test: Happy:       `--json` findings all have a non-null `kind` Edge:        A finding whose axis is ambiguous -> named explicitly, never defaulted silently Fail:        Total finding count MUST be unchanged; if it moved, an assertion was touched Integration: `run.js --check` exits 0
+    Action:      Add a `kind` string field to every rule-31 finding object, naming its axis:
+                 below-min-states | missing-gradient | native-colour-ui | banned-lookalike |
+                 roster-surface-unknown. Purely additive — no assertion changes.
+    Files:       plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js
+    Inputs:      none
+    Outcome:     Every finding in --json carries a `kind`; classification stops being a substring
+                 grep on free-text `detail`
+    Exec:        SEQUENTIAL
+    Deps:        none (can run before or alongside Step 2)
+    Marker:      (none)
+    Time:        10 min
+    Tooling:     Bash, node, python
+    On-Fail:     Revert; no assertion depended on it
+    Test:
+      Happy:       `--json` findings all have a non-null `kind`
+      Edge:        A finding whose axis is ambiguous -> named explicitly, never defaulted silently
+      Fail:        Total finding count MUST be unchanged; if it moved, an assertion was touched
+      Integration: `run.js --check` exits 0
 
 ⛔ **Why this is its own step.** There is NO `kind` field today — verified: finding objects carry `{rule, checklistItem, block, file, line, severity, detail, fix, key, status}`. The kinds this plan names exist only as free text inside `detail`. Without this step, QA Gate B's "classify by kind" means "grep a substring you invent yourself", and two agents will draw the boundaries differently.
 
 ## QA Gate A — the resolver is honest before any assertion depends on it
 
     Model:   inline
-    Exec:    SEQUENTIAL Deps:    Step 2 Check:   node scripts/inspector-scan/run.js --check ; echo "exit=$?"   AND   the run reports an explicit UNRESOLVED count Pass:    exit 0, total findings unchanged from the Step-0 measurement, UNRESOLVED count stated Fail:    If total moved, the resolver changed an assertion it should not have — revert Step 2 Marker:  QA
+    Exec:    SEQUENTIAL
+    Deps:    Step 2
+    Check:   node scripts/inspector-scan/run.js --check ; echo "exit=$?"   AND   the run reports an
+             explicit UNRESOLVED count
+    Pass:    exit 0, total findings unchanged from the Step-0 measurement, UNRESOLVED count stated
+    Fail:    If total moved, the resolver changed an assertion it should not have — revert Step 2
+    Marker:  QA
 
 ## Step 3 — Make the assertion mechanism-aware, BOTH directions
 
     Model:       sonnet
-    Action:      Replace the binary `row-missing-gradient` check. A row PASSES when its gradient path matches its resolved mechanism. A shadow-mechanism row is EXEMPT (no gradient possible). An UNRESOLVED row is reported as unresolved, never as a pass. Files:       plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js Inputs:      Step 2's resolver; S-3 Outcome:     Shadow rows stop being flagged for a missing gradient; a row wired to the WRONG mechanism starts being flagged Exec:        SEQUENTIAL Deps:        QA Gate A Marker:      (none) Time:        45 min Tooling:     Bash, node On-Fail:     Revert; re-measure to confirm the count returns to its pre-step value Prompt:      `.claude/prompts/step-3-mechanism-assertion.md` (WRITTEN) Test: Happy:       A shadow row is no longer flagged missing-gradient Edge:        A text row wired to the BACKGROUND mechanism is newly flagged (the false-PASS case) Fail:        NEGATIVE CONTROL, must be OBSERVED both ways: inject a wrongly-wired row -> gate RED; restore -> GREEN Integration: `npm run build` exits 0 with the ratchet re-baselined
+    Action:      Replace the binary `row-missing-gradient` check. A row PASSES when its gradient path
+                 matches its resolved mechanism. A shadow-mechanism row is EXEMPT (no gradient
+                 possible). An UNRESOLVED row is reported as unresolved, never as a pass.
+    Files:       plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js
+    Inputs:      Step 2's resolver; S-3
+    Outcome:     Shadow rows stop being flagged for a missing gradient; a row wired to the WRONG
+                 mechanism starts being flagged
+    Exec:        SEQUENTIAL
+    Deps:        QA Gate A
+    Marker:      (none)
+    Time:        45 min
+    Tooling:     Bash, node
+    On-Fail:     Revert; re-measure to confirm the count returns to its pre-step value
+    Prompt:      `.claude/prompts/step-3-mechanism-assertion.md` (WRITTEN)
+    Test:
+      Happy:       A shadow row is no longer flagged missing-gradient
+      Edge:        A text row wired to the BACKGROUND mechanism is newly flagged (the false-PASS case)
+      Fail:        NEGATIVE CONTROL, must be OBSERVED both ways: inject a wrongly-wired row -> gate RED; restore -> GREEN
+      Integration: `npm run build` exits 0 with the ratchet re-baselined
 
 ## Step 3b — Fix the rows Step 3 newly reveals as MISWIRED
 
     Model:       sonnet
-    Action:      Step 3 teaches the detector to SEE a row wired to the wrong paint mechanism. This step REPAIRS them. Enumerate every newly-flagged miswired row, then for each, rewire the row to the mechanism its render.php actually uses. Files:       Enumerated from Step 3's run — REPORT the list before editing. Unknown until then. Inputs:      Step 3's finding delta, grouped by the `kind` field Outcome:     Zero rows remain flagged as mechanism-mismatched Exec:        SEQUENTIAL Deps:        Step 3 Marker:      (none) Time:        ⛔ NOT ESTIMATED — size it from Step 3's actual output. Enumerated, never guessed. Tooling:     Bash, node On-Fail:     Revert per row; each is independent Prompt:      ⛔ NOT PRE-WRITTEN, deliberately. This step's scope IS Step 3's output — the list of newly-flagged miswired rows does not exist until Step 3 runs. Writing a cold prompt now would state a scope nobody has measured. Write it at dispatch time via /subagent-prompt, using Step 3's actual enumeration. Test: Happy:       A text row that was painting through the background mechanism now routes to sgs_text_colour_decl and renders visibly Edge:        A row whose mechanism is UNRESOLVED is NOT a miswired row — leave it, report it Fail:        NEGATIVE CONTROL: re-wire one row back to the wrong mechanism -> the rule must go RED. Observe it, both directions. Integration: build green
+    Action:      Step 3 teaches the detector to SEE a row wired to the wrong paint mechanism. This
+                 step REPAIRS them. Enumerate every newly-flagged miswired row, then for each,
+                 rewire the row to the mechanism its render.php actually uses.
+    Files:       Enumerated from Step 3's run — REPORT the list before editing. Unknown until then.
+    Inputs:      Step 3's finding delta, grouped by the `kind` field
+    Outcome:     Zero rows remain flagged as mechanism-mismatched
+    Exec:        SEQUENTIAL
+    Deps:        Step 3
+    Marker:      (none)
+    Time:        ⛔ NOT ESTIMATED — size it from Step 3's actual output. Enumerated, never guessed.
+    Tooling:     Bash, node
+    On-Fail:     Revert per row; each is independent
+    Prompt:      ⛔ NOT PRE-WRITTEN, deliberately. This step's scope IS Step 3's output — the
+                 list of newly-flagged miswired rows does not exist until Step 3 runs. Writing a
+                 cold prompt now would state a scope nobody has measured. Write it at dispatch
+                 time via /subagent-prompt, using Step 3's actual enumeration.
+    Test:
+      Happy:       A text row that was painting through the background mechanism now routes to
+                   sgs_text_colour_decl and renders visibly
+      Edge:        A row whose mechanism is UNRESOLVED is NOT a miswired row — leave it, report it
+      Fail:        NEGATIVE CONTROL: re-wire one row back to the wrong mechanism -> the rule must go
+                   RED. Observe it, both directions.
+      Integration: build green
 
 ⛔ **Why this step exists.** The plan originally taught the detector to find miswired rows and then assigned nobody to fix them. If Step 3 finds five, that work had no owner and no budget. A finding with no repair step is a backlog entry pretending to be a fix.
 
 ## Step 4 — Remove post-grid's shadow exemption
 
     Model:       inline (deletes ONE json entry; a cold prompt costs more than the edit)
-    Action:      Delete the `colourExemptions.shadow` entry from post-grid/block.json. It is now a second owner of a fact the detector states. Files:       plugins/sgs-blocks/src/blocks/post-grid/block.json Inputs:      S-3; Step 3 must be live first Outcome:     post-grid's shadow row is still unflagged — because the MECHANISM exempts it, not the declaration Exec:        SEQUENTIAL Deps:        Step 3 Marker:      (none) Time:        5 min Tooling:     Bash, python On-Fail:     Restore the entry Test: Happy:       Rule 31 finding count unchanged after removal Edge:        JSON still parses Fail:        If a finding APPEARS, Step 3's exemption is not working — revert and fix Step 3 Integration: build green
+    Action:      Delete the `colourExemptions.shadow` entry from post-grid/block.json. It is now a
+                 second owner of a fact the detector states.
+    Files:       plugins/sgs-blocks/src/blocks/post-grid/block.json
+    Inputs:      S-3; Step 3 must be live first
+    Outcome:     post-grid's shadow row is still unflagged — because the MECHANISM exempts it, not
+                 the declaration
+    Exec:        SEQUENTIAL
+    Deps:        Step 3
+    Marker:      (none)
+    Time:        5 min
+    Tooling:     Bash, python
+    On-Fail:     Restore the entry
+    Test:
+      Happy:       Rule 31 finding count unchanged after removal
+      Edge:        JSON still parses
+      Fail:        If a finding APPEARS, Step 3's exemption is not working — revert and fix Step 3
+      Integration: build green
 
 ## QA Gate B — detector complete and re-ratcheted
 
     Model:   inline
-    Exec:    SEQUENTIAL Deps:    Steps 3-4 Check:   node scripts/inspector-scan/run.js --check --json > reports/qa-gate-b-worklist.json then group by the `kind` FIELD added in Step 2a (NOT by grepping the free-text `detail` string — that is an invented substring boundary and two agents will draw it differently); then set rules.json openBacklog to the measured total and re-run --check Pass:    exit 0; shadow rows contribute 0 missing-gradient; ratchet equals the measured total Fail:    Re-measure by ENUMERATION, never by subtracting totals across tree states Marker:  QA
+    Exec:    SEQUENTIAL
+    Deps:    Steps 3-4
+    Check:   node scripts/inspector-scan/run.js --check --json > reports/qa-gate-b-worklist.json
+             then group by the `kind` FIELD added in Step 2a (NOT by grepping the free-text
+             `detail` string — that is an invented substring boundary and two agents will draw it
+             differently); then set rules.json openBacklog to the measured total and re-run --check
+    Pass:    exit 0; shadow rows contribute 0 missing-gradient; ratchet equals the measured total
+    Fail:    Re-measure by ENUMERATION, never by subtracting totals across tree states
+    Marker:  QA
 
 ## Step 5a — GridItemDefaultsPanel (highest leverage, well-scoped)
 
     Model:       sonnet
-    Action:      Bring the colour rows in GridItemDefaultsPanel to the recipe. 6 findings; the panel is reached by 20 blocks, so one edit clears all of them. Every mounting block must already declare the sibling attributes the new states write to, or WordPress discards them from the editor schema in silence. Files:       plugins/sgs-blocks/src/blocks/container/components/GridItemDefaultsPanel.js (VERIFIED PATH — NOT src/components/. resolveComponentFiles() scans both directories with no de-duplication, so a file created at the wrong path silently FORKS a component reaching 20 blocks: one copy live, one stale.) plus the block.json files the agent enumerates and REPORTS BEFORE EDITING Inputs:      Step 1 recipes; S-4 reference blocks Outcome:     GridItemDefaultsPanel's 6 findings clear; rule 31 drops by the enumerated amount Exec:        SEQUENTIAL Deps:        QA Gate B Marker:      SESSION-START Time:        45 min Tooling:     Bash, node On-Fail:     Revert the component; the ratchet catches any rise Cold-Entry:  This plan + the brief + golden-controls.json recipes + reports/qa-gate-b-worklist.json Prompt:      `.claude/prompts/step-5a-grid-item-panel.md` (WRITTEN) Test: Happy:       The 6 findings clear Edge:        A mounting block missing a sibling attr -> enumerated + declared, never skipped Fail:        A control writing to an undeclared attr -> value lost on reload; caught at Gate C Integration: build green; ratchet lowered
+    Action:      Bring the colour rows in GridItemDefaultsPanel to the recipe. 6 findings; the panel
+                 is reached by 20 blocks, so one edit clears all of them. Every mounting block must
+                 already declare the sibling attributes the new states write to, or WordPress
+                 discards them from the editor schema in silence.
+    Files:       plugins/sgs-blocks/src/blocks/container/components/GridItemDefaultsPanel.js
+                 (VERIFIED PATH — NOT src/components/. resolveComponentFiles() scans both
+                 directories with no de-duplication, so a file created at the wrong path silently
+                 FORKS a component reaching 20 blocks: one copy live, one stale.)
+                 plus the block.json files the agent enumerates and REPORTS BEFORE EDITING
+    Inputs:      Step 1 recipes; S-4 reference blocks
+    Outcome:     GridItemDefaultsPanel's 6 findings clear; rule 31 drops by the enumerated amount
+    Exec:        SEQUENTIAL
+    Deps:        QA Gate B
+    Marker:      SESSION-START
+    Time:        45 min
+    Tooling:     Bash, node
+    On-Fail:     Revert the component; the ratchet catches any rise
+    Cold-Entry:  This plan + the brief + golden-controls.json recipes + reports/qa-gate-b-worklist.json
+    Prompt:      `.claude/prompts/step-5a-grid-item-panel.md` (WRITTEN)
+    Test:
+      Happy:       The 6 findings clear
+      Edge:        A mounting block missing a sibling attr -> enumerated + declared, never skipped
+      Fail:        A control writing to an undeclared attr -> value lost on reload; caught at Gate C
+      Integration: build green; ratchet lowered
 
 ## Step 5b — ShadowControl hover state (RE-SIZE BEFORE RUNNING)
 
     Model:       sonnet
-    Action:      Give ShadowControl's colour row a `states[]` array with normal + hover. This is a COMPONENT API CHANGE, not a prop tweak: it needs a second colour prop pair, a new sibling attribute in EVERY mounting block's block.json, AND a real `:hover` CSS rule in each block's render.php — without the render half the control is dead under HC2 and `check-dead-controls.js` fails the build. Files:       plugins/sgs-blocks/src/components/ShadowControl.js + the 15 mounting blocks' edit.js, block.json AND render.php (enumerate first — measured 16 JSX mounts across 15 blocks: before-after, brand-strip, button, card-grid, container, cta-section, hero, info-box, media, physics-canvas, post-grid, quote, team-member, testimonial, trust-bar) Inputs:      Step 5a's completion report Outcome:     ShadowControl's 2 findings clear AND no block gains a dead control Exec:        SEQUENTIAL Deps:        Step 5a Marker:      SESSION-START Time:        ⛔ NOT ESTIMATED — size it after enumerating the render.php work. The original 45-minute budget covered this and GridItemDefaultsPanel TOGETHER and was wrong by roughly an order of magnitude. Do not start this inside another step's budget. Tooling:     Bash, node On-Fail:     Revert component + all touched blocks; this is the largest blast radius in the phase Cold-Entry:  This plan + Step 5a's report + golden-controls.json recipes Prompt:      ⛔ NOT PRE-WRITTEN, deliberately — same reason as 3b. This step is marked NOT ESTIMATED; its file list is whatever the enumeration of ShadowControl's mounting blocks returns, including which need a `:hover` rule in render.php. Write the prompt after that enumeration, never before. Test: Happy:       Shadow hover repaints on a real pointer hover, live Edge:        A block whose shadow renders via a preset slug (self-contained, no colour) — must not gain a meaningless hover colour Fail:        NEGATIVE CONTROL — must be a LIVE check, not check-dead-controls (see the Action note: CHECK 5 is advisory and cannot go red). Declare a hover attr, wire the control, do NOT add the `:hover` rule, deploy, and confirm on the canary that hovering changes NOTHING. Then add the rule and confirm it repaints. Integration: build green; ratchet lowered
+    Action:      Give ShadowControl's colour row a `states[]` array with normal + hover. This is a
+                 COMPONENT API CHANGE, not a prop tweak: it needs a second colour prop pair, a new
+                 sibling attribute in EVERY mounting block's block.json, AND a real `:hover` CSS
+                 rule in each block's render.php — without the render half the control is dead under
+                 HC2 and `check-dead-controls.js` fails the build.
+    Files:       plugins/sgs-blocks/src/components/ShadowControl.js + the 15 mounting blocks'
+                 edit.js, block.json AND render.php (enumerate first — measured 16 JSX mounts across
+                 15 blocks: before-after, brand-strip, button, card-grid, container, cta-section,
+                 hero, info-box, media, physics-canvas, post-grid, quote, team-member, testimonial,
+                 trust-bar)
+    Inputs:      Step 5a's completion report
+    Outcome:     ShadowControl's 2 findings clear AND no block gains a dead control
+    Exec:        SEQUENTIAL
+    Deps:        Step 5a
+    Marker:      SESSION-START
+    Time:        ⛔ NOT ESTIMATED — size it after enumerating the render.php work. The original
+                 45-minute budget covered this and GridItemDefaultsPanel TOGETHER and was wrong by
+                 roughly an order of magnitude. Do not start this inside another step's budget.
+    Tooling:     Bash, node
+    On-Fail:     Revert component + all touched blocks; this is the largest blast radius in the phase
+    Cold-Entry:  This plan + Step 5a's report + golden-controls.json recipes
+    Prompt:      ⛔ NOT PRE-WRITTEN, deliberately — same reason as 3b. This step is marked NOT
+                 ESTIMATED; its file list is whatever the enumeration of ShadowControl's mounting
+                 blocks returns, including which need a `:hover` rule in render.php. Write the
+                 prompt after that enumeration, never before.
+    Test:
+      Happy:       Shadow hover repaints on a real pointer hover, live
+      Edge:        A block whose shadow renders via a preset slug (self-contained, no colour) — must
+                   not gain a meaningless hover colour
+      Fail:        NEGATIVE CONTROL — must be a LIVE check, not check-dead-controls (see the
+                   Action note: CHECK 5 is advisory and cannot go red). Declare a hover attr, wire
+                   the control, do NOT add the `:hover` rule, deploy, and confirm on the canary
+                   that hovering changes NOTHING. Then add the rule and confirm it repaints.
+      Integration: build green; ratchet lowered
 
     ✅ ALREADY DONE (D740, this session): ShadowControl's picker was missing `linked`, so it stored a
-    raw colour on EVERY pick and never a palette slug — the client's brand token unlinked across all 15 blocks the moment they chose a shadow colour. Same defect D717 fixed on the overlay. Fixed; safe because `sgs_shadow_value_composed()` resolves the colour through `sgs_colour_value()` (`helpers-tokens.php:717`). ⚠ `enableAlpha` DELIBERATELY STAYS ON here, unlike the overlay: a shadow legitimately wants alpha and there is no separate shadow-opacity attribute to carry it, so removing it would delete a capability rather than relocate it. Consequence stated, not hidden: lowering alpha still stores a raw colour. **Bean may want to revisit that trade.**
+    raw colour on EVERY pick and never a palette slug — the client's brand token unlinked across all
+    15 blocks the moment they chose a shadow colour. Same defect D717 fixed on the overlay. Fixed;
+    safe because `sgs_shadow_value_composed()` resolves the colour through `sgs_colour_value()`
+    (`helpers-tokens.php:717`). ⚠ `enableAlpha` DELIBERATELY STAYS ON here, unlike the overlay: a
+    shadow legitimately wants alpha and there is no separate shadow-opacity attribute to carry it,
+    so removing it would delete a capability rather than relocate it. Consequence stated, not
+    hidden: lowering alpha still stores a raw colour. **Bean may want to revisit that trade.**
 
 ## Step 6a-6d — Per-block migration, PARALLEL, disjoint file sets
 
     Model:       sonnet (x4)
-    Action:      Four agents, each owning a disjoint set of blocks from the enumerated worklist, bringing every colour row to its recipe. Split by block, never by file type. Suggested split by finding volume: (a) product-card + nav-menu; (b) post-grid + testimonial + pricing-table; (c) trust-bar + before-after + mega-panel; (d) multi-button + process-steps + product-search + business-info. Files:       Each agent: only its own blocks' edit.js + block.json. NO shared components (Step 5 owns those). NO render.php unless the recipe requires a new paint call. Inputs:      Step 1 recipes; the enumerated per-block worklist from QA Gate B Outcome:     Each agent's blocks reach 0 rule-31 findings. ⛔ "AT ITS RECIPE" MEANS EXACTLY THIS: 0 rule-31 findings for that row. Nothing else. A recipe also records `rowShape` and `livesAs`, but NO rule asserts those — they are migration GUIDANCE, not gates. Do not spend time trying to make them checkable. ⛔ WHEN "WHY NOT" IS ACCEPTABLE: only for a `missing-gradient` finding, and only as a new `supports.sgs.colourExemptions` entry carrying a real, BLOCK-SPECIFIC, non-boilerplate reason. Every OTHER finding kind has no exemption mechanism in the schema at all — a "why not" there is an UNFIXED DEFECT and must be escalated to the coordinator, never closed as a report. Exec:        PARALLEL with each other Deps:        Step 5 Marker:      (none) Time:        40 min (wall clock, all four) Tooling:     Bash, node, Agent On-Fail:     Revert that agent's blocks only; the others are independent Cold-Entry:  This plan + `golden-controls.json` recipes + `reports/qa-gate-b-worklist.json` (QA Gate B WRITES that file; each agent filters it to its own block list — do not hand-paste a worklist into the prompt, it is not reproducible)
-                 + Step 5a's touched-blocks report: any shadow row listed there is PRE-CLEARED — VERIFY ONLY, do not re-touch it, or two agents will "fix" the same row differently. Prompt:      `.claude/prompts/step-6-block-migration.md` (WRITTEN — parameterise per agent with that agent's own block list; everything else is identical) Test: Happy:       Named blocks drop to 0 findings Edge:        A row whose mechanism is UNRESOLVED -> reported, not guessed at Fail:        A new sibling attr not declared in block.json -> WP discards it; the agent must declare before wiring Integration: build green after the coordinator merges all four
+    Action:      Four agents, each owning a disjoint set of blocks from the enumerated worklist,
+                 bringing every colour row to its recipe. Split by block, never by file type.
+                 Suggested split by finding volume: (a) product-card + nav-menu; (b) post-grid +
+                 testimonial + pricing-table; (c) trust-bar + before-after + mega-panel;
+                 (d) multi-button + process-steps + product-search + business-info.
+    Files:       Each agent: only its own blocks' edit.js + block.json. NO shared components (Step 5
+                 owns those). NO render.php unless the recipe requires a new paint call.
+    Inputs:      Step 1 recipes; the enumerated per-block worklist from QA Gate B
+    Outcome:     Each agent's blocks reach 0 rule-31 findings.
+                 ⛔ "AT ITS RECIPE" MEANS EXACTLY THIS: 0 rule-31 findings for that row. Nothing
+                 else. A recipe also records `rowShape` and `livesAs`, but NO rule asserts those —
+                 they are migration GUIDANCE, not gates. Do not spend time trying to make them
+                 checkable.
+                 ⛔ WHEN "WHY NOT" IS ACCEPTABLE: only for a `missing-gradient` finding, and only as
+                 a new `supports.sgs.colourExemptions` entry carrying a real, BLOCK-SPECIFIC,
+                 non-boilerplate reason. Every OTHER finding kind has no exemption mechanism in the
+                 schema at all — a "why not" there is an UNFIXED DEFECT and must be escalated to the
+                 coordinator, never closed as a report.
+    Exec:        PARALLEL with each other
+    Deps:        Step 5
+    Marker:      (none)
+    Time:        40 min (wall clock, all four)
+    Tooling:     Bash, node, Agent
+    On-Fail:     Revert that agent's blocks only; the others are independent
+    Cold-Entry:  This plan + `golden-controls.json` recipes + `reports/qa-gate-b-worklist.json`
+                 (QA Gate B WRITES that file; each agent filters it to its own block list — do not
+                 hand-paste a worklist into the prompt, it is not reproducible)
+                 + Step 5a's touched-blocks report: any shadow row listed there is PRE-CLEARED —
+                 VERIFY ONLY, do not re-touch it, or two agents will "fix" the same row differently.
+    Prompt:      `.claude/prompts/step-6-block-migration.md` (WRITTEN — parameterise per agent
+                 with that agent's own block list; everything else is identical)
+    Test:
+      Happy:       Named blocks drop to 0 findings
+      Edge:        A row whose mechanism is UNRESOLVED -> reported, not guessed at
+      Fail:        A new sibling attr not declared in block.json -> WP discards it; the agent must
+                   declare before wiring
+      Integration: build green after the coordinator merges all four
 
 ## QA Gate C — migration verified live, not just statically
 
     Model:   inline
-    Exec:    SEQUENTIAL Deps:    Steps 6a-6d Check:   npm run build (exit 0) THEN build-deploy.py --target sandybrown --blocks-only THEN a Playwright editor login sampling ONE ROW PER MECHANISM — fill, text, border, overlay, shadow (5 rows, NOT 1) — with at least one from a Step-6 agent's own block and one from a Step-5a shared row, so the per-block and shared-component paths are each proven live. For each: pick a palette colour, save, RELOAD, assert the stored attribute is the SLUG, and confirm a hover repaints under a real pointer. ⛔ One sample proves one mechanism round-trips and says nothing about the other four. The dominant risk here is a sibling attribute left undeclared, which WP discards silently — a single spot-check cannot see it across independently-edited block sets. Pass:    Build exit 0; stored value is a slug not a hex; hover repaints under a real pointer Fail:    A value lost on reload means an undeclared sibling attribute — find it, do not baseline Marker:  QA
+    Exec:    SEQUENTIAL
+    Deps:    Steps 6a-6d
+    Check:   npm run build (exit 0) THEN build-deploy.py --target sandybrown --blocks-only THEN a
+             Playwright editor login sampling ONE ROW PER MECHANISM — fill, text, border, overlay,
+             shadow (5 rows, NOT 1) — with at least one from a Step-6 agent's own block and one
+             from a Step-5a shared row, so the per-block and shared-component paths are each proven
+             live. For each: pick a palette colour, save, RELOAD, assert the stored attribute is the
+             SLUG, and confirm a hover repaints under a real pointer.
+             ⛔ One sample proves one mechanism round-trips and says nothing about the other four.
+             The dominant risk here is a sibling attribute left undeclared, which WP discards
+             silently — a single spot-check cannot see it across independently-edited block sets.
+    Pass:    Build exit 0; stored value is a slug not a hex; hover repaints under a real pointer
+    Fail:    A value lost on reload means an undeclared sibling attribute — find it, do not baseline
+    Marker:  QA
 
 ## Step 7 — Ratchet down + docs
 
     Model:       inline
-    Action:      Lower rule 31's openBacklog to the new measured floor with a stated reason. Write the D-entry. Update the LEDGER. Write the visual-diff evidence report. ⛔ COMMIT SCOPING (S-7): list every filename literally on the `git commit -- …` line. A GLOB over a shared directory is `git add -A` wearing a pathspec — that is exactly how `87d904a6` swept a co-active track's half-done edit and left `main` fatal for ~5 minutes. `--amend` is also banned here: it flushes the WHOLE index, ignoring the original pathspec (STOP-GIT-COMMIT-AMEND-IGNORES-THE-ORIGINAL-PATHSPEC). Re-check `git branch --show-current` IN THE SAME COMMAND as the commit. Files:       scripts/inspector-scan/rules.json, .claude/decisions.md, .claude/LEDGER.md, reports/visual-diff/ Inputs:      QA Gate C results Outcome:     `handoff-preflight.py --check` passes all 10; ratchet at the measured floor Exec:        SEQUENTIAL Deps:        QA Gate C Marker:      HANDOFF Time:        20 min Tooling:     Bash, python On-Fail:     Do not lower the ratchet below a measured value Test: Happy:       preflight 10/10; ratchet --check exits 0 Edge:        Ratchet one below live -> exits 1 (prove it still bites) Fail:        A stale count in any doc -> the doc names the command instead Integration: pushed to origin/main
+    Action:      Lower rule 31's openBacklog to the new measured floor with a stated reason. Write
+                 the D-entry. Update the LEDGER. Write the visual-diff evidence report.
+                 ⛔ COMMIT SCOPING (S-7): list every filename literally on the `git commit -- …`
+                 line. A GLOB over a shared directory is `git add -A` wearing a pathspec — that is
+                 exactly how `87d904a6` swept a co-active track's half-done edit and left `main`
+                 fatal for ~5 minutes. `--amend` is also banned here: it flushes the WHOLE index,
+                 ignoring the original pathspec (STOP-GIT-COMMIT-AMEND-IGNORES-THE-ORIGINAL-PATHSPEC).
+                 Re-check `git branch --show-current` IN THE SAME COMMAND as the commit.
+    Files:       scripts/inspector-scan/rules.json, .claude/decisions.md, .claude/LEDGER.md,
+                 reports/visual-diff/
+    Inputs:      QA Gate C results
+    Outcome:     `handoff-preflight.py --check` passes all 10; ratchet at the measured floor
+    Exec:        SEQUENTIAL
+    Deps:        QA Gate C
+    Marker:      HANDOFF
+    Time:        20 min
+    Tooling:     Bash, python
+    On-Fail:     Do not lower the ratchet below a measured value
+    Test:
+      Happy:       preflight 10/10; ratchet --check exits 0
+      Edge:        Ratchet one below live -> exits 1 (prove it still bites)
+      Fail:        A stale count in any doc -> the doc names the command instead
+      Integration: pushed to origin/main
 
 ---
 

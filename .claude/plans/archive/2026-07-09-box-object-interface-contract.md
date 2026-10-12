@@ -34,7 +34,9 @@ A merged box family is ONE attribute of `"type": "object"` holding named keys:
 
 ## 3. DB categorisation (the collision guard) — `block_attributes.box_family`
 
-> ⛔ **CORRECTED 2026-08-18. This section named a `box_side` column that DOES NOT EXIST.** Spec 31 §4 records it corrected away on 2026-07-14 (verified against the live schema: `block_attributes` has `box_family` only; per-side identity is carried by attr-name convention). The seeding channel below is also superseded — `ATTR_CLASSIFICATION_OVERRIDES` was replaced at **D300** by declarative `block.json` `supports.sgs.boxFamilies`, and the 137 override rows were removed. **Spec 31 §3.A step 3b / §4 / FR-31-22.1/.2 is the authority.** Read this section as history.
+> ⛔ **CORRECTED 2026-08-18. This section named a `box_side` column that DOES NOT EXIST.** Spec 31 §4 records it corrected away on 2026-07-14 (verified against the live schema: `block_attributes` has `box_family` only; per-side identity is carried by attr-name convention). The seeding channel below is also superseded — `ATTR_CLASSIFICATION_OVERRIDES` was replaced at **D300** by declarative `block.json` `supports.sgs.boxFamilies`, and the 137 override rows were removed.
+>
+> **Spec 31 §3.A step 3b / §4 / FR-31-22.1/.2 is the authority.** Read this section as history.
 Seeded via `ATTR_CLASSIFICATION_OVERRIDES` in `sgs-update-v2.py` (adds the columns on the fly, reseed-durable).
 - Every OBJECT box attr gets `box_family` = the family name (`padding`/`margin`/`borderWidth`/`borderRadius`/`contentBandPadding`/…). `box_side` = NULL on the object attr itself (the object holds all sides).
 - **Rule for the merge/migration:** an attr is a merge/migration TARGET only if it (or the flat attr it replaces) carries a `box_family`. The 10 keep-scalar families get NO `box_family` → excluded. The migration MUST query `box_family`, never a name regex (enforced by the AST gate — §6).

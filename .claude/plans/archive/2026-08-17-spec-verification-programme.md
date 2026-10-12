@@ -374,9 +374,7 @@ Handle these **per case**, not in a batch: each needs the "is the replacement ac
 - **On-Fail:** Unsure which spec owns it → **ask Bean in that moment**, with the item, the two or three candidate specs, your recommendation and why. Do not guess, and do not park it.
 - **Test:** *Happy:* moved items exist in the destination spec. *Edge:* an item spanning two specs is flagged for Bean, not split silently. *Fail:* preflight passes. *Integration:* `git status` shows only intended files.
 
-**Session done when — all eight, no partial credit:**
-
-0. **Every row typed `requirement` that carries no `FR-` id has been triaged at Step 1b** — grouped, promoted, or reclassified. None left both un-numbered and un-judged.
+**Session done when — all eight, no partial credit:** 0. **Every row typed `requirement` that carries no `FR-` id has been triaged at Step 1b** — grouped, promoted, or reclassified. None left both un-numbered and un-judged.
 1. Every point has a verdict, a command and its raw output
 2. No row is `AGENT`
 3. **Every `live`-tagged point was settled on the canary — zero carried forward.** ⚠ **One exception, and only one:** the canary is genuinely unreachable. Then the session closes as `LIVE-BLOCKED`, naming every unsettled point, and the **next session's Step 4b clears those first, before its own.** A blocked session is not a failed session — but it is never "done", and the points are never marked passed.

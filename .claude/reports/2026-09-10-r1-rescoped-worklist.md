@@ -53,7 +53,11 @@ if not decl.state and db_lookup.tier_object_base(ctx.block_slug, base_attr):
 
 Classified all 449 `tier_shape='tier_object'` rows into 3 categories using the two live DB predicates the converter itself already branches on:
 
-| Category | Count | Mechanism | Needs new code? | |---|--:|---|---| | 1 — `tier_object_base()=True` | 339 | The 5-file resolver branch above (`typography`/`grid`/`outer_box`/`content_band`/`styling_content` → `tier_object_write()`) + the matching merge branch in `dispatch_spine.py` | **No**, IF the CSS property in question routes through one of those 5 files | | 2 — `box_family_is_tier_shaped()=True` (and not already in 1) | 93 | The SEPARATE "TIER-of-BOXES" merge branch in `dispatch_spine.py::ElementResult.attrs()` (the one that nests a box's `{top,right,bottom,left}` under a tier key — `contentBandPadding`, `gridItemPadding` etc.) plus `tier_suffix()`'s own `box_family_is_tier_shaped()` bypass (returns the bare base attr instead of a suffixed name once a block has migrated off flat box-per-tier siblings) | **No** — same reasoning, already-built mechanism | | 3 — neither | **17** | Nothing | **Yes — this is the real work-list** |
+| Category | Count | Mechanism | Needs new code? |
+|---|--:|---|---|
+| 1 — `tier_object_base()=True` | 339 | The 5-file resolver branch above (`typography`/`grid`/`outer_box`/`content_band`/`styling_content` → `tier_object_write()`) + the matching merge branch in `dispatch_spine.py` | **No**, IF the CSS property in question routes through one of those 5 files |
+| 2 — `box_family_is_tier_shaped()=True` (and not already in 1) | 93 | The SEPARATE "TIER-of-BOXES" merge branch in `dispatch_spine.py::ElementResult.attrs()` (the one that nests a box's `{top,right,bottom,left}` under a tier key — `contentBandPadding`, `gridItemPadding` etc.) plus `tier_suffix()`'s own `box_family_is_tier_shaped()` bypass (returns the bare base attr instead of a suffixed name once a block has migrated off flat box-per-tier siblings) | **No** — same reasoning, already-built mechanism |
+| 3 — neither | **17** | Nothing | **Yes — this is the real work-list** |
 
 **7/7 of the xfail-tested attributes are Category 1.** The 442 attributes the xfail suite never named are **425 in Category 1/2 (already mechanically covered)** and **10 in Category 3** (7 of the 17 Category-3 rows belong to blocks also carrying xfail-tested attrs' siblings, listed below).
 

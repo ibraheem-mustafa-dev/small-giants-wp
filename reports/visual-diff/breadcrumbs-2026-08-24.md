@@ -47,7 +47,8 @@ Retires the scoped bypass used on commit `7939844f3`. Same sequencing reason: th
 `breadcrumbs/render.php` — WordPress's canonical `get_the_archive_title_prefix` filter (WP 5.5+), applied locally and removed immediately:
 
     add_filter( 'get_the_archive_title_prefix', '__return_empty_string' );
-    $archive_label = get_the_archive_title(); remove_filter( 'get_the_archive_title_prefix', '__return_empty_string' );
+    $archive_label = get_the_archive_title();
+    remove_filter( 'get_the_archive_title_prefix', '__return_empty_string' );
 
 NOT string surgery — a term legitimately named "Sale: Winter" would be corrupted by a regex stripping a leading "Word: ".
 

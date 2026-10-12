@@ -254,8 +254,7 @@ What not to do: no regex or HTML parse of the `.dc.html` file for values (§3.2 
 - **Walker gaps**: C gives the full state list to diff against each config's `states` (COUNCIL.md §2 made the same point).
 - **Better per-page skeleton**: C's typed block list (`split`, `cards`, `stats`, `faq`, `form`…) and B's marquee/loop record are strong hints for `skeleton.mjs`; still a hint, since the list shape differs per designer (§1.10).
 - **Scanner false positives** (**INFERRED** to mean the walker/sweep's open rows): A's declared-nothing test and B's "this element animates" record remove phase and default-paint noise; loop membership from the bridge is already allowed.
-- **Agents seeing exact code for a framework gap**: give the agent the bridge's source node (`__dcTemplateSource`, rt line
-  1819) for the row's `data-dc-tpl`, plus B's recorded call. This is reading for diagnosis, not for writing, so it fits R-47-4 as written.
+- **Agents seeing exact code for a framework gap**: give the agent the bridge's source node (`__dcTemplateSource`, rt line 1819) for the row's `data-dc-tpl`, plus B's recorded call. This is reading for diagnosis, not for writing, so it fits R-47-4 as written.
 
 ### 5.3 Risks
 

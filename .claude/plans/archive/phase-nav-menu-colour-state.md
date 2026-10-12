@@ -430,7 +430,15 @@ QA Gate — the BUILD PLAN's fix-shapes hold against the current codebase
 >
 > Read `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` §FR-41-31 (the block headed "The shared file therefore exposes the value it already owns") and the whole of the target file including its docblock, which explains WHY the duration is 180ms.
 >
-> Inside the existing `[data-sgs-fx="magnet"]` rule, make this exact change and nothing else: ```css [data-sgs-fx="magnet"] { --sgs-magnet-transition: transform 180ms ease-out; transition: var( --sgs-magnet-transition ); /* transform / will-change unchanged */ } ``` ⛔ Do not touch the `@media (prefers-reduced-motion: reduce)` rule. Do not change the duration. Do not add `!important`. Do not touch any other file. Do not run git.
+> Inside the existing `[data-sgs-fx="magnet"]` rule, make this exact change and nothing else:
+> ```css
+> [data-sgs-fx="magnet"] {
+>   --sgs-magnet-transition: transform 180ms ease-out;
+>   transition: var( --sgs-magnet-transition );
+>   /* transform / will-change unchanged */
+> }
+> ```
+> ⛔ Do not touch the `@media (prefers-reduced-motion: reduce)` rule. Do not change the duration. Do not add `!important`. Do not touch any other file. Do not run git.
 >
 > **Prove it:** paste the before/after of the rule, and paste `grep -rn 'data-sgs-fx="magnet"' plugins/sgs-blocks/ theme/ --include=*.css --include=*.php --include=*.js` so the dispatching session can see every element this change reaches.
 
@@ -599,7 +607,11 @@ QA Gate — the BUILD PLAN's fix-shapes hold against the current codebase
 >
 > **Task — ONE additive optional `$map` key. Do NOT change the function signature.** The signature stays `sgs_border_states_css( string $selector, array $attributes, array $map ): string`. The new capability arrives as a key inside the existing `$map`, which is how `gradient`, `hover`, `hover_gradient` and `width` already arrive. ⛔ Do NOT add a fourth positional parameter. ⛔ Do NOT create `sgs_border_states_css_per_edge()` or any sibling — the no-sibling rule that governs step 6's third state governs this identically.
 >
-> **The key's shape is the project's existing BOX OBJECT naming, reused verbatim:** ```php 'suppress_edges' => array( 'top' => false, 'right' => false, 'bottom' => true, 'left' => false ) ``` An absent key behaves as all-false. An absent EDGE inside the array behaves as false. Read it defensively — it is operator-adjacent data by the time nav-menu passes it.
+> **The key's shape is the project's existing BOX OBJECT naming, reused verbatim:**
+> ```php
+> 'suppress_edges' => array( 'top' => false, 'right' => false, 'bottom' => true, 'left' => false )
+> ```
+> An absent key behaves as all-false. An absent EDGE inside the array behaves as false. Read it defensively — it is operator-adjacent data by the time nav-menu passes it.
 >
 > **Behaviour, exactly:**
 > 1. **Resting rule: UNCHANGED.** It keeps emitting the `border-color` shorthand. (nav-menu makes the swept edge's resting colour transparent with its own separate rule from the sweep branch — that is not this function's job and you must not do it here.)
@@ -738,9 +750,17 @@ QA Gate — the BUILD PLAN's fix-shapes hold against the current codebase
 >
 > **The measurement, re-derived against the live tree (command below, output pasted):**
 >
-> ``` render.php = 2,032 raw lines / 845 CODE lines (52% comments) above the "── 4. Scoped CSS assembly" banner:  878 raw / 428 code below it (the CSS assembly half):            1,154 raw / 417 code  (58% comments) largest single cluster (mega-trigger / submenu / drawer-fork / indicator): 531 raw / 139 code  (68% comments) ```
+> ```
+> render.php = 2,032 raw lines / 845 CODE lines (52% comments)
+>   above the "── 4. Scoped CSS assembly" banner:  878 raw / 428 code
+>   below it (the CSS assembly half):            1,154 raw / 417 code  (58% comments)
+>   largest single cluster (mega-trigger / submenu / drawer-fork / indicator):
+>                                                  531 raw / 139 code  (68% comments)
+> ```
 >
-> At the 300-line PHP limit measured on CODE lines: `ceil(428/300) = 2` for the markup half and `ceil(417/300) = 2` for the CSS half. **On code alone this file needs 4 modules, not 8.** **FLOOR AND CEILING: exactly 4 PHP files.** ⛔ Do not split it into more; a further split buys a smaller number and costs a boundary nobody needed.
+> At the 300-line PHP limit measured on CODE lines: `ceil(428/300) = 2` for the markup half and `ceil(417/300) = 2` for the CSS half. **On code alone this file needs 4 modules, not 8.**
+>
+> **FLOOR AND CEILING: exactly 4 PHP files.** ⛔ Do not split it into more; a further split buys a smaller number and costs a boundary nobody needed.
 >
 > ⛔ **Do NOT "reduce by reuse" here — the lever is already spent.** Verified: `render.php` already carries **27 shared-helper call sites** (`sgs_hover_state_rules` ×10, `sgs_colour_value` ×14, `sgs_background_paint_decl` ×7, …), and both `plugins/sgs-blocks/scripts/migrate-render-closures.py --survey` and `plugins/sgs-blocks/scripts/migrate-length-sanitiser.py --survey` return **0 migratable, plugin-wide**. A reuse-ledger row of *"none applies — shared helpers already adopted, surveys return 0"* is the **correct and expected** answer for this step, not a failure to look. (⚠ This is the opposite of step 7, where the `fillRow`/`textRow` lever is real and unspent.)
 
@@ -1404,8 +1424,7 @@ QA Gate — zero blast radius on shared code, and the two splits changed nothing
 > 6. **When the RESOLVED treatment is `'sweep'` AND that prefix's hover text-decoration resolves to a permitted non-`none` value, the same block-private emitter also sets `text-decoration-color` to the HOVER colour**, in the SAME `sgs_hover_state_rules()` call as the decoration itself. `text-decoration-color` is not governed by `-webkit-text-fill-color`, so without this the glyphs travel and the line under them stays at the resting colour. ⚠ Add NO transition to it.
 > 7. **The block-private typography hover emitter (`sgs_nav_menu_typography_hover_rule()`) is declared in `plugins/sgs-blocks/src/blocks/nav-menu/render.php` ITSELF, inside a `function_exists()` guard — ⛔ NOT in `includes/nav-menu-css.php`, NOT anywhere under `includes/` (owner ruling 2, 2026-09-11).** Spec 41 FR-41-21 says it literally ("*a file-local function in this block's own `render.php`, not an addition to `includes/`*") and the owner has confirmed the literal reading: this is BLOCK-PRIVATE code, and `includes/` — even a file only nav-menu requires — is the shared folder. Step 8's split moved the CSS *assembly* out; it did NOT move this, and step 8's prompt says so. A top-level function declaration in a per-instance `render.php` fatals on the second instance, and this page has two, hence the guard. It validates each value against the SAME allowlists `sgs_typography_css_rule()` applies, reproduced literally (there is no exported constant): `text-decoration` ∈ none/underline/line-through/overline; `text-transform` ∈ none/uppercase/lowercase/capitalize; `font-weight` via `preg_replace('/[^a-z0-9]/i','',$v)`. ⛔ A value that is set but not permitted emits NOTHING — it never falls back to the base value. ⛔ Do NOT extend `sgs_typography_css_rule()`; that is a shared helper with callers across most of the block library and a design-gated change.
 >
-> **Also implement:** `itemFontWeightCurrent` under FR-41-6's never-lighter rule (emit only when `(int)itemFontWeightCurrent > (int)itemFontWeight`) · `itemSmartContrast` via the EXISTING `sgs_wcag_text_colour_for_bg()` / `sgs_wcag_preferred_text_colour_for_bg()` — ⛔ do not build a new contrast function · the burger `triggerMode` branch, including building the `aria-label` attribute segment as a VARIABLE and interpolating it (⛔ the attribute lives inside a `sprintf()` format string literal; passing `''` emits `aria-label=""`, an EMPTY accessible name, strictly worse than the mismatch it fixes) · `aria-hidden="true"` on the icon under `icon-and-text` · `min-width:
-> <burgerSize>; width:auto` in place of the fixed `width` under `text`/`icon-and-text`, keeping `height`/`min-height` so the 44px touch floor survives · `triggerIcon`/`sublinkMarkerIcon` through the SAME source-aware resolver `sgs/icon` calls, never a bespoke lookup · the magnet's three `data-sgs-fx*` attributes, each through `absint()` then `esc_attr()`, and **no attribute at all when disabled** (⛔ no `view.js` change and no enqueue code — the motion registry's enqueue is markup-sniffed) · the submenu typography call `sgs_typography_css_rule( $attributes, 'submenu', $uid_sel . ' .sgs-nav-menu__sublink' )` · `submenuTopOffset` as `top: calc(100% + <offset>)` **plus its mandatory hover-bridge** `.sgs-nav-menu__submenu-wrap::before` (emitted only when an offset is set — ⛔ `submenuCloseGrace` does NOT cover this; it governs OPENNESS and never touches CSS `:hover`) · the sublink sweep selector scoped to EXCLUDE featured sub-items (`{uid} .sgs-nav-menu__subitem:not(.sgs-nav-menu__subitem--featured) .sgs-nav-menu__sublink`).
+> **Also implement:** `itemFontWeightCurrent` under FR-41-6's never-lighter rule (emit only when `(int)itemFontWeightCurrent > (int)itemFontWeight`) · `itemSmartContrast` via the EXISTING `sgs_wcag_text_colour_for_bg()` / `sgs_wcag_preferred_text_colour_for_bg()` — ⛔ do not build a new contrast function · the burger `triggerMode` branch, including building the `aria-label` attribute segment as a VARIABLE and interpolating it (⛔ the attribute lives inside a `sprintf()` format string literal; passing `''` emits `aria-label=""`, an EMPTY accessible name, strictly worse than the mismatch it fixes) · `aria-hidden="true"` on the icon under `icon-and-text` · `min-width: <burgerSize>; width:auto` in place of the fixed `width` under `text`/`icon-and-text`, keeping `height`/`min-height` so the 44px touch floor survives · `triggerIcon`/`sublinkMarkerIcon` through the SAME source-aware resolver `sgs/icon` calls, never a bespoke lookup · the magnet's three `data-sgs-fx*` attributes, each through `absint()` then `esc_attr()`, and **no attribute at all when disabled** (⛔ no `view.js` change and no enqueue code — the motion registry's enqueue is markup-sniffed) · the submenu typography call `sgs_typography_css_rule( $attributes, 'submenu', $uid_sel . ' .sgs-nav-menu__sublink' )` · `submenuTopOffset` as `top: calc(100% + <offset>)` **plus its mandatory hover-bridge** `.sgs-nav-menu__submenu-wrap::before` (emitted only when an offset is set — ⛔ `submenuCloseGrace` does NOT cover this; it governs OPENNESS and never touches CSS `:hover`) · the sublink sweep selector scoped to EXCLUDE featured sub-items (`{uid} .sgs-nav-menu__subitem:not(.sgs-nav-menu__subitem--featured) .sgs-nav-menu__sublink`).
 >
 > **Prove it:** `php -l` clean · `node plugins/sgs-blocks/scripts/hover-guard/check.js` passes · `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 · `wc -l` every file ≤ 300 · for each of the three `sweepEligibility` rows, paste the emitted CSS with the predicate TRUE and with it FALSE, side by side. Do NOT run git beyond `diff`/`status`.
 
@@ -1637,8 +1656,7 @@ QA Gate — the census execution did not leave half a fix standing
 >
 > **When it is written:** during the G5a migration path ONLY, in the same pass that writes the carried-across value. Never on a fresh block, never on a save, never on render. One record per KEY that actually changed. ⛔ A SKIPPED key writes no record. ⛔ The UNSET-SOURCE case writes no record either. Both still LOG.
 >
-> **The wording — client-visible, so the string rules bind.** Worked example: *"Your menu's hover highlight colour was carried over automatically from the old pill setting. It was <old>, and is now <new>. To put it back, set the Item background row's Hover swatch to
-> <old>."* ⛔ The string must not contain "WCAG", "contrast", "AA", "signal" or "migration". "Migration" is developer vocabulary; the operator experienced a setting moving.
+> **The wording — client-visible, so the string rules bind.** Worked example: *"Your menu's hover highlight colour was carried over automatically from the old pill setting. It was <old>, and is now <new>. To put it back, set the Item background row's Hover swatch to <old>."* ⛔ The string must not contain "WCAG", "contrast", "AA", "signal" or "migration". "Migration" is developer vocabulary; the operator experienced a setting moving.
 >
 > ⛔ **Nothing in this plugin uses `createNotice` / `useDispatch( noticesStore )`** (zero hits across `src/`). Do not introduce the notices STORE — a snackbar is transient and this message must survive until the operator dismisses it.
 >

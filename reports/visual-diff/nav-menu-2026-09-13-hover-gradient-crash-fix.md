@@ -20,9 +20,7 @@ Fix 2: `hoverGradient: itemSmartContrast ? undefined : 'itemColourHoverGradient'
 ## Verification performed
 
 - **Build:** `npm run build` — full gate suite passed (hover-guard PASS, motion-bundle budget PASS, shader-source checks PASS, block-asset-targets PASS, no-ghosts PASS).
-- **Deploy:** `build-deploy.py --target sandybrown --blocks-only --skip-build --payload
-  <4 files>` — remote extract OK, `[payload-verify] PASS: all 83 deployed block.json match
-  the payload`, OPcache + LiteSpeed purged, HTTP 200 post-deploy probe confirmed markers.
+- **Deploy:** `build-deploy.py --target sandybrown --blocks-only --skip-build --payload <4 files>` — remote extract OK, `[payload-verify] PASS: all 83 deployed block.json match the payload`, OPcache + LiteSpeed purged, HTTP 200 post-deploy probe confirmed markers.
 - **Deployed-artefact spot checks (SSH, post-deploy):**
   - `build/blocks/nav-menu/block.json` on the live server carries the new `itemColourHoverGradient` attribute + description — 3 occurrences, matching source.
   - `build/blocks/nav-menu/index.js` on the live server carries 2 occurrences of `itemColourHoverGradient` (the attrs wiring string literal survives minification since it's a live attribute name, not a local identifier).

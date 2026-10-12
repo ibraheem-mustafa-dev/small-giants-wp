@@ -19,7 +19,7 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 371 | repo-wide tooling (naming lint, site utilities) |
+| `scripts/` | 373 | repo-wide tooling (naming lint, site utilities) |
 | `plugins/sgs-blocks/scripts/` | 597 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -1610,11 +1610,12 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_scan.py` | manifest+script-call | The scan: every SGS block attribute (DB `source='sgs'`) through the paint |
 | `wiring-fingerprint/wf_tokens.py` | manifest+script-call | Channel tokens: what one PHP statement emits. |
 
-#### `scripts/` — 190 scripts
+#### `scripts/` — 205 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
 | `check-focus-ring-token.py` | manifest+script-call | : every keyboard focus ring is drawn from the focus-ring token. |
+| `check-md-wrap.py` | commit-gate+script-call | No hard-wrapped Markdown: every paragraph, list item and blockquote paragraph is one unbroken line. |
 | `check-no-client-names.py` | manifest+script-call | : keep client names and reference-site names out of the framework. |
 | `check-spec-id-landing.py` | manifest | Prove every ID the Spec 32 and Spec 47 section ledgers carry lands in a live spec. |
 | `computed-route/answer-sheet.mjs` | script-call | Answer-sheet scorer (Spec 48 route-accuracy R1). |
@@ -1676,18 +1677,32 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/intake-census-trace.mjs` | script-call | The in-page half of the census runtime pass (Spec 48 FR-48-24). Both functions are serialised into the page, so they are self-contained (no closure… |
 | `computed-route/lib/intake-census.mjs` | script-call | Construct census (Spec 48 FR-48-24, R-47-4, R-48-3). The static pass lists every construct a draft uses, the code that never runs included: template… |
 | `computed-route/lib/intake-defects-binding.mjs` | script-call | FR-48-34 test 1, unresolved-binding (Spec 48 §9, R-47-4): a `style-*` value holds a `{{ }}` binding still unresolved at read time. The runtime… |
+| `computed-route/lib/intake-defects-chain.mjs` | script-call | Two-step forced states for FR-48-34's second draft-defect test (Spec 48 §9, R-48-3): a construct that renders or runs only after a first state is… |
+| `computed-route/lib/intake-defects-deadfield.mjs` | script-call | Dead-field outcome for an unreached construct (Spec 48 FR-48-34, FR-48-33): a construct whose own guard needs an instance field (`this._foodEl`) to… |
 | `computed-route/lib/intake-defects-force.mjs` | script-call | Forced states for FR-48-34's second draft-defect test (Spec 48 §9, R-47-4, R-48-3). A census row the runtime pass left `unreached` is a draft defect… |
+| `computed-route/lib/intake-defects-gesture.mjs` | script-call | Pointer, drag and touch forcing for FR-48-34's second draft-defect test (Spec 48 §9, R-48-3), beside the plain event firing in lib/intake-state.mjs.… |
 | `computed-route/lib/intake-defects-keys.mjs` | script-call | What FR-48-34's forced states set, read from the draft's logic syntax tree (Spec 48 §9, R-47-4, R-48-3): the state keys an sc-if condition reads… |
 | `computed-route/lib/intake-defects-static.mjs` | script-call | Static outcomes for an unreached construct (Spec 48 FR-48-34, FR-48-33): two cases where the code itself says the construct never runs in the design… |
 | `computed-route/lib/intake-defects.mjs` | script-call | Draft defects (Spec 48 FR-48-34, R-47-4, DESIGN decision 3). A draft defect is a closed list with an operational test; every other code-render… |
 | `computed-route/lib/intake-flags.mjs` | script-call | Placeholder, stock and prototype-only flags (Spec 48 FR-48-33). Each flag is one review row, accepted as flagged unless Bean marks `not-flagged`… |
 | `computed-route/lib/intake-harness-page.mjs` | script-call | The in-page half of the determinism harness (Spec 48 FR-48-28). harnessInit is serialised into the page with page.addInitScript, so it is… |
 | `computed-route/lib/intake-harness.mjs` | script-call | The determinism harness (Spec 48 FR-48-28): every render intake takes runs under a virtual clock, a seeded Math.random, seeded storage and loaded… |
+| `computed-route/lib/intake-inventory-anim.mjs` | script-call | The re-derived animations inventory (Spec 48 FR-48-25, METHOD.md §4, §5, §8): one record per effect, built from the census rows… |
+| `computed-route/lib/intake-inventory-code.mjs` | script-call | The re-derived inventory's code reading (Spec 48 FR-48-25, METHOD.md §5). One parsed program per component logic and per helmet script file… |
+| `computed-route/lib/intake-inventory-css.mjs` | script-call | The re-derived inventory's CSS reading (Spec 48 FR-48-25, METHOD.md §5.4): the transition and animation shorthands split per property, the rule… |
+| `computed-route/lib/intake-inventory-diff.mjs` | script-call | Claude Design's inventory against the re-derived one (Spec 48 FR-48-25): every difference is a review row, never a silent pick. Records pair by what… |
+| `computed-route/lib/intake-inventory-keys.mjs` | script-call | The re-derived inventory's state keys (Spec 48 FR-48-25, METHOD.md §7), on the syntax tree of lib/intake-inventory-code.mjs::codeModel: the keys each… |
+| `computed-route/lib/intake-inventory-sample.mjs` | script-call | Timer- and frame-written styles sampled per width (Spec 48 FR-48-25, FR-48-28 sample mode, motion row 11). A J record whose trigger is an interval or… |
+| `computed-route/lib/intake-inventory-surfaces.mjs` | script-call | The re-derived surfaces inventory (Spec 48 FR-48-25, METHOD.md §7, §8): one record per component, one per route, and one per group of interactive… |
+| `computed-route/lib/intake-inventory-target.mjs` | script-call | The re-derived inventory's targets and effects (Spec 48 FR-48-25, METHOD.md §5.2 and §5.4), on the syntax tree of… |
+| `computed-route/lib/intake-inventory-tpl.mjs` | script-call | The re-derived inventory's template and stylesheet records (Spec 48 FR-48-25, METHOD.md §5): one TR record per transition declaration (from the… |
+| `computed-route/lib/intake-inventory.mjs` | manifest+script-call | The inventory, re-derived (Spec 48 FR-48-25, Spec 48A FR-48A-7): intake's own animations.json and surfaces.json equivalents, built by… |
 | `computed-route/lib/intake-missing.mjs` | script-call | The missing-features list (Spec 48 FR-48-34, DESIGN decision 7): one line per construct the draft uses that no SGS block or feature holds. Bean marks… |
 | `computed-route/lib/intake-pagemap-surfaces.mjs` | script-call | The CPT surfaces and menus of one Claude Design export for the page map (Spec 48 FR-48-30, §2 Surface manifest): header, footer, drawers, mega-menu… |
 | `computed-route/lib/intake-pagemap.mjs` | script-call | The page map proposal (Spec 48 FR-48-30, Spec 48A FR-48A-9): one row per route and one per CPT surface, in the Appendix C "Page map row" shape that… |
 | `computed-route/lib/intake-palette.mjs` | script-call | The palette role proposal for Bean's intake review (Spec 48 FR-48-31, §11 FR-33-2, R-47-7). Declared colour tokens |
 | `computed-route/lib/intake-process.mjs` | script-call | The secret-free intake process (Spec 48 FR-48-23, Spec 48A FR-48A-10): intake workers run in a new Node process given only an allowlisted… |
+| `computed-route/lib/intake-props.mjs` | script-call | Prop variants (Spec 48 FR-48-29). A component draft mounted through `dc-import` declares its props in the `data-props` attribute of its `<script… |
 | `computed-route/lib/intake-prose.mjs` | script-call | Exported prose is data, never instructions (Spec 48 FR-48-23, Spec 48A FR-48A-10). Lists the command-like text in a handoff's README.md… |
 | `computed-route/lib/intake-reading.mjs` | script-call | The reading record (Spec 48 FR-48-28, Appendix C "Reading"): one JSON record per stamped element, width, state and sample time, read under the… |
 | `computed-route/lib/intake-record.mjs` | script-call | Recording the replay file (Spec 48 FR-48-23). Pass 1 renders the draft in the sandbox with the network closed and lists the URLs it asks for on a… |

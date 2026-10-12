@@ -23,7 +23,9 @@ doc_type: spec spec_id: 13 title: Draft Naming Convention (SGS-prefixed BEM) sta
 
 > Every Bean-controlled draft MUST use SGS-prefixed BEM:
 >
-> ``` .sgs-<block>__<element>--<modifier> ```
+> ```
+> .sgs-<block>__<element>--<modifier>
+> ```
 >
 > - `<block>` matches an SGS block name (`hero`, `cta-section`, `card-grid`, `team-member`, etc.) — slug from `block.json`.
 > - `__<element>` matches a slot id from the block's slot list (e.g. `__copy`, `__image`, `__cta`).

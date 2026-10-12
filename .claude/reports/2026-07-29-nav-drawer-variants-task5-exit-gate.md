@@ -18,11 +18,14 @@ status: MEASUREMENT COMPLETE — awaiting Bean's eye (R-31-13); gate does NOT cl
 > 3. **Nothing checked alignment.** `centred-statement` — the variant whose NAME is its alignment — renders its nav links flush left. Measured, not disputed.
 > 4. **Content fidelity was asserted, never measured.** "Exact content" was checked as *"the strings I planned are in the DOM"*, not as *"this looks like the reference"*. Bean's verdict on the built result is "night and day", and on the evidence below he is right.
 >
-> ### D1 — Invisible text: `sgs/icon-list` in a dark drawer (6 elements, 2 variants) `sgs-icon-list__text` computes `rgb(58,46,38)` on a drawer background of `rgb(58,46,38)` — **identical colours, contrast 1:1**. Affected: every `sgs/icon-list` inside a drawer using the dark `footer-bg`, i.e. `centred-statement` (Contact/Latest/Careers) and `split-zone-serif` (Team/Careers/Press). The other five variants are clean, so this is specifically icon-list failing to resolve a contrast-safe colour against a dark drawer.
+> ### D1 — Invisible text: `sgs/icon-list` in a dark drawer (6 elements, 2 variants)
+> `sgs-icon-list__text` computes `rgb(58,46,38)` on a drawer background of `rgb(58,46,38)` — **identical colours, contrast 1:1**. Affected: every `sgs/icon-list` inside a drawer using the dark `footer-bg`, i.e. `centred-statement` (Contact/Latest/Careers) and `split-zone-serif` (Team/Careers/Press). The other five variants are clean, so this is specifically icon-list failing to resolve a contrast-safe colour against a dark drawer.
 >
-> ### D2 — `drawerAlign: 'center'` does not centre the menu The drawer emits **no align class at all** (`drawerAlignAttrPresent: false`). `drawerAlign` centres the drawer's direct children *as boxes*; the nav-menu then stretches to the full 1376px with `text-align: start`, so the links stay at x=32. Secondary blocks (narrow) do centre, which is why the panel looks half-centred.
+> ### D2 — `drawerAlign: 'center'` does not centre the menu
+> The drawer emits **no align class at all** (`drawerAlignAttrPresent: false`). `drawerAlign` centres the drawer's direct children *as boxes*; the nav-menu then stretches to the full 1376px with `text-align: start`, so the links stay at x=32. Secondary blocks (narrow) do centre, which is why the panel looks half-centred.
 >
-> ### D3 — Fidelity is far below "clone" on every variant Bean's review of the lamalama pair: text styling, panel background, border lines, symbols and button styling all differ, and three whole behaviours are absent — the cycling animated background imagery, the animated "THIS IS US" circle, and the right-hand floating UI. The variants currently reproduce *structure and copy*, not *design*.
+> ### D3 — Fidelity is far below "clone" on every variant
+> Bean's review of the lamalama pair: text styling, panel background, border lines, symbols and button styling all differ, and three whole behaviours are absent — the cycling animated background imagery, the animated "THIS IS US" circle, and the right-hand floating UI. The variants currently reproduce *structure and copy*, not *design*.
 >
 > **Consequence: the gate is not merely un-signed-off, it is not passable in the current form.** The next decision is architectural (block vs CPT — see the session response), not another measurement pass.
 

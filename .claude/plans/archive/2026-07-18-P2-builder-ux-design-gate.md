@@ -449,7 +449,8 @@ No bespoke defaults store (the locked 4-channel model). For header/footer/nav sp
 
 ## 15. NAVIGATION ENGINE DECISION
 
-> ### ⛔ BEAN OVERRIDE 2026-07-18 (supersedes the salvage framing below) — FULL REWORK The council recommended salvaging adaptive-nav's "working" parts. **Bean overrode on lived experience: adaptive-nav is the messy, repeatedly-patch-fixed block he wants GONE — the council judged its code structure "capable"; Bean has used + patch-fixed it and knows better. His ground truth wins.**
+> ### ⛔ BEAN OVERRIDE 2026-07-18 (supersedes the salvage framing below) — FULL REWORK
+> The council recommended salvaging adaptive-nav's "working" parts. **Bean overrode on lived experience: adaptive-nav is the messy, repeatedly-patch-fixed block he wants GONE — the council judged its code structure "capable"; Bean has used + patch-fixed it and knows better. His ground truth wins.**
 >
 > **LOCKED now (only these):**
 > 1. **Full rework of the WHOLE nav block set** — no salvage of `sgs/adaptive-nav`; the KEEP-VERBATIM/ REBUILD table below is superseded (it leaned on keeping adaptive-nav). Existing blocks are reference material only.

@@ -540,9 +540,7 @@ Apply now. First live within 2–3 weeks. Bilingual (English + Urdu/Punjabi food
 
 ## Suggested next actions (sequenced, revised v3)
 
-**Priority 0 — TODAY (before any other action):**
-
-0. **£5 demand-validation taste-test** — Zainab WhatsApp-DMs 5 mum-friends in her network (mixed cohort, not segmented by community) with sample-offer + honest-feedback ask. Specifically test: would they buy a premium ingredient cookie range AND a 40-Day Care Bundle? — **15 min, blocks all S1/S4 spend if it fails**
+**Priority 0 — TODAY (before any other action):** 0. **£5 demand-validation taste-test** — Zainab WhatsApp-DMs 5 mum-friends in her network (mixed cohort, not segmented by community) with sample-offer + honest-feedback ask. Specifically test: would they buy a premium ingredient cookie range AND a 40-Day Care Bundle? — **15 min, blocks all S1/S4 spend if it fails**
 
 **This week:**
 1. **Validate pricing structure with Zainab** — cost coverage + postage threshold + FSA labelling cost + cookie counts at each pack size

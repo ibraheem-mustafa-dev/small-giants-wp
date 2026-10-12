@@ -21,7 +21,8 @@ away / drawer / 375 / zone_model: an expanded panel shows "two image callouts si
 Render: `SGS_Container_Wrapper::render()` appends, last in `$responsive_css` (so it wins over the grid rules at equal specificity), `includes/container-scroll-row-css.php::sgs_container_scroll_row_css( $grid_sel, $attributes, $container_queries )`. For each tier resolved ON, inside that tier's EXACT range (desktop >= 1024, tablet 768 to 1023, mobile <= 767; also as `@container` when the wrapper uses container queries), so a tier that is off needs no reset:
 
     ROW{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
-        scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch} ROW>*{flex:0 0 <width>;min-width:0;scroll-snap-align:start}
+        scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+    ROW>*{flex:0 0 <width>;min-width:0;scroll-snap-align:start}
 
 `ROW` is `$grid_sel` (`.{uid}>.sgs-container__inner`, or `.{uid}` when the wrapper puts the grid on the root), the element whose direct children are the items; the existing `gap` applies to the flex row unchanged. The tier range helpers (`sgs_tier_media_queries`, `sgs_tier_exact_media_css`) move from `includes/sgs-header-pass-through.php` to a shared `includes/helpers-tier-queries.php`.
 

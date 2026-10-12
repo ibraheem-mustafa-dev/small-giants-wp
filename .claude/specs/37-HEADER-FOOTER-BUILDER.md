@@ -244,7 +244,11 @@ Per-site header and footer content lives in each live site's CPT posts. Every li
 
 > Every FR carries `Status:` (`BUILT` / `PARTIAL` / `NOT-BUILT`) with evidence, and a `Done when:` binary check. Re-verify statuses against code rather than trusting these lines. Three verification tiers are used and must not be conflated:
 >
-> | Tier | Means | |---|---| | `LIVE-VERIFIED` | Observed working on a deployed site with evidence recorded | | `DEPLOYED (unexercised)` | Shipped and checksum-verified, but no page or setting currently renders it, so it has never actually run | | `BUILT (code)` | In the repo and build-green, not deployed or not reachable |
+> | Tier | Means |
+> |---|---|
+> | `LIVE-VERIFIED` | Observed working on a deployed site with evidence recorded |
+> | `DEPLOYED (unexercised)` | Shipped and checksum-verified, but no page or setting currently renders it, so it has never actually run |
+> | `BUILT (code)` | In the repo and build-green, not deployed or not reachable |
 
 ### Editing home and binding
 

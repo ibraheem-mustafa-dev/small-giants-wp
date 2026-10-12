@@ -22,8 +22,7 @@ docscore_grade: not run (small ad-hoc phase, in-flight doc_type has no template 
 - [x] `sgs-clone-orchestrator.py`'s Stage 4 classless-match gate (~line 2242) branches on `boundary_kind`: "item" boundaries use the element directly as the Stage B item (bypass `representative_item()` entirely); "container" boundaries keep calling `representative_item()` unchanged.
 - [x] `measure-classless-baseline.py` and `measure-classless-frame-card.py` are untouched — their `sc_for.parent`-shaped calls to `representative_item()` still work exactly as before.
 - [x] Live pipeline re-run against Eye Care Birmingham, SAME flags as the documented 50/74 baseline, shows b32 (ticker) getting a real item (not `None`) and b40 (reasons card) getting its full 3-field content (not just the number badge) in `classless-decisions.json`.
-- [x] `.claude/decisions.md` carries a new D-number (next after D1107) recording root cause + fix
-      + evidence; `.claude/mistakes.md` carries the reusable "container-shaped function fed an item-shaped input, no signal to catch it" pattern.
+- [x] `.claude/decisions.md` carries a new D-number (next after D1107) recording root cause + fix + evidence; `.claude/mistakes.md` carries the reusable "container-shaped function fed an item-shaped input, no signal to catch it" pattern.
 
 **Entry context (read before starting):**
 - `plugins/sgs-blocks/scripts/recogniser/classless_draft_adapter.py::representative_item` — the function whose 3 real call sites this fix concerns. Lines 122-135.

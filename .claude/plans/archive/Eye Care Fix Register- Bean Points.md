@@ -58,9 +58,8 @@ Floating WhatsApp button-
 
 49. Our floating Whatsapp button's Icon and font is much bigger/heavier weight than the draft. I think the draft's is a bit small so can we meet a little in the middle, dropping the weight to match but increasing the size of the icon. Icon looks really small on the button especially collapses to be on the smaller widths to only show the icon.
 
-Home-
+Home- 50. This should be the default for all regular buttons, e.g. not plain text ones. I've noticed other pages on the site with buttons like the About page's message me and shop the range buttons have the generic darken effect on them which is not consistent with these other buttons. N14. Standardised hover CSS for all buttons should match 3 buttons if it matches their base colours: A. Hero button 'SHOP SUNGLASSES' - Base colours bg white, black text - only lift B. Hero button 'ADD YOUR PRESCRIPTION' - Base colours bg black, white text, white border - lift + brighten bg C. Homepage bottom button 'Message me on Whatsapp' - Base colours black text and icon, green bg - only lift
 
-50. This should be the default for all regular buttons, e.g. not plain text ones. I've noticed other pages on the site with buttons like the About page's message me and shop the range buttons have the generic darken effect on them which is not consistent with these other buttons. N14. Standardised hover CSS for all buttons should match 3 buttons if it matches their base colours: A. Hero button 'SHOP SUNGLASSES' - Base colours bg white, black text - only lift B. Hero button 'ADD YOUR PRESCRIPTION' - Base colours bg black, white text, white border - lift + brighten bg C. Homepage bottom button 'Message me on Whatsapp' - Base colours black text and icon, green bg - only lift
 51. Ok
 52. Ok
 53. Issue is inaccurate - Draft has normal image bg set, live has bg image set as parallax. 54 + 55. Incorrect - Mention the styles for the Whatsapp button in N14B. Go with that
@@ -124,70 +123,17 @@ Lenses page-
 102. Ok - Also, the text for each point needs to align vertically with the number for its step.
 103. Ok N39. The live page's title is much lower than the draft. The margins and paddings are much different for the page container. This issue occurs on several other pages. Draft: Padding: Top=48, Bottom=90, Sides=52 Margin: Sides=128, Top/Bottom=0 Live: Padding: Top/Bottom=104, Sides=52 Margin: Sides=85.2, Top/Bottom=0 N40. Also the gap between the button and the content above it is bigger than the draft. Similar to point 101. N41. Choose a frame button should have lift animation on hover like all else on the site.
 
-About-
+About- 104. No, the lift effect should be consistent across the site's buttons. 105. Ok 106. Ok 107. Ok 108. Think this is fine since it's consistent with the other whatsapp CTA buttons on the rest of the site. 109. Match the icon and text size from the homepage button. N42. The N39 issue is applicable on here.
 
-104. No, the lift effect should be consistent across the site's buttons.
-105. Ok
-106. Ok
-107. Ok
-108. Think this is fine since it's consistent with the other whatsapp CTA buttons on the rest of the site.
-109. Match the icon and text size from the homepage button. N42. The N39 issue is applicable on here.
+Help- 110 + 122. For all of this stuff on the accordion setup - please just refer to all of the accordion points I made for the one on the product page/ 111. Ok 112. Ok 113. Don't care, as mentioned everywhere else both of these buttons fit the 2 homepage hero button's looks so they should also have the site-wide lift hover effect. 114. There are no pop-up whatsapp buttons or sentences on this page. Unless you're referring to the site wide floating button. 115. Not sure what this referring to but ok. 116. Ok 117. Ok, pretty sure this was covered in the product page points since this pop-up exists there. 118. Incorrect, I have tested it. It works across all of the buttons/elements you mentioned in this point. 119. Ok 120. Ok, fix it. 121. Ok 123. Yes, this point should be merged into the identical one in the product page section. N43. The N39 issue is applicable on here.
 
-Help- 110 + 122. For all of this stuff on the accordion setup - please just refer to all of the accordion points I made for the one on the product page/
-
-111. Ok
-112. Ok
-113. Don't care, as mentioned everywhere else both of these buttons fit the 2 homepage hero button's looks so they should also have the site-wide lift hover effect.
-114. There are no pop-up whatsapp buttons or sentences on this page. Unless you're referring to the site wide floating button.
-115. Not sure what this referring to but ok.
-116. Ok
-117. Ok, pretty sure this was covered in the product page points since this pop-up exists there.
-118. Incorrect, I have tested it. It works across all of the buttons/elements you mentioned in this point.
-119. Ok
-120. Ok, fix it.
-121. Ok
-123. Yes, this point should be merged into the identical one in the product page section. N43. The N39 issue is applicable on here.
-
-Contact- 
-
-124. Ok
-125. Ok
-126. Ok 127 + 138. Instead of matching the draft, make sure it's consistent with the other whatsapp CTA buttons on the rest of the site.
-128. Not sure I agree with this. What do you mean by it, because the general column structure is identical between both.
-129. Ok
-130. Think we already have a point to cover this in the footer section, merge this point with that one.
-131. Disagree - Colour does change slightly but that's not the focus. Have the hover effect mirror these 2 links: 'Review & hours'and '@eyecare.birmingham' - They're on the same page. 132 + 141. It's supposed to be a Google Map on live. We'll be switching to her actual Google Business profile once she has approved.
-133. Ok
-134. Ok
-135. Ok
-136. Ok
-137. Ok
-139. Ok, that's stupid, either fix it properly or switch to setting up normal links through a text block or something else.
-140. The footer section has a point that deals with this by setting the content in the settings to have a line break. 142 - 145. Dealt with in N45
+Contact- 124. Ok 125. Ok 126. Ok 127 + 138. Instead of matching the draft, make sure it's consistent with the other whatsapp CTA buttons on the rest of the site. 128. Not sure I agree with this. What do you mean by it, because the general column structure is identical between both. 129. Ok 130. Think we already have a point to cover this in the footer section, merge this point with that one. 131. Disagree - Colour does change slightly but that's not the focus. Have the hover effect mirror these 2 links: 'Review & hours'and '@eyecare.birmingham' - They're on the same page. 132 + 141. It's supposed to be a Google Map on live. We'll be switching to her actual Google Business profile once she has approved. 133. Ok 134. Ok 135. Ok 136. Ok 137. Ok 139. Ok, that's stupid, either fix it properly or switch to setting up normal links through a text block or something else. 140. The footer section has a point that deals with this by setting the content in the settings to have a line break. 142 - 145. Dealt with in N45
 
 N44. The N39 issue is applicable on here. N45. Our version of the contact form is pretty awful, all critiques are valid and should be addressed. However, there's one point that I want to change from the draft. The contact form is in its own row so it looks stupid to constrain it to half the page with nothing in the other column. Lets have this row only have 1 main column aside from in the form itself which will be most likely setup via the form CPT.
 
-Checkout-
+Checkout- 147. Ok 148. Ok 149. Ok 150. Ok 151. Ok 152. Ok, make sure they're easy to turn on and off and then leave the 3 all on. 153.  All seems fine 154. Totally redesign the checkout to fit this site's checkout draft page. Doesn't mean it needs to the setup for all future sites, it's a bespoke customisation. 155. The draft design sees better, lets go with that.
 
-147. Ok
-148. Ok
-149. Ok
-150. Ok
-151. Ok
-152. Ok, make sure they're easy to turn on and off and then leave the 3 all on.
-153.  All seems fine
-154. Totally redesign the checkout to fit this site's checkout draft page. Doesn't mean it needs to the setup for all future sites, it's a bespoke customisation.
-155. The draft design sees better, lets go with that.
+Confirmation- 156. Ok, lets go with the suggested framework part building fix. 157. Ok
 
-Confirmation-
-
-156. Ok, lets go with the suggested framework part building fix.
-157. Ok
-
-Content and decisions not tied to one screen-
-
-158. As mentioned in product section - I tested this by uploading extra images for the cats eyes product. It doesn't work properly.
-159. Don't need a photo of Fatima anywhere on the site unless she requests it.
-160. Keep
-161. Which is better for SEO and AI discoverability? /seo  
+Content and decisions not tied to one screen- 158. As mentioned in product section - I tested this by uploading extra images for the cats eyes product. It doesn't work properly. 159. Don't need a photo of Fatima anywhere on the site unless she requests it. 160. Keep 161. Which is better for SEO and AI discoverability? /seo  
 162. Keep ours

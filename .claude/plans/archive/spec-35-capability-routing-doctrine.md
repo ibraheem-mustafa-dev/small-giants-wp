@@ -70,7 +70,8 @@ Any capability in SGS attaches by exactly one of these. Today the choice is made
 
 Core **uses** `render_block` injection heavily — `wp_render_layout_support_flag()` and `WP_Duotone::render_duotone_support()` are both such filters. Auto-injection is not intrinsically wrong. The difference is that core never *guesses*: where it advances past the outermost tag it matches a class captured from the block's own parsed `innerContent`. It is **reading**, not assuming. And it uses `WP_HTML_Tag_Processor`, never regex.
 
-> ### THE RULE **Auto-injection is correct when the filter can identify its target from information it legitimately owns. It is wrong when it must infer the block's internal DOM shape.**
+> ### THE RULE
+> **Auto-injection is correct when the filter can identify its target from information it legitimately owns. It is wrong when it must infer the block's internal DOM shape.**
 
 ### The tests (corrected — the first version had two broken tests)
 

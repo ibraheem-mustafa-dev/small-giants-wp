@@ -345,9 +345,7 @@ Grouped by the top-10 problem each targets.
 9. Can width-dependent values use standard CSS (`@media` at stated breakpoints, `clamp()`, `grid-template-columns: repeat(4, 1fr)`, `ch` widths) instead of values computed in script per width? If script is required, can the breakpoints and each responsive value be exported as named data (for example `secPad: { mobile: '56px 20px', desktop: '104px 52px' }`)?
 10. Can shared values (section padding, page padding, card padding, radii, gaps) be exported as named CSS custom properties so the design's "one setting" is visible, rather than repeated inline values?
 
-**Tokens and brand (P18)**
-
-11. Can colour, type and spacing tokens be declared in `:root` with role names (primary, accent, surface, text, muted, border), plus a README token table in a fixed format, so the palette is never guessed from usage?
+**Tokens and brand (P18)** 11. Can colour, type and spacing tokens be declared in `:root` with role names (primary, accent, surface, text, muted, border), plus a README token table in a fixed format, so the palette is never guessed from usage?
 
 **Content, data and links (P14 to P17, P21)**
 
@@ -357,10 +355,6 @@ Grouped by the top-10 problem each targets.
 15. Can images and logos be exported as named files (SVG where drawn as SVG, full-resolution rasters) with alt text, rather than base64 blobs or a different element from the one rendered?
 16. Can brief-only or placeholder content (a "coming soon" line, a sketch map standing in for a real map, typed text standing in for a logo) be flagged as such?
 
-**Runtime (P20)**
+**Runtime (P20)** 17. Can the export vendor React and Babel (or precompile) so it renders with no CDN access, and can Claude Design check that each exported page renders without console errors before handoff?
 
-17. Can the export vendor React and Babel (or precompile) so it renders with no CDN access, and can Claude Design check that each exported page renders without console errors before handoff?
-
-**Decisions round-trip (P25)**
-
-18. Can Claude Design take a list of accepted changes from the built site ("the live footer is the ideal") and update the design to match, so the draft stays the single answer key?
+**Decisions round-trip (P25)** 18. Can Claude Design take a list of accepted changes from the built site ("the live footer is the ideal") and update the design to match, so the draft stays the single answer key?

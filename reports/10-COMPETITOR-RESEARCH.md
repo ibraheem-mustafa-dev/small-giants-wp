@@ -1,6 +1,10 @@
 # Deep Competitor Research — SGS WordPress Framework
 
-> **Date:** 2026-02-21 **Purpose:** Comprehensive competitive analysis to inform SGS Framework build priorities. **Related:** [`09-GOLD-STANDARD-AUDIT.md`](reference/09-GOLD-STANDARD-AUDIT.md) contains per-block feature parity tables.
+> **Date:** 2026-02-21
+>
+> **Purpose:** Comprehensive competitive analysis to inform SGS Framework build priorities.
+>
+> **Related:** [`09-GOLD-STANDARD-AUDIT.md`](reference/09-GOLD-STANDARD-AUDIT.md) contains per-block feature parity tables.
 
 ---
 

@@ -138,9 +138,7 @@ Input: a surface from `surfaces.json`.
 
 **Each round:**
 1. Build: `node scripts/wp-build-page.js --env-file <envFile> --env-key <envKey> --tree <tree> --post-id <id>` (or `--template-part`).
-2. Walk: one `node scripts/parity/draft-live-walk.mjs <walker> --headless --no-review --lean --widths <w> --draft-cache
-   <run dir>/draft-cache-<w>.json --out <run dir>/round-<N>/w<w>` per width (375, 768, 1440, 1920), all four at once,
-   merged into `round-<N>/report.json` (`solve.mjs::mergeReports`). `--lean` reads only what Solve uses (styles, boxes, hover end states, structure); `--draft-cache` reads the draft once per run. `<walker>` is the surface's `walkerFull` (every block paired, `pairs.mjs`) when it has one, else its hand config. Measured on About: lean 45s and cached 21s against 123s full; four widths at once 49s against 126s, with no host bot check (eye-care-test's IP allowlist on). With `SGS_HEADED=1` the walks run headed (`solve.mjs::WALK_FLAGS` drops `--headless`): Hostinger's edge answers headless browsers with a 403 browser check after bursts of traffic (`.claude/dev-setup.md`); when it shows a captcha even to headed logins, run against the local WSL mirrors (§3.2).
+2. Walk: one `node scripts/parity/draft-live-walk.mjs <walker> --headless --no-review --lean --widths <w> --draft-cache <run dir>/draft-cache-<w>.json --out <run dir>/round-<N>/w<w>` per width (375, 768, 1440, 1920), all four at once, merged into `round-<N>/report.json` (`solve.mjs::mergeReports`). `--lean` reads only what Solve uses (styles, boxes, hover end states, structure); `--draft-cache` reads the draft once per run. `<walker>` is the surface's `walkerFull` (every block paired, `pairs.mjs`) when it has one, else its hand config. Measured on About: lean 45s and cached 21s against 123s full; four widths at once 49s against 126s, with no host bot check (eye-care-test's IP allowlist on). With `SGS_HEADED=1` the walks run headed (`solve.mjs::WALK_FLAGS` drops `--headless`): Hostinger's edge answers headless browsers with a 403 browser check after bursts of traffic (`.claude/dev-setup.md`); when it shows a captcha even to headed logins, run against the local WSL mirrors (§3.2).
 3. Write. Consider each row in `report.json` whose kind is `style`, `hover` or `box`, which is not accepted and not matched in `divergences.json`:
    - The row's `ref` names the node; its `path` matches a calibration element exactly, giving the slot.
    - The resolver gives the setting; the draft's value is written at the row's width.
@@ -216,9 +214,7 @@ An entry matches a row on node, state, property, width and layer: an element's e
 - **Migration:** a walker config's `accept` entries with only `pair`, `key`, `kind`, `state` and `width` migrate one to one. Entries using `when` or `notPainted` (functions) stay in the config and are listed as unmigrated.
 - **Accepting a row:** `node scripts/computed-route/ledger.mjs accept <report.json> <row id> --reason "..."` writes the entry with today's date; `report.md` prints each open row's id for this.
 
-- **Register decisions:** every entry cites the fix-register items it implements (`register`); `lint.mjs --surfaces
-  <surfaces.json>` checks the ledger against the register its `qa/ledger.config.json` names (`{ "register": "<path from
-  the repo root>" }`, kept in the client's folder; `--register <file>` overrides) and fails an entry citing no item or an item the register lacks, a ledger with entries and no register, and a named register that does not exist. House-rule entries (`touch-target`, `accessibility`) cite none.
+- **Register decisions:** every entry cites the fix-register items it implements (`register`); `lint.mjs --surfaces <surfaces.json>` checks the ledger against the register its `qa/ledger.config.json` names (`{ "register": "<path from the repo root>" }`, kept in the client's folder; `--register <file>` overrides) and fails an entry citing no item or an item the register lacks, a ledger with entries and no register, and a named register that does not exist. House-rule entries (`touch-target`, `accessibility`) cite none.
 - **Independent check:** a site's `qa/independent-check.mjs` judges its differences through `lib/ledger.mjs::judgeIndependent` (matched on `node`); a value entry live has drifted from stays open, named by its id.
 
 **Done when:** `node --test scripts/computed-route/tests/ledger.test.mjs` and `lint.test.mjs` pass, including a stale entry that must fail the run, an entry citing an item the register lacks, and a drifted value entry that stays open.
@@ -337,15 +333,13 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - register items 25, 26, 28 and 38;
      - the spacing, size and tracking parts of 27 and 29: the top margins, the tagline margin, the social-row margin, the brand column gap, 11.5px, 0.2em, weight 400, line height 1.5, the 4px bottom margin and the 10px column gap.
 
-     An item is closed when the rows for its elements read no open difference at all four widths. The block swaps in
-     27, 29 and 30 are outside the proof and must appear as Unresolved or Missing setting.
+     An item is closed when the rows for its elements read no open difference at all four widths. The block swaps in 27, 29 and 30 are outside the proof and must appear as Unresolved or Missing setting.
    - **Success** (Bean, 2026-10-03: Solve's job is to close what existing settings can close and to name what they cannot; a correctly named gap is a success, not a miss). All three hold:
      - At least 90% of scored items are handled: closed, or left open and correctly identified as a framework gap (classified Hardcode or Missing setting). Calling a fixable item a gap is a failure. Whether a gap is real is judged outside the tool, by the register or by proof (calibration, code), never by Solve's own label.
      - No row closed before is open after, and no open row moves further from the draft.
      - At most 10% of writes are wrong.
 
-     Whether a gap gets the right type (Hardcode for a repair, Missing setting for a new control) is reported as a
-     further measure, not a condition.
+     Whether a gap gets the right type (Hardcode for a repair, Missing setting for a new control) is reported as a further measure, not a condition.
    - **Kill:** under 60% handled, over 10% of writes are wrong, or the third write round still writes. A round that only reverts regressions (R-47-9) is not a write round.
 3. **Solve on every built Eye Care surface (built and in use).** All 17 surfaces have walker configs, score items, state maps and a pairing config; per-surface state is in `sites/eye-care-ward-end/build/qa/triage/*.json` and `.claude/plans/2026-10-04-spec47-full-coverage.md`. A surface is done when, on a fresh rebuild of its committed tree, the whole-page line reads 0 unexplained and 0 labelled gaps, 0 new rows, at most 10% wrong writes, the independent check agrees and the register is marked.
 4. **Fill on an unbuilt surface (proved on a built one).** Fill is proved against a built surface with its committed tree withheld as the hand-checked answer. The demonstration on a genuinely unbuilt surface carries to the first client that has one.

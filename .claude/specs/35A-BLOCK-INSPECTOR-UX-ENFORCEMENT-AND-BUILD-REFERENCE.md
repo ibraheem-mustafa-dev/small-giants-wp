@@ -112,7 +112,10 @@ Storage: an object attr `{x,y}`, matching this plugin's established box-family o
 
 > ⛔ **THIS LIST IS THE CORE-COMPONENT REFERENCE, NOT THE CANONICAL CONTROL SET. Where it names a raw core component that SGS has wrapped, the wrapper wins — and the raw lookalikes are enforced by live build gates.**
 >
-> | Job | Part H names | **Canonical (governing)** | Gate | |---|---|---|---| | colour | `ColorPalette` / `ColorGradientControl` | **`DesignTokenPicker`** (contract §1) | rule `24-raw-canonical-component` (`gate`) bans the raw components outright; rule `04-colour-alpha` (`gate`) flags a raw colour picker **only when `enableAlpha` is absent** (`<ColorPalette enableAlpha>` passes rule 04 clean) | | link / CTA | `LinkControl` | **`LinkPopoverField`** (contract §2; `SgsLinkControl` is not canonical) | rule `24` bans raw `URLInput`/`LinkControl`; rule `08-raw-url-link` matches `<TextControl type="url">` only; rule `27-superseded-link-control` flags any new `<SgsLinkControl>` mount |
+> | Job | Part H names | **Canonical (governing)** | Gate |
+> |---|---|---|---|
+> | colour | `ColorPalette` / `ColorGradientControl` | **`DesignTokenPicker`** (contract §1) | rule `24-raw-canonical-component` (`gate`) bans the raw components outright; rule `04-colour-alpha` (`gate`) flags a raw colour picker **only when `enableAlpha` is absent** (`<ColorPalette enableAlpha>` passes rule 04 clean) |
+> | link / CTA | `LinkControl` | **`LinkPopoverField`** (contract §2; `SgsLinkControl` is not canonical) | rule `24` bans raw `URLInput`/`LinkControl`; rule `08-raw-url-link` matches `<TextControl type="url">` only; rule `27-superseded-link-control` flags any new `<SgsLinkControl>` mount |
 >
 > Governing document: **PART O** (Spec 35), which lists both raw components as **banned lookalikes**. Raw `<ColorPalette>` and `<LinkControl>` are rendered only *inside* the canonical wrappers under `src/components/`, never in a block's `edit.js` (`git grep -n "<ColorPalette\|<LinkControl" -- plugins/sgs-blocks/src/blocks` → 0).
 >
@@ -285,7 +288,12 @@ Hand-assigning a role is BANNED. A role may be written only by the mechanism tha
 | `layout` and other families | `property_suffixes` provisioning, or D6's per-key native-support map |
 | `image-alt` | `alt_companion_attr`, declared per row — never name-guessed |
 | `icon-*` family | TIER 3.16 (correction pass), guarded `role NOT LIKE 'icon-%'` so it only ever
-  fixes a wrongly-classified icon-source attr — it cannot invent a new icon-* row | | `technical` (second route) | The token-sanitiser veto (D1) — a value passed through `sanitize_key()` / `sanitize_html_class()` / `wp_validate_redirect()` before use, which proves it is a machine token regardless of what a naive content read would suggest | | `a11y-text` | D-series accessibility-text detection — routed alongside the other content roles, never hand-assigned |
+  fixes a wrongly-classified icon-source attr — it cannot invent a new icon-* row |
+| `technical` (second route) | The token-sanitiser veto (D1) — a value passed through
+  `sanitize_key()` / `sanitize_html_class()` / `wp_validate_redirect()` before use, which proves it
+  is a machine token regardless of what a naive content read would suggest |
+| `a11y-text` | D-series accessibility-text detection — routed alongside the other content roles,
+  never hand-assigned |
 
 **Detector inventory** (`plugins/sgs-blocks/scripts/content-role-detect/`). D1/D3 are trusted alone; D2 reports and never assigns (66% precise); D8 reports a SCHEMA gap, never a role.
 
