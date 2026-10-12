@@ -135,15 +135,15 @@ explicit-pathspec commits straight to `main`.
 - [x] **9. Palette slugs** (code done 2026-10-12, commits 7815a2b9b, 8caab9757, 25a761b5b). FR-32-14: the five slugs in
   the framework and all nine snapshots, the completeness gate and push guard with negative controls, the container's
   Section ground toggle. Four non-client snapshots linked below 4.5:1 and take the darker shade of the same hue (Spec 32
-  FR-32-14 status). The rendered colour check runs after step 12's deploy.
+  FR-32-14 status). The rendered colour check passed on `indus-test`, `sandybrown` and `eye-care-test` (FR-32-14 status).
 - [x] **10. Per-tier section padding and gutter tokens** (code done 2026-10-12, commits 2c9f4f5ed, 039c21622,
   2d4a1b876). FR-32-15: six tokens in every snapshot at today's values, `theme/sgs-theme/assets/css/layout-tokens.css`
   as their reader, the wrapper's `.sgs-container--section-pad`, the placeholder, the push guard. The Indus 375/768/1440
-  parity check needs step 17's snapshot; the nested-section and token-change checks run after step 12's deploy.
+  parity check needs step 17's snapshot; the nested-section and token-change checks passed on `indus-test`, and the gutter reads unchanged on `sandybrown` and `eye-care-test`. A snapshot whose `styles.css` sets the root padding is refused by the gate and the push, because the gutter token outranks it.
 - [x] **11. `sgsCustomCss` hardening** (code done 2026-10-12, commit d6c1d3968; its gate folded in 2d4a1b876). FR-32-20: parsed and scoped per instance (PHP and JS twins
   on one shared case table, one gate), stable instance key, core-block lift, `edit_css` save check, route label; three
   raw unscoped readers removed (the nav link helper, `nav-drawer`), guarded. The canvas-versus-page and head-collector
-  checks run after step 12's deploy.
+  checks passed on `indus-test`.
 - [x] **12. Framework refresh loop** (done 2026-10-12). The framework lane reseeded the shared DB from a detached HEAD
   worktree (twice: for steps 9 to 11, then for the route lane's typography overrides 9295b6005), ran
   `dbschema/seed_reference_data.py` after each (a normal reseed leaves `sgs/hero.splitMediaType` as select-from-enum),

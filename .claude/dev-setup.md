@@ -488,6 +488,7 @@ and write commands need `--user=<id>`. Full reference: `.claude/wp-sgs-cli.md`.
 |------|---------|-------|
 | Node.js | v24.16.0 | Build tooling only — not on the server |
 | @wordpress/scripts | 30.x | Handles webpack, eslint, format |
+| typescript | 5.4.5 (pinned in `plugins/sgs-blocks/package.json`) | `@typescript-eslint` 6.21 loads only against TypeScript 5.4; an unpinned install resolves 7.x and every `npx eslint` fails at plugin load |
 | WordPress | 7.1 | Block theme, no classic editor |
 | PHP | 8.0+ | |
 | Shell | PowerShell (dev) / Bash (SSH) | Use `;` not `&&` to chain PowerShell commands |
