@@ -153,7 +153,7 @@ The design is a semantic BEM variant class consuming `--wp--custom--{component}-
   4. **Normalise.** Every block's per-instance styling emits at one class-level specificity (§6.1(b)); no block emits at `#uid` (`plugins/sgs-blocks/scripts/check-id-scoped-emits.js`).
 
   Known limits: a no-width media condition (`@media print`, `prefers-color-scheme`, `orientation`) is not handled as a residual band; two residuals whose bands overlap resolve by emission order, so bound them ascending. *Done when:* a residual authored at `min-width:600` applies only between 600px and 767px, beats the block's own rule in that band, and leaves the Tablet and Desktop computed styles unchanged (read at 375, 700, 768 and 1440).
-  Status: PARTLY BUILT. The bounded, doubled-scope residual is built (`render_custom_css`). The route's snap, its ledger entry and the block-breakpoint step are not built (Spec 48 FR-48-50). A rule written without `&selector` is emitted unscoped today (FR-32-20).
+  Status: PARTLY BUILT. The bounded, doubled-scope residual is built (`render_custom_css`). The route's snap, its ledger entry and the block-breakpoint step are not built (Spec 48 FR-48-50). Every rule is parsed and scoped to the instance (FR-32-20).
 
 - **FR-32-20 — The residual CSS channel is scoped, instance-keyed and visible to the client.** `sgsCustomCss` (FR-32-13) must be safe for the cloning route to write media queries into:
   1. **Every rule is scoped to the instance**, including rules inside `@media` (and `@supports` or `@container`). The rule is parsed, not string-replaced: a rule that does not start from `&selector` is scoped to the instance or refused, never emitted against the whole page. Today `render_custom_css` runs `wp_strip_all_tags` and replaces `&selector`, nothing else, so a rule written without it applies page-wide.
@@ -164,7 +164,14 @@ The design is a semantic BEM variant class consuming `--wp--custom--{component}-
   6. **A structured, client-visible breakpoint override is preferred** where one fits: a block setting such as "switch layout below [N] px" that the client edits as a number, written by the route in place of raw CSS. The residual is the fallback for what no setting can hold.
 
   *Done when:* a rule written without `&selector` is refused or scoped (negative control: it does not change any other element on the page); a rule inside `@media` lands on the instance only; two instances carrying identical CSS get different uids and only the edited one changes; a core block's residual appears in the head collector with no body `<style>` (negative control: a body `<style>` from a core block fails the check); the editor canvas and the page give the same computed value at 375, 768, 1200 and 1440 for a 1200px residual; a route-written rule shows its label in the inspector; and `audit-inline-styling.js --check` and `check-id-scoped-emits.js` stay green.
-  Status: not built.
+  Status: BUILT in code, 2026-10-12; the live checks (the head collector, the canvas and page values at 375/768/1200/1440, the inspector label) run after Appendix B step 12's deploy.
+  1. `includes/class-custom-css-scoper.php::Custom_Css_Scoper::scope` parses and scopes: `&selector` (or the nesting `&`) is the doubled scope, any other selector is a descendant of it, a bare declaration applies to the block, `@media`/`@supports`/`@container`/`@layer` are walked; every other at-rule, a nested rule, a script-capable value and any `<` are refused; malformed input refuses all. `src/utils/custom-css-scope.js` is its twin; both pass `tests/shared/custom-css-scope-cases.json` (24 cases; a string-replace scoper fails all 24), gates `test-custom-css-scope-php` and `test-custom-css-scope-js`. The PHP runner also fails if any file other than `includes/custom-css.php` reads `sgsCustomCss`.
+  2. `sgsCustomCssId` is the stable instance key (`sgs-c-{id}`), set by the editor and replaced on a duplicated block (`custom-css.js::withCustomCssControl`); content without one falls back to a CSS hash made unique per request.
+  3. `class-sgs-css-registry.php::sgs_lift_block_css` lifts every block's `<style id="sgs-custom-css-…">`, a core block's included.
+  4. `custom-css.js::withCustomCssCanvas` scopes through the same twin; the inspector lists refused rules under the field.
+  5. `sgsCustomCssNote` is shown above the field; the route writes it.
+  6. Not built: a structured "switch layout below N px" setting; the residual is the only channel today.
+  Also: as WordPress core does for its own per-block CSS, `sgsCustomCss` is stripped on save for a user without `edit_css` (`includes/custom-css.php::sgs_strip_custom_css_from_blocks`).
   Blocks: Indus (its header branches at 1200 and 1260, which no tier snaps to; Spec 48 FR-48-50).
 
 ## 5. Non-functional requirements

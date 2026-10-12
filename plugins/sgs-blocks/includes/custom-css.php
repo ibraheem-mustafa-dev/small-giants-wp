@@ -1,9 +1,16 @@
 <?php
 /**
- * Custom CSS Per Block - server-side output.
+ * Custom CSS per block - server-side output (Spec 32 FR-32-13, FR-32-20).
  *
- * Hooks into render_block to inject scoped <style> tags when
- * a block has a non-empty sgsCustomCss attribute.
+ * A block's `sgsCustomCss` is parsed and scoped to the block instance by
+ * `Custom_Css_Scoper` (includes/class-custom-css-scoper.php): every rule, including rules inside
+ * `@media`, `@supports` and `@container`, is confined to the instance, and anything that cannot be
+ * confined is refused, never emitted against the whole page. The scoped rules render as a `<style>`
+ * appended after the block, which the CSS collector lifts into the head
+ * (class-sgs-css-registry.php::sgs_lift_block_css) for SGS and core blocks alike.
+ *
+ * Only a user who may edit CSS (`edit_css`, as WordPress core requires for its own per-block CSS)
+ * can save it: for anyone else the attribute is stripped from the post on save.
  *
  * @package SGS\Blocks
  */
@@ -14,8 +21,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once __DIR__ . '/class-custom-css-scoper.php';
+
+/** The block attributes that make up the Additional-CSS channel. */
+const SGS_CUSTOM_CSS_ATTRS = array( 'sgsCustomCss', 'sgsCustomCssId', 'sgsCustomCssNote' );
+
 /**
- * Add scoped custom CSS to the block's rendered HTML.
+ * The scope class for one block instance.
+ *
+ * The editor stores a stable per-instance key in `sgsCustomCssId` (src/blocks/extensions/custom-css.js),
+ * so the class survives edits to the CSS and differs between two instances carrying the same CSS. A block
+ * saved without a key falls back to a hash of its CSS, made unique within the request by an occurrence count.
+ *
+ * @param array $block Parsed block.
+ * @return string
+ */
+function sgs_custom_css_uid( array $block ): string {
+	static $seen = array();
+
+	$key = (string) ( $block['attrs']['sgsCustomCssId'] ?? '' );
+	if ( 1 === preg_match( '/^[a-z0-9]{4,16}$/', $key ) ) {
+		return 'sgs-c-' . $key;
+	}
+
+	$hash          = substr( md5( (string) $block['attrs']['sgsCustomCss'] . ( $block['blockName'] ?? '' ) ), 0, 8 );
+	$seen[ $hash ] = ( $seen[ $hash ] ?? 0 ) + 1;
+	return 'sgs-c-' . $hash . ( $seen[ $hash ] > 1 ? '-' . $seen[ $hash ] : '' );
+}
+
+/**
+ * Add the block's scoped custom CSS to its rendered HTML.
  *
  * @param string $block_content Rendered block HTML.
  * @param array  $block         Block data including attrs.
@@ -23,46 +58,114 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function render_custom_css( string $block_content, array $block ): string {
 	$custom_css = $block['attrs']['sgsCustomCss'] ?? '';
-	if ( ! $custom_css ) {
+	if ( ! is_string( $custom_css ) || '' === trim( $custom_css ) || '' === $block_content ) {
 		return $block_content;
 	}
 
-	// Generate a unique scope class.
-	$uid      = 'sgs-c-' . substr( md5( $custom_css . ( $block['blockName'] ?? '' ) ), 0, 8 );
-	$safe_css = wp_strip_all_tags( $custom_css );
+	$uid = sgs_custom_css_uid( $block );
 
-	// Scope all rules: replace `&selector` with the uid class, DOUBLED.
-	// D303 (2026-07-10) — the residual must WIN over the block's own per-instance
-	// scoped rule at the residual's bounded @media band. The block emits its
-	// per-instance styling at CLASS level (`.uid.block-class` = specificity 0,2,0;
-	// Spec 32 section 6.1, never `#uid`). Doubling the scope class (`.uid.uid` = 0,2,0)
-	// MATCHES that specificity, so the residual wins purely by SOURCE ORDER — it is
-	// appended after the block (below) — which is the WordPress-core (6.6 `:root
-	// :where()`) / Kadence / Spectra / GenerateBlocks idiom. NEVER an ID or
-	// `!important` escalation (the banned anti-pattern; Spec 32 FR-32-13,
-	// Spec 32 §6.1(b)). `.uid.uid` matches an element carrying the class once.
-	$scope      = '.' . $uid . '.' . $uid;
-	$scoped_css = str_replace( '&selector', $scope, $safe_css );
+	// The scope class is DOUBLED (`.uid.uid`, 0,2,0), matching the block's own class-level
+	// per-instance rules (Spec 32 §6.1(b), never `#uid`), so the residual wins by source order
+	// alone: it is appended after the block. Never an ID or `!important` (Spec 32 FR-32-13).
+	$result = Custom_Css_Scoper::scope( $custom_css, '.' . $uid . '.' . $uid );
+	if ( '' === $result['css'] ) {
+		return $block_content;
+	}
 
-	// Prepend the uid class to the block wrapper.
-	$block_content = preg_replace(
-		'/class="/',
-		'class="' . esc_attr( $uid ) . ' ',
-		$block_content,
-		1
-	);
+	$block_content = preg_replace( '/class="/', 'class="' . esc_attr( $uid ) . ' ', $block_content, 1 );
 
-	$style = '<style id="sgs-custom-css-' . esc_attr( $uid ) . '">'
-		. $scoped_css
-		. '</style>';
-
-	// APPEND (not prepend) so the block's Additional-CSS wins over the block's own
-	// render-time styles at equal specificity (later source order wins). This is
-	// what makes "Additional CSS" behave as an override — matching WordPress core's
-	// site-wide Additional CSS, which is emitted last. It also lets the cloning
-	// pipeline's non-device-breakpoint residual CSS (Spec 32 FR-32-13, e.g. an @media
-	// (min-width:1280px) padding band) override the block's base tier attr rule at
-	// that breakpoint. Prepending would let the block's own later style beat it.
-	return $block_content . $style;
+	// APPEND so the residual follows the block's own render-time styles at equal specificity,
+	// as WordPress core emits its site-wide Additional CSS last. The scoper refuses any input
+	// containing `<`, so the rule text cannot close the `<style>` element.
+	return $block_content . '<style id="sgs-custom-css-' . esc_attr( $uid ) . '">' . $result['css'] . '</style>';
 }
 add_filter( 'render_block', __NAMESPACE__ . '\render_custom_css', 10, 2 );
+
+/**
+ * Strip the Additional-CSS attributes from every block in post content (for users without `edit_css`).
+ *
+ * Mirrors WordPress core's `wp_strip_custom_css_from_blocks()` for its own per-block CSS: the block
+ * delimiters are tokenised with WP_Block_Parser and only the attribute JSON of a block carrying one
+ * of the keys is re-serialised.
+ *
+ * @param string $content Slashed post content.
+ * @return string Slashed post content without the attributes.
+ */
+function sgs_strip_custom_css_from_blocks( $content ) {
+	if ( ! is_string( $content ) || false === strpos( $content, 'sgsCustomCss' ) || ! has_blocks( $content ) ) {
+		return $content;
+	}
+
+	$unslashed        = stripslashes( $content );
+	$parser           = new \WP_Block_Parser();
+	$parser->document = $unslashed;
+	$parser->offset   = 0;
+	$end              = strlen( $unslashed );
+	$replacements     = array();
+
+	while ( $parser->offset < $end ) {
+		$next_token = $parser->next_token();
+		if ( 'no-more-tokens' === $next_token[0] ) {
+			break;
+		}
+		list( $token_type, , $attrs, $start_offset, $token_length ) = $next_token;
+
+		$parser->offset = $start_offset + $token_length;
+		if ( 'block-opener' !== $token_type && 'void-block' !== $token_type ) {
+			continue;
+		}
+
+		$found = false;
+		foreach ( SGS_CUSTOM_CSS_ATTRS as $key ) {
+			if ( array_key_exists( $key, $attrs ) ) {
+				unset( $attrs[ $key ] );
+				$found = true;
+			}
+		}
+		if ( ! $found ) {
+			continue;
+		}
+
+		$token_string   = substr( $unslashed, $start_offset, $token_length );
+		$json_rel_start = strcspn( $token_string, '{' );
+		$json_rel_end   = strrpos( $token_string, '}' );
+		$json_start     = $start_offset + $json_rel_start;
+		$json_length    = $json_rel_end - $json_rel_start + 1;
+
+		$replacements[] = empty( $attrs )
+			? array( $json_start, $json_length + 1, '' )
+			: array( $json_start, $json_length, serialize_block_attributes( $attrs ) );
+	}
+
+	if ( empty( $replacements ) ) {
+		return $content;
+	}
+
+	$result = '';
+	$was_at = 0;
+	foreach ( $replacements as $replacement ) {
+		list( $offset, $length, $new_json ) = $replacement;
+		$result                            .= substr( $unslashed, $was_at, $offset - $was_at ) . $new_json;
+		$was_at                             = $offset + $length;
+	}
+	if ( $was_at < $end ) {
+		$result .= substr( $unslashed, $was_at );
+	}
+
+	return addslashes( $result );
+}
+
+/**
+ * Strip the attributes on save unless the current user may edit CSS. Priority 8, as core's
+ * equivalent, runs before kses (10).
+ */
+function sgs_custom_css_kses_init() {
+	remove_filter( 'content_save_pre', __NAMESPACE__ . '\sgs_strip_custom_css_from_blocks', 8 );
+	remove_filter( 'content_filtered_save_pre', __NAMESPACE__ . '\sgs_strip_custom_css_from_blocks', 8 );
+	if ( ! current_user_can( 'edit_css' ) ) {
+		add_filter( 'content_save_pre', __NAMESPACE__ . '\sgs_strip_custom_css_from_blocks', 8 );
+		add_filter( 'content_filtered_save_pre', __NAMESPACE__ . '\sgs_strip_custom_css_from_blocks', 8 );
+	}
+}
+add_action( 'init', __NAMESPACE__ . '\sgs_custom_css_kses_init', 20 );
+add_action( 'set_current_user', __NAMESPACE__ . '\sgs_custom_css_kses_init' );

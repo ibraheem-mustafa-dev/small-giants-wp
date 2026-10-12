@@ -40,16 +40,11 @@ WHAT THE SURVEY FOUND (2026-09-04)
     calls wp_strip_all_tags() internally — any render.php that only emits via
     that helper needs no local wrap and is excluded from findings.
 
-    The generic `render_custom_css()` filter (includes/custom-css.php) already
-    wraps the sgsCustomCss free-text residual in wp_strip_all_tags() correctly.
-    src/blocks/nav-menu/render.php ALSO inlines sgsCustomCss into its own $css
-    (line 1727, stripped only of <script> tags by a local preg_replace) before
-    that filter runs — but nav-menu's own final echo (line 1757) wraps the
-    WHOLE $css blob in wp_strip_all_tags() too, so the </style> breakout this
-    gate exists to catch is already closed there by the blob-level wrap. Not a
-    finding under this gate's contract (which checks the blob-level wrap, not
-    every intermediate string) — recorded here so a future reader does not
-    re-discover and re-flag the same non-issue.
+    The sgsCustomCss free-text residual is handled only by the generic
+    `render_custom_css()` filter (includes/custom-css.php): its parser
+    (includes/class-custom-css-scoper.php::Custom_Css_Scoper) refuses any input
+    containing `<`, so the </style> breakout this gate exists to catch cannot
+    occur there. No render.php or shared CSS builder reads sgsCustomCss itself.
 
 WHAT THIS SCRIPT DOES NOT DO
     It does not sanitise CSS keyword values (that is CHECK B's job, already

@@ -560,11 +560,8 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 			$css .= $root_box_css;
 		}
 
-		// 4h. Free-text custom CSS escape hatch — sanitised (letters/digits/basic CSS
-		// punctuation only) and stripped of any </style> breakout below with the rest.
-		if ( ! empty( $attributes['sgsCustomCss'] ) ) {
-			$css .= preg_replace( '/<\/?script/i', '', (string) $attributes['sgsCustomCss'] );
-		}
+		// The block's Additional CSS (`sgsCustomCss`) is not read here: the generic
+		// render_block filter (includes/custom-css.php) scopes and emits it for every block.
 
 		return $css;
 	}

@@ -128,6 +128,8 @@ return array(
 	'sgsConditionUrlParam' => array( 'type' => 'string' ),
 	'sgsConditionUserRole' => array( 'type' => 'array' ),
 	'sgsCustomCss' => array( 'type' => 'string' ),
+	'sgsCustomCssId' => array( 'type' => 'string' ),
+	'sgsCustomCssNote' => array( 'type' => 'string' ),
 	'sgsFocusRing' => array( 'type' => 'boolean' ),
 	'sgsHeightDesktop' => array( 'type' => 'number' ),
 	'sgsHeightMobile' => array( 'type' => 'number' ),

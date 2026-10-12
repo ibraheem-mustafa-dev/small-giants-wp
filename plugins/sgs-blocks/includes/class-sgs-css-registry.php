@@ -109,10 +109,6 @@ function sgs_lift_block_css( string $block_content, array $block ): string {
 	if ( '' === $block_content ) {
 		return $block_content;
 	}
-	$name = $block['blockName'] ?? '';
-	if ( 0 !== \strpos( (string) $name, 'sgs/' ) ) {
-		return $block_content;
-	}
 	if ( false === \strpos( $block_content, '<style' ) ) {
 		return $block_content;
 	}
@@ -121,10 +117,16 @@ function sgs_lift_block_css( string $block_content, array $block ): string {
 		return $block_content;
 	}
 
-	// Lift every `<style …>…</style>` in document order. SGS CSS is
-	// wp_strip_all_tags()'d at source, so no nested `</style>` can occur.
+	// An sgs/* block: lift every `<style …>…</style>` in document order. SGS CSS is
+	// sanitised at source, so no nested `</style>` can occur. Any other block: lift
+	// only the Additional-CSS residual custom-css.php appended (Spec 32 FR-32-20), so
+	// a core/html block's own `<style>` is left where its author put it.
+	$name    = (string) ( $block['blockName'] ?? '' );
+	$pattern = 0 === \strpos( $name, 'sgs/' )
+		? '#<style\b[^>]*>(.*?)</style>#is'
+		: '#<style id="sgs-custom-css-[a-z0-9-]+">(.*?)</style>#is';
 	return (string) \preg_replace_callback(
-		'#<style\b[^>]*>(.*?)</style>#is',
+		$pattern,
 		static function ( $m ) {
 			sgs_collect_css( $m[1] );
 			return '';

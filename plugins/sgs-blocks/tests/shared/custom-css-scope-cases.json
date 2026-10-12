@@ -1,0 +1,30 @@
+{
+	"_note": "Spec 32 FR-32-20. Input CSS -> scoped output for Custom_Css_Scoper::scope (PHP) and scopeCustomCss (JS). Both test suites read this file; scope is the instance selector passed to both.",
+	"scope": ".s.s",
+	"cases": [
+		{ "name": "&selector becomes the doubled scope", "css": "&selector { color: red; }", "out": ".s.s{color: red}", "refused": [] },
+		{ "name": "a selector without &selector is scoped as a descendant, never page-wide", "css": "h2 { color: red }", "out": ".s.s h2{color: red}", "refused": [] },
+		{ "name": "page roots are confined too", "css": "body, :root, html { display: none }", "out": ".s.s body,.s.s :root,.s.s html{display: none}", "refused": [] },
+		{ "name": "&selector with a descendant and a state", "css": "&selector .x, &selector:hover { color: red; }", "out": ".s.s .x,.s.s:hover{color: red}", "refused": [] },
+		{ "name": "CSS-nesting & is the block", "css": "& > a { color: red }", "out": ".s.s > a{color: red}", "refused": [] },
+		{ "name": "declarations outside a rule apply to the block", "css": "color: red; padding: 4px;", "out": ".s.s{color: red;padding: 4px}", "refused": [] },
+		{ "name": "a rule inside @media lands on the instance only", "css": "@media (min-width:1024px) and (max-width:1200px) { &selector { padding: 8px } }", "out": "@media (min-width:1024px) and (max-width:1200px){.s.s{padding: 8px}}", "refused": [] },
+		{ "name": "an unscoped rule inside @media is scoped", "css": "@media (max-width: 600px) { p { margin: 0 } }", "out": "@media (max-width: 600px){.s.s p{margin: 0}}", "refused": [] },
+		{ "name": "@supports nested in @media", "css": "@media screen { @supports (display:grid) { &selector { display: grid } } }", "out": "@media screen{@supports (display:grid){.s.s{display: grid}}}", "refused": [] },
+		{ "name": "@container is walked", "css": "@container (min-width: 400px) { .a { gap: 2px } }", "out": "@container (min-width: 400px){.s.s .a{gap: 2px}}", "refused": [] },
+		{ "name": "comments are removed", "css": "/* note */ &selector { /* x */ color: red }", "out": ".s.s{color: red}", "refused": [] },
+		{ "name": "commas and braces inside strings and brackets do not split", "css": "a[title=\"x,y\"], &selector::before { content: \"{;}\" }", "out": ".s.s a[title=\"x,y\"],.s.s::before{content: \"{;}\"}", "refused": [] },
+		{ "name": "& inside a string is not the scope", "css": "a[href*=\"&\"] { color: red }", "out": ".s.s a[href*=\"&\"]{color: red}", "refused": [] },
+		{ "name": "@import is refused, the rest kept", "css": "@import url(x.css); &selector { color: red }", "out": ".s.s{color: red}", "refused": ["at-rule: import"] },
+		{ "name": "@font-face and @keyframes are refused", "css": "@font-face { font-family: x } @keyframes k { from { opacity: 0 } } &selector { color: red }", "out": ".s.s{color: red}", "refused": ["at-rule: font-face", "at-rule: keyframes"] },
+		{ "name": "a nested rule body is refused", "css": "&selector { color: red; .x { color: blue } }", "out": "", "refused": ["nested rule: &selector"] },
+		{ "name": "a script-capable value is refused", "css": "&selector { width: expression(alert(1)) } p { background: url(javascript:alert(1)) }", "out": "", "refused": ["unsafe value: &selector", "unsafe value: p"] },
+		{ "name": "markup refuses everything (no </style> breakout)", "css": "&selector{color:red}</style><script>alert(1)</script>", "out": "", "refused": ["markup: the CSS contains \"<\""] },
+		{ "name": "an extra closing brace refuses everything", "css": "&selector { color: red } } body { display: none }", "out": "", "refused": ["syntax: unbalanced braces or an unterminated string"] },
+		{ "name": "a missing closing brace refuses everything", "css": "@media (min-width: 600px) { &selector { color: red }", "out": "", "refused": ["syntax: unbalanced braces or an unterminated string"] },
+		{ "name": "an unterminated comment refuses everything", "css": "&selector { color: red } /* open", "out": "", "refused": ["syntax: an unterminated comment"] },
+		{ "name": "an unterminated string refuses everything", "css": "&selector { content: \"x }", "out": "", "refused": ["syntax: unbalanced braces or an unterminated string"] },
+		{ "name": "empty input", "css": "  \n ", "out": "", "refused": [] },
+		{ "name": "an empty rule emits nothing", "css": "&selector { }", "out": "", "refused": [] }
+	]
+}

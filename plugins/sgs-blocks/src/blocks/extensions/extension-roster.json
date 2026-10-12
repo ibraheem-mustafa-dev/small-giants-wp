@@ -123,7 +123,9 @@
 			"file": "custom-css.js",
 			"rule": { "mode": "universal", "requiresClassName": false, "hideSlug": null },
 			"attributes": {
-				"sgsCustomCss": { "type": "string", "default": "", "role": "styling" }
+				"sgsCustomCss": { "type": "string", "default": "", "role": "styling" },
+				"sgsCustomCssId": { "type": "string", "default": "", "role": "styling" },
+				"sgsCustomCssNote": { "type": "string", "default": "", "role": "styling" }
 			}
 		},
 		{

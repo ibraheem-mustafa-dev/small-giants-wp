@@ -348,9 +348,6 @@ if ( ! in_array( $bg_attachment, $allowed_attachments, true ) ) {
 	$bg_attachment = 'scroll';
 }
 
-// ── Custom CSS escape hatch (non-device-breakpoint rules only, per contract).
-$custom_css = isset( $attributes['sgsCustomCss'] ) ? (string) $attributes['sgsCustomCss'] : '';
-
 // ────────────────────────────────────────────────────────────────────────────
 // Build the block's OWN scoped CSS (no-inline contract; every value pre-sanitised).
 // ────────────────────────────────────────────────────────────────────────────
@@ -737,11 +734,8 @@ if ( $border['mobile'] ) {
 }
 $css .= implode( '', $border['rules'] );
 
-// Custom CSS escape hatch — appended verbatim (sanitised of a </style> breakout
-// by wp_strip_all_tags below alongside the rest of $css).
-if ( '' !== $custom_css ) {
-	$css .= $custom_css;
-}
+// The block's Additional CSS (`sgsCustomCss`) is scoped and emitted by the generic
+// render_block filter (includes/custom-css.php), never appended here.
 
 // ── Build the dialog wrapper attributes. The <dialog> id IS the drawerRef (the
 // store resolves the drawer by getElementById — the id + data-sgs-nav-drawer
