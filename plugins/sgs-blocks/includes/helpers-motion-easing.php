@@ -15,6 +15,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// The motion field types (Spec 38A FR-38A-55), so every file that requires this one, standalone tests included, has them.
+// The class check keeps a re-read of this file's text from another directory (an eval'd copy) from requiring a path
+// relative to the wrong directory once the class is loaded.
+if ( ! class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Field_Types', false ) ) {
+	require_once __DIR__ . '/motion/class-sgs-motion-field-types.php';
+}
+
 if ( ! function_exists( 'sgs_motion_easing_values' ) ) {
 	/**
 	 * Every named easing value, in editor order. Mirrors the JSON enums.

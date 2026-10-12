@@ -286,6 +286,9 @@ Noindex_Store_Pages::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-llms-txt.php';
 Llms_Txt::register();
 
+// Motion model (Spec 38A): every file under includes/motion/, in a fixed folder order.
+require_once SGS_BLOCKS_PATH . 'includes/motion-loader.php';
+
 // Animation attributes — server-side data-attribute injection for scroll reveals.
 require_once SGS_BLOCKS_PATH . 'includes/animation-timing-clamp.php';
 require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';

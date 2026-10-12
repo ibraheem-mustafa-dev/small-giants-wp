@@ -77,6 +77,7 @@ HAND_VAR_OK = {
     "includes/class-button-preset-control.php": "lists the theme palette's own slugs, never an attribute value",
     "includes/fx-cursor-field.php": "a hex returns before the [a-z0-9-] slug branch",
     "includes/shape-dividers.php": "sgs_sanitise_colour(): a '#' or '(' value never matches its slug pattern",
+    "includes/motion/field-types/class-sgs-motion-field-css.php": "the colourReference schema pattern admits only a slug or a hex, and a hex returns first",
 }
 PALETTE_CALL_RE = re.compile(r"sgs_resolve_palette_hex\(\s*([^,)]*)")
 
