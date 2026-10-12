@@ -18,11 +18,23 @@ const BAND_BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
  */
 export function hasContentBand( attributes ) {
 	const width = attributes?.contentWidth?.desktop ?? '';
-	if ( 'string' === typeof width && '' !== width.trim() && 'full' !== width ) {
+	if (
+		'string' === typeof width &&
+		'' !== width.trim() &&
+		'full' !== width
+	) {
 		return true;
 	}
-	return [ attributes?.contentBandPadding?.desktop, attributes?.contentBandMargin?.desktop ].some(
-		( box ) => box && 'object' === typeof box && BAND_BOX_SIDES.some( ( side ) => box[ side ] !== undefined && box[ side ] !== '' )
+	return [
+		attributes?.contentBandPadding?.desktop,
+		attributes?.contentBandMargin?.desktop,
+	].some(
+		( box ) =>
+			box &&
+			'object' === typeof box &&
+			BAND_BOX_SIDES.some(
+				( side ) => box[ side ] !== undefined && box[ side ] !== ''
+			)
 	);
 }
 

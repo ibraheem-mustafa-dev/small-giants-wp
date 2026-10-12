@@ -11,7 +11,8 @@
  */
 
 const NESTING_AT_RULES = [ 'media', 'supports', 'container', 'layer' ];
-const UNSAFE_BODY = /expression\s*\(|javascript\s*:|vbscript\s*:|behavior\s*:|-moz-binding/i;
+const UNSAFE_BODY =
+	/expression\s*\(|javascript\s*:|vbscript\s*:|behavior\s*:|-moz-binding/i;
 
 /**
  * Trim CSS whitespace (the PHP copy's `trim( $s, " \t\n\r\f" )`).
@@ -365,7 +366,9 @@ function parseBlock( css, state, inBlock, scope, refused ) {
 					return null;
 				}
 				if ( inner ) {
-					out += `@${ name }${ condition ? ' ' + condition : '' }{${ inner }}`;
+					out += `@${ name }${
+						condition ? ' ' + condition : ''
+					}{${ inner }}`;
 				}
 				continue;
 			}
@@ -397,7 +400,9 @@ function parseBlock( css, state, inBlock, scope, refused ) {
 		if ( ! declarations ) {
 			continue;
 		}
-		out += `${ scopeSelectorList( prelude, scope ) }{${ trimSemicolon( declarations ) }}`;
+		out += `${ scopeSelectorList( prelude, scope ) }{${ trimSemicolon(
+			declarations
+		) }}`;
 	}
 
 	if ( decls.length ) {

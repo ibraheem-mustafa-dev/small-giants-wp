@@ -48,7 +48,9 @@ const keyOwners = new Map();
 function newInstanceKey() {
 	const bytes = new Uint8Array( 4 );
 	window.crypto.getRandomValues( bytes );
-	return Array.from( bytes, ( b ) => b.toString( 16 ).padStart( 2, '0' ) ).join( '' );
+	return Array.from( bytes, ( b ) =>
+		b.toString( 16 ).padStart( 2, '0' )
+	).join( '' );
 }
 
 // Add the attributes to every block, and disable WP core's own native `customCSS` block support
@@ -88,7 +90,9 @@ const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 			if ( ! hasCss ) {
 				return undefined;
 			}
-			const owner = sgsCustomCssId ? keyOwners.get( sgsCustomCssId ) : undefined;
+			const owner = sgsCustomCssId
+				? keyOwners.get( sgsCustomCssId )
+				: undefined;
 			if ( ! sgsCustomCssId || ( owner && owner !== clientId ) ) {
 				const key = newInstanceKey();
 				keyOwners.set( key, clientId );
@@ -103,7 +107,10 @@ const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 			};
 		}, [ hasCss, sgsCustomCssId, clientId, setAttributes ] );
 
-		const refused = isSelected && hasCss ? scopeCustomCss( sgsCustomCss, '&' ).refused : [];
+		const refused =
+			isSelected && hasCss
+				? scopeCustomCss( sgsCustomCss, '&' ).refused
+				: [];
 
 		return (
 			<>
@@ -141,11 +148,7 @@ const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 	};
 }, 'withCustomCssControl' );
 
-addFilter(
-	'editor.BlockEdit',
-	'sgs/custom-css-control',
-	withCustomCssControl
-);
+addFilter( 'editor.BlockEdit', 'sgs/custom-css-control', withCustomCssControl );
 
 // Save filter - attribute is stored in block comment markup by default.
 function saveCustomCssAttribute( extraProps ) {
@@ -167,13 +170,18 @@ const withCustomCssCanvas = createHigherOrderComponent( ( BlockListBlock ) => {
 	return ( props ) => {
 		const { attributes = {} } = props;
 		const scope = `sgs-c-ed-${ props.clientId }`;
-		const { css } = scopeCustomCss( attributes.sgsCustomCss, `.${ scope }.${ scope }` );
+		const { css } = scopeCustomCss(
+			attributes.sgsCustomCss,
+			`.${ scope }.${ scope }`
+		);
 		if ( ! css ) {
 			return <BlockListBlock { ...props } />;
 		}
 		const wrapperProps = {
 			...( props.wrapperProps || {} ),
-			className: [ props.wrapperProps?.className, scope ].filter( Boolean ).join( ' ' ),
+			className: [ props.wrapperProps?.className, scope ]
+				.filter( Boolean )
+				.join( ' ' ),
 		};
 		return (
 			<>
