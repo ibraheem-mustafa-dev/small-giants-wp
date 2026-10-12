@@ -4,7 +4,9 @@
 // (lib/intake-run-worker.mjs, through lib/intake-process.mjs::runIsolated) that runs every stage that renders or reads
 // the draft, then assembles intake.json, validates it against data/intake.schema.json (an invalid record is never
 // written), carries Bean's marks over from the previous intake.json (kept as intake.prev.json), and writes review.md
-// and page-map.json. `--apply-review` reads review.md back and writes the marks, and the confirmed page map.
+// and page-map.json. `--apply-review` reads review.md back and writes the marks, the confirmed page map and Bean's
+// confirmed skeleton choices (the client decisions file). `--finalise`, `--apply-picks` and `--render` are
+// lib/intake-run-finalise.mjs.
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -14,6 +16,8 @@ import { runIsolated } from './intake-process.mjs';
 import { loadAjv, schemaProblems } from './handoff.mjs';
 import { pageMapProblems } from './intake-pagemap.mjs';
 import { renderReview, applyReview, carryOver, reviewRows, isoDay, ROW_TYPES } from './intake-review.mjs';
+import { mergeBlocked } from './intake-run-collapse.mjs';
+import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } from './intake-run-finalise.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '..', '..', '..' );
@@ -23,9 +27,13 @@ const WIDTHS = [ 375, 768, 1440 ];
 export const USAGE = [
 	'usage: node scripts/computed-route/intake.mjs <client> [--record] [--widths 375,768,1440] [--surfaces a,b] [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --apply-review <client> [--repo <path>]',
+	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> [--repo <path>]',
 ].join( '\n' );
 
-// argv (after the script) to { mode: 'run'|'apply', client, record, widths, surfaces, repo } or { error }.
+const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-picks': 'apply-picks', '--render': 'render' };
+
+// argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render', client, record, widths, surfaces,
+// repo } or { error }.
 export function parseArgs( argv ) {
 	const o = { mode: 'run', client: null, record: false, widths: WIDTHS, surfaces: null, repo: REPO };
 	for ( let i = 0; i < argv.length; i++ ) {
@@ -33,8 +41,11 @@ export function parseArgs( argv ) {
 		const value = () => ( i + 1 < argv.length && ! argv[ i + 1 ].startsWith( '--' ) ? argv[ ++i ] : null );
 		if ( '--record' === a ) {
 			o.record = true;
-		} else if ( '--apply-review' === a ) {
-			o.mode = 'apply';
+		} else if ( a in MODES ) {
+			if ( 'run' !== o.mode ) {
+				return { error: `one mode only (got ${ a } after another)` };
+			}
+			o.mode = MODES[ a ];
 		} else if ( '--widths' === a ) {
 			const v = value();
 			o.widths = v ? v.split( ',' ).map( Number ) : [];
@@ -64,8 +75,8 @@ export function parseArgs( argv ) {
 	if ( ! o.client || ! /^[a-z0-9-]+$/.test( o.client ) ) {
 		return { error: o.client ? `client "${ o.client }" is not a slug` : 'no client given' };
 	}
-	if ( 'apply' === o.mode && ( o.record || o.surfaces ) ) {
-		return { error: '--apply-review takes only the client (and --repo)' };
+	if ( 'run' !== o.mode && ( o.record || o.surfaces || o.widths !== WIDTHS ) ) {
+		return { error: `${ Object.keys( MODES ).find( ( k ) => MODES[ k ] === o.mode ) } takes only the client (and --repo)` };
 	}
 	return o;
 }
@@ -103,16 +114,6 @@ function tail( file, log ) {
 	};
 }
 
-// Blocked requests from every sandbox, one row per URL, reason and draft ID.
-const blockedHosts = ( lists ) => {
-	const seen = new Map();
-	for ( const b of lists.flat() ) {
-		const row = { url: b.url, host: b.host || '(no host)', reason: b.reason, draftId: b.draftId ?? null };
-		seen.set( [ row.url, row.reason, row.draftId ].join( '\u0000' ), row );
-	}
-	return [ ...seen.values() ].sort( ( a, b ) => ( a.host + a.url < b.host + b.url ? -1 : 1 ) );
-};
-
 // The intake record from the worker's result (Appendix C "Intake record"), review rows unmarked until carryOver.
 export function buildRecord( { client, takenOn, manifest, result } ) {
 	const p = result.parts;
@@ -138,7 +139,7 @@ export function buildRecord( { client, takenOn, manifest, result } ) {
 		draftDefects: p[ 'draft defects' ]?.draftDefects ?? [],
 		missingFeatures: p[ 'missing features' ]?.missingFeatures ?? [],
 		skeletons: p.skeletons?.skeletons ?? {},
-		notices: { prose: p.notices?.prose ?? [], blockedHosts: blockedHosts( [ p.replay?.blocked ?? [], p.skeletons?.blocked ?? [] ] ) },
+		notices: { prose: p.notices?.prose ?? [], blockedHosts: mergeBlocked( result.blocked ?? Object.values( p ).flatMap( ( x ) => x?.blocked ?? [] ) ) },
 		gaps,
 		review: [],
 	};
@@ -239,8 +240,10 @@ export function confirmedPageMap( intake ) {
 	} );
 }
 
-// --apply-review. Returns the exit code.
-export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${ l }\n` ), today = isoDay() } = {} ) {
+// --apply-review. Returns the exit code. Bean's confirmed skeleton choices (intake-run-finalise.mjs::reviewDecisions)
+// go into sites/<client>/build/skeleton/decisions.json; `knownBlock` (default: the framework DB, read-only) must know
+// every block they name, or nothing is written.
+export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${ l }\n` ), today = isoDay(), knownBlock = null } = {} ) {
 	const at = pathsFor( o.repo, o.client );
 	const say = ( l ) => log( `[intake --apply-review] ${ l }` );
 	for ( const f of [ at.intake, at.review ] ) {
@@ -257,13 +260,25 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 	const pageMap = confirmedPageMap( res.intake );
 	const ajv = loadAjv();
 	const problems = [ ...recordProblems( res.intake, ajv ), ...pageMapProblems( pageMap, ajv ).map( ( p ) => `confirmed page map ${ p }` ) ];
+	const decisions = reviewDecisions( res.intake, today );
+	if ( decisions.length ) {
+		const db = knownBlock ? null : dbKnownBlock();
+		try {
+			const known = knownBlock || db.known;
+			decisions.filter( ( d ) => d.choice.block && ! known( d.choice.block ) ).forEach( ( d ) => problems.push( `skeleton ${ d.surface } ${ d.element.key }: ${ d.choice.block } is not a block in the framework database` ) );
+		} finally {
+			db?.close();
+		}
+	}
 	if ( problems.length ) {
 		say( `the marked record does not validate, nothing written:\n${ problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		return 1;
 	}
 	fs.writeFileSync( at.intake, `${ JSON.stringify( res.intake, null, 1 ) }\n` );
+	const file = decisionsFile( o.repo, o.client );
+	const saved = recordReviewDecisions( decisions, file );
 	fs.writeFileSync( at.pageMap, `${ JSON.stringify( pageMap, null, 2 ) }\n` );
 	const dropped = res.intake.pageMap.length - pageMap.length;
-	say( `${ o.client }: ${ res.intake.review.length } rows marked (dated ${ today }); page-map.json confirmed with ${ pageMap.length } rows${ dropped ? ` (${ dropped } dropped)` : '' }` );
+	say( `${ o.client }: ${ res.intake.review.length } rows marked (dated ${ today }); page-map.json confirmed with ${ pageMap.length } rows${ dropped ? ` (${ dropped } dropped)` : '' }; ${ saved } skeleton choices saved to ${ path.relative( o.repo, file ) } (block:<slug> marks and accepted finaliser picks)` );
 	return 0;
 }

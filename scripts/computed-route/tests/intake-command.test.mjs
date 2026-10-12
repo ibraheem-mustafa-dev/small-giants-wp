@@ -235,6 +235,25 @@ test( 'a re-run after one draft text change carries unchanged marks and lists th
 	assert.match( about[ 1 ], /\| accept \|$/, 'a carried mark shows in its Mark cell' );
 } );
 
+test( 'MUST FAIL: a request to an unlisted host made only where the census and defect pages settle reaches the notices', () => {
+	// An 8-second timer at 1100 to 1300px wide: the replay check closes each page in real time before it fires, and the
+	// palette readings (1440) and skeleton runs (375, 768, 1440) never run at that width; only the census runtime pass
+	// and the draft-defect pages (1200 here) settle long enough, in virtual time, to make the request.
+	makeClient( 'fx-blocked' );
+	const folder = handoff( 'fx-blocked' );
+	const timer = "componentDidMount() {\n    setTimeout(() => { if (window.innerWidth > 1100 && window.innerWidth < 1300) { new Image().src = 'https://tracker.example.net/pixel.gif'; } }, 8000);";
+	fs.writeFileSync( path.join( folder, 'Home.dc.html' ), fs.readFileSync( path.join( folder, 'Home.dc.html' ), 'utf8' ).replace( 'componentDidMount() {', timer ) );
+	placeHar( 'fx-blocked', writeManifest( folder ) );
+	const r = spawnSync( process.execPath, [ INTAKE, 'fx-blocked', '--widths', '1200', '--surfaces', 'footer', '--repo', REPO ], { encoding: 'utf8', timeout: 900000 } );
+	assert.equal( r.status, 0, `${ r.stdout }${ r.stderr }` );
+	const intake = JSON.parse( fs.readFileSync( at( 'fx-blocked', 'intake', 'intake.json' ), 'utf8' ) );
+	const row = intake.notices.blockedHosts.find( ( b ) => 'tracker.example.net' === b.host );
+	assert.ok( row, `no tracker row in ${ JSON.stringify( intake.notices.blockedHosts ) }` );
+	assert.deepEqual( [ row.url, row.reason ], [ 'https://tracker.example.net/pixel.gif', 'unlisted-host' ] );
+	assert.equal( intake.notices.blockedHosts.filter( ( b ) => b.url === row.url ).length, 1, 'one row per URL and reason across every sandbox' );
+	assert.ok( reviewRows( intake ).some( ( x ) => 'notice:host:tracker.example.net' === x.rowId ), 'the blocked host is a review row' );
+} );
+
 test( 'MUST FAIL: a manifest version "2.0" stops the run before any browser starts', () => {
 	makeClient( 'fx-v2' );
 	writeManifest( handoff( 'fx-v2' ), '2.0' );

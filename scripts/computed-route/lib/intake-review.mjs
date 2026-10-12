@@ -64,7 +64,7 @@ export const HASH_FIELDS = {
 	'palette-role': [ 'token', 'hex', 'role' ],
 	'site-info': [ 'key', 'value', 'normalised' ],
 	flag: [ 'kind', 'text', 'url' ],
-	'skeleton-block': [ 'surface', 'key', 'tag', 'words', 'block' ],
+	'skeleton-block': [ 'surface', 'key', 'tag', 'words', 'block', 'action' ], // action only when it removes or absorbs
 	notice: [ 'kind', 'file', 'text', 'host', 'reasons' ],
 };
 export const VOLATILE = [ 'rowId', 'confidence', 'score', 'scores', 'why', 'reason', 'location', 'source', 'sources', 'screenshots', 'snippet', 'candidates', 'low', 'ms' ];
@@ -96,13 +96,24 @@ const unique = ( list ) => {
 	} );
 };
 
+// Why a skeleton or missing-feature row needs Bean's judgement rather than a glance (null: a confident proposal Accept
+// all covers). Skeleton: the finaliser agent picked it, no block fits, or its confidence is low. Missing feature: it is
+// on the main flow, or it proposes no block (Accept all cannot mark it).
+export const NEEDS_ORDER = [ 'agent-pick', 'unresolved', 'low', 'main-flow', 'no-block' ];
+const skeletonNeeds = ( r ) => ( 'agent' === r.finalisedBy ? 'agent-pick' : 'unresolved' === r.action ? 'unresolved' : r.low ? 'low' : null );
+const proposalText = ( r ) => ( r.block ? `block:${ r.block }` : r.action && 'unresolved' !== r.action ? r.action : 'no block' );
+const skeletonNote = ( r ) => ( 'agent' === r.finalisedBy
+	? `agent pick ${ r.confidence ?? '?' }: ${ r.reason ?? '' }; was ${ proposalText( r.original || {} ) } ${ r.original?.confidence ?? '' }`.trim()
+	: [ r.confidence, r.reason ].filter( ( x ) => null != x && '' !== x ).join( ': ' ) );
+
 // The flat review rows of an intake record, section by section: { rowId, rowType, draftId, contentHash, shows,
-// proposed, note, acceptAll } where `acceptAll` is the mark the section's Accept all gives the row (null when the
-// first value needs a block the row does not propose).
+// proposed, note, acceptAll, needs } where `acceptAll` is the mark the section's Accept all gives the row (null when
+// the first value needs a block the row does not propose) and `needs` is skeletonNeeds' or the missing-feature reason
+// (undefined for the other row types, whose every row is read).
 export function reviewRows( intake ) {
 	const out = [];
-	const add = ( rowType, row, draftId, shows, proposed = '', note = '', acceptAll = MARKS[ rowType ][ 0 ].value ) => out.push( {
-		rowId: row.rowId, rowType, draftId: String( draftId ?? '' ), contentHash: contentHash( rowType, row, draftId ), shows, proposed, note, acceptAll,
+	const add = ( rowType, row, draftId, shows, proposed = '', note = '', acceptAll = MARKS[ rowType ][ 0 ].value, needs = undefined ) => out.push( {
+		rowId: row.rowId, rowType, draftId: String( draftId ?? '' ), contentHash: contentHash( rowType, row, draftId ), shows, proposed, note, acceptAll, ...( undefined === needs ? {} : { needs } ),
 	} );
 	unique( ( intake.pageMap || [] ).map( ( r ) => ( { ...r, rowId: `page:${ r.postType }:${ r.slug }` } ) ) ).forEach( ( r ) => add( 'page-map', r, r.route ?? r.slug,
 		`${ r.route ?? '(no route)' } → ${ r.title } (${ r.postType }, ${ r.collection }${ r.template ? `, ${ r.template }` : '' })`,
@@ -114,12 +125,13 @@ export function reviewRows( intake ) {
 	( intake.draftDefects || [] ).forEach( ( r ) => add( 'draft-defect', r, r.draftId, describe( r ), text( r.proposed ?? r.intent ?? 'build the code\'s intent' ), text( r.why ?? r.reason ) ) );
 	( intake.missingFeatures || [] ).forEach( ( r ) => {
 		const block = r.block ?? r.proposedBlock ?? null;
-		add( 'missing-feature', r, r.draftId, describe( r ), block ? `map:${ block }` : 'no block proposed', text( r.why ?? r.reason ), block && BLOCK.test( block ) ? `map:${ block }` : null );
+		const acceptAll = block && BLOCK.test( block ) ? `map:${ block }` : null;
+		add( 'missing-feature', r, r.draftId, describe( r ), block ? `map:${ block }` : 'no block proposed', text( r.why ?? r.reason ), acceptAll, r.mainFlow ? 'main-flow' : acceptAll ? null : 'no-block' );
 	} );
 	const sk = intake.skeletons || {};
 	( Array.isArray( sk ) ? sk : Object.entries( sk ).map( ( [ surface, s ] ) => ( { surface, ...s } ) ) ).forEach( ( s ) => ( s.rows || [] ).forEach( ( r ) => add( 'skeleton-block',
-		{ surface: s.surface, ...r, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,
-		`${ s.surface } ${ r.key } <${ r.tag ?? '?' }>${ r.words ? ` "${ text( r.words ) }"` : '' }`, r.block ? `block:${ r.block }` : 'no block', [ r.confidence, r.reason ].filter( ( x ) => null != x && '' !== x ).join( ': ' ) ) ) );
+		{ surface: s.surface, ...r, action: r.action && 'unresolved' !== r.action ? r.action : undefined, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,
+		`${ s.surface } ${ r.key } <${ r.tag ?? '?' }>${ r.words ? ` "${ text( r.words ) }"` : '' }`, proposalText( r ), skeletonNote( r ), MARKS[ 'skeleton-block' ][ 0 ].value, skeletonNeeds( r ) ) ) );
 	( intake.inventory?.diff || [] ).forEach( ( r ) => add( 'inventory-diff', { ...r, rowId: r.rowId || `inventory:${ r.draftId }` }, r.draftId, describe( r ), 'ours', text( r.why ?? r.reason ) ) );
 	( intake.notices?.prose || [] ).forEach( ( r ) => add( 'notice', { kind: 'prose', file: r.file, text: r.text, rowId: `notice:${ r.rowId }` }, `${ r.file }:${ r.line }`, `${ r.file }:${ r.line } ${ r.text }`, 'noted', r.why || '' ) );
 	const hosts = new Map();
@@ -138,12 +150,34 @@ export function reviewRows( intake ) {
 const cell = ( v ) => String( v ?? '' ).replace( /\r?\n/g, ' ' ).replace( /\|/g, '\\|' ).trim();
 const byId = ( a, b ) => ( a.rowId < b.rowId ? -1 : a.rowId > b.rowId ? 1 : 0 );
 const ordered = ( rows, changed ) => [ ...rows.filter( ( r ) => changed.has( r.rowId ) ).sort( byId ), ...rows.filter( ( r ) => ! changed.has( r.rowId ) ).sort( byId ) ];
+const rank = ( r, changed ) => ( changed.has( r.rowId ) ? -1 : NEEDS_ORDER.indexOf( r.needs ) );
+// Rows needing judgement (changed first, then NEEDS_ORDER, each by row ID) and the confident rest (by row ID).
+const splitByNeed = ( rows, changed ) => [
+	rows.filter( ( r ) => changed.has( r.rowId ) || r.needs ).sort( ( a, b ) => rank( a, changed ) - rank( b, changed ) || byId( a, b ) ),
+	rows.filter( ( r ) => ! changed.has( r.rowId ) && ! r.needs ).sort( byId ),
+];
+const SPLIT = new Set( [ 'skeleton-block', 'missing-feature' ] );
+export const CONFIDENT_HEADING = 'Confident proposals (Accept all covers these)';
+
+// { total, read, confident, skeleton, missing }: rows Bean reads one by one versus the confident skeleton and
+// missing-feature proposals that the section's Accept all covers without reading (a changed row is always read).
+export function readingCounts( intake, changed = ( intake.review || [] ).filter( ( r ) => r.changed ).map( ( r ) => r.rowId ) ) {
+	const ch = new Set( changed );
+	const rows = reviewRows( intake );
+	const confident = rows.filter( ( r ) => SPLIT.has( r.rowType ) && ! r.needs && ! ch.has( r.rowId ) );
+	const by = ( t ) => confident.filter( ( r ) => r.rowType === t ).length;
+	return { total: rows.length, read: rows.length - confident.length, confident: confident.length, skeleton: by( 'skeleton-block' ), missing: by( 'missing-feature' ) };
+}
 const TABLE_HEAD = [ '| Row | Shows | Proposed | Confidence or reason | Mark |', '|---|---|---|---|---|' ];
+const readingLine = ( c ) => `Rows: ${ c.total }; ${ c.read } need reading, ${ c.confident } are confident proposals that Accept all covers (skeleton block choices ${ c.skeleton }, missing features ${ c.missing }).`;
 const manifestHash = ( m ) => sha( canonical( m?.files || {} ) ).slice( 0, 16 );
 
 // The Markdown of review.md. `changed` is the rowIds changed since the previous export (by default the review rows
 // carryOver set `changed: true` on); they are listed first in their section (and surface) with a **changed** marker.
-// Marks already in intake.review (carried or applied before) show in the Mark cell. Byte-identical for identical input.
+// In the skeleton (per surface) and missing-feature sections the rows needing judgement come next (NEEDS_ORDER), then
+// the confident rows under a `### ... Confident proposals (Accept all covers these)` sub-heading; the header states how
+// many rows need reading. Marks already in intake.review (carried or applied before) show in the Mark cell.
+// Byte-identical for identical input.
 export function renderReview( intake, { changed = ( intake.review || [] ).filter( ( r ) => r.changed ).map( ( r ) => r.rowId ) } = {} ) {
 	const ch = new Set( changed );
 	const marks = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
@@ -153,6 +187,7 @@ export function renderReview( intake, { changed = ( intake.review || [] ).filter
 		'differently, write its mark in that row\'s Mark cell (a row\'s own mark always beats Accept all). Flag rows left blank',
 		'are accepted as flagged; every other row needs Accept all or its own mark. Rows marked **changed** differ from the',
 		'last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review ' + intake.client + '`.', '',
+		readingLine( readingCounts( intake, changed ) ), '',
 		'Marks per section (first value = Accept all):' ];
 	ROW_TYPES.forEach( ( t ) => out.push( `- ${ SECTION_TITLES[ t ] }: ${ markShapes( t ).map( ( s ) => `\`${ s }\`` ).join( ', ' ) }` ) );
 	const line = ( r ) => {
@@ -168,7 +203,13 @@ export function renderReview( intake, { changed = ( intake.review || [] ).filter
 		out.push( '', `## ${ SECTION_TITLES[ t ] } (${ t })`, '', 'Accept all: [ ]' );
 		const groups = 'skeleton-block' === t ? [ ...new Set( of.map( ( r ) => r.rowId.split( ':' )[ 1 ] ) ) ].sort().map( ( s ) => [ s, of.filter( ( r ) => r.rowId.split( ':' )[ 1 ] === s ) ] ) : [ [ null, of ] ];
 		for ( const [ name, list ] of groups ) {
-			out.push( '', ...( name ? [ `### ${ name }`, '' ] : [] ), ...TABLE_HEAD, ...ordered( list, ch ).map( line ) );
+			if ( ! SPLIT.has( t ) ) {
+				out.push( '', ...( name ? [ `### ${ name }`, '' ] : [] ), ...TABLE_HEAD, ...ordered( list, ch ).map( line ) );
+				continue;
+			}
+			const [ judge, sure ] = splitByNeed( list, ch );
+			judge.length && out.push( '', ...( name ? [ `### ${ name }`, '' ] : [] ), ...TABLE_HEAD, ...judge.map( line ) );
+			sure.length && out.push( '', `### ${ name ? `${ name }: ` : '' }${ CONFIDENT_HEADING }`, '', ...TABLE_HEAD, ...sure.map( line ) );
 		}
 	}
 	return `${ out.join( '\n' ) }\n`;

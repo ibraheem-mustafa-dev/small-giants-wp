@@ -103,7 +103,8 @@ export function readingProblems( records, ajv ) {
 
 // One harness run of one surface at one width: opens a fresh sandbox, settles in rest mode, and reads (rest), or then
 // samples `sample.target` at `sample.times` (sample; kind 'animation'), or samples a timer or frame writer from boot
-// (sample with kind 'clock', no settle). Returns { records, jsonl, settings, summary, url }.
+// (sample with kind 'clock', no settle). Returns { records, jsonl, settings, summary, url, blocked } (`blocked`: the
+// sandbox's aborted requests, filled until it closes).
 export async function readSurface( { folder, index, harPath, file = index, hash = '', width = 1440, mode = 'rest', surface, state = 'default', rootSelector = '#dc-root', props = READING_PROPS, sample = null, ...opts } ) {
 	const h = await openHarness( { folder, index, harPath, file, hash, width, ...opts } );
 	try {
@@ -124,7 +125,7 @@ export async function readSurface( { folder, index, harPath, file = index, hash 
 		} else {
 			throw new Error( `readSurface mode must be 'rest' or 'sample', not ${ JSON.stringify( mode ) }` );
 		}
-		return { records, jsonl: toJsonl( records ), settings: h.settings, summary, url: h.page.url() };
+		return { records, jsonl: toJsonl( records ), settings: h.settings, summary, url: h.page.url(), blocked: h.sb.blocked };
 	} finally {
 		await h.close();
 	}

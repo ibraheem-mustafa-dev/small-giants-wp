@@ -70,7 +70,8 @@ export function routeVisits( routing, entry ) {
 }
 
 // The stages in FR-48-17's order. Each takes ( job, ctx ) and returns its part of the record; ctx carries the parts
-// already made and `gaps` (every gap row, each with its stage).
+// already made, `gaps` (every gap row, each with its stage) and `blocked` (every sandbox's aborted requests so far, which
+// the worker gathers from each stage's `blocked`).
 export const STAGES = [
 	[ 'routing', ( job ) => {
 		const r = readRouting( { folder: job.folder } );
@@ -106,7 +107,6 @@ export const STAGES = [
 		} finally {
 			await sb.close();
 		}
-		ctx.blocked = [ ...out.blocked ];
 		const misses = out.blocked.filter( ( b ) => 'replay-miss' === b.reason ).length;
 		out.note = `${ visits.list.length } routes x ${ job.widths.length } widths, ${ out.requests } requests, ${ misses } replay misses, ${ out.proxyAttempts } proxy attempts${ out.recorded ? `; recorded ${ out.recorded.urls } URLs in ${ out.recorded.rounds } round(s)` : '' }`;
 		return out;
@@ -117,6 +117,7 @@ export const STAGES = [
 		const unreached = c.rows.filter( ( r ) => true === r.unreached ).length;
 		return {
 			census: { rows: slimCensus( c.rows, c.problems ), pass: c.pass, problems: c.problems, counts: c.counts },
+			blocked: c.runtime?.blocked ?? [],
 			gaps: [ ...c.gaps, ...c.problems.map( ( p ) => gap( 'census', job.entry, p ) ) ],
 			note: `${ c.rows.length } constructs, ${ c.pass ? 'pass' : `FAIL (${ c.problems.length } problems)` }, ${ unreached } unreached`,
 		};
@@ -133,9 +134,12 @@ export const STAGES = [
 		const t = readTokens( job.folder );
 		const records = [];
 		const gaps = [];
+		const blocked = [];
 		for ( const v of ctx.visits.list ) {
 			try {
-				records.push( ...( await readSurface( { folder: job.folder, index: job.entry, harPath: job.harPath, file: v.file, hash: v.hash, width: 1440, mode: 'rest', surface: v.key } ) ).records );
+				const read = await readSurface( { folder: job.folder, index: job.entry, harPath: job.harPath, file: v.file, hash: v.hash, width: 1440, mode: 'rest', surface: v.key } );
+				records.push( ...read.records );
+				blocked.push( ...read.blocked );
 			} catch ( e ) {
 				gaps.push( gap( 'palette-usage', `${ v.file }${ v.hash ? `#${ v.hash }` : '' }`, `the 1440 rest reading failed: ${ e.message.split( '\n' )[ 0 ] }` ) );
 			}
@@ -145,7 +149,7 @@ export const STAGES = [
 		gaps.push( ...p.problems.map( ( x ) => gap( `palette:${ x.kind ?? 'token' }`, x.draftId ?? x.name ?? x.token ?? 'tokens', x.error ?? x.message ?? JSON.stringify( x ) ) ) );
 		return {
 			palette: { tokens: p.tokens, rows: p.rows, unused: p.unused, oneOff: p.oneOff, merges: p.merges, usageFrom: `computed colour properties of ${ records.length } rest-mode reading records, one 1440 read per route` },
-			gaps, note: `${ t.tokens.length } tokens, ${ p.rows.length } roles, ${ p.unused.length } unused, ${ p.oneOff.length } one-off; usage from ${ records.length } records (${ usage.length } colour uses)`,
+			blocked, gaps, note: `${ t.tokens.length } tokens, ${ p.rows.length } roles, ${ p.unused.length } unused, ${ p.oneOff.length } one-off; usage from ${ records.length } records (${ usage.length } colour uses)`,
 		};
 	} ],
 	[ 'site info', ( job, ctx ) => {
@@ -164,7 +168,7 @@ export const STAGES = [
 		const c = ctx.censusFull;
 		const d = await twoPassDefects( { folder: job.folder, entry: job.entry, harPath: job.harPath, census: { rows: c.rows, sources: c.sources }, visits: ctx.visits.census, widths: job.widths, flags: ctx.flagRows ?? null, log } );
 		return {
-			draftDefects: defectReviewRows( d ), notDefects: d.notDefects.length, passes: d.passes, gaps: d.gaps,
+			draftDefects: defectReviewRows( d ), notDefects: d.notDefects.length, passes: d.passes, gaps: d.gaps, blocked: d.blocked,
 			note: `${ d.rows.length } defects in ${ d.groups.length } groups, ${ d.notDefects.length } not defects; pass A ${ ( d.passes.a.ms / 1000 ).toFixed( 1 ) }s, pass B ${ ( d.passes.b.ms / 1000 ).toFixed( 1 ) }s`,
 		};
 	} ],
@@ -181,7 +185,6 @@ export const STAGES = [
 		}
 		const c = collapseSkeletons( r.skeletons );
 		ctx.skeletonRows = Object.values( c.skeletons ).flatMap( ( s ) => s.rows );
-		ctx.blocked = [ ...( ctx.blocked || [] ), ...r.runs.flatMap( ( x ) => x.blocked ) ];
 		const opened = r.skeletons.filter( ( s ) => s.opened ).map( ( s ) => `${ s.surface } via ${ s.opened.via }` );
 		return {
 			skeletons: c.skeletons, surfaces: { surfaces: roots.surfaces.map( ( { states, ...s } ) => ( void states, s ) ), parts: roots.parts },

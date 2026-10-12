@@ -32,9 +32,10 @@ export const motionModifier = ( r ) => [ 'transition', 'keyframes' ].includes( r
 // `onPage(session, { width, visit })` runs on each visit after the rest settle, before any forcing. `force` switches a
 // forcing off ({ pseudo, state, events, props, deadCode, reducedMotion }: false); it exists only for the tests' negative
 // controls. `only` (a Set of census row IDs) limits the candidates, for a second pass over more visits. `flags`
-// (lib/intake-flags.mjs::proposeFlags rows, optional) lets a construct be prototype-only (FR-48-33).
+// (lib/intake-flags.mjs::proposeFlags rows, optional) lets a construct be prototype-only (FR-48-33). Returns { rows,
+// notDefects, gaps, blocked } (`blocked`: every forced page's aborted requests).
 export async function unreachedDefects( { folder, entry, harPath, census, visits = [ entry ], widths = WIDTHS, harness = {}, timeout = 60000, onPage = null, force = {}, only = null, flags = null } ) {
-	const out = { rows: [], notDefects: [], gaps: [] };
+	const out = { rows: [], notDefects: [], gaps: [], blocked: [] };
 	const unreached = census.rows.filter( ( r ) => true === r.unreached );
 	census.rows.filter( ( r ) => null === r.unreached && r.traceGap ).forEach( ( r ) => out.gaps.push( { construct: r.kind, draftId: r.draftId, error: `the census could not decide reach (${ r.traceGap }); not tested as a draft defect` } ) );
 	unreached.filter( ( r ) => ! STATE_KINDS.includes( r.kind ) ).forEach( ( r ) => out.notDefects.push( { draftId: r.draftId, censusId: r.id, why: 'render-wins', note: `${ r.kind } is not a state, motion or behaviour` } ) );
@@ -81,10 +82,12 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 				}
 			} catch ( e ) {
 				failed.add( width );
+				out.blocked.push( ...( e.blocked || [] ) );
 				out.gaps.push( { construct: 'defect-visit', draftId: `${ group.file }@${ width }`, error: e.message.split( '\n' ).slice( 0, 3 ).join( ' ' ) } );
 			} finally {
 				if ( s ) {
 					await s.close();
+					out.blocked.push( ...s.blocked );
 				}
 			}
 		}
@@ -277,7 +280,7 @@ function numberRows( rows ) {
 	} );
 }
 
-// Both tests: { rows: [ { rowId, draftId, test, kind, evidence, widths } ], groups, notDefects, gaps }. `groups` holds
+// Both tests: { rows: [ { rowId, draftId, test, kind, evidence, widths } ], groups, notDefects, gaps, blocked }. `groups` holds
 // the rows by enclosing class member or script file (defectGroups), so a function is reviewed once. Test 1 reads the
 // compiled rules on every forced page right after its rest settle; test 2 runs only when the census carries the
 // runtime pass's `unreached` marks (otherwise a gap row says it was not run).
@@ -292,5 +295,5 @@ export async function proposeDraftDefects( { folder, entry, harPath, census, vis
 	const b = bindingVerdicts( bound, reads );
 	const gaps = [ ...b.gaps, ...u.gaps, ...( marked ? [] : [ { construct: 'draft-defect', draftId: entry, error: 'the census carries no runtime `unreached` marks: FR-48-34 test 2 was not run' } ] ) ];
 	const rows = numberRows( [ ...b.rows, ...u.rows ] );
-	return { rows, groups: defectGroups( rows, census ), notDefects: [ ...b.notDefects, ...u.notDefects ], gaps };
+	return { rows, groups: defectGroups( rows, census ), notDefects: [ ...b.notDefects, ...u.notDefects ], gaps, blocked: u.blocked };
 }

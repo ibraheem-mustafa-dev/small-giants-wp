@@ -1352,10 +1352,14 @@ flag default; and `intake.json` validates against its schema.
 Status: the command is built 2026-10-12 (`intake.mjs`, `lib/intake-run*.mjs`, `lib/intake-review.mjs`,
 `tests/intake-command.test.mjs`, `tests/intake-review.test.mjs`). An Indus rehearsal writes a valid `intake.json`,
 `review.md` and `page-map.json` with no live request; a run takes about 97 minutes of machine time (draft defects
-63, skeletons 17, palette readings 9, census 7). Not yet built: §3.4 step 3 (the AI finaliser deciding the
-low-confidence block choices before Bean's review), the re-derived inventory (FR-48-25, Appendix B step 14b), and
-blocked requests from the census, reading and defect sandboxes reaching the notices (only the replay check's and the
-skeleton sandboxes' do). The Indus review today is 761 rows, 553 of them skeleton block choices.
+63, skeletons 17, palette readings 9, census 7). §3.4 steps 3 and 4 run inside intake: `--finalise` writes the request
+for the low-confidence and unresolved block choices, an agent answers it with `prompts/skeleton-finaliser.md`,
+`--apply-picks` applies the answers before Bean's review, and `--apply-review` saves his confirmed choices to the
+client's decisions file. Every sandbox's blocked requests reach the notices. The Indus review is 762 rows, of which 415
+need reading and 347 are confident block proposals that "Accept all" covers. Not yet built: the re-derived inventory
+(FR-48-25, Appendix B step 14b). Known limits: a blocked request caught by a census, defect or harness page carries no
+draft ID; the finaliser request holds each row's tag, words, snippet and top three candidates but not its parent or
+boxes; finaliser picks are re-applied after a re-run (`--finalise`, then `--apply-picks` with the same picks file).
 
 #### FR-48-18 — Stage 2: site build
 **Entry:** stage 1's exit test passes and the client has its own test site (a `build-deploy.py` `TARGETS` entry and

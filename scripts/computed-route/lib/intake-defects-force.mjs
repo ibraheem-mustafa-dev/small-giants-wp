@@ -60,7 +60,8 @@ function enclosingIfs( { comp, n } ) {
 
 // One harness page at one width with the probes on: CDP coverage, DOM and CSS. Returns a session:
 // { page, origin, width, rest, collect(), setState(comp, patch), enclosingIfs(row), forcePseudo(row), dispatch(row),
-//   coverage(), settle(), close() }. `forcePseudoState: false` exists only for the tests' negative control.
+//   coverage(), settle(), close(), blocked } (`blocked`: the sandbox's aborted requests). A failure to open carries the
+// requests blocked so far as the error's `blocked`. `forcePseudoState: false` exists only for the tests' negative control.
 export async function openForcedPage( { folder, entry, harPath, file = entry, hash = '', width, harness = {}, timeout = 60000, forcePseudoState = true } ) {
 	const sb = await openSandbox( { folder, index: entry, harPath, mode: 'replay', widths: [ width ], timeout } );
 	try {
@@ -215,10 +216,12 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 				return out;
 			},
 			close: () => sb.close(),
+			blocked: sb.blocked,
 		};
 		return session;
 	} catch ( e ) {
 		await sb.close();
+		e.blocked = sb.blocked;
 		throw e;
 	}
 }

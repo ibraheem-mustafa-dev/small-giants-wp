@@ -105,7 +105,8 @@ function decide( row, ev, ctx ) {
 
 // The runtime pass. `census` is a staticCensus result (rows and sources); `visits` the caller's page and route list.
 // Returns { sightings: [ { id?, kind, draftId, component, detail, source: 'runtime', visit, width } ], perVisit,
-// gaps: [ { construct, draftId, error } ], traceGaps: [ { id, error } ], runtimeOnly, kinds, wallMs }.
+// gaps: [ { construct, draftId, error } ], traceGaps: [ { id, error } ], runtimeOnly, kinds, wallMs, blocked } where
+// `blocked` holds every sandbox's aborted requests (lib/intake-sandbox.mjs::openSandbox rows), for the intake notices.
 export async function runtimeCensus( { folder, entry, harPath, visits = [ entry ], widths = [ 375, 768, 1440 ], census = null, timeout = 60000, harness = {} } ) {
 	const t0 = Date.now();
 	const base = census || await ( await import( './intake-census.mjs' ) ).staticCensus( { folder, entry, harPath, timeout } );
@@ -128,6 +129,7 @@ export async function runtimeCensus( { folder, entry, harPath, visits = [ entry 
 	const reached = new Set();
 	const traceGap = new Map();
 	const runtimeOnly = new Map();
+	const blocked = [];
 	const sight = ( r, visit, width ) => sightings.push( { ...( r.id ? { id: r.id } : {} ), kind: r.kind, draftId: r.draftId, component: r.component, detail: r.detail, source: 'runtime', visit, width } );
 	for ( const width of widths ) {
 		for ( const group of groupVisits( visits, entry ) ) {
@@ -270,6 +272,7 @@ export async function runtimeCensus( { folder, entry, harPath, visits = [ entry 
 			} finally {
 				if ( sb ) {
 					await sb.close();
+					blocked.push( ...sb.blocked );
 				}
 			}
 			if ( failed ) {
@@ -283,5 +286,5 @@ export async function runtimeCensus( { folder, entry, harPath, visits = [ entry 
 	}
 	const traceGaps = [ ...traceGap ].filter( ( [ id ] ) => ! reached.has( id ) ).map( ( [ id, error ] ) => ( { id, error } ) ).sort( ( a, b ) => ( a.id < b.id ? -1 : a.id > b.id ? 1 : 0 ) );
 	traceGaps.forEach( ( g ) => gaps.push( { construct: 'runtime-trace', draftId: g.id, error: g.error } ) );
-	return { sightings, perVisit, gaps, traceGaps, runtimeOnly: [ ...runtimeOnly.values() ], kinds: TRACED_KINDS, wallMs: Date.now() - t0 };
+	return { sightings, perVisit, gaps, traceGaps, runtimeOnly: [ ...runtimeOnly.values() ], kinds: TRACED_KINDS, wallMs: Date.now() - t0, blocked };
 }

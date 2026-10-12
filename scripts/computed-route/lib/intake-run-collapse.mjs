@@ -175,3 +175,25 @@ export function collapseMissing( rows ) {
 	} ) );
 	return { rows: out, before: rows.length, after: out.length };
 }
+
+// Blocked requests from every sandbox (the replay check, census runtime pass, palette readings, draft-defect pages and
+// skeleton runs) as one row per URL and reason: { url, host, reason, draftIds (every draft ID seen, sorted), draftId
+// (the first of them, else null) }, sorted by host then URL. Merging a merged list changes nothing.
+export function mergeBlocked( list ) {
+	const seen = new Map();
+	for ( const b of list ) {
+		const k = `${ b.url } ${ b.reason }`;
+		const row = seen.get( k ) || { url: b.url, host: b.host || '(no host)', reason: b.reason, draftId: null, draftIds: [] };
+		for ( const d of [ ...( b.draftIds || [] ), b.draftId ] ) {
+			if ( null != d && '' !== d && ! row.draftIds.includes( String( d ) ) ) {
+				row.draftIds.push( String( d ) );
+			}
+		}
+		seen.set( k, row );
+	}
+	const rows = [ ...seen.values() ].map( ( r ) => {
+		const ids = [ ...r.draftIds ].sort();
+		return { ...r, draftId: ids[ 0 ] ?? null, draftIds: ids };
+	} );
+	return rows.sort( ( a, b ) => ( a.host + a.url < b.host + b.url ? -1 : a.host + a.url > b.host + b.url ? 1 : a.reason < b.reason ? -1 : 1 ) );
+}
