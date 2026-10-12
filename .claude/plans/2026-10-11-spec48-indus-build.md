@@ -86,9 +86,10 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
 
 ### Phase 1. Set-up and stage 0 (Appendix B steps 1 to 8)
 - [x] **1. Current export.** Passes `handoff-check.mjs` (2026-10-11).
-- [ ] **2. Test-site email** (agent). Appendix A step 6 on `indus-test` through the studio mailbox (sandybrown's login and
-  key, `.claude/dev-setup.md` §Site email) with `--redirect-all-to` Bean; no client mailbox (Bean, 2026-10-12: the studio
-  does not run Indus's domain or email). Done when `provision-site-mail.py --target indus-test --check` exits 0.
+- [x] **2. Test-site email** (done 2026-10-12). Appendix A step 6 on `indus-test` through the studio mailbox (sandybrown's
+  login and key, `.claude/dev-setup.md` §Site email): From `Indus Foods (test) <admin@smallgiantsstudio.co.uk>`, digest and
+  `--redirect-all-to` the studio mailbox; no client mailbox (Bean, 2026-10-12: the studio does not run Indus's domain or
+  email). `provision-site-mail.py --target indus-test --check` exits 0; the test send is row 1 `sent` in `wp_fsmpt_email_logs`.
 - [x] **3. Route dependencies** (done 2026-10-11; route suite 867/870, the 3 known failures). FR-48-75 done when: `npm ci` in `scripts/computed-route` installs the pinned set; a
   planted import from `plugins/sgs-blocks/node_modules` fails `lint.mjs`. (The G0 browser-version case lands with G0,
   Phase 6.)
