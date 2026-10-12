@@ -17,6 +17,7 @@ Reference: `.claude/plans/2026-10-12-spec38a-motion-build.md` (spec `.claude/spe
 | `sgsMotion` never declared in a block.json | `git grep -n '"sgsMotion"' -- 'plugins/sgs-blocks/src/blocks/*/block.json'` | no output | PENDING |
 | Every motion gate passes | `python plugins/sgs-blocks/scripts/run-motion-gates.py` | exit 0 | PENDING |
 | One easing list definition | `git grep -nE "const (MOTION_EASING_OPTIONS\|EASING_OPTIONS\|FX_EASE_OPTIONS) =" -- plugins/sgs-blocks/src` | one line, in `src/components/motion/EasingAtom.js` | PENDING |
+| Motion field rows (decision 3 option B; under option A count `block_attributes` rows with `source='sgs-motion'`) | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT COUNT(*) FROM motion_field_rows"` and `python plugins/sgs-blocks/scripts/check-motion-db-rows.py --check` | non-zero; exit 0 | PENDING |
 | Presets table in, old table out | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT name FROM sqlite_master WHERE name IN ('motion_presets','animation_tokens')"` | `motion_presets` only | PENDING |
 | Spec status lines | `grep -nE "^- \*\*FR-38A-(1\|3\|14\|15\|55\|56) " .claude/specs/38A-SGS-MOTION-MODEL.md` | each says built | PENDING |
 
