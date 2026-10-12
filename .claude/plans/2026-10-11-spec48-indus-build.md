@@ -24,9 +24,9 @@ blocks are current, with four slot maps left stale on purpose (step 8 says why).
 | Route | session A (the one that wrote this plan) | 3 → 5 → 6 → 7 → 8 | 8 needs 4 | 3 h 15 |
 | Mirror | session A, background subagent | 4, later 2 and 16 | nothing | 45 min, then 5 and 30 min |
 | Framework | session B, prompt `.claude/prompts/2026-10-11-spec48-framework-lane.md` | 9 → 10 → 11 → 12 (queued) | nothing | 2 h 55 |
-| Intake | session C, prompt `.claude/prompts/2026-10-11-spec48-intake-lane.md` | 13 → 14 | 3 pushed | 5 h 15 |
+| Intake | session C, prompt `.claude/prompts/2026-10-11-spec48-intake-lane.md` | 13 → 14 → 14b | 3 pushed | 6 h |
 
-The lanes join at step 15 (needs 8 and 14). The critical path is the intake lane (3, 13, 14: about 5 h 45 by the
+The lanes join at step 15 (needs 8, 9, 14 and 14b). The critical path is the intake lane (3, 13, 14: about 5 h 45 by the
 spec's figures, against about 12 h with every set-up and intake step in a row).
 
 ### Why these lanes (file-overlap proof, grep on 2026-10-11)
@@ -136,8 +136,12 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
 - [ ] **14. Intake 4b.** FR-48-26, FR-48-30, FR-48-31, FR-48-32 done-whens; FR-48-27, FR-48-33, FR-48-34 and §3.4's
   skeleton inventory and proposal; `review.md` and `intake.mjs --apply-review` (FR-48-17); the intake and page-map
   schemas.
+- [ ] **14b. Re-derived inventory and prop variants** (session C, Opus; needs 13; before 15). FR-48-25 and FR-48-29
+  are on FR-48-17's work list but were in no Appendix B step (Bean, 2026-10-12: a step of their own, not built inside
+  13 or 14). Until it lands, the motion construct kinds sit in `data/construct-registry.json` as gaps citing FR-48-25.
 - [ ] **15. Intake run and Bean's review.** Stage 1's exit (FR-48-17): every census construct has a reader or a gap
-  row, and every review row carries Bean's mark.
+  row, and every review row carries Bean's mark. Runs after session B's step 9 as well as 8 and 14b: the palette
+  proposal reads the slugs from `theme/sgs-theme/theme.json`, so FR-32-14's new slugs reach it only once step 9 lands.
 
 ### Phase 4. Stage 2 site build (steps 16 to 19)
 - [ ] **16. Appendix A on `indus-test`**, the steps not already done (may start after step 4).

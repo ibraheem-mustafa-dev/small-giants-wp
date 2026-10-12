@@ -2569,7 +2569,10 @@ One pass is about 10 minutes of agent time and 20 minutes of machine time.
     Info proposal with `sync-business-info.py` as a source (FR-48-32), the flags, draft defects and missing features
     (FR-48-33, FR-48-34), the skeleton inventory and proposal (§3.4), `review.md` with its sections and
     `intake.mjs --apply-review` (FR-48-17), and the intake and page-map schemas (Appendix C). Needs 13.
-15. **Intake run and Bean's review** (machine 20 min, Bean 30 min). Needs 8 and 14.
+14b. **Re-derived inventory and prop variants** (agent, 45 min). FR-48-25 and FR-48-29, the two FR-48-17 work items
+    no other step builds; until then the census registry records the motion kinds as gaps citing FR-48-25. Needs 13.
+15. **Intake run and Bean's review** (machine 20 min, Bean 30 min). Needs 8, 9 (the palette proposal reads FR-32-14's
+    slugs from the theme), 14 and 14b.
 
 *Stage 2: site build (steps 16 and the environment parts of Appendix A may start after step 4)*
 16. **Appendix A on `indus-test`** (agent, 30 min): the steps not already done.
