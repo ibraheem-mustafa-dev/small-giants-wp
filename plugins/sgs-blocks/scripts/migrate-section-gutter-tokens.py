@@ -83,6 +83,7 @@ def survey(root: Path = ROOT) -> list[dict]:
             "file": path.relative_to(root).as_posix(),
             "roundtrip": dump(data, raw) == raw,
             "missing": sorted(additions),
+            "css_overrides": tokens.css_root_padding_overrides(data),
             "values": additions,
         })
     return rows
@@ -120,6 +121,8 @@ def check(root: Path = ROOT) -> int:
     for row in survey(root):
         if row["missing"]:
             problems.append(f"  {row['file']}: lacks {', '.join(row['missing'])}")
+        if row["css_overrides"]:
+            problems.append(f"  {row['file']}: styles.css sets {', '.join(row['css_overrides'])}; move the value into settings.custom.gutter")
         if not row["roundtrip"]:
             problems.append(f"  {row['file']}: does not round-trip through JSON unchanged")
     required = tokens.framework_layout_tokens(root / "theme" / "sgs-theme" / "theme.json")
@@ -179,6 +182,12 @@ def self_test() -> int:
         a2 = json.loads((root / "sites" / "a" / "theme-snapshot.json").read_text(encoding="utf-8"))
         if tokens.token_value(a2, "gutter.mobile") != "12px":
             failures.append("an existing token was overwritten")
+        # A snapshot css rule on the root padding is beaten by the token, so --check refuses it.
+        a2["styles"]["css"] = "@media (max-width: 767px) { :root, body { --wp--style--root--padding-left: 20px; } }"
+        (root / "sites" / "a" / "theme-snapshot.json").write_text(json.dumps(a2, indent=2) + "\n", encoding="utf-8")
+        if check(root) != 1:
+            failures.append("negative control: --check passed a styles.css rule on the root padding")
+        del a2["styles"]["css"]
         # The negative control again: one token removed turns the gate red.
         del a2["settings"]["custom"]["section"]["padding"]["tablet"]
         (root / "sites" / "a" / "theme-snapshot.json").write_text(json.dumps(a2, indent=2) + "\n", encoding="utf-8")

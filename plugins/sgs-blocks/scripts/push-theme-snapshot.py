@@ -1100,6 +1100,12 @@ def main() -> int:
               "for palette slugs, python scripts/migrate-section-gutter-tokens.py for custom.section and "
               "custom.gutter) and re-run; nothing was sent.", file=sys.stderr)
         return 2
+    css_clash = layout_tokens.css_root_padding_overrides(local)
+    if css_clash:
+        print(f"[push-theme-snapshot] REFUSED: sites/{args.client}/theme-snapshot.json styles.css sets "
+              f"{', '.join(css_clash)}, which the gutter tokens override. Move the value into "
+              "settings.custom.gutter and re-run; nothing was sent.", file=sys.stderr)
+        return 2
     local_path = repo_root() / "sites" / args.client / "theme-snapshot.json"
     server_path = f"domains/{args.target_domain}/public_html/wp-content/themes/sgs-theme/theme.json"
     wp_root = f"domains/{args.target_domain}/public_html"

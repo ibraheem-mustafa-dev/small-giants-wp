@@ -84,3 +84,17 @@ def todays_values(snapshot: dict) -> dict[str, str]:
     values = {f"section.padding.{tier}": "0" for tier in TIERS}
     values.update({f"gutter.{tier}": gutter for tier in TIERS})
     return values
+
+
+def css_root_padding_overrides(snapshot: dict) -> list[str]:
+    """Root side-padding properties a snapshot's own `styles.css` sets.
+
+    `layout-tokens.css` sets `--wp--style--root--padding-left/right` from the gutter tokens at `:root:root body`
+    specificity, so a snapshot rule on the same properties is silently beaten and the token paints instead.
+    The gutter belongs in `settings.custom.gutter`, never in `styles.css`.
+    """
+    css = (snapshot.get("styles") or {}).get("css")
+    if not isinstance(css, str):
+        return []
+    return sorted(set(re.findall(r"--wp--style--root--padding-(?:left|right|top|bottom)", css)))
+
