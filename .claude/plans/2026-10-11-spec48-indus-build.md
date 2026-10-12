@@ -144,8 +144,12 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
   blocks included) under its lossy-write guard; session B then recalibrates only what `stage0 --plan` still lists.
 
 ### Phase 3. Stage 1 intake (steps 13 to 15, session C, then the join)
-- [ ] **13. Intake 4a.** FR-48-23 and FR-48-28 done-whens; FR-48-24's census with `construct-registry.json`; the
-  Appendix C schemas for the reading record, the registry and the baseline.
+- [x] **13. Intake 4a** (done 2026-10-12, session C). FR-48-23 and FR-48-28 done-whens; FR-48-24's census with
+  `construct-registry.json`; the Appendix C schemas for the reading record, the registry and the baseline. Built as
+  `lib/intake-sandbox.mjs`, `-record`, `-process`, `-prose`, `lib/intake-harness.mjs`, `lib/intake-reading.mjs`, the
+  `lib/intake-census*.mjs` static and runtime passes and `lib/intake-registry.mjs`, each case with its MUST FAIL
+  control; `tests/intake-schemas.test.mjs` holds every Appendix C schema equal to the spec. The Indus census (24
+  visits at three widths) takes about 9 minutes and is identical across two runs.
 - [ ] **14. Intake 4b.** FR-48-26, FR-48-30, FR-48-31, FR-48-32 done-whens; FR-48-27, FR-48-33, FR-48-34 and §3.4's
   skeleton inventory and proposal; `review.md` and `intake.mjs --apply-review` (FR-48-17); the intake and page-map
   schemas.
