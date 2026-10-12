@@ -1,0 +1,336 @@
+// Bean's one batched intake review (Spec 48 FR-48-17, Appendix C "Intake record" `review` and "Review marks").
+// review.md is generated from intake.json; Bean ticks a section's "Accept all" box and writes a mark only in the Mark
+// cell of a row he wants changed. A row's own mark beats Accept all; a flag row left blank is `accept-flagged`; every
+// other row needs Accept all or its own mark, notices included: FR-48-17 says "A placeholder, stock or prototype-only
+// flag row is accepted as flagged unless Bean marks otherwise; every other row needs a mark from its section or its
+// own", and Appendix C gives notices the one value `noted`, so a notice is acknowledged, never defaulted.
+//
+// Content hash: SHA-256 of a canonical (sorted-key) JSON of HASH_FIELDS[rowType] plus `draftId`, so a mark carries
+// across an identical re-export and is dropped when what the row shows changes. Proposal noise (confidence, scores,
+// "why" text, source locations, screenshots) is never hashed. Defect, missing-feature and inventory-diff rows hash
+// every field except VOLATILE ones.
+//
+// Notices come from `intake.notices` ({ prose: commandLikeLines rows, blockedHosts: sandbox blocked rows }).
+import crypto from 'crypto';
+
+export const ROW_TYPES = [ 'page-map', 'palette-role', 'site-info', 'flag', 'draft-defect', 'missing-feature', 'skeleton-block', 'inventory-diff', 'notice' ];
+export const SECTION_TITLES = {
+	'page-map': 'Page map', 'palette-role': 'Palette roles', 'site-info': 'Site Info', flag: 'Flags', 'draft-defect': 'Draft defects',
+	'missing-feature': 'Missing features', 'skeleton-block': 'Skeleton block choices', 'inventory-diff': 'Inventory diffs', notice: 'Notices',
+};
+
+const SLUG = /^[a-z0-9-]+$/;
+const BLOCK = /^[a-z0-9-]+\/[a-z0-9-]+$/;
+const PAGE_FIELDS = { route: null, slug: SLUG, title: null, parent: null, template: null, postType: /^(page|post|product_cat|shop|sgs_header|sgs_footer|sgs_drawer|sgs_modal|sgs_mega_menu|sgs_form|sgs_choice_flow|wp_block)$/, collection: /^(static|live)$/ };
+
+// The mark vocabulary per row type, in Appendix C order; the first entry is what "Accept all" sets. A pattern entry's
+// `check` returns null for a sound mark or the reason it is refused.
+export const MARKS = {
+	'page-map': [ { value: 'accept' }, { shape: 'edit:<field>=<value>', re: /^edit:([A-Za-z]+)=(.*)$/, check: ( m ) => {
+		if ( ! ( m[ 1 ] in PAGE_FIELDS ) ) {
+			return `"${ m[ 1 ] }" is not an editable page-map field (${ Object.keys( PAGE_FIELDS ).join( ', ' ) })`;
+		}
+		const re = PAGE_FIELDS[ m[ 1 ] ];
+		return re && ! re.test( m[ 2 ] ) ? `"${ m[ 2 ] }" is not a valid ${ m[ 1 ] }` : null;
+	} }, { value: 'drop' } ],
+	'palette-role': [ { value: 'accept' }, { shape: 'role:<slug>', re: /^role:(.+)$/, check: ( m ) => ( SLUG.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a slug` ) }, { value: 'one-off' } ],
+	'site-info': [ { value: 'accept' }, { shape: 'edit:<value>', re: /^edit:(.*)$/, check: ( m ) => ( m[ 1 ].trim() ? null : 'the edited value is empty' ) }, { value: 'drop' } ],
+	flag: [ { value: 'accept-flagged' }, { value: 'not-flagged' } ],
+	'draft-defect': [ { value: 'accept' }, { value: 'render-wins' } ],
+	'missing-feature': [ { shape: 'map:<block>', re: /^map:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' }, { value: 'build' } ],
+	'skeleton-block': [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) } ],
+	'inventory-diff': [ { value: 'ours' }, { value: 'theirs' } ],
+	notice: [ { value: 'noted' } ],
+};
+
+export const markShapes = ( rowType ) => MARKS[ rowType ].map( ( m ) => m.value ?? m.shape );
+
+// null when `mark` is one of the row type's values, else why it is refused.
+export function markProblem( rowType, mark ) {
+	for ( const m of MARKS[ rowType ] || [] ) {
+		if ( m.value === mark ) {
+			return null;
+		}
+		const hit = m.re?.exec( mark );
+		if ( hit ) {
+			return m.check( hit );
+		}
+	}
+	return `not a ${ rowType } mark (${ markShapes( rowType ).join( ', ' ) })`;
+}
+
+export const HASH_FIELDS = {
+	'page-map': [ 'route', 'slug', 'title', 'parent', 'template', 'postType', 'collection', 'menus', 'flags' ],
+	'palette-role': [ 'token', 'hex', 'role' ],
+	'site-info': [ 'key', 'value', 'normalised' ],
+	flag: [ 'kind', 'text', 'url' ],
+	'skeleton-block': [ 'surface', 'key', 'tag', 'words', 'block' ],
+	notice: [ 'kind', 'file', 'text', 'host', 'reasons' ],
+};
+export const VOLATILE = [ 'rowId', 'confidence', 'score', 'scores', 'why', 'reason', 'location', 'source', 'sources', 'screenshots', 'snippet', 'candidates', 'low', 'ms' ];
+
+const canonical = ( v ) => {
+	if ( Array.isArray( v ) ) {
+		return `[${ v.map( canonical ).join( ',' ) }]`;
+	}
+	if ( v && 'object' === typeof v ) {
+		return `{${ Object.keys( v ).sort().filter( ( k ) => undefined !== v[ k ] ).map( ( k ) => `${ JSON.stringify( k ) }:${ canonical( v[ k ] ) }` ).join( ',' ) }}`;
+	}
+	return JSON.stringify( v ?? null );
+};
+export const sha = ( s ) => crypto.createHash( 'sha256' ).update( s ).digest( 'hex' );
+
+export function contentHash( rowType, row, draftId ) {
+	const fields = HASH_FIELDS[ rowType ] || Object.keys( row ).filter( ( k ) => ! VOLATILE.includes( k ) );
+	return sha( canonical( { draftId, ...Object.fromEntries( fields.map( ( k ) => [ k, row[ k ] ] ) ) } ) );
+}
+
+const text = ( v ) => ( null === v || undefined === v ? '' : 'string' === typeof v ? v : canonical( v ) );
+const describe = ( r ) => text( r.text ?? r.summary ?? r.what ?? r.title ?? r.description ?? Object.fromEntries( Object.entries( r ).filter( ( [ k ] ) => ! VOLATILE.includes( k ) && 'draftId' !== k ) ) );
+const unique = ( list ) => {
+	const seen = new Map();
+	return list.map( ( r ) => {
+		const n = ( seen.get( r.rowId ) || 0 ) + 1;
+		seen.set( r.rowId, n );
+		return 1 === n ? r : { ...r, rowId: `${ r.rowId }#${ n }` };
+	} );
+};
+
+// The flat review rows of an intake record, section by section: { rowId, rowType, draftId, contentHash, shows,
+// proposed, note, acceptAll } where `acceptAll` is the mark the section's Accept all gives the row (null when the
+// first value needs a block the row does not propose).
+export function reviewRows( intake ) {
+	const out = [];
+	const add = ( rowType, row, draftId, shows, proposed = '', note = '', acceptAll = MARKS[ rowType ][ 0 ].value ) => out.push( {
+		rowId: row.rowId, rowType, draftId: String( draftId ?? '' ), contentHash: contentHash( rowType, row, draftId ), shows, proposed, note, acceptAll,
+	} );
+	unique( ( intake.pageMap || [] ).map( ( r ) => ( { ...r, rowId: `page:${ r.postType }:${ r.slug }` } ) ) ).forEach( ( r ) => add( 'page-map', r, r.route ?? r.slug,
+		`${ r.route ?? '(no route)' } → ${ r.title } (${ r.postType }, ${ r.collection }${ r.template ? `, ${ r.template }` : '' })`,
+		`${ r.parent ? `${ r.parent }/` : '' }${ r.slug }`,
+		[ ...( r.menus || [] ).map( ( m ) => `${ m.menu } #${ m.position }` ), ...( r.flags || [] ) ].join( ', ' ) ) );
+	( intake.palette?.rows || [] ).forEach( ( r ) => add( 'palette-role', r, r.token, `${ r.token } ${ r.hex }`, r.role ? `role:${ r.role }` : 'no slug (one-off)', [ r.confidence, r.why ].filter( Boolean ).join( ': ' ) ) );
+	( intake.siteInfo?.rows || [] ).forEach( ( r ) => add( 'site-info', r, r.key, `${ r.key }: ${ text( r.value ) }`, text( r.normalised ), ( r.sources || [] ).map( ( s ) => s.draftId || s.location ).filter( Boolean ).join( ', ' ) ) );
+	( intake.flags || [] ).forEach( ( r ) => add( 'flag', r, r.draftId, `${ r.kind }: ${ r.text ?? r.url ?? '' }`, 'accept-flagged', r.why || '' ) );
+	( intake.draftDefects || [] ).forEach( ( r ) => add( 'draft-defect', r, r.draftId, describe( r ), text( r.proposed ?? r.intent ?? 'build the code\'s intent' ), text( r.why ?? r.reason ) ) );
+	( intake.missingFeatures || [] ).forEach( ( r ) => {
+		const block = r.block ?? r.proposedBlock ?? null;
+		add( 'missing-feature', r, r.draftId, describe( r ), block ? `map:${ block }` : 'no block proposed', text( r.why ?? r.reason ), block && BLOCK.test( block ) ? `map:${ block }` : null );
+	} );
+	const sk = intake.skeletons || {};
+	( Array.isArray( sk ) ? sk : Object.entries( sk ).map( ( [ surface, s ] ) => ( { surface, ...s } ) ) ).forEach( ( s ) => ( s.rows || [] ).forEach( ( r ) => add( 'skeleton-block',
+		{ surface: s.surface, ...r, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,
+		`${ s.surface } ${ r.key } <${ r.tag ?? '?' }>${ r.words ? ` "${ text( r.words ) }"` : '' }`, r.block ? `block:${ r.block }` : 'no block', [ r.confidence, r.reason ].filter( ( x ) => null != x && '' !== x ).join( ': ' ) ) ) );
+	( intake.inventory?.diff || [] ).forEach( ( r ) => add( 'inventory-diff', { ...r, rowId: r.rowId || `inventory:${ r.draftId }` }, r.draftId, describe( r ), 'ours', text( r.why ?? r.reason ) ) );
+	( intake.notices?.prose || [] ).forEach( ( r ) => add( 'notice', { kind: 'prose', file: r.file, text: r.text, rowId: `notice:${ r.rowId }` }, `${ r.file }:${ r.line }`, `${ r.file }:${ r.line } ${ r.text }`, 'noted', r.why || '' ) );
+	const hosts = new Map();
+	( intake.notices?.blockedHosts || [] ).forEach( ( b ) => {
+		const h = b.host || b.url;
+		hosts.set( h, [ ...( hosts.get( h ) || [] ), b ] );
+	} );
+	[ ...hosts ].forEach( ( [ host, list ] ) => {
+		const reasons = [ ...new Set( list.map( ( b ) => b.reason ) ) ].sort();
+		const urls = [ ...new Set( list.map( ( b ) => b.url ) ) ].sort();
+		add( 'notice', { kind: 'host', host, reasons, rowId: `notice:host:${ host }` }, host, `request to ${ host } blocked (${ urls.length } URL${ 1 === urls.length ? '' : 's' }, first ${ urls[ 0 ] })`, 'noted', reasons.join( ', ' ) );
+	} );
+	return out;
+}
+
+const cell = ( v ) => String( v ?? '' ).replace( /\r?\n/g, ' ' ).replace( /\|/g, '\\|' ).trim();
+const byId = ( a, b ) => ( a.rowId < b.rowId ? -1 : a.rowId > b.rowId ? 1 : 0 );
+const ordered = ( rows, changed ) => [ ...rows.filter( ( r ) => changed.has( r.rowId ) ).sort( byId ), ...rows.filter( ( r ) => ! changed.has( r.rowId ) ).sort( byId ) ];
+const TABLE_HEAD = [ '| Row | Shows | Proposed | Confidence or reason | Mark |', '|---|---|---|---|---|' ];
+const manifestHash = ( m ) => sha( canonical( m?.files || {} ) ).slice( 0, 16 );
+
+// The Markdown of review.md. `changed` is the rowIds changed since the previous export (by default the review rows
+// carryOver set `changed: true` on); they are listed first in their section (and surface) with a **changed** marker.
+// Marks already in intake.review (carried or applied before) show in the Mark cell. Byte-identical for identical input.
+export function renderReview( intake, { changed = ( intake.review || [] ).filter( ( r ) => r.changed ).map( ( r ) => r.rowId ) } = {} ) {
+	const ch = new Set( changed );
+	const marks = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
+	const rows = reviewRows( intake );
+	const out = [ `# Intake review: ${ intake.client }`, '', `Taken on ${ intake.takenOn }; manifest ${ intake.manifest?.schema_version ?? '?' }, files hash ${ manifestHash( intake.manifest ) }.`, '',
+		'How to mark: put x in a section\'s `Accept all: [ ]` box to give every row the section\'s first mark; to mark one row',
+		'differently, write its mark in that row\'s Mark cell (a row\'s own mark always beats Accept all). Flag rows left blank',
+		'are accepted as flagged; every other row needs Accept all or its own mark. Rows marked **changed** differ from the',
+		'last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review ' + intake.client + '`.', '',
+		'Marks per section (first value = Accept all):' ];
+	ROW_TYPES.forEach( ( t ) => out.push( `- ${ SECTION_TITLES[ t ] }: ${ markShapes( t ).map( ( s ) => `\`${ s }\`` ).join( ', ' ) }` ) );
+	const line = ( r ) => {
+		const prior = marks.get( r.rowId );
+		const mark = prior && prior.contentHash === r.contentHash && ! ch.has( r.rowId ) ? prior.mark : null;
+		return `| \`${ r.rowId }\` | ${ ch.has( r.rowId ) ? '**changed** ' : '' }${ cell( r.shows ) } | ${ cell( r.proposed ) } | ${ cell( r.note ) } | ${ cell( mark ) } |`;
+	};
+	for ( const t of ROW_TYPES ) {
+		const of = rows.filter( ( r ) => r.rowType === t );
+		if ( ! of.length ) {
+			continue;
+		}
+		out.push( '', `## ${ SECTION_TITLES[ t ] } (${ t })`, '', 'Accept all: [ ]' );
+		const groups = 'skeleton-block' === t ? [ ...new Set( of.map( ( r ) => r.rowId.split( ':' )[ 1 ] ) ) ].sort().map( ( s ) => [ s, of.filter( ( r ) => r.rowId.split( ':' )[ 1 ] === s ) ] ) : [ [ null, of ] ];
+		for ( const [ name, list ] of groups ) {
+			out.push( '', ...( name ? [ `### ${ name }`, '' ] : [] ), ...TABLE_HEAD, ...ordered( list, ch ).map( line ) );
+		}
+	}
+	return `${ out.join( '\n' ) }\n`;
+}
+
+const splitRow = ( l ) => {
+	const body = l.replace( /^\|/, '' ).replace( /(?<!\\)\|\s*$/, '' );
+	return body.split( /(?<!\\)\|/ ).map( ( c ) => c.trim() );
+};
+const unquote = ( s ) => s.replace( /\\\|/g, '|' ).replace( /^`(.*)`$/, '$1' ).trim();
+
+// Reads review.md back: { sections: { rowType: { acceptAll, exceptions: { rowId: mark } } }, rowMarks, rowSection
+// (every rowId listed, with its section's type), problems }. Free text is allowed only before the first section;
+// inside sections every line must be a heading, the Accept all line, a table line or blank.
+export function parseReview( markdown ) {
+	const sections = {};
+	const rowMarks = {};
+	const rowSection = {};
+	const problems = [];
+	let cur = null;
+	markdown.split( /\r?\n/ ).forEach( ( raw, i ) => {
+		const n = i + 1;
+		const l = raw.trim();
+		const h = /^##\s+(.*?)\s*$/.exec( l );
+		if ( h && ! l.startsWith( '###' ) ) {
+			const t = /\(([a-z-]+)\)$/.exec( h[ 1 ] )?.[ 1 ];
+			if ( ! ROW_TYPES.includes( t ) ) {
+				problems.push( `line ${ n }: section heading "${ l }" names no row type (${ ROW_TYPES.join( ', ' ) })` );
+				cur = null;
+				return;
+			}
+			if ( sections[ t ] ) {
+				problems.push( `line ${ n }: the ${ t } section appears twice` );
+			}
+			cur = t;
+			sections[ t ] = { acceptAll: null, exceptions: {}, line: n };
+			return;
+		}
+		if ( ! cur || ! l || l.startsWith( '### ' ) ) {
+			return;
+		}
+		if ( /^accept all\s*:/i.test( l ) ) {
+			const m = /^accept all\s*:\s*\[\s*([xX]?)\s*\]$/i.exec( l );
+			if ( ! m ) {
+				problems.push( `line ${ n }: "${ l }" is not "Accept all: [ ]" or "Accept all: [x]"` );
+			} else if ( null !== sections[ cur ].acceptAll ) {
+				problems.push( `line ${ n }: a second Accept all line in the ${ cur } section` );
+			} else {
+				sections[ cur ].acceptAll = !! m[ 1 ];
+			}
+			return;
+		}
+		if ( ! l.startsWith( '|' ) ) {
+			problems.push( `line ${ n }: unrecognised line in the ${ cur } section: "${ l }"` );
+			return;
+		}
+		if ( /^\|[\s|:-]+$/.test( l ) ) {
+			return;
+		}
+		const cells = splitRow( l );
+		if ( 5 !== cells.length ) {
+			problems.push( `line ${ n }: a table row needs 5 cells (Row, Shows, Proposed, Confidence or reason, Mark), found ${ cells.length }` );
+			return;
+		}
+		if ( 'Row' === cells[ 0 ] ) {
+			return;
+		}
+		const id = unquote( cells[ 0 ] );
+		if ( ! id ) {
+			problems.push( `line ${ n }: a table row has no row ID` );
+			return;
+		}
+		if ( id in rowSection ) {
+			problems.push( `line ${ n }: row ${ id } is listed twice` );
+			return;
+		}
+		rowSection[ id ] = cur;
+		const mark = unquote( cells[ 4 ] );
+		if ( mark ) {
+			rowMarks[ id ] = mark;
+			sections[ cur ].exceptions[ id ] = mark;
+		}
+	} );
+	for ( const [ t, s ] of Object.entries( sections ) ) {
+		if ( null === s.acceptAll ) {
+			problems.push( `line ${ s.line }: the ${ t } section has no "Accept all: [ ]" line` );
+			s.acceptAll = false;
+		}
+		delete s.line;
+	}
+	return { sections, rowMarks, rowSection, problems };
+}
+
+export const isoDay = () => new Date().toISOString().slice( 0, 10 );
+
+// Applies Bean's marks to the intake record. Per row: its own Mark cell, else the section's Accept all (the first
+// value), else `accept-flagged` for a flag row, else no mark. A mark kept unchanged on a row with an unchanged hash
+// keeps its markedOn and carriedFrom; any other new mark is dated `today`. Returns { intake (review rebuilt from the
+// record's rows), problems, missing: [{ rowId, rowType, why }] }; non-empty problems or missing means the review fails.
+export function applyReview( intake, markdown, { today = isoDay() } = {} ) {
+	const rows = reviewRows( intake );
+	const known = new Map( rows.map( ( r ) => [ r.rowId, r ] ) );
+	const prior = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
+	const parsed = parseReview( markdown );
+	const problems = [ ...parsed.problems ];
+	for ( const [ id, t ] of Object.entries( parsed.rowSection ) ) {
+		if ( ! known.has( id ) ) {
+			problems.push( `row ${ id } (${ t } section) is not a row of this intake` );
+		} else if ( known.get( id ).rowType !== t ) {
+			problems.push( `row ${ id } sits in the ${ t } section but is a ${ known.get( id ).rowType } row` );
+		}
+	}
+	const review = [];
+	const missing = [];
+	for ( const r of rows ) {
+		if ( ! ( r.rowId in parsed.rowSection ) ) {
+			problems.push( `row ${ r.rowId } is not in review.md; regenerate it from intake.json` );
+		}
+		let mark = parsed.rowMarks[ r.rowId ] ?? null;
+		let why = 'no mark of its own and its section is not accepted';
+		if ( null !== mark ) {
+			const bad = markProblem( r.rowType, mark );
+			if ( bad ) {
+				problems.push( `row ${ r.rowId }: mark "${ mark }" refused: ${ bad }` );
+				mark = null;
+				why = 'its mark was refused';
+			}
+		} else if ( parsed.sections[ r.rowType ]?.acceptAll ) {
+			mark = r.acceptAll;
+			why = 'Accept all cannot mark it: it proposes no block; mark map:<block>, difference or build';
+		} else if ( 'flag' === r.rowType ) {
+			mark = 'accept-flagged';
+		}
+		const old = prior.get( r.rowId );
+		const keep = old && old.contentHash === r.contentHash && null !== mark && old.mark === mark;
+		review.push( { rowId: r.rowId, rowType: r.rowType, contentHash: r.contentHash, mark, markedOn: null === mark ? null : keep ? old.markedOn : today, carriedFrom: keep ? old.carriedFrom ?? null : null,
+			...( old?.changed && old.contentHash === r.contentHash ? { changed: true } : {} ) } );
+		if ( null === mark ) {
+			missing.push( { rowId: r.rowId, rowType: r.rowType, why } );
+		}
+	}
+	return { intake: { ...intake, review }, problems, missing };
+}
+
+// The new intake's review rows after a re-export: a row whose rowId (which carries its draft ID) and content hash match
+// the previous intake's row keeps its mark, markedOn and carriedFrom (the previous takenOn, or the date it was first
+// carried from); every other row is unmarked. A row present before with a different hash gets `changed: true` (kept by
+// applyReview while the hash holds), and `changed` lists those rowIds too.
+export function carryOver( previousIntake, intake ) {
+	const prior = new Map( ( previousIntake?.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
+	const changed = [];
+	const review = reviewRows( intake ).map( ( r ) => {
+		const old = prior.get( r.rowId );
+		const base = { rowId: r.rowId, rowType: r.rowType, contentHash: r.contentHash, mark: null, markedOn: null, carriedFrom: null };
+		if ( ! old ) {
+			return base;
+		}
+		if ( old.contentHash !== r.contentHash || old.rowType !== r.rowType ) {
+			changed.push( r.rowId );
+			return { ...base, changed: true };
+		}
+		return null === old.mark ? base : { ...base, mark: old.mark, markedOn: old.markedOn, carriedFrom: old.carriedFrom ?? previousIntake.takenOn };
+	} );
+	return { review, changed };
+}
