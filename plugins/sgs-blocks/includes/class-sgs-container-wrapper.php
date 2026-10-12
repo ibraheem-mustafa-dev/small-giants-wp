@@ -204,6 +204,28 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 		}
 
 		/**
+		 * Whether a block declares a boolean `supports.sgs.<key>` capability as true, read through the
+		 * same block-type supports resolution as `has_extension()`. Used for per-role opt-ins that are not
+		 * inspector panels, such as `sectionPadding` (Spec 32 FR-32-15).
+		 *
+		 * @param \WP_Block|null $block Block instance passed to render.php.
+		 * @param string         $key   The `supports.sgs` key.
+		 * @return bool
+		 */
+		public static function has_sgs_support( $block, string $key ): bool {
+			$supports = null;
+			if ( $block instanceof \WP_Block && isset( $block->block_type->supports ) && is_array( $block->block_type->supports ) ) {
+				$supports = $block->block_type->supports;
+			} elseif ( $block instanceof \WP_Block && ! empty( $block->name ) ) {
+				$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $block->name );
+				if ( null !== $registered && is_array( $registered->supports ?? null ) ) {
+					$supports = $registered->supports;
+				}
+			}
+			return is_array( $supports ) && true === ( $supports['sgs'][ $key ] ?? null );
+		}
+
+		/**
 		 * Render the outer wrapper for a container-style block.
 		 *
 		 * Returns a single pre-joined string:
@@ -1689,12 +1711,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$classes[] = 'has-global-padding';
 			}
 
-			// Section padding default (Spec 32 FR-32-15): a section-kind container with a content
-			// band (page content, the same gate as the gutter above) takes the snapshot's per-tier
+			// Section padding default (Spec 32 FR-32-15): a block whose role is a page section opts in
+			// with `supports.sgs.sectionPadding` (sgs/container; header, footer and other structural
+			// blocks do not), and with a content band it takes the snapshot's per-tier
 			// `--wp--custom--section--padding--{tier}` as its top and bottom padding through
 			// theme/sgs-theme/assets/css/layout-tokens.css. That rule is zero-specificity, so padding
 			// the client sets wins, and it skips a section nested in another, so nesting never compounds.
-			if ( $is_section && $has_band_props && false !== $opt_wrap_inner ) {
+			if ( $is_section && $has_band_props && false !== $opt_wrap_inner && self::has_sgs_support( $block, 'sectionPadding' ) ) {
 				$classes[] = 'sgs-container--section-pad';
 			}
 

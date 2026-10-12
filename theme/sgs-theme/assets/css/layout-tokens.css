@@ -12,9 +12,9 @@
  * per tier here moves every gutter at once. `:root:root body` (0,2,1) beats the `body` declaration on
  * specificity, not on enqueue order.
  *
- * SECTION PADDING. `SGS_Container_Wrapper` gives `sgs-container--section-pad` to a section-kind container with a
- * content band (the same gate as the gutter). A section inside another such section takes none, so nested
- * sections never compound. `:where()` keeps the rule at zero specificity: any padding the client sets on the
+ * SECTION PADDING. `SGS_Container_Wrapper` gives `sgs-container--section-pad` to a block whose role is a page
+ * section (it declares `supports.sgs.sectionPadding`: sgs/container) when it has a content band. A section
+ * inside another such section takes none, so nested sections never compound. `:where()` keeps the rule at zero specificity: any padding the client sets on the
  * block (a per-instance class rule) wins on every side and tier it sets. Top and bottom are written as longhands
  * so the minifier cannot fold them into a shorthand.
  */
