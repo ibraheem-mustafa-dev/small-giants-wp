@@ -1,0 +1,35 @@
+{
+	"description": "\u00a710 ::after slot: a second effect that paints ::after beside ripple.",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Ripple already uses this element's second paint layer."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"effects": [
+					{
+						"id": "e1",
+						"effect": "ripple",
+						"trigger": "click",
+						"values": {
+							"sizeFactor": 2.2
+						}
+					},
+					{
+						"id": "e2",
+						"effect": "wave-gradient",
+						"trigger": "load",
+						"values": {
+							"variant": "horizon"
+						}
+					}
+				]
+			}
+		}
+	}
+}

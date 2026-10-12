@@ -1,0 +1,35 @@
+{
+	"description": "\u00a75: an effect slug appears at most once per list on one element.",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Magnet is already on this element; change its values instead."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"effects": [
+						{
+							"id": "h1",
+							"effect": "magnet",
+							"values": {
+								"maxPullX": 5
+							}
+						},
+						{
+							"id": "h2",
+							"effect": "magnet",
+							"values": {
+								"maxPullX": 10
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

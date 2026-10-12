@@ -1,0 +1,24 @@
+{
+	"description": "A cubic-bezier() whose first x value is above 1 is refused.",
+	"expect": {
+		"valid": false,
+		"errors": [
+			"/elements/root/hover/state/values/easing: must match a schema in anyOf"
+		],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"state": {
+						"values": {
+							"easing": "cubic-bezier(1.2, 0, 0, 1)"
+						}
+					}
+				}
+			}
+		}
+	}
+}

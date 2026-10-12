@@ -1,0 +1,28 @@
+{
+	"description": "A duration above the 120000ms ceiling is refused at its path.",
+	"expect": {
+		"valid": false,
+		"errors": [
+			"/elements/root/entrance/base/values/duration: must be <= 120000"
+		],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"entrance": {
+					"base": {
+						"trigger": "load",
+						"values": {
+							"from": {
+								"opacity": 0
+							},
+							"duration": 999999
+						}
+					}
+				}
+			}
+		}
+	}
+}

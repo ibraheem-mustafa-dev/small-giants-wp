@@ -1,0 +1,43 @@
+{
+	"description": "\u00a710 opacity: proximity focus on an element whose scrub tweens opacity.",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Scrub sets this element's opacity while it scrolls, so a hover opacity would be overwritten. Put the hover opacity on a different part."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"effects": [
+					{
+						"id": "e1",
+						"effect": "horizontal-panel",
+						"trigger": "scroll",
+						"values": {
+							"proximityFocus": true,
+							"edgeScale": 0.94,
+							"edgeOpacity": 0.55
+						}
+					},
+					{
+						"id": "e2",
+						"effect": "scrub",
+						"trigger": "scroll",
+						"values": {
+							"rows": [
+								{
+									"property": "opacity",
+									"from": 0.4,
+									"to": 1
+								}
+							]
+						}
+					}
+				]
+			}
+		}
+	}
+}

@@ -1,0 +1,36 @@
+{
+	"description": "\u00a710 ::before slot: a second effect that paints ::before beside cursor field.",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Cursor field already uses this element's first paint layer."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"effects": [
+					{
+						"id": "e1",
+						"effect": "cursor-field",
+						"trigger": "hover",
+						"values": {
+							"field": "glow",
+							"radius": 280
+						}
+					},
+					{
+						"id": "e2",
+						"effect": "wave-gradient",
+						"trigger": "load",
+						"values": {
+							"variant": "pastel"
+						}
+					}
+				]
+			}
+		}
+	}
+}

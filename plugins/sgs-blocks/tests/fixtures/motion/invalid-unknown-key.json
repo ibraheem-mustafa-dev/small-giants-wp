@@ -1,0 +1,25 @@
+{
+	"description": "A planted unknown key in the hover state values is refused by name.",
+	"expect": {
+		"valid": false,
+		"errors": [
+			"/elements/root/hover/state/values: must NOT have additional properties (wobble)"
+		],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"state": {
+						"values": {
+							"translateY": -4,
+							"wobble": 3
+						}
+					}
+				}
+			}
+		}
+	}
+}

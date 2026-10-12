@@ -1,0 +1,46 @@
+{
+	"description": "\u00a710 clip-path: a scrub clip row on an element whose entrance reveals with a clip.",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"This element's entrance already reveals it with a clip. Use the scrub's clip row on a different part, or choose an entrance without a clip."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"entrance": {
+					"base": {
+						"trigger": "scroll",
+						"values": {
+							"from": {
+								"clip": 100
+							},
+							"to": {
+								"clip": 0
+							}
+						}
+					}
+				},
+				"effects": [
+					{
+						"id": "e1",
+						"effect": "scrub",
+						"trigger": "scroll",
+						"values": {
+							"rows": [
+								{
+									"property": "clip",
+									"from": 50,
+									"to": 0
+								}
+							]
+						}
+					}
+				]
+			}
+		}
+	}
+}

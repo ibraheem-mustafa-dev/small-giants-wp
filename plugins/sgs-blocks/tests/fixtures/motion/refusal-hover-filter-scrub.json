@@ -1,0 +1,40 @@
+{
+	"description": "\u00a710 filter: a hover filter on an element whose scrub has a blur row.",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Scrub sets this element's filter while it scrolls. Put the hover filter on a different part."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"state": {
+						"values": {
+							"grayscale": 0
+						}
+					}
+				},
+				"effects": [
+					{
+						"id": "e1",
+						"effect": "scrub",
+						"trigger": "scroll",
+						"values": {
+							"rows": [
+								{
+									"property": "blur",
+									"from": 8,
+									"to": 0
+								}
+							]
+						}
+					}
+				]
+			}
+		}
+	}
+}

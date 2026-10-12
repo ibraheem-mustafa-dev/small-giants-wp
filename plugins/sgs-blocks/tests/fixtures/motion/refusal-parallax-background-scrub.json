@@ -1,0 +1,42 @@
+{
+	"description": "\u00a710 background-position: background parallax and a scrub background-position row on one surface.",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Parallax already moves this background. Remove it, or remove the scrub's background position row."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"background": {
+				"effects": [
+					{
+						"id": "e1",
+						"effect": "parallax",
+						"trigger": "scroll",
+						"values": {
+							"speedRatio": 0.2,
+							"background": true
+						}
+					},
+					{
+						"id": "e2",
+						"effect": "scrub",
+						"trigger": "scroll",
+						"values": {
+							"rows": [
+								{
+									"property": "backgroundPosition",
+									"from": 0,
+									"to": 100
+								}
+							]
+						}
+					}
+				]
+			}
+		}
+	}
+}

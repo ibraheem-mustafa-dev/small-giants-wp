@@ -1,0 +1,25 @@
+{
+	"description": "A custom target without its review row is refused.",
+	"expect": {
+		"valid": false,
+		"errors": [
+			"/elements/custom:1: must have required property 'review'"
+		],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"custom:1": {
+				"selector": ".sgs-example__inner",
+				"hover": {
+					"state": {
+						"values": {
+							"opacity": 0.7
+						}
+					}
+				}
+			}
+		}
+	}
+}

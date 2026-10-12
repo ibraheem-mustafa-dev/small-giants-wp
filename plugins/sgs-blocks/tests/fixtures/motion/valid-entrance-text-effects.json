@@ -1,0 +1,136 @@
+{
+	"description": "Entrances with text and SVG effects: a heading with Fade up plus a split reveal, an SVG part drawn on load, a panel part that opens with close values, and a part driven by a declared state.",
+	"expect": {
+		"valid": true,
+		"errors": [],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"title": {
+				"entrance": {
+					"base": {
+						"preset": "fade-up",
+						"trigger": "scroll",
+						"values": {
+							"from": {
+								"opacity": 0,
+								"translateY": 24
+							},
+							"to": {
+								"opacity": 1,
+								"translateY": 0
+							},
+							"keyframes": [
+								{
+									"offset": 60,
+									"opacity": 0.8,
+									"translateY": 4
+								}
+							],
+							"duration": 600,
+							"delay": 100,
+							"easing": "token:easing.ease-out"
+						}
+					},
+					"text": [
+						{
+							"id": "t1",
+							"effect": "split-reveal",
+							"preset": "split-words",
+							"intensity": "standard",
+							"trigger": "scroll",
+							"values": {
+								"from": {
+									"opacity": 0,
+									"translateY": "0.6em",
+									"blur": 4
+								},
+								"stagger": 30,
+								"staggerOrder": "start",
+								"unit": "words",
+								"mask": true,
+								"duration": 600,
+								"easing": "token:easing.ease-out"
+							}
+						}
+					]
+				}
+			},
+			"icon": {
+				"entrance": {
+					"text": [
+						{
+							"id": "t1",
+							"effect": "draw",
+							"trigger": "load",
+							"values": {
+								"from": 0,
+								"to": 100,
+								"direction": "forward",
+								"duration": 1000,
+								"easing": "ease-in-out"
+							}
+						}
+					]
+				}
+			},
+			"panel": {
+				"entrance": {
+					"base": {
+						"preset": "slide-down",
+						"trigger": "open",
+						"values": {
+							"from": {
+								"opacity": 0,
+								"translateY": -16
+							},
+							"to": {
+								"opacity": 1,
+								"translateY": 0
+							},
+							"duration": "token:duration.slow",
+							"delay": 0,
+							"easing": "token:easing.ease-out"
+						},
+						"close": {
+							"to": {
+								"opacity": 0,
+								"translateY": -8
+							},
+							"closeDuration": 300,
+							"closeEasing": "ease-in",
+							"closeDelay": 0
+						},
+						"devices": {
+							"mobile": {
+								"close": {
+									"closeDuration": 200
+								}
+							}
+						}
+					}
+				}
+			},
+			"count": {
+				"entrance": {
+					"base": {
+						"trigger": "state",
+						"state": "count-changed",
+						"values": {
+							"from": {
+								"scale": 1.3
+							},
+							"to": {
+								"scale": 1
+							},
+							"duration": "token:duration.medium",
+							"easing": "token:easing.spring"
+						}
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,24 @@
+{
+	"description": "A token reference for a duration and a linear() spring for the easing.",
+	"expect": {
+		"valid": true,
+		"errors": [],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"state": {
+						"values": {
+							"translateY": -6,
+							"duration": "token:duration.fast",
+							"easing": "linear(0, 1.05 60%, 1)"
+						}
+					}
+				}
+			}
+		}
+	}
+}

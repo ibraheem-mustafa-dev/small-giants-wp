@@ -1,0 +1,24 @@
+{
+	"description": "A token reference to a key the theme does not define is refused.",
+	"expect": {
+		"valid": false,
+		"errors": [
+			"/elements/root/hover/state/values/duration: must match a schema in anyOf"
+		],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"state": {
+						"values": {
+							"duration": "token:duration.nope"
+						}
+					}
+				}
+			}
+		}
+	}
+}

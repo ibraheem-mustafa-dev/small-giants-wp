@@ -1,0 +1,63 @@
+{
+	"description": "A container with the stagger helper's last settings, an entrance stamped on its item part, and an item delay the helper wrote.",
+	"expect": {
+		"valid": true,
+		"errors": [],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"entrance": {
+					"base": {
+						"preset": "fade",
+						"trigger": "scroll",
+						"values": {
+							"from": {
+								"opacity": 0
+							},
+							"to": {
+								"opacity": 1
+							},
+							"duration": "token:entrance.duration",
+							"delay": 0
+						}
+					}
+				}
+			},
+			"item": {
+				"entrance": {
+					"base": {
+						"preset": "fade-up",
+						"trigger": "scroll",
+						"values": {
+							"from": {
+								"opacity": 0,
+								"translateY": "token:distance.md"
+							},
+							"to": {
+								"opacity": 1,
+								"translateY": 0
+							},
+							"duration": "token:entrance.duration",
+							"delay": 80,
+							"easing": "token:entrance.easing"
+						},
+						"customised": [
+							"values.delay"
+						]
+					}
+				}
+			}
+		},
+		"stagger": {
+			"apply": true,
+			"offset": 0,
+			"step": 80,
+			"order": "row-first",
+			"perRow": true,
+			"cap": 600
+		}
+	}
+}

@@ -1,0 +1,170 @@
+{
+	"description": "A root with all three panels: a lift hover state with tilt, magnet and sheen stacked as hover effects, a scroll entrance, and a pointerdown ripple; a media part with parallax and Ken Burns.",
+	"expect": {
+		"valid": true,
+		"errors": [],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"state": {
+						"preset": "lift",
+						"intensity": "standard",
+						"source": "self",
+						"trigger": "hover",
+						"values": {
+							"translateY": "-token:distance.sm",
+							"scale": 1.04,
+							"duration": "token:duration.fast",
+							"easing": "token:easing.ease-out"
+						},
+						"devices": {
+							"mobile": {
+								"translateY": "-2px"
+							}
+						},
+						"customised": [
+							"values.scale"
+						]
+					},
+					"effects": [
+						{
+							"id": "l1",
+							"effect": "tilt",
+							"preset": "tilt-standard",
+							"intensity": "standard",
+							"trigger": "hover",
+							"values": {
+								"maxAngle": 8,
+								"perspective": 1000,
+								"perspectiveOn": "parent",
+								"axisLock": "none",
+								"glare": true,
+								"glareColour": "base",
+								"glareOpacity": 0.4,
+								"glareSize": 55,
+								"resetDuration": 600,
+								"resetEasing": "token:easing.spring-gentle"
+							},
+							"devices": {
+								"tablet": {
+									"maxAngle": 6
+								}
+							}
+						},
+						{
+							"id": "l2",
+							"effect": "magnet",
+							"intensity": "standard",
+							"trigger": "hover",
+							"values": {
+								"engage": "over",
+								"pullModel": "normalised",
+								"maxPullX": 5,
+								"maxPullY": 4,
+								"axis": "both",
+								"returnDuration": 250,
+								"returnEasing": "cubic-bezier(0.16, 0.84, 0.32, 1)",
+								"movingPart": "root"
+							}
+						},
+						{
+							"id": "l3",
+							"effect": "sheen",
+							"intensity": "standard",
+							"trigger": "hover",
+							"values": {
+								"bandWidth": 60,
+								"angle": -18,
+								"colour": "#ffffff",
+								"opacity": 0.35,
+								"duration": 750,
+								"easing": "ease-out"
+							}
+						}
+					]
+				},
+				"entrance": {
+					"base": {
+						"preset": "fade-up",
+						"intensity": "standard",
+						"trigger": "scroll",
+						"values": {
+							"from": {
+								"opacity": 0,
+								"translateY": "token:entrance.distance"
+							},
+							"to": {
+								"opacity": 1,
+								"translateY": 0
+							},
+							"duration": "token:entrance.duration",
+							"delay": 0,
+							"easing": "token:entrance.easing",
+							"start": 6
+						},
+						"devices": {
+							"tablet": {
+								"from": {
+									"translateY": 16
+								}
+							},
+							"mobile": {
+								"from": {
+									"translateY": 8
+								}
+							}
+						}
+					}
+				},
+				"effects": [
+					{
+						"id": "e1",
+						"effect": "ripple",
+						"trigger": "pointerdown",
+						"values": {
+							"colour": "base",
+							"duration": 650,
+							"easing": "token:easing.ease-out",
+							"sizeFactor": 2.2,
+							"peakOpacity": 0.35
+						}
+					}
+				]
+			},
+			"media": {
+				"effects": [
+					{
+						"id": "e1",
+						"effect": "parallax",
+						"trigger": "scroll",
+						"intensity": "standard",
+						"values": {
+							"speedRatio": 0.1,
+							"basis": "page",
+							"axis": "y",
+							"clamp": 120
+						}
+					},
+					{
+						"id": "e2",
+						"effect": "ken-burns",
+						"trigger": "load",
+						"intensity": "subtle",
+						"values": {
+							"mode": "zoom-out-once",
+							"zoomStart": 104,
+							"zoomEnd": 100,
+							"panDirection": "none",
+							"duration": 20000,
+							"easing": "linear"
+						}
+					}
+				]
+			}
+		}
+	}
+}

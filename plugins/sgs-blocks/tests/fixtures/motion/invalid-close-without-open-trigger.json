@@ -1,0 +1,30 @@
+{
+	"description": "Close values on an entrance whose trigger is not `open` are refused.",
+	"expect": {
+		"valid": false,
+		"errors": [
+			"/elements/panel/entrance/base/trigger: must be equal to one of the allowed values"
+		],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"panel": {
+				"entrance": {
+					"base": {
+						"trigger": "scroll",
+						"values": {
+							"from": {
+								"opacity": 0
+							}
+						},
+						"close": {
+							"closeDuration": 200
+						}
+					}
+				}
+			}
+		}
+	}
+}

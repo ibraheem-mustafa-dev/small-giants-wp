@@ -1,0 +1,28 @@
+{
+	"description": "A cloning-only custom target with a scoped selector and its review row.",
+	"expect": {
+		"valid": true,
+		"errors": [],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"custom:1": {
+				"selector": ".sgs-example__inner > span",
+				"review": {
+					"draftNode": "draft element 42 (the inner label span)",
+					"reason": "No declared part names this span."
+				},
+				"hover": {
+					"state": {
+						"values": {
+							"opacity": 0.7,
+							"duration": 200
+						}
+					}
+				}
+			}
+		}
+	}
+}
