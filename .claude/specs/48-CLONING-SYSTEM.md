@@ -2225,7 +2225,8 @@ now created. A form step becomes an `sgs/form-step`. For each form, intake recor
   `result`).
 
 *Done when:* each Indus form (the enquiry and trade application drafts and their steps) submits on the test site, the
-owner email arrives at the confirmed recipient, and the success state matches the draft.
+owner email is addressed to the confirmed recipient (on a test site it is redirected to Bean, and the site's FluentSMTP
+email log shows the original recipient), and the success state matches the draft.
 Status: `sgs_form`, `notifyEmail`, `successMessage` and `successRedirect` are built. Route creation and per-field
 validation copy are not built.
 
@@ -2589,8 +2590,8 @@ One pass is about 10 minutes of agent time and 20 minutes of machine time.
 
 *Stages 3 to 5 for the rest*
 21. **Trees** (agent 1 h 30 min, mostly machine). Footer, drawer, mega menus, the page records and the forms.
-22. **Forms** (agent, 30 min). Submission path, recipient, success state, validation copy rows; the owner email
-    arrives at the confirmed recipient (FR-48-57). Needs 2.
+22. **Forms** (agent, 30 min). Submission path, recipient, success state, validation copy rows; the owner email is
+    addressed to the confirmed recipient (FR-48-57). Needs 2.
 23. **Check** (agent, 45 min). Code to code with the render confirming, flows, Solve rounds, every surface.
 24. **Answer-sheet sample** (agent 15 min, Bean 10 min). The seeded 10-row F sample labelled by an independent agent
     from the gate evidence; Bean confirms the disagreements only (FR-48-71, FR-48-73).
