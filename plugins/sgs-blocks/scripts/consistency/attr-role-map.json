@@ -5761,7 +5761,7 @@
     "sgs/hero::splitMediaSvgContent": null,
     "sgs/hero::splitMediaSvgContentMobile": null,
     "sgs/hero::splitMediaSvgContentTablet": null,
-    "sgs/hero::splitMediaType": "select-from-enum",
+    "sgs/hero::splitMediaType": "scalar-media",
     "sgs/hero::splitMediaTypeMobile": "select-from-enum",
     "sgs/hero::splitMediaTypeTablet": "select-from-enum",
     "sgs/hero::splitMediaVideoId": "enum-class-probe",
