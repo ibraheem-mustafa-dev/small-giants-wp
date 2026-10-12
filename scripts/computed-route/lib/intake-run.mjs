@@ -137,6 +137,7 @@ export function buildRecord( { client, takenOn, manifest, result } ) {
 		siteInfo: p[ 'site info' ]?.siteInfo ?? { rows: [], refused: [] },
 		flags: p.flags?.flags ?? [],
 		draftDefects: p[ 'draft defects' ]?.draftDefects ?? [],
+		notDefects: p[ 'draft defects' ]?.notDefects ?? [],
 		missingFeatures: p[ 'missing features' ]?.missingFeatures ?? [],
 		skeletons: p.skeletons?.skeletons ?? {},
 		notices: { prose: p.notices?.prose ?? [], blockedHosts: mergeBlocked( result.blocked ?? Object.values( p ).flatMap( ( x ) => x?.blocked ?? [] ) ) },

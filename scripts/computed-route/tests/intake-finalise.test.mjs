@@ -37,7 +37,7 @@ const fixture = () => {
 		tools: { playwright: '1.50.0', browser: 'chromium 133', runtime: 'support.js 1' }, harness: { clock: '2026-01-05T10:00:00.000Z', seed: 1, stepMs: 16 },
 		census: [], inventory: { animations: null, surfaces: null, diff: [] }, routing: { adapter: 'hash', routes: [], links: [] }, breakpoints: [],
 		pageMap: [ { route: '#/', slug: 'home', title: 'Home', parent: null, template: null, postType: 'page', collection: 'static', id: null } ],
-		palette: { tokens: [], unused: [], oneOff: [], rows: [] }, siteInfo: { rows: [], refused: [] }, flags: [], draftDefects: [],
+		palette: { tokens: [], unused: [], oneOff: [], rows: [] }, siteInfo: { rows: [], refused: [] }, flags: [], draftDefects: [], notDefects: [],
 		missingFeatures: [
 			{ rowId: 'missing:Site:9', draftId: 'Site:9', construct: 'element <div>', from: 'skeleton', key: 'Site/9#0', line: '<div>: no SGS block fits it', mainFlow: null, why: 'no block fits this element' },
 			{ rowId: 'missing:Quiz:1', draftId: 'Quiz:1', construct: 'flavour quiz', from: 'census', mainFlow: true, why: 'a quiz on the order path' },

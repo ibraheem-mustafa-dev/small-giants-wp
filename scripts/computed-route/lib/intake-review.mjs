@@ -12,10 +12,11 @@
 //
 // Notices come from `intake.notices` ({ prose: commandLikeLines rows, blockedHosts: sandbox blocked rows }).
 import crypto from 'crypto';
+import { isUnwired } from './intake-defects-static.mjs';
 
-export const ROW_TYPES = [ 'page-map', 'palette-role', 'site-info', 'flag', 'draft-defect', 'missing-feature', 'skeleton-block', 'inventory-diff', 'notice' ];
+export const ROW_TYPES = [ 'page-map', 'palette-role', 'site-info', 'flag', 'draft-defect', 'not-a-defect', 'missing-feature', 'skeleton-block', 'inventory-diff', 'notice' ];
 export const SECTION_TITLES = {
-	'page-map': 'Page map', 'palette-role': 'Palette roles', 'site-info': 'Site Info', flag: 'Flags', 'draft-defect': 'Draft defects',
+	'page-map': 'Page map', 'palette-role': 'Palette roles', 'site-info': 'Site Info', flag: 'Flags', 'draft-defect': 'Draft defects', 'not-a-defect': 'Not defects: unwired code',
 	'missing-feature': 'Missing features', 'skeleton-block': 'Skeleton block choices', 'inventory-diff': 'Inventory diffs', notice: 'Notices',
 };
 
@@ -37,6 +38,7 @@ export const MARKS = {
 	'site-info': [ { value: 'accept' }, { shape: 'edit:<value>', re: /^edit:(.*)$/, check: ( m ) => ( m[ 1 ].trim() ? null : 'the edited value is empty' ) }, { value: 'drop' } ],
 	flag: [ { value: 'accept-flagged' }, { value: 'not-flagged' } ],
 	'draft-defect': [ { value: 'accept' }, { value: 'render-wins' } ],
+	'not-a-defect': [ { value: 'not-a-defect' }, { value: 'defect' } ],
 	'missing-feature': [ { shape: 'map:<block>', re: /^map:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' }, { value: 'build' } ],
 	'skeleton-block': [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) } ],
 	'inventory-diff': [ { value: 'ours' }, { value: 'theirs' } ],
@@ -64,6 +66,7 @@ export const HASH_FIELDS = {
 	'palette-role': [ 'token', 'hex', 'role' ],
 	'site-info': [ 'key', 'value', 'normalised' ],
 	flag: [ 'kind', 'text', 'url' ],
+	'not-a-defect': [ 'censusId', 'why', 'note' ],
 	'skeleton-block': [ 'surface', 'key', 'tag', 'words', 'block', 'action' ], // action only when it removes or absorbs
 	notice: [ 'kind', 'file', 'text', 'host', 'reasons' ],
 };
@@ -106,6 +109,23 @@ const skeletonNote = ( r ) => ( 'agent' === r.finalisedBy
 	? `agent pick ${ r.confidence ?? '?' }: ${ r.reason ?? '' }; was ${ proposalText( r.original || {} ) } ${ r.original?.confidence ?? '' }`.trim()
 	: [ r.confidence, r.reason ].filter( ( x ) => null != x && '' !== x ).join( ': ' ) );
 
+// The not-a-defect entries (FR-48-34) listed one per review row: dead code of the unwired kind
+// (lib/intake-defects-static.mjs::isUnwired), each with a stable `not-defect:<censusId>` row ID.
+export const unwiredRows = ( intake ) => unique( ( intake.notDefects || [] ).filter( ( r ) => 'dead-code' === r.why && isUnwired( r.note ) )
+	.map( ( r ) => ( { ...r, rowId: `not-defect:${ r.censusId ?? r.draftId }` } ) ) );
+
+// One header line counting every other not-a-defect entry per reason (constant-guard dead code, prop variants,
+// prototype-only and the rest), which review.md does not list row by row.
+export function notDefectLine( intake ) {
+	const counts = new Map();
+	( intake.notDefects || [] ).forEach( ( r ) => {
+		const key = 'dead-code' === r.why ? ( isUnwired( r.note ) ? null : 'dead-code (constant guard)' ) : r.why;
+		key && counts.set( key, ( counts.get( key ) || 0 ) + 1 );
+	} );
+	const list = [ ...counts ].sort( ( a, b ) => ( a[ 0 ] < b[ 0 ] ? -1 : 1 ) ).map( ( [ k, n ] ) => `${ k } ${ n }` );
+	return `Not defects counted, not listed: ${ list.length ? list.join( ', ' ) : 'none' }.`;
+}
+
 // The flat review rows of an intake record, section by section: { rowId, rowType, draftId, contentHash, shows,
 // proposed, note, acceptAll, needs } where `acceptAll` is the mark the section's Accept all gives the row (null when
 // the first value needs a block the row does not propose) and `needs` is skeletonNeeds' or the missing-feature reason
@@ -123,6 +143,7 @@ export function reviewRows( intake ) {
 	( intake.siteInfo?.rows || [] ).forEach( ( r ) => add( 'site-info', r, r.key, `${ r.key }: ${ text( r.value ) }`, text( r.normalised ), ( r.sources || [] ).map( ( s ) => s.draftId || s.location ).filter( Boolean ).join( ', ' ) ) );
 	( intake.flags || [] ).forEach( ( r ) => add( 'flag', r, r.draftId, `${ r.kind }: ${ r.text ?? r.url ?? '' }`, 'accept-flagged', r.why || '' ) );
 	( intake.draftDefects || [] ).forEach( ( r ) => add( 'draft-defect', r, r.draftId, describe( r ), text( r.proposed ?? r.intent ?? 'build the code\'s intent' ), text( r.why ?? r.reason ) ) );
+	unwiredRows( intake ).forEach( ( r ) => add( 'not-a-defect', r, r.draftId, `${ r.censusId } ${ text( r.note ) }`, 'not-a-defect', 'a handler or ref callback no template binding names; a misspelled binding reads the same' ) );
 	( intake.missingFeatures || [] ).forEach( ( r ) => {
 		const block = r.block ?? r.proposedBlock ?? null;
 		const acceptAll = block && BLOCK.test( block ) ? `map:${ block }` : null;
@@ -188,6 +209,7 @@ export function renderReview( intake, { changed = ( intake.review || [] ).filter
 		'are accepted as flagged; every other row needs Accept all or its own mark. Rows marked **changed** differ from the',
 		'last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review ' + intake.client + '`.', '',
 		readingLine( readingCounts( intake, changed ) ), '',
+		notDefectLine( intake ), '',
 		'Marks per section (first value = Accept all):' ];
 	ROW_TYPES.forEach( ( t ) => out.push( `- ${ SECTION_TITLES[ t ] }: ${ markShapes( t ).map( ( s ) => `\`${ s }\`` ).join( ', ' ) }` ) );
 	const line = ( r ) => {

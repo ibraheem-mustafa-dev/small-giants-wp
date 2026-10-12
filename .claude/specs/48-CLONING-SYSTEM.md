@@ -1692,6 +1692,7 @@ over every route at 375/768/1440 leaves 15 constructs in 8 groups (from 218 at r
 each a candidate cause for some of the 15: drag events are not among the fired listener types; two-step states (open
 the drawer, then an accordion row) cannot be chained, because state is restored after each trigger; pointer handlers
 fire without coordinates; a field set only by dead code is not followed. Test 2 on Indus takes about 40 minutes.
+The not-a-defect list is kept whole in `intake.json`'s `notDefects` (built 2026-10-12, Bean: a misspelled wiring must be visible). `review.md` lists the dead-code entries of the unwired kind (a handler or ref callback no template binding names, `lib/intake-defects-static.mjs::isUnwired` over `deadCodeWhy`'s own reason text) as the `not-a-defect` section, default mark `not-a-defect`, alternative `defect`; constant-guard dead code, prop variants, prototype-only and the other reasons are one header line counting each reason (`lib/intake-review.mjs::notDefectLine`). Verified by `node --test scripts/computed-route/tests/intake-review.test.mjs` (12/12): a planted handler whose template binding is misspelled (`onTogle` for `onToggle`) appears in that section, the correctly spelled binding gives no entry, and the case fails with the section's rule removed.
 
 #### FR-48-35 — The intake record
 `intake.json` holds the census, the re-derived inventory, the routing adapter and routes, the width basis and
@@ -2728,6 +2729,7 @@ fails when one differs from this appendix.
 | `palette` | declared tokens from `lib/tokens.mjs` and the proposed role per token |
 | `siteInfo` | the proposed key, value, source and validation result per key |
 | `flags`, `draftDefects`, `missingFeatures` | one row each, with `rowId` and `draftId` |
+| `notDefects` | every unreached construct ruled not a draft defect (FR-48-34): `draftId`, `censusId`, `why` (`render-wins`, `reached-when-forced`, `breakpoint`, `dead-code`, `prototype-only`, `prop-variant`) and `note`; the review lists the unwired dead-code entries and counts the rest per reason |
 | `skeletons` | per surface, the inventory and the proposed block per key with its confidence |
 | `notices` | `prose`: command-like text in the exported prose (FR-48-23); `blockedHosts`: each request the sandbox aborted, with its host, reason and draft ID |
 | `gaps` | R-48-3 gap rows: construct, draft ID, error text |
@@ -2790,6 +2792,7 @@ Each key is a construct kind (`sc-if`, `sc-for`, `dc-import`, `binding`, `style-
 | Site Info key | `accept`, `edit:<value>`, `drop` |
 | Flag (placeholder, stock, prototype-only) | `accept-flagged` (the default), `not-flagged` |
 | Draft defect | `accept` (build the code's intent), `render-wins` |
+| Not a defect (unwired dead code) | `not-a-defect` (the default), `defect` (build it as a draft defect) |
 | Missing feature | `map:<block>`, `difference` (record as deliberate), `build` |
 | Skeleton block choice | `accept`, `block:<slug>` |
 | Inventory diff | `ours`, `theirs` |

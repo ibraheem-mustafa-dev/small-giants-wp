@@ -92,6 +92,14 @@ function templateNames( census, comp ) {
 	return out;
 }
 
+// The endings of deadCodeWhy's two "unwired" reasons: a member handed to the template under a key no binding names, or
+// a member nothing references. A misspelled template binding produces the same reasons, so review.md lists these
+// entries one by one (FR-48-34); a constant guard is the code's own "off" and stays a count.
+export const UNWIRED_PHRASES = Object.freeze( [ ', which no template binding references', ' is never referenced' ] );
+
+// True when a dead-code note (deadCodeWhy's, or a dead-field note quoting it) names an unwired member.
+export const isUnwired = ( note ) => UNWIRED_PHRASES.some( ( p ) => String( note ?? '' ).includes( p ) );
+
 // Why the code row at logic offset `off` of `source` is dead code, or null when that is not provable.
 export function deadCodeWhy( source, off, census ) {
 	const m = logicModel( source );
@@ -142,7 +150,7 @@ export function deadCodeWhy( source, off, census ) {
 	if ( refs.every( viaKey ) ) {
 		const keys = refs.map( ( r ) => r.parent.key.name ?? r.parent.key.value );
 		if ( keys.every( ( k ) => ! roots.has( k ) ) ) {
-			return keys.length ? `${ name } is reached only through renderVals key${ keys.length > 1 ? 's' : '' } ${ keys.join( ', ' ) }, which no template binding references` : `${ name } is never referenced`;
+			return keys.length ? `${ name } is reached only through renderVals key${ keys.length > 1 ? 's' : '' } ${ keys.join( ', ' ) }${ UNWIRED_PHRASES[ 0 ] }` : `${ name }${ UNWIRED_PHRASES[ 1 ] }`;
 		}
 	}
 	return null;

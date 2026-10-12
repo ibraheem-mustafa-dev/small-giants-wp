@@ -6,7 +6,8 @@ import assert from 'node:assert/strict';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
-import { reviewRows, renderReview, parseReview, applyReview, carryOver, markProblem, MARKS, ROW_TYPES } from '../lib/intake-review.mjs';
+import { reviewRows, renderReview, parseReview, applyReview, carryOver, markProblem, notDefectLine, MARKS, ROW_TYPES } from '../lib/intake-review.mjs';
+import { deadCodeWhy } from '../lib/intake-defects-static.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const SCHEMA = path.join( HERE, '..', 'data', 'intake.schema.json' );
@@ -30,6 +31,11 @@ const fixture = ( over = {} ) => ( {
 	siteInfo: { refused: [], rows: [ { rowId: 'siteinfo:phone', key: 'phone', value: '0121 000 0000', normalised: '+441210000000', sources: [ { source: 'link', draftId: 'Site.dc.html:4:2' } ], valid: true, reason: null } ] },
 	flags: [ { rowId: 'flag:placeholder:Hero:3', kind: 'placeholder', draftId: 'Hero:3', text: 'Lorem ipsum', why: 'lorem ipsum filler', source: 'template' } ],
 	draftDefects: [ { rowId: 'defect:Nav:2', draftId: 'Nav:2', text: 'aria-expanded never flips', why: 'handler sets state but no binding' } ],
+	notDefects: [
+		{ draftId: 'Nav:js:3:2', censusId: 'handler@Nav:js:3:2', why: 'dead-code', note: 'closeAll is reached only through renderVals key onClose, which no template binding references' },
+		{ draftId: 'Nav:js:9:2', censusId: 'timer@Nav:js:9:2', why: 'dead-code', note: 'sparkle: exits at a constant guard before it: if (mode === \'off\') is always true' },
+		{ draftId: 'Card:2', censusId: 'sc-if@Card:2', why: 'prop-variant', note: 'gated by prop glow, which no parent draft mounts Card with (FR-48-29)' },
+	],
 	missingFeatures: [
 		{ rowId: 'missing:Map:1', draftId: 'Map:1', text: 'store locator map', block: 'sgs/map' },
 		{ rowId: 'missing:Quiz:1', draftId: 'Quiz:1', text: 'flavour quiz' },
@@ -145,7 +151,7 @@ test( 'MUST FAIL an unknown row ID, a row in the wrong section and a malformed l
 	assert.ok( r.problems.some( ( p ) => /row palette:ink is not in review\.md/.test( p ) ) );
 	const moved = applyReview( fixture(), renderReview( fixture() ).replace( /(\| `palette:ink` \|[^\n]*\n)/, '' ).replace( '| `page:page:home` |', '| `palette:ink` | x | y | z | |\n| `page:page:home` |' ), { today: TODAY } );
 	assert.ok( moved.problems.some( ( p ) => /palette:ink sits in the page-map section but is a palette-role row/.test( p ) ) );
-	assert.deepEqual( parseReview( '## Odd heading\n' ).problems, [ 'line 1: section heading "## Odd heading" names no row type (page-map, palette-role, site-info, flag, draft-defect, missing-feature, skeleton-block, inventory-diff, notice)' ] );
+	assert.deepEqual( parseReview( '## Odd heading\n' ).problems, [ 'line 1: section heading "## Odd heading" names no row type (page-map, palette-role, site-info, flag, draft-defect, not-a-defect, missing-feature, skeleton-block, inventory-diff, notice)' ] );
 } );
 
 test( 'MUST FAIL carry-over keeps a mark when draft ID and hash match, drops it (changed, listed first) when the hash changes', () => {
@@ -192,4 +198,41 @@ test( 'MUST FAIL the output is deterministic: two renders are byte-identical wha
 	assert.equal( renderReview( shuffled ), a );
 	assert.equal( renderReview( fixture() ), a );
 	assert.ok( a.indexOf( '### footer' ) < a.indexOf( '### header' ) );
+} );
+
+// A Nav draft whose toggle handler is handed to the template as onToggle, and the template's binding names it.
+const NAV_LOGIC = `class Component extends DCComponent {
+	toggleMenu() {
+		this.setState( { open: ! this.state.open } );
+	}
+	renderVals() {
+		return { onToggle: this.toggleMenu };
+	}
+}
+`;
+const navWhy = ( binding ) => deadCodeWhy( { component: 'Nav', logic: NAV_LOGIC }, NAV_LOGIC.indexOf( 'this.setState' ),
+	{ rows: [ { component: 'Nav', kind: 'binding', detail: { expression: binding } } ] } );
+
+test( 'MUST FAIL (FR-48-34): a handler whose template binding is misspelled is listed in the not-a-defect section; spelled right it is no entry', () => {
+	const note = navWhy( 'onTogle' );
+	assert.equal( note, 'toggleMenu is reached only through renderVals key onToggle, which no template binding references' );
+	assert.equal( navWhy( 'onToggle' ), null, 'the correctly spelled binding wires the handler, so it is not dead code' );
+	const intake = fixture( { notDefects: [ { draftId: 'Nav:js:3:4', censusId: 'timer@Nav:js:3:4', why: 'dead-code', note } ] } );
+	const row = reviewRows( intake ).find( ( r ) => 'not-a-defect' === r.rowType );
+	assert.equal( row.rowId, 'not-defect:timer@Nav:js:3:4' );
+	assert.equal( row.acceptAll, 'not-a-defect' );
+	const md = renderReview( intake );
+	const section = md.slice( md.indexOf( '## Not defects: unwired code (not-a-defect)' ) );
+	assert.ok( md.includes( '## Not defects: unwired code (not-a-defect)' ) );
+	assert.match( section.split( '\n## ' )[ 0 ],/`not-defect:timer@Nav:js:3:4` \| timer@Nav:js:3:4 toggleMenu is reached only through renderVals key onToggle/ );
+	assert.deepEqual( mark( md, { rows: { 'not-defect:timer@Nav:js:3:4': 'defect' } } ).includes( '| defect |' ), true );
+	assert.equal( markProblem( 'not-a-defect', 'render-wins' ), 'not a not-a-defect mark (not-a-defect, defect)' );
+} );
+
+test( 'MUST FAIL (FR-48-34): constant-guard dead code and the other reasons are counted per reason, never listed', () => {
+	const rows = reviewRows( fixture() ).filter( ( r ) => 'not-a-defect' === r.rowType );
+	assert.deepEqual( rows.map( ( r ) => r.rowId ), [ 'not-defect:handler@Nav:js:3:2' ] );
+	assert.equal( notDefectLine( fixture() ), 'Not defects counted, not listed: dead-code (constant guard) 1, prop-variant 1.' );
+	assert.ok( renderReview( fixture() ).includes( 'Not defects counted, not listed: dead-code (constant guard) 1, prop-variant 1.' ) );
+	assert.equal( notDefectLine( fixture( { notDefects: [] } ) ), 'Not defects counted, not listed: none.' );
 } );

@@ -132,7 +132,7 @@ test( 'MUST FAIL (page map): an array schema whose items differ from the row, or
 
 test( 'MUST FAIL (intake): a schema missing one Appendix C key, or requiring an extra one, is reported', () => {
 	const keys = [ 'schemaVersion', 'client', 'takenOn', 'manifest', 'tools', 'harness', 'census', 'inventory', 'routing',
-		'breakpoints', 'pageMap', 'palette', 'siteInfo', 'flags', 'draftDefects', 'missingFeatures', 'skeletons', 'notices', 'gaps', 'review' ];
+		'breakpoints', 'pageMap', 'palette', 'siteInfo', 'flags', 'draftDefects', 'notDefects', 'missingFeatures', 'skeletons', 'notices', 'gaps', 'review' ];
 	const good = { type: 'object', required: keys, properties: Object.fromEntries( keys.map( ( k ) => [ k, {} ] ) ) };
 	assert.deepEqual( intakeProblems( spec, good ), [] );
 	const bad = { ...good, required: [ ...keys.filter( ( k ) => 'review' !== k ), 'extra' ] };
