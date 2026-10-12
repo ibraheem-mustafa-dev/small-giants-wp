@@ -242,22 +242,27 @@ test( 'MUST FAIL (FR-48-34): constant-guard dead code and the other reasons are 
 	assert.equal( notDefectLine( fixture( { notDefects: [] } ) ), 'Not defects counted, not listed: none.' );
 } );
 
-test( 'MUST FAIL (FR-48-34): a dead field written only behind a constant guard is counted by its kind, never listed; the old note-reading stays the fallback', () => {
-	// arm() writes this._el behind a constant guard; setRef() writes it and nothing references setRef. The note names
-	// both reasons, so its wording alone would list it as unwired.
-	const logic = 'class Component { componentDidMount() { this.arm(); this.go(); } go() { if ( this._el ) { this._el.animate( [], 300 ); } } arm() { const on = false; if ( ! on ) { return; } this._el = document.body; } setRef( el ) { this._el = el; } }';
-	const v = deadFieldVerdict( { logic }, logic.indexOf( '.animate(' ), { rows: [] } );
-	assert.equal( v.kind, 'constant-guard' );
-	assert.match( v.note, /exits at a constant guard/ );
-	assert.match( v.note, /setRef is never referenced/ );
-	const entry = { draftId: 'Home:js:1:1', censusId: 'waapi@Home:js:1:1', why: 'dead-code', deadKind: v.kind, note: v.note };
+test( 'MUST FAIL (FR-48-34): a dead field written only behind a constant guard is counted by its kind; one also written by an unwired member is listed; the old note-reading stays the fallback', () => {
+	// guarded: arm() writes this._el only behind a constant guard, so the code itself turns the field off.
+	const guarded = 'class Component { componentDidMount() { this.arm(); this.go(); } go() { if ( this._el ) { this._el.animate( [], 300 ); } } arm() { const on = false; if ( ! on ) { return; } this._el = document.body; } }';
+	const g = deadFieldVerdict( { logic: guarded }, guarded.indexOf( '.animate(' ), { rows: [] } );
+	assert.equal( g.kind, 'constant-guard' );
+	assert.match( g.note, /exits at a constant guard/ );
+	const entry = { draftId: 'Home:js:1:1', censusId: 'waapi@Home:js:1:1', why: 'dead-code', deadKind: g.kind, note: g.note };
 	const intake = fixture( { notDefects: [ entry ] } );
 	assert.deepEqual( reviewRows( intake ).filter( ( r ) => 'not-a-defect' === r.rowType ), [] );
 	assert.equal( notDefectLine( intake ), 'Not defects counted, not listed: dead-code (constant guard) 1.' );
 	assert.equal( notDefectLine( fixture( { notDefects: [ { ...entry, deadKind: 'data-gated' } ] } ) ), 'Not defects counted, not listed: dead-code (data-gated) 1.' );
-	const { deadKind, ...old } = entry;
+	// mixed: setRef() also writes this._el and nothing references it. A misspelled wiring would set the field, so the
+	// owner must see it (Bean, 2026-10-12): unwired, listed.
+	const mixed = 'class Component { componentDidMount() { this.arm(); this.go(); } go() { if ( this._el ) { this._el.animate( [], 300 ); } } arm() { const on = false; if ( ! on ) { return; } this._el = document.body; } setRef( el ) { this._el = el; } }';
+	const m = deadFieldVerdict( { logic: mixed }, mixed.indexOf( '.animate(' ), { rows: [] } );
+	assert.match( m.note, /setRef is never referenced/ );
+	assert.equal( m.kind, 'unwired', 'one unwired writer is enough to list it' );
+	assert.equal( reviewRows( fixture( { notDefects: [ { ...entry, deadKind: m.kind, note: m.note } ] } ) ).filter( ( r ) => 'not-a-defect' === r.rowType ).length, 1 );
+	const { deadKind, ...old } = { ...entry, note: m.note };
 	assert.ok( deadKind );
-	assert.equal( reviewRows( fixture( { notDefects: [ old ] } ) ).filter( ( r ) => 'not-a-defect' === r.rowType ).length, 1, 'a record without deadKind falls back to the note\'s wording' );
+	assert.equal( reviewRows( fixture( { notDefects: [ old ] } ) ).filter( ( r ) => 'not-a-defect' === r.rowType ).length, 1, 'a record without deadKind falls back to the wording of its note' );
 	const only = 'class Component { componentDidMount() { this.go(); } go() { if ( this._el ) { this._el.animate( [], 300 ); } } setRef( el ) { this._el = el; } }';
 	assert.equal( deadFieldVerdict( { logic: only }, only.indexOf( '.animate(' ), { rows: [] } )?.kind, 'unwired', 'with only the unreferenced writer it is unwired, so listed' );
 } );

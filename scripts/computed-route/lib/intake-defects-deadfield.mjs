@@ -127,8 +127,8 @@ function guardFields( member, off ) {
 export const deadFieldWhy = ( source, off, census ) => deadFieldVerdict( source, off, census )?.note ?? null;
 
 // deadFieldWhy's verdict with its kind: { note, kind }, or null. The kind is `unwired` when nothing writes the field
-// or every write is unwired dead code (a misspelled wiring would set it), and `constant-guard` when any write sits
-// behind a constant guard: the code itself turns that field's setting off.
+// or any write is unwired dead code (a misspelled wiring would set it, so the owner must see it, Bean 2026-10-12), and
+// `constant-guard` when every write sits behind a constant guard: the code itself turns that field's setting off.
 export function deadFieldVerdict( source, off, census ) {
 	const m = logicModel( source );
 	if ( m.error ) {
@@ -154,7 +154,7 @@ export function deadFieldVerdict( source, off, census ) {
 		const whys = at.map( ( w ) => deadCodeVerdict( source, w, census ) );
 		if ( whys.every( Boolean ) ) {
 			return at.length
-				? { note: `${ entry[ 0 ] } needs this.${ field }, which is written only in dead code (${ [ ...new Set( whys.map( ( w ) => w.note ) ) ].join( '; ' ) })`, kind: whys.every( ( w ) => 'unwired' === w.kind ) ? 'unwired' : 'constant-guard' }
+				? { note: `${ entry[ 0 ] } needs this.${ field }, which is written only in dead code (${ [ ...new Set( whys.map( ( w ) => w.note ) ) ].join( '; ' ) })`, kind: whys.some( ( w ) => 'unwired' === w.kind ) ? 'unwired' : 'constant-guard' }
 				: { note: `${ entry[ 0 ] } needs this.${ field }, which nothing writes`, kind: 'unwired' };
 		}
 	}
