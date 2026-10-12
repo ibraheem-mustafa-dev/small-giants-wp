@@ -6,6 +6,17 @@
     "image": {
       "id": 458,
       "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-varifocal.png"
+    },
+    "refs": {
+      "menu": 96,
+      "menuItem": 195,
+      "drawer": 203,
+      "image": {
+        "id": 202,
+        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg"
+      },
+      "logo": 198,
+      "product": 71
     }
   },
   "sandybrown": {
@@ -15,6 +26,17 @@
     "image": {
       "id": 3459,
       "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+    },
+    "refs": {
+      "menu": 119,
+      "menuItem": 3834,
+      "drawer": 3593,
+      "image": {
+        "id": 3459,
+        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+      },
+      "logo": 10,
+      "product": 3990
     }
   },
   "local-eye-care": {
@@ -46,6 +68,12 @@
     "image": {
       "id": 18,
       "url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/cr-overlay.png"
+    },
+    "refs": {
+      "image": {
+        "id": 18,
+        "url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/cr-overlay.png"
+      }
     }
   },
   "local-indus": {

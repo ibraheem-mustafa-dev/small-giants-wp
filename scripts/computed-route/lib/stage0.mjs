@@ -7,6 +7,7 @@ import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 import { readSlotMap } from './cache.mjs';
 import { loadAjv, schemaProblems } from './handoff.mjs';
+import { fixtureRoles, refsProblem, resolveFixture } from './calibration-refs.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const BASELINE_SCHEMA = path.join( HERE, '..', 'data', 'calibration-baseline.schema.json' );
@@ -45,7 +46,9 @@ export function blockSetFor( kinds, rows ) {
 //   current: the cached slotKey is the deployed hash.   stale: it differs.   missing: no slot map.
 //   undeployed: the local build differs from the deployed one, so calibrate.mjs would refuse (deploy or rebuild first).
 //   no-fixture: calibration-fixtures.json has no entry, so calibrate.mjs cannot measure it.   no-build: no build to hash.
-export function blockState( { cacheDir, block, hashes, fixtures } ) {
+//   needs-refs: the fixture names a site reference the target does not supply or the site does not hold (refsWhy says
+//   which, lib/calibration-refs.mjs::refsProblem), so calibrate.mjs would not build it.
+export function blockState( { cacheDir, block, hashes, fixtures, refsWhy = '' } ) {
 	const out = { block };
 	if ( ! hashes || ! hashes.deployed ) {
 		return { ...out, state: 'no-build', why: hashes?.error || 'no build to hash' };
@@ -55,6 +58,9 @@ export function blockState( { cacheDir, block, hashes, fixtures } ) {
 	out.cachedKey = have?.slotKey || null;
 	if ( ! fixtures[ block ] ) {
 		return { ...out, state: 'no-fixture', why: 'no entry in calibration-fixtures.json' };
+	}
+	if ( refsWhy ) {
+		return { ...out, state: 'needs-refs', why: refsWhy };
 	}
 	if ( hashes.local && hashes.local !== hashes.deployed ) {
 		return { ...out, state: 'undeployed', why: `deployed build ${ hashes.deployed } differs from the local build ${ hashes.local }` };
@@ -126,8 +132,10 @@ export function calibrateArgs( { site, client, blocks, recalibrate } ) {
 export const installedPlaywright = () => createRequire( import.meta.url )( 'playwright/package.json' ).version;
 
 // Runs stage 0. Effects come in through `deps`:
-//   checkHandoff(folder, log) -> exit code; compositionRows() -> block_composition rows; fixtures; hashesOf(block) ->
-//   { deployed, local } | { error }; runCalibrate(args) -> exit code; now() -> ISO time; playwright; writeBaseline(file, text).
+//   checkHandoff(folder, log) -> exit code; compositionRows() -> block_composition rows; fixtures; refs (the target's
+//   calibration-targets.json refs, lib/calibration-refs.mjs::refsFor); refsExist(roles) -> { role: true | reason } (a read
+//   on the site); hashesOf(block) -> { deployed, local } | { error }; runCalibrate(args) -> exit code; now() -> ISO time;
+//   playwright; writeBaseline(file, text).
 // `o` is { repo, client, site, cacheDir, plan, recalibrate }. Returns { code, lines, baseline }; `plan` reads and prints only.
 export async function runStage0( o, deps ) {
 	const lines = [];
@@ -146,12 +154,17 @@ export async function runStage0( o, deps ) {
 	unmapped.length && log( `  unmapped kinds (no block_composition block is named for them): ${ unmapped.join( ', ' ) }` );
 	log( `block set (${ blocks.length }): ${ blocks.join( ', ' ) }` );
 
-	const states = () => blocks.map( ( block ) => blockState( { cacheDir: o.cacheDir, block, hashes: deps.hashesOf( block ), fixtures: deps.fixtures } ) );
+	// Site references: the roles the set's fixtures name, checked once on the site; a block that cannot resolve is blocked.
+	const refs = deps.refs || {};
+	const roles = [ ...new Set( blocks.filter( ( b ) => deps.fixtures[ b ] && ! resolveFixture( deps.fixtures[ b ], refs ).missing.length ).flatMap( ( b ) => fixtureRoles( deps.fixtures[ b ] ) ) ) ];
+	const exists = roles.length && deps.refsExist ? deps.refsExist( roles ) : {};
+	const refsWhy = ( b ) => ( deps.fixtures[ b ] ? refsProblem( deps.fixtures[ b ], refs, exists, o.site ) : '' );
+	const states = () => blocks.map( ( block ) => blockState( { cacheDir: o.cacheDir, block, hashes: deps.hashesOf( block ), fixtures: deps.fixtures, refsWhy: refsWhy( block ) } ) );
 	const show = ( list ) => list.forEach( ( s ) => log( `  ${ s.block }: ${ s.state }${ s.why ? ` (${ s.why })` : '' }` ) );
 	let list = states();
 	show( list );
 	const due = list.filter( ( s ) => [ 'stale', 'missing' ].includes( s.state ) || ( o.recalibrate && 'current' === s.state ) );
-	const blocked = list.filter( ( s ) => [ 'undeployed', 'no-fixture', 'no-build' ].includes( s.state ) );
+	const blocked = list.filter( ( s ) => [ 'undeployed', 'no-fixture', 'needs-refs', 'no-build' ].includes( s.state ) );
 	log( `to recalibrate (slot map only): ${ due.length ? due.map( ( s ) => s.block ).join( ', ' ) : 'none' }` );
 	if ( o.plan ) {
 		log( 'plan only: nothing was run or written' );

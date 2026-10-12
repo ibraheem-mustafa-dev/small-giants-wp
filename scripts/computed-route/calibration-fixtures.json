@@ -362,7 +362,7 @@
             ],
             "woocommerceAttributes": [],
             "woocommerceHandPickedProducts": [
-              "71"
+              "{{product:text}}"
             ]
           },
           "tagName": "div"
@@ -1327,8 +1327,8 @@
   "sgs/media": {
     "attributes": {
       "mediaType": "image",
-      "imageId": 202,
-      "imageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg",
+      "imageId": "{{image}}",
+      "imageUrl": "{{image.url}}",
       "imageAlt": "Person wearing sunglasses outdoors",
       "caption": "A short caption under the image."
     }
@@ -1647,10 +1647,10 @@
   "sgs/nav-bar-menu": {
     "companionClass": "is-detached",
     "attributes": {
-      "ref": 96,
-      "splitAfterItemId": "id:195",
+      "ref": "{{menu}}",
+      "splitAfterItemId": "id:{{menuItem}}",
       "disabledItemIds": [
-        "id:195"
+        "id:{{menuItem}}"
       ],
       "submenuOpenOn": "hover",
       "triggerMode": {
@@ -1658,7 +1658,7 @@
         "mobile": "icon"
       },
       "submenuCaret": false,
-      "drawerRef": 203,
+      "drawerRef": "{{drawer}}",
       "megaAlign": {
         "desktop": "full-width"
       }
@@ -1689,7 +1689,7 @@
       {
         "disabledItemIds": [],
         "featuredItemIds": [
-          "id:195"
+          "id:{{menuItem}}"
         ]
       },
       {
@@ -1855,7 +1855,7 @@
       "attributeTagTerm": "polarised",
       "attributeTagText": "Polarised",
       "sourceMode": "wc-product",
-      "productId": 71,
+      "productId": "{{product}}",
       "ratingValue": 4.6,
       "reviewCount": 12,
       "overrideElements": [
@@ -1905,7 +1905,7 @@
   "sgs/responsive-logo": {
     "attributes": {
       "linkToHome": true,
-      "logoId": 198
+      "logoId": "{{logo}}"
     }
   },
   "sgs/site-header": {
@@ -1935,11 +1935,11 @@
           {
             "name": "sgs/nav-bar-menu",
             "attributes": {
-              "ref": 96,
+              "ref": "{{menu}}",
               "splitSide": "before",
-              "splitAfterItemId": "id:195",
+              "splitAfterItemId": "id:{{menuItem}}",
               "disabledItemIds": [
-                "id:195"
+                "id:{{menuItem}}"
               ],
               "submenuOpenOn": "hover",
               "triggerMode": {
@@ -1947,7 +1947,7 @@
                 "mobile": "icon"
               },
               "submenuCaret": false,
-              "drawerRef": 203,
+              "drawerRef": "{{drawer}}",
               "triggerIconPosition": "before",
               "megaAlign": {
                 "desktop": "full-width"
@@ -2466,21 +2466,21 @@
     "variants": [
       {},
       {
-        "ref": 96,
+        "ref": "{{menu}}",
         "disabledItemIds": [
-          "id:195"
+          "id:{{menuItem}}"
         ],
         "itemTrailingIcons": {
-          "id:195": {
+          "id:{{menuItem}}": {
             "source": "lucide",
             "name": "arrow-right"
           }
         }
       },
       {
-        "ref": 96,
+        "ref": "{{menu}}",
         "featuredItemIds": [
-          "id:195"
+          "id:{{menuItem}}"
         ]
       }
     ]

@@ -322,7 +322,18 @@ non-rendering element.
   unproven (§5 residual).
 - Each block has a fixture in `scripts/computed-route/calibration-fixtures.json`: the minimum content and parent chain
   it needs (text for a heading, a parent `sgs/site-footer` for `site-footer-row`). A block with no fixture is
-  reported, not guessed.
+  reported, not guessed. A fixture names each site object it needs by a token, never a literal id: `{{menu}}`,
+  `{{menuItem}}` (inside the attribute's own form, `"id:{{menuItem}}"`), `{{drawer}}`, `{{image}}` with `{{image.url}}`,
+  `{{logo}}` and `{{product}}` (`{{product:text}}` where the attribute stores ids as text); the vocabulary is
+  `lib/calibration-refs.mjs::ROLES`. Each calibration target maps the tokens to its own objects in
+  `calibration-targets.json` `refs`, and a mirror inherits its test site's. Before building, `calibrate.mjs` resolves
+  each fixture from the target's refs and checks that every referenced object exists on the site with the right kind
+  (one read-only `wp eval-file`; a menu item must be in the menu). A block whose token the target does not supply, or
+  whose object is missing, is reported and not built, so a site without the object never replaces the library-wide slot
+  map with an empty render; stage 0 reports it as `needs-refs` and does not run. An attachment id beside the URL its
+  render falls back to (`url` beside `id`, `<name>Url` beside `<name>Id`) stays literal, because the element renders on
+  any site. `lint.mjs` fails on a literal reference with no fallback (`lib/fixture-refs.mjs`; `fixture-refs.mjs
+  --survey` lists every reference and its category).
 - Blocks that render only inside a header, footer, drawer or mega-menu post are calibrated inside a dedicated
   `sgs_header`, `sgs_footer` or `sgs_drawer` post, recorded in the same file. The site's active pointers never change.
 - At the end of a run the calibration page is replaced with an empty tree.
@@ -2478,7 +2489,14 @@ the first run. A script replaces this checklist after the third client uses it (
     Create the calibration page on the test site with `wp-build-page.js --create page --title "CR calibration" --slug
     cr-calibration --status private` (the refresh carries it to the mirror with the same ID), and add both sites to
     `scripts/computed-route/calibration-targets.json` with that `postId`, an overlay image from the site's media, and
-    the mirror's `pluginDir`. For Indus: `indus-test` and `local-indus`.
+    the mirror's `pluginDir`. Then create the objects the fixture tokens name (§3.2) on the test site:
+    `node scripts/computed-route/provision-calibration-refs.mjs --site <test-site> --dry-run`, then without `--dry-run`
+    (`--image <file>` and `--logo <file>` import images from the repo; without them an existing `image` ref is kept and
+    the logo reuses it). It finds or creates the "CR calibration" menu (a submenu, a mega-panel item and the menu-item
+    role), the calibration mega panel and drawer, the media, and a product when WooCommerce is active, and writes their
+    IDs as the test site's `refs`; refresh the mirror again so it holds them (it inherits the refs). A role the site cannot
+    supply (a product without WooCommerce) is reported, and the blocks that need it are not calibrated there. For Indus:
+    `indus-test` and `local-indus`.
 
 Steps 1 to 4, 6 to 9 and 13 are environment work that may run before stage 1 exits (FR-48-17). Step 6 needs the
 client's mailbox to exist first: Bean creates it in hPanel and adds its password under a new key in the email secrets

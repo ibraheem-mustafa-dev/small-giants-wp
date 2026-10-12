@@ -1,0 +1,1160 @@
+{
+  "tally": {
+    "url-backed": 56,
+    "not-a-reference": 4,
+    "token": 19
+  },
+  "unexplainedWide": [],
+  "found": [
+    {
+      "block": "sgs/brand-strip",
+      "path": [
+        "attributes",
+        "logos",
+        0,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 3459,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "path": [
+        "attributes",
+        "logos",
+        1,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 4080,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/buybox",
+      "path": [
+        "parents",
+        0,
+        "attributes",
+        "queryId"
+      ],
+      "key": "queryId",
+      "value": 91,
+      "category": "not-a-reference",
+      "reason": "a query loop block's own instance number (woocommerce/product-collection keeps paging apart with it), not a database id"
+    },
+    {
+      "block": "sgs/buybox",
+      "path": [
+        "parents",
+        0,
+        "attributes",
+        "query",
+        "woocommerceHandPickedProducts",
+        0
+      ],
+      "key": "woocommerceHandPickedProducts",
+      "value": "{{product:text}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/card-grid",
+      "path": [
+        "attributes",
+        "items",
+        0,
+        "glyphImage",
+        "id"
+      ],
+      "key": "id",
+      "value": 148,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/card-grid",
+      "path": [
+        "attributes",
+        "items",
+        1,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 175,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/card-grid",
+      "path": [
+        "attributes",
+        "items",
+        1,
+        "glyphImage",
+        "id"
+      ],
+      "key": "id",
+      "value": 149,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/card-grid",
+      "path": [
+        "attributes",
+        "items",
+        2,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 177,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/card-grid",
+      "path": [
+        "attributes",
+        "items",
+        2,
+        "glyphImage",
+        "id"
+      ],
+      "key": "id",
+      "value": 150,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/card-grid",
+      "path": [
+        "attributes",
+        "items",
+        3,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 178,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/card-grid",
+      "path": [
+        "attributes",
+        "items",
+        3,
+        "glyphImage",
+        "id"
+      ],
+      "key": "id",
+      "value": 151,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/card-grid",
+      "path": [
+        "attributes",
+        "items",
+        4,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 181,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/card-grid",
+      "path": [
+        "attributes",
+        "items",
+        4,
+        "glyphImage",
+        "id"
+      ],
+      "key": "id",
+      "value": 152,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/card-grid",
+      "path": [
+        "attributes",
+        "items",
+        5,
+        "glyphImage",
+        "id"
+      ],
+      "key": "id",
+      "value": 153,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "path": [
+        "attributes",
+        "headerLogo",
+        "id"
+      ],
+      "key": "id",
+      "value": 486,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        0,
+        "attributes",
+        "options",
+        0,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 455,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        0,
+        "attributes",
+        "options",
+        1,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 457,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        0,
+        "attributes",
+        "options",
+        2,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 458,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        0,
+        "attributes",
+        "options",
+        3,
+        "nextStepId"
+      ],
+      "key": "nextStepId",
+      "value": "7",
+      "category": "not-a-reference",
+      "reason": "a choice-flow option's target step, stored as the step's position in the flow (choice-flow/edit.js), not a database id"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        0,
+        "attributes",
+        "options",
+        3,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 456,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "path": [
+        "inner",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "options",
+        0,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 451,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "path": [
+        "inner",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "options",
+        1,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 452,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "path": [
+        "inner",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "options",
+        2,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 454,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "path": [
+        "inner",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "options",
+        3,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 453,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow-question",
+      "path": [
+        "attributes",
+        "options",
+        0,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 455,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow-question",
+      "path": [
+        "attributes",
+        "options",
+        1,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 457,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow-question",
+      "path": [
+        "attributes",
+        "options",
+        2,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 458,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow-question",
+      "path": [
+        "attributes",
+        "options",
+        3,
+        "nextStepId"
+      ],
+      "key": "nextStepId",
+      "value": "7",
+      "category": "not-a-reference",
+      "reason": "a choice-flow option's target step, stored as the step's position in the flow (choice-flow/edit.js), not a database id"
+    },
+    {
+      "block": "sgs/choice-flow-question",
+      "path": [
+        "attributes",
+        "options",
+        3,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 456,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow-question",
+      "path": [
+        "parents",
+        0,
+        "attributes",
+        "headerLogo",
+        "id"
+      ],
+      "key": "id",
+      "value": 486,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/choice-flow-result",
+      "path": [
+        "parents",
+        0,
+        "attributes",
+        "headerLogo",
+        "id"
+      ],
+      "key": "id",
+      "value": 486,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/form-step",
+      "path": [
+        "inner",
+        0,
+        "attributes",
+        "options",
+        0,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 455,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/form-step",
+      "path": [
+        "inner",
+        0,
+        "attributes",
+        "options",
+        1,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 457,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/form-step",
+      "path": [
+        "inner",
+        0,
+        "attributes",
+        "options",
+        2,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 458,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/form-step",
+      "path": [
+        "inner",
+        0,
+        "attributes",
+        "options",
+        3,
+        "nextStepId"
+      ],
+      "key": "nextStepId",
+      "value": "7",
+      "category": "not-a-reference",
+      "reason": "a choice-flow option's target step, stored as the step's position in the flow (choice-flow/edit.js), not a database id"
+    },
+    {
+      "block": "sgs/form-step",
+      "path": [
+        "inner",
+        0,
+        "attributes",
+        "options",
+        3,
+        "image",
+        "id"
+      ],
+      "key": "id",
+      "value": 456,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/form-step",
+      "path": [
+        "parents",
+        0,
+        "attributes",
+        "headerLogo",
+        "id"
+      ],
+      "key": "id",
+      "value": 486,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/media",
+      "path": [
+        "attributes",
+        "imageId"
+      ],
+      "key": "imageId",
+      "value": "{{image}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/media",
+      "path": [
+        "attributes",
+        "imageUrl"
+      ],
+      "key": "imageUrl",
+      "value": "{{image.url}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        0,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 571,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        1,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 572,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        2,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 573,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        3,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 574,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        4,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 575,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        5,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 576,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        6,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 577,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        7,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 578,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        8,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 579,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        9,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 580,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        10,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 581,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/mega-group",
+      "path": [
+        "inner",
+        0,
+        "innerBlocks",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "items",
+        11,
+        "media",
+        "id"
+      ],
+      "key": "id",
+      "value": 625,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "path": [
+        "attributes",
+        "ref"
+      ],
+      "key": "ref",
+      "value": "{{menu}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "path": [
+        "attributes",
+        "splitAfterItemId"
+      ],
+      "key": "splitAfterItemId",
+      "value": "id:{{menuItem}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "path": [
+        "attributes",
+        "disabledItemIds",
+        0
+      ],
+      "key": "disabledItemIds",
+      "value": "id:{{menuItem}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "path": [
+        "attributes",
+        "drawerRef"
+      ],
+      "key": "drawerRef",
+      "value": "{{drawer}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "path": [
+        "variants",
+        1,
+        "featuredItemIds",
+        0
+      ],
+      "key": "featuredItemIds",
+      "value": "id:{{menuItem}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "path": [
+        "attributes",
+        "chromeLogoId"
+      ],
+      "key": "chromeLogoId",
+      "value": 4080,
+      "category": "url-backed",
+      "reason": "the render paints chromeLogoUrl when the id is absent on the site"
+    },
+    {
+      "block": "sgs/product-card",
+      "path": [
+        "attributes",
+        "productId"
+      ],
+      "key": "productId",
+      "value": "{{product}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/responsive-logo",
+      "path": [
+        "attributes",
+        "logoId"
+      ],
+      "key": "logoId",
+      "value": "{{logo}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/site-header",
+      "path": [
+        "inner",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "ref"
+      ],
+      "key": "ref",
+      "value": "{{menu}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/site-header",
+      "path": [
+        "inner",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "splitAfterItemId"
+      ],
+      "key": "splitAfterItemId",
+      "value": "id:{{menuItem}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/site-header",
+      "path": [
+        "inner",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "disabledItemIds",
+        0
+      ],
+      "key": "disabledItemIds",
+      "value": "id:{{menuItem}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/site-header",
+      "path": [
+        "inner",
+        1,
+        "innerBlocks",
+        0,
+        "attributes",
+        "drawerRef"
+      ],
+      "key": "drawerRef",
+      "value": "{{drawer}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/audio",
+      "path": [
+        "attributes",
+        "audioId"
+      ],
+      "key": "audioId",
+      "value": 4089,
+      "category": "url-backed",
+      "reason": "the render paints audioUrl when the id is absent on the site"
+    },
+    {
+      "block": "sgs/before-after",
+      "path": [
+        "attributes",
+        "beforeImageId"
+      ],
+      "key": "beforeImageId",
+      "value": 3459,
+      "category": "url-backed",
+      "reason": "the render paints beforeImageUrl when the id is absent on the site"
+    },
+    {
+      "block": "sgs/before-after",
+      "path": [
+        "attributes",
+        "afterImageId"
+      ],
+      "key": "afterImageId",
+      "value": 4080,
+      "category": "url-backed",
+      "reason": "the render paints afterImageUrl when the id is absent on the site"
+    },
+    {
+      "block": "sgs/decorative-image",
+      "path": [
+        "attributes",
+        "decorMedia",
+        "id"
+      ],
+      "key": "id",
+      "value": 3459,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/gallery",
+      "path": [
+        "attributes",
+        "mediaItems",
+        0,
+        "id"
+      ],
+      "key": "id",
+      "value": 3459,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/gallery",
+      "path": [
+        "attributes",
+        "mediaItems",
+        1,
+        "id"
+      ],
+      "key": "id",
+      "value": 4080,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/gallery",
+      "path": [
+        "attributes",
+        "mediaItems",
+        2,
+        "id"
+      ],
+      "key": "id",
+      "value": 3459,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/image-sequence",
+      "path": [
+        "attributes",
+        "thumbnail",
+        "id"
+      ],
+      "key": "id",
+      "value": 3459,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "path": [
+        "variants",
+        1,
+        "ref"
+      ],
+      "key": "ref",
+      "value": "{{menu}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "path": [
+        "variants",
+        1,
+        "disabledItemIds",
+        0
+      ],
+      "key": "disabledItemIds",
+      "value": "id:{{menuItem}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "path": [
+        "variants",
+        1,
+        "itemTrailingIcons",
+        "id:{{menuItem}}"
+      ],
+      "key": "id:{{menuItem}}",
+      "value": "id:{{menuItem}}",
+      "category": "token",
+      "where": "key"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "path": [
+        "variants",
+        2,
+        "ref"
+      ],
+      "key": "ref",
+      "value": "{{menu}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "path": [
+        "variants",
+        2,
+        "featuredItemIds",
+        0
+      ],
+      "key": "featuredItemIds",
+      "value": "id:{{menuItem}}",
+      "category": "token"
+    },
+    {
+      "block": "sgs/team-member",
+      "path": [
+        "attributes",
+        "photo",
+        "id"
+      ],
+      "key": "id",
+      "value": 3459,
+      "category": "url-backed",
+      "reason": "the render paints url when the id is absent on the site"
+    },
+    {
+      "block": "sgs/measured-diagram",
+      "path": [
+        "attributes",
+        "drawingImageId"
+      ],
+      "key": "drawingImageId",
+      "value": 4969,
+      "category": "url-backed",
+      "reason": "the render paints drawingImageUrl when the id is absent on the site"
+    },
+    {
+      "block": "sgs/diagram-dimension",
+      "path": [
+        "parents",
+        0,
+        "attributes",
+        "drawingImageId"
+      ],
+      "key": "drawingImageId",
+      "value": 4969,
+      "category": "url-backed",
+      "reason": "the render paints drawingImageUrl when the id is absent on the site"
+    }
+  ]
+}

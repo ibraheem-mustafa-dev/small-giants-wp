@@ -170,3 +170,49 @@ test( '--plan prints the set and the stale blocks and runs and writes nothing', 
 	assert.equal( d.written.length, 0 );
 	assert.match( r.lines.join( '\n' ), /to recalibrate \(slot map only\): sgs\/form/ );
 } );
+
+// Site references (lib/calibration-refs.mjs): a block whose fixture names a token the target does not supply, or whose
+// object the site does not hold, is needs-refs and blocks the run; supplied and present references let it through.
+const tokenFixtures = ( extra = {} ) => new Proxy( { 'sgs/nav-bar-menu': { attributes: { ref: '{{menu}}', splitAfterItemId: 'id:{{menuItem}}' } }, ...extra }, { get: ( t, k ) => t[ k ] ?? {} } );
+
+test( 'MUST FAIL: a block whose fixture names a reference the target does not supply is needs-refs, and no run starts', async () => {
+	const all = [ ...FIXED_BLOCKS, 'sgs/nav-bar-menu', 'sgs/nav-drawer-menu' ];
+	const w = world( [ 'menu' ], { ...current( all ), 'sgs/nav-bar-menu': 'old-key' } );
+	const d = deps( { fixtures: tokenFixtures() } );
+	d.refs = {};
+	d.refsExist = () => assert.fail( 'nothing to check when no role is supplied' );
+	const r = await runStage0( opts( w, { plan: true } ), d );
+	assert.equal( r.code, 1 );
+	assert.match( r.lines.join( '\n' ), /sgs\/nav-bar-menu: needs-refs \(the fixture needs references local-x does not supply: menu, menuItem/ );
+	assert.equal( d.calls.length, 0 );
+	const run = await runStage0( opts( w ), d );
+	assert.equal( run.code, 1 );
+	assert.equal( d.calls.length, 0, 'a needs-refs block stops the run before calibrate.mjs' );
+} );
+
+test( 'MUST FAIL: a supplied reference the site reports missing is needs-refs with the site\'s reason', async () => {
+	const all = [ ...FIXED_BLOCKS, 'sgs/nav-bar-menu', 'sgs/nav-drawer-menu' ];
+	const w = world( [ 'menu' ], current( all ) );
+	const d = deps( { fixtures: tokenFixtures() } );
+	d.refs = { menu: 5, menuItem: 6 };
+	const asked = [];
+	d.refsExist = ( roles ) => {
+		asked.push( ...roles );
+		return { menu: true, menuItem: 'menu item 6 is not in menu 5' };
+	};
+	const r = await runStage0( opts( w, { plan: true } ), d );
+	assert.equal( r.code, 1 );
+	assert.deepEqual( asked.sort(), [ 'menu', 'menuItem' ] );
+	assert.match( r.lines.join( '\n' ), /sgs\/nav-bar-menu: needs-refs \(referenced objects missing on local-x: menuItem 6: menu item 6 is not in menu 5\)/ );
+} );
+
+test( 'supplied references the site holds leave the block calibratable', async () => {
+	const all = [ ...FIXED_BLOCKS, 'sgs/nav-bar-menu', 'sgs/nav-drawer-menu' ];
+	const w = world( [ 'menu' ], current( all ) );
+	const d = deps( { fixtures: tokenFixtures() } );
+	d.refs = { menu: 5, menuItem: 6 };
+	d.refsExist = () => ( { menu: true, menuItem: true } );
+	const r = await runStage0( opts( w, { plan: true } ), d );
+	assert.equal( r.code, 0, r.lines.join( '\n' ) );
+	assert.match( r.lines.join( '\n' ), /sgs\/nav-bar-menu: current/ );
+} );

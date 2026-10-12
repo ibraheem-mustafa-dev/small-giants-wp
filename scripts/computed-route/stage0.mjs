@@ -8,8 +8,10 @@
 //    calibrate.mjs --slot-map-only; stage 0 writes no default paint. --recalibrate also re-measures current slot maps.
 // 4. Writes sites/<client>/build/intake/calibration-baseline.json only when every block's slot map is current and the
 //    baseline validates against data/calibration-baseline.schema.json.
-// --plan reads the handoff folder, the framework DB and the deploy hashes (the mirror's pluginDir is a local file read),
-// prints the set and what would be recalibrated, and touches nothing else.
+// --plan reads the handoff folder, the framework DB, the deploy hashes (the mirror's pluginDir is a local file read) and
+// whether each site reference the set's fixtures name exists on the site (one read-only wp eval-file), prints the set and
+// what would be recalibrated, and touches nothing else. A block whose fixture needs a reference the target does not supply
+// or hold is reported as needs-refs and blocks the run.
 // Exit 0: check passed, every block current, baseline written (or, with --plan, nothing blocks a run). Exit 1: otherwise.
 import fs from 'fs';
 import path from 'path';
@@ -19,6 +21,7 @@ import { main as handoffCheck } from './handoff-check.mjs';
 import { openDb } from './lib/db.mjs';
 import { localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { runStage0, installedPlaywright } from './lib/stage0.mjs';
+import { refsFor, checkRefsExist, wpEvalRunner } from './lib/calibration-refs.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -78,6 +81,8 @@ async function run( argv ) {
 		checkHandoff: ( folder, log ) => handoffCheck( [ folder ], log ),
 		compositionRows: () => db.prepare( 'SELECT block_slug FROM block_composition' ).all(),
 		fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ),
+		refs: refsFor( targets, o.site ),
+		refsExist: ( roles ) => checkRefsExist( refsFor( targets, o.site ), roles, wpEvalRunner( targets[ o.site ], o.site, REPO ) ),
 		hashesOf: ( block ) => hashesFor( o.site, targets[ o.site ], block ),
 		runCalibrate: ( args ) => spawnSync( process.execPath, [ path.join( HERE, 'calibrate.mjs' ), ...args ], { stdio: 'inherit', cwd: REPO } ).status ?? 1,
 		now: () => new Date().toISOString(),

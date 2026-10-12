@@ -14,6 +14,8 @@
 //   - the divergence ledger beside a --surfaces manifest has an entry citing no register item, or an item its register
 //     does not hold (house-rule entries exempt), or has entries and no register: --register, else the "register" of
 //     qa/ledger.config.json beside it (B4);
+//   - calibration-fixtures.json in the route folder names a site object by a literal id with no URL fallback, or by a
+//     token outside the vocabulary (lib/fixture-refs.mjs::checkFixtureRefs; fixture-refs.mjs --survey lists them);
 //   - check-no-client-names.py reports a hit inside the route folder (--no-names skips it: tests on temp copies).
 import fs from 'fs';
 import path from 'path';
@@ -24,6 +26,7 @@ import { readTree, walk } from './lib/tree.mjs';
 import { lintSurfaces } from './lib/references.mjs';
 import { load } from './lib/ledger.mjs';
 import { brandBySlug, brandOwnsAddress } from './lib/brand-registry.mjs';
+import { checkFixtureRefs } from './lib/fixture-refs.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -214,6 +217,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const all = ( name ) => argv.flatMap( ( a, i ) => ( a === name ? [ argv[ i + 1 ] ] : [] ) );
 	const root = path.resolve( all( '--root' )[ 0 ] || HERE );
 	const problems = lintFolder( root );
+	const fixturesFile = path.join( root, 'calibration-fixtures.json' );
+	fs.existsSync( fixturesFile ) && problems.push( ...checkFixtureRefs( JSON.parse( fs.readFileSync( fixturesFile, 'utf8' ) ) ) );
 	const db = openDb();
 	all( '--tree' ).forEach( ( f ) => problems.push( ...lintTree( readTree( f ), db, f ) ) );
 	all( '--skeleton' ).forEach( ( f ) => problems.push( ...lintSkeleton( readTree( f ), db, f ) ) );

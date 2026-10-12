@@ -5,7 +5,8 @@ import path from 'path';
 import crypto from 'crypto';
 import { execFileSync } from 'child_process';
 
-const SSH = [ '-i', path.join( process.env.USERPROFILE || process.env.HOME, '.ssh', 'id_ed25519' ), '-p', '65002', '-o', 'ConnectTimeout=20', 'u945238940@141.136.39.73' ];
+// The SSH arguments for the shared host (every hosted test site lives on it).
+export const SSH = [ '-i', path.join( process.env.USERPROFILE || process.env.HOME, '.ssh', 'id_ed25519' ), '-p', '65002', '-o', 'ConnectTimeout=20', 'u945238940@141.136.39.73' ];
 // Remote plugin roots per site (the deploy script's TARGETS hold the same paths).
 export const REMOTE_PLUGIN = {
 	'eye-care-test': 'domains/darkcyan-grouse-898606.hostingersite.com/public_html/wp-content/plugins/sgs-blocks',

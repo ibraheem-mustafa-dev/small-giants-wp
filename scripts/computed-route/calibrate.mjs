@@ -8,7 +8,9 @@
 // instance at 375, 768 and 1440 (hover settings under a real mouse), and writes two files (lib/cache.mjs): the
 // site-independent slot map cache/<block>.json, keyed by the deployed build's md5, and this site's default paint
 // cache/<site>/<block>.paint.json, keyed by that md5 and the site snapshot's md5. Each is written only when due. The page
-// is emptied at the end.
+// is emptied at the end. A fixture names site objects (menu, drawer, media, product) by token, resolved from the target's
+// refs (lib/calibration-refs.mjs); a block whose reference the target does not supply, or whose object the site does not
+// hold, is reported and not built.
 import fs from 'fs';
 import path from 'path';
 import { spawn, spawnSync } from 'child_process';
@@ -26,6 +28,7 @@ import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, b
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
 import { WIDTHS, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, readAll } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
+import { refsFor, refGate, checkRefsExist, fixtureRoles, resolveFixture, wpEvalRunner } from './lib/calibration-refs.mjs';
 
 export { REMOTE_PLUGIN, EDITOR_ONLY, BUNDLE_TEXT, normaliseBundle, TEXT_FILE, lfText, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 
@@ -323,9 +326,21 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		due[ b ] = dueOutputs( slotWhy, paintWhy, slotMapOnly );
 		( slotWhy || paintWhy ) && console.log( JSON.stringify( { block: b, skipped: { slotMap: slotWhy, paint: paintWhy } } ) );
 	}
-	const blocks = asked.filter( ( b ) => due[ b ].slotMap || due[ b ].paint );
-	if ( ! blocks.length ) {
+	const dueBlocks = asked.filter( ( b ) => due[ b ].slotMap || due[ b ].paint );
+	if ( ! dueBlocks.length ) {
 		process.exit( 0 );
+	}
+	// Each fixture's site references resolve from this target's refs (lib/calibration-refs.mjs), and every referenced
+	// object is checked on the site first: a block whose reference is unsupplied or missing is reported and not built.
+	const fixtures = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) );
+	const refs = refsFor( targets, site );
+	const roles = [ ...new Set( dueBlocks.filter( ( b ) => fixtures[ b ] && ! resolveFixture( fixtures[ b ], refs ).missing.length ).flatMap( ( b ) => fixtureRoles( fixtures[ b ] ) ) ) ];
+	const exists = roles.length ? checkRefsExist( refs, roles, wpEvalRunner( target, site, REPO ) ) : {};
+	const gate = refGate( dueBlocks, fixtures, refs, exists, site );
+	gate.blocked.forEach( ( r ) => console.log( JSON.stringify( r ) ) );
+	const blocks = dueBlocks.filter( ( b ) => ! gate.blocked.some( ( r ) => r.block === b ) );
+	if ( ! blocks.length ) {
+		process.exit( gate.blocked.length ? 1 : 0 );
 	}
 	// A local mirror has no host deploy to wait for; this machine's deploy or reseed still blocks the run.
 	assertQuiet( target.pluginDir ? null : undefined );
@@ -335,8 +350,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	fs.mkdirSync( CACHE, { recursive: true } );
 	const env = readEnv( target.envFile, target.envKey );
 	const shared = await openBrowser( site, env );
-	const ctx = { site, target, env, shared, fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ), snapshot: loadSnapshot( snapFile ), rawSnapshot: JSON.parse( fs.readFileSync( snapFile, 'utf8' ) ), db: openDb(), rejectedOut: [], image: target.image || null };
-	const results = [];
+	const ctx = { site, target, env, shared, fixtures: gate.ready, snapshot: loadSnapshot( snapFile ), rawSnapshot: JSON.parse( fs.readFileSync( snapFile, 'utf8' ) ), db: openDb(), rejectedOut: [], image: target.image || null };
+	const results = [ ...gate.blocked ];
 	try {
 		for ( const b of blocks ) {
 			// One block's failure (a page that never renders its instance, a host time-out) is that block's error; the
