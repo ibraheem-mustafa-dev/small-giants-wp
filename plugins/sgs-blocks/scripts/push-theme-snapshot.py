@@ -78,6 +78,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tls_urlopen import urlopen_tls  # noqa: E402
+import snapshot_palette_roster as palette_roster  # noqa: E402
 
 # The generic host-matched secrets lookup lives with the Site Info push; one copy, not two.
 from business_info.credentials import credentials_from_secrets  # noqa: E402
@@ -222,6 +223,16 @@ def _basic_auth_header(username: str, app_password: str) -> str:
 def repo_root() -> Path:
     """Resolve the small-giants-wp repo root from this script's location."""
     return Path(__file__).resolve().parents[3]
+
+
+def roster_guard(snapshot: dict) -> list[str]:
+    """Framework palette roster slugs the snapshot lacks (Spec 32 FR-32-14 push guard).
+
+    A snapshot replaces the site's theme.json wholesale, so every slug it lacks is deleted for that
+    client. The roster is read from the framework theme.json by the same function the completeness
+    gate (check-snapshot-palette-roster.py) uses.
+    """
+    return palette_roster.missing_roster_slugs(snapshot, palette_roster.framework_roster())
 
 
 def load_local_snapshot(client: str) -> dict:
@@ -1076,6 +1087,13 @@ def main() -> int:
         return do_rollback(args)
 
     local = load_local_snapshot(args.client)
+    missing_slugs = roster_guard(local)
+    if missing_slugs:
+        print(f"[push-theme-snapshot] REFUSED: sites/{args.client}/theme-snapshot.json lacks framework palette "
+              f"slug(s): {', '.join(missing_slugs)}. A snapshot replaces the site's theme.json wholesale, so "
+              "these would be deleted for the client. Add them (python scripts/migrate-palette-roster-slugs.py) "
+              "and re-run; nothing was sent.", file=sys.stderr)
+        return 2
     local_path = repo_root() / "sites" / args.client / "theme-snapshot.json"
     server_path = f"domains/{args.target_domain}/public_html/wp-content/themes/sgs-theme/theme.json"
     wp_root = f"domains/{args.target_domain}/public_html"

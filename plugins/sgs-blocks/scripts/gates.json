@@ -1553,5 +1553,14 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 173
+  },
+  {
+    "id": "check-snapshot-palette-roster",
+    "cmd": "python scripts/check-snapshot-palette-roster.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 300,
+    "order": 174
   }
 ]

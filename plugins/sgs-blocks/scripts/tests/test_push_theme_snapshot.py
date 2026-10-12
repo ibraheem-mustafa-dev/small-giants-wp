@@ -299,14 +299,20 @@ def test_fetch_reports_found_absent_or_error_from_the_ssh_result(pts, monkeypatc
 # ---------------------------------------------------------------------------
 # 3. Exit code — main() with every network / SSH / disk-writing function stubbed
 # ---------------------------------------------------------------------------
+def _full_roster_snap(pts) -> dict:
+    """A snapshot carrying every framework palette slug (the push guard's precondition)."""
+    roster = pts.palette_roster.framework_roster()
+    return _snap([{"slug": s, "color": "#112233", "name": s} for s in roster])
+
+
 def _run_main(pts, monkeypatch, *, server, gs_state, gs_body, post_ok=True, extra_args=(),
-              server_status=None):
+              server_status=None, snapshot=None):
     calls: dict[str, int] = {"post": 0, "scp": 0}
 
     monkeypatch.setattr(sys, "argv", ["push-theme-snapshot.py", "--client", "unit-client",
                                       "--target", "user@host", "--target-domain", "unit.example.com",
                                       "--yes", *extra_args])
-    monkeypatch.setattr(pts, "load_local_snapshot", lambda client: _snap([DECLARED]))
+    monkeypatch.setattr(pts, "load_local_snapshot", lambda client: snapshot if snapshot is not None else _full_roster_snap(pts))
     status = server_status or ("found" if server is not None else "absent")
     monkeypatch.setattr(pts, "fetch_server_theme_json", lambda *a, **k: (server, status))
     monkeypatch.setattr(pts, "discover_global_styles_state", lambda *a, **k: gs_state)
@@ -418,7 +424,8 @@ def test_apply_dark_palette_ships_fill_scoped_ink_and_light_mode_warnings(pts):
     custom = out["settings"]["custom"]
     assert "_sgsDark" not in out
     assert custom["dark"]["text"] != "#3a2e26"
-    assert custom["darkInk"] == {"element": {"button": {"base": {"text": "#3a2e26"}}}}
+    button_ink = custom["darkInk"]["element"]["button"]
+    assert button_ink["base"] == {"text": "#3a2e26"} and set(button_ink) <= {"base", "hover"}
     assert "fill-scoped ink" in note and "light-mode warning: text-inverse on primary" in note
 
 
@@ -433,3 +440,42 @@ def test_apply_dark_palette_removes_stale_ink_when_none_is_needed(pts):
     snap["_sgsDark"] = {"enabled": True}
     out, _note = pts.apply_dark_palette(snap)
     assert "darkInk" not in out["settings"]["custom"]
+
+
+# ---------------------------------------------------------------------------
+# 4. Push guard — a snapshot missing a framework roster slug is refused before any network action
+# ---------------------------------------------------------------------------
+def test_roster_guard_names_every_missing_slug(pts):
+    full = _full_roster_snap(pts)
+    assert pts.roster_guard(full) == []
+    trimmed = copy.deepcopy(full)
+    _pal(trimmed)[:] = [e for e in _pal(trimmed) if e["slug"] not in ("link-hover", "section")]
+    assert pts.roster_guard(trimmed) == ["link-hover", "section"]
+
+
+def test_push_refuses_a_snapshot_missing_a_roster_slug_before_any_network_action(pts, monkeypatch, capsys):
+    trimmed = _full_roster_snap(pts)
+    _pal(trimmed)[:] = [e for e in _pal(trimmed) if e["slug"] != "section-text"]
+
+    def _boom(*a, **k):
+        raise AssertionError("network or SSH was touched")
+
+    for name in ("fetch_server_theme_json", "discover_global_styles_state", "fetch_global_styles",
+                 "push_snapshot", "post_global_styles", "flush_cache"):
+        monkeypatch.setattr(pts, name, _boom)
+    monkeypatch.setattr(sys, "argv", ["push-theme-snapshot.py", "--client", "unit-client", "--target", "user@host",
+                                      "--target-domain", "unit.example.com", "--yes"])
+    monkeypatch.setattr(pts, "load_local_snapshot", lambda client: trimmed)
+    code = pts.main()
+    assert code != 0
+    assert "section-text" in capsys.readouterr().err
+
+
+def test_push_proceeds_with_a_complete_roster(pts, monkeypatch):
+    code, calls = _run_main(pts, monkeypatch, server=THEME, gs_state=(7, "found"), gs_body=GS)
+    assert code == 0 and calls["scp"] == 1
+
+
+def test_every_committed_snapshot_passes_the_roster_guard(pts):
+    for path in sorted((REPO / "sites").glob("*/theme-snapshot.json")):
+        assert pts.roster_guard(json.loads(path.read_text(encoding="utf-8"))) == [], path.parent.name
