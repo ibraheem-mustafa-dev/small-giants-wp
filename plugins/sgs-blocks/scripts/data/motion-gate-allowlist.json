@@ -1,0 +1,80 @@
+[
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "duration.instant",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "duration.slow",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "duration.extra-slow",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "easing.ease-in",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "easing.linear",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "easing.spring-gentle",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "easing.spring-bouncy",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "transition.slow",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "distance.xs",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "distance.sm",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "distance.md",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "distance.lg",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-token-consumers",
+    "pattern": "distance.xl",
+    "reason": "first reader is the shared motion stylesheet",
+    "delete_in_unit": "M2.2"
+  }
+]

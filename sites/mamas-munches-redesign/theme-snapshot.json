@@ -538,28 +538,30 @@
         "pill": "9999px"
       },
       "transition": {
-        "fast": "0.15s ease",
-        "medium": "0.3s ease",
-        "slow": "0.5s ease"
+        "fast": "200ms cubic-bezier(0.25, 0.1, 0.25, 1)",
+        "medium": "300ms cubic-bezier(0.25, 0.1, 0.25, 1)",
+        "slow": "420ms cubic-bezier(0.25, 0.1, 0.25, 1)"
       },
       "duration": {
         "instant": "60ms",
-        "fast": "150ms",
+        "fast": "200ms",
         "medium": "300ms",
-        "slow": "500ms",
+        "slow": "420ms",
         "extra-slow": "800ms"
       },
       "easing": {
-        "default": "cubic-bezier(0.4, 0, 0.2, 1)",
-        "ease-out": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "default": "cubic-bezier(0.25, 0.1, 0.25, 1)",
+        "ease-out": "cubic-bezier(0.2, 0.7, 0.2, 1)",
         "ease-in": "cubic-bezier(0.4, 0, 1, 1)",
         "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
-        "linear": "linear"
+        "linear": "linear",
+        "spring-gentle": "linear(0, 0.065, 0.215, 0.397, 0.574, 0.729, 0.851, 0.94, 0.999, 1.034, 1.05, 1.053, 1.049, 1.04, 1.03, 1.021, 1.013, 1.007, 1.003, 1, 0.998, 0.997, 0.997, 0.997, 1)",
+        "spring-bouncy": "linear(0, 0.092, 0.298, 0.536, 0.753, 0.92, 1.031, 1.09, 1.11, 1.102, 1.081, 1.055, 1.03, 1.011, 0.998, 0.991, 0.988, 0.988, 0.991, 0.993, 0.996, 0.998, 1, 1.001, 1)"
       },
       "entrance": {
-        "distance": "30px",
-        "duration": "500ms",
-        "easing": "cubic-bezier(0.16,1,0.3,1)"
+        "distance": "28px",
+        "duration": "750ms",
+        "easing": "cubic-bezier(0.2, 0.7, 0.2, 1)"
       },
       "focus-ring": {
         "width": "3px",
@@ -580,6 +582,13 @@
         "mobile": "var(--wp--preset--spacing--40)",
         "tablet": "var(--wp--preset--spacing--40)",
         "desktop": "var(--wp--preset--spacing--40)"
+      },
+      "distance": {
+        "xs": "2px",
+        "sm": "3px",
+        "md": "10px",
+        "lg": "18px",
+        "xl": "32px"
       }
     },
     "appearanceTools": true,
