@@ -16,6 +16,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { openHarness, settleRest } from './intake-harness.mjs';
+import { mapPool, poolSize } from './intake-pool.mjs';
 import { readInventory, INVENTORY_WIDTHS } from './skeleton-inventory.mjs';
 import { proposeSkeleton } from './skeleton-propose.mjs';
 import { loadFacts, decisionsProblems, REPO } from './skeleton-facts.mjs';
@@ -295,15 +296,16 @@ function factsFor( { db, client, repo, facts } ) {
 }
 
 // The inventory and proposal of every surface (surfaceRoots' list). Surfaces sharing a page and route share one fresh
-// sandbox and harness run: settled in rest mode at open, then each surface's root is marked and read at 1440, 375 and
-// 768, settleRest after each resize. A root that does not render at rest is opened first (openers: its surfaces.json
-// state keys, else a trigger `census`'s template handlers link to it through `opened_by`), read, then closed again; the
-// entry's `opened` says how, where it renders and which widths were read at a neighbour (`readAt`). `openStates: false`
-// switches opening off (the tests' negative control). o: { folder, harPath, surfaces, client, db?, facts?, entry?,
-// routing?, site?, shotsDir?, widths, repo?, harness? (harness options), log?, census?, openStates? }. Returns
-// { skeletons: [{ surface, id, kind, name, route, opened?, inventory, rows, counts, problems, gap? }], gaps, runs:
-// [{ file, hash, surfaces, requests, unlisted, blocked, proxyAttempts, ms }] }. A surface whose inventory or proposal
-// throws, or that no opener renders, keeps its entry with `gap` and adds a gap row naming what was tried.
+// sandbox and harness run (the runs go side by side in the browser-unit pool, lib/intake-pool.mjs, kept in page order):
+// settled in rest mode at open, then each surface's root is marked and read at 1440, 375 and 768, settleRest after each
+// resize. A root that does not render at rest is opened first (openers: its surfaces.json state keys, else a trigger
+// `census`'s template handlers link to it through `opened_by`), read, then closed again; the entry's `opened` says how,
+// where it renders and which widths were read at a neighbour (`readAt`). `openStates: false` switches opening off (the
+// tests' negative control). o: { folder, harPath, surfaces, client, db?, facts?, entry?, routing?, site?, shotsDir?,
+// widths, repo?, harness? (harness options), log?, census?, openStates? }. Returns { skeletons: [{ surface, id, kind,
+// name, route, opened?, inventory, rows, counts, problems, gap? }], gaps, runs: [{ file, hash, surfaces, requests,
+// unlisted, blocked, proxyAttempts, ms }] }. A surface whose inventory or proposal throws, or that no opener renders,
+// keeps its entry with `gap` and adds a gap row naming what was tried.
 export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true } ) {
 	if ( [ ...widths ].sort().join() !== [ ...INVENTORY_WIDTHS ].sort().join() ) {
 		throw new Error( `the skeleton inventory reads at ${ INVENTORY_WIDTHS.join( ', ' ) } (Spec 48 §3.4), not ${ widths.join( ', ' ) }` );
@@ -324,9 +326,9 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 	const out = [];
 	const gaps = [];
 	const runs = [];
-	const fail = ( s, error ) => {
-		gaps.push( gap( 'skeleton', `${ s.component }:${ s.rootTpl }`, `${ s.slug }: ${ error }` ) );
-		out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, inventory: null, rows: [], counts: null, problems: [], gap: error } );
+	const fail = ( s, error, into = { out, gaps } ) => {
+		into.gaps.push( gap( 'skeleton', `${ s.component }:${ s.rootTpl }`, `${ s.slug }: ${ error }` ) );
+		into.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, inventory: null, rows: [], counts: null, problems: [], gap: error } );
 	};
 	const groups = new Map();
 	for ( const s of surfaces ) {
@@ -340,7 +342,10 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 		groups.get( k ).list.push( s );
 	}
 	try {
-		for ( const g of groups.values() ) {
+		// One unit per page group (each its own sandbox and harness run, its surfaces read one after another), side by
+		// side in the browser-unit pool; each unit's entries, gap rows and run record are kept in groups order.
+		const runGroup = async ( g ) => {
+			const u = { out: [], gaps: [], runs: [] };
 			const t0 = Date.now();
 			let h;
 			try {
@@ -348,8 +353,8 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 				await settleRest( h.page, h.options );
 			} catch ( e ) {
 				h && await h.close();
-				g.list.forEach( ( s ) => fail( s, `the harness run for ${ g.file }${ g.hash ? `#${ g.hash }` : '' } failed: ${ e.message.split( '\n' )[ 0 ] }` ) );
-				continue;
+				g.list.forEach( ( s ) => fail( s, `the harness run for ${ g.file }${ g.hash ? `#${ g.hash }` : '' } failed: ${ e.message.split( '\n' )[ 0 ] }`, u ) );
+				return u;
 			}
 			try {
 				const settle = ( page ) => settleRest( page, h.options );
@@ -381,17 +386,23 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						}
 						const r = proposeSkeleton( { inventory, facts: f.facts, surface: s.slug, clientDecisions: f.clientDecisions, calKeys, db: theDb } );
 						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, tried: open.tried };
-						out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems } );
+						u.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems } );
 						log( `${ s.slug }: ${ inventory.elements.length } elements, ${ r.proposal.rows.length } rows` );
 					} catch ( e ) {
-						fail( s, e.message.split( '\n' )[ 0 ] );
+						fail( s, e.message.split( '\n' )[ 0 ], u );
 					}
 				}
 			} finally {
 				const unlisted = h.sb.requests.filter( ( r ) => 'unlisted' === r.kind ).map( ( r ) => r.url );
-				runs.push( { file: g.file, hash: g.hash, surfaces: g.list.map( ( s ) => s.slug ), requests: h.sb.requests.length, unlisted, blocked: [ ...h.sb.blocked ], proxyAttempts: [ ...h.sb.proxyAttempts ], ms: Date.now() - t0 } );
+				u.runs.push( { file: g.file, hash: g.hash, surfaces: g.list.map( ( s ) => s.slug ), requests: h.sb.requests.length, unlisted, blocked: [ ...h.sb.blocked ], proxyAttempts: [ ...h.sb.proxyAttempts ], ms: Date.now() - t0 } );
 				await h.close();
 			}
+			return u;
+		};
+		for ( const u of await mapPool( [ ...groups.values() ], poolSize(), runGroup ) ) {
+			out.push( ...u.out );
+			gaps.push( ...u.gaps );
+			runs.push( ...u.runs );
 		}
 	} finally {
 		ownDb && theDb?.close?.();

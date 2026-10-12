@@ -23,9 +23,9 @@ const gapKey = ( g ) => `${ g.construct }\u0000${ g.draftId }\u0000${ g.error }`
 export async function twoPassDefects( { folder, entry, harPath, census, visits, widths, flags = null, firstPass = 3, log = () => {} } ) {
 	const bound = boundStyleRows( census );
 	const reads = new Map();
-	const onPage = ( s, at ) => readPageBindings( s.page, bound, at, reads );
+	const onPage = ( s, at, into = reads ) => readPageBindings( s.page, bound, at, into );
 	const marked = census.rows.some( ( r ) => 'boolean' === typeof r.unreached );
-	const base = { folder, entry, harPath, widths, onPage, flags, census: marked ? census : { ...census, rows: [] } };
+	const base = { folder, entry, harPath, widths, onPage, reads, flags, census: marked ? census : { ...census, rows: [] } };
 	const t0 = Date.now();
 	const a = await unreachedDefects( { ...base, visits: visits.slice( 0, firstPass ) } );
 	const msA = Date.now() - t0;

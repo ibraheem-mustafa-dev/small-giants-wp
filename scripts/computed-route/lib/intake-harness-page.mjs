@@ -12,7 +12,9 @@
 //     never fires (so `if (this._raf) return` guards stay set, and the loop stays paused);
 //   - every Web Animation the draft creates (Element.prototype.animate) and every CSS animation or transition seen at a
 //     step kept in a registry, so sample mode can still reach one that has finished;
-//   - stylesheet <link> load and error events recorded, so the font wait can tell a pending sheet from a failed one.
+//   - stylesheet <link> load and error events recorded, so the font wait can tell a pending sheet from a failed one;
+//   - each interval's next tick and every pending idle callback tracked, so H.quietMs can say how long nothing can
+//     change the page (the node side jumps the clock across that stretch).
 // cfg.disable (negative controls only) switches single items off: 'random', 'storage', 'intervals', 'raf'.
 export function harnessInit( cfg ) {
 	// Any clock call replays Playwright's clock log now, before the clock's own real-time timer could move it.
@@ -49,6 +51,8 @@ export function harnessInit( cfg ) {
 	const desc = ( fn ) => String( fn ).replace( /\s+/g, ' ' ).slice( 0, 160 );
 	// eslint-disable-next-line no-eval
 	const run = ( fn, self, args ) => ( 'function' === typeof fn ? fn.apply( self, args ) : ( 0, eval )( String( fn ) ) );
+	// Each interval's next tick in virtual ms (kept off the record, which H.pending reports as it is).
+	const next = new WeakMap();
 	const fake = {
 		setTimeout: window.setTimeout, clearTimeout: window.clearTimeout, setInterval: window.setInterval,
 		clearInterval: window.clearInterval, raf: window.requestAnimationFrame, caf: window.cancelAnimationFrame,
@@ -64,8 +68,10 @@ export function harnessInit( cfg ) {
 	};
 	window.setInterval = function setInterval( fn, delay, ...args ) {
 		const rec = { kind: 'interval', delay: Math.max( 0, Number( delay ) || 0 ), ticks: 0, fn: desc( fn ) };
+		next.set( rec, now() + rec.delay );
 		const id = fake.setInterval.call( window, function () {
 			rec.ticks++;
+			next.set( rec, now() + rec.delay );
 			if ( ! off.has( 'intervals' ) && rec.ticks > cfg.intervalTicks ) {
 				return undefined;
 			}
@@ -112,6 +118,24 @@ export function harnessInit( cfg ) {
 		H.rafs.delete( id );
 		return fake.caf.call( window, id );
 	};
+	// Idle callbacks are counted only so H.quietMs never skips past one (the fake clock fires them as timers).
+	const idle = new Set();
+	if ( 'function' === typeof window.requestIdleCallback ) {
+		const ric = window.requestIdleCallback;
+		const cic = window.cancelIdleCallback;
+		window.requestIdleCallback = function requestIdleCallback( fn, ...rest ) {
+			const id = ric.call( window, function ( ...a ) {
+				idle.delete( id );
+				return fn.apply( this, a );
+			}, ...rest );
+			idle.add( id );
+			return id;
+		};
+		window.cancelIdleCallback = function cancelIdleCallback( id ) {
+			idle.delete( id );
+			return cic.call( window, id );
+		};
+	}
 	const animate = Element.prototype.animate;
 	Element.prototype.animate = function ( ...a ) {
 		const anim = animate.apply( this, a );
@@ -144,12 +168,44 @@ export function harnessInit( cfg ) {
 		intervals: [ ...H.intervals.values() ].filter( ( x ) => off.has( 'intervals' ) || x.ticks < cfg.intervalTicks ),
 		frames: [ ...H.rafs.values() ],
 	} );
+	// Virtual ms until anything can next change the page: 0 while a frame callback or an idle callback is scheduled, a
+	// timer is overdue or an animation runs (CSS and Web Animations run on real time, so no clock jump may pass one);
+	// otherwise the time to the next timeout or interval tick, or null when none is scheduled. An interval past
+	// cfg.intervalTicks is left out: its wrapper only counts the tick and returns before the draft's callback. One
+	// posted-message round trip first lets a render the last step queued (React's scheduler posts one) run and start its
+	// timers and transitions.
+	H.quietMs = async () => {
+		await new Promise( ( done ) => {
+			const c = new MessageChannel();
+			c.port1.onmessage = () => {
+				c.port1.close();
+				done();
+			};
+			c.port2.postMessage( 0 );
+		} );
+		if ( H.rafs.size || idle.size || document.getAnimations().some( ( a ) => 'running' === a.playState ) ) {
+			return 0;
+		}
+		const t = now();
+		let q = null;
+		const at = ( due ) => {
+			q = null === q ? due - t : Math.min( q, due - t );
+		};
+		H.timeouts.forEach( ( x ) => at( x.due ) );
+		H.intervals.forEach( ( x ) => ( off.has( 'intervals' ) || x.ticks < cfg.intervalTicks ) && at( next.get( x ) ) );
+		return null === q ? null : Math.max( 0, q );
+	};
 	// One harness step after the clock moved: register every live animation, let the renderer produce a frame (so
-	// observers see this step's state at this step's virtual time), and report what is pending.
-	H.step = async ( windowEnd ) => {
+	// observers see this step's state at this step's virtual time), and report what is pending; with `quiet`, the
+	// report also carries H.quietMs (read after the pending lists, so they are as without it).
+	H.step = async ( windowEnd, quiet = false ) => {
 		document.getAnimations().forEach( ( a ) => H.animations.add( a ) );
 		await H.frame();
-		return H.pending( windowEnd );
+		const p = H.pending( windowEnd );
+		if ( quiet ) {
+			p.quiet = await H.quietMs();
+		}
+		return p;
 	};
 	const label = ( a ) => {
 		const t = a.effect?.target;

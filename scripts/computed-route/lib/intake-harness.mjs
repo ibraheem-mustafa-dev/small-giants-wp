@@ -16,6 +16,11 @@
 // every 16ms step, so each observer sees each step's state at that step's virtual time. The one residue: a frame can
 // also fall between two timers that fire inside the same 16ms step, so an observer callback that reads the clock may
 // see any time within that step.
+//
+// Quiet steps: a stretch in which no frame callback or idle callback is scheduled, no animation runs and no timer falls
+// due is crossed in one clock jump of whole steps with no frame wait (steps, settlePhase): no observer can see anything
+// new there, and the step that reaches the next due timer is still a stepped one, so readings, settle times and the
+// settle ceiling are those of the step-by-step run. INTAKE_SKIP_QUIET=0 (or opts.skipQuiet false) turns it off.
 import { parse } from '@babel/parser';
 import { tplKeyOf } from '../../parity/lib/collect.mjs';
 import { harnessInit } from './intake-harness-page.mjs';
@@ -44,6 +49,9 @@ export const DISABLE_ITEMS = [ 'clock', 'random', 'storage', 'timeouts', 'interv
 export function harnessOptions( opts = {} ) {
 	const o = { ...HARNESS_DEFAULTS, ...opts };
 	o.disable = [ ...( opts.disable || [] ) ];
+	// Quiet-step skipping (steps): on unless INTAKE_SKIP_QUIET=0 (the reference run) or opts.skipQuiet is false. It is
+	// never part of the recorded settings: a run reads the same with it on or off.
+	o.skipQuiet = false !== opts.skipQuiet && '0' !== process.env.INTAKE_SKIP_QUIET;
 	const unknown = o.disable.filter( ( d ) => ! DISABLE_ITEMS.includes( d ) );
 	if ( unknown.length ) {
 		throw new Error( `unknown harness item(s) to disable: ${ unknown.join( ', ' ) } (known: ${ DISABLE_ITEMS.join( ', ' ) })` );
@@ -224,14 +232,41 @@ async function advance( page, ms, o ) {
 	}
 }
 
-// Advances ms in stepMs steps, a real frame after each; returns the last pending report.
+const skipping = ( o ) => o.skipQuiet && o.stepMs > 0 && ! o.disable.includes( 'clock' );
+const quietMs = ( page ) => page.evaluate( () => window.__sgsHarness.quietMs() );
+
+// The whole steps a quiet stretch lets the clock jump: with q virtual ms before anything can change the page
+// (H.quietMs; null when nothing is scheduled) and at most `limit` ms left, floor((min(q, limit) - stepMs) / stepMs)
+// steps when that is two or more steps' worth, else 0. The jump is a multiple of stepMs, so every later step, every
+// firing and every reported time stays on the same stepMs grid, and the step that reaches the next due timer is still
+// a stepped one with its frame.
+export function quietSkip( q, limit, o ) {
+	const room = Math.min( null === q ? Infinity : q, limit );
+	return Number.isFinite( room ) && room >= 2 * o.stepMs ? Math.floor( ( room - o.stepMs ) / o.stepMs ) * o.stepMs : 0;
+}
+
+// One stepMs step (or the `d` ms left): the clock moved, a real frame, the pending report (with `quiet` when skipping).
+async function oneStep( page, d, o, windowEnd ) {
+	await advance( page, d, o );
+	return page.evaluate( ( [ w, quiet ] ) => window.__sgsHarness.step( w, quiet ), [ windowEnd, skipping( o ) ] );
+}
+
+// Advances ms in stepMs steps, a real frame after each; returns the last pending report. A quiet stretch (no frame
+// callback, running animation or due timer before it ends) is crossed in one clock jump with no frame wait
+// (quietSkip); a frame there would see nothing new.
 async function steps( page, ms, o, windowEnd ) {
 	let left = ms;
 	let p = null;
+	let q = skipping( o ) && left >= 2 * o.stepMs ? await quietMs( page ) : 0;
 	while ( left > 0 ) {
+		const skip = skipping( o ) ? quietSkip( q, left, o ) : 0;
+		if ( skip ) {
+			await advance( page, skip, o );
+			left -= skip;
+		}
 		const d = Math.min( o.stepMs, left );
-		await advance( page, d, o );
-		p = await page.evaluate( ( w ) => window.__sgsHarness.step( w ), windowEnd );
+		p = await oneStep( page, d, o, windowEnd );
+		q = p.quiet ?? 0;
 		left -= d;
 	}
 	return p;
@@ -242,11 +277,23 @@ const describe = ( p ) => [ ...p.timeouts, ...p.intervals, ...p.frames ]
 
 // One settle phase: steps until no timeout due within timeoutMaxMs of the phase start is pending, every interval has
 // ticked intervalTicks times and no frame callback is scheduled. Throws, naming what is still pending, at settleMaxMs.
+// A quiet stretch is jumped (quietSkip) only after a step has reported something pending (the first step is always
+// stepped, so a page that is already settled ends on it), and no further than the first step at or past settleMaxMs, so
+// the ceiling throws at the same virtual time with the same pending list.
 async function settlePhase( page, o, label ) {
 	const start = await page.evaluate( () => performance.now() );
 	const windowEnd = start + o.timeoutMaxMs;
+	const ceiling = start + ( o.stepMs > 0 ? Math.ceil( o.settleMaxMs / o.stepMs ) * o.stepMs : 0 );
+	let q = 0;
+	let now = start;
 	for ( ;; ) {
-		const p = await steps( page, o.stepMs, o, windowEnd );
+		const skip = skipping( o ) ? quietSkip( q, ceiling - now, o ) : 0;
+		if ( skip ) {
+			await advance( page, skip, o );
+		}
+		const p = await oneStep( page, o.stepMs, o, windowEnd );
+		q = p.quiet ?? 0;
+		now = p.t;
 		if ( ! p.timeouts.length && ! p.intervals.length && ! p.frames.length ) {
 			return Math.round( p.t - start );
 		}

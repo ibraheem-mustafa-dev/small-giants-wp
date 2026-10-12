@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-12",
+  "project": "Quiet-step fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 2619,
+      "sha256": "7e715e7947d32165eefcaff362822f384f87ba94dc9cb0b5e117560dbde34ebe"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    }
+  ]
+}

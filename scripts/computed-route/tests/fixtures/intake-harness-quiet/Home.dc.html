@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+.quiet-bar { height: 8px; margin: 4px 0; background: #36c; }
+.quiet-grow { transition: width 400ms linear; }
+</style>
+</helmet>
+<main style="font-family:system-ui,sans-serif;padding:24px;color:#222">
+  <h1 style="margin:0 0 12px;font-size:24px">Quiet-step fixture</h1>
+  <div data-q="timeout" class="quiet-bar" style="width:{{ timeoutW }}px"></div>
+  <div data-q="frames" class="quiet-bar" style="width:{{ framesW }}px"></div>
+  <div data-q="interval" class="quiet-bar" style="width:{{ intervalW }}px"></div>
+  <div data-q="late" class="quiet-bar" style="width:{{ lateW }}px"></div>
+  <div style="height:1200px"></div>
+  <div data-q="reveal" ref="{{ setRevealEl }}" class="quiet-bar quiet-grow" style="width:{{ revealW }}px"></div>
+  <div data-q="after" class="quiet-bar" style="width:{{ afterW }}px"></div>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;600px&quot;}}">
+class Component extends DCLogic {
+  state = { timeoutW: 10, frames: 0, ticks: 0, stamp: 0, lateW: 10, revealW: 10, afterW: 10 };
+  componentDidMount() {
+    setTimeout(() => this.setState({ timeoutW: Math.round(performance.now() / 5) }), 500);
+    setTimeout(() => this.setState({ lateW: Math.round(performance.now() / 50) }), 9000);
+    this._int = setInterval(() => this.setState({ ticks: this.state.ticks + 1, stamp: Math.round(performance.now()) }), 6500);
+    const loop = () => { this.setState({ frames: this.state.frames + 1 }); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  }
+  componentWillUnmount() {
+    clearInterval(this._int);
+    if (this._io) this._io.disconnect();
+  }
+  setRevealEl = (el) => {
+    if (!el || this._io) return;
+    this._io = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      this._io.unobserve(en.target);
+      this.setState({ revealW: Math.round(performance.now()) / 100 });
+      setTimeout(() => this.setState({ afterW: Math.round(performance.now()) / 100 }), 700);
+    }));
+    this._io.observe(el);
+  };
+  renderVals() {
+    return {
+      timeoutW: this.state.timeoutW, framesW: this.state.frames, intervalW: this.state.ticks * 10 + this.state.stamp / 1000,
+      lateW: this.state.lateW, revealW: this.state.revealW, afterW: this.state.afterW, setRevealEl: this.setRevealEl,
+    };
+  }
+}
+</script>
+</body>
+</html>

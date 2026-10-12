@@ -12,6 +12,7 @@ import { proposePageMap } from './intake-pagemap.mjs';
 import { readTokens } from './tokens.mjs';
 import { proposePalette, loadPaletteSlugs } from './intake-palette.mjs';
 import { readSurface } from './intake-reading.mjs';
+import { mapPool, poolSize } from './intake-pool.mjs';
 import { proposeSiteInfo } from './intake-siteinfo.mjs';
 import { proposeFlags } from './intake-flags.mjs';
 import { surfaceRoots, proposeSkeletons } from './intake-skeletons.mjs';
@@ -135,15 +136,23 @@ export const STAGES = [
 		const records = [];
 		const gaps = [];
 		const blocked = [];
-		for ( const v of ctx.visits.list ) {
+		// One read per route, side by side in the pool (each its own sandbox and harness run), kept in route order.
+		const reads = await mapPool( ctx.visits.list, poolSize(), async ( v ) => {
 			try {
-				const read = await readSurface( { folder: job.folder, index: job.entry, harPath: job.harPath, file: v.file, hash: v.hash, width: 1440, mode: 'rest', surface: v.key } );
+				return { read: await readSurface( { folder: job.folder, index: job.entry, harPath: job.harPath, file: v.file, hash: v.hash, width: 1440, mode: 'rest', surface: v.key } ) };
+			} catch ( e ) {
+				return { error: e };
+			}
+		} );
+		reads.forEach( ( { read, error }, i ) => {
+			const v = ctx.visits.list[ i ];
+			if ( read ) {
 				records.push( ...read.records );
 				blocked.push( ...read.blocked );
-			} catch ( e ) {
-				gaps.push( gap( 'palette-usage', `${ v.file }${ v.hash ? `#${ v.hash }` : '' }`, `the 1440 rest reading failed: ${ e.message.split( '\n' )[ 0 ] }` ) );
+			} else {
+				gaps.push( gap( 'palette-usage', `${ v.file }${ v.hash ? `#${ v.hash }` : '' }`, `the 1440 rest reading failed: ${ error.message.split( '\n' )[ 0 ] }` ) );
 			}
-		}
+		} );
 		const usage = paletteUsage( records );
 		const p = proposePalette( { tokens: t.tokens, usage, slugs: loadPaletteSlugs(), problems: t.problems } );
 		gaps.push( ...p.problems.map( ( x ) => gap( `palette:${ x.kind ?? 'token' }`, x.draftId ?? x.name ?? x.token ?? 'tokens', x.error ?? x.message ?? JSON.stringify( x ) ) ) );
@@ -232,3 +241,29 @@ export const STAGES = [
 		return { prose, note: `${ prose.length } command-like prose lines (listed, never run)` };
 	} ],
 ];
+
+// What each stage must wait for before it starts when stages run side by side (lib/intake-run-worker.mjs): the
+// earlier stages whose context fields it reads (routing: routing; visits and userAgent: replay; censusFull: census;
+// siteInfoFull: site info; flagRows: flags; notDefects: draft defects; skeletonRows: skeletons), or '*' for every earlier
+// stage applied (the replay top-up reads `blocked`, which the worker gathers as each stage is applied).
+// tests/intake-run-schedule.test.mjs checks each stage's own reads (and the inventory stage's inventoryStage) against
+// this list.
+export const STAGE_NEEDS = Object.freeze( {
+	routing: [],
+	replay: [ 'routing' ],
+	census: [ 'replay' ],
+	breakpoints: [],
+	'page map': [ 'routing', 'census' ],
+	'tokens and palette': [ 'replay' ],
+	'site info': [ 'routing', 'census' ],
+	flags: [ 'census', 'site info' ],
+	'draft defects': [ 'replay', 'census', 'flags' ],
+	inventory: [ 'routing', 'census', 'draft defects' ],
+	skeletons: [ 'routing', 'census' ],
+	'missing features': [ 'census', 'skeletons' ],
+	'replay top-up': [ '*' ],
+	notices: [],
+} );
+
+// The stages that open a browser outside the browser-unit pool: run side by side, each holds one pool slot.
+export const SLOT_STAGES = Object.freeze( [ 'replay', 'inventory', 'replay top-up' ] );
