@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-12",
+  "project": "Skeleton intake fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 2224,
+      "sha256": "09d334c9e01da6fa6d78c88fab4023c203a484133ebb2d4e8c86d617076cabd0"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    },
+    {
+      "path": "surfaces.json",
+      "bytes": 1065,
+      "sha256": "8244d730fe943af885c4c2dd55dac242920e277afdeaef8d4f844f3ea5f27447"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="font-family:system-ui,sans-serif;color:#222">
+  <header style="position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 24px;background:#fff">
+    <span style="font-weight:700;font-size:20px">Fixture Foods</span>
+    <nav aria-label="Main" style="display:flex;gap:16px">
+      <sc-for list="{{ links }}" as="link"><a href="{{ link.href }}" style="color:#222;text-decoration:none">{{ link.label }}</a></sc-for>
+    </nav>
+    <a href="#/contact" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:#c33;color:#fff;text-decoration:none">Get in touch<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" fill="none"></path></svg></a>
+  </header>
+  <main style="padding:24px">
+    <sc-if value="{{ isHome }}">
+      <section style="padding:24px 0">
+        <h1 style="margin:0 0 12px;font-size:32px">Fresh food for busy kitchens</h1>
+        <p style="margin:0">We deliver ingredients across the region every weekday.</p>
+      </section>
+      <section style="padding:24px 0">
+        <h2 style="margin:0 0 8px;font-size:24px">Why us</h2>
+        <p style="margin:0">Family run since 1962.</p>
+      </section>
+    </sc-if>
+  </main>
+  <footer style="padding:24px;background:#222;color:#fff">
+    <p style="margin:0">Rendered at <span data-h="stamp">{{ stamp }}</span></p>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;600px&quot;}}">
+class Component extends DCLogic {
+  state = { stamp: 'pending' };
+  componentDidMount() {
+    this.setState({ stamp: new Date().toISOString() });
+  }
+  renderVals() {
+    return {
+      stamp: this.state.stamp,
+      isHome: true,
+      links: [ { label: 'About', href: '#/about' }, { label: 'Products', href: '#/products' }, { label: 'Contact', href: '#/contact' } ],
+    };
+  }
+}
+</script>
+</body>
+</html>

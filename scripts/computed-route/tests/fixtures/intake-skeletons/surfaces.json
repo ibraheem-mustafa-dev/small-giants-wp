@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "project": "Skeleton intake fixture",
+  "generated": "2026-10-12",
+  "records": [
+    { "id": "S-01", "kind": "header", "name": "Site header", "dc": "Home", "template_tpl_id": "1", "route": "*", "parent": null, "opened_by": "always rendered", "closed_by": "never", "states": [ { "name": "default", "state_keys": {}, "how_to_reach": "load" } ], "time_dependent": { "value": false, "reason": "" } },
+    { "id": "S-02", "kind": "footer", "name": "Footer", "dc": "Home", "template_tpl_id": "17", "route": "*", "parent": null, "opened_by": "always rendered", "closed_by": "never", "states": [ { "name": "default", "state_keys": {}, "how_to_reach": "load" } ], "time_dependent": { "value": true, "reason": "prints the render time" } },
+    { "id": "S-03", "kind": "page", "name": "home", "dc": "Home", "template_tpl_id": "10", "route": "/", "parent": null, "opened_by": "route", "closed_by": "route", "states": [ { "name": "default", "state_keys": {}, "how_to_reach": "load" } ], "time_dependent": { "value": false, "reason": "" } }
+  ]
+}

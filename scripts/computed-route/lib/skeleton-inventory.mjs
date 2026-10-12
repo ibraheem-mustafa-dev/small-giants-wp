@@ -122,9 +122,95 @@ async function settle( page, rootSelector ) {
 	await page.waitForTimeout( 1500 );
 }
 
+// In-page: hides fixed and sticky overlays outside the root for the crops, keeping each one's earlier inline
+// visibility in data-inv-hidden.
+function hideOverlays( sel ) {
+	const r = document.querySelector( sel );
+	for ( const e of document.body.querySelectorAll( '*' ) ) {
+		if ( ! r.contains( e ) && ! e.contains( r ) && [ 'fixed', 'sticky' ].includes( getComputedStyle( e ).position ) ) {
+			e.hasAttribute( 'data-inv-hidden' ) || e.setAttribute( 'data-inv-hidden', JSON.stringify( [ e.style.getPropertyValue( 'visibility' ), e.style.getPropertyPriority( 'visibility' ) ] ) );
+			e.style.setProperty( 'visibility', 'hidden', 'important' );
+		}
+	}
+}
+
+// In-page: undoes hideOverlays, so a later read of another root on the same page sees the page as it was.
+function restoreOverlays() {
+	for ( const e of document.querySelectorAll( '[data-inv-hidden]' ) ) {
+		const [ v, p ] = JSON.parse( e.getAttribute( 'data-inv-hidden' ) );
+		v ? e.style.setProperty( 'visibility', v, p ) : e.style.removeProperty( 'visibility' );
+		e.removeAttribute( 'data-inv-hidden' );
+	}
+}
+
+// The read on a page the caller prepared (readInventory with `page`): per width, resize, `settle( page, width )`, clear
+// the previous read's data-inv-i marks, read; screenshots only with `shotsDir`; overlays hidden for crops are restored.
+async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt } ) {
+	if ( 'function' !== typeof settleAt ) {
+		throw new Error( 'readInventory with a page needs settle( page, width ): the caller drives settling' );
+	}
+	const runs = {};
+	const shots = {};
+	const skipped = [];
+	shotsDir && fs.mkdirSync( shotsDir, { recursive: true } );
+	const height = page.viewportSize()?.height ?? 900;
+	for ( const w of INVENTORY_WIDTHS ) {
+		await page.setViewportSize( { width: w, height } );
+		await settleAt( page, w );
+		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
+		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS ] );
+		if ( res.error ) {
+			throw new Error( `${ res.error } at ${ w }px` );
+		}
+		runs[ w ] = res;
+		log( `inventory ${ w }px: ${ res.records.length } elements` );
+		if ( 1440 !== w && 375 !== w ) {
+			continue;
+		}
+		shotsDir && await page.evaluate( hideOverlays, root );
+		for ( const r of res.records ) {
+			if ( ! r.visible ) {
+				skipped.push( { w, key: r.key, why: r.box ? `not visible (box ${ r.box.w }x${ r.box.h })` : 'not rendered (no layout box)' } );
+				continue;
+			}
+			if ( 375 === w ) {
+				const d = runs[ 1440 ].records.find( ( x ) => x.key === r.key );
+				const pd = d && runs[ 1440 ].records.find( ( x ) => x.key === d.parentKey );
+				const pm = res.records.find( ( x ) => x.key === r.parentKey );
+				const rel = ( a, pa ) => ( a?.box && pa?.box ? [ a.box.x - pa.box.x, a.box.y - pa.box.y ] : [ 0, 0 ] );
+				const [ dx, dy ] = rel( d, pd );
+				const [ mx, my ] = rel( r, pm );
+				r.layoutChanged = ! d?.box || Math.abs( d.box.w - r.box.w ) > 1 || Math.abs( d.box.h - r.box.h ) > 1 || Math.abs( dx - mx ) > 1 || Math.abs( dy - my ) > 1;
+				if ( ! r.layoutChanged ) {
+					continue;
+				}
+			}
+			if ( ! shotsDir ) {
+				continue;
+			}
+			const file = `${ safe( r.key ) }@${ w }.png`;
+			try {
+				await page.locator( `[data-inv-i="${ r.i }"]` ).screenshot( { path: path.join( shotsDir, file ), animations: 'disabled', timeout: 15000 } );
+				( shots[ r.key ] ||= {} )[ w ] = `shots/${ file }`;
+			} catch ( e ) {
+				skipped.push( { w, key: r.key, why: `screenshot failed: ${ e.message.split( '\n' )[ 0 ] }` } );
+			}
+		}
+		shotsDir && await page.evaluate( restoreOverlays );
+	}
+	return summarise( { runs, shots, skipped, url: url ?? page.url(), root } );
+}
+
 // Reads the draft at every width and returns { generated, source, root, keyFormat, checks, elements }. Screenshots go to
 // `shotsDir` (1440 for every shown element, 375 only where an element's size or place inside its parent changed).
-export async function readInventory( { url, root, shotsDir, log = () => {} } ) {
+// Without `page`, a browser of its own opens `url` at each width. With `page` (a page the caller already prepared,
+// opened and settled, such as intake's sandboxed harness page), nothing is launched or navigated: readOnPage resizes it
+// to each width and the caller's `settle( page, width )` settles it; `shotsDir` may be null (no screenshots) and `url`
+// only labels the result (default: the page's url).
+export async function readInventory( { url, root, shotsDir, log = () => {}, page = null, settle: settleAt = null } ) {
+	if ( page ) {
+		return readOnPage( { page, url, root, shotsDir, log, settle: settleAt } );
+	}
 	const { chromium } = await loadChromium();
 	const browser = await chromium.launch( { headless: true } );
 	const runs = {};
@@ -184,6 +270,11 @@ export async function readInventory( { url, root, shotsDir, log = () => {} } ) {
 	} finally {
 		await browser.close();
 	}
+	return summarise( { runs, shots, skipped, url, root } );
+}
+
+// The inventory from the per-width reads ({ width: collect result }).
+function summarise( { runs, shots, skipped, url, root } ) {
 	const base = runs[ 1440 ];
 	const at = ( w, key ) => runs[ w ].records.find( ( x ) => x.key === key );
 	const elements = base.records.map( ( r ) => {
