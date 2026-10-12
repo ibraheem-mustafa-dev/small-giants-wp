@@ -28,6 +28,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"motion": true,
 			"elements": {
 				"item": {
 					"label": "FAQ item",

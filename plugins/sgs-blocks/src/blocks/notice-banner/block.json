@@ -30,6 +30,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"motion": true,
 			"iconPicker": true,
 			"is_section_root": true,
 			"enabledExtensions": [

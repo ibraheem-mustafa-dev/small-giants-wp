@@ -67,17 +67,52 @@ const OUT_FILE = path.join(
  * `\b` anchors the match to an identifier start so a longer word merely
  * ENDING in these letters is not mistaken for a definition.
  */
+// Attributes registered per block by a `supports.sgs.*` flag, never mirrored to every block. A literal for one of
+// these names in the extension JS would register it on every block, core included, so collectAttributes() skips
+// the name and --check fails when a literal appears (findSupportDrivenLiterals) or the generated PHP carries it.
+const SUPPORT_DRIVEN = [ 'sgsMotion' ];
+
 const ATTR_RE = /\b((?:sgs|fx)[A-Za-z0-9]*)\s*:\s*\{([^}]*)\}/g;
 const TYPE_RE = /\btype\s*:\s*["'](string|number|boolean|array|object)["']/;
 
-function collectAttributes() {
+function listExtensionFiles() {
 	// Recursive: an extension split into a folder (extensions/hover-effects/)
 	// declares its attributes in a file below the top level.
-	const files = fs
+	return fs
 		.readdirSync( EXT_DIR, { recursive: true } )
 		.map( ( f ) => String( f ) )
 		.filter( ( f ) => f.endsWith( '.js' ) )
 		.sort();
+}
+
+/**
+ * Files holding an attribute-definition literal for a support-driven name.
+ *
+ * @param {string} extDir Directory to scan (defaults to the extensions folder).
+ * @return {string[]} `file: name` entries.
+ */
+function findSupportDrivenLiterals( extDir = EXT_DIR ) {
+	const found = [];
+	const files = fs
+		.readdirSync( extDir, { recursive: true } )
+		.map( ( f ) => String( f ) )
+		.filter( ( f ) => f.endsWith( '.js' ) )
+		.sort();
+	for ( const file of files ) {
+		const src = fs.readFileSync( path.join( extDir, file ), 'utf8' );
+		const re = new RegExp( ATTR_RE.source, 'g' );
+		let m;
+		while ( ( m = re.exec( src ) ) !== null ) {
+			if ( SUPPORT_DRIVEN.includes( m[ 1 ] ) ) {
+				found.push( `${ file }: ${ m[ 1 ] }` );
+			}
+		}
+	}
+	return found;
+}
+
+function collectAttributes() {
+	const files = listExtensionFiles();
 
 	const map = new Map();
 	const conflicts = [];
@@ -87,6 +122,9 @@ function collectAttributes() {
 		let m;
 		while ( ( m = ATTR_RE.exec( src ) ) !== null ) {
 			const [ , name, body ] = m;
+			if ( SUPPORT_DRIVEN.includes( name ) ) {
+				continue;
+			}
 			const typeMatch = body.match( TYPE_RE );
 			if ( ! typeMatch ) {
 				// An sgs* object literal with no recognised `type` key — skip,
@@ -160,9 +198,25 @@ function main() {
 	}
 
 	if ( check ) {
+		const literals = findSupportDrivenLiterals();
+		const leaked = SUPPORT_DRIVEN.filter( ( name ) => php.includes( `'${ name }'` ) );
+		if ( literals.length || leaked.length ) {
+			process.stderr.write(
+				'[generate-extension-attributes] REFUSED: a support-driven attribute would register on every block. ' +
+					`Literals in src/blocks/extensions/: ${ literals.join( ', ' ) || 'none' }; in the generated PHP: ${ leaked.join( ', ' ) || 'none' }. ` +
+					'Build the definition at run time (see motion/register.js).\n'
+			);
+			process.exit( 1 );
+		}
 		const current = fs.existsSync( OUT_FILE )
 			? fs.readFileSync( OUT_FILE, 'utf8' )
 			: '';
+		const onDisk = SUPPORT_DRIVEN.filter( ( name ) => current.includes( `'${ name }'` ) );
+		if ( onDisk.length ) {
+			process.stderr.write( `[generate-extension-attributes] REFUSED: includes/extension-attributes.generated.php contains ${ onDisk.join( ', ' ) }.
+` );
+			process.exit( 1 );
+		}
 		if ( current !== php ) {
 			process.stderr.write(
 				'[generate-extension-attributes] STALE: includes/extension-attributes.generated.php ' +
@@ -206,4 +260,4 @@ if ( require.main === module ) {
 	main();
 }
 
-module.exports = { collectAttributes };
+module.exports = { collectAttributes, findSupportDrivenLiterals, SUPPORT_DRIVEN };

@@ -27,6 +27,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', dirname( __DIR__, 2 ) . '/' );
 }
 
+// The loader requires every motion include, and support-registration.php calls add_filter() when it loads.
+if ( ! function_exists( 'add_filter' ) ) {
+	function add_filter(): bool {
+		return true;
+	}
+}
+
 require_once dirname( __DIR__, 2 ) . '/includes/motion-loader.php';
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-motion-easing.php';
 

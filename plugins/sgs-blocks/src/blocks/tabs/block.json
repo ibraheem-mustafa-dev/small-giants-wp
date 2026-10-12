@@ -34,6 +34,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"motion": true,
 			"spacingDefaults": {
 				"tabPadding": {
 					"top": "12px",

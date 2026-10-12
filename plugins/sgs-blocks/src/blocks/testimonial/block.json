@@ -31,6 +31,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"motion": true,
 			"_comment_orgLogoNotAdopted": "orgLogo's object-fit:contain (style.css) is deliberately NOT a client control and NOT routed through the media-atom layer -- a logo must never be cropped, so there is no orgLogoObjectFit attribute to adopt in the first place. Disclosed here (in addition to the existing style.css comment) for consistency with the other _comment_*NotAdopted notes added during the 37-media-no-handroll remediation, per /qc-council 2026-09-03.",
 			"containerKind": "content",
 			"scalarContentLift": true,

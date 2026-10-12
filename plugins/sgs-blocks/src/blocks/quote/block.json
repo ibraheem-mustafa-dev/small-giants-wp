@@ -18,6 +18,7 @@
 	"render": "file:./render.php",
 	"supports": {
 		"sgs": {
+			"motion": true,
 			"scalarStylingLift": true,
 			"elements": {
 				"box": {

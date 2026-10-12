@@ -30,6 +30,7 @@
       "__experimentalSkipSerialization": true
     },
     "sgs": {
+      "motion": true,
       "collection": true,
       "iconPicker": true,
       "boxFamilies": {

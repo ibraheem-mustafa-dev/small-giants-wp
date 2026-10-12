@@ -42,6 +42,7 @@
 			"text": false
 		},
 		"sgs": {
+			"motion": true,
 			"enabledExtensions": [
 				"childSizing"
 			],

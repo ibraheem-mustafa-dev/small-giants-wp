@@ -27,6 +27,7 @@
 			"text": false
 		},
 		"sgs": {
+			"motion": true,
 			"headerEssential": true,
 			"iconPicker": true,
 			"imageControls": false,

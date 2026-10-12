@@ -30,6 +30,7 @@
 		},
 		"interactivity": true,
 		"sgs": {
+			"motion": true,
 			"boxFamilies": {
 				"padding": [
 					"padding"

@@ -19,6 +19,7 @@
 	"icon": "images-alt2",
 	"supports": {
 		"sgs": {
+			"motion": true,
 			"separators": {
 				"separators": {
 					"axes": [

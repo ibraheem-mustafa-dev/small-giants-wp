@@ -27,6 +27,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"motion": true,
 			"elements": {
 				"wrapper": {
 					"label": "Clock",

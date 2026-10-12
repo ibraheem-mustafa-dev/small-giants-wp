@@ -18,6 +18,7 @@
 	"icon": "format-image",
 	"supports": {
 		"sgs": {
+			"motion": true,
 			"_comment_hover": "The Hover panel (hover-effects extension) for the image: zoom on hover (inside the frame or the whole image grows, amount, duration, easing — the shared rule in assets/css/extensions.css keys on this block's .sgs-media-box/.sgs-media-el markers), lift, scale, opacity, grayscale. Its hover-shadow picker is excluded: this block's own shadow atom already owns the image's hover shadow (Shadow → hover colour).",
 			"enabledExtensions": [
 				"hover"

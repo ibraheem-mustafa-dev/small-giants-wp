@@ -35,6 +35,7 @@
 		},
 		"interactivity": true,
 		"sgs": {
+			"motion": true,
 			"separators": {
 				"separators": {
 					"axes": [

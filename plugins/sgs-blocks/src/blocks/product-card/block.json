@@ -19,6 +19,7 @@
 	"icon": "products",
 	"supports": {
 		"sgs": {
+			"motion": true,
 			"scalarStylingLift": true,
 			"enabledExtensions": [ "hover", "blockLink" ],
 			"blockLinkAlways": true,

@@ -26,6 +26,7 @@
 			"full"
 		],
 		"sgs": {
+			"motion": true,
 			"boxFamilies": {
 				"padding": [
 					"padding"

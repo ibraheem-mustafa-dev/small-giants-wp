@@ -33,6 +33,7 @@
 		},
 		"html": false,
 		"sgs": {
+			"motion": true,
 			"enabledExtensions": [ "childSizing", "blockLink" ],
 			"blockLinkAutoUrl": true,
 			"blockLinkAutoHelp": "The whole logo block becomes the home link, not just the logo image — so anything else placed inside it (a wordmark, a strapline) is part of the same link. Needs “Link to home” switched on. The Lottie pause button stays clickable on top of it.",

@@ -17,6 +17,7 @@
 	"icon": "columns",
 	"supports": {
 		"sgs": {
+			"motion": true,
 			"colourExemptions": {
 				"labelBackground": {
 					"rule": "states",

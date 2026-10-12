@@ -52,6 +52,7 @@ import './media-elements';
 import './cpt-default-panel';
 import './product-collection-same-term';
 import './product-filter-chips-gap';
+import './motion';
 
 // The two colour-picker fork stylesheets that carry genuinely NEW SGS
 // classnames (not core's own `.components-*` names, which `wp-components`

@@ -26,6 +26,7 @@
 			"text": false
 		},
 		"sgs": {
+			"motion": true,
 			"specRef": "30",
 			"elements": {
 				"menuLink": {

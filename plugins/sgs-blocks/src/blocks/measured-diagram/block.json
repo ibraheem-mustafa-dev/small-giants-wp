@@ -30,6 +30,7 @@
 		"html": false,
 		"align": false,
 		"sgs": {
+			"motion": true,
 			"imageControls": false,
 			"_comment_imageControls": "The drawing is a measured technical drawing with labels placed at fixed % positions over it. Cropping, object-position, zoom or a forced aspect ratio would move the drawing under those labels, so the frame always shows the whole drawing at its own aspect ratio (from the intrinsic atom) and no image-treatment controls are offered.",
 			"hideExtensions": [

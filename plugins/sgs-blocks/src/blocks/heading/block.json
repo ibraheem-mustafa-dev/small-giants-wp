@@ -27,6 +27,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"motion": true,
 			"enabledExtensions": [ "childSizing" ],
 			"boxFamilies": {
 				"borderWidth": [

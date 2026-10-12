@@ -35,6 +35,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"motion": true,
 			"separators": {
 				"featureSeparators": {
 					"axes": [

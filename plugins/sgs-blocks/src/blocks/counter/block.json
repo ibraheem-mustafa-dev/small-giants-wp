@@ -17,6 +17,7 @@
 	"icon": "chart-bar",
 	"supports": {
 		"sgs": {
+			"motion": true,
 			"iconPicker": true,
 			"scalarStylingLift": true,
 			"boxFamilies": {

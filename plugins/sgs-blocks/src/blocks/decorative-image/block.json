@@ -19,6 +19,7 @@
         "anchor": true,
         "html": false,
         "sgs": {
+            "motion": true,
             "_comment_mediaElements": "Wave 6 (2026-09-02). This block never had object-fit/focal-point/overlay controls before — adopting three atoms only, unprefixed (this block has one media slot). box-shape is DELIBERATELY NOT declared: border-radius/sizing-mode is a genuinely NEW capability this block never exposed, and adding it is out of scope for this preserve-existing-behaviour migration (flagged as a judgement call, not silently dropped). maxWidthPercent stays a bare percentage number via registry.js's own `reads` mapping (box-shape.reads['sgs/decorative-image'].maxWidthPercent) — untouched, unrenamed, since box-shape is not adopted here.",
             "mediaElements": [
                 { "prefix": "", "context": "element", "atoms": [ "object-fit", "focal-point", "overlay" ] }

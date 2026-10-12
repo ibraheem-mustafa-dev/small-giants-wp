@@ -24,6 +24,7 @@
 		"html": false,
 		"color": false,
 		"sgs": {
+			"motion": true,
 			"_comment_overlayNotAdopted": "backgroundImage/Size/Position/Repeat/Attachment, backgroundOverlay*, bgVideo*/bgSvg*/bgParallax/bgKenBurns are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- settled 2026-09-03 (Bean-directed) after this exact question was investigated. A background panel applied to the whole block is a different feature from a client-configurable <img>/<video> element (which the media-atom system in supports.sgs.mediaElements DOES cover), so it is correctly out of scope for that system and is not a deferred migration. Detector rule 37-media-no-handroll (scripts/inspector-scan/rules/37-media-no-handroll.js) encodes this discriminator: a bare `background`/`bg`-prefixed attribute is panel-owned and never flagged; an element-prefixed attribute (e.g. splitMediaObjectFit) still is.",
 			"intrinsicColumns": true,
 			"separators": {

@@ -29,6 +29,7 @@
 			"text": false
 		},
 		"sgs": {
+			"motion": true,
 			"separators": {
 				"separators": {
 					"axes": [

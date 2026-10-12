@@ -17,6 +17,7 @@
 		"anchor": false,
 		"align": false,
 		"sgs": {
+			"motion": true,
 			"boxFamilies": {
 				"asidePadding": [ "asidePadding" ]
 			},

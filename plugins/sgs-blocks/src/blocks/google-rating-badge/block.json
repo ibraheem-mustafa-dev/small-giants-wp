@@ -26,6 +26,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"motion": true,
 			"imageControls": false,
 			"boxFamilies": {
 				"padding": [

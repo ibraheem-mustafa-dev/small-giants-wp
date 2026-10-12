@@ -17,6 +17,7 @@
 	"textdomain": "sgs-blocks",
 	"supports": {
 		"sgs": {
+			"motion": true,
 			"enabledExtensions": [
 				"hover"
 			],

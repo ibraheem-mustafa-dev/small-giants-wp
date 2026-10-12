@@ -29,6 +29,7 @@
 			"lineHeight": true
 		},
 		"sgs": {
+			"motion": true,
 			"elements": {
 				"heading": {
 					"label": "Heading",

@@ -41,6 +41,7 @@
 			"text": false
 		},
 		"sgs": {
+			"motion": true,
 			"siteInfoLinkRow": {
 				"bindingSource": "sgs/site-info",
 				"bindAttr": "linkUrl",
