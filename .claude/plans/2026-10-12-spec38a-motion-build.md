@@ -2,7 +2,7 @@
 title: Spec 38A build plan (the SGS motion model)
 project: small-giants-wp
 created: 2026-10-12
-status: draft
+status: active
 authors: Bean + Claude
 governs: .claude/specs/38A-SGS-MOTION-MODEL.md v1.5 (phases M1 to M6; M7 cloning rides plan Phases 2 and 4 of .claude/plans/2026-10-12-clone-coverage-foundation.md)
 ---
@@ -18,6 +18,8 @@ governs: .claude/specs/38A-SGS-MOTION-MODEL.md v1.5 (phases M1 to M6; M7 cloning
 **Total estimate:** see Effort summary. **Critical path:** M1.1 → M1.2 → M1.3 → M1.4 → M1.7 → M1.11 → M2.1 → M2.8 → M2.9 → M3.W → M3.3 → M3.5 → M4.5 → M4.6 → M5.17 → M5.W → M6.5 → M6.6C → M6.6 → M5.18 → M6.7 (M4.4 runs beside M3.3 and M3.5; the inspector chain M3.3 → M3.5 is what M4.5 waits on).
 
 **Glossary.** *Unit*: one subagent-sized piece of work (M1.1 and so on). *Wave*: units that can run at the same time because they share no edited file and all their needs are done. *Track*: one parallel session's share of waves 12 to 16. *FR*: a numbered requirement in the spec, with a "done when" test. *MUST FAIL control* (negative control): the planted mistake that must turn a check red, proving the check is not vacuous. *Probe*: a Playwright script that measures a live page. *Reseed*: rebuilding the shared framework DB with `/sgs-update`. *Serial queue*: the rule that only one session reseeds or deploys at a time. *Migration-method*: the project skill that builds a survey, fix, check and self-test detector before a repeated edit. *Tier G*: effects that need GSAP. *`qa:motion`*: `npm run qa:motion`, the standing motion probes on canary pages 2103, 2109, 2113, 2603. *§n*: a section of Spec 38A.
+
+**Quality checks passed (2026-10-12):** Opus risk assessment (folded in as amendments); hidden-decisions pass (Sonnet and Haiku cold reviewers); gap-analysis B 3.78 (report `~/.claude/gap-analysis/reports/2026-10-12-spec38a-motion-build-plan.md`, every C+ fix applied); two independent plan reviews; a closing QC council of three raters (all findings applied).
 
 **Unit detail lives in the two committed maps** (files, adapt-or-rebuild evidence per replaced file, surfaces covered, the four-layer test for critical-path units): `.claude/reports/2026-10-12-spec38a-unit-map-m1-m2.md` and `.claude/reports/2026-10-12-spec38a-unit-map-m3-m6.md`. This plan is the merged order, the reconciliations that override the maps, the model per unit, the gates, the risks, the estimates and the session split. Where this plan and a map disagree, this plan wins.
 
