@@ -135,6 +135,9 @@ test( 'MUST FAIL an off-list mark is refused naming the row and the mark', () =>
 	assert.ok( r.problems.some( ( p ) => /skeleton:header:logo: mark "block:Not A Block" refused/.test( p ) ) );
 	assert.deepEqual( r.missing.map( ( x ) => x.rowId ).sort(), [ 'missing:Quiz:1', 'palette:brand', 'siteinfo:phone', 'skeleton:header:logo' ], 'Quiz proposes no block' );
 	assert.equal( markProblem( 'page-map', 'edit:postType=banana' ), '"banana" is not a valid postType' );
+	assert.equal( markProblem( 'page-map', 'edit:postType=product' ), null, 'product is in data/page-map.schema.json postType enum' );
+	assert.equal( markProblem( 'page-map', 'edit:postType=page2' ), '"page2" is not a valid postType', 'an exact enum value only' );
+	assert.equal( markProblem( 'page-map', 'edit:collection=live' ), null );
 	assert.equal( markProblem( 'page-map', 'edit:colour=red' ).startsWith( '"colour" is not an editable' ), true );
 	assert.equal( markProblem( 'flag', 'not-flagged' ), null );
 } );

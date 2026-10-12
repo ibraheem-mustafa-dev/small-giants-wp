@@ -264,3 +264,26 @@ test( 'MUST FAIL: a dead-field note is listed as unwired for review, whether its
 	assert.ok( isUnwired( why ), 'so review.md lists it under unwired code' );
 	assert.ok( ! isUnwired( 'exits at a constant guard before it: if (true) is always true' ), 'a constant guard stays a count' );
 } );
+
+test( 'MUST FAIL (dead field): every way of writing the field, a `this` alias or a same-name write on another object makes it unprovable', () => {
+	const why = ( setter ) => {
+		const logic = `class Component { constructor() { this.go = this.go.bind( this ); } animatePage() { if ( this._foodEl ) { this._foodEl.animate( [], 300 ); } } go() {} ${ setter } }`;
+		return deadFieldWhy( { logic }, logic.indexOf( '.animate(' ), { rows: [] } );
+	};
+	assert.equal( why( 'setFoodEl( el ) { this._foodEl = el; }' ), 'animatePage needs this._foodEl, which is written only in dead code (setFoodEl is never referenced)', 'the genuine unbound-ref case stays dead code' );
+	const live = {
+		array: 'componentDidMount() { [ this._foodEl ] = [ document.body ]; }',
+		object: 'componentDidMount() { ( { a: this._foodEl } = { a: document.body } ); }',
+		defineProperty: 'componentDidMount() { Object.defineProperty( this, \'_foodEl\', { value: document.body } ); }',
+		defineProperties: 'componentDidMount() { Object.defineProperties( this, { _foodEl: { value: document.body } } ); }',
+		reflectSet: 'componentDidMount() { Reflect.set( this, \'_foodEl\', document.body ); }',
+		alias: 'componentDidMount() { const s = this; s[ \'_food\' + \'El\' ] = document.body; }',
+		forOf: 'componentDidMount() { for ( this._foodEl of [ document.body ] ) {} }',
+		update: 'componentDidMount() { this._foodEl++; }',
+		otherObject: 'componentDidMount() { register( ( inst ) => { inst._foodEl = document.body; } ); }',
+		assignOther: 'componentDidMount() { register( ( inst ) => Object.assign( inst, { _foodEl: document.body } ) ); }',
+	};
+	for ( const [ shape, setter ] of Object.entries( live ) ) {
+		assert.equal( why( setter ), null, `${ shape }: the field is written in live code, or may be` );
+	}
+} );

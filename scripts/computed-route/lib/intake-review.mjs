@@ -12,6 +12,9 @@
 //
 // Notices come from `intake.notices` ({ prose: commandLikeLines rows, blockedHosts: sandbox blocked rows }).
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { isUnwired } from './intake-defects-static.mjs';
 
 export const ROW_TYPES = [ 'page-map', 'palette-role', 'site-info', 'flag', 'draft-defect', 'not-a-defect', 'missing-feature', 'skeleton-block', 'inventory-diff', 'notice' ];
@@ -22,7 +25,11 @@ export const SECTION_TITLES = {
 
 const SLUG = /^[a-z0-9-]+$/;
 const BLOCK = /^[a-z0-9-]+\/[a-z0-9-]+$/;
-const PAGE_FIELDS = { route: null, slug: SLUG, title: null, parent: null, template: null, postType: /^(page|post|product_cat|shop|sgs_header|sgs_footer|sgs_drawer|sgs_modal|sgs_mega_menu|sgs_form|sgs_choice_flow|wp_block)$/, collection: /^(static|live)$/ };
+// postType and collection take exactly the values data/page-map.schema.json's enums allow (read once), so a mark can
+// never set a value the page map itself refuses, nor refuse one it allows.
+const PAGE_ROW = JSON.parse( fs.readFileSync( path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'page-map.schema.json' ), 'utf8' ) ).items.properties;
+const oneOf = ( values ) => ( { test: ( v ) => values.includes( v ) } );
+const PAGE_FIELDS = { route: null, slug: SLUG, title: null, parent: null, template: null, postType: oneOf( PAGE_ROW.postType.enum ), collection: oneOf( PAGE_ROW.collection.enum ) };
 
 // The mark vocabulary per row type, in Appendix C order; the first entry is what "Accept all" sets. A pattern entry's
 // `check` returns null for a sound mark or the reason it is refused.

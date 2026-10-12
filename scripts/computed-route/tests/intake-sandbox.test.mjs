@@ -135,6 +135,68 @@ ${ JSON.stringify( own.blocked, null, 1 ) }` );
 	}
 } );
 
+// A blocked request whose element is stamped only after a quiet spell: the quiet-timer lookup finds no ID yet, so the
+// row must wait for the page close instead of being settled as null.
+test( 'MUST FAIL (c3): a row the quiet-timer lookup finds no ID for is resolved again when its page closes', async () => {
+	const own = await openSandbox( { folder: FIXTURE, index: INDEX, harPath, mode: 'replay' } );
+	let row;
+	try {
+		const p = await own.newPage();
+		await p.goto( `${ own.origin }/${ INDEX }`, { waitUntil: 'load' } );
+		await p.waitForSelector( '#dc-root [data-dc-tpl]' );
+		await p.waitForLoadState( 'networkidle' );
+		await p.evaluate( () => {
+			const box = document.createElement( 'div' );
+			box.id = 'late-stamp';
+			box.innerHTML = '<img src="https://late-stamp.example/p.png" alt="">';
+			document.body.appendChild( box );
+		} );
+		await p.waitForTimeout( 1200 );
+		await p.evaluate( () => document.getElementById( 'late-stamp' ).setAttribute( 'data-dc-tpl', '9001' ) );
+		await p.close();
+	} finally {
+		await own.close();
+		row = own.blocked.find( ( b ) => 'late-stamp.example' === b.host );
+	}
+	assert.ok( row, `no blocked row for late-stamp.example:\n${ JSON.stringify( own.blocked, null, 1 ) }` );
+	assert.equal( row.draftId, '9001', `draftId ${ row.draftId } (${ row.draftIdError || 'no error' })` );
+} );
+
+test( 'MUST FAIL (c4): a page that does not answer the draft ID lookup gives draftIdError and never holds up close()', async () => {
+	const own = await openSandbox( { folder: FIXTURE, index: INDEX, harPath, mode: 'replay', resolveTimeout: 500 } );
+	let row;
+	const started = Date.now();
+	try {
+		const p = await own.newPage();
+		await p.goto( `${ own.origin }/${ INDEX }`, { waitUntil: 'load' } );
+		await p.waitForSelector( '#dc-root [data-dc-tpl]' );
+		await p.waitForLoadState( 'networkidle' );
+		await p.evaluate( () => {
+			document.body.insertAdjacentHTML( 'beforeend', '<img src="https://wedged.example/p.png" alt="">' );
+		} );
+		for ( let i = 0; i < 50 && ! own.blocked.some( ( b ) => 'wedged.example' === b.host ); i++ ) {
+			await new Promise( ( r ) => setTimeout( r, 20 ) );
+		}
+		// The main thread is busy for 20 s: no lookup can run in the page.
+		void p.evaluate( () => {
+			setTimeout( () => {
+				const end = Date.now() + 20000;
+				while ( Date.now() < end ) {
+					// Busy on purpose.
+				}
+			}, 0 );
+		} ).catch( () => {} );
+		await new Promise( ( r ) => setTimeout( r, 100 ) );
+	} finally {
+		await own.close();
+		row = own.blocked.find( ( b ) => 'wedged.example' === b.host );
+	}
+	assert.ok( Date.now() - started < 15000, `close() waited ${ Date.now() - started } ms on a wedged page` );
+	assert.ok( row, `no blocked row for wedged.example:\n${ JSON.stringify( own.blocked, null, 1 ) }` );
+	assert.equal( row.draftId, null );
+	assert.match( String( row.draftIdError ), /did not answer the draft ID lookup within 500 ms/ );
+} );
+
 test( 'MUST FAIL (d): a worker started by runIsolated holds no secret variable', async () => {
 	const dir = tempDir( 'intake-worker-' );
 	const worker = path.join( dir, 'worker.mjs' );

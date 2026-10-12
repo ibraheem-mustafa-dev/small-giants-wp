@@ -83,7 +83,7 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 					if ( onPage ) {
 						await onPage( s, { width, visit: v.label } );
 					}
-					await forceVisit( s, { plan, source, texts, files, selectors, triggers, width, force } );
+					await forceVisit( s, { plan, source, texts, files, selectors, triggers, width, force, last: i === group.visits.length - 1 } );
 				}
 			} catch ( e ) {
 				failed.add( width );
@@ -109,8 +109,14 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 // the rows whose element only now renders get their pseudo and hover forcing too and the state is put back; code-wired
 // listeners, then their pointer gestures; the two-step chain (lib/intake-defects-chain.mjs); a last settle with the
 // scroll pass.
-async function forceVisit( s, { plan, source, texts, files, selectors, triggers, width, force } ) {
+async function forceVisit( s, { plan, source, texts, files, selectors, triggers, width, force, last } ) {
 	const pending = () => [ ...plan.values() ].filter( ( p ) => ! p.at.get( width ) );
+	// Once every candidate is reached at this width, the remaining steps can record nothing decideRow reads (p.at only
+	// turns true, and p.gaps or p.patches matter only for a row reached nowhere), so they are skipped. Only on the
+	// visit's last hash: a later hash on the same page starts from the state these steps leave (its test-1 reads and
+	// its enclosingIfs see it). Rows proven dead or prototype-only stay counted: decideRow checks reach first, so their
+	// reach can still change their verdict.
+	const done = () => last && ! pending().length;
 	const trees = new Map();
 	let rendered = new Set();
 	const mark = ( p ) => p.at.set( width, true );
@@ -190,6 +196,9 @@ async function forceVisit( s, { plan, source, texts, files, selectors, triggers,
 		for ( const p of pending() ) {
 			for ( const x of p.patches ) {
 				const key = JSON.stringify( x );
+				if ( done() ) {
+					break;
+				}
 				if ( seen.has( key ) ) {
 					continue;
 				}
@@ -207,8 +216,14 @@ async function forceVisit( s, { plan, source, texts, files, selectors, triggers,
 		}
 	}
 	await pseudoPass();
+	if ( done() ) {
+		return;
+	}
 	const triggerPass = async () => {
 		for ( const h of triggers ) {
+			if ( done() ) {
+				return;
+			}
 			const before = rendered;
 			if ( ! await s.dispatch( h ) ) {
 				continue;
@@ -233,15 +248,29 @@ async function forceVisit( s, { plan, source, texts, files, selectors, triggers,
 	};
 	if ( false !== force.events ) {
 		await triggerPass();
+		if ( done() ) {
+			return;
+		}
 		await s.wiggle();
 		await check();
+	}
+	if ( done() ) {
+		return;
 	}
 	if ( false !== force.chain && false !== force.events ) {
 		const keys = new Set();
 		const patches = pending().flatMap( ( p ) => p.patches ).filter( ( x ) => ! keys.has( JSON.stringify( x ) ) && keys.add( JSON.stringify( x ) ) );
-		await chainPass( s, { triggers, patches: false !== force.state ? patches : [], pending, check, rendered: () => rendered, pseudoPass } );
+		const chain = await chainPass( s, { triggers, patches: false !== force.state ? patches : [], pending, check, rendered: () => rendered, pseudoPass } );
+		const why = chain.lost ? 'a route change inside the two-step chain could not be undone, so the rest of the chain was not run'
+			: chain.exhausted ? `the two-step chain stopped at its budget of ${ chain.attempts } attempts with openers untried` : null;
+		if ( why ) {
+			pending().forEach( ( p ) => p.gaps.push( `${ why } at ${ width }` ) );
+		}
 		await s.restore();
 		await check();
+	}
+	if ( done() ) {
+		return;
 	}
 	await s.settle();
 	await check();

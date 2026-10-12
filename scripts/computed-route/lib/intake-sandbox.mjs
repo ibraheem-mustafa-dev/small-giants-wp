@@ -35,6 +35,8 @@ export const hostOf = ( url ) => {
 };
 // How long the context must be request-free before pending blocked rows get their draft IDs.
 const QUIET_MS = 300;
+// How long one draft ID lookup may take before it is given up as draftIdError.
+const RESOLVE_MS = 5000;
 const escapeRe = ( s ) => s.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
 
 // What the sandbox does with a URL: 'origin' (the draft server), 'inline' (data:, blob:), 'pinned' (one of the three
@@ -170,21 +172,29 @@ function draftIdInPage( url ) {
 // The draft ID behind a blocked request. An iframe navigation resolves through its frame element; any other
 // element-initiated load is matched by URL against src/href/srcset/data/poster in the requesting frame's DOM. A
 // CSS-initiated load (a background image, a font, an @import) has no element: null. A frame that has gone is reported
-// in draftIdError, never as a silent null.
-async function resolveDraftId( row, request ) {
-	try {
+// in draftIdError, never as a silent null. A page that does not answer within `limit` ms (a wedged main thread) is
+// reported in draftIdError too, so it can never hold up a page close or close().
+async function resolveDraftId( row, request, limit ) {
+	const lookup = async () => {
 		const frame = request.frame();
 		if ( request.isNavigationRequest() && frame.parentFrame() ) {
 			// A frame the runtime replaced (the pre-boot parse of the raw template) is matched by URL in the page instead.
-			row.draftId = frame.isDetached()
-				? await frame.page().mainFrame().evaluate( draftIdInPage, row.url )
-				: await ( await frame.frameElement() ).evaluate( ( e ) => e.closest( '[data-dc-tpl]' )?.getAttribute( 'data-dc-tpl' ) ?? null );
-		} else {
-			row.draftId = await frame.evaluate( draftIdInPage, row.url );
+			return frame.isDetached()
+				? frame.page().mainFrame().evaluate( draftIdInPage, row.url )
+				: ( await frame.frameElement() ).evaluate( ( e ) => e.closest( '[data-dc-tpl]' )?.getAttribute( 'data-dc-tpl' ) ?? null );
 		}
+		return frame.evaluate( draftIdInPage, row.url );
+	};
+	let timer = null;
+	try {
+		row.draftId = await Promise.race( [ lookup(), new Promise( ( done, fail ) => {
+			timer = setTimeout( () => fail( new Error( `the page did not answer the draft ID lookup within ${ limit } ms` ) ), limit );
+		} ) ] );
 	} catch ( e ) {
 		row.draftId = null;
 		row.draftIdError = e.message;
+	} finally {
+		clearTimeout( timer );
 	}
 }
 
@@ -196,10 +206,12 @@ async function resolveDraftId( row, request ) {
 //   blocked:  { url, host, reason: 'unlisted-host'|'replay-miss'|'websocket', draftId } for every aborted request
 //             and every WebSocket (a loopback port other than the draft server's is an unlisted host);
 //   Every aborted request's draft ID is resolved once the context is request-free for QUIET_MS, on any page it opens
-//   (visit() and newPage() alike); an ID that cannot be resolved leaves draftId null with draftIdError set.
+//   (visit() and newPage() alike); a row found no ID then is retried at the next quiet spell and settled for good when
+//   its page closes, in visit() or in close(). An ID that cannot be resolved (or a lookup the page does not answer
+//   within `resolveTimeout` ms) leaves draftId null with draftIdError set.
 //   visit(pagePath, { width }) renders a draft page, waits for the runtime and fonts, scrolls it through, waits for the
 //   pending ID resolutions and returns the page; close() waits for them too.
-export async function openSandbox( { folder, index, harPath = null, mode = 'replay', widths = [ 1440 ], stockHosts = [], pinnedBodies = {}, headless = true, timeout = 60000 } ) {
+export async function openSandbox( { folder, index, harPath = null, mode = 'replay', widths = [ 1440 ], stockHosts = [], pinnedBodies = {}, headless = true, timeout = 60000, resolveTimeout = RESOLVE_MS } ) {
 	if ( ! [ 'replay', 'discover' ].includes( mode ) ) {
 		throw new Error( `openSandbox mode must be 'replay' or 'discover', not ${ JSON.stringify( mode ) }` );
 	}
@@ -221,14 +233,19 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 	// Aborted requests awaiting their draft ID. The runtime stamps data-dc-tpl after the request fires, so a row is resolved
 	// once the page is quiet (no request in flight for QUIET_MS), when a page opened here closes, in visit() and in close():
 	// a page opened with newPage() (the census, defect and harness pages) gets IDs exactly as visit() does.
+	// The quiet-timer drain is an early attempt: the runtime may not have stamped the element yet, so a row it finds no
+	// ID for (and no error) goes back to `pending`. Only a final drain (visit(), close(), a newPage close) accepts null.
 	const pending = [];
 	let resolving = Promise.resolve();
 	let inflight = 0;
 	let quiet = null;
-	const drain = () => {
+	const drain = ( final = true ) => {
 		resolving = resolving.then( async () => {
 			for ( const [ b, req ] of pending.splice( 0 ) ) {
-				await resolveDraftId( b, req );
+				await resolveDraftId( b, req, resolveTimeout );
+				if ( ! final && null === b.draftId && ! b.draftIdError ) {
+					pending.push( [ b, req ] );
+				}
 			}
 		} );
 		return resolving;
@@ -243,7 +260,7 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 	const settled = () => {
 		inflight = Math.max( 0, inflight - 1 );
 		if ( 0 === inflight ) {
-			quiet = setTimeout( () => void drain(), QUIET_MS );
+			quiet = setTimeout( () => void drain( false ), QUIET_MS );
 		}
 	};
 	context.on( 'requestfinished', ( r ) => {
@@ -308,7 +325,7 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 		return page;
 	};
 	const visit = async ( pagePath = index, { width = widths[ 0 ], height = 900 } = {} ) => {
-		const page = await context.newPage();
+		const page = await newPage();
 		await page.setViewportSize( { width, height } );
 		const [ file, query = '' ] = pagePath.split( /\?(.*)/s );
 		await page.goto( `${ origin }/${ file.split( '/' ).map( encodeURIComponent ).join( '/' ) }${ query ? `?${ query }` : '' }`, { waitUntil: 'load', timeout } );

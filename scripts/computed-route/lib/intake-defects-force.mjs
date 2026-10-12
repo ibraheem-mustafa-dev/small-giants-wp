@@ -118,8 +118,12 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 				await session.nudge();
 				return n;
 			},
-			// How many rendered copies a template row has.
-			copies: ( row ) => page.evaluate( gestureIn, { op: 'copies', comp: row.component, n: row.draftId.slice( row.draftId.lastIndexOf( ':' ) + 1 ) } ),
+			// How many rendered copies of a template row dispatchAt can fire on: every copy for a pointer event, the first
+			// only for any other (dispatchAt fires those through dispatch, on the first copy).
+			copies: async ( row ) => {
+				const n = await page.evaluate( gestureIn, { op: 'copies', comp: row.component, n: row.draftId.slice( row.draftId.lastIndexOf( ':' ) + 1 ) } );
+				return pointerish( row.detail.event ) ? n : Math.min( 1, n );
+			},
 			// Fires a template handler's event on rendered copy `index` (pointer events at its centre, with their gesture);
 			// false when that copy is not rendered.
 			async dispatchAt( row, index ) {
