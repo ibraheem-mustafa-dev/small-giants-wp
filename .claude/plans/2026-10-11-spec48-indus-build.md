@@ -13,8 +13,8 @@ status: in progress
 closed by the done-when of the requirement it cites, and fixes who runs what, in which order, beside what. Quality and
 reliability come first; a speed or cost gain is taken only where it adds no risk (Bean, 2026-10-11).
 
-**Where it stands (2026-10-12).** Steps 1 and 3 to 7 are done; step 8's command is built and 13 of the 17 Indus
-blocks are current, with four slot maps left stale on purpose (step 8 says why). Steps 9 to 12 are done (2026-10-12). Steps 2 and 13 to 25 are not started or are in the other lanes. Progress per step is marked in the phases below.
+**Where it stands (2026-10-12).** Phase 1 (steps 1 to 8) and steps 9 to 12 are done: all 17 Indus blocks are current
+and the stage-0 calibration baseline is written. Steps 13 to 25 are not started or are in the other lanes. Progress per step is marked in the phases below.
 
 ## Orchestration
 
@@ -79,8 +79,8 @@ the same reply.
 read every remaining Appendix B agent estimate at about a third.
 
 **Guardrails on every commit.** `python scripts/check-spec-id-landing.py` and `--self-test` green;
-`node --test "scripts/computed-route/tests/*.test.mjs"` fails only the 3 known `lint.test.mjs` brandName cases; never
-edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec commits straight to `main`.
+`node --test "scripts/computed-route/tests/*.test.mjs"` fails only the 3 known `lint.test.mjs` brandName cases;
+explicit-pathspec commits straight to `main`.
 
 ## Phases
 
@@ -113,16 +113,16 @@ edit or revert `sites/mamas-munches/theme-snapshot.json`; explicit-pathspec comm
   (`lib/calibrate.mjs::slotFor`), so a yes/no setting that reaches all three widths cannot be excluded by value; and
   the stack discovery records `flex-direction: column` on the root only, though the wrapper also forces it on
   `__inner`.
-- [ ] **8. Stage 0 command and run.** FR-48-3 done when a stage-0 run on Indus writes
+- [x] **8. Stage 0 command and run** (done 2026-10-12). FR-48-3 done when a stage-0 run on Indus writes
   `sites/indus-foods/build/intake/calibration-baseline.json` (validating against its Appendix C schema), refuses to
   report a block whose deploy hash differs from its cache as calibrated, and writes no default-paint file. Stage 0's
   exit (FR-48-16) then holds.
-  Command built and fixtures portable (2026-10-11); 13 of 17 Indus blocks current, nav-drawer-menu recalibrated on
-  `local-indus`. **Next:** prove why nav-bar-menu, site-header, media and nav-drawer lose settings on `local-indus`
-  that Eye Care's run reaches (FR-48-3 status lists them; likely missing calibration content such as a badge menu
-  item, a header background image or a video), extend `provision-calibration-refs.mjs`, then re-run stage 0 with the
-  cache backed up and every block's settings diffed. Add a guard so a `--recalibrate` that would drop a setting the
-  existing slot map reaches is refused, not written (a slot map is shared by every client).
+  Run on `local-indus` at `3e1bdd9e9`: all 17 blocks current, `sites/indus-foods/build/intake/calibration-baseline.json`
+  written and its counts and hashes checked against `cache/*.json` (17 of 17), no paint file changed, and every block's
+  settings diffed against the pre-run cache: no setting lost except two named, proven ones. `calibrate.mjs` now refuses
+  a slot map that drops a reached setting unless `--allow-loss` names it; the refusals it raised on Indus, their proven
+  causes and fixes (a badge menu item, `::before` media-layer reads, 16 typography `css_property` overrides, the
+  `extensions.css` link-underline rule) and the open calibration debt are in FR-48-3's Status.
 
 ### Phase 2. Spec 32 framework halves (steps 9 to 12, session B)
 - [x] **9. Palette slugs** (code done 2026-10-12, commits 7815a2b9b, 8caab9757, 25a761b5b). FR-32-14: the five slugs in

@@ -1,0 +1,147 @@
+{
+  "client": "indus-foods",
+  "site": "local-indus",
+  "takenOn": "2026-10-12T04:04:51.887Z",
+  "playwright": "1.58.2",
+  "browser": "145.0.7632.6",
+  "blockSet": [
+    "sgs/container",
+    "sgs/heading",
+    "sgs/text",
+    "sgs/button",
+    "sgs/media",
+    "sgs/icon-list",
+    "sgs/accordion",
+    "sgs/choice-flow-result",
+    "sgs/form",
+    "sgs/form-step",
+    "sgs/mega-panel",
+    "sgs/nav-bar-menu",
+    "sgs/nav-drawer",
+    "sgs/nav-drawer-menu",
+    "sgs/site-footer",
+    "sgs/site-header",
+    "sgs/wishlist-panel"
+  ],
+  "blocks": {
+    "sgs/container": {
+      "deployHash": "f229f84b143e98ac452473630fbef8f5",
+      "dead": 9,
+      "noMarker": 3,
+      "oneWidth": 9,
+      "untestedStates": 0
+    },
+    "sgs/heading": {
+      "deployHash": "c915167f969434aec4cf19c7c305e2c8",
+      "dead": 3,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/text": {
+      "deployHash": "a6b467bc58f963470d805e7eb9739b5b",
+      "dead": 6,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/button": {
+      "deployHash": "9c77312ff7cacd7e6c928ab200b21553",
+      "dead": 3,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/media": {
+      "deployHash": "72e9260ac5b2c6883269c4dfb741972f",
+      "dead": 0,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/icon-list": {
+      "deployHash": "88cfe7a121fd8ef90dbd45d44fb885e7",
+      "dead": 10,
+      "noMarker": 2,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/accordion": {
+      "deployHash": "d2efb9a5d4629e53ebab384fa92dd63f",
+      "dead": 9,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/choice-flow-result": {
+      "deployHash": "49b8cc2201d79480c4f03260e18a4971",
+      "dead": 0,
+      "noMarker": 0,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/form": {
+      "deployHash": "1e6df684052417c2b314d3a941e6af0a",
+      "dead": 166,
+      "noMarker": 2,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/form-step": {
+      "deployHash": "215a5d25055f527b93e1181f8bc916b4",
+      "dead": 0,
+      "noMarker": 0,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/mega-panel": {
+      "deployHash": "c73df13ade6ed34adada2149312cd977",
+      "dead": 28,
+      "noMarker": 0,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/nav-bar-menu": {
+      "deployHash": "ac512be79bfbd93cc03a9fa5d2e91dd3",
+      "dead": 20,
+      "noMarker": 6,
+      "oneWidth": 7,
+      "untestedStates": 6
+    },
+    "sgs/nav-drawer": {
+      "deployHash": "b09edb75607f65c70c79e8cf5128f180",
+      "dead": 11,
+      "noMarker": 11,
+      "oneWidth": 0,
+      "untestedStates": 9
+    },
+    "sgs/nav-drawer-menu": {
+      "deployHash": "6d6b60a02054ef3c65845b38fa74364e",
+      "dead": 31,
+      "noMarker": 4,
+      "oneWidth": 0,
+      "untestedStates": 25
+    },
+    "sgs/site-footer": {
+      "deployHash": "69a169f3987db21afb6ce989a3818dcd",
+      "dead": 9,
+      "noMarker": 2,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/site-header": {
+      "deployHash": "8432b9c60a559f5420be211efcd5806c",
+      "dead": 3,
+      "noMarker": 2,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/wishlist-panel": {
+      "deployHash": "bc61dccc39a774efb068bd3ee219d08f",
+      "dead": 16,
+      "noMarker": 0,
+      "oneWidth": 2,
+      "untestedStates": 0
+    }
+  }
+}

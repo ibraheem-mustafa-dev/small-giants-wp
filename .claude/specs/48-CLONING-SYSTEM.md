@@ -389,20 +389,33 @@ change what blocks paint. It is measured as stage 2's exit step (FR-48-18), afte
 stage 1's skeleton proposal adds outside the fixed set is calibrated in that same exit step.
 Done when: a stage-0 run on Indus writes the baseline file, refuses to report a block whose deploy hash differs from its
 cache as calibrated, writes no default-paint file, and `container.gridTemplateColumns` is no longer `dead`.
-Status: the command is built (2026-10-11: `stage0.mjs`, `lib/stage0.mjs`, `data/calibration-baseline.schema.json`,
-`calibrate.mjs --slot-map-only`, `tests/stage0.test.mjs`); Indus has 13 of its 17 blocks current and 4 stale. The block
+Status: done for Indus (2026-10-12). The command is built (`stage0.mjs`, `lib/stage0.mjs`,
+`data/calibration-baseline.schema.json`, `calibrate.mjs --slot-map-only`, `tests/stage0.test.mjs`); a run on `local-indus`
+at `3e1bdd9e9` has all 17 blocks current and wrote `sites/indus-foods/build/intake/calibration-baseline.json`, whose
+per-block counts and deploy hashes match `scripts/computed-route/cache/*.json` (17 of 17; totals 324 dead, 37 noMarker,
+18 oneWidth, 40 untestedStates), and no default-paint file changed. The block
 set maps each surface kind to the `sgs/` blocks whose slug is the kind or ends in `-<kind>`, because `block_composition`
 has no surface-kind column; for Indus that gives 17 blocks (the six layout and content blocks, plus accordion,
 choice-flow-result, form, form-step, mega-panel, nav-bar-menu, nav-drawer, nav-drawer-menu, site-footer, site-header and
 wishlist-panel, the last a false match on `-panel`). Card-grid, hero and trust-bar come from `page` surfaces, which no
 block is named for, so they are calibrated by the stage 2 exit rule above. Fixtures are portable (2026-10-11: tokens resolved per
 calibration target, `lib/calibration-refs.mjs`; `provision-calibration-refs.mjs` created the `indus-test` calibration
-menu 3, item 26, drawer 20 and logo 29). The Indus run then improved nav-drawer-menu (52 to 70 settings, kept) but
-would have cost four library-wide slot maps settings Eye Care's run reaches, so those four were restored and stay
-stale: nav-bar-menu (the six `itemBadge*` and `itemTextDecorationHover`: the calibration menu has no badge item),
-site-header (`backgroundAttachment`, `backgroundSize`, `bgHoverZoomScale`), media (eleven `videoTime*` settings dead) and
-nav-drawer (`chromeSlotFontStyle`; `anchorOffset` and `chromeRatingColour` dead). Their causes are not yet proven. No
-baseline is kept until the four are current. `container.gridTemplateColumns` is no longer dead (2026-10-11: the marker wrote a
+menu 3, item 26, drawer 20 and logo 29; the `menuItem` item carries the Description "SOON", the menu blocks' badge
+copy). A slot map is shared by every client, so `calibrate.mjs` refuses one that drops a setting the existing map
+reaches unless `--allow-loss <block>:<setting>` names it, and keeps the refused candidate in `cache/<block>.refused.json`
+(`lib/cache.mjs::slotMapWriteDecision`). Each refusal on Indus had a proven cause, fixed at its source: the badge item
+(content); site-header `backgroundSize`/`backgroundAttachment` paint on the container wrapper's `::before` media layer,
+now read (`lib/calibrate-props.mjs::CAL_PSEUDO_PROPS`); `chromeSlotFontStyle` and 15 other helper-painted typography
+rows had lost their `css_property` (`attr-classification-overrides.json`, reseeded at `3e1bdd9e9`); and
+`itemTextDecorationHover` was beaten inside page content by `extensions.css`'s link-underline rule, which now skips any
+`sgs-` link (`3aa1ed054`). Fixture preconditions reach `videoTime*` (a literal `.invalid` direct-file video),
+`anchorOffset` (anchor `trigger`) and `chromeRatingColour` (`chromeRating`). Two named losses were accepted: site-header
+`bgHoverZoomScale` (no `css_property`; Eye Care's reading was noise, its slots all `@controls` panels) and nav-drawer
+`discovered:chromeSlotTextTransform` (now an ordinary setting on the same slot). Settings: nav-bar-menu 90 to 116,
+nav-drawer 48 to 57, nav-drawer-menu 70 to 81, site-header 28 to 33, media 38 to 49. Calibration debt left open:
+`chromeRatingColour` reads dead because the Indus test site has no Site Info rating (a fake one would show on the
+client's build), and `bgHoverZoomScale` on every block that has it carries no `css_property`, so no block's hover zoom is
+calibrated. `container.gridTemplateColumns` is no longer dead (2026-10-11: the marker wrote a
 number, which `SGS_Container_Wrapper` ignores as a template; the `repeat` probe writes a string, FR-48-2), and every
 `:count` setting is now calibrated (it was dropped for having no readable property). The two `container.layout` ties are fixed
 (`lib/resolve.mjs::resolve` drops a yes/no setting whose unreached widths keep a default paint the draft differs from;
@@ -1307,8 +1320,8 @@ client's test site has a local mirror and a `calibration-targets.json` entry for
 (Appendix C), and each block in the fixed set has a slot-map cache whose deploy hash is the current one (G0, §14).
 Status: the check is built (`handoff-check.mjs`); the Indus and Mama's exports pass it (repackaged 2026-10-11, Spec 48A
 FR-48A-1). The Indus mirror and its calibration targets exist (Appendix A step 13, `local-indus`, page 15), the Indus
-calibration fixes are built and the stage-0 command runs; 13 of the 17 blocks are current and no baseline is kept until
-the last four are (FR-48-3 status).
+calibration fixes are built, and the exit holds for Indus (2026-10-12): `handoff-check.mjs` exits 0, the baseline
+validates and every fixed-set block's slot map carries the current deploy hash (FR-48-3 status).
 
 #### FR-48-17 — Stage 1: intake, closed by one batched review
 **Entry:** stage 0's exit test passes.
@@ -2560,15 +2573,19 @@ task, summed per step; "machine" is unattended run time.
 
 **The framework refresh loop.** Written once and named in the steps that need it. After any framework edit (theme,
 blocks or DB-seeded facts):
-1. deploy: `python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test` (it builds, gates, deploys,
+1. reseed: `python plugins/sgs-blocks/scripts/sgs-update-v2.py` from a clean `HEAD`, serialised with any
+   other session's deploy or reseed, then `python plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py` (a
+   normal reseed leaves `sgs/hero.splitMediaType` as select-from-enum, which fails the deploy's value-identity gate)
+   and regenerate `attr-role-map.json` after it. The reseed comes first because the deploy's wiring-fingerprint gate
+   fails an attribute the DB does not yet hold (`.claude/dev-setup.md`, "Adding a block attribute?");
+2. deploy: `python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test` (it builds, gates, deploys,
    verifies and purges caches);
-2. reseed: `python plugins/sgs-blocks/scripts/sgs-update-v2.py` from a clean `HEAD`, serialised with any
-   other session's deploy or reseed;
 3. mirror refresh: `bash scripts/local-wp/refresh-from-remote.sh local-indus indus-test`, then
    `scripts/local-wp/sync-build.sh local-indus`;
 4. recalibrate the blocks the edit touched: `node scripts/computed-route/calibrate.mjs --site local-indus --client
    indus-foods --blocks <blocks> --recalibrate` (the slot map, and the default paint once stage 2's snapshot is
-   pushed), then re-record the calibration-debt baseline.
+   pushed), then re-record the calibration-debt baseline. A recalibration that would drop a setting the existing slot
+   map reaches is refused (FR-48-3); accept a loss only with `--allow-loss <block>:<setting>` and a proven reason.
 
 One pass is about 10 minutes of agent time and 20 minutes of machine time.
 
