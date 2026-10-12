@@ -81,9 +81,9 @@ pass it (repackaged 2026-10-11 by `handoff-repackage.mjs`; no design change sinc
 animation and state inventory, FR-48-25 and FR-48-29). **Time-critical:** the standalone Claude
 Design site deletes its projects on 14 December 2026; export every project as a "Project archive" and test the
 artifact-based Claude Design once before then (plan B0; Spec 48A goes to 1.0 after it).
-**Resume from:** `plans/2026-10-11-spec48-indus-build.md` Phase 4 step 16 (route lane: Appendix A's remaining
-pre-intake steps on `indus-test`), Phase 3 step 14b then 15 (intake lane), and, as a separate session, B5
-(mirror the live Eye Care site into its draft).
+**Resume from:** `plans/2026-10-11-spec48-indus-build.md` Phase 3 step 14b then 15 (intake lane; the route lane has
+nothing pre-intake left: Appendix A steps 7 and 9 are done on `indus-test`, noindex on and site icon set), and, as a
+separate session, B5 (mirror the live Eye Care site into its draft).
 **Bean-only tasks:** B0.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)

@@ -2660,7 +2660,7 @@ One pass is about 10 minutes of agent time and 20 minutes of machine time.
     slugs from the theme), 14 and 14b.
 
 *Stage 2: site build (steps 16 and the environment parts of Appendix A may start after step 4)*
-16. **Appendix A on `indus-test`** (agent, 30 min): the steps not already done.
+16. **Appendix A on `indus-test`** (agent, 30 min): the steps not already done. Steps 7 and 9 done 2026-10-12; 5, 10, 11 and 12 wait on stage 1.
 17. **Snapshot** (agent, 1 h). The extractor reads `tokens/*.css` with the confirmed roles and the `border`
     vocabulary; the Indus snapshot carries the new palette slugs, fluid presets, per-tier padding tokens and
     `buttonPresets.default.hover-transform`; dry run, then push. Needs 12 and 15.

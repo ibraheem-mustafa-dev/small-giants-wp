@@ -198,9 +198,11 @@ explicit-pathspec commits straight to `main`.
 
 ### Phase 4. Stage 2 site build (steps 16 to 19)
 - [ ] **16. Appendix A on `indus-test`**, the steps not already done (may start after step 4). Checked 2026-10-12 over
-  SSH: steps 1 to 3, 6, 8 and 13 are done; step 4 does not apply (Indus is a trade wholesaler, no WooCommerce); step 7
-  is open (`blog_public` is 1, so the test site is indexable) and step 9 is open (`site_icon` is 0, no icon); steps 5,
-  10, 11 and 12 follow stage 1 (snapshot, Site Info and site build need step 15).
+  SSH: steps 1 to 3, 6, 7, 8, 9 and 13 are done; step 4 does not apply (Indus is a trade wholesaler, no WooCommerce).
+  Step 7: `blog_public` is 0 (the homepage carries `noindex, nofollow`). Step 9: `site_icon` is attachment 33, the
+  Indus logo fitted into a 512px square (the export's `logo-square.svg` is 1998x1302, not square), and the homepage's
+  `rel="icon"` links point at it; the PNG is a scratch render, not committed. Still open: steps 5, 10, 11 and 12, which
+  follow stage 1 (snapshot, Site Info and site build need step 15).
 - [ ] **17. Snapshot** (needs 12 and 15): the extractor reads `tokens/*.css` with the confirmed roles; dry run, then
   push.
 - [ ] **18. Site build** (needs 15 and 16): FR-48-55, FR-48-58 and FR-48-59 done-whens.
