@@ -1,0 +1,908 @@
+[
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 1 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Planning a project well saves time later, because every decision is made once and written down where the whole team can find it. A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 1",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 1",
+     "description": "Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 2 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen. Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 2",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 2",
+     "description": "Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 3 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise. Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 3",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 3",
+     "description": "Planning a project well saves time later, because every decision is made once and written down where the whole team can find it."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 4 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix. Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Planning a project well saves time later, because every decision is made once and written down where the whole team can find it."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 4",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 4",
+     "description": "A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 5 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration. Planning a project well saves time later, because every decision is made once and written down where the whole team can find it."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 5",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 5",
+     "description": "Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 6 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Planning a project well saves time later, because every decision is made once and written down where the whole team can find it. A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 6",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 6",
+     "description": "Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 7 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen. Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 7",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 7",
+     "description": "Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 8 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise. Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 8",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 8",
+     "description": "Planning a project well saves time later, because every decision is made once and written down where the whole team can find it."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 9 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix. Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Planning a project well saves time later, because every decision is made once and written down where the whole team can find it."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 9",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 9",
+     "description": "A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 10 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration. Planning a project well saves time later, because every decision is made once and written down where the whole team can find it."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 10",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 10",
+     "description": "Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 11 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Planning a project well saves time later, because every decision is made once and written down where the whole team can find it. A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 11",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 11",
+     "description": "Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 12 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen. Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 12",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 12",
+     "description": "Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 13 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise. Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 13",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 13",
+     "description": "Planning a project well saves time later, because every decision is made once and written down where the whole team can find it."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 14 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix. Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Planning a project well saves time later, because every decision is made once and written down where the whole team can find it."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 14",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 14",
+     "description": "A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 15 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Consistent spacing, readable type and sensible contrast make a page feel calm and trustworthy without any extra decoration. Planning a project well saves time later, because every decision is made once and written down where the whole team can find it."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 15",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 15",
+     "description": "Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Section 16 heading",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Planning a project well saves time later, because every decision is made once and written down where the whole team can find it. A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Read more 16",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {
+     "heading": "Point 16",
+     "description": "Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix."
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Closing section",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Planning a project well saves time later, because every decision is made once and written down where the whole team can find it."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "A clear structure helps visitors find what they need quickly, whether they arrive on a phone, a tablet or a large desktop screen."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Good content answers a question before it is asked, keeps sentences short and avoids jargon that only insiders would recognise."
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Reliable systems are built from small parts that each do one job, which makes problems easier to find and simpler to fix."
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Get in touch",
+     "url": "/contact/"
+    }
+   },
+   {
+    "name": "sgs/separator",
+    "attributes": {}
+   }
+  ]
+ }
+]
