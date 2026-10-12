@@ -1275,7 +1275,7 @@ stays with Eye Care; the answer sheet is re-frozen after B5; the folder keeps th
 2. **A structured breakpoint override.** The hardened `sgsCustomCss` path is Spec 32 FR-32-20 and is what the route
    uses today for an off-tier threshold (FR-48-50 step 3). A structured, client-visible breakpoint override is
    preferred wherever a block has one (FR-48-50 step 2); whether a general one is built, and for which blocks first,
-   is open. Indus's header branches at 1200 and 1260, so FR-32-20 blocks Indus either way.
+   is open. Indus's header branches at 1200 and 1260, which the route writes as scoped residuals (FR-32-20 is built).
 3. **Kill-line share.** The share of a surface's constructs read without manual fixes below which that surface is
    hand-built (§8) is provisional until the Indus run sets it.
 4. **Presence reads for enums with no CSS property** (`layout` and `select-from-enum` roles, `hoursLayout` first): the
@@ -1851,20 +1851,17 @@ For a draft threshold `t` on its width basis, and the SGS tiers `T ∈ {768, 102
    precedence rules and FR-32-20's hardening, and list it in the surface report. Route-written CSS carries the
    label FR-32-20 defines, so the client can see which rules the route wrote.
 
-**Prerequisite (blocks Indus).** Before the route writes any media query through step 3, Spec 32 FR-32-20 must be
-built. Today `plugins/sgs-blocks/includes/custom-css.php::render_custom_css` runs `wp_strip_all_tags` and nothing
-else. It replaces `&selector` with the doubled scope class, so a rule written without `&selector` is emitted unscoped
-and applies to the whole page. Its scope class is hashed from the CSS text and the block name, not from the instance,
-so two instances with the same CSS share one class. On an SGS block its `<style>` is lifted to the head by
-`plugins/sgs-blocks/includes/class-sgs-css-registry.php::sgs_lift_block_css` (which runs after it and takes only `sgs/` blocks); on a core block it
-stays in the page body beside the block. FR-32-20 scopes every rule, takes the scope class from the instance, lifts
-core blocks' CSS too, keeps the editor's preview the same as the front end, and labels route-written CSS. Indus's
-header branches at 1200 and 1260 (`Indus Foods Website v2.dc.html`), which no tier snaps to, so Indus needs it.
+**Prerequisite (met 2026-10-12).** Spec 32 FR-32-20 is built: `plugins/sgs-blocks/includes/custom-css.php::render_custom_css`
+parses every rule through `includes/class-custom-css-scoper.php::Custom_Css_Scoper` and confines it to the instance
+(rules inside `@media` included; what cannot be confined is refused), takes the scope class from the instance key
+`sgsCustomCssId`, lifts core blocks' CSS to the head too, scopes the editor canvas through the same rules, and shows
+the route's label (`sgsCustomCssNote`) in the inspector. Indus's header branches at 1200 and 1260
+(`Indus Foods Website v2.dc.html`), which no tier snaps to, so the route writes them through this channel.
 *Done when:* a 1060 threshold writes the 1024 tier and one `breakpoint-snap` ledger entry with distance 36, and the
 flip check passes at 1023/1025; a 1200 threshold writes a bounded, scoped, labelled rule that flips at 1199/1201 and
 leaves 375 and 1440 unchanged; and an unscoped test rule is refused.
-Status: not built. The `breakpoint-snap` rule is not in `lib/ledger.mjs::RULES` nor in `lint.mjs::HOUSE_RULES`;
-FR-32-20 is a Spec 32 hand-off (§16).
+Status: not built. The `breakpoint-snap` rule is not in `lib/ledger.mjs::RULES` nor in `lint.mjs::HOUSE_RULES`, and
+the route does not yet write `sgsCustomCssNote` with a rule.
 
 ## 11. Tokens and the extractor
 
@@ -2329,8 +2326,7 @@ R-48-5 (Client code only on Bean's decision, §1) governs this section.
 the composite cannot reach, and each such rule is a row the split later replaces. Mama's shop proofs also need the
 minimum fixture products (§16).
 
-Status: steps 2 and 3 work today for a rule the route writes with `&selector`; the route-written label and the
-scoping of a rule without it wait for Spec 32 FR-32-20. Step 1 waits for the Spec 27 parts split. The fixture products
+Status: steps 2 and 3 work today; Spec 32 FR-32-20 scopes every rule and shows the label the route writes. Step 1 waits for the Spec 27 parts split. The fixture products
 do not exist.
 
 #### FR-48-61 — The shop filter
@@ -2480,9 +2476,9 @@ Items Spec 48 needs but does not own. "Blocks" says which client cannot finish w
 
 | Item | Owning spec or owner | Blocks | Status |
 |---|---|---|---|
-| `sgsCustomCss` hardened: every rule scoped, the scope class taken from the instance, core blocks' CSS lifted to the head too, editor preview equal to the front end, route-written CSS labelled; a structured breakpoint override preferred where a block has one | Spec 32 FR-32-20 (FR-32-13 keeps the precedence rules and allows the snap) | Indus | not built |
-| Per-tier section padding and gutter tokens | Spec 32 FR-32-15 (§14.2) | Indus | not built |
-| Palette slugs: heading text, link and link hover, section ground with its text colour (no gradients) | Spec 32 FR-32-14 (§12.2, §14.2) | Indus (in the Indus snapshot only) | not built |
+| `sgsCustomCss` hardened: every rule scoped, the scope class taken from the instance, core blocks' CSS lifted to the head too, editor preview equal to the front end, route-written CSS labelled; a structured breakpoint override preferred where a block has one | Spec 32 FR-32-20 (FR-32-13 keeps the precedence rules and allows the snap) | Indus | built 2026-10-12, except the structured breakpoint override |
+| Per-tier section padding and gutter tokens | Spec 32 FR-32-15 (§14.2) | Indus | built 2026-10-12 |
+| Palette slugs: heading text, link and link hover, section ground with its text colour (no gradients) | Spec 32 FR-32-14 (§12.2, §14.2) | Indus (in the Indus snapshot only) | built 2026-10-12 |
 | Fluid heading presets (`fluid: {min, max}` per client; per-device values when a preset misses by more than R-47-7's length tolerance at 375/768/1440); built only after calibration records accepted value forms | Spec 32 FR-32-16 (§14.2) | Indus (Indus snapshot only) | not built |
 | Button lift written as `buttonPresets.default.hover-transform` (no new key; `button/style.css` already reads variant, then `default`); the extractor folds a shared lift into `default` (FR-33-4) | Spec 32 FR-32-19 (§14.3), Spec 48 §11 | Indus (Indus snapshot only) | partly built (the key is read; the extractor writes per variant only) |
 | Shadow role names (card, card-hover, button, panel, header, drawer, modal); migration surveying saved slugs including `raised`, `subtle`, `raisedish`, `hard-sm`; old slugs kept as aliases; dry run per client; FR-26-D3 waits for the O10 shadow-picker check | Spec 32 FR-32-18 (§14.2), §13.4 (FR-26-D3) | neither | not built |
@@ -2612,10 +2608,10 @@ One pass is about 10 minutes of agent time and 20 minutes of machine time.
    fixed block set on `local-indus`, writing `calibration-baseline.json` (FR-48-3, FR-48-16). Needs 1, 4 to 7.
 
 *Spec 32 framework halves (beside steps 9 to 11)*
-9. **Palette slugs** (agent, 45 min). Spec 32 FR-32-14: the slugs, their consumers and the completeness gate.
-10. **Per-tier section padding and gutter tokens** (agent, 1 h). Spec 32 FR-32-15.
-11. **`sgsCustomCss` hardening** (agent, 1 h). Spec 32 FR-32-20.
-12. **Framework refresh loop**, once for 9 to 11 (agent 10 min, machine 20 min).
+9. **Palette slugs** (done 2026-10-12). Spec 32 FR-32-14: the slugs, their consumers and the completeness gate.
+10. **Per-tier section padding and gutter tokens** (done 2026-10-12). Spec 32 FR-32-15.
+11. **`sgsCustomCss` hardening** (done 2026-10-12). Spec 32 FR-32-20.
+12. **Framework refresh loop**, once for 9 to 11 (done 2026-10-12).
 
 *Stage 1: intake*
 13. **Intake 4a, run safely and see everything** (agent, 2 h 45 min). The sandbox with the record-and-replay cache

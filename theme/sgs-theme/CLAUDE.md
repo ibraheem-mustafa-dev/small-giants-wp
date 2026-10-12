@@ -36,6 +36,7 @@ sgs-theme/
 │   │   ├── core-blocks-critical.css # Critical subset, inlined
 │   │   ├── dark-mode.css            # Dark-mode token overrides
 │   │   ├── type-scale.css           # Responsive type scale
+│   │   ├── layout-tokens.css        # Per-tier section padding and gutter tokens (Spec 32 FR-32-15)
 │   │   ├── utilities.css            # .sr-only, .container, .text-centre, etc.
 │   │   └── woocommerce.css          # WooCommerce shop/PDP/cart styling
 │   ├── js/
