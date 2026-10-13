@@ -59,6 +59,33 @@ if ( ! function_exists( 'sgs_media_atom_shadow_requires' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_atom_shadow_lift_on' ) ) {
+	/**
+	 * Does this media element's automatic lift-on-hover apply?
+	 *
+	 * The lift switch belongs to the element's own prefix: the block-root switch
+	 * (`shadowLiftOnHover`) for an unprefixed element, `{prefix}ShadowLiftOnHover` for a
+	 * prefixed one (`sgs_shadow_lift_attr_names()`). A prefixed element whose block does not
+	 * declare its own switch gets no automatic lift, so a block's root shadow switch never
+	 * reaches a second surface. JS twin: `shadow.js::liftOn()`.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $prefix     Surface prefix ('' when unprefixed).
+	 * @param string $block_slug Block slug.
+	 * @return bool True when the automatic lift is drawn.
+	 */
+	function sgs_media_atom_shadow_lift_on( array $attributes, $prefix, $block_slug ) {
+		$prefix = (string) $prefix;
+		if ( '' !== $prefix ) {
+			$names = sgs_shadow_lift_attr_names( $prefix );
+			if ( true !== ( $attributes[ $names['lift'] ] ?? null ) ) {
+				return false;
+			}
+		}
+		return sgs_shadow_lift_enabled( $attributes, (string) $block_slug, $prefix );
+	}
+}
+
 if ( ! function_exists( 'sgs_media_atom_shadow_css' ) ) {
 	/**
 	 * Custom-property declarations for this atom. Mirrors the JS twin's
@@ -96,7 +123,7 @@ if ( ! function_exists( 'sgs_media_atom_shadow_css' ) ) {
 			if ( '' !== $hover ) {
 				$decls[] = '--sgs-media-box-shadow-hover:' . $hover;
 			}
-		} elseif ( sgs_shadow_lift_enabled( $attributes, is_string( $block_slug ) ? $block_slug : '' ) ) {
+		} elseif ( sgs_media_atom_shadow_lift_on( $attributes, (string) $prefix, is_string( $block_slug ) ? $block_slug : '' ) ) {
 			// AUTOMATIC LIFT (design H4, task lift-2) — only when this instance has NO
 			// explicit hover colour set; the explicit branch above always wins outright.
 			// The shared stylesheet (assets/css/media-atoms/shadow.css) already reads

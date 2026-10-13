@@ -530,11 +530,14 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// `validate()`, which rejects 'custom' to '' and therefore emits no
 		// custom property, leaving the explicit width/height below in sole
 		// control, matching render.php's gate.
+		// The `shadow` atom's resting/hover custom properties ride the same marker
+		// (`assets/css/media-atoms/shadow.css` paints `.sgs-media-el`), matching
+		// render.php's `SGS_Media_Element::style()` atom list.
 		...elementCustomProperties( {
 			attributes,
 			prefix: 'splitMedia',
 			blockSlug: 'sgs/hero',
-			atoms: [ 'object-fit', 'focal-point' ],
+			atoms: [ 'object-fit', 'focal-point', 'shadow' ],
 		} ),
 		...heroPreview.image,
 	};
@@ -1644,7 +1647,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						     unchanged: box-shape's own resolveSizingMode() resolves an
 						     unset MediaSizing + objectFit==='custom' to mode 'height'. */ }
 						<ToolsPanelItem
-							label={ __( 'Split media box & border', 'sgs-blocks' ) }
+							label={ __( 'Split media box, border & shadow', 'sgs-blocks' ) }
 							hasValue={ () =>
 								!! splitMediaMediaSizing ||
 								splitMediaShape !== 'none' ||
@@ -1665,6 +1668,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								Object.keys( splitMediaBorderRadius ?? {} ).length > 0 ||
 								Object.keys( splitMediaBorderRadiusTablet ?? {} ).length > 0 ||
 								Object.keys( splitMediaBorderRadiusMobile ?? {} ).length > 0 ||
+								!! attributes.splitMediaBoxShadow ||
+								!! attributes.splitMediaBoxShadowColour ||
+								!! attributes.splitMediaBoxShadowColourHover ||
 								Object.values( splitMediaPadding ?? {} ).some(
 									( tierBox ) => tierBox && Object.keys( tierBox ).length > 0
 								)
@@ -1690,6 +1696,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									splitMediaBorderWidth: {},
 									splitMediaBorderColour: '',
 									splitMediaBorderColourGradient: '',
+									splitMediaBoxShadow: '',
+									splitMediaBoxShadowColour: '',
+									splitMediaBoxShadowColourHover: '',
 									splitMediaPadding: { desktop: {} },
 								} )
 							}
@@ -1701,7 +1710,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								prefix="splitMedia"
 								blockSlug="sgs/hero"
 								insertion="element"
-								atoms={ [ 'box-shape', 'media-padding' ] }
+								atoms={ [ 'box-shape', 'media-padding', 'shadow' ] }
 							/>
 						</ToolsPanelItem>
 
