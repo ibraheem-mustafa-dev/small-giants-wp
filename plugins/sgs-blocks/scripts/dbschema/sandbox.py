@@ -159,6 +159,28 @@ class SandboxRunner:
             con.close()
 
 
+def _link_directory(link: Path, target: Path) -> bool:
+    """Make `link` a directory link to `target`: a symlink, or on Windows without that privilege a junction.
+
+    Both live inside the throwaway sandbox HOME, and `shutil.rmtree` removes a link without following it.
+    Returns False when neither can be made (the caller falls back to file-level views).
+    """
+    try:
+        os.symlink(target, link, target_is_directory=True)
+        return True
+    except OSError:
+        pass
+    if os.name == "nt":
+        try:
+            import _winapi
+
+            _winapi.CreateJunction(str(target), str(link))
+            return True
+        except OSError:
+            return False
+    return False
+
+
 @contextlib.contextmanager
 def sandbox(seed_from: Path | str | None = None, keep: bool = False):
     """Yield a :class:`SandboxRunner` backed by a throwaway database.
@@ -171,10 +193,21 @@ def sandbox(seed_from: Path | str | None = None, keep: bool = False):
     home = Path(tempfile.mkdtemp(prefix="sgs-dbsandbox-"))
     views: list[Path] = []
     try:
-        for spelling in HOME_SPELLINGS:
-            target = home / spelling / REL
-            target.parent.mkdir(parents=True, exist_ok=True)
-            views.append(target)
+        # The skill folder exists once (under the last spelling) and every other spelling is a directory
+        # link to it, as on the real machine (~/.claude/skills/sgs-wp-engine links to ~/.agents/...). The
+        # database runs in WAL mode and SQLite keeps its -wal and -shm files beside the path it was opened
+        # through, so two file-level views of one database (a hardlink or a copy) give each spelling its own
+        # WAL and corrupt it ("database disk image is malformed"); a directory link shares them.
+        real_dir = home / HOME_SPELLINGS[-1] / REL.parent
+        real_dir.mkdir(parents=True, exist_ok=True)
+        dir_linked = True
+        for spelling in HOME_SPELLINGS[:-1]:
+            link_dir = home / spelling / REL.parent
+            link_dir.parent.mkdir(parents=True, exist_ok=True)
+            if not _link_directory(link_dir, real_dir):
+                dir_linked = False
+                link_dir.mkdir(parents=True, exist_ok=True)
+        views = [home / spelling / REL for spelling in HOME_SPELLINGS]
 
         primary = views[0]
         if seed_from is not None:
@@ -195,6 +228,8 @@ def sandbox(seed_from: Path | str | None = None, keep: bool = False):
 
         linked = True
         for other in views[1:]:
+            if dir_linked:
+                continue
             if other.exists():
                 other.unlink()
             try:

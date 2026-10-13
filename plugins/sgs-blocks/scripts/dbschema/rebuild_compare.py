@@ -11,14 +11,41 @@ A shortfall is the EXPECTED result, not a failure to hide: ``property_suffixes``
 regenerative source -- that is Phase 1's work. Bean's ruling (2026-08-02):
 **partial rebuild PASSES provided the shortfalls are written down and carried
 forward.** This script writes them down.
+
+The rebuild runs from a throwaway git worktree at HEAD (``--ref`` picks another
+commit), never from the shared checkout: ``sgs-update-v2.py --rebuild`` regenerates
+tracked files from whatever DB it sees (the property classifier
+``behavioural-analyser/css-property-classifications.json``, the ``reports/phase4-*``
+reports), and against the empty sandbox DB those come out empty or wrong. In the
+worktree they are discarded with it. Only this script's own outputs, the dated
+report under ``.claude/reports/`` and ``dbschema/rebuild-comparison.json``, are
+written to the shared checkout.
+
+The worktree gets no ``node_modules`` link (a link removed with the worktree has
+deleted the shared dependency tree). CommonJS scripts resolve packages through
+``NODE_PATH`` (the shared ``plugins/sgs-blocks/node_modules`` and
+``scripts/computed-route/node_modules``); the ES-module preset validator ignores
+``NODE_PATH``, so ``ajv`` and its dependencies are COPIED into the worktree's
+``scripts/computed-route/node_modules``. Before removal the worktree is checked for
+reparse points.
+
+    python rebuild_compare.py                 # rebuild at HEAD and compare
+    python rebuild_compare.py --ref <commit>  # rebuild at another commit
+    python rebuild_compare.py --keep-worktree # leave the worktree for inspection
 """
 
 from __future__ import annotations
 
+import argparse
+import datetime
 import json
+import os
+import shutil
 import sqlite3
 import subprocess
 import sys
+import tempfile
+from contextlib import contextmanager
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -41,6 +68,55 @@ KNOWN_UNREPRODUCIBLE: set[str] = set()
 
 NOTINT = "name NOT LIKE 'sqlite@_%' ESCAPE '@'"
 
+# The ES-module validator's packages: ajv, ajv-formats and their dependencies.
+ESM_PACKAGES = ("ajv", "ajv-formats", "fast-deep-equal", "fast-uri",
+                "json-schema-traverse", "require-from-string")
+
+
+def _git(*args: str, cwd: Path = REPO) -> subprocess.CompletedProcess:
+    return subprocess.run(["git", *args], cwd=str(cwd), capture_output=True, text=True)
+
+
+def _reparse_points(root: Path) -> list[Path]:
+    """Every symlink or junction under root (a junction is a reparse point that is not a symlink)."""
+    found = []
+    for dirpath, dirnames, filenames in os.walk(root):
+        for name in dirnames + filenames:
+            path = Path(dirpath) / name
+            if path.is_symlink() or (hasattr(path, "is_junction") and path.is_junction()):
+                found.append(path)
+        dirnames[:] = [d for d in dirnames if not (Path(dirpath) / d).is_symlink()]
+    return found
+
+
+@contextmanager
+def throwaway_worktree(ref: str, keep: bool):
+    """A detached worktree at ref with ajv copied in; removed afterwards unless keep."""
+    base = Path(os.environ.get("SystemDrive", "C:") + os.sep) if os.name == "nt" else Path(tempfile.gettempdir())
+    tree = Path(tempfile.mkdtemp(prefix="sgsrb-", dir=str(base)))
+    tree.rmdir()
+    add = _git("worktree", "add", "--detach", str(tree), ref)
+    if add.returncode != 0:
+        raise SystemExit(f"FATAL: git worktree add failed: {add.stderr.strip()}")
+    try:
+        src = REPO / "scripts" / "computed-route" / "node_modules"
+        dest = tree / "scripts" / "computed-route" / "node_modules"
+        for pkg in ESM_PACKAGES:
+            if (src / pkg).is_dir():
+                shutil.copytree(src / pkg, dest / pkg)
+        yield tree
+    finally:
+        if keep:
+            print(f"worktree kept: {tree} (remove with: git worktree remove --force {tree})")
+        else:
+            links = _reparse_points(tree)
+            if links:
+                print(f"NOT removing {tree}: it holds reparse points {links[:3]}; remove them first", file=sys.stderr)
+            else:
+                gone = _git("worktree", "remove", "--force", str(tree))
+                if gone.returncode != 0:
+                    print(f"WARN: could not remove {tree}: {gone.stderr.strip()}", file=sys.stderr)
+
 
 def counts(db: Path) -> dict[str, int]:
     if not db.exists() or db.stat().st_size == 0:
@@ -54,23 +130,42 @@ def counts(db: Path) -> dict[str, int]:
         con.close()
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Rebuild the knowledge base from nothing in a sandbox HOME, "
+                                     "from a throwaway worktree, and compare it with the live database.")
+    parser.add_argument("--ref", default="HEAD", help="commit to rebuild from (default HEAD)")
+    parser.add_argument("--keep-worktree", action="store_true", help="leave the throwaway worktree in place")
+    opts = parser.parse_args(argv)
+    today = datetime.date.today().isoformat()
+
     live_path = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
     live = counts(live_path)
     live_mtime = live_path.stat().st_mtime_ns
     print(f"live: {len(live)} tables, {sum(live.values())} rows total\n")
 
-    seeder = SCRIPTS / "sgs-update-v2.py"
-    with sandbox() as run:
+    node_path = os.pathsep.join(str(p) for p in (SCRIPTS.parent / "node_modules",
+                                                 REPO / "scripts" / "computed-route" / "node_modules"))
+    os.environ["NODE_PATH"] = node_path
+    with throwaway_worktree(opts.ref, opts.keep_worktree) as tree, sandbox() as run:
+        scripts = tree / "plugins" / "sgs-blocks" / "scripts"
+        seeder = scripts / "sgs-update-v2.py"
+        print(f"worktree     : {tree} ({opts.ref})")
         print(f"sandbox HOME : {run.home}")
         print(f"sandbox DB   : {run.db}")
         print(f"running {seeder.name} --rebuild ...\n")
         proc = run.run(
             [sys.executable, str(seeder), "--rebuild"],
-            cwd=str(SCRIPTS), timeout=3600,
+            cwd=str(scripts), timeout=3600,
         )
-        rebuilt = counts(run.db)
         stdout, stderr, rc = proc.stdout or "", proc.stderr or "", proc.returncode
+        try:
+            rebuilt = counts(run.db)
+        except sqlite3.DatabaseError as err:
+            print(f"FATAL: the rebuilt sandbox DB cannot be read ({err}); rebuild exit code {rc}", file=sys.stderr)
+            for label, text in (("stderr", stderr), ("stdout", stdout)):
+                print(f"--- last {label} ---", file=sys.stderr)
+                print("\n".join(text.strip().splitlines()[-40:]), file=sys.stderr)
+            return 3
 
     if live_path.stat().st_mtime_ns != live_mtime:
         print("FATAL: the LIVE database changed during the rebuild.", file=sys.stderr)
@@ -122,15 +217,15 @@ def main() -> int:
             print(f"  {t:38} live={lv:>6}  rebuilt={rv:>6}")
         print()
 
-    report = REPO / ".claude" / "reports" / "2026-08-02-db-rebuild-comparison.md"
+    report = REPO / ".claude" / "reports" / f"{today}-db-rebuild-comparison.md"
     report.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         "---", "doc_type: report", "project: small-giants-wp",
-        "created: 2026-08-02", "phase: Phase 0 Step 0.5 — rebuild-from-empty", "---", "",
+        f"created: {today}", "phase: Phase 0 Step 0.5 — rebuild-from-empty", "---", "",
         "# Rebuild-from-empty comparison",
         "",
-        "`sgs-update-v2.py --rebuild` run against an EMPTY database inside a sandbox HOME",
-        "(so every `Path.home()`-hardcoding script resolved there, never at the live file —",
+        f"`sgs-update-v2.py --rebuild` at `{opts.ref}`, from a throwaway worktree, run against an EMPTY database "
+        "inside a sandbox HOME (so every `Path.home()`-hardcoding script resolved there, never at the live file; "
         "the live database's mtime was confirmed unchanged afterwards).",
         "",
         f"**Rebuild exit code: {rc}**",
@@ -183,7 +278,7 @@ def main() -> int:
 
     json_out = HERE / "rebuild-comparison.json"
     json_out.write_text(json.dumps({
-        "generated_at": "2026-08-02", "rebuild_exit_code": rc,
+        "generated_at": today, "ref": opts.ref, "rebuild_exit_code": rc,
         "live_counts": live, "rebuilt_counts": rebuilt,
         "missing_tables": missing_tables, "extra_tables": extra_tables,
         "empty_unknown": [t for t, _ in empty_unknown],
