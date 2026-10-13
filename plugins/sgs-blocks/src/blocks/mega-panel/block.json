@@ -88,6 +88,10 @@
 						"layout"
 					],
 					"attrMap": {
+						"css:border-radius": "drawerShellRadius",
+						"css:padding": "drawerShellPadding",
+						"css:box-shadow": "drawerShellShadow",
+						"css:box-shadow-color": "drawerShellShadowColour",
 						"css:background-color": "drawerBg",
 						"css:background-image": "drawerBgGradient",
 						"css:order": "drawerAsideOrder"
@@ -99,13 +103,25 @@
 					"layer": "CONTENT",
 					"order": 5.1,
 					"clusters": [
+						"fill",
 						"layout"
 					],
 					"attrMap": {
+						"css:background-color": "drawerLinkBg",
+						"css:background-image": "drawerLinkBgGradient",
+						"css:border-radius": "drawerLinkRadius",
 						"css:border-color": "drawerLinkDivider",
 						"css:border-color-gradient": "drawerLinkDividerGradient",
 						"css:min-height": "drawerLinkMinHeight",
 						"css:padding-block": "drawerLinkPaddingY"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "drawerLinkHoverBg",
+								"css:background-image": "drawerLinkHoverBgGradient"
+							}
+						}
 					},
 					"_note": "Each direct-child sgs/container of `.sgs-mega-group`, in the drawer only."
 				},
@@ -535,6 +551,26 @@
 			"default": "",
 			"description": "CSS gradient string painting the panel root in the mobile drawer only, instead of drawerBg (emitted as --sgs-mm-drawer-bg-gradient through sgs_custom_property_gradient_decls()). Non-empty wins over drawerBg."
 		},
+		"drawerShellRadius": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: the panel's corner radius (a CSS length), so the drawer copy reads as a card. '' emits nothing (includes/mega-panel-drawer-extras-css.php)."
+		},
+		"drawerShellPadding": {
+			"type": "object",
+			"default": {},
+			"description": "In the drawer: the panel's padding box (one box for every device). Unset sides emit nothing."
+		},
+		"drawerShellShadow": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: the panel's shadow (ShadowControl value). '' emits nothing."
+		},
+		"drawerShellShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow colour for drawerShellShadow."
+		},
 		"drawerAsideOrder": {
 			"type": "string",
 			"default": "last",
@@ -605,10 +641,44 @@
 			"default": "",
 			"description": "Top and bottom padding of each link row in the drawer."
 		},
+		"drawerLinkBg": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: a link row's resting fill. '' paints nothing (the panel ground shows)."
+		},
+		"drawerLinkBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient resting fill for a link row in the drawer; wins over drawerLinkBg."
+		},
+		"drawerLinkHoverBg": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: a link row's fill while it is hovered or holds keyboard focus (touch-guarded). '' emits nothing."
+		},
+		"drawerLinkHoverBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient fill for a hovered link row in the drawer; wins over drawerLinkHoverBg."
+		},
+		"drawerLinkRadius": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: a link row's corner radius (a CSS length). '' emits nothing."
+		},
 		"drawerCardCompact": {
 			"type": "boolean",
 			"default": false,
 			"description": "Renders the aside as a compact horizontal card in the drawer: the media frame becomes a thumbnail beside the tag, title and link; the description is hidden. Uses the aside's five-slot order (media, tag, title, description, link)."
+		},
+		"drawerCardLayout": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"stacked-overlay"
+			],
+			"description": "In the drawer: the aside card's layout. '' keeps the layout drawerCardCompact chooses; `stacked-overlay` is a full-width card with the tag over the image's top-left corner, the title and description below it and the link drawn as a 40px circle holding only its icon (the label stays the link's accessible name), from the mega-aside's five-slot order. It wins over drawerCardCompact."
 		},
 		"drawerCardBg": {
 			"type": "string",

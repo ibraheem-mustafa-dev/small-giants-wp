@@ -51,6 +51,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-surface-ground.php';
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/mega-panel-drawer-extras-css.php';
 
 // ---------------------------------------------------------------------------
 // 0. Sanitise every attribute. variant/style/colourScheme are PHP-validated
@@ -1043,6 +1044,9 @@ if ( $sgs_mm_in_drawer ) {
 			'width'    => '1px',
 		)
 	);
+	// The drawer copy's card shell (radius, padding, shadow) and the link-row
+	// hover fill and radius (includes/mega-panel-drawer-extras-css.php).
+	$css .= sgs_mega_panel_drawer_shell_css( $attributes, $root_sel, $sgs_dv_row );
 
 	// Link number / label / description: colour (flat or text-clip gradient)
 	// and size, one rule per part. Keyed by the colour attribute, the way
@@ -1095,7 +1099,10 @@ if ( $sgs_mm_in_drawer ) {
 	if ( '' !== $sgs_dv_card_space ) {
 		$sgs_dv_card_decls .= ( $sgs_dv_order_first ? 'margin-bottom:' : 'margin-top:' ) . $sgs_dv_card_space . ';';
 	}
-	if ( ! empty( $attributes['drawerCardCompact'] ) ) {
+	if ( 'stacked-overlay' === ( $attributes['drawerCardLayout'] ?? '' ) ) {
+		// Full-width card, tag over the image, link as an arrow circle.
+		$css .= sgs_mega_panel_drawer_stacked_css( $attributes, $sgs_dv_aside, $sgs_dv_card_decls );
+	} elseif ( ! empty( $attributes['drawerCardCompact'] ) ) {
 		$sgs_dv_thumb  = $sgs_dv_len( 'drawerCardThumbSize' );
 		$sgs_dv_thumb  = '' !== $sgs_dv_thumb ? $sgs_dv_thumb : '64px';
 		$sgs_dv_gap    = $sgs_dv_len( 'drawerCardGap' );
@@ -1144,8 +1151,12 @@ if ( $sgs_mm_in_drawer ) {
 		if ( '' !== $sgs_dv_link_size ) {
 			$css .= $sgs_dv_aside . ' > :nth-child(5) .sgs-button{font-size:' . $sgs_dv_link_size . ';line-height:1.5;}';
 		}
-	} elseif ( '' !== $sgs_dv_card_decls ) {
-		$css .= $sgs_dv_aside . '{' . $sgs_dv_card_decls . '}';
+	} else {
+		// Outside compact mode the card's radius and padding print here.
+		$sgs_dv_card_decls .= sgs_mega_panel_drawer_card_box_decls( $attributes );
+		if ( '' !== $sgs_dv_card_decls ) {
+			$css .= $sgs_dv_aside . '{' . $sgs_dv_card_decls . '}';
+		}
 	}
 }
 
