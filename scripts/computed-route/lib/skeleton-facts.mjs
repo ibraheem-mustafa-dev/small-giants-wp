@@ -79,7 +79,7 @@ export function decisionsProblems( facts ) {
 	known( d.structural?.columnLabel?.block, 'structural.columnLabel' );
 	( d.elements || [] ).forEach( ( e ) => e.block && known( e.block, `elements.${ e.id }` ) );
 	const r = d.rules || {};
-	[ [ 'rules.decorativeShape', r.decorativeShape?.block ], [ 'rules.backToTop.wholeBlock', r.backToTop?.wholeBlock ], [ 'rules.backToTop.lone', r.backToTop?.lone ], [ 'rules.pillButton', r.pillButton?.block ], [ 'rules.wholeCardLink', r.wholeCardLink?.block ],
+	[ [ 'rules.decorativeShape', r.decorativeShape?.block ], [ 'rules.backToTop.wholeBlock', r.backToTop?.wholeBlock ], [ 'rules.backToTop.lone', r.backToTop?.lone ], [ 'rules.pillButton', r.pillButton?.block ], [ 'rules.wholeCardLink', r.wholeCardLink?.block ], [ 'rules.marquee.logoBlock', r.marquee?.logoBlock ], [ 'rules.marquee.itemBlock', r.marquee?.itemBlock ], [ 'rules.trustBar', r.trustBar?.block ], [ 'rules.hero', r.hero?.block ],
 		...Object.entries( r.navigation?.bySurface || {} ).map( ( [ k, b ] ) => [ `rules.navigation.${ k }`, b ] ), ...( r.surfaceRoot?.entries || [] ).map( ( x, i ) => [ `rules.surfaceRoot[${ i }]`, x.block ] ),
 		...( r.drawsChildren?.blocks || [] ).map( ( x ) => [ `rules.drawsChildren ${ x.block }`, x.block ] ) ].forEach( ( [ where, slug ] ) => known( slug, where ) );
 	( r.coreExceptions || [] ).forEach( ( x, i ) => ( ! x.block?.startsWith( 'core/' ) || ! String( x.reason || '' ).trim() ) && problems.push( `rules.coreExceptions[${ i }] must name a core block and give its reason` ) );

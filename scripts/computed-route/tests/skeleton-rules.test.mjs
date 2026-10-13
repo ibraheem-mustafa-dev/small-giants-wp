@@ -46,7 +46,7 @@ function inventory( root ) {
 	walk( root, null, 0 );
 	return { checks: {}, source: 'fixture', root: root.tag, generated: 'fixture', elements };
 }
-const run = ( root, o = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', built: o.built || null, db } );
+const run = ( root, o = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', built: o.built || null, motion: o.motion || new Set(), db } );
 const row = ( r, pred ) => r.proposal.rows.find( pred );
 const byWords = ( r, w ) => row( r, ( x ) => x.words === w );
 const byTag = ( r, t ) => row( r, ( x ) => x.tag === t );
@@ -211,6 +211,48 @@ test( 'clientBuiltSurface: every row of a surface the client built as a post nam
 	assert.ok( run( tree, { kind: 'drawer', built } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' === x.rule && x.builtPost === built && ! x.low ), 'every row is settled by the post, so none awaits the finaliser' );
 	assert.ok( run( tree, { kind: 'drawer' } ).proposal.rows.some( ( x ) => x.low ), 'the same surface unbuilt has a row the finaliser would be asked about' );
 	assert.ok( run( tree, { kind: 'drawer', built, facts: facts( 'clientBuiltSurface' ) } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' !== x.rule ) );
+} );
+
+test( 'marquee: a strip whose own animation loops a translate for ever is a scrolling brand strip (logos) or trust bar (labels); MUST FAIL without the rule or the motion record', () => {
+	const logos = section( [ E( 'div', {}, [ E( 'a', { attrs: { href: '/a' } }, [ E( 'image-slot' ) ] ), E( 'a', { attrs: { href: '/b' } }, [ E( 'image-slot' ) ] ) ] ) ] );
+	const loopKey = 'Root/2';
+	const strip = byTag( run( logos, { motion: new Set( [ loopKey ] ) } ), 'div' );
+	assert.deepEqual( [ strip.block, strip.rule, strip.attributes.scrolling ], [ 'sgs/brand-strip', 'marquee', true ] );
+	assert.notEqual( byTag( run( logos ), 'div' ).rule, 'marquee', 'no motion record, no marquee (never read from a name)' );
+	assert.notEqual( byTag( run( logos, { motion: new Set( [ loopKey ] ), facts: facts( 'marquee' ) } ), 'div' ).rule, 'marquee' );
+	const labels = section( [ E( 'div', {}, [ E( 'span', { words: 'Free delivery' } ), E( 'span', { words: 'Next day' } ) ] ) ] );
+	const ticker = byTag( run( labels, { motion: new Set( [ loopKey ] ) } ), 'div' );
+	assert.deepEqual( [ ticker.block, ticker.attributes.autoScroll ], [ 'sgs/trust-bar', true ] );
+} );
+
+test( 'trustBar: a row of short labels naming a trust-bar capability is a trust bar; hours rows, numbered steps and job tags are not; MUST FAIL without the rule', () => {
+	const bar = ( ...words ) => section( [ E( 'div', { display: 'flex' }, words.map( ( w, i ) => E( 'span', { words: w, box: { x: i * 120, y: 0, w: 110, h: 30 } }, [ E( 'span', { style: 'width:7px;height:7px;border-radius:50%' } ) ] ) ) ) ] );
+	const badges = bar( 'BRC certified', 'Halal certified', 'Family run' );
+	const r = run( badges );
+	assert.deepEqual( [ row( r, ( x ) => 'div' === x.tag ).block, row( r, ( x ) => 'div' === x.tag ).rule ], [ 'sgs/trust-bar', 'trustBar' ] );
+	assert.ok( r.proposal.rows.filter( ( x ) => 'span' === x.tag ).every( ( x ) => 'absorbed' === x.action ), 'the badges are its items' );
+	assert.notEqual( row( run( badges, { facts: facts( 'trustBar' ) } ), ( x ) => 'div' === x.tag ).block, 'sgs/trust-bar' );
+	for ( const look of [ bar( 'Sunday', 'Closed' ), bar( '01', 'Halal' ), bar( 'Warehouse', 'Full-time', 'Birmingham' ) ] ) {
+		assert.notEqual( row( run( look ), ( x ) => 'div' === x.tag ).rule, 'trustBar', 'not a trust bar' );
+	}
+} );
+
+test( 'hero and heroInner: a page\'s first section holding its h1 is the split hero; its wrappers go, its image is its media, its buttons stay a group; MUST FAIL without each', () => {
+	const page = E( 'main', {}, [ E( 'section', {}, [ E( 'div', { display: 'grid' }, [
+		E( 'div', {}, [ E( 'h1', { words: 'Fresh food, delivered' } ), E( 'p', { words: 'Family run since 1962.' } ), E( 'div', { display: 'flex' }, [ E( 'a', { words: 'Apply', attrs: { href: '/apply' } } ), E( 'a', { words: 'Catalogue', attrs: { href: '/catalogue' } } ) ] ) ] ),
+		E( 'div', {}, [ E( 'image-slot' ) ] ),
+	] ) ] ), E( 'section', {}, [ E( 'h2', { words: 'More' } ) ] ) ] );
+	const r = run( page );
+	const hero = byTag( r, 'section' );
+	assert.deepEqual( [ hero.block, hero.rule, hero.attributes.variant ], [ 'sgs/hero', 'hero', 'split' ] );
+	assert.deepEqual( settled( byTag( r, 'image-slot' ) ), { block: null, action: 'absorbed', rule: 'heroInner' } );
+	assert.ok( r.proposal.rows.filter( ( x ) => 'div' === x.tag && 'unwrap' === x.action ).length >= 2, 'the layout wrappers go' );
+	const heroNode = r.skeleton[ 0 ].innerBlocks[ 0 ];
+	assert.deepEqual( heroNode.innerBlocks.map( ( n ) => n.name ), [ 'sgs/heading', 'sgs/text', 'sgs/multi-button' ], 'heading, text and the button group sit directly in the hero' );
+	assert.equal( r.proposal.rows.filter( ( x ) => 'hero' === x.rule ).length, 1, 'only the first section holding the h1' );
+	assert.notEqual( byTag( run( page, { facts: facts( 'hero' ) } ), 'section' ).block, 'sgs/hero' );
+	assert.notEqual( byTag( run( page, { facts: facts( 'heroInner' ) } ), 'image-slot' ).rule, 'heroInner' );
+	assert.notEqual( byTag( run( page, { kind: 'header' } ), 'section' ).rule, 'hero', 'a hero is a page section' );
 } );
 
 test( 'drawsChildren: a leaf, an array-item block and a named block draw their children; MUST FAIL with the name removed', () => {
