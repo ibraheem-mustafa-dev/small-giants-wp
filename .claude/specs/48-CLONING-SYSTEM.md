@@ -1619,6 +1619,6 @@ Each key is a construct kind (`sc-if`, `sc-for`, `dc-import`, `binding`, `style-
 | Draft defect | `accept` (build the code's intent), `render-wins` |
 | Not a defect (unwired dead code) | `not-a-defect` (the default), `defect` (build it as a draft defect) |
 | Missing feature | `map:<block>`, `difference` (record as deliberate), `build` |
-| Skeleton block choice | `accept`, `block:<slug>` |
+| Skeleton block choice | `accept`, `block:<slug>`, `remove` (the element is absorbed into its parent block and gets none of its own) |
 | Inventory diff | `ours`, `theirs` |
 | Unknown host request or command-like prose | `noted` |

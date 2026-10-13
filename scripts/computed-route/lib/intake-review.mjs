@@ -50,7 +50,7 @@ export const MARKS = {
 	'draft-defect': [ { value: 'accept' }, { value: 'render-wins' } ],
 	'not-a-defect': [ { value: 'not-a-defect' }, { value: 'defect' } ],
 	'missing-feature': [ { shape: 'map:<block>', re: /^map:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' }, { value: 'build' } ],
-	'skeleton-block': [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) } ],
+	'skeleton-block': [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'remove' } ],
 	'inventory-diff': [ { value: 'ours' }, { value: 'theirs' } ],
 	notice: [ { value: 'noted' } ],
 };

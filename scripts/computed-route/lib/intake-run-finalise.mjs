@@ -159,11 +159,12 @@ export function reviewDecisions( intake, today ) {
 			const mark = marks.get( r.rowId || `skeleton:${ surface }:${ r.key }` ) ?? null;
 			const own = /^block:(.+)$/.exec( mark || '' )?.[ 1 ];
 			const accepted = 'accept' === mark && 'agent' === r.finalisedBy;
-			if ( ! own && ! accepted ) {
+			const removed = 'remove' === mark;
+			if ( ! own && ! accepted && ! removed ) {
 				continue;
 			}
-			const choice = own ? { block: own } : 'remove' === r.action ? { remove: true } : { block: r.block, ...( r.attributes ? { attributes: r.attributes } : {} ) };
-			const reason = own ? `Bean marked block:${ own } in the intake review on ${ today }` : `Bean accepted the finaliser's pick in the intake review on ${ today }: ${ r.reason || '' }`.trim();
+			const choice = own ? { block: own } : removed || 'remove' === r.action ? { remove: true } : { block: r.block, ...( r.attributes ? { attributes: r.attributes } : {} ) };
+			const reason = own ? `Bean marked block:${ own } in the intake review on ${ today }` : removed ? `Bean marked remove in the intake review on ${ today }: the element is absorbed into its parent block` : `Bean accepted the finaliser's pick in the intake review on ${ today }: ${ r.reason || '' }`.trim();
 			const one = Boolean( r.distinctWords && r.distinctWords > 1 );
 			const homes = [ { surface, keys: r.keys || [ r.key ] }, ...( one ? [] : r.alsoIn || [] ) ];
 			for ( const h of homes ) {

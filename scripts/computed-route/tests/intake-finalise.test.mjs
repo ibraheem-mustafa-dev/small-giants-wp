@@ -261,3 +261,15 @@ test( '--render rewrites review.md from intake.json with the reading counts', ()
 	assert.equal( read( 'review.md' ), renderReview( fixture() ) );
 	assert.match( r.out, /9 rows: 6 need reading, 3 confident proposals Accept all covers \(skeleton 2, missing features 1\)/ );
 } );
+
+test( 'MUST FAIL: a remove mark on a confident skeleton row is saved as a removal, absorbed into its parent', async () => {
+	const { markProblem } = await import( '../lib/intake-review.mjs' );
+	assert.equal( markProblem( 'skeleton-block', 'remove' ), null, 'remove is a skeleton mark' );
+	const intake = { skeletons: { header: { rows: [
+		{ rowId: 'skeleton:header:Site/2#0', key: 'Site/2#0', tag: 'div', words: '', block: 'sgs/container' },
+		{ rowId: 'skeleton:header:Site/3#0', key: 'Site/3#0', tag: 'a', words: 'Home', block: 'sgs/container' },
+	] } }, review: [ { rowId: 'skeleton:header:Site/2#0', mark: 'remove' }, { rowId: 'skeleton:header:Site/3#0', mark: 'accept' } ] };
+	const d = reviewDecisions( intake, '2026-10-13' );
+	assert.deepEqual( d.map( ( x ) => [ x.element.key, x.choice ] ), [ [ 'Site/2#0', { remove: true } ] ], 'the removed row is saved; the accepted confident row is not' );
+	assert.match( d[ 0 ].reason, /Bean marked remove/ );
+} );
