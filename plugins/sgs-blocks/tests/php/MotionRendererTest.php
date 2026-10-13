@@ -26,7 +26,7 @@ use SGS\Blocks\Motion\Sgs_Motion_Renderer;
 #[\PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses]
 final class MotionRendererTest extends TestCase {
 
-	private const CARD = '<div class="wp-block-sgs-info-box"><div class="sgs-info-box__media"><img src="a.jpg" alt=""></div><div class="sgs-info-box__body"><p class="lede">Hi</p></div></div>';
+	private const CARD = '<div class="wp-block-sgs-hero"><div class="sgs-hero__media"><img src="a.jpg" alt=""></div><div class="sgs-hero__content"><p class="lede">Hi</p></div></div>';
 
 	protected function setUp(): void {
 		require_once __DIR__ . '/stubs/motion-render-stubs.php';
@@ -40,7 +40,7 @@ final class MotionRendererTest extends TestCase {
 	private function render( array $motion, string $html = self::CARD, array $extra_attrs = array() ): string {
 		return sgs_test_render_motion_block(
 			array(
-				'blockName' => 'sgs/info-box',
+				'blockName' => 'sgs/hero',
 				'attrs'     => array( 'sgsMotion' => $motion ) + $extra_attrs,
 			),
 			$html
@@ -79,7 +79,7 @@ final class MotionRendererTest extends TestCase {
 		);
 		$scope = $this->scope( $out );
 		$css   = $this->css();
-		$sel   = '.' . $scope . ' .sgs-info-box__media';
+		$sel   = '.' . $scope . ' .sgs-hero__media';
 
 		$this->assertSame( 1, substr_count( $css, $sel . '{--sgs-mh-to-s:1.04;--sgs-mh-to-ty:-6px;transition:' ), $css );
 		$this->assertSame( 1, substr_count( $css, '@media (max-width:1023px){' . $sel . '{--sgs-mh-to-s:1.02;}}' ), $css );
@@ -91,7 +91,7 @@ final class MotionRendererTest extends TestCase {
 		$this->assertStringNotContainsString( '--sgs-mh-rot', $css, 'only the owners present are listed' );
 		$this->assertStringNotContainsString( ' style=', $out );
 		$this->assertStringNotContainsString( '<style', $out, 'the front end sends the CSS through the collector' );
-		$this->assertStringContainsString( '<div data-sgs-mc="translate scale" data-sgs-mh="self" class="sgs-info-box__media">', $out );
+		$this->assertStringContainsString( '<div data-sgs-mc="translate scale" data-sgs-mh="self" class="sgs-hero__media">', $out );
 		$this->assertStringNotContainsString( 'data-sgs-mroot', $out );
 	}
 
@@ -146,6 +146,18 @@ final class MotionRendererTest extends TestCase {
 		$this->assertStringNotContainsString( '<cite data-sgs-mh', $out, 'the sibling is untouched' );
 	}
 
+	public function test_refusal_part_marked_motion_false_is_not_a_target(): void {
+		// sgs/hero's `headline` is a child sgs/heading (block.json "motion": false), even when that child carries the BEM class.
+		$html   = '<section class="wp-block-sgs-hero"><div class="sgs-hero__content"><h1 class="sgs-hero__headline">Hi</h1></div></section>';
+		$motion = array(
+			'v'        => 1,
+			'elements' => array( 'headline' => array( 'hover' => array( 'state' => array( 'values' => array( 'translateY' => -4 ) ) ) ) ),
+		);
+		$out    = sgs_test_render_motion_block( array( 'blockName' => 'sgs/hero', 'attrs' => array( 'sgsMotion' => $motion ) ), $html );
+		$this->assertStringNotContainsString( 'sgs-hero__headline{', $this->css(), 'no rule for an excluded part' );
+		$this->assertStringNotContainsString( 'data-sgs-mh', $out, 'no element is stamped' );
+	}
+
 	private static function load_fade( bool $allow = false, string $trigger = 'load' ): array {
 		$values = array( 'from' => array( 'opacity' => 0, 'translateY' => 24 ), 'duration' => 600 );
 		if ( $allow ) {
@@ -186,7 +198,7 @@ final class MotionRendererTest extends TestCase {
 	}
 
 	public function test_edge_priority_image_keeps_from_opacity_1(): void {
-		$html = '<div class="wp-block-sgs-info-box"><div class="sgs-info-box__media"><img src="a.jpg" alt="" fetchpriority="high"></div></div>';
+		$html = '<div class="wp-block-sgs-hero"><div class="sgs-hero__media"><img src="a.jpg" alt="" fetchpriority="high"></div></div>';
 		$this->render( self::load_fade(), $html );
 		$this->assertStringContainsString( '--sgs-me-from-op:1;', $this->css() );
 	}
@@ -210,7 +222,7 @@ final class MotionRendererTest extends TestCase {
 
 	public function test_root_source_marks_the_root(): void {
 		$out = $this->render( self::media_hover( array( 'scale' => 1.04 ), array(), 'root' ) );
-		$this->assertMatchesRegularExpression( '/^<div[^>]*\bdata-sgs-mroot\b[^>]*class="wp-block-sgs-info-box sgs-m-/', $out );
+		$this->assertMatchesRegularExpression( '/^<div[^>]*\bdata-sgs-mroot\b[^>]*class="wp-block-sgs-hero sgs-m-/', $out );
 		$this->assertStringContainsString( 'data-sgs-mh="root"', $out );
 	}
 
@@ -220,7 +232,7 @@ final class MotionRendererTest extends TestCase {
 
 		$rules = '';
 		$out   = sgs_test_render_motion_block(
-			array( 'blockName' => 'sgs/info-box', 'attrs' => array( 'sgsMotion' => self::media_hover( array( 'scale' => 1.04 ), array(), 'group' ) ) ),
+			array( 'blockName' => 'sgs/hero', 'attrs' => array( 'sgsMotion' => self::media_hover( array( 'scale' => 1.04 ), array(), 'group' ) ) ),
 			self::CARD,
 			null,
 			static function () use ( &$rules ) {

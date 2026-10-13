@@ -83,6 +83,7 @@
 					"_note": "Root typography (fontSize/fontWeight/fontStyle/lineHeight and the extended set) uses the shared TypographyControls/sgs_typography_css_rule() mechanism, root prefix '', and serialises on the wrapper as an inherited default for any text the number, label and expired-message elements do not style themselves. Those three elements each own a typography surface (prefixes number, label, expired), so a per-digit, per-label or per-message size, weight, transform or spacing is set on the element, not the wrapper. textAlign is a plain attribute edited through TypographyControls' own text-align field and emitted by render.php as a scoped declaration on the wrapper. textColourHover/textColourHoverGradient (2026-09-07, colour-conformance) are safe to paint directly on the wrapper's own selector because backgroundColour is ALREADY moved onto its own ::after layer via sgs_block_background_layer_css() (render.php) — background-clip:text on hover can never clip a background that isn't painted on this element."
 				},
 				"number": {
+					"selector": ".sgs-countdown__number",
 					"label": "Number",
 					"order": 2,
 					"clusters": [
@@ -108,6 +109,7 @@
 					"_note": "numberColourGradient (D636 Task 1b) is the text-colour gradient sibling to numberColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member (every other fill member is an honest GAP, this element has no background/border surface). The number* typography family is painted on .sgs-countdown__number by sgs_typography_css_rule( $attributes, 'number', … )."
 				},
 				"label": {
+					"selector": ".sgs-countdown__label",
 					"label": "Label",
 					"order": 3,
 					"clusters": [
@@ -131,6 +133,7 @@
 					}
 				},
 				"expired": {
+					"selector": ".sgs-countdown__expired",
 					"label": "Expired message",
 					"order": 4,
 					"clusters": [

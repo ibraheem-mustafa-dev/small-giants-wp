@@ -121,7 +121,7 @@ final class IconLabelTest extends TestCase {
 		$this->assertStringContainsString( '<span class="sgs-icon__label-text">Our shop</span>', $inner, 'the visible label sits inside the link' );
 		$this->assertNull( $this->hidden( $html ), 'no visually hidden name beside a visible label' );
 		$this->assertSame( 1, substr_count( $html, 'Our shop' ), 'the name appears once: no double announcement' );
-		$this->assertMatchesRegularExpression( '#<span class="sgs-icon__svg" aria-hidden="true">#', $inner, 'the glyph stays hidden' );
+		$this->assertMatchesRegularExpression( '#<span class="sgs-icon__glyph sgs-icon__svg" aria-hidden="true">#', $inner, 'the glyph stays hidden' );
 		$this->assertDoesNotMatchRegularExpression( '#<a [^>]*aria-label=#', $html, 'the link takes its name from its text' );
 	}
 

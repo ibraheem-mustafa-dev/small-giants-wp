@@ -168,6 +168,7 @@
 					}
 				},
 				"grid-item": {
+					"motion": false,
 					"label": "Grid item",
 					"layer": "GRID_AREA",
 					"order": 4,
@@ -200,6 +201,7 @@
 					}
 				},
 				"decorative": {
+					"motion": false,
 					"label": "Decorative background",
 					"order": 5,
 					"clusters": [],

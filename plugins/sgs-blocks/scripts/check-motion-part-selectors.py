@@ -7,20 +7,30 @@ uses it; any other part uses `.sgs-<slug>__<part>`. A part with neither a select
 matches nothing, so a motion layer on it is silently lost.
 
 HOW A PART RESOLVES (a part keyed `root`, or with `isWrapper: true`, is the root and is skipped)
+  excluded    the part is marked `"motion": false`: an element the block does not print itself (an InnerBlocks child,
+              a state of another element, a pseudo-element, a styling-only grouping, an element built at run time by
+              JS, third-party markup, or markup printed outside the block root). Spec 38A section 6.2: it is not a
+              target, and the renderer (Sgs_Motion_Targets::parts), seed_motion_fields.py, check-motion-db-rows.py and
+              TargetPicker.js all leave it out
   declared    the part has a `selector` key (one compound class, or classes joined by descendant spaces)
   bem         the class `sgs-<slug>__<part>` appears literally in the block's render source (render.php and the
               own-folder partials it requires, read through scripts/lib/block_source_files.py, then every other .php
               file in the block folder, which holds the require_once partials; a static block with no
-              render.php is read from save.js) or in a shared include that names this block's class
-  unresolved  neither; --survey prints the candidate real classes (a class the source emits whose element name holds
-              the part name, or a word of its label)
+              render.php is read from save.js) or in a shared include that names this block's class; or the part is
+              `content-band` and the render calls SGS_Container_Wrapper::render, which prints the band with
+              `sgs-<slug>__content-band` (built from the block name, so it is never a literal)
+  unresolved  none of these; --survey prints the candidate real classes (a class the source emits whose element name
+              holds the part name, or a word of its label)
 
 MODES
   --survey [--json]  every part with how it resolves, and the counts
-  --check            exit 1 on any unresolved part not in the allow-list, and on a declared selector that is not a class
-                     selector, or whose last class the block never emits
+  --check            exit 1 on any unresolved part not in the allow-list, on a `motion` value other than false, and on a
+                     declared selector that is not a class selector, or whose last class neither the block's render
+                     source, a shared include, nor the container wrapper's band class prints
   --self-test        plants (in temp copies) a part with no selector and no class (caught), a declared selector (passes),
-                     a BEM-class part (passes), a declared selector naming a class the block never emits (caught)
+                     a BEM-class part (passes), a declared selector naming a class the block never emits (caught), an
+                     excluded part (passes), a `motion` value other than false (caught), a wrapper block's content-band
+                     (passes) and a declared selector naming the wrapper's band class (passes)
 
 EXCEPTIONS live in plugins/sgs-blocks/scripts/data/motion-gate-allowlist.json (gate "motion-part-selectors"; pattern is
 `<block slug>:<part>`). An entry that matches no unresolved part is an error, and so is one whose delete_in_unit landed.
@@ -49,6 +59,8 @@ REPO = SCRIPTS.parents[2]
 BLOCKS = REPO / "plugins" / "sgs-blocks" / "src" / "blocks"
 INCLUDES = REPO / "plugins" / "sgs-blocks" / "includes"
 GATE = "motion-part-selectors"
+WRAPPER_CALL = "SGS_Container_Wrapper::render"
+WRAPPER_PART = "content-band"
 # Parts whose real class is not the kebab-case of the part key, each confirmed by reading the element in the render
 # source (the element is emitted once, its tag is the text the part's label names): `block:part` -> element class.
 CONFIRMED = {
@@ -77,6 +89,11 @@ def emitted_elements(text: str, slug: str) -> set[str]:
     """Element names of `sgs-<slug>__<element>` classes literally present in `text`, outside CSS selectors."""
     # A class written after a dot is a CSS selector or a comment about one, not an element carrying it.
     return set(re.findall(r"(?<![.\w-])sgs-" + re.escape(slug) + r"__([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)", text))
+
+
+def wrapper_band(text: str, slug: str) -> str:
+    """The band class SGS_Container_Wrapper::render prints for this block (`sgs-<slug>__content-band`), or ''."""
+    return f"sgs-{slug}__{WRAPPER_PART}" if WRAPPER_CALL in text else ""
 
 
 def kebab(part: str) -> str:
@@ -109,9 +126,14 @@ def survey(blocks: Path, includes: Path) -> list[dict]:
                 continue
             cls = f"sgs-{slug}__{part}"
             row = {"block": slug, "part": part, "label": spec.get("label") or "", "file": block_json.as_posix(), "candidates": []}
-            if "selector" in spec:
+            if "motion" in spec:
+                row["motion"] = spec["motion"]
+            if spec.get("motion") is False:
+                row["how"] = "excluded"
+            elif "selector" in spec:
                 row["how"], row["selector"] = "declared", spec["selector"]
-            elif part in emitted or any(part in emitted_elements(t, slug) for t in shared_hit):
+            elif part in emitted or any(part in emitted_elements(t, slug) for t in shared_hit) or (
+                    part == WRAPPER_PART and wrapper_band(text, slug)):
                 row["how"] = "bem"
             else:
                 row["how"] = "unresolved"
@@ -124,10 +146,17 @@ def survey(blocks: Path, includes: Path) -> list[dict]:
     return rows
 
 
-def declared_problems(rows: list[dict], blocks: Path) -> list[str]:
-    """A declared selector must be a class selector, and its last class must be one the block emits."""
+def declared_problems(rows: list[dict], blocks: Path, includes: Path) -> list[str]:
+    """A `motion` key is only ever false; a declared selector is a class selector whose last class something prints.
+
+    The last class must appear literally in the block's render source or in a shared include (the cart panel, value
+    ladder and nav markup helpers print classes for several blocks), or be the container wrapper's band class.
+    """
     problems = []
+    shared = include_text(includes)
     for r in rows:
+        if "motion" in r and r["motion"] is not False:
+            problems.append(f"{r['block']}:{r['part']} has \"motion\": {r['motion']!r}; the only allowed value is false")
         if r["how"] != "declared":
             continue
         sel = r["selector"]
@@ -135,15 +164,15 @@ def declared_problems(rows: list[dict], blocks: Path) -> list[str]:
             problems.append(f"{r['block']}:{r['part']} declared selector {sel!r} is not a class selector (classes joined by single spaces)")
             continue
         last = sel.split(" ")[-1][1:]
-        block_dir = blocks / r["block"]
-        if last not in source_text(block_dir):
-            problems.append(f"{r['block']}:{r['part']} declared selector {sel!r}: the block's render source never emits {last!r}")
+        text = source_text(blocks / r["block"])
+        if last not in text and not any(last in s for s in shared) and last != wrapper_band(text, r["block"]):
+            problems.append(f"{r['block']}:{r['part']} declared selector {sel!r}: neither the block's render source nor a shared include prints {last!r}")
     return problems
 
 
-def evaluate(rows: list[dict], blocks: Path, allow: list[dict], allow_errors: list[str]) -> tuple[list[str], list[str]]:
+def evaluate(rows: list[dict], blocks: Path, includes: Path, allow: list[dict], allow_errors: list[str]) -> tuple[list[str], list[str]]:
     allowed = {e["pattern"] for e in allow}
-    errors = [f"allow-list: {e}" for e in allow_errors] + declared_problems(rows, blocks)
+    errors = [f"allow-list: {e}" for e in allow_errors] + declared_problems(rows, blocks, includes)
     notes: list[str] = []
     keys = set()
     for r in rows:
@@ -158,7 +187,7 @@ def evaluate(rows: list[dict], blocks: Path, allow: list[dict], allow_errors: li
 
 
 def counts(rows: list[dict]) -> str:
-    return ", ".join(f"{h}={sum(1 for r in rows if r['how'] == h)}" for h in ("declared", "bem", "unresolved")) + f", total={len(rows)}"
+    return ", ".join(f"{h}={sum(1 for r in rows if r['how'] == h)}" for h in ("declared", "bem", "excluded", "unresolved")) + f", total={len(rows)}"
 
 
 def run_survey(blocks: Path, includes: Path, as_json: bool) -> int:
@@ -176,7 +205,7 @@ def run_survey(blocks: Path, includes: Path, as_json: bool) -> int:
 def run_check(blocks: Path, includes: Path) -> int:
     rows = survey(blocks, includes)
     allow, allow_errors = allowlist.load(REPO, GATE)
-    errors, notes = evaluate(rows, blocks, allow, allow_errors)
+    errors, notes = evaluate(rows, blocks, includes, allow, allow_errors)
     for n in notes:
         print(f"note: {n}")
     for e in errors:
@@ -260,20 +289,35 @@ def self_test() -> int:
         _plant(tmp, "chosen", {"label": "Thing", "selector": ".sgs-chosen__real"}, "<?php echo '<i class=\"sgs-chosen__real\"></i>';")
         _plant(tmp, "classed", {"label": "Thing"}, "<?php echo '<i class=\"sgs-classed__thing\"></i>';")
         _plant(tmp, "dangling", {"label": "Thing", "selector": ".sgs-dangling__gone"}, "<?php echo '<i class=\"sgs-dangling__other\"></i>';")
+        _plant(tmp, "skipped", {"label": "Thing", "motion": False}, "<?php echo '<div></div>';")
+        _plant(tmp, "badflag", {"label": "Thing", "motion": "no"}, "<?php echo '<i class=\"sgs-badflag__thing\"></i>';")
+        _plant(tmp, "banded", {"label": "Thing", "selector": ".sgs-banded__content-band"}, "<?php echo SGS_Container_Wrapper::render( $a, $b, $c );")
+        _plant(tmp, "shared", {"label": "Thing", "selector": ".sgs-helper__thing"}, "<?php echo sgs_helper_markup();")
+        (empty_includes / "helper.php").write_text("<?php function sgs_helper_markup() { return '<i class=\"sgs-helper__thing\"></i>'; }", encoding="utf-8")
+        band_dir = tmp / "bandpart"
+        _plant(tmp, "bandpart", {"label": "Thing"}, "<?php echo SGS_Container_Wrapper::render( $a, $b, $c );")
+        data = json.loads((band_dir / "block.json").read_text(encoding="utf-8"))
+        data["supports"]["sgs"]["elements"] = {"content-band": {"label": "Content band"}}
+        (band_dir / "block.json").write_text(json.dumps(data), encoding="utf-8")
         rows = {f"{r['block']}": r for r in survey(tmp, empty_includes)}
-        problems = declared_problems(list(rows.values()), tmp)
+        problems = declared_problems(list(rows.values()), tmp, empty_includes)
         cases = [
             ("no selector and no class is unresolved", rows["bare"]["how"] == "unresolved"),
             ("a part whose name matches no emitted class has no candidate", rows["bare"]["candidates"] == []),
             ("a declared selector passes", rows["chosen"]["how"] == "declared" and not any("chosen" in p for p in problems)),
             ("a BEM-class part passes", rows["classed"]["how"] == "bem"),
             ("a declared selector the block never emits is caught", any("dangling" in p for p in problems)),
+            ("a part marked motion false is excluded, not unresolved", rows["skipped"]["how"] == "excluded" and not any(p.startswith("skipped:") for p in problems)),
+            ("a motion value other than false is caught", any(p.startswith("badflag:") for p in problems)),
+            ("a wrapper block's content-band resolves to the band class", rows["bandpart"]["how"] == "bem"),
+            ("a declared selector naming the wrapper's band class passes", not any(p.startswith("banded:") for p in problems)),
+            ("a declared selector a shared include prints passes", not any(p.startswith("shared:") for p in problems)),
         ]
-        errors, _ = evaluate(list(rows.values()), tmp, [], [])
-        cases.append(("evaluate fails on the bare part only", any("bare:thing" in e for e in errors) and not any("chosen" in e or "classed" in e for e in errors)))
-        errors, notes = evaluate(list(rows.values()), tmp, [{"pattern": "bare:thing"}], [])
+        errors, _ = evaluate(list(rows.values()), tmp, empty_includes, [], [])
+        cases.append(("evaluate fails on the bare part only", any("bare:thing" in e for e in errors) and not any("chosen" in e or "classed" in e or "skipped" in e for e in errors)))
+        errors, notes = evaluate(list(rows.values()), tmp, empty_includes, [{"pattern": "bare:thing"}], [])
         cases.append(("an allow-listed part is a note, not an error", not any("bare:thing" in e for e in errors) and any("bare:thing" in n for n in notes)))
-        errors, _ = evaluate(list(rows.values()), tmp, [{"pattern": "bare:thing"}, {"pattern": "gone:part"}], [])
+        errors, _ = evaluate(list(rows.values()), tmp, empty_includes, [{"pattern": "bare:thing"}, {"pattern": "gone:part"}], [])
         cases.append(("a stale allow-list entry is an error", any("gone:part" in e for e in errors)))
         for label, ok in cases:
             failures += 0 if ok else 1

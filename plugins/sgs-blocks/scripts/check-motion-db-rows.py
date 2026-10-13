@@ -78,7 +78,8 @@ def expected_targets(blocks_dir: Path) -> set[str]:
         if not sgs.get("motion"):
             continue
         targets.add(f"{data['name']}/root")
-        targets.update(f"{data['name']}/{part}" for part in (sgs.get("elements") or {}))
+        # A part marked `"motion": false` is not a target (Spec 38A section 6.2).
+        targets.update(f"{data['name']}/{part}" for part, spec in (sgs.get("elements") or {}).items() if (spec or {}).get("motion") is not False)
     return targets
 
 

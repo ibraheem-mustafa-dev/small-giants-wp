@@ -51,6 +51,7 @@
 					"_note": "Root <div>: alignment, floating position and offset. The badge frame is the badge element."
 				},
 				"badge": {
+					"selector": ".sgs-google-rating-badge__link",
 					"label": "Badge",
 					"order": 2,
 					"clusters": [
@@ -98,6 +99,7 @@
 					}
 				},
 				"star": {
+					"selector": ".sgs-google-rating-badge__stars",
 					"label": "Stars",
 					"layer": "OUTER",
 					"order": 5,
@@ -112,6 +114,7 @@
 					"_note": "SVG star fill. Flat colour via --sgs-grb-star; a gradient through sgs_svg_stroke_gradient(...,'fill') defs."
 				},
 				"accent-stripe": {
+					"motion": false,
 					"label": "Accent stripe (card)",
 					"order": 6,
 					"clusters": [

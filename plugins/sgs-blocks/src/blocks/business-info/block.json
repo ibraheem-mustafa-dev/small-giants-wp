@@ -803,6 +803,7 @@
 					"_note_hover": "iconColourHover/iconColourHoverGradient mirror sgs/button's icon element exactly (same Lucide stroke-based icon painted via ancestor `color:`, same helpers-svg-gradient.php stroke-gradient mechanism) — see block.json's button icon element for the identical states.hover shape."
 				},
 				"hours-row": {
+					"selector": ".sgs-business-hours__row",
 					"label": "Hours row",
 					"order": 6,
 					"clusters": [

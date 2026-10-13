@@ -30,6 +30,7 @@
 			"specRef": "30",
 			"elements": {
 				"menuLink": {
+					"motion": false,
 					"label": "Menu links",
 					"order": 1,
 					"clusters": [
@@ -48,6 +49,7 @@
 					}
 				},
 				"menuActive": {
+					"motion": false,
 					"label": "Active menu item",
 					"order": 2,
 					"clusters": [
@@ -61,6 +63,7 @@
 					}
 				},
 				"menuIndicator": {
+					"motion": false,
 					"label": "Active menu item bar",
 					"order": 3,
 					"clusters": [
@@ -84,6 +87,7 @@
 					}
 				},
 				"cardBox": {
+					"selector": ".sgs-account__card",
 					"label": "Cards",
 					"order": 5,
 					"clusters": [
@@ -99,6 +103,7 @@
 					}
 				},
 				"cardTitle": {
+					"selector": ".sgs-account__card-title",
 					"label": "Card titles",
 					"order": 6,
 					"clusters": [
@@ -122,6 +127,7 @@
 					}
 				},
 				"track": {
+					"selector": ".sgs-account__progress-step",
 					"label": "Progress track",
 					"order": 8,
 					"clusters": [
@@ -132,6 +138,7 @@
 					}
 				},
 				"trackDone": {
+					"motion": false,
 					"label": "Progress track (completed)",
 					"order": 9,
 					"clusters": [
@@ -142,6 +149,7 @@
 					}
 				},
 				"contentLink": {
+					"motion": false,
 					"label": "Content links",
 					"order": 10,
 					"clusters": [

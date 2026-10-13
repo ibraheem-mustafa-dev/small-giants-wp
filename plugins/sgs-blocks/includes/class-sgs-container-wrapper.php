@@ -4008,6 +4008,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				 */
 				$fx_track_attr = ' data-sgs-fx-track="true"';
 			}
+			// The band also carries its block's own class, `sgs-<slug>__content-band`: the element the motion parts `content-band` and `inner` resolve to (Spec 38A §6.2), distinct from a nested container's band.
+			$inner_class = 'sgs-container__inner' . ( $block instanceof \WP_Block && 0 === strpos( (string) $block->name, 'sgs/' ) ? ' sgs-' . sanitize_html_class( substr( (string) $block->name, 4 ) ) . '__content-band' : '' );
 			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
 				// Responsive band tiers exist: the base band styles were emitted into
 				// the uid stylesheet (band base rule before the @media tiers) — an
@@ -4019,7 +4021,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// scoped `.$uid>.sgs-container__inner{…}` rule (see the block right
 				// after the $base_grid_real_decls rule above) — so no style attribute
 				// is built on this element at all.
-				$inner_open  = '<div class="sgs-container__inner"' . $fx_track_attr . '>';
+				$inner_open  = '<div class="' . esc_attr( $inner_class ) . '"' . $fx_track_attr . '>';
 				$inner_close = '</div>';
 			} elseif ( $do_wrap ) {
 				// No-inline contract (Spec 32 FR-32-4/FR-32-4a, this pass 2026-08-01):
@@ -4033,7 +4035,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// now emitted as a scoped rule at $grid_sel alongside
 				// $base_grid_real_decls (see above) — so this branch never needs a
 				// style attribute either, matching the $has_band_responsive branch.
-				$inner_open  = '<div class="sgs-container__inner"' . $fx_track_attr . '>';
+				$inner_open  = '<div class="' . esc_attr( $inner_class ) . '"' . $fx_track_attr . '>';
 				$inner_close = '</div>';
 			}
 

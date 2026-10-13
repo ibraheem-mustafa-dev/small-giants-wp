@@ -1,7 +1,8 @@
 /**
  * TargetPicker: which part of the block a motion layer animates (Spec 38A §3: targets are declared parts, never a typed
  * selector). The options are the whole block (`root`) plus every part the block declares in `supports.sgs.elements`,
- * in the order the block declares. M3.3's Target row composes this atom.
+ * in the order the block declares, except a part marked `"motion": false` (an element the block does not print itself,
+ * §6.2). M3.3's Target row composes this atom.
  *
  * @package
  */
@@ -31,7 +32,11 @@ export function targetOptions( elements ) {
 			label: part?.label || humanise( key ),
 			order: Number.isFinite( part?.order ) ? part.order : index + 1,
 		} ) )
-		.filter( ( part ) => part.value !== ROOT_TARGET )
+		.filter(
+			( part ) =>
+				part.value !== ROOT_TARGET &&
+				elements[ part.value ]?.motion !== false
+		)
 		.sort( ( a, b ) => a.order - b.order );
 	return [
 		{ value: ROOT_TARGET, label: __( 'Whole block', 'sgs-blocks' ) },

@@ -117,6 +117,7 @@
 					}
 				},
 				"current": {
+					"motion": false,
 					"label": "Current page",
 					"order": 4,
 					"clusters": [

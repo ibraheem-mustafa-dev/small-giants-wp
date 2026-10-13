@@ -3,7 +3,8 @@
  * Motion targets: each sgsMotion target to its CSS selector and its markup matcher (Spec 38A §6.2, §6.5).
  *
  * A target is `root`, a part the block declares in `supports.sgs.elements` (its element is the part's declared
- * `selector`, else the class `sgs-<block slug>__<part>`; a part marked `isWrapper` is the root itself), or a cloning-only `custom:<n>` whose
+ * `selector`, else the class `sgs-<block slug>__<part>`; a part marked `isWrapper` is the root itself; a part marked `"motion": false`
+ * is not a target), or a cloning-only `custom:<n>` whose
  * stored selector (already schema-checked) is prefixed by the scoped root. Parts are read from the registered block
  * type at render time, the same `block.json` source `scripts/dbschema/seed_motion_fields.py` seeds `motion_targets`
  * from.
@@ -21,7 +22,8 @@ defined( 'ABSPATH' ) || exit;
 final class Sgs_Motion_Targets {
 
 	/**
-	 * The declared parts of a block: part key => isWrapper.
+	 * The declared parts of a block that can be motion targets: part key => isWrapper. A part marked `"motion": false`
+	 * (an element the block does not print itself, Spec 38A §6.2) is left out, so a layer on it resolves to nothing.
 	 *
 	 * @param string $block_name Block name.
 	 * @return array<string,bool>
@@ -36,6 +38,9 @@ final class Sgs_Motion_Targets {
 			: array();
 		$out      = array();
 		foreach ( $elements as $key => $spec ) {
+			if ( is_array( $spec ) && array_key_exists( 'motion', $spec ) && false === $spec['motion'] ) {
+				continue;
+			}
 			$out[ (string) $key ] = is_array( $spec ) && ! empty( $spec['isWrapper'] );
 		}
 		return $out;

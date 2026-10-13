@@ -86,6 +86,7 @@
 			},
 			"elements": {
 				"scrim": {
+					"motion": false,
 					"label": "Backdrop / scrim",
 					"order": 5,
 					"clusters": [
@@ -172,6 +173,7 @@
 					"_note": "FR-36-19 — the flyout/drawer panel surface. panelBg/panelTextColour do not follow {prefix}{suffix} — explicit attrMap. Only rendered when displayMode is flyout|drawer. Gradient siblings use the same hand-built ::after reasoning as the badge element above (the panel's own --flyout/--drawer modifiers declare position:absolute/fixed, at the same specificity a uid-scoped sgs_block_background_layer_css() rule would carry). panelTextColourHover/panelTextColourHoverGradient are safe for the same reason as the badge above — the panel's own background always lives on its ::after layer."
 				},
 				"pill": {
+					"selector": ".sgs-cart__trigger",
 					"label": "Trigger pill (text style)",
 					"order": 6,
 					"clusters": [ "text", "fill", "layout" ],
@@ -201,6 +203,7 @@
 					"_note": "Wave B — triggerStyle:'pill' swaps the icon+badge trigger for a word (pillLabel) beside the live item count, in a pill (matches a 'Bag'/'Cart' text trigger draft shape). Only rendered/styled when triggerStyle is 'pill' — the icon element above stays the trigger for triggerStyle:'icon' (the default). HAND-BUILT ::after for the background (same reasoning as badge/panel above: .sgs-cart__trigger is already position:relative in style.css, and a text gradient's background-clip:text must not be clipped by the pill's own fill) — pillTextColour styles the LABEL only; the count beside it keeps using the existing badgeTextColour/badgeTextColourGradient attributes (same badge element, restyled inline for the pill via CSS, so one colour control governs the count in both trigger styles). Border (compliance correction, Spec 35 §14/§1 field 9f): pillBorderWidth (box object, base only) + pillBorderStyle (enum) + pillBorderColour (flat, no gradient sibling) mount through `SgsBorderControl`, mirroring sgs/whatsapp-cta's cardBorderWidth/cardBorderStyle/cardBorderColour (card-fields.js CardTypographyPanel) — no ad-hoc second colour mechanism. pillBorderRadius stays the one exception: a plain CSS-length STRING (default '' — CSS default of border-radius:999px in style.css governs), NOT a responsive 4-corner tier object, per Spec 32 §6.1's deliberate-keep for a single uniform pill radius (mirrors sgs/option-picker's pillBorderRadius) — `SgsBorderControl`'s `onRadiusChange` pairing is typed for that 4-corner tier shape, so pairing this scalar there would force the very object migration §6.1 exempts; it is mounted immediately alongside the composite instead (PillBorderControl.js). `layout` cluster added (compliance pass) purely so css:border-color/css:border-width/css:border-style/css:border-radius — all members of that cluster, per scripts/consistency/cluster-member-sets.json — resolve against this element's own attrMap instead of reporting ORPHAN:STYLE-DEFECT; no other `layout` member (padding/margin/gap/etc.) has an attrMap entry here, so none of them are newly claimed."
 				},
 				"freeDeliveryTrack": {
+					"motion": false,
 					"label": "Free-delivery progress track",
 					"order": 7,
 					"clusters": [ "fill" ],
@@ -212,6 +215,7 @@
 					"_note": "Wave B — the empty background of the free-delivery progress bar in the mini-cart panel (flyout or drawer). Only rendered when a threshold (manual override or the WooCommerce free-shipping zone method's min_amount) resolves to a positive number; both empty hides the whole feature. Built entirely client-side (panel-render.js) against Store API cart totals — see render.php's data-free-delivery-* attributes on the block wrapper, which is the only part of this feature render.php can own (the panel BODY markup lives in the shared includes/helpers-cart-panel.php, outside this build's file scope). freeDeliveryMessage/freeDeliverySuccessMessage (the progress-bar's two text states, edited in PanelSettingsControls.js) are declared here as `contentAttrs` — the content half of this element, not a style attribute, following Spec 35's PLACEMENT model (THE ELEMENT MANIFEST §ContentAttrs)."
 				},
 				"freeDeliveryFill": {
+					"motion": false,
 					"label": "Free-delivery progress fill",
 					"order": 8,
 					"clusters": [ "fill", "motion" ],
@@ -224,6 +228,7 @@
 					"_note": "Wave B — the filled portion of the free-delivery progress bar, width driven live by a --sgs-cart-free-delivery-pct custom property (panel-render.js element.style.setProperty()) — a custom-property VALUE, never a raw style=\"width:...\" declaration (Spec 32 FR-32-4; mirrors sgs/audio's --sgs-progress and sgs/before-after's --sgs-before-after-position)."
 				},
 				"panelFrame": {
+					"selector": ".sgs-cart__panel",
 					"label": "Panel frame",
 					"order": 9,
 					"clusters": [
@@ -241,6 +246,7 @@
 					"_note": "Drawer surface geometry. The dialog carries the block uid class itself because the shared nav store re-parents it to <body> on open, so every panel rule is scoped to `.{uid}.sgs-cart__panel`, never the block wrapper. panelShadowColour pairs with panelShadow through ShadowControl; panelSlideDuration/panelSlideEasing are the slide-in transition's duration and curve (panelSlideEasingCustom holds a hand-typed curve)."
 				},
 				"panelHead": {
+					"selector": ".sgs-cart__panel-header",
 					"label": "Panel head row",
 					"order": 10,
 					"clusters": [
@@ -253,6 +259,7 @@
 					}
 				},
 				"panelTitle": {
+					"selector": ".sgs-cart__panel-heading",
 					"label": "Panel heading",
 					"order": 11,
 					"clusters": [
@@ -262,6 +269,7 @@
 					"attrMap": {}
 				},
 				"panelCount": {
+					"selector": ".sgs-cart__panel-count",
 					"label": "Panel heading count",
 					"order": 12,
 					"clusters": [
@@ -274,6 +282,7 @@
 					"_note": "The bracketed live item count after the heading; shown when panelShowCount is on."
 				},
 				"panelClose": {
+					"selector": ".sgs-cart__panel-close",
 					"label": "Panel close button",
 					"order": 13,
 					"clusters": [
@@ -287,6 +296,7 @@
 					}
 				},
 				"panelBody": {
+					"selector": ".sgs-cart__panel-items",
 					"label": "Panel body",
 					"order": 14,
 					"clusters": [
@@ -299,6 +309,7 @@
 					}
 				},
 				"panelEmpty": {
+					"motion": false,
 					"label": "Empty-cart block",
 					"order": 15,
 					"clusters": [
@@ -312,6 +323,7 @@
 					}
 				},
 				"emptyMessage": {
+					"motion": false,
 					"label": "Empty-cart message",
 					"order": 16,
 					"clusters": [
@@ -325,6 +337,7 @@
 					}
 				},
 				"emptyCta": {
+					"motion": false,
 					"label": "Empty-cart button",
 					"order": 17,
 					"clusters": [
@@ -341,6 +354,7 @@
 					}
 				},
 				"itemThumb": {
+					"motion": false,
 					"label": "Item image",
 					"order": 18,
 					"clusters": [
@@ -355,6 +369,7 @@
 					}
 				},
 				"item": {
+					"motion": false,
 					"label": "Item row",
 					"order": 19,
 					"clusters": [
@@ -366,6 +381,7 @@
 					}
 				},
 				"itemBrand": {
+					"motion": false,
 					"label": "Item brand",
 					"order": 20,
 					"clusters": [
@@ -377,6 +393,7 @@
 					}
 				},
 				"itemName": {
+					"motion": false,
 					"label": "Item name",
 					"order": 21,
 					"clusters": [
@@ -386,6 +403,7 @@
 					"attrMap": {}
 				},
 				"itemDetail": {
+					"motion": false,
 					"label": "Item details (lens line)",
 					"order": 22,
 					"clusters": [
@@ -397,6 +415,7 @@
 					}
 				},
 				"itemPrice": {
+					"motion": false,
 					"label": "Item line price",
 					"order": 23,
 					"clusters": [
@@ -406,6 +425,7 @@
 					"attrMap": {}
 				},
 				"itemAction": {
+					"motion": false,
 					"label": "Item action link",
 					"order": 24,
 					"clusters": [
@@ -419,6 +439,7 @@
 					}
 				},
 				"itemRemove": {
+					"motion": false,
 					"label": "Item remove link",
 					"order": 25,
 					"clusters": [
@@ -432,6 +453,7 @@
 					}
 				},
 				"panelFooter": {
+					"selector": ".sgs-cart__panel-footer",
 					"label": "Panel footer",
 					"order": 26,
 					"clusters": [
@@ -446,6 +468,7 @@
 					}
 				},
 				"subtotal": {
+					"selector": ".sgs-cart__panel-subtotal",
 					"label": "Subtotal row",
 					"order": 27,
 					"clusters": [
@@ -458,6 +481,7 @@
 					"_note": "subtotalLabelColour colours the label and row; the amount on the right is its own element (subtotalValue)."
 				},
 				"subtotalValue": {
+					"selector": ".sgs-cart__panel-subtotal-value",
 					"label": "Subtotal amount",
 					"order": 32,
 					"clusters": [
@@ -469,6 +493,7 @@
 					}
 				},
 				"freeDeliveryText": {
+					"motion": false,
 					"label": "Free-delivery message",
 					"order": 28,
 					"clusters": [
@@ -480,6 +505,7 @@
 					}
 				},
 				"freeDeliveryBar": {
+					"motion": false,
 					"label": "Free-delivery bar geometry",
 					"order": 29,
 					"clusters": [
@@ -493,6 +519,7 @@
 					}
 				},
 				"checkout": {
+					"selector": ".sgs-cart__panel-checkout",
 					"label": "Checkout button",
 					"order": 30,
 					"clusters": [
@@ -518,6 +545,7 @@
 					"_note": "Hover: checkoutBgHover / checkoutColourHover."
 				},
 				"panelNote": {
+					"selector": ".sgs-cart__panel-note",
 					"label": "Note under checkout",
 					"order": 31,
 					"clusters": [

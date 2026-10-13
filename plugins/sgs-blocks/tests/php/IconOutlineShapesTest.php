@@ -96,7 +96,7 @@ final class IconOutlineShapesTest extends TestCase {
 			$this->assertMatchesRegularExpression( '#<clipPath id="(sgs-icn-[a-f0-9]{8}-oc)"><path d="' . preg_quote( $registry[ $shape ], '#' ) . '"/></clipPath>#', $html );
 			$this->assertStringContainsString( 'sgs-icon--shape-' . $shape, $html );
 			$this->assertStringContainsString( 'sgs-icon--outline', $html );
-			$this->assertMatchesRegularExpression( '#</svg><span class="sgs-icon__svg"#', $html, $shape . ': the glyph follows the outline' );
+			$this->assertMatchesRegularExpression( '#</svg><span class="sgs-icon__glyph sgs-icon__svg"#', $html, $shape . ': the glyph follows the outline' );
 			$svg = preg_match( '#<svg class="sgs-icon__outline".*?</svg>#s', $html, $m ) ? $m[0] : '';
 			$this->assertDoesNotMatchRegularExpression( '#\s(fill|stroke|stroke-width|style)=#', $svg, $shape . ': paint comes only from classes' );
 		}

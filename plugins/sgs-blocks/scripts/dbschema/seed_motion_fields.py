@@ -135,7 +135,7 @@ def field_rows(schema: dict) -> list[tuple]:
 
 
 def target_rows(blocks_dir: Path | None = None) -> list[tuple]:
-    """`root` plus one row per declared part (a part keyed `root` is the root), for every block whose `supports.sgs.motion` is truthy."""
+    """`root` plus one row per declared part (a part keyed `root` is the root; a part marked `"motion": false` is skipped), for every block whose `supports.sgs.motion` is truthy."""
     rows: list[tuple] = []
     for block_json in sorted((blocks_dir or DEFAULT_BLOCKS_DIR).glob("*/block.json")):
         data = json.loads(block_json.read_text(encoding="utf-8"))
@@ -150,7 +150,8 @@ def target_rows(blocks_dir: Path | None = None) -> list[tuple]:
         declared_root = parts.get("root") or {}
         rows.append((slug, "root", "root", "root", int(bool(declared_root.get("isWrapper"))), declared_root.get("label") or "Block root", support))
         for part, spec in parts.items():
-            if part != "root":
+            # A part marked `"motion": false` is an element the block does not print itself (section 6.2): not a target.
+            if part != "root" and spec.get("motion") is not False:
                 rows.append((slug, part, spec.get("selector") or part, "part", int(bool(spec.get("isWrapper"))), spec.get("label"), support))
     return rows
 

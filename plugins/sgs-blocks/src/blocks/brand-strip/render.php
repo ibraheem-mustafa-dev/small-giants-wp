@@ -770,7 +770,7 @@ if ( ! empty( $logos ) ) {
 				$sgs_bs_marker_class = implode( ' ', SGS_Media_Element::element_classes( $sgs_bs_scope_class ) );
 				$logo_html           = preg_replace(
 					'/(<img\b[^>]*\bclass="[^"]*)"/',
-					'$1 ' . $sgs_bs_marker_class . '"',
+					'$1 sgs-brand-strip__logo ' . $sgs_bs_marker_class . '"',
 					$logo_html,
 					1
 				);

@@ -606,16 +606,16 @@ switch ( $icon_source ) {
 
 if ( 'dashicon' === $icon_source ) {
 	$glyph_html = sprintf(
-		'<span class="sgs-icon__dashicon dashicons dashicons-%s" aria-hidden="true"></span>',
+		'<span class="sgs-icon__glyph sgs-icon__dashicon dashicons dashicons-%s" aria-hidden="true"></span>',
 		esc_attr( '' !== $dashicon_name ? $dashicon_name : 'star-filled' )
 	);
 } elseif ( 'emoji' === $icon_source ) {
-	$glyph_html = sprintf( '<span class="sgs-icon__emoji" aria-hidden="true">%s</span>', esc_html( '' !== $emoji_char ? $emoji_char : '⭐' ) );
+	$glyph_html = sprintf( '<span class="sgs-icon__glyph sgs-icon__emoji" aria-hidden="true">%s</span>', esc_html( '' !== $emoji_char ? $emoji_char : '⭐' ) );
 } else {
 	$glyph_svg  = sgs_svg_inject_defs( (string) $glyph_svg, $icon_grad['defs'] );
 	$glyph_svg  = sgs_svg_inject_defs( $glyph_svg, $icon_grad_hover['defs'] );
 	$glyph_svg  = sgs_svg_inject_defs( $glyph_svg, $logo_grad['defs'] );
-	$glyph_html = '<span class="sgs-icon__svg" aria-hidden="true">' . $glyph_svg . '</span>';
+	$glyph_html = '<span class="sgs-icon__glyph sgs-icon__svg" aria-hidden="true">' . $glyph_svg . '</span>';
 }
 $image_attrs = '' === $link_url && '' !== $aria_label && $group['in_group'] && ! $has_label ? ' role="img" aria-label="' . esc_attr( $aria_label ) . '"' : '';
 // An outline shape with something to paint (a background or a stroke) draws its SVG behind the glyph.

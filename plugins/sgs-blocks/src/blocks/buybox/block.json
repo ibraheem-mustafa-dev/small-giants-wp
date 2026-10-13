@@ -96,6 +96,7 @@
 					}
 				},
 				"rrp-pill": {
+					"selector": ".buybox__rrp-pill",
 					"label": "RRP saving pill",
 					"order": 2,
 					"clusters": [
@@ -109,6 +110,7 @@
 					"_note": "FR-Wave-B. SSR-only chip shown when a configured RRP meta key resolves to a genuine saving on the default variation (includes/product-rrp.php::sgs_product_rrp_saving). Background/text colour both live here rather than on the wrapper element, since this is a distinct visual element from the price row it sits beside."
 				},
 				"stock-in-stock": {
+					"motion": false,
 					"label": "In-stock label",
 					"order": 3,
 					"clusters": [
@@ -120,6 +122,7 @@
 					"_note": "FR-Wave-B. Shown only when showStockStatus is on. Colours both the label text and the status dot (extras.php::sgs_buybox_extras_scoped_css). Split into three separate elements (in/low/out) because each is its own css:color target — one element manifest entry cannot map three attributes to the same css_property key."
 				},
 				"stock-low-stock": {
+					"motion": false,
 					"label": "Low-stock label",
 					"order": 4,
 					"clusters": [
@@ -131,6 +134,7 @@
 					"_note": "FR-Wave-B. See stock-in-stock note — same mechanism, the low-stock state (WooCommerce per-variation stock management, extras.php::sgs_buybox_stock_status)."
 				},
 				"stock-out-of-stock": {
+					"motion": false,
 					"label": "Out-of-stock label",
 					"order": 5,
 					"clusters": [
@@ -142,6 +146,7 @@
 					"_note": "FR-Wave-B. See stock-in-stock note — same mechanism, the out-of-stock state."
 				},
 				"add-to-cart": {
+					"selector": ".buybox__add-to-cart",
 					"label": "Add to bag button",
 					"order": 6,
 					"clusters": [
@@ -161,6 +166,7 @@
 					"_note": "The add-to-cart button (.buybox__add-to-cart): its own look, distinct from the wrapper's border and the price's typography."
 				},
 				"gallery-thumb": {
+					"selector": ".product-card__thumb",
 					"label": "Gallery thumbnails",
 					"order": 9,
 					"clusters": [
@@ -191,6 +197,7 @@
 					"_note": "The thumbnail rail buttons (.product-card__thumb). A per-device thumbsPerRow fluid grid (0 = the fixed 64px scrolling rail) with thumbGap and thumbStripOffset, plus the shared border pair on SgsBorderControl: galleryThumbBorderWidth (box), galleryThumbBorderStyle, galleryThumbBorderColour / Hover / Current (Current is the selected [aria-current=true] thumbnail) and galleryThumbBorderRadius (a flat corner object, single tier), and the selected thumbnail's scale. Emitted per instance by extras.php::sgs_buybox_extras_scoped_css through sgs_border_states_css(). Empty width, colours and radius, and scale 105, keep the stylesheet defaults (2px transparent border, primary-token selected border, the main image's radius, scale 1.05); scale 100 turns the selected scale off."
 				},
 				"valueLadder": {
+					"selector": ".buybox__value-ladder",
 					"label": "Value ladder",
 					"order": 7,
 					"clusters": [
@@ -200,6 +207,7 @@
 					"_note": "The comparative per-pack price ladder wrapper (.buybox__value-ladder); its font settings cascade to the pack and per-unit text. No colour attribute exists for this element - an honest gap. Emitted by render.php sgs_typography_css_rule( $attributes, 'valueLadder', $root_sel . ' .buybox__value-ladder' )."
 				},
 				"valueLadderSaving": {
+					"selector": ".value-ladder__saving",
 					"label": "Value ladder saving",
 					"order": 8,
 					"clusters": [
@@ -257,6 +265,7 @@
 					"_note": "The email field label and the consent checkbox label of the back-in-stock form (.sgs-buybox__notify-label, .sgs-buybox__notify-consent-label): one role, the text that names a form control. No colour attribute exists for this element - an honest gap."
 				},
 				"notifyInput": {
+					"selector": ".sgs-buybox__notify-email",
 					"label": "Notify email input",
 					"order": 12,
 					"clusters": [
@@ -351,6 +360,7 @@
 					"_note": "The saving badge over the gallery photo (.sgs-buybox__saving-badge)."
 				},
 				"stock": {
+					"selector": ".buybox__stock",
 					"label": "Stock line",
 					"order": 16,
 					"clusters": [
@@ -374,6 +384,7 @@
 					"_note": "The stock line (.buybox__stock), in both the always-on form and the status-dot form. Its colour comes from the three stock-status colour elements."
 				},
 				"guidedMeter": {
+					"selector": ".sgs-buybox-guided__meter",
 					"label": "Guided progress meter",
 					"order": 17,
 					"clusters": [
@@ -397,6 +408,7 @@
 					"_note": "Guided layout: the meter step text, its step number and the compact \"2 of 4\" line (.sgs-buybox-guided__meter-btn, .sgs-buybox-guided__meter-index, .sgs-buybox-guided__meter-compact). The number sits inside the step, so one setting governs the whole step."
 				},
 				"guidedGroupTitle": {
+					"selector": ".sgs-buybox-guided__group-title",
 					"label": "Guided group title",
 					"order": 18,
 					"clusters": [

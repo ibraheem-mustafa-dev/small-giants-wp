@@ -111,6 +111,7 @@
 					"_note": "composite wrapper grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared, so the default convention cannot resolve bare camelCase attrs (ROLLOUT REQUIREMENT 1)."
 				},
 				"submit-button": {
+					"selector": ".sgs-form__button--submit",
 					"label": "Submit button",
 					"order": 3,
 					"clusters": [
@@ -151,6 +152,7 @@
 					"_note": "submitColour/submitBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule on `.uid .sgs-form__button--submit` (render.php, contract §A) — not inline. submitBackgroundGradient's attrMap entry exists because the default convention has no Gradient-suffix awareness, so the gradient sibling would otherwise float as an unclaimed orphan. submitBackgroundHover/submitBackgroundHoverGradient are painted through sgs_fill_decls()/sgs_emit_state_colour_css(), with an explicit hover attrMap for the same reason. The submit* typography family (size, weight, style, family, transform, decoration, line-height, letter-spacing, alignment, wrap, columns, writing mode) is painted on `.sgs-form__button--submit` by sgs_typography_css_rule( $attributes, 'submit', … ) in render.php. The stylesheet's own button typography is a :where() default on `.sgs-form__button`, so an unset control leaves the look unchanged. Previous-step and Next buttons keep that default; they have no typography controls."
 				},
 				"prev-button": {
+					"selector": ".sgs-form__button--prev",
 					"label": "Previous-step button",
 					"order": 3,
 					"clusters": [
@@ -193,6 +195,7 @@
 					"_note": "progressBarColour drives the `--sgs-progress-colour` custom-property value; progressBarColourGradient drives the `--sgs-progress-colour-gradient` sibling (2026-09-04). Both are custom-property-fed (not real declarations), so mapped explicitly. The gradient wins when set (render.php line 290 uses sgs_custom_property_gradient_decls). progressBarColourHover/progressBarColourHoverGradient (2026-09-06, hover-sibling closeout) feed the -hover/-hover-gradient custom-property siblings via the SAME 5-arg sgs_custom_property_gradient_decls() call, consumed by a new :hover/:focus-visible rule in style.css."
 				},
 				"field-input": {
+					"motion": false,
 					"label": "Field controls",
 					"order": 6,
 					"clusters": [
@@ -214,6 +217,7 @@
 					}
 				},
 				"field-placeholder": {
+					"motion": false,
 					"label": "Field placeholder",
 					"order": 7,
 					"clusters": [
@@ -224,6 +228,7 @@
 					}
 				},
 				"field-textarea": {
+					"motion": false,
 					"label": "Textarea control",
 					"order": 8,
 					"clusters": [
@@ -234,6 +239,7 @@
 					}
 				},
 				"field-label": {
+					"motion": false,
 					"label": "Field label",
 					"order": 10,
 					"clusters": [
@@ -243,6 +249,7 @@
 					"_note": "Typography only (labelFontSize and the rest of the label* set, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__label). The class is rendered by the child field blocks: as a <label> by includes/forms/field-render-helpers.php::field_label and as a <legend> by form-field-checkbox, form-field-radio and form-field-tiles, so one class-only selector serves both tags."
 				},
 				"submit-actions": {
+					"selector": ".sgs-form__actions",
 					"label": "Submit button row",
 					"order": 9,
 					"clusters": [
@@ -253,6 +260,7 @@
 					}
 				},
 				"focus-ring": {
+					"motion": false,
 					"label": "Focus ring",
 					"order": 5,
 					"clusters": [
@@ -269,6 +277,7 @@
 					"_note": "formFocusRingColour/Width/Opacity/Offset (render.php:82-86,237-243) drive :focus-visible custom-property values on form inputs — a distinct focus-ring control surface outside the Text/Fill/Layout/Position/Motion clusters (no 'outline colour'/'ring width' member exists), so this element declares no CLUSTER members and its attributes surface as ORPHANs (FR-35-4), same treatment as sgs/button's icon element. It DOES declare an explicit attrMap (2026-08-02): these four drive custom-property VALUES rather than being real declarations, so each is mapped to the property it semantically controls — the same treatment progressBarColour gets above, and for the same reason. Opacity is mapped to `css:opacity`, NOT to `css:box-shadow`: style.css:211-217 composes TWO --sgs-* vars (colour + opacity) into ONE box-shadow via color-mix, so no single attr owns that property, and declaring this one as the box-shadow would assert something untrue. Without the attrMap the emission tracer resolved formFocusRingOpacity to box-shadow with css_element NULL, which the F6 reseed-survival check correctly flagged as an undeclared sub-element paint that would misroute on a clone."
 				},
 				"tile-icon": {
+					"motion": false,
 					"label": "Tile icon",
 					"order": 11,
 					"clusters": [ "text" ],
@@ -290,6 +299,7 @@
 					"_note": "Typography only (tileIcon* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-tile__icon). The class is emitted by the child sgs/form-field-tiles block, which declares no typography attributes of its own; the parent's uid class is an ancestor of every tile, so the scoped rule reaches it."
 				},
 				"tile-label": {
+					"motion": false,
 					"label": "Tile label",
 					"order": 12,
 					"clusters": [ "text" ],
@@ -311,6 +321,7 @@
 					"_note": "Typography only (tileLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-tile__label). The class is emitted by the child sgs/form-field-tiles block. The selected-state bold in style.css stays a higher-specificity rule on the 'background' tile style: it is the non-colour selected cue (WCAG 1.4.1), so it outranks tileLabelFontWeight in that one state."
 				},
 				"consent-text": {
+					"motion": false,
 					"label": "Consent text",
 					"order": 13,
 					"clusters": [ "text" ],
@@ -332,6 +343,7 @@
 					"_note": "Typography only (consent* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__consent-text). The class is emitted by the child sgs/form-field-consent block, which declares no typography attributes of its own."
 				},
 				"review-term": {
+					"motion": false,
 					"label": "Review term",
 					"order": 14,
 					"clusters": [ "text" ],
@@ -353,6 +365,7 @@
 					"_note": "Typography only (reviewTerm* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__term). The <dt> is created by view.js inside the sgs/form-review list, which sits inside the form wrapper that carries the uid class, so the scoped rule reaches it."
 				},
 				"nav-button": {
+					"motion": false,
 					"label": "Step buttons",
 					"order": 15,
 					"clusters": [ "text" ],
@@ -374,6 +387,7 @@
 					"_note": "Typography of the multi-step Previous and Next buttons (.sgs-form__button--prev, .sgs-form__button--next). The submit button has its own submit* surface."
 				},
 				"help-text": {
+					"motion": false,
 					"label": "Help text",
 					"order": 16,
 					"clusters": [ "text" ],
@@ -395,6 +409,7 @@
 					"_note": "Typography only (helpText* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__help and .{uid} .sgs-form-field__file-hint). The help paragraph is emitted by field_label/field_help in field-render-helpers.php and the file size hint by sgs/form-field-file; neither child declares typography attributes."
 				},
 				"error-text": {
+					"motion": false,
 					"label": "Error text",
 					"order": 17,
 					"clusters": [ "text" ],
@@ -416,6 +431,7 @@
 					"_note": "Typography only (errorText* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__error and .{uid} .sgs-form-field__error-message). Both are the inline validation message lines under a field."
 				},
 				"file-status": {
+					"motion": false,
 					"label": "File upload status",
 					"order": 18,
 					"clusters": [ "text" ],
@@ -437,6 +453,7 @@
 					"_note": "Typography only (fileStatus* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-file__preview and .{uid} .sgs-form-file__progress). Both are emitted by the child sgs/form-field-file block."
 				},
 				"review-heading": {
+					"motion": false,
 					"label": "Review heading",
 					"order": 19,
 					"clusters": [ "text" ],
@@ -458,6 +475,7 @@
 					"_note": "Typography only (reviewHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__heading). The heading is emitted by the child sgs/form-review block, as a heading element whose level the block sets."
 				},
 				"review-detail": {
+					"motion": false,
 					"label": "Review answer",
 					"order": 20,
 					"clusters": [ "text" ],
@@ -479,6 +497,7 @@
 					"_note": "Typography only (reviewDetail* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__detail). The answer <dd> is built by view.js::populateReview, beside the reviewTerm surface."
 				},
 				"step-label": {
+					"selector": ".sgs-form__progress-step-label",
 					"label": "Step label",
 					"order": 21,
 					"clusters": [ "text" ],
@@ -500,6 +519,7 @@
 					"_note": "Typography only (stepLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-label). The label beside each multi-step progress number; the active-step bold in style.css stays as the non-colour active cue."
 				},
 				"file-button": {
+					"motion": false,
 					"label": "File upload button",
 					"order": 22,
 					"clusters": [ "text" ],
@@ -521,6 +541,7 @@
 					"_note": "Typography only (fileButton* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-button). The Choose file cue inside the panel-style upload zone."
 				},
 				"file-prompt": {
+					"motion": false,
 					"label": "File upload prompt",
 					"order": 23,
 					"clusters": [ "text" ],
@@ -542,6 +563,7 @@
 					"_note": "Typography only (filePrompt* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-label). The upload zone prompt text."
 				},
 				"grid-column-heading": {
+					"motion": false,
 					"label": "Grid column heading",
 					"order": 24,
 					"clusters": [ "text" ],
@@ -563,6 +585,7 @@
 					"_note": "Typography only (gridColHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__column-heading). The micro-label above a field in a table-style grid."
 				},
 				"grid-row-heading": {
+					"motion": false,
 					"label": "Grid row heading",
 					"order": 25,
 					"clusters": [ "text" ],
@@ -584,6 +607,7 @@
 					"_note": "Typography only (gridRowHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__row-heading). The label in the gutter beside a field in a table-style grid."
 				},
 				"step-number": {
+					"selector": ".sgs-form__progress-step-number",
 					"label": "Progress step number",
 					"order": 26,
 					"clusters": [ "text" ],
