@@ -14,35 +14,292 @@
 	"briefOnlyLines": [
 		{
 			"id": "coming-soon",
-			"patterns": [ "\\b(?:arriving|coming|launching|available|opening)\\s+soon\\b", "\\bcoming soon\\b" ],
+			"patterns": [
+				"\\b(?:arriving|coming|launching|available|opening)\\s+soon\\b",
+				"\\bcoming soon\\b"
+			],
 			"flags": "i",
 			"reason": "a coming-soon line exists only because the designer's brief said the thing is not ready; it has no place on a live page"
 		},
 		{
 			"id": "placeholder-copy",
-			"patterns": [ "\\blorem ipsum\\b", "^\\s*(?:your|insert)\\s+(?:text|content|copy)\\s+here\\s*$" ],
+			"patterns": [
+				"\\blorem ipsum\\b",
+				"^\\s*(?:your|insert)\\s+(?:text|content|copy)\\s+here\\s*$"
+			],
 			"flags": "i",
 			"reason": "placeholder copy is replaced by real content, never built"
+		},
+		{
+			"id": "photo-credit-note",
+			"patterns": [
+				"\\bplaceholder (?:photography|photos?|images?)\\b",
+				"^\\s*(?:photos?|photography|images?) (?:via|from|by) unsplash\\b"
+			],
+			"flags": "i",
+			"reason": "a note that the draft's photographs are stand-ins exists only for the design review; the live site uses the client's own photographs"
 		}
 	],
 	"siteInfoPatterns": {
-		"copyright": { "patterns": [ "^\\s*(?:copyright\\b|\\(c\\)|©|&copy;)" ], "flags": "i", "reason": "a line opening with a copyright mark (the marker business-info's own render uses)" },
-		"hours": { "patterns": [ "\\b(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*\\b.*\\d{1,2}[.:]\\d{2}" ], "flags": "i", "reason": "a day name followed by a clock time" },
-		"address": { "patterns": [ "\\b[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}\\b" ], "flags": "", "reason": "a UK postcode" },
-		"attribution": { "patterns": [ "^\\s*(?:website|site|web design|designed|built|made)\\s+by\\b" ], "flags": "i", "reason": "a credit line for the agency that built the site" }
+		"phone": {
+			"patterns": [
+				"^\\s*(?:\\+44\\s?|0)\\d[\\d\\s()-]{8,13}\\s*$"
+			],
+			"flags": "",
+			"reason": "a typed UK phone number standing alone is the Site Info phone"
+		},
+		"email": {
+			"patterns": [
+				"^\\s*[^\\s@]+@[^\\s@]+\\.[a-z]{2,}\\s*$"
+			],
+			"flags": "i",
+			"reason": "a typed email address standing alone is the Site Info email"
+		},
+		"copyright": {
+			"patterns": [
+				"^\\s*(?:copyright\\b|\\(c\\)|©|&copy;)"
+			],
+			"flags": "i",
+			"reason": "a line opening with a copyright mark (the marker business-info's own render uses)"
+		},
+		"hours": {
+			"patterns": [
+				"\\b(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*\\b.*\\d{1,2}[.:]\\d{2}"
+			],
+			"flags": "i",
+			"reason": "a day name followed by a clock time"
+		},
+		"address": {
+			"patterns": [
+				"\\b[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}\\b"
+			],
+			"flags": "",
+			"reason": "a UK postcode"
+		},
+		"attribution": {
+			"patterns": [
+				"^\\s*(?:website|site|web design|designed|built|made)\\s+by\\b"
+			],
+			"flags": "i",
+			"reason": "a credit line for the agency that built the site"
+		}
 	},
-	"addressLinkPatterns": { "patterns": [ "maps\\.google", "google\\.[a-z.]+/maps", "maps\\.apple" ], "flags": "i", "reason": "a link to a maps host is an address link" },
+	"addressLinkPatterns": {
+		"patterns": [
+			"maps\\.google",
+			"google\\.[a-z.]+/maps",
+			"maps\\.apple"
+		],
+		"flags": "i",
+		"reason": "a link to a maps host is an address link"
+	},
 	"logoImage": {
-		"patterns": [ "logo", "wordmark", "brandmark" ],
+		"patterns": [
+			"logo",
+			"wordmark",
+			"brandmark"
+		],
 		"flags": "i",
 		"reason": "an image whose file name, alt text or class says it is the brand mark"
 	},
 	"elements": [
 		{
 			"id": "skip-link",
-			"match": { "tag": "a", "wordsPattern": "^skip to (?:main )?content$" },
+			"match": {
+				"tag": "a",
+				"wordsPattern": "^skip to (?:main )?content$"
+			},
 			"action": "remove",
 			"reason": "the theme prints its own skip link"
 		}
-	]
+	],
+	"rules": {
+		"doc": "Framework-wide verdicts that settle an element before any scoring (lib/skeleton-rules.mjs holds the mechanisms; each verdict names its rule id on the row, and the review groups rows by it). Precedence: a client decision, then these rules, then a finaliser pick or a standing element decision, then the database scoring. Every block named here is checked against the framework database on load.",
+		"decided": "Bean, review of 2026-10-13 (Spec 48 FR-48-6)",
+		"coreExceptions": [],
+		"drawsChildren": {
+			"reason": "a block that draws the draft element's children itself, though it is neither a leaf nor holds an array item schema: the children are absorbed, never built",
+			"blocks": [
+				{
+					"block": "sgs/business-info",
+					"reason": "reads its content from Site Info"
+				},
+				{
+					"block": "sgs/nav-bar-menu",
+					"reason": "draws its items, labels and carets from a WordPress menu"
+				},
+				{
+					"block": "sgs/nav-drawer-menu",
+					"reason": "draws its items, numbers and carets from a WordPress menu"
+				}
+			]
+		},
+		"surfaceRoot": {
+			"reason": "a surface root whose kind names its block: a bar above the header is the header's top row, a menu panel is the mega panel, a drawer is the navigation drawer",
+			"entries": [
+				{
+					"kind": "global",
+					"namePattern": "\\btop[ -]?bar\\b|\\butility bar\\b|\\bannouncement bar\\b",
+					"block": "sgs/site-header-row",
+					"reason": "a top bar above the header is the header's top row (sgs/site-header-row with its own hide-on-scroll setting), not a separate surface"
+				},
+				{
+					"kind": "menu",
+					"namePattern": ".",
+					"block": "sgs/mega-panel",
+					"reason": "a menu surface (the panel a navigation item opens) is sgs/mega-panel"
+				},
+				{
+					"kind": "drawer",
+					"namePattern": ".",
+					"block": "sgs/nav-drawer",
+					"reason": "a drawer surface is sgs/nav-drawer, whose own settings draw its top row, logo, close button and body"
+				}
+			]
+		},
+		"readingProgress": {
+			"maxHeightPx": 6,
+			"reason": "a full-width bar a few pixels tall, fixed to the viewport, is the Floating UI reading progress setting, not a block",
+			"handover": "Floating UI reading progress bar: its height and its colour or gradient (shared gradient picker) are site settings"
+		},
+		"decorationLayer": {
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in"
+		},
+		"decorativeShape": {
+			"block": "sgs/decorative-image",
+			"reason": "a floating shape that draws an outline (a ring) is a decorative image"
+		},
+		"typedDivider": {
+			"patterns": [
+				"^[|·•/–—-]$"
+			],
+			"flags": "",
+			"reason": "a typed divider between items is the row's separators setting, not a block"
+		},
+		"homeLink": {
+			"patterns": [
+				"^(?:#?/?|#/|\\./?|index\\.html?)$"
+			],
+			"flags": "i",
+			"reason": "the link around a logo goes: the logo block links home itself"
+		},
+		"widthWrapper": {
+			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place"
+		},
+		"listWrapper": {
+			"reason": "a bare wrapper whose only content is one list goes: the list block is that wrapper"
+		},
+		"backToTop": {
+			"patterns": [
+				"\\bback to top\\b",
+				"^\\s*(?:to )?top\\s*$"
+			],
+			"flags": "i",
+			"handlers": {
+				"patterns": [
+					"^(?:toTop|scrollTop|backToTop|scrollToTop|goTop)$"
+				],
+				"flags": "i"
+			},
+			"wholeBlock": "sgs/container",
+			"lone": "sgs/button",
+			"reason": "a back-to-top control is a link whose source is 'top' (the shared link source): a container whose whole box is the link when it holds a label and an icon, a button when it is words alone"
+		},
+		"mapEmbed": {
+			"patterns": [
+				"google\\.[a-z.]+/maps",
+				"maps\\.google\\.",
+				"/maps/embed",
+				"openstreetmap\\.org"
+			],
+			"flags": "i",
+			"reason": "an embedded map is sgs/business-info's map display",
+			"handover": "map source: the Google Business Profile listing when Site Info has one (preferred), else the address",
+			"block": "sgs/business-info"
+		},
+		"openStatus": {
+			"patterns": [
+				"^\\s*(?:open now|closed now|open today|closed today|opens? at\\b|closes? at\\b|closed until\\b)"
+			],
+			"flags": "i",
+			"reason": "a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
+			"block": "sgs/business-info"
+		},
+		"hoursRows": {
+			"maxChars": 80,
+			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"block": "sgs/business-info"
+		},
+		"pillButton": {
+			"block": "sgs/button",
+			"reason": "a link or button holding one label and an icon is one button (its glyph is the button's own icon); a lone link is a button too, which can be styled as a plain link"
+		},
+		"wholeCardLink": {
+			"block": "sgs/container",
+			"reason": "a link holding two or more pieces of text, or a heading, is a container whose whole box is the link (the shared link source, so a Site Info address can be its target)"
+		},
+		"siteInfoLink": {
+			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
+			"block": "sgs/button"
+		},
+		"linkSourceForKind": {
+			"map": {
+				"phone": "phone",
+				"email": "email",
+				"address": "directions",
+				"whatsapp": "whatsapp",
+				"google": "google"
+			},
+			"reason": "the shared link source each Site Info kind becomes on a link"
+		},
+		"navigation": {
+			"bySurface": {
+				"header": "sgs/nav-bar-menu",
+				"drawer": "sgs/nav-drawer-menu"
+			},
+			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
+		},
+		"solitaryIcon": {
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"block": "sgs/icon"
+		},
+		"label": {
+			"maxWords": 4,
+			"minTrackingEm": 0.06,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label",
+			"block": "sgs/label"
+		},
+		"clientBuiltSurface": {
+			"reason": "a surface the client already built as a post (a header, drawer or mega menu) follows that post's block tree"
+		},
+		"logoElement": {
+			"reason": "a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo"
+		},
+		"columnHeading": {
+			"block": "sgs/heading",
+			"rowBlocks": [
+				"sgs/site-header-row",
+				"sgs/site-footer-row"
+			],
+			"reason": "the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style"
+		},
+		"mediaElement": {
+			"patterns": [
+				"^(?:image|img|photo|picture|media)-(?:slot|placeholder|frame)$",
+				"-(?:image|img|photo|picture)$"
+			],
+			"flags": "i",
+			"block": "sgs/media",
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+		},
+		"logoGrid": {
+			"minItems": 3,
+			"block": "sgs/gallery",
+			"reason": "a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items"
+		},
+		"cardTitle": {
+			"block": "sgs/heading",
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+		}
+	}
 }

@@ -1,0 +1,2065 @@
+{
+ "source": "Join session transcript 98407ad4, 2026-10-13",
+ "category1": [
+  {
+   "rowId": "defect-group:Indus Foods Website v2:template",
+   "elementRowIdsIntakeJson": [
+    "defect:Indus Foods Website v2:87",
+    "defect:Indus Foods Website v2:151",
+    "defect:Indus Foods Website v2:160",
+    "defect:Indus Foods Website v2:324",
+    "defect:Indus Foods Website v2:326",
+    "defect:Indus Foods Website v2:338",
+    "defect:Indus Foods Website v2:367",
+    "defect:Indus Foods Website v2:125",
+    "defect:Indus Foods Website v2:670"
+   ],
+   "group": "A (7 hover effects with the colour part lost: 87 sector cards in mega menu, 151 drawer sub-links, 160 drawer brand cards, 324 and 326 breadcrumb links, 338 CTA pills, 367 gradient sector cards)",
+   "proposed": "accept",
+   "outcome": "accept",
+   "correction": null,
+   "beanQuote": "I approve all 3 of your decisions"
+  },
+  {
+   "rowId": "defect-group:Indus Foods Website v2:template",
+   "elementRowIdsIntakeJson": [
+    "defect:Indus Foods Website v2:125"
+   ],
+   "group": "B (element 125, drawer accordion button colour transition; plus the animateAcc timer and waapi rows) - assistant judged these a detector miss, not real defects",
+   "proposed": "accept",
+   "outcome": "accept",
+   "correction": null,
+   "beanQuote": "I approve all 3 of your decisions"
+  },
+  {
+   "rowId": "defect-group:Indus Foods Website v2:animateAcc",
+   "elementRowIdsIntakeJson": [
+    "defect:Indus Foods Website v2:js:1276:13",
+    "defect:Indus Foods Website v2:js:1278:63"
+   ],
+   "group": "B (timer: setTimeout scroll of the expanded drawer row into view; waapi: el.animate fade-up of sub-links) - Bean asked what these are; answered by the assistant",
+   "proposed": "accept",
+   "outcome": "accept",
+   "correction": null,
+   "beanQuote": "I approve all 3 of your decisions"
+  },
+  {
+   "rowId": "defect-group:Indus Foods Website v2:template",
+   "elementRowIdsIntakeJson": [
+    "defect:Indus Foods Website v2:670"
+   ],
+   "group": "C (element 670, footer opening-hours card transition copied from neighbouring cards, no hover rule)",
+   "proposed": "render-wins",
+   "outcome": "render-wins",
+   "correction": "Bean: the opening hours in the footer look like another menu item and link to the Google Business Profile; hover is the site-wide underline. It is not a card. Built as a footer item linking to the GBP (carried into batch 4 row 670).",
+   "beanQuote": "the opening hours on our footer just look like another menu item and we've added a hyperlink to our GMB link and the hover effect is just the site-wide underline. It's not a card"
+  }
+ ],
+ "category1Note": "The review.md 'template' group row holds 9 defects with mixed outcomes (groups A, B-125 = accept, C = render-wins); the group row itself carries one mark in review.md, so element-level outcomes are recorded here with the intake.json element row IDs (those element IDs are not listed individually in review.md).",
+ "category2": [
+  {
+   "decision": 1,
+   "rowIds": [
+    "missing:Indus Foods Website v2:111",
+    "missing:Indus Foods Website v2:120",
+    "missing:Indus Foods Website v2:232",
+    "missing:Indus Foods Website v2:318",
+    "missing:Indus Foods Website v2:368",
+    "missing:Indus Foods Website v2:518",
+    "missing:Indus Foods Website v2:52",
+    "missing:Indus Foods Website v2:621",
+    "missing:Indus Foods Website v2:623",
+    "missing:TradeApplication:14",
+    "missing:EnquiryForm:26",
+    "missing:EnquiryForm:31",
+    "missing:Indus Foods Website v2:101",
+    "missing:Indus Foods Website v2:109",
+    "missing:Indus Foods Website v2:110",
+    "missing:Indus Foods Website v2:114",
+    "missing:Indus Foods Website v2:119",
+    "missing:Indus Foods Website v2:128",
+    "missing:Indus Foods Website v2:130",
+    "missing:Indus Foods Website v2:200",
+    "missing:Indus Foods Website v2:214",
+    "missing:Indus Foods Website v2:217",
+    "missing:Indus Foods Website v2:225",
+    "missing:Indus Foods Website v2:234",
+    "missing:Indus Foods Website v2:244",
+    "missing:Indus Foods Website v2:257",
+    "missing:Indus Foods Website v2:273",
+    "missing:Indus Foods Website v2:279",
+    "missing:Indus Foods Website v2:289",
+    "missing:Indus Foods Website v2:297",
+    "missing:Indus Foods Website v2:319",
+    "missing:Indus Foods Website v2:321",
+    "missing:Indus Foods Website v2:332",
+    "missing:Indus Foods Website v2:342",
+    "missing:Indus Foods Website v2:351",
+    "missing:Indus Foods Website v2:361",
+    "missing:Indus Foods Website v2:369",
+    "missing:Indus Foods Website v2:370",
+    "missing:Indus Foods Website v2:372",
+    "missing:Indus Foods Website v2:38",
+    "missing:Indus Foods Website v2:383",
+    "missing:Indus Foods Website v2:391",
+    "missing:Indus Foods Website v2:396",
+    "missing:Indus Foods Website v2:402",
+    "missing:Indus Foods Website v2:419",
+    "missing:Indus Foods Website v2:43",
+    "missing:Indus Foods Website v2:441",
+    "missing:Indus Foods Website v2:452",
+    "missing:Indus Foods Website v2:484",
+    "missing:Indus Foods Website v2:496",
+    "missing:Indus Foods Website v2:50",
+    "missing:Indus Foods Website v2:503",
+    "missing:Indus Foods Website v2:516",
+    "missing:Indus Foods Website v2:517",
+    "missing:Indus Foods Website v2:521",
+    "missing:Indus Foods Website v2:532",
+    "missing:Indus Foods Website v2:560",
+    "missing:Indus Foods Website v2:562",
+    "missing:Indus Foods Website v2:566",
+    "missing:Indus Foods Website v2:568",
+    "missing:Indus Foods Website v2:570",
+    "missing:Indus Foods Website v2:573",
+    "missing:Indus Foods Website v2:576",
+    "missing:Indus Foods Website v2:581",
+    "missing:Indus Foods Website v2:596",
+    "missing:Indus Foods Website v2:608",
+    "missing:Indus Foods Website v2:638",
+    "missing:Indus Foods Website v2:654",
+    "missing:Indus Foods Website v2:655",
+    "missing:Indus Foods Website v2:659",
+    "missing:Indus Foods Website v2:665",
+    "missing:Indus Foods Website v2:674",
+    "missing:Indus Foods Website v2:684",
+    "missing:Indus Foods Website v2:707",
+    "missing:Indus Foods Website v2:727",
+    "missing:Indus Foods Website v2:78",
+    "missing:Indus Foods Website v2:89",
+    "missing:TradeApplication:13",
+    "missing:TradeApplication:39",
+    "missing:TradeApplication:41",
+    "missing:TradeApplication:96"
+   ],
+   "count": 81,
+   "proposed": "follow category 3 (map:<block> if the element keeps a block, difference if removed)",
+   "outcome": "follow the category 3 outcome for the same element",
+   "correction": null,
+   "beanQuote": "Agree with your decisions for all 3."
+  },
+  {
+   "decision": 2,
+   "rowIds": [
+    "missing:handler@Indus Foods Website v2:571/template:onMouseEnter",
+    "missing:handler@Indus Foods Website v2:571/template:onMouseLeave"
+   ],
+   "count": 2,
+   "proposed": "build",
+   "outcome": "build: sgs/form submit button gets hover lift, resting shadow and hover shadow, reusing sgs/button's mechanism via shared helpers",
+   "correction": "Bean: for D2's implementation look for a shared helper for the button that can be used or is usable after updating it. Assistant: hover glow helper (helpers-shadow-hover.php, shadow-hover.js, ShadowLiftControls) gets an attribute-prefix option; the 2px lift moves into a new shared PHP+JS helper; sgs/form gains submitShadow. Built in lane A.",
+   "beanQuote": "Agree with your decisions for all 3. For D2's implementation try to see if there's a shared helper for the but"
+  },
+  {
+   "decision": 3,
+   "rowIds": [
+    "missing:handler@Indus Foods Website v2:js:1179:6/addEventListener:mouseenter",
+    "missing:handler@Indus Foods Website v2:js:1180:6/addEventListener:mouseleave"
+   ],
+   "count": 2,
+   "proposed": "difference",
+   "outcome": "difference (not built; the draft switches the scatter feature off, const density = 'Off')",
+   "correction": null,
+   "beanQuote": "Agree with your decisions for all 3."
+  }
+ ],
+ "category3": {
+  "batch1": [
+   {
+    "rowId": "skeleton:top-bar:Indus Foods Website v2/9#0",
+    "surface": "top-bar",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/site-header-row (top row, rowHideOnScroll)",
+    "correction": "Bean: the blue top bar is the header's top row, not a container.",
+    "beanQuote": "9-11,40,41 - Shouldn't these be sgs/header-row ? || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:top-bar:Indus Foods Website v2/10#0",
+    "surface": "top-bar",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "remove",
+    "correction": "Inner 1320px flex wrapper: the header row already sets content width and layout.",
+    "beanQuote": "9-11,40,41 - Shouldn't these be sgs/header-row ? || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:top-bar:Indus Foods Website v2/11#0",
+    "surface": "top-bar",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/multi-button",
+    "correction": "Bean chose multi-button for the left pill group. Also Bean's draft bug: at the width where only the 2 buttons show, centre-align them (draft left-aligns them like desktop); the mobile-only 'Apply' pill becomes a third sgs/button hidden on desktop and tablet.",
+    "beanQuote": "11 - sgs/multi-button || Yes, but I just realised a bug in the draft, when the top strip header row gets to the width where only the 2 buttons - Need to centre align them, they are left aligned like on the desktop version",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:top-bar:Indus Foods Website v2/14#0",
+    "surface": "top-bar",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "block:sgs/business-info (phone)",
+    "approvedBlock": "sgs/button, link source phone (label from Site Info, build item 2)",
+    "correction": "Follows from row 11 becoming a multi-button: pills become buttons reading link and label from Site Info.",
+    "beanQuote": "11 - sgs/multi-button || Yes, but I just realised a bug in the draft, when the top strip header row gets to the width where only the 2 buttons - Need to centre align them, they are left aligned like on the desktop version",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:top-bar:Indus Foods Website v2/16#0",
+    "surface": "top-bar",
+    "draftElement": "<span> \"0121 771 4330\"",
+    "reviewMdProposed": "block:sgs/business-info",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Phone text is the button's label (absorbed).",
+    "beanQuote": "Yes, but I just realised a bug in the draft, when the top strip header row gets to the width where only the 2 buttons - Need to centre align them, they are left aligned like on the desktop version",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:top-bar:Indus Foods Website v2/20#0",
+    "surface": "top-bar",
+    "draftElement": "<a> \"amir@indusfoodsltd.com\"",
+    "reviewMdProposed": "block:sgs/business-info",
+    "proposedBlock": "sgs/business-info (email)",
+    "approvedBlock": "sgs/button, link source email (label from Site Info, build item 2)",
+    "correction": "Follows from row 11 becoming a multi-button.",
+    "beanQuote": "11 - sgs/multi-button || Yes, but I just realised a bug in the draft, when the top strip header row gets to the width where only the 2 buttons - Need to centre align them, they are left aligned like on the desktop version",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:top-bar:Indus Foods Website v2/22#0",
+    "surface": "top-bar",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/social-icons",
+    "proposedBlock": "sgs/social-icons",
+    "approvedBlock": "sgs/social-icons",
+    "correction": "No change.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:top-bar:Indus Foods Website v2/23#0",
+    "surface": "top-bar",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Absorbed into sgs/social-icons.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:top-bar:Indus Foods Website v2/26#0",
+    "surface": "top-bar",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Absorbed into sgs/social-icons.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:top-bar:Indus Foods Website v2/29#0",
+    "surface": "top-bar",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Absorbed into sgs/social-icons.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:top-bar:Indus Foods Website v2/35#0",
+    "surface": "top-bar",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Absorbed into sgs/social-icons.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:scroll-progress-bar:Indus Foods Website v2/38#0",
+    "surface": "scroll-progress-bar",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container (motion attached at step 20b)",
+    "approvedBlock": "remove (site setting: Floating UI reading progress bar, 3px, gradient colour via shared gradient picker, build item 3 option a)",
+    "correction": "Bean: the reading progress bar already exists in Floating UI settings. Bean chose option (a): build gradient support into the Floating UI colour using the appropriate colour picker helper, with a few gradient picker variants for different element needs.",
+    "beanQuote": "38 - Not sure if the design of it matches the draft's implementation as it was made a while ago but in our floating UI settings we have the reading progress bar. || 38 - a - use the appropriate colour picker helper, have a few gradient picker variants to suit needs of elements that need different gradient implementations",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/39#0",
+    "surface": "sticky-header",
+    "draftElement": "<header>",
+    "reviewMdProposed": "block:sgs/site-header",
+    "proposedBlock": "sgs/site-header",
+    "approvedBlock": "sgs/site-header",
+    "correction": "No change.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/40#0",
+    "surface": "sticky-header",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/site-header-row",
+    "proposedBlock": "sgs/site-header-row (middle row)",
+    "approvedBlock": "sgs/site-header-row (middle row)",
+    "correction": "Bean: header rows. Already a header row in review.md.",
+    "beanQuote": "9-11,40,41 - Shouldn't these be sgs/header-row ? || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/41#0",
+    "surface": "sticky-header",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "remove",
+    "correction": "Inner width/flex wrapper (same as row 10).",
+    "beanQuote": "9-11,40,41 - Shouldn't these be sgs/header-row ? || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/42#0",
+    "surface": "sticky-header",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "sgs/responsive-logo already links home.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/43#0",
+    "surface": "sticky-header",
+    "draftElement": "<indus-logo>",
+    "reviewMdProposed": "block:sgs/responsive-logo",
+    "proposedBlock": "sgs/responsive-logo",
+    "approvedBlock": "sgs/responsive-logo",
+    "correction": "No change.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/45#0",
+    "surface": "sticky-header",
+    "draftElement": "<nav>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/nav-bar-menu",
+    "approvedBlock": "sgs/nav-bar-menu",
+    "correction": "Menu rendered from the WordPress menu incl. mega panels.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/47",
+    "surface": "sticky-header",
+    "draftElement": "<button>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Drawn by sgs/nav-bar-menu itself (menu buttons, labels, caret, active underline). Presentation listed 48 twice; review.md carries 48=sgs/text and 48=sgs/container.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/48=sgs/text",
+    "surface": "sticky-header",
+    "draftElement": "<span> \"Home\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Drawn by sgs/nav-bar-menu itself (menu buttons, labels, caret, active underline). Presentation listed 48 twice; review.md carries 48=sgs/text and 48=sgs/container.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/48=sgs/container",
+    "surface": "sticky-header",
+    "draftElement": "<span> \"About\"",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Drawn by sgs/nav-bar-menu itself (menu buttons, labels, caret, active underline). Presentation listed 48 twice; review.md carries 48=sgs/text and 48=sgs/container.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/50",
+    "surface": "sticky-header",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Drawn by sgs/nav-bar-menu itself (menu buttons, labels, caret, active underline). Presentation listed 48 twice; review.md carries 48=sgs/text and 48=sgs/container.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/52#0",
+    "surface": "sticky-header",
+    "draftElement": "<span>",
+    "reviewMdProposed": "remove",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Drawn by sgs/nav-bar-menu itself (menu buttons, labels, caret, active underline). Presentation listed 48 twice; review.md carries 48=sgs/text and 48=sgs/container.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   },
+   {
+    "rowId": "skeleton:sticky-header:Indus Foods Website v2/54#0",
+    "surface": "sticky-header",
+    "draftElement": "<a> \"Register For A Trade Account\"",
+    "reviewMdProposed": "block:sgs/button",
+    "proposedBlock": "sgs/button",
+    "approvedBlock": "sgs/button",
+    "correction": "No change.",
+    "beanQuote": "Everything else seems good || Yes, but I just realised a bug in the draft",
+    "approvalBasis": "explicit: group approval 'Yes, but ...' after corrections (user message 2198)"
+   }
+  ],
+  "batch2": [
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/67#0",
+    "surface": "about-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/mega-panel",
+    "correction": "Existing Indus About mega menu (post 4426) uses mega-panel as root.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/68#0",
+    "surface": "about-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/mega-group",
+    "correction": "Existing build uses mega-group for the links column.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/70",
+    "surface": "about-mega-menu",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container (linked)",
+    "approvedBlock": "sgs/container (linked)",
+    "correction": "Matches existing build: container with block link and 6px hover indent.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/71",
+    "surface": "about-mega-menu",
+    "draftElement": "<span> \"01\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "sgs/text",
+    "approvedBlock": "sgs/text",
+    "correction": "Brand-blue index number.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/72",
+    "surface": "about-mega-menu",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container",
+    "correction": "Column container.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/73",
+    "surface": "about-mega-menu",
+    "draftElement": "<span> \"Our Story\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "sgs/text (bold)",
+    "approvedBlock": "sgs/heading (h4)",
+    "correction": "Assistant withdrew its 'no headings in menus' rule; existing build uses heading h4.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/74",
+    "surface": "about-mega-menu",
+    "draftElement": "<span> \"Six decades of family heritage\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "sgs/text",
+    "approvedBlock": "sgs/text",
+    "correction": "No change.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/76#0",
+    "surface": "about-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/mega-aside",
+    "correction": "Existing build uses mega-aside for the feature panel.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/77#0",
+    "surface": "about-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container",
+    "correction": "Bordered 132px image frame.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/78#0",
+    "surface": "about-mega-menu",
+    "draftElement": "<image-slot>",
+    "reviewMdProposed": "block:sgs/media",
+    "proposedBlock": "sgs/media",
+    "approvedBlock": "sgs/media",
+    "correction": "Goes inside the frame; placeholder.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/79#0",
+    "surface": "about-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container",
+    "correction": "Label-row flex container.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/80#0",
+    "surface": "about-mega-menu",
+    "draftElement": "<span> \"Since 1962\"",
+    "reviewMdProposed": "block:sgs/label",
+    "proposedBlock": "sgs/label",
+    "approvedBlock": "sgs/label",
+    "correction": "No change.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/81#0",
+    "surface": "about-mega-menu",
+    "draftElement": "<div> \"Six decades of heritage\"",
+    "reviewMdProposed": "block:sgs/heading",
+    "proposedBlock": "sgs/text (bold)",
+    "approvedBlock": "sgs/text (bold)",
+    "correction": "Existing build: bold text 19px (feature-panel title).",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/82#0",
+    "surface": "about-mega-menu",
+    "draftElement": "<div> \"From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers.\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "sgs/text",
+    "approvedBlock": "sgs/text",
+    "correction": "No change.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/83#0",
+    "surface": "about-mega-menu",
+    "draftElement": "<a> \"Read our story\"",
+    "reviewMdProposed": "block:sgs/button",
+    "proposedBlock": "sgs/button",
+    "approvedBlock": "sgs/button",
+    "correction": "Button in its own row container.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/85#0",
+    "surface": "sectors-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container (grid 4/2/1)",
+    "correction": "Matches existing Sectors build (post 4443).",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/87",
+    "surface": "sectors-mega-menu",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container (linked, whole card)",
+    "approvedBlock": "sgs/container (not linked; card has hover lift, shadow and fade)",
+    "correction": "Existing build: card is not a link; the button is the link.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/88",
+    "surface": "sectors-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container",
+    "correction": "Image box / text box.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/90",
+    "surface": "sectors-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container",
+    "correction": "Image box / text box.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/89",
+    "surface": "sectors-mega-menu",
+    "draftElement": "<image-slot>",
+    "reviewMdProposed": "block:sgs/media",
+    "proposedBlock": "sgs/media",
+    "approvedBlock": "sgs/media",
+    "correction": "110px image box; placeholder.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/91",
+    "surface": "sectors-mega-menu",
+    "draftElement": "<div> \"Food Service\"",
+    "reviewMdProposed": "block:sgs/heading",
+    "proposedBlock": "sgs/text (bold)",
+    "approvedBlock": "sgs/heading (h3)",
+    "correction": "Existing build uses heading h3 for card titles.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/92",
+    "surface": "sectors-mega-menu",
+    "draftElement": "<div> \"Quality ingredients for venues, caterers & events across the UK.\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "sgs/text",
+    "approvedBlock": "sgs/text",
+    "correction": "No change.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/93",
+    "surface": "sectors-mega-menu",
+    "draftElement": "<div> \"Explore Food Service\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "sgs/text",
+    "approvedBlock": "sgs/button",
+    "correction": "Existing build uses a real sgs/button; there is no link-inside-a-link because the card is not a link.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/95#0",
+    "surface": "brands-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/mega-panel (brands variant)",
+    "correction": "Existing build (post 4440).",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/96#0",
+    "surface": "brands-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container",
+    "correction": "Column container.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/97#0",
+    "surface": "brands-mega-menu",
+    "draftElement": "<div> \"Our Brands\"",
+    "reviewMdProposed": "block:sgs/label",
+    "proposedBlock": "sgs/label",
+    "approvedBlock": "sgs/text (hidden on tablet and mobile)",
+    "correction": "Matches existing build (small grey text hidden below desktop). The drawer-copy content notes in batch 3 later say to un-hide 'Our Brands' on mobile/tablet in post 4440.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/98#0",
+    "surface": "brands-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/brand-strip (static)",
+    "approvedBlock": "sgs/gallery (logo grid, link per image; gallery block upgrade, build item 5)",
+    "correction": "Assistant first withdrew brand-strip for a container grid, then Bean doubted the container in favour of sgs/gallery needing an upgrade (per-image link, logo tiles); lane B built it. Gallery hover zoom and dark overlay to be switched off.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/100",
+    "surface": "brands-mega-menu",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "remove (absorbed into brand-strip)",
+    "approvedBlock": "remove (absorbed into sgs/gallery items)",
+    "correction": "Inferred: logo boxes become gallery items. Not stated row by row in chat.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5). Row-level mapping for 100/101 to gallery items is inferred."
+   },
+   {
+    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/101",
+    "surface": "brands-mega-menu",
+    "draftElement": "<image-slot>",
+    "reviewMdProposed": "block:sgs/media",
+    "proposedBlock": "remove (absorbed into brand-strip)",
+    "approvedBlock": "remove (absorbed into sgs/gallery items)",
+    "correction": "Inferred: logos are the gallery images.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5). Row-level mapping for 100/101 to gallery items is inferred."
+   },
+   {
+    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/102#0",
+    "surface": "brands-mega-menu",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/mega-aside (cta format)",
+    "correction": "Existing build.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/103#0",
+    "surface": "brands-mega-menu",
+    "draftElement": "<span> \"Own Brands\"",
+    "reviewMdProposed": "block:sgs/label",
+    "proposedBlock": "sgs/label",
+    "approvedBlock": "sgs/label",
+    "correction": "No change.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/104#0",
+    "surface": "brands-mega-menu",
+    "draftElement": "<div> \"We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree.\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "sgs/text",
+    "approvedBlock": "sgs/text",
+    "correction": "No change.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   },
+   {
+    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/105#0",
+    "surface": "brands-mega-menu",
+    "draftElement": "<a> \"View All Brands\"",
+    "reviewMdProposed": "block:sgs/button",
+    "proposedBlock": "sgs/button",
+    "approvedBlock": "sgs/button",
+    "correction": "No change.",
+    "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
+    "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
+   }
+  ],
+  "batch3": [
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/108#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/nav-drawer (gradient bg, 440px tablet, slides in from right)",
+    "approvedBlock": "sgs/nav-drawer (setting)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/109#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/decorative-image",
+    "proposedBlock": "sgs/decorative-image (ring); drift waits for Spec 38A ambient-float",
+    "approvedBlock": "sgs/decorative-image (ring); plain-CSS drift stopgap built now, Spec 38A standardises the controls later",
+    "correction": "Bean D4: build a working upgrade but give it to 38A to standardise. Later Bean (4019): accepted the endless-drift/WCAG finding; believes it stops after reaching position and at most pulses.",
+    "beanQuote": "All others are accepted || D4. We've got a lot to get through, I think we canbuild a working upgrade but still give it to spec 38A to standardise the controls when its ready.",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/110#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/decorative-image",
+    "proposedBlock": "sgs/decorative-image (ring); drift waits for Spec 38A ambient-float",
+    "approvedBlock": "sgs/decorative-image (ring); plain-CSS drift stopgap built now, Spec 38A standardises the controls later",
+    "correction": "Bean D4: build a working upgrade but give it to 38A to standardise. Later Bean (4019): accepted the endless-drift/WCAG finding; believes it stops after reaching position and at most pulses.",
+    "beanQuote": "All others are accepted || D4. We've got a lot to get through, I think we canbuild a working upgrade but still give it to spec 38A to standardise the controls when its ready.",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/111#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "remove",
+    "proposedBlock": "remove (second layer of the background gradient)",
+    "approvedBlock": "remove (second layer of the background gradient)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/112#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "drawer top row, 76px",
+    "approvedBlock": "drawer top row, 76px (covered)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/115#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "drawer top row, 76px",
+    "approvedBlock": "drawer top row, 76px (covered)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/113#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "drawer logo; white pill = build",
+    "approvedBlock": "drawer logo with logo box (fill, radius, padding, shadow)",
+    "correction": "Pill is a lane D build.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/114#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<indus-logo>",
+    "reviewMdProposed": "block:sgs/responsive-logo",
+    "proposedBlock": "drawer logo (setting)",
+    "approvedBlock": "drawer logo (setting)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/116#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/business-info",
+    "proposedBlock": "drawer top row, phone/email circles from Site Info (new slot type 'contact')",
+    "approvedBlock": "top-row slot that holds an sgs/social-icons group (phone, email, social icons from Site Info)",
+    "correction": "Bean suggested adding sgs/social-icons to the slots (or an optional icon array that allows both). Lane D built the social-icons slot (plan item 7). The assistant's text reply to Bean's 'would that allow for both?' was not found in the transcript.",
+    "beanQuote": "B. I guess 116-117 would work if we added social-icons to the slots or do we have to add like an optional icon array? Would that allow for both?",
+    "approvalBasis": "explicit suggestion by Bean; adopted by assistant in the lane D brief and plan item 7, not separately re-confirmed by Bean"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/117#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/business-info",
+    "proposedBlock": "drawer top row, phone/email circles from Site Info (new slot type 'contact')",
+    "approvedBlock": "top-row slot that holds an sgs/social-icons group (phone, email, social icons from Site Info)",
+    "correction": "Bean suggested adding sgs/social-icons to the slots (or an optional icon array that allows both). Lane D built the social-icons slot (plan item 7). The assistant's text reply to Bean's 'would that allow for both?' was not found in the transcript.",
+    "beanQuote": "B. I guess 116-117 would work if we added social-icons to the slots or do we have to add like an optional icon array? Would that allow for both?",
+    "approvalBasis": "explicit suggestion by Bean; adopted by assistant in the lane D brief and plan item 7, not separately re-confirmed by Bean"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/118#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<button>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "drawer close, 46px, fill colour (build)",
+    "approvedBlock": "drawer close, 46px; fill colour rest and hover (build)",
+    "correction": "Close button hover turn goes to Spec 38A.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/119#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove (close button draws the cross)",
+    "approvedBlock": "remove",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/120#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "remove",
+    "proposedBlock": "remove (close button draws the cross)",
+    "approvedBlock": "remove",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/121#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "drawer body (covered)",
+    "approvedBlock": "drawer body (covered)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/122#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<nav>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/nav-drawer-menu",
+    "approvedBlock": "sgs/nav-drawer-menu (menu items to Home, About, Sectors, Brands, Trade, Contact)",
+    "correction": "D2: Bean confirmed; the 'More' setup is dropped and the blog page is linked in the About mega menu.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/124",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "nav-drawer-menu rows: 24px labels, gold when open/current, one open at a time, 550ms expand",
+    "approvedBlock": "same (settings)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/125",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<button>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "nav-drawer-menu rows: 24px labels, gold when open/current, one open at a time, 550ms expand",
+    "approvedBlock": "same (settings)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/127",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span> \"Home\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "nav-drawer-menu rows: 24px labels, gold when open/current, one open at a time, 550ms expand",
+    "approvedBlock": "same (settings)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/126",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span> \"01\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "nav-drawer-menu number ornament; mono font = build",
+    "approvedBlock": "same; number typography built in lane D",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/128=unresolved",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "menu caret turns 180 degrees; ringed circle = build",
+    "approvedBlock": "menu caret setting; ringed caret circle with its own controls built in lane D, with named targets for Spec 38A's motion (ring glow, open-state fill, caret turn)",
+    "correction": "Bean: the expander ring box and hover effect should be a cross-library feature passed to the parallel (Spec 38A) session rather than a small-scale cheat; D4: still build a working upgrade and let 38A standardise. Assistant confirmed 38A owns glow ring, open-state fills and caret turn.",
+    "beanQuote": "130 - This might be another hover effect that we want to make a feature that can be used across the sgs library by passing it over to the parallel session, what do you think? || I think several are a little too small scale and would classify as cheats e.g. the expander ring box - and like this case I think it's more appropriate to send it to the parallel session to make sure that it's in its scope || D4. We've got a lot to get through, I think we canbuild a working upgrade but still give it to spec 38A to standardise the controls when its ready.",
+    "approvalBasis": "explicit instructions in message 2414; scope split confirmed by assistant in message 2705"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/128=sgs/container",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "menu caret turns 180 degrees; ringed circle = build",
+    "approvedBlock": "menu caret setting; ringed caret circle with its own controls built in lane D, with named targets for Spec 38A's motion (ring glow, open-state fill, caret turn)",
+    "correction": "Bean: the expander ring box and hover effect should be a cross-library feature passed to the parallel (Spec 38A) session rather than a small-scale cheat; D4: still build a working upgrade and let 38A standardise. Assistant confirmed 38A owns glow ring, open-state fills and caret turn.",
+    "beanQuote": "130 - This might be another hover effect that we want to make a feature that can be used across the sgs library by passing it over to the parallel session, what do you think? || I think several are a little too small scale and would classify as cheats e.g. the expander ring box - and like this case I think it's more appropriate to send it to the parallel session to make sure that it's in its scope || D4. We've got a lot to get through, I think we canbuild a working upgrade but still give it to spec 38A to standardise the controls when its ready.",
+    "approvalBasis": "explicit instructions in message 2414; scope split confirmed by assistant in message 2705"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/130",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "menu caret turns 180 degrees; ringed circle = build",
+    "approvedBlock": "menu caret setting; ringed caret circle with its own controls built in lane D, with named targets for Spec 38A's motion (ring glow, open-state fill, caret turn)",
+    "correction": "Bean: the expander ring box and hover effect should be a cross-library feature passed to the parallel (Spec 38A) session rather than a small-scale cheat; D4: still build a working upgrade and let 38A standardise. Assistant confirmed 38A owns glow ring, open-state fills and caret turn.",
+    "beanQuote": "130 - This might be another hover effect that we want to make a feature that can be used across the sgs library by passing it over to the parallel session, what do you think? || I think several are a little too small scale and would classify as cheats e.g. the expander ring box - and like this case I think it's more appropriate to send it to the parallel session to make sure that it's in its scope || D4. We've got a lot to get through, I think we canbuild a working upgrade but still give it to spec 38A to standardise the controls when its ready.",
+    "approvalBasis": "explicit instructions in message 2414; scope split confirmed by assistant in message 2705"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/178#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container (flex, space-between)",
+    "approvedBlock": "sgs/container (flex, space-between) - provisional",
+    "correction": "Bean asked where this row is and whether the drawer/menu block wrappers already cover it. The assistant checked the code but no text answer to Bean was found; this stays the original proposal until confirmed.",
+    "beanQuote": "178 - Where is this row and what does it hold? It could already be covered as a row in the nav drawer or menu block wrappers",
+    "approvalBasis": "UNCONFIRMED: Bean's question not answered in the transcript text"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/179#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span> \"Follow us\"",
+    "reviewMdProposed": "block:sgs/label",
+    "proposedBlock": "sgs/label",
+    "approvedBlock": "sgs/label",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/180#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/social-icons",
+    "proposedBlock": "sgs/social-icons (brand colours, circles)",
+    "approvedBlock": "sgs/social-icons (brand colours, circles)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/181#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove (drawn by sgs/social-icons)",
+    "approvedBlock": "remove (drawn by sgs/social-icons)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/184#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove (drawn by sgs/social-icons)",
+    "approvedBlock": "remove (drawn by sgs/social-icons)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/187#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove (drawn by sgs/social-icons)",
+    "approvedBlock": "remove (drawn by sgs/social-icons)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/193#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove (drawn by sgs/social-icons)",
+    "approvedBlock": "remove (drawn by sgs/social-icons)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/196#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container pinned to drawer bottom (build)",
+    "approvedBlock": "sgs/container with an opt-in 'pin to edge' setting (sticky top/bottom per device, safe-area padding); not hardcoded into every nav drawer",
+    "correction": "Bean asked whether to make a new optional pin/sticky child block or a sticky container; Bean accepts the container fix as long as the bottom strip is optional and not hardcoded. Built as plan item 9 on sgs/container; nav-drawer gets chromeSticky for the top row.",
+    "beanQuote": "196 + C1 sgs/nav-drawer - Is it worth making a new block with this pin/sticky bottom functionality so it could be used in other nav drawers as an optional nav drawer specific child block or a sticky container that can fit in parent it's not totally unconstrained since it fits to the width of the drawer.",
+    "approvalBasis": "explicit instruction in message 2414; implementation chosen by assistant (plan item 9)"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/197#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/button (gold pill)",
+    "approvedBlock": "sgs/button (gold pill)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/198#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span> \"Become A Trade Customer\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "remove (label absorbed into the button)",
+    "approvedBlock": "remove (label absorbed into the button)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/199#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "button icon in a filled circle (build)",
+    "approvedBlock": "absorbed into sgs/button icon with a filled circle (iconBackground, iconShapeSize; build item 8)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   },
+   {
+    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/200#0",
+    "surface": "mobile-tablet-drawer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "button icon in a filled circle (build)",
+    "approvedBlock": "absorbed into sgs/button icon with a filled circle (iconBackground, iconShapeSize; build item 8)",
+    "correction": "No change.",
+    "beanQuote": "All others are accepted",
+    "approvalBasis": "explicit: group approval 'All others are accepted' (user message 2414), with the row-specific notes recorded per row"
+   }
+  ],
+  "batch4": [
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/653#0",
+    "surface": "footer",
+    "draftElement": "<footer>",
+    "reviewMdProposed": "block:sgs/site-footer",
+    "proposedBlock": "sgs/site-footer",
+    "approvedBlock": "sgs/site-footer",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/654#0",
+    "surface": "footer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/separator",
+    "proposedBlock": "sgs/separator (gradient, 5px strip)",
+    "approvedBlock": "remove (becomes sgs/site-footer's own top border, per-side per-device, accepts a gradient)",
+    "correction": "Bean: built in site-footer border.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/655#0",
+    "surface": "footer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/decorative-image",
+    "proposedBlock": "remove (radial layer in footer background)",
+    "approvedBlock": "remove (invisible aria-hidden layer; nothing lost)",
+    "correction": "Bean: cannot see any glow in the draft.",
+    "beanQuote": "655 - Can't see any glow in corners of the footer on the draft",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/656#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/site-footer-row",
+    "proposedBlock": "sgs/site-footer-row (first footer row)",
+    "approvedBlock": "remove (width wrapper; footer rows handle width)",
+    "correction": "Assistant corrected after checking the draft: 656 wraps the contact strip and the column group.",
+    "beanQuote": "702, 709, 711, 713 - This is the 2nd of 3 sgs/footer-row blocks",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/657#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container (the strip)",
+    "approvedBlock": "sgs/site-footer-row, row 1 (contact strip)",
+    "correction": "Follows Bean's 'three sgs/footer-row blocks' note.",
+    "beanQuote": "702, 709, 711, 713 - This is the 2nd of 3 sgs/footer-row blocks",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/658#0",
+    "surface": "footer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container (linked) - tel:/mailto: typed (gap)",
+    "approvedBlock": "sgs/container (whole-block link) whose link comes from Site Info via the shared link popover (build item 10: typed URL, page, Site Info source, back to top)",
+    "correction": "Bean: add Site Info and page links to the shared link popover helper.",
+    "beanQuote": "658/664 - I've seen this issue pop up quite a lot. Why can't we add this functionality to set links tied to site info or pages in our link popover shared helper?",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/664#0",
+    "surface": "footer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container (linked) - tel:/mailto: typed (gap)",
+    "approvedBlock": "sgs/container (whole-block link) whose link comes from Site Info via the shared link popover (build item 10: typed URL, page, Site Info source, back to top)",
+    "correction": "Bean: add Site Info and page links to the shared link popover helper.",
+    "beanQuote": "658/664 - I've seen this issue pop up quite a lot. Why can't we add this functionality to set links tied to site info or pages in our link popover shared helper?",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/659#0",
+    "surface": "footer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "sgs/icon (circle)",
+    "approvedBlock": "sgs/icon (circle)",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/665#0",
+    "surface": "footer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "sgs/icon (circle)",
+    "approvedBlock": "sgs/icon (circle)",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/660#0",
+    "surface": "footer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container",
+    "correction": "Layout.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/666#0",
+    "surface": "footer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container",
+    "correction": "Layout.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/661#0",
+    "surface": "footer",
+    "draftElement": "<span> \"Call us\"",
+    "reviewMdProposed": "block:sgs/label",
+    "proposedBlock": "sgs/label",
+    "approvedBlock": "sgs/label",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/667#0",
+    "surface": "footer",
+    "draftElement": "<span> \"Email us\"",
+    "reviewMdProposed": "block:sgs/label",
+    "proposedBlock": "sgs/label",
+    "approvedBlock": "sgs/label",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/662#0",
+    "surface": "footer",
+    "draftElement": "<span> \"0121 771 4330\"",
+    "reviewMdProposed": "block:sgs/business-info",
+    "proposedBlock": "sgs/business-info (phone, email)",
+    "approvedBlock": "sgs/business-info (phone, email)",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/668#0",
+    "surface": "footer",
+    "draftElement": "<span> \"amir@indusfoodsltd.com\"",
+    "reviewMdProposed": "block:sgs/business-info",
+    "proposedBlock": "sgs/business-info (phone, email)",
+    "approvedBlock": "sgs/business-info (phone, email)",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/663#0",
+    "surface": "footer",
+    "draftElement": "<span> \"Speak to our sales team\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "sgs/text",
+    "approvedBlock": "sgs/text",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/669#0",
+    "surface": "footer",
+    "draftElement": "<span> \"We reply within one working day\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "sgs/text",
+    "approvedBlock": "sgs/text",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/670#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container (linked to Google Business Profile), no card lift, hover is site-wide underline",
+    "approvedBlock": "sgs/container (linked to Google Business Profile https://share.google/llQBqDGp0tMA9EtAS), no card lift",
+    "correction": "Bean's category 1 correction: not a card.",
+    "beanQuote": "the opening hours on our footer just look like another menu item and we've added a hyperlink to our GMB link and the hover effect is just the site-wide underline. It's not a card",
+    "approvalBasis": "explicit (Bean's category 1 correction, carried into batch 4)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/671#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container",
+    "correction": "Layout.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/675#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container",
+    "correction": "Layout.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/672#0",
+    "surface": "footer",
+    "draftElement": "<span> \"Opening hours\"",
+    "reviewMdProposed": "block:sgs/label",
+    "proposedBlock": "sgs/label",
+    "approvedBlock": "sgs/label",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/673#0",
+    "surface": "footer",
+    "draftElement": "<span> \"Open now\"",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "new sgs/business-info 'open status' display (build item 11)",
+    "approvedBlock": "sgs/business-info open-status display (live in the visitor's browser from Site Info hours)",
+    "correction": "Built in lane F.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/674#0",
+    "surface": "footer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "new sgs/business-info 'open status' display (build item 11)",
+    "approvedBlock": "sgs/business-info open-status display (live in the visitor's browser from Site Info hours)",
+    "correction": "Built in lane F.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/680#0",
+    "surface": "footer",
+    "draftElement": "<span> \"Closes at 5pm today\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "new sgs/business-info 'open status' display (build item 11)",
+    "approvedBlock": "sgs/business-info open-status display (live in the visitor's browser from Site Info hours)",
+    "correction": "Built in lane F.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/677",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/business-info (hours, rows)",
+    "approvedBlock": "sgs/business-info (hours, rows layout)",
+    "correction": "No change.",
+    "beanQuote": "679 - Doesn't this just means there are 2 variant layouts of this hours block?",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/678",
+    "surface": "footer",
+    "draftElement": "<span> \"Monday – Thursday\"",
+    "reviewMdProposed": "block:sgs/business-info",
+    "proposedBlock": "sgs/business-info (hours, rows)",
+    "approvedBlock": "sgs/business-info (hours, rows layout)",
+    "correction": "No change.",
+    "beanQuote": "679 - Doesn't this just means there are 2 variant layouts of this hours block?",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/679",
+    "surface": "footer",
+    "draftElement": "<span> \"9:30am – 5pm\"",
+    "reviewMdProposed": "remove",
+    "proposedBlock": "remove (time column)",
+    "approvedBlock": "remove (time column is part of the hours rows layout, day left and time right)",
+    "correction": "Bean asked whether this is just 2 variant layouts of the hours block; assistant confirmed yes.",
+    "beanQuote": "679 - Doesn't this just means there are 2 variant layouts of this hours block?",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/681#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container (columns layout)",
+    "approvedBlock": "sgs/site-footer-row, row 2",
+    "correction": "Bean: 702, 709, 711, 713 are the 2nd of 3 footer rows; assistant mapped the row itself to 681 and kept 682/702/709 as column containers.",
+    "beanQuote": "702, 709, 711, 713 - This is the 2nd of 3 sgs/footer-row blocks",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/682#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container (brand column)",
+    "correction": "Layout.",
+    "beanQuote": "702, 709, 711, 713 - This is the 2nd of 3 sgs/footer-row blocks",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/683#0",
+    "surface": "footer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "remove (logo block links home)",
+    "approvedBlock": "remove",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/684#0",
+    "surface": "footer",
+    "draftElement": "<indus-logo>",
+    "reviewMdProposed": "block:sgs/responsive-logo",
+    "proposedBlock": "sgs/responsive-logo",
+    "approvedBlock": "sgs/responsive-logo",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/685#0",
+    "surface": "footer",
+    "draftElement": "<p> \"As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods & has a strong export operation. Part of the Unitas Wholesale Group, with an annual turnover of £8bn, the company is at the forefront of driving positive growth within the Independent Wholesale sector.\"",
+    "reviewMdProposed": "block:sgs/text",
+    "proposedBlock": "sgs/text",
+    "approvedBlock": "sgs/text",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/686#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/social-icons",
+    "proposedBlock": "sgs/social-icons",
+    "approvedBlock": "sgs/social-icons",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/687#0",
+    "surface": "footer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Absorbed into sgs/social-icons.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/690#0",
+    "surface": "footer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Absorbed into sgs/social-icons.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/693#0",
+    "surface": "footer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Absorbed into sgs/social-icons.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/699#0",
+    "surface": "footer",
+    "draftElement": "<a>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Absorbed into sgs/social-icons.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/702#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container (column inside footer row 2)",
+    "correction": "Bean: part of the 2nd of 3 footer rows.",
+    "beanQuote": "702, 709, 711, 713 - This is the 2nd of 3 sgs/footer-row blocks",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/709#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container (column inside footer row 2)",
+    "correction": "Bean: part of the 2nd of 3 footer rows.",
+    "beanQuote": "702, 709, 711, 713 - This is the 2nd of 3 sgs/footer-row blocks",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/711#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container (layout inside the 'Visit us' column of footer row 2)",
+    "correction": "Bean: part of the 2nd of 3 footer rows.",
+    "beanQuote": "702, 709, 711, 713 - This is the 2nd of 3 sgs/footer-row blocks",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/713#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container",
+    "approvedBlock": "sgs/container (layout inside the 'Visit us' column of footer row 2)",
+    "correction": "Bean: part of the 2nd of 3 footer rows.",
+    "beanQuote": "702, 709, 711, 713 - This is the 2nd of 3 sgs/footer-row blocks",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/703#0",
+    "surface": "footer",
+    "draftElement": "<div> \"Quick links\"",
+    "reviewMdProposed": "block:sgs/heading",
+    "proposedBlock": "sgs/heading",
+    "approvedBlock": "sgs/heading",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/710#0",
+    "surface": "footer",
+    "draftElement": "<div> \"Visit us\"",
+    "reviewMdProposed": "block:sgs/heading",
+    "proposedBlock": "sgs/heading",
+    "approvedBlock": "sgs/heading",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/704#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "remove",
+    "approvedBlock": "remove",
+    "correction": "Absorbed into the list block.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/706",
+    "surface": "footer",
+    "draftElement": "<a> \"Certifications\"",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "block:sgs/icon-list (dot icon, each item linked)",
+    "approvedBlock": "sgs/icon-list (dot icon, each item linked)",
+    "correction": "No change; later Bean confirmed core/list -> sgs/icon-list as the replacement.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/707",
+    "surface": "footer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "sgs/icon-list item dot",
+    "approvedBlock": "absorbed into sgs/icon-list items",
+    "correction": "Presented together with 706 as 'the 6 links, each with a dot'.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/708#0",
+    "surface": "footer",
+    "draftElement": "<a> \"Apply For A Trade Account\"",
+    "reviewMdProposed": "block:sgs/button",
+    "proposedBlock": "sgs/button",
+    "approvedBlock": "sgs/button",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/712#0",
+    "surface": "footer",
+    "draftElement": "<iframe>",
+    "reviewMdProposed": "block:sgs/media",
+    "proposedBlock": "sgs/business-info (map display from Site Info address)",
+    "approvedBlock": "sgs/business-info map with a map-source option: Google Business Profile listing (preferred when set) or address (build item 12)",
+    "correction": "Bean: option to choose between a maps embed and a Google Business Profile embed, GBP preferred.",
+    "beanQuote": "712 - Should have option to pick between maps embed like you're suggesting and Google Business Profile embed which is preferred if I have it.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/714#0",
+    "surface": "footer",
+    "draftElement": "<div> \"55-58 Stratford St N, Birmingham B11 1BU, United Kingdom\"",
+    "reviewMdProposed": "block:sgs/business-info",
+    "proposedBlock": "sgs/business-info (address)",
+    "approvedBlock": "sgs/business-info (address): 55-58 Stratford St N, Birmingham B11 1BU",
+    "correction": "Address settled by Bean.",
+    "beanQuote": "For the address of the GBP - Here's the URL - https://share.google/llQBqDGp0tMA9EtAS",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/717#0",
+    "surface": "footer",
+    "draftElement": "<a> \"Get Directions\"",
+    "reviewMdProposed": "block:sgs/button",
+    "proposedBlock": "sgs/button, link source directions from Site Info",
+    "approvedBlock": "sgs/button, link source directions = https://maps.app.goo.gl/JV4nsGnV4EkxMoz36",
+    "correction": "Bean supplied the business directions URL.",
+    "beanQuote": "For the address of the GBP - Here's the URL - https://share.google/llQBqDGp0tMA9EtAS",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/718#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/site-footer-row",
+    "proposedBlock": "sgs/site-footer-row (bottom row)",
+    "approvedBlock": "sgs/site-footer-row, row 3 (bottom strip)",
+    "correction": "Bean: bottom strip is the final footer row block.",
+    "beanQuote": "718-720 - Bottom strip is the final sgs/footer-row-block",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/719#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "container (layout)",
+    "approvedBlock": "remove (width wrapper)",
+    "correction": "Assistant correction.",
+    "beanQuote": "718-720 - Bottom strip is the final sgs/footer-row-block",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/720#0",
+    "surface": "footer",
+    "draftElement": "<div>",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/container (layout)",
+    "approvedBlock": "sgs/container (groups copyright, attribution and dividers left, back to top right)",
+    "correction": "Bean: 718-720 are the bottom strip.",
+    "beanQuote": "718-720 - Bottom strip is the final sgs/footer-row-block",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/721#0",
+    "surface": "footer",
+    "draftElement": "<span> \"Copyright © 2026 Indus Foods Ltd\"",
+    "reviewMdProposed": "block:sgs/business-info",
+    "proposedBlock": "sgs/business-info (copyright)",
+    "approvedBlock": "sgs/business-info (copyright)",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/722#0",
+    "surface": "footer",
+    "draftElement": "<span> \"\\|\"",
+    "reviewMdProposed": "remove",
+    "proposedBlock": "remove (row separators setting draws the lines)",
+    "approvedBlock": "remove",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/724#0",
+    "surface": "footer",
+    "draftElement": "<span> \"\\|\"",
+    "reviewMdProposed": "remove",
+    "proposedBlock": "remove (row separators setting draws the lines)",
+    "approvedBlock": "remove",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/723#0",
+    "surface": "footer",
+    "draftElement": "<a> \"Website by Ibraheem Mustafa\"",
+    "reviewMdProposed": "block:sgs/business-info",
+    "proposedBlock": "sgs/business-info (attribution)",
+    "approvedBlock": "sgs/business-info (attribution)",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/725#0",
+    "surface": "footer",
+    "draftElement": "<span> \"Placeholder photography via Unsplash\"",
+    "reviewMdProposed": "remove",
+    "proposedBlock": "remove (design-brief note)",
+    "approvedBlock": "remove",
+    "correction": "No change.",
+    "beanQuote": "654 - This functionality is built in sgs/site-footer as the border corners are responsive box objects so you can set only the top and it works with gradients.",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535) (no row-specific note)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/726#0",
+    "surface": "footer",
+    "draftElement": "<button> \"Back to top\"",
+    "reviewMdProposed": "block:sgs/container",
+    "proposedBlock": "sgs/button, link source top",
+    "approvedBlock": "sgs/container with whole-block link source 'back to top' (build item 10) holding an sgs/text ('Back to top') and an sgs/icon; each child keeps its own hover behaviour; parent-hover-drives-child-hover asked of the Spec 38A session",
+    "correction": "Bean: not a button; mirror Floating UI back-to-top or use a container with a whole-block link plus text and icon blocks with their own hover states. Assistant picked the container option.",
+    "beanQuote": "726 - This is not a button, I think the back to top button is also something from the floating UI settings",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   },
+   {
+    "rowId": "skeleton:footer:Indus Foods Website v2/727#0",
+    "surface": "footer",
+    "draftElement": "<span>",
+    "reviewMdProposed": "block:sgs/icon",
+    "proposedBlock": "remove (button's own icon, ringed)",
+    "approvedBlock": "sgs/icon (ringed circle) inside the back-to-top container; scales up and rises on hover (needs 38A parent-hover feature)",
+    "correction": "Consequence of row 726 no longer being a button.",
+    "beanQuote": "726 - This is not a button, I think the back to top button is also something from the floating UI settings",
+    "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
+   }
+  ]
+ },
+ "batchDecisions": {
+  "batch1": {
+   "buildItems": [
+    "2 sgs/button label from Site Info",
+    "3 reading-progress gradient colour",
+    "4 review 'remove' mark"
+   ],
+   "note": "Bean's centring correction for the top strip applies at the width where only the 2 buttons show; the assistant checked which device tier."
+  },
+  "batch2": {
+   "buildItems": [
+    "5 sgs/gallery per-image link + logo tile styling + hover checks",
+    "6 pipeline: propose already-built surfaces; detect navigation as sgs/nav-bar-menu (FR-48-6)"
+   ]
+  },
+  "batch3": {
+   "answers": {
+    "D1 pin top row and footer band": {
+     "answer": "yes (Bean: 'Yes, we're cloning the draft.')",
+     "beanQuote": "D1. Yes, we're cloning the draft."
+    },
+    "D2 menu items Home, About, Sectors, Brands, Trade, Contact": {
+     "answer": "yes",
+     "beanQuote": "D2. Same answer as D1 - Also, if you check you can see that the more setup is completely dropped and the blogs page is linked in the About mega menu"
+    },
+    "D3 duplicate small drawer-only differences with show/hide by device": {
+     "answer": "yes",
+     "beanQuote": "D3. Yeah, that's why we have that functionality built"
+    },
+    "D4 drifting rings": {
+     "answer": "build a working upgrade now, give it to Spec 38A to standardise later",
+     "beanQuote": "D4. We've got a lot to get through, I think we canbuild a working upgrade but still give it to spec 38A to standardise the controls when its ready."
+    },
+    "D5 desktop mega menus unchanged": {
+     "answer": "no; differences exist (e.g. sectors mega menu background gradient) and are settings within current block capabilities",
+     "beanQuote": "D5. You're defo wrong on this"
+    }
+   },
+   "buildItems": [
+    "7 drawer upgrade (nav-drawer, nav-drawer-menu, mega-panel drawer copy)",
+    "8 sgs/button filled circle behind icon",
+    "9 sgs/container opt-in pin to edge"
+   ],
+   "instruction": "Do the gallery block upgrade, get all the builds queued up going"
+  },
+  "batch4": {
+   "buildItems": [
+    "10 link sources in shared LinkPopoverField (typed URL, page, Site Info, back to top)",
+    "11 sgs/business-info open-status display",
+    "12 sgs/business-info map source GBP or address"
+   ],
+   "siteInfoFacts": {
+    "googleBusinessProfile": "https://share.google/llQBqDGp0tMA9EtAS",
+    "directions": "https://maps.app.goo.gl/JV4nsGnV4EkxMoz36",
+    "address": "55-58 Stratford St N, Birmingham B11 1BU"
+   },
+   "beanQuote": "For the address of the GBP - Here's the URL - https://share.google/llQBqDGp0tMA9EtAS"
+  }
+ },
+ "batch5RowIds": [
+  "skeleton:page-home:Indus Foods Website v2/203#0",
+  "skeleton:page-home:Indus Foods Website v2/204#0",
+  "skeleton:page-home:Indus Foods Website v2/205#0",
+  "skeleton:page-home:Indus Foods Website v2/206#0",
+  "skeleton:page-home:Indus Foods Website v2/207#0",
+  "skeleton:page-home:Indus Foods Website v2/208#0",
+  "skeleton:page-home:Indus Foods Website v2/209#0",
+  "skeleton:page-home:Indus Foods Website v2/210#0",
+  "skeleton:page-home:Indus Foods Website v2/211#0",
+  "skeleton:page-home:Indus Foods Website v2/213",
+  "skeleton:page-home:Indus Foods Website v2/214",
+  "skeleton:page-home:Indus Foods Website v2/215#0",
+  "skeleton:page-home:Indus Foods Website v2/216#0",
+  "skeleton:page-home:Indus Foods Website v2/217#0",
+  "skeleton:page-home:Indus Foods Website v2/218#0",
+  "skeleton:page-home:Indus Foods Website v2/219#0",
+  "skeleton:page-home:Indus Foods Website v2/220#0",
+  "skeleton:page-home:Indus Foods Website v2/221#0",
+  "skeleton:page-home:Indus Foods Website v2/222#0",
+  "skeleton:page-home:Indus Foods Website v2/224",
+  "skeleton:page-home:Indus Foods Website v2/225"
+ ],
+ "generalRules": [
+  {
+   "rule": "Review runs one category at a time, sequentially, only moving on when the previous is totally complete; each item arrives with its evidence, the assistant's decision and the reasoning, discussed in session chat; categories get a plain explanation when they start.",
+   "beanQuote": "We shoud go through each category sequentially only moving on when the previous one is totally complete and cleared. Explain what each categorised issue means simply when we start on it"
+  },
+  {
+   "rule": "Items that the assistant can solve must be presented to Bean with the reasoning for approval, not as questions (palette roles included).",
+   "beanQuote": "All of these are able to be solved by you and presented to me with explanations on the reasoning for the approval."
+  },
+  {
+   "rule": "Page-map slugs for forms, mega menus and brands sub-pages must not carry a site-part or brand prefix.",
+   "beanQuote": "The page map had a few stupid suggestions like adding the site part as a prefix in the slug for forms, mega menus and brands sub-pages had a similar issue but in that case it added brand prefix"
+  },
+  {
+   "rule": "Palette colour roles are decided by Bean's existing rules; the assistant proposes the decisions instead of asking Bean.",
+   "beanQuote": "I've already given you the clear rules/principles for deciding on palette colours and their roles. You need to propose the decisions to me instead of having me tell you."
+  },
+  {
+   "rule": "Header and footer bars are header/footer row blocks (sgs/site-header-row, sgs/site-footer-row): a top bar is the header's top row; the footer has three footer rows (contact strip, columns, bottom strip).",
+   "beanQuote": "9-11,40,41 - Shouldn't these be sgs/header-row ? || 702, 709, 711, 713 - This is the 2nd of 3 sgs/footer-row blocks || 718-720 - Bottom strip is the final sgs/footer-row-block"
+  },
+  {
+   "rule": "The reading progress bar is a Floating UI setting, not a block; gradients use the shared colour/gradient picker helpers, with several gradient picker variants for different element needs.",
+   "beanQuote": "38 - Not sure if the design of it matches the draft's implementation as it was made a while ago but in our floating UI settings we have the reading progress bar. || 38 - a - use the appropriate colour picker helper, have a few gradient picker variants to suit needs of elements that need different gradient implementations"
+  },
+  {
+   "rule": "Contact pills (phone/email) are buttons whose link (and label) come from Site Info, grouped in sgs/multi-button.",
+   "beanQuote": "11 - sgs/multi-button"
+  },
+  {
+   "rule": "A client surface already built as a CPT post (mega menus, drawer, header) is the source of truth: the proposed blocks must follow that build's block tree.",
+   "beanQuote": "We've already built these mega menus in our CPT mega menu setup."
+  },
+  {
+   "rule": "Motion/animation additions go to the parallel Spec 38A session to confirm scope; a working upgrade may be built now but 38A standardises the controls; avoid small-scale 'cheat' fixes for cross-library effects (e.g. the expander ring box).",
+   "beanQuote": "I think several are a little too small scale and would classify as cheats e.g. the expander ring box - and like this case I think it's more appropriate to send it to the parallel session to make sure that it's in its scope || D4. We've got a lot to get through, I think we canbuild a working upgrade but still give it to spec 38A to standardise the controls when its ready."
+  },
+  {
+   "rule": "Pin/sticky bottom strips must be optional and never hardcoded into every nav drawer (opt-in setting on a container or optional child).",
+   "beanQuote": "196 + C1 sgs/nav-drawer - Is it worth making a new block with this pin/sticky bottom functionality so it could be used in other nav drawers as an optional nav drawer specific child block or a sticky container that can fit in parent it's not totally unconstrained since it fits to the width of the drawer."
+  },
+  {
+   "rule": "Desktop mega menus are NOT assumed identical to the draft: small differences (e.g. the sectors mega menu background gradient) exist and need settings.",
+   "beanQuote": "D5. You're defo wrong on this, the differences aren't as extreme and probably don't require anything outside of the block's current capabilties but they still exist e.g. the sectors mega menu bg gradient on the draft"
+  },
+  {
+   "rule": "Link sources (typed URL, page, Site Info phone/email/WhatsApp/directions/GBP, back to top) belong in the shared link popover helper so every block's link can use them; no typed tel:/mailto:.",
+   "beanQuote": "658/664 - I've seen this issue pop up quite a lot. Why can't we add this functionality to set links tied to site info or pages in our link popover shared helper?"
+  },
+  {
+   "rule": "The Google Business Profile embed is preferred over a plain maps embed when set.",
+   "beanQuote": "712 - Should have option to pick between maps embed like you're suggesting and Google Business Profile embed which is preferred if I have it."
+  },
+  {
+   "rule": "Apply any fix at the widest impact it applies to (rules in the pipeline), and group the review by cause or symptom rather than by place on site.",
+   "beanQuote": "are we able to use the answers/solutions to the points we've dealt with so far to be able to categorise and sort more of the low confidence points so we have less to deal with and are following the project rule of applying any fix/solution to widest impact it applies to || it might be easier to group the items by cause/symptom or something similar rather than place on site"
+  },
+  {
+   "rule": "A lone link becomes sgs/button even without a button look (buttons can be styled as naked links).",
+   "beanQuote": "lone links become buttons (even if they don't have the button look - our buttons can be styled as naked links)"
+  },
+  {
+   "rule": "Images are routed to sgs/media.",
+   "beanQuote": "images get routed to sgs/media"
+  },
+  {
+   "rule": "Core blocks are excluded when they have a direct replacement in /wp-blocks; allowed only as a named exception.",
+   "beanQuote": "the exclusion of core blocks, especially when they have a direct replacement in /wp-blocks - should only be allowed when it's a named exception"
+  },
+  {
+   "rule": "Media exceptions: a floating image goes to sgs/decorative-image; an image in a gallery or logo/brand slider belongs to that block.",
+   "beanQuote": "other exceptions to media rule are when it's a floating image goes to decorative image block and if it's like a gallery block or something like the logo/brand slider"
+  },
+  {
+   "rule": "core/list is replaced by sgs/icon-list.",
+   "beanQuote": "the direct replacement is sgs/icon-list"
+  },
+  {
+   "rule": "A solitary icon/glyph (any of the icon libraries or emoji) is sgs/icon; an emoji inside a paragraph stays typed in the text block.",
+   "beanQuote": "if an emoji is in a paragraph, we just type the emoji in the text block instead of trying to insert an icon blokc"
+  },
+  {
+   "rule": "Always run /qc-council before /handoff.",
+   "beanQuote": "Remember to always run /qc-council before /handoff"
+  },
+  {
+   "rule": "When a button label comes from Site Info (email), obscure it (antispambot) like the link.",
+   "beanQuote": "Can obscure it when the site info data is being used?"
+  },
+  {
+   "rule": "Draft opening hours in the footer are a footer item linking to the Google Business Profile with the site-wide underline hover, not a card.",
+   "beanQuote": "the opening hours on our footer just look like another menu item and we've added a hyperlink to our GMB link and the hover effect is just the site-wide underline. It's not a card"
+  }
+ ],
+ "unresolved": [
+  {
+   "what": "Batch 2 approval is inferred, not explicit",
+   "why": "No standalone 'approve batch 2' message; Bean redirected to the existing mega menu builds (2273), questioned the logo container vs sgs/gallery (2313) and said 'Do the gallery block upgrade' (2414). Rows 100/101 mapping to gallery items is inferred."
+  },
+  {
+   "what": "Batch 4 has no explicit 'approve' message",
+   "why": "Bean replied with corrections (2759); the assistant's revised table (2778) was not re-confirmed, but the assistant treated the designs as approved (3154) and Bean moved on ('Batch 5 next session', 3535)."
+  },
+  {
+   "what": "Batch 3 row 178 ('Follow us' row container)",
+   "why": "Bean asked where the row is and whether nav drawer/menu wrappers already cover it; no text answer from the assistant was found. Kept as sgs/container, marked unconfirmed."
+  },
+  {
+   "what": "Batch 3 rows 116-117 reply",
+   "why": "Bean asked whether social-icons in the slots would allow both; the assistant's text reply was not found, but lane D's brief and plan item 7 adopt the social-icons slot."
+  },
+  {
+   "what": "Batch 3 per-row 'accept' is a group acceptance",
+   "why": "Bean said 'All others are accepted' against the agent's report table (sections A-D lettering); the assistant's chat table (message 2384) is a condensed version of that report's section B, so rows are taken from 2384."
+  },
+  {
+   "what": "Batch 1 mobile-only 'Apply' pill",
+   "why": "Drawn only below tablet width, no review row; becomes a third sgs/button linked to the apply page, hidden on desktop/tablet."
+  },
+  {
+   "what": "Batch 2 row 97 vs drawer copy",
+   "why": "Batch 2 revised table sets 'Our Brands' hidden on tablet/mobile; batch 3 content notes say un-hide it on mobile/tablet in the drawer copy of post 4440. Both stand: desktop hidden below desktop in the panel, shown in the drawer copy."
+  },
+  {
+   "what": "Category 3 rows not presented in batches 1-4",
+   "why": "Only the surfaces top-bar, scroll-progress-bar, sticky-header, the three mega menus, mobile-tablet-drawer and footer were reviewed; whatsapp-button and all page-* surfaces have no approved decision. Review rows for those are not recorded."
+  },
+  {
+   "what": "Inventory diffs, page map, palette, Site Info, flags, notices",
+   "why": "Not reached in this session (categories 4 onward); only the 'ours' meaning and Site Info facts (GBP, directions, address, social placeholders need real URLs) were discussed."
+  },
+  {
+   "what": "Batch 5 not decided",
+   "why": "Bean: 'Batch 5 next session'. Presented rows listed in batch5RowIds only."
+  }
+ ]
+}

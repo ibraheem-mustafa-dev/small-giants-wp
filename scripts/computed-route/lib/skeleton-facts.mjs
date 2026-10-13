@@ -68,6 +68,7 @@ export function loadFacts( { db, client, repo = REPO, siteName = null, decisions
 export function decisionsProblems( facts ) {
 	const d = facts.decisions;
 	const problems = [];
+	const specs0 = [];
 	const known = ( slug, where ) => {
 		if ( slug?.startsWith( 'core/' ) ) {
 			problems.push( `${ where } names ${ slug }, a core block (SGS bans core blocks)${ facts.replacedBy?.[ slug ] ? `: use ${ facts.replacedBy[ slug ] }` : '' }` );
@@ -77,7 +78,14 @@ export function decisionsProblems( facts ) {
 	};
 	known( d.structural?.columnLabel?.block, 'structural.columnLabel' );
 	( d.elements || [] ).forEach( ( e ) => e.block && known( e.block, `elements.${ e.id }` ) );
-	const specs = [ ...( d.briefOnlyLines || [] ).map( ( s ) => [ `briefOnlyLines.${ s.id }`, s ] ), ...Object.entries( d.siteInfoPatterns || {} ).map( ( [ k, s ] ) => [ `siteInfoPatterns.${ k }`, s ] ), [ 'addressLinkPatterns', d.addressLinkPatterns ], [ 'logoImage', d.logoImage ] ];
+	const r = d.rules || {};
+	[ [ 'rules.decorativeShape', r.decorativeShape?.block ], [ 'rules.backToTop.wholeBlock', r.backToTop?.wholeBlock ], [ 'rules.backToTop.lone', r.backToTop?.lone ], [ 'rules.pillButton', r.pillButton?.block ], [ 'rules.wholeCardLink', r.wholeCardLink?.block ],
+		...Object.entries( r.navigation?.bySurface || {} ).map( ( [ k, b ] ) => [ `rules.navigation.${ k }`, b ] ), ...( r.surfaceRoot?.entries || [] ).map( ( x, i ) => [ `rules.surfaceRoot[${ i }]`, x.block ] ),
+		...( r.drawsChildren?.blocks || [] ).map( ( x ) => [ `rules.drawsChildren ${ x.block }`, x.block ] ) ].forEach( ( [ where, slug ] ) => known( slug, where ) );
+	( r.coreExceptions || [] ).forEach( ( x, i ) => ( ! x.block?.startsWith( 'core/' ) || ! String( x.reason || '' ).trim() ) && problems.push( `rules.coreExceptions[${ i }] must name a core block and give its reason` ) );
+	( r.surfaceRoot?.entries || [] ).forEach( ( x, i ) => specs0.push( [ `rules.surfaceRoot[${ i }]`, { patterns: [ x.namePattern ], flags: 'i' } ] ) );
+	const specs = [ ...specs0, ...( d.briefOnlyLines || [] ).map( ( s ) => [ `briefOnlyLines.${ s.id }`, s ] ), ...Object.entries( d.siteInfoPatterns || {} ).map( ( [ k, s ] ) => [ `siteInfoPatterns.${ k }`, s ] ), [ 'addressLinkPatterns', d.addressLinkPatterns ], [ 'logoImage', d.logoImage ],
+		...[ 'typedDivider', 'homeLink', 'backToTop', 'mapEmbed', 'openStatus' ].map( ( k ) => [ `rules.${ k }`, r[ k ] ] ), [ 'rules.backToTop.handlers', r.backToTop?.handlers ] ];
 	for ( const [ where, spec ] of specs ) {
 		try {
 			rxList( spec );
