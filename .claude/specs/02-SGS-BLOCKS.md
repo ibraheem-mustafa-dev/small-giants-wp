@@ -850,8 +850,7 @@ Attributes are injected into all `sgs/*` blocks by `plugins/sgs-blocks/src/block
 - `sgsParallaxStrength` — number 0-100 (default: 30 — higher = more pronounced effect)
 
 **Implementation approach:**
-- CSS Scroll-Driven Animations (`animation-timeline: scroll()`) used where supported (Chrome/Edge 115+, Safari 26+; Firefox stable lacks it — see Spec 38 §3.1)
-- JS fallback using `IntersectionObserver` + `requestAnimationFrame` for unsupported browsers
+- `assets/js/parallax.js` writes `--sgs-plx-y` on every browser (rAF-throttled, updated on scroll and resize, off under reduced motion including a mid-session switch); `assets/css/extensions.css` moves `.sgs-parallax-element` by it with `translate` (Spec 38A FR-38A-21 and 47). Spec 38A M5.7 replaces this with the one parallax effect on the shared scroll driver.
 
 #### General Page Effects
 

@@ -232,13 +232,25 @@ final class MotionRendererTest extends TestCase {
 	}
 
 	private static function keyframe_entrance( string $trigger ): array {
-		$values = array(
-			'keyframes' => array(
+		return self::keyframe_entrance_from(
+			$trigger,
+			array(
 				array( 'offset' => 0, 'opacity' => 0, 'translateY' => 40 ),
 				array( 'offset' => 60, 'opacity' => 1, 'translateY' => -6 ),
 				array( 'offset' => 100, 'opacity' => 1, 'translateY' => 0 ),
-			),
+			)
 		);
+	}
+
+	/**
+	 * A one-element keyframe entrance.
+	 *
+	 * @param string                         $trigger Entrance trigger.
+	 * @param array<int,array<string,mixed>> $frames  Stored frames.
+	 * @return array<string,mixed>
+	 */
+	private static function keyframe_entrance_from( string $trigger, array $frames ): array {
+		$values = array( 'keyframes' => $frames );
 		return array(
 			'v'        => 1,
 			'elements' => array( 'root' => array( 'entrance' => array( 'base' => array( 'trigger' => $trigger, 'values' => $values ) ) ) ),
@@ -251,6 +263,42 @@ final class MotionRendererTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-me-from-op:0;', $css, 'frame 0 opacity is the hidden start' );
 		$this->assertStringContainsString( '--sgs-me-from-ty:40px;', $css, 'frame 0 translate is the hidden start' );
 		$this->assertStringContainsString( 'data-sgs-me-keyframes', $out );
+		$this->assertStringNotContainsString( '@media', $css, 'desktop-only values stay out of the tablet and mobile tiers' );
+	}
+
+	public function test_edge_reversed_keyframes_are_ordered_by_offset_and_frame_zero_is_the_lowest_offset(): void {
+		$frames = array(
+			array( 'offset' => 100, 'opacity' => 1, 'translateY' => 0 ),
+			array( 'offset' => 60, 'opacity' => 1, 'translateY' => -6 ),
+			array( 'offset' => 0, 'opacity' => 0, 'translateY' => 40 ),
+		);
+		$out    = $this->render( self::keyframe_entrance_from( 'scroll', $frames ) );
+		$css    = $this->css();
+		$this->assertStringContainsString( '--sgs-me-from-op:0;', $css );
+		$this->assertStringContainsString( '--sgs-me-from-ty:40px;', $css );
+		$this->assertSame( array( 0, 0.6, 1 ), array_column( $this->emitted_frames( $out ), 'offset' ) );
+	}
+
+	public function test_edge_first_keyframe_above_offset_zero_is_emitted_at_zero(): void {
+		$frames = array(
+			array( 'offset' => 20, 'opacity' => 0, 'translateY' => 40 ),
+			array( 'offset' => 100, 'opacity' => 1, 'translateY' => 0 ),
+		);
+		$out    = $this->render( self::keyframe_entrance_from( 'scroll', $frames ) );
+		$this->assertSame( array( 0, 1 ), array_column( $this->emitted_frames( $out ), 'offset' ) );
+	}
+
+	/**
+	 * The decoded `data-sgs-me-keyframes` frames.
+	 *
+	 * @param string $html Rendered markup.
+	 * @return array<int,array<string,mixed>>
+	 */
+	private function emitted_frames( string $html ): array {
+		$this->assertSame( 1, preg_match( '/data-sgs-me-keyframes=([\'"])(.*?)\1/s', $html, $m ), 'keyframes attribute present' );
+		$frames = json_decode( html_entity_decode( $m[2], ENT_QUOTES ), true );
+		$this->assertIsArray( $frames );
+		return $frames;
 	}
 
 	public function test_edge_first_section_load_keyframes_keep_from_opacity_1(): void {

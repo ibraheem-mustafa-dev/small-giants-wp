@@ -5,9 +5,9 @@
  * sets `data-sgs-in` on each `[data-sgs-me~="scroll"]` element once it crosses its start line; the stylesheet plays
  * the entrance from that attribute, so this script computes no timing. The start line is the percentage of the
  * viewport height above the bottom edge in the element's `--sgs-me-start` custom property (default 6). An element
- * already above its start line when the script runs is revealed before the class is added, so it is never painted
+ * already above its start line when the script runs (all rects are read before any attribute is written) is revealed before the class is added, so it is never painted
  * hidden. An element scrolled above the viewport is revealed at once, and one fully visible in the uncropped viewport
- * is revealed too (the cropped observer cannot reach an element shorter than the band at the very end of the page).
+ * is revealed too when the page cannot scroll far enough for its top to cross the start line. An element with no layout box, zero size or a position outside the horizontal viewport is left to the observers.
  * With reduced motion on, the class is removed and every observer released; a change of that preference mid-session
  * re-arms or releases them. Without IntersectionObserver the class is never added, so everything stays visible.
  */
@@ -32,19 +32,22 @@
 			root.classList.remove( 'sgs-motion-ready' );
 			return;
 		}
-		const todo = [];
-		d.querySelectorAll( '[data-sgs-me~="scroll"]:not([data-sgs-in])' ).forEach( ( el ) => {
-			let s = parseFloat( w.getComputedStyle( el ).getPropertyValue( '--sgs-me-start' ) );
-			s = s >= 0 ? s : 6;
-			el.getBoundingClientRect().top < w.innerHeight * ( 1 - s / 100 ) ? el.setAttribute( 'data-sgs-in', '' ) : todo.push( [ el, s ] );
+		const rows = [ ...d.querySelectorAll( '[data-sgs-me~="scroll"]:not([data-sgs-in])' ) ].map( ( el ) => {
+			const s = parseFloat( w.getComputedStyle( el ).getPropertyValue( '--sgs-me-start' ) );
+			const r = el.getBoundingClientRect();
+			const seen = el.getClientRects().length && r.width && r.height && r.right > 0 && r.left < w.innerWidth;
+			return [ el, s >= 0 ? s : 6, r, seen && r.top < w.innerHeight * ( 1 - ( s >= 0 ? s : 6 ) / 100 ) ];
 		} );
+		rows.forEach( ( [ el, , , up ] ) => up && el.setAttribute( 'data-sgs-in', '' ) );
 		root.classList.add( 'sgs-motion-ready' );
-		if ( todo.length ) {
-			obs.f = new w.IntersectionObserver( ( l, io ) => hit( l, io, 1 ), { threshold: 1 } );
-		}
-		todo.forEach( ( [ el, s ] ) => {
+		rows.forEach( ( [ el, s, r, up ] ) => {
+			if ( up ) {
+				return;
+			}
 			( obs[ s ] = obs[ s ] || new w.IntersectionObserver( hit, { rootMargin: `0px 0px -${ s }% 0px` } ) ).observe( el );
-			obs.f.observe( el );
+			if ( r.top + w.pageYOffset > root.scrollHeight - ( w.innerHeight * s ) / 100 ) {
+				( obs.f = obs.f || new w.IntersectionObserver( ( l, io ) => hit( l, io, 1 ), { threshold: 1 } ) ).observe( el );
+			}
 		} );
 	};
 	mq.addEventListener( 'change', sync );

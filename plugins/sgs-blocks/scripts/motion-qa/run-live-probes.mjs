@@ -19,7 +19,7 @@
  * Wired into `build-deploy.py` as `step_motion_qa()`, after `step_verify_payload()`.
  * Opt out with `--skip-motion-qa`, and know that doing so is the D338 mistake.
  *
- * SCOPE, STATED HONESTLY. This runner registers the THREE probes that are standing
+ * SCOPE, STATED HONESTLY. This runner registers the FOUR probes that are standing
  * regression checks with negative controls and stable canary fixtures. The other probes in
  * this directory are one-shot investigation artefacts tied to a specific incident; they
  * are still runnable by hand and are NOT claimed to be covered here. Promoting one means
