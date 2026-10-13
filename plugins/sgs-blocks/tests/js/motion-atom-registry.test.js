@@ -3,12 +3,10 @@
  * schema extract maps to an atom in `atom-registry.js`, except the types that only exist inside other types.
  */
 require( './motion-atoms-harness' );
-const defs = require( '@sgs/motion-defs' );
+const { FIELD_TYPE_NAMES: fieldTypes } = require( '../../src/components/motion/field-types' );
 const { ATOM_FOR_FIELD_TYPE, EMBEDDED_FIELD_TYPES } = require( '../../src/components/motion/atom-registry' );
 const fs = require( 'fs' );
 const path = require( 'path' );
-
-const fieldTypes = Object.keys( defs.$defs ).filter( ( name ) => defs.$defs[ name ][ 'x-sgs-kind' ] === 'fieldType' );
 
 describe( 'the atom registry', () => {
 	it( 'maps every field type in the schema to an atom or marks it embedded', () => {

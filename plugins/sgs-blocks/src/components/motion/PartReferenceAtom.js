@@ -2,22 +2,17 @@
  * PartReferenceAtom: which declared part of the block a `partReference` field names (magnet's moving part). The options
  * are the whole block (`root`) plus the parts the block declares in `supports.sgs.elements`, listed by `targetOptions`
  * (the same list the Target row offers). The stored value is the part key; a stored key the block no longer declares is
- * still shown so it can be seen and changed.
+ * still shown, marked as no longer on this block, so it can be seen and changed.
  *
  * @package
  */
 
-import { __ } from '@wordpress/i18n';
-import { getBlockType } from '@wordpress/blocks';
-import { SelectControl } from '@wordpress/components';
-import { useAtomField } from './atom-utils';
-import { targetOptions } from './TargetPicker';
-import AtomFrame from './AtomFrame';
-
-const humanise = ( key ) => {
-	const text = key.replace( /[-_]/g, ' ' );
-	return text.charAt( 0 ).toUpperCase() + text.slice( 1 );
-};
+import { __, sprintf } from "@wordpress/i18n";
+import { getBlockType } from "@wordpress/blocks";
+import { SelectControl } from "@wordpress/components";
+import { useAtomField } from "./atom-utils";
+import { humanise, targetOptions } from "./TargetPicker";
+import AtomFrame from "./AtomFrame";
 
 /**
  * @param {Object}      props
@@ -31,56 +26,60 @@ const humanise = ( key ) => {
  * @param {string}      [props.help]        Hint text.
  * @return {Element} The control.
  */
-export default function PartReferenceAtom( {
-	label,
-	value,
-	onChange,
-	elements,
-	blockName,
-	fieldNode = null,
-	presetValue,
-	help,
-} ) {
-	const declared =
-		elements ?? getBlockType( blockName )?.supports?.sgs?.elements;
-	const options = targetOptions( declared );
-	if (
-		typeof value === 'string' &&
-		value !== '' &&
-		! options.some( ( option ) => option.value === value )
-	) {
-		options.push( { value, label: humanise( value ) } );
-	}
-	const field = useAtomField( {
-		type: 'partReference',
-		fieldNode,
-		value,
-		onChange,
-		presetValue,
-	} );
+export default function PartReferenceAtom({
+  label,
+  value,
+  onChange,
+  elements,
+  blockName,
+  fieldNode = null,
+  presetValue,
+  help,
+}) {
+  const declared = elements ?? getBlockType(blockName)?.supports?.sgs?.elements;
+  const options = targetOptions(declared);
+  if (
+    typeof value === "string" &&
+    value !== "" &&
+    !options.some((option) => option.value === value)
+  ) {
+    options.push({
+      value,
+      /* translators: %s: the stored part's name. */
+      label: sprintf(
+        __("%s (no longer on this block)", "sgs-blocks"),
+        humanise(value),
+      ),
+    });
+  }
+  const field = useAtomField({
+    type: "partReference",
+    fieldNode,
+    value,
+    onChange,
+    presetValue,
+  });
 
-	return (
-		<AtomFrame
-			kind="part-reference"
-			label={ label }
-			help={ help }
-			error={ field.error }
-			customised={ field.customised }
-			onReset={ field.reset }
-		>
-			<SelectControl
-				label={ label }
-				value={ typeof value === 'string' ? value : '' }
-				options={ [
-					{ label: __( 'Not set', 'sgs-blocks' ), value: '' },
-					...options,
-				] }
-				onChange={ ( next ) =>
-					field.commit( next === '' ? undefined : next )
-				}
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			/>
-		</AtomFrame>
-	);
+  return (
+    <AtomFrame
+      kind="part-reference"
+      label={label}
+      help={help}
+      error={field.error}
+      customised={field.customised}
+      onReset={field.reset}
+    >
+      <SelectControl
+        label={label}
+        value={typeof value === "string" ? value : ""}
+        options={[
+          { label: __("Not set", "sgs-blocks"), value: "" },
+          ...options,
+        ]}
+        onChange={(next) => field.commit(next === "" ? undefined : next)}
+        __nextHasNoMarginBottom
+        __next40pxDefaultSize
+      />
+    </AtomFrame>
+  );
 }

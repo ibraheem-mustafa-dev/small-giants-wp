@@ -7,16 +7,16 @@
  * @package
  */
 
-import { __ } from '@wordpress/i18n';
-import { getBlockType } from '@wordpress/blocks';
-import ChoiceAtom from './ChoiceAtom';
+import { __ } from "@wordpress/i18n";
+import { getBlockType } from "@wordpress/blocks";
+import ChoiceAtom from "./ChoiceAtom";
 
-export const ROOT_TARGET = 'root';
-const CUSTOM_PREFIX = 'custom:';
+export const ROOT_TARGET = "root";
+const CUSTOM_PREFIX = "custom:";
 
-const humanise = ( key ) => {
-	const text = key.replace( /[-_]/g, ' ' );
-	return text.charAt( 0 ).toUpperCase() + text.slice( 1 );
+export const humanise = (key) => {
+  const text = key.replace(/[-_]/g, " ");
+  return text.charAt(0).toUpperCase() + text.slice(1);
 };
 
 /**
@@ -25,23 +25,22 @@ const humanise = ( key ) => {
  * @param {Object|null} elements `supports.sgs.elements`: `{ <partKey>: { label, order } }`.
  * @return {{value: string, label: string}[]} The whole block first, then each declared part by its `order`, then key.
  */
-export function targetOptions( elements ) {
-	const parts = Object.entries( elements || {} )
-		.map( ( [ key, part ], index ) => ( {
-			value: key,
-			label: part?.label || humanise( key ),
-			order: Number.isFinite( part?.order ) ? part.order : index + 1,
-		} ) )
-		.filter(
-			( part ) =>
-				part.value !== ROOT_TARGET &&
-				elements[ part.value ]?.motion !== false
-		)
-		.sort( ( a, b ) => a.order - b.order );
-	return [
-		{ value: ROOT_TARGET, label: __( 'Whole block', 'sgs-blocks' ) },
-		...parts.map( ( { value, label } ) => ( { value, label } ) ),
-	];
+export function targetOptions(elements) {
+  const parts = Object.entries(elements || {})
+    .map(([key, part], index) => ({
+      value: key,
+      label: part?.label || humanise(key),
+      order: Number.isFinite(part?.order) ? part.order : index + 1,
+    }))
+    .filter(
+      (part) =>
+        part.value !== ROOT_TARGET && elements[part.value]?.motion !== false,
+    )
+    .sort((a, b) => a.order - b.order);
+  return [
+    { value: ROOT_TARGET, label: __("Whole block", "sgs-blocks") },
+    ...parts.map(({ value, label }) => ({ value, label })),
+  ];
 }
 
 /**
@@ -54,33 +53,32 @@ export function targetOptions( elements ) {
  * @param {string}      [props.help]      Hint text.
  * @return {Element} The control.
  */
-export default function TargetPicker( {
-	label = __( 'Animate', 'sgs-blocks' ),
-	value,
-	onChange,
-	elements,
-	blockName,
-	help,
-} ) {
-	const declared =
-		elements ?? getBlockType( blockName )?.supports?.sgs?.elements;
-	const options = targetOptions( declared );
-	// A target the cloning tool wrote by selector is shown, never offered.
-	if (
-		typeof value === 'string' &&
-		value.startsWith( CUSTOM_PREFIX ) &&
-		! options.some( ( option ) => option.value === value )
-	) {
-		options.push( { value, label: __( 'Custom target', 'sgs-blocks' ) } );
-	}
-	return (
-		<ChoiceAtom
-			label={ label }
-			help={ help }
-			options={ options }
-			value={ value || ROOT_TARGET }
-			onChange={ ( next ) => onChange( next || ROOT_TARGET ) }
-			emptyLabel={ options[ 0 ].label }
-		/>
-	);
+export default function TargetPicker({
+  label = __("Animate", "sgs-blocks"),
+  value,
+  onChange,
+  elements,
+  blockName,
+  help,
+}) {
+  const declared = elements ?? getBlockType(blockName)?.supports?.sgs?.elements;
+  const options = targetOptions(declared);
+  // A target the cloning tool wrote by selector is shown, never offered.
+  if (
+    typeof value === "string" &&
+    value.startsWith(CUSTOM_PREFIX) &&
+    !options.some((option) => option.value === value)
+  ) {
+    options.push({ value, label: __("Custom target", "sgs-blocks") });
+  }
+  return (
+    <ChoiceAtom
+      label={label}
+      help={help}
+      options={options}
+      value={value || ROOT_TARGET}
+      onChange={(next) => onChange(next || ROOT_TARGET)}
+      emptyLabel={options[0].label}
+    />
+  );
 }
