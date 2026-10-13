@@ -1,0 +1,284 @@
+/**
+ * The shared motion stylesheet (Spec 38A §9, §10, §12; FR-38A-17, 18, 23, 27, 42, 49).
+ *
+ * Every generic motion rule lives here; per-instance values come from the renderer's scoped custom properties
+ * (includes/motion/), never a `style` attribute. The contract with the renderer:
+ *
+ *   data-sgs-mh="self|root|group"    the target holds a hover state; the value is its source (§6.2)
+ *   --sgs-mh-to-<tx|ty|rot|s|op|blur|gray|bright>
+ *                                     the hover state's to-values (plain, unregistered; per device). The rotate
+ *                                     to-value is the hover angle minus the rest angle (§10)
+ *   --sgs-rot-rest                    the rest rotate, a resting styling value (FR-38A-42)
+ *   data-sgs-mroot                    a block root whose targets use source root
+ *   data-sgs-hover-group              the hover-group block (source group reads the nearest one)
+ *   data-sgs-mc="<channels>"          the persistent channels of the element's non-entrance owners, as the schema's
+ *                                     x-sgs-writes names them (translate rotate scale opacity filter transform
+ *                                     background-position ::before ::after injected)
+ *   data-sgs-me="<trigger> <channels>" an entrance: trigger load|scroll|open|state, then the channels it touches
+ *   --sgs-me-from-<x>, --sgs-me-to-<x>, --sgs-me-dur, --sgs-me-delay, --sgs-me-ease
+ *                                     the entrance's values and timing (to-values default to the identity)
+ *   data-sgs-in                       set by the reveal module (scroll) or the owning block (open, state)
+ *   .sgs-motion-ready                 added by the reveal module; the only gate on a hidden start state
+ *   span.sgs-motion-layer             an injected paint layer (aria-hidden), at most two per element
+ *
+ * The per-element `transition` list is the renderer's (each owner's own timing, never `all`).
+ */
+
+/* ── Owner custom properties (§10): typed, identity initial value, so each owner animates on its own timing.
+   Channel owners never inherit (a nested target must not pick up its parent's lift); paint-slot and layer
+   properties, and the tilt angles a glare layer reads, inherit so the pseudo-elements and layers see them. ── */
+@property --sgs-me-tx { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-me-ty { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-mh-tx { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-mh-ty { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-mag-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-mag-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-plx-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-plx-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-float-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-float-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-kb-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-kb-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-rot-rest { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --sgs-mh-rot { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --sgs-me-rot { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --sgs-me-s { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-mh-s { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-focus-s { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-kb-s { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-tilt-persp { syntax: '<length>'; inherits: false; initial-value: 800px; }
+@property --sgs-tilt-x { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
+@property --sgs-tilt-y { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
+@property --sgs-me-op { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-mh-op { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-focus-op { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-me-blur { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-mh-blur { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-mh-gray { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --sgs-mh-bright { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-me-clip { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
+@property --sgs-plx-bg-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-plx-bg-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-cursor-field-radius { syntax: '<length>'; inherits: true; initial-value: 0px; }
+@property --sgs-ripple-s { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --sgs-ripple-op { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --sgs-sheen-x { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+@property --sgs-ring-x { syntax: '<length>'; inherits: true; initial-value: 0px; }
+@property --sgs-ring-y { syntax: '<length>'; inherits: true; initial-value: 0px; }
+@property --sgs-ring-s { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+/* ── Persistent channels (§10): declared only where a non-entrance owner writes that channel, so an element
+   with nothing but an entrance never holds a transform, a filter or a containing block. ── */
+[data-sgs-mc~="translate"] {
+	translate: calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));
+}
+[data-sgs-mc~="rotate"] {
+	rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+}
+[data-sgs-mc~="scale"] {
+	scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s));
+}
+[data-sgs-mc~="opacity"] {
+	opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op));
+}
+[data-sgs-mc~="filter"] {
+	filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+}
+[data-sgs-mc~="transform"] {
+	transform: perspective(var(--sgs-tilt-persp)) rotateX(var(--sgs-tilt-x)) rotateY(var(--sgs-tilt-y));
+}
+[data-sgs-mc~="background-position"] {
+	background-position: calc(50% + var(--sgs-plx-bg-x)) calc(50% + var(--sgs-plx-bg-y));
+}
+
+/* ── Hover state (§9, FR-38A-17): the hover values are the to-values times an engagement flag. The flag is set by
+   the source's :hover only inside the pointer guard (and the touch-input guard, includes/helpers-hover-state.php),
+   and by :focus-visible / :focus-within outside it, so keyboard users get the same result. Root and group flags
+   inherit, and every root and group resets its own to 0, so a target follows its NEAREST root or group. ── */
+[data-sgs-mh] { --sgs-mh-on: 0; }
+[data-sgs-mh="root"] { --sgs-mh-on: var(--sgs-mh-root-on, 0); }
+[data-sgs-mh="group"] { --sgs-mh-on: var(--sgs-mh-group-on, 0); }
+[data-sgs-mroot] { --sgs-mh-root-on: 0; }
+[data-sgs-hover-group] { --sgs-mh-group-on: 0; }
+
+[data-sgs-mh="self"]:focus-visible { --sgs-mh-on: 1; }
+[data-sgs-mroot]:focus-within { --sgs-mh-root-on: 1; }
+[data-sgs-hover-group]:focus-within { --sgs-mh-group-on: 1; }
+
+@media (hover: hover) and (pointer: fine) {
+	:where(:root:not(.sgs-touch-input)) [data-sgs-mh="self"]:hover { --sgs-mh-on: 1; }
+	:where(:root:not(.sgs-touch-input)) [data-sgs-mroot]:hover { --sgs-mh-root-on: 1; }
+	:where(:root:not(.sgs-touch-input)) [data-sgs-hover-group]:hover { --sgs-mh-group-on: 1; }
+}
+
+[data-sgs-mh] {
+	--sgs-mh-tx: calc(var(--sgs-mh-to-tx, 0px) * var(--sgs-mh-on));
+	--sgs-mh-ty: calc(var(--sgs-mh-to-ty, 0px) * var(--sgs-mh-on));
+	--sgs-mh-rot: calc(var(--sgs-mh-to-rot, 0deg) * var(--sgs-mh-on));
+	--sgs-mh-s: calc(1 + (var(--sgs-mh-to-s, 1) - 1) * var(--sgs-mh-on));
+	--sgs-mh-op: calc(1 + (var(--sgs-mh-to-op, 1) - 1) * var(--sgs-mh-on));
+	--sgs-mh-blur: calc(var(--sgs-mh-to-blur, 0px) * var(--sgs-mh-on));
+	--sgs-mh-gray: calc(var(--sgs-mh-to-gray, 0) * var(--sgs-mh-on));
+	--sgs-mh-bright: calc(1 + (var(--sgs-mh-to-bright, 1) - 1) * var(--sgs-mh-on));
+}
+
+/* ── Entrance (§9 entrance rule, FR-38A-18): each touched channel plays its own animation of the --sgs-me-*
+   properties, and every keyframe declares that channel with the full composite formula, so nothing is held once
+   it ends. Load plays with no JavaScript; a scroll reveal starts hidden only once the reveal module has run. ── */
+@keyframes sgs-me-translate {
+	from {
+		--sgs-me-tx: var(--sgs-me-from-tx, 0px);
+		--sgs-me-ty: var(--sgs-me-from-ty, 0px);
+		translate: calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));
+	}
+	to {
+		--sgs-me-tx: var(--sgs-me-to-tx, 0px);
+		--sgs-me-ty: var(--sgs-me-to-ty, 0px);
+		translate: calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));
+	}
+}
+@keyframes sgs-me-rotate {
+	from {
+		--sgs-me-rot: var(--sgs-me-from-rot, 0deg);
+		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+	}
+	to {
+		--sgs-me-rot: var(--sgs-me-to-rot, 0deg);
+		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+	}
+}
+@keyframes sgs-me-scale {
+	from {
+		--sgs-me-s: var(--sgs-me-from-s, 1);
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s));
+	}
+	to {
+		--sgs-me-s: var(--sgs-me-to-s, 1);
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s));
+	}
+}
+@keyframes sgs-me-opacity {
+	from {
+		--sgs-me-op: var(--sgs-me-from-op, 1);
+		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op));
+	}
+	to {
+		--sgs-me-op: var(--sgs-me-to-op, 1);
+		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op));
+	}
+}
+@keyframes sgs-me-filter {
+	from {
+		--sgs-me-blur: var(--sgs-me-from-blur, 0px);
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+	}
+	to {
+		--sgs-me-blur: var(--sgs-me-to-blur, 0px);
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+	}
+}
+@keyframes sgs-me-clip-path {
+	from {
+		--sgs-me-clip: var(--sgs-me-from-clip, 0%);
+		clip-path: inset(var(--sgs-me-clip));
+	}
+	to {
+		--sgs-me-clip: var(--sgs-me-to-clip, 0%);
+		clip-path: inset(var(--sgs-me-clip));
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	[data-sgs-me] {
+		--sgs-me-a-translate: none;
+		--sgs-me-a-rotate: none;
+		--sgs-me-a-scale: none;
+		--sgs-me-a-opacity: none;
+		--sgs-me-a-filter: none;
+		--sgs-me-a-clip-path: none;
+		animation-duration: var(--sgs-me-dur, var(--wp--custom--entrance--duration, 750ms));
+		animation-timing-function: var(--sgs-me-ease, var(--wp--custom--entrance--easing, ease-out));
+		animation-delay: var(--sgs-me-delay, 0ms);
+		animation-fill-mode: backwards;
+	}
+	/* A disclosure panel's entrance defaults to the panel open-and-close duration (§7). */
+	[data-sgs-me~="open"] {
+		animation-duration: var(--sgs-me-dur, var(--wp--custom--duration--slow, 450ms));
+	}
+	[data-sgs-me~="translate"] { --sgs-me-a-translate: sgs-me-translate; }
+	[data-sgs-me~="rotate"] { --sgs-me-a-rotate: sgs-me-rotate; }
+	[data-sgs-me~="scale"] { --sgs-me-a-scale: sgs-me-scale; }
+	[data-sgs-me~="opacity"] { --sgs-me-a-opacity: sgs-me-opacity; }
+	[data-sgs-me~="filter"] { --sgs-me-a-filter: sgs-me-filter; }
+	[data-sgs-me~="clip-path"] { --sgs-me-a-clip-path: sgs-me-clip-path; }
+
+	[data-sgs-me]:is([data-sgs-me~="load"], [data-sgs-in]) {
+		animation-name: var(--sgs-me-a-translate), var(--sgs-me-a-rotate), var(--sgs-me-a-scale), var(--sgs-me-a-opacity), var(--sgs-me-a-filter), var(--sgs-me-a-clip-path);
+	}
+
+	/* The hidden start state: only under the reveal module's class, only before the element is in view. */
+	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="translate"] {
+		--sgs-me-tx: var(--sgs-me-from-tx, 0px);
+		--sgs-me-ty: var(--sgs-me-from-ty, 0px);
+		translate: calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));
+	}
+	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="rotate"] {
+		--sgs-me-rot: var(--sgs-me-from-rot, 0deg);
+		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+	}
+	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="scale"] {
+		--sgs-me-s: var(--sgs-me-from-s, 1);
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s));
+	}
+	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="opacity"] {
+		--sgs-me-op: var(--sgs-me-from-op, 1);
+		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op));
+	}
+	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="filter"] {
+		--sgs-me-blur: var(--sgs-me-from-blur, 0px);
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+	}
+	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="clip-path"] {
+		--sgs-me-clip: var(--sgs-me-from-clip, 0%);
+		clip-path: inset(var(--sgs-me-clip));
+	}
+}
+
+/* ── Paint slots (§10, FR-38A-49): one owner per pseudo-element, at most two injected layers. The host rule has
+   zero specificity, so a block's own positioning always wins over it. ── */
+:where([data-sgs-mc~="::before"], [data-sgs-mc~="::after"], [data-sgs-mc~="injected"]) {
+	position: relative;
+	isolation: isolate;
+}
+[data-sgs-mc~="::before"]::before,
+[data-sgs-mc~="::after"]::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+}
+.sgs-motion-layer {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+/* ── Reduced motion (§12, FR-38A-27): nothing moves, every delay is zero, and colour, shadow, opacity and filter
+   changes become instant state flips. Entrances show their final state, because the entrance rules above apply
+   only under no-preference. The rest rotate is a styling value and stays. ── */
+@media (prefers-reduced-motion: reduce) {
+	[data-sgs-mh] {
+		--sgs-mh-tx: 0px;
+		--sgs-mh-ty: 0px;
+		--sgs-mh-rot: 0deg;
+		--sgs-mh-s: 1;
+	}
+	:is([data-sgs-mh], [data-sgs-me], [data-sgs-mc]) {
+		transition-duration: var(--wp--custom--duration--instant, 0ms) !important;
+		transition-delay: initial !important;
+		animation-delay: initial !important;
+	}
+}

@@ -8,10 +8,15 @@ WHAT --check ASSERTS
   present     theme.json carries every schema token, and its cssVar is `--wp--custom--<family>--<key>`
   consumers   every `--wp--custom--<motion family>--<key>` read in plugins/sgs-blocks and theme/sgs-theme CSS, PHP and
               JS (and theme.json styles) names a token theme.json declares
-  readers     every motion token in theme.json has at least one such reader, or a live allow-list entry
+  readers     every motion token in theme.json has at least one reader, or a live allow-list entry
               (`plugins/sgs-blocks/scripts/data/motion-gate-allowlist.json`, a JSON array of
               {gate:"motion-token-consumers", pattern:<key>, reason, delete_in_unit}); an entry whose token already
-              has a reader is reported as stale (a note, not a failure)
+              has a reader is reported as stale (a note, not a failure). A reader is any of three sources:
+                css     a stylesheet, PHP or JS source reads its `--wp--custom--` var() (the consumers scan above)
+                preset  `plugins/sgs-blocks/scripts/data/motion-presets.json` stamps it as `token:<family>.<key>`
+                offer   a schema field type offers it: `$defs.tokenReference` lists it and a field type that
+                        references tokenReference accepts it (its `pattern`, or every listed token when it has none);
+                        the renderer resolves each stored token reference to its var(), so its collected CSS reads it
 
 WHAT --bands ASSERTS
   every token with a band holds a theme.json value inside it. Band kinds: time (ms or s), length (px),
@@ -44,6 +49,9 @@ REPO = motion.REPO_ROOT
 SCHEMA_REL = Path("plugins/sgs-blocks/schemas/motion.schema.json")
 THEME_REL = Path("theme/sgs-theme/theme.json")
 ALLOW_REL = Path("plugins/sgs-blocks/scripts/data/motion-gate-allowlist.json")
+PRESETS_REL = Path("plugins/sgs-blocks/scripts/data/motion-presets.json")
+TOKEN_REF_DEF = "#/$defs/tokenReference"
+TOKEN_REF = re.compile(r"-?token:([a-z0-9-]+\.[a-z0-9-]+)")
 SCAN_ROOTS = (Path("plugins/sgs-blocks"), Path("theme/sgs-theme"))
 SCAN_EXT = {".css", ".scss", ".php", ".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx"}
 SKIP_DIRS = {"node_modules", "build", "vendor", ".phpunit.cache", "tests", "test", "__tests__", "schemas"}
@@ -112,41 +120,110 @@ def find_readers(root: Path, tokens: dict[str, dict]) -> dict[str, list[str]]:
     return readers
 
 
+def preset_readers(root: Path) -> set[str]:
+    """Token keys the motion presets stamp as `token:<family>.<key>` (a leading minus negates, same token)."""
+    path = root / PRESETS_REL
+    if not path.is_file():
+        return set()
+    return set(TOKEN_REF.findall(path.read_text(encoding="utf-8")))
+
+
+def _offers_token_reference(node: dict) -> bool:
+    if node.get("$ref") == TOKEN_REF_DEF:
+        return True
+    return any(isinstance(part, dict) and part.get("$ref") == TOKEN_REF_DEF for part in node.get("allOf") or [])
+
+
+def offered_tokens(root: Path) -> set[str]:
+    """Token keys a schema field type offers: listed by $defs.tokenReference and accepted by a field type's pattern."""
+    defs = json.loads((root / SCHEMA_REL).read_text(encoding="utf-8")).get("$defs") or {}
+    listed = [ref for ref in (defs.get("tokenReference") or {}).get("enum") or [] if isinstance(ref, str)]
+    offered: set[str] = set()
+
+    def walk(node: object) -> None:
+        if isinstance(node, list):
+            for item in node:
+                walk(item)
+            return
+        if not isinstance(node, dict):
+            return
+        if _offers_token_reference(node):
+            pattern = node.get("pattern")
+            for ref in listed:
+                if pattern is None or re.search(pattern, ref):
+                    offered.update(TOKEN_REF.findall(ref))
+            return
+        for value in node.values():
+            walk(value)
+
+    for name, node in defs.items():
+        if name != "tokenReference":
+            walk(node)
+    return offered
+
+
+def all_readers(root: Path, css_readers: dict[str, list[str]]) -> dict[str, list[str]]:
+    """Token key -> every reader across the three sources (css files, the presets file, the schema's field offers)."""
+    readers = {key: list(files) for key, files in css_readers.items()}
+    for key in preset_readers(root):
+        readers.setdefault(key, []).append(str(PRESETS_REL) + " (preset token reference)")
+    for key in offered_tokens(root):
+        readers.setdefault(key, []).append(str(SCHEMA_REL) + " (field type offers it)")
+    return readers
+
+
 def load_allowlist(root: Path) -> tuple[list[dict], list[str]]:
     return allowlist.load(root, GATE)
 
 
-def check_consumers(root: Path) -> tuple[list[str], list[str]]:
-    tokens = load_tokens(root)
-    custom = theme_custom(root)
+def check_present(tokens: dict[str, dict], custom: dict) -> list[str]:
     errors: list[str] = []
-    notes: list[str] = []
     for key, entry in tokens.items():
         if theme_value(custom, key) is None:
             errors.append(f"present: theme.json settings.custom.{key} is missing")
         expected = "--wp--custom--" + key.replace(".", "--")
         if entry.get("cssVar") != expected:
             errors.append(f"present: schema cssVar for {key} is {entry.get('cssVar')!r}, expected {expected!r}")
-    readers = find_readers(root, tokens)
-    for key, files in sorted(readers.items()):
+    return errors
+
+
+def check_unknown_consumers(tokens: dict[str, dict], css_readers: dict[str, list[str]]) -> list[str]:
+    errors: list[str] = []
+    for key, files in sorted(css_readers.items()):
         if key not in tokens:
             more = f" and {len(files) - 1} more" if len(files) > 1 else ""
             errors.append(f"consumers: --wp--custom--{key.replace('.', '--')} is read in {files[0]}{more} "
                           "but is not a motion token")
+    return errors
+
+
+def check_reader_coverage(root: Path, tokens: dict[str, dict],
+                          css_readers: dict[str, list[str]]) -> tuple[list[str], list[str]]:
+    readers = all_readers(root, css_readers)
     allow, allow_errors = load_allowlist(root)
-    errors += [f"allow-list: {e}" for e in allow_errors]
+    errors = [f"allow-list: {e}" for e in allow_errors]
+    notes: list[str] = []
     allowed = {e["pattern"] for e in allow}
     css_vars = {entry.get("cssVar") for entry in tokens.values()}
     for key, entry in tokens.items():
         listed = key in allowed or entry.get("cssVar") in allowed
         if key not in readers and not listed:
-            errors.append(f"readers: {entry.get('cssVar')} has no stylesheet reader and no allow-list entry")
+            errors.append(f"readers: {entry.get('cssVar')} has no reader (no stylesheet var(), no preset token "
+                          "reference, no schema field offering it) and no allow-list entry")
         if key in readers and listed:
             notes.append(f"stale allow-list entry: {key} now has a reader ({readers[key][0]})")
     for pattern in sorted(allowed):
         if pattern not in tokens and pattern not in css_vars:
             errors.append(f"allow-list: pattern {pattern!r} names no motion token")
     return errors, notes
+
+
+def check_consumers(root: Path) -> tuple[list[str], list[str]]:
+    tokens = load_tokens(root)
+    css_readers = find_readers(root, tokens)
+    errors = check_present(tokens, theme_custom(root)) + check_unknown_consumers(tokens, css_readers)
+    coverage_errors, notes = check_reader_coverage(root, tokens, css_readers)
+    return errors + coverage_errors, notes
 
 
 def parse_time_ms(value: str) -> float | None:
@@ -250,11 +327,61 @@ def report(label: str, errors: list[str], notes: list[str] | None = None) -> int
 
 def build_temp_root(tmp: Path) -> Path:
     """A copy of every file the checks read, at the same relative paths."""
-    for rel in [SCHEMA_REL, THEME_REL, ALLOW_REL, *scan_files(REPO)]:
+    for rel in [SCHEMA_REL, THEME_REL, ALLOW_REL, PRESETS_REL, *scan_files(REPO)]:
         if (REPO / rel).is_file():
             (tmp / rel).parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(REPO / rel, tmp / rel)
     return tmp
+
+
+def _plant_token(tmp: Path, key: str, *, offer: bool = False, preset: bool = False) -> None:
+    """Add a motion token to the temp schema and theme, read only by the sources asked for."""
+    family, name = key.split(".")
+    schema_path = tmp / SCHEMA_REL
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    schema["x-sgs-tokens"][key] = {"band": None, "usedBy": "self-test plant",
+                                   "cssVar": f"--wp--custom--{family}--{name}"}
+    if offer:
+        schema["$defs"]["tokenReference"]["enum"].append(f"token:{key}")
+    schema_path.write_text(json.dumps(schema), encoding="utf-8")
+    theme_path = tmp / THEME_REL
+    theme = json.loads(theme_path.read_text(encoding="utf-8"))
+    theme["settings"]["custom"][family][name] = "8px" if family == "distance" else "100ms"
+    theme_path.write_text(json.dumps(theme), encoding="utf-8")
+    if preset:
+        presets_path = tmp / PRESETS_REL
+        presets = json.loads(presets_path.read_text(encoding="utf-8"))
+        presets["presets"].append({"slug": "self-test-plant", "values": {"duration": f"token:{key}"}})
+        presets_path.write_text(json.dumps(presets), encoding="utf-8")
+
+
+def _reader_error_for(tmp: Path, key: str) -> bool:
+    css_var = "--wp--custom--" + key.replace(".", "--")
+    return any(e.startswith("readers: " + css_var + " ") for e in check_consumers(tmp)[0])
+
+
+def self_test_reader_sources(tmp: Path) -> int:
+    """A token read by none of the three sources fails; one read only by a preset or only by a field offer passes."""
+    failures = 0
+    _plant_token(tmp, "duration.zz-unread")
+    if _reader_error_for(tmp, "duration.zz-unread"):
+        print("self-test: planted token with no reader fails (expected)")
+    else:
+        print("self-test: a planted token with no reader was not caught")
+        failures += 1
+    _plant_token(tmp, "duration.zz-preset-only", preset=True)
+    if _reader_error_for(tmp, "duration.zz-preset-only"):
+        print("self-test: a token read only by a preset token reference was wrongly failed")
+        failures += 1
+    else:
+        print("self-test: token read only by a preset passes (expected)")
+    _plant_token(tmp, "distance.zz-offer-only", offer=True)
+    if _reader_error_for(tmp, "distance.zz-offer-only"):
+        print("self-test: a token offered only by a schema field type was wrongly failed")
+        failures += 1
+    else:
+        print("self-test: token offered only by a schema field passes (expected)")
+    return failures
 
 
 def self_test() -> int:
@@ -276,6 +403,7 @@ def self_test() -> int:
         else:
             print("self-test: planted unknown consumer fails (expected)")
         plant.unlink()
+        failures += self_test_reader_sources(tmp)
         theme = tmp / THEME_REL
         data = json.loads(theme.read_text(encoding="utf-8"))
         data["settings"]["custom"]["duration"]["fast"] = "900ms"
