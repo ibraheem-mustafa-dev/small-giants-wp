@@ -701,7 +701,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							<ToggleControl
 								label={ __( 'Pause on hover', 'sgs-blocks' ) }
 								help={ __(
-									'Stop the marquee while a visitor’s pointer is over it — required for WCAG 2.2.2 (Pause, Stop, Hide) on auto-moving content.',
+									'Also stop the marquee while a visitor’s pointer is over it, or a finger taps it. Keyboard focus always pauses it, and a pause / play button always shows while it scrolls (WCAG 2.2.2).',
 									'sgs-blocks'
 								) }
 								checked={ pauseOnHover }

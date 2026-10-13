@@ -382,6 +382,8 @@ Attributes: `/wp-blocks schema sgs/testimonial-slider`. `layout` is `full` or `s
 
 **Render:** **Dynamic** (`render.php`) with an optional CSS scrolling animation.
 
+Scrolling (`scrolling`) behaviour: `view.js` clones the logo set (each copy `aria-hidden` and `inert`) and the track loops seamlessly; the shared pause/play button (`includes/helpers-motion-pause.php::sgs_motion_pause_button`, runtime `src/shared/motion-pause/index.js::initMotionPause`) shows over the strip's end edge while it scrolls and holds a pause until pressed again (WCAG 2.2.2); keyboard focus inside the strip always pauses it; hover, or a tap on touch, pauses it while `pauseOnHover` is on (default). `prefers-reduced-motion` keeps the strip static and the button hidden.
+
 ---
 
 ### WhatsApp CTA (`sgs/whatsapp-cta`)

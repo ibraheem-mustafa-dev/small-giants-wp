@@ -104,6 +104,35 @@ final class MotionPauseRenderTest extends TestCase {
 		$this->assertStringContainsString( 'sgs-motion-pause--overlay-end', $this->pause_button( $html ) );
 	}
 
+	/** @return array<int, array<string, mixed>> */
+	private function brand_logos(): array {
+		return array(
+			array(
+				'media' => 'https://example.test/one.png',
+				'alt'   => 'One',
+			),
+			array(
+				'media' => 'https://example.test/two.png',
+				'alt'   => 'Two',
+			),
+		);
+	}
+
+	public function test_brand_strip_prints_the_button_when_scrolling(): void {
+		$html = $this->html(
+			'sgs/brand-strip',
+			array(
+				'scrolling' => true,
+				'logos'     => $this->brand_logos(),
+			)
+		);
+		$this->assert_button( $html, 'sgs-brand-strip', 'Pause scrolling' );
+	}
+
+	public function test_brand_strip_prints_no_button_when_static(): void {
+		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/brand-strip', array( 'logos' => $this->brand_logos() ) ) ) );
+	}
+
 	public function test_trust_bar_prints_no_button_when_nothing_scrolls_or_it_is_switched_off(): void {
 		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/trust-bar', array( 'items' => $this->trust_items() ) ) ) );
 		$this->assertSame(

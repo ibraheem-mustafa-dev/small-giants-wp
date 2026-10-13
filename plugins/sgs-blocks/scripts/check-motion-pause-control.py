@@ -88,7 +88,6 @@ SIGNALS = (
 # Blocks that have not adopted the shared control yet. The list only shrinks: a block leaves it in
 # the commit that adopts the control, and a listed block that no longer needs it fails --check.
 PENDING: frozenset[str] = frozenset({
-    "brand-strip",
     "gallery",
     "google-reviews",
     "notice-banner",
