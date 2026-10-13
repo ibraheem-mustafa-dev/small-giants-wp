@@ -4,6 +4,7 @@
 import { __ } from '@wordpress/i18n';
 import { SelectControl, TextControl, ToggleControl, FocalPointPicker } from '@wordpress/components';
 import { LinkPopoverField } from '../../../components';
+import { LINK_SOURCES_ALL } from '../../../shared/link-source-options';
 import { focalPointToObjectPosition } from '../../../utils';
 
 /**
@@ -82,14 +83,19 @@ export default function GalleryThumbnail( {
 			<LinkPopoverField
 				label={ __( 'Link', 'sgs-blocks' ) }
 				emptyLabel={ __( 'Link this item', 'sgs-blocks' ) }
-				value={ { url: image.linkUrl || '', linkTarget: image.linkTarget || '' } }
+				value={ { url: image.linkUrl || '', linkTarget: image.linkTarget || '', linkSource: image.linkUrlSource || '' } }
+				linkSources={ LINK_SOURCES_ALL }
 				targetMode="boolean"
 				showRel={ false }
 				onChange={ ( next ) => {
 					const patch = {};
+					const nextSource = 'linkSource' in next ? next.linkSource : image.linkUrlSource || '';
+					if ( 'linkSource' in next ) {
+						patch.linkUrlSource = next.linkSource;
+					}
 					if ( 'url' in next ) {
 						patch.linkUrl = next.url;
-						if ( ! next.url ) {
+						if ( ! next.url && ! nextSource ) {
 							patch.linkTarget = '';
 							patch.linkLabel = '';
 						}
@@ -100,7 +106,7 @@ export default function GalleryThumbnail( {
 					onUpdateLink( index, patch );
 				} }
 			/>
-			{ !! image.linkUrl && (
+			{ !! ( image.linkUrl || image.linkUrlSource ) && (
 				<TextControl
 					label={ __( 'Link label', 'sgs-blocks' ) }
 					help={ __( 'Read out by screen readers. Empty uses the image description.', 'sgs-blocks' ) }

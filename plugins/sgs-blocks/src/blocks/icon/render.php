@@ -70,6 +70,12 @@ if ( '' !== $bound_link_key ) {
 	$link_url       = $resolved_link['url'];
 	$link_from_site = 'site-info' === $resolved_link['from'];
 }
+// An unbound icon's link may follow a page by ID or go back to top (`linkUrlSource`,
+// includes/helpers-link-source.php); the typed link is the fallback.
+$link_url_source = '' === $bound_link_key && is_string( $attributes['linkUrlSource'] ?? null ) ? $attributes['linkUrlSource'] : '';
+if ( '' !== $link_url_source ) {
+	$link_url = trim( sgs_link_source_href( $link_url_source, $link_url ) );
+}
 // A bound icon with no link from either source renders nothing for a visitor (the editor shows it dimmed with a notice).
 $is_hidden_empty = '' !== $bound_link_key && '' === $link_url;
 if ( $is_hidden_empty && ! $is_editor_render ) {
@@ -631,7 +637,7 @@ if ( '' !== $link_url ) {
 	$output = sprintf(
 		'<a class="sgs-icon__link" href="%s"%s%s>%s%s%s</a>',
 		esc_url( $link_url ),
-		'_blank' === $link_target ? ' target="_blank"' : '',
+		( '_blank' === $link_target ? ' target="_blank"' : '' ) . sgs_link_source_attrs_html( $link_url_source ),
 		'' !== $link_rel ? ' rel="' . esc_attr( $link_rel ) . '"' : '',
 		$output,
 		$label_html,

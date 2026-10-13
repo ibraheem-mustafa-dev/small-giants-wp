@@ -109,6 +109,7 @@ return array(
 	'sgsBlockLink' => array( 'type' => 'string' ),
 	'sgsBlockLinkAuto' => array( 'type' => 'boolean' ),
 	'sgsBlockLinkLabel' => array( 'type' => 'string' ),
+	'sgsBlockLinkSource' => array( 'type' => 'string' ),
 	'sgsBlockLinkTarget' => array( 'type' => 'boolean' ),
 	'sgsChildSizing' => array( 'type' => 'object' ),
 	'sgsChildWidth' => array( 'type' => 'object' ),

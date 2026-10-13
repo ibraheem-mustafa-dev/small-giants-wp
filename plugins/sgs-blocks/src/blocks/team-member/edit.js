@@ -41,6 +41,7 @@ import {
 } from '@wordpress/components';
 import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, shadowAttrKeys, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
+import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { usePreviewTier, typographyPreviewStyle } from '../../utils';
 import { buildWrapperStyle, textSurfaceStyle } from './preview-style';
@@ -144,11 +145,16 @@ function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 					url: item.url || '',
 					linkTarget: item.opensInNewTab !== false ? '_blank' : '_self',
 					rel: item.rel || '',
+					linkSource: item.linkSource || '',
 				} }
+				// A person's own profile links: only a page on this site (a bio page) is
+				// offered, never the business's Site Info links; an email takes no source.
+				linkSources={ 'email' === item.platform ? undefined : LINK_SOURCES_PAGES }
 				targetMode="boolean"
 				onChange={ ( next ) => {
 					const patch = { ...item };
 					if ( undefined !== next.url ) patch.url = next.url;
+					if ( undefined !== next.linkSource ) patch.linkSource = next.linkSource;
 					if ( undefined !== next.linkTarget ) patch.opensInNewTab = '_blank' === next.linkTarget;
 					if ( undefined !== next.rel ) patch.rel = next.rel;
 					onChange( patch );

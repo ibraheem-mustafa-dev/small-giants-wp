@@ -19,6 +19,7 @@ import {
 	MediaElementPanel,
 	SsrPreviewGuard, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
+import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
 import { ListingContentPanel, ListingShapePanel, ListingDotsPanel, ListingOverlaysPanel } from './listing-panels';
 import { cardPartColourRows } from './card-part-rows';
 import {
@@ -631,9 +632,11 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 								<LinkPopoverField
 									label={ __( "Button link", "sgs-blocks" ) }
 									value={ attributes.ctaUrl || "" }
-									onChange={ ( url ) =>
-										setAttributes( { ctaUrl: url } )
+									onChange={ ( url, extra ) =>
+										setAttributes( { ctaUrl: url, ...( extra ? { ctaUrlSource: extra.linkSource } : {} ) } )
 									}
+									linkSource={ attributes.ctaUrlSource || "" }
+									linkSources={ LINK_SOURCES_NO_TOP }
 									searchOnly
 								/>
 							) : (
@@ -2730,7 +2733,9 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							<LinkPopoverField
 								label={ __( 'Primary button URL', 'sgs-blocks' ) }
 								value={ ctaUrl || '' }
-								onChange={ ( url ) => setAttributes( { ctaUrl: url } ) }
+								onChange={ ( url, extra ) => setAttributes( { ctaUrl: url, ...( extra ? { ctaUrlSource: extra.linkSource } : {} ) } ) }
+								linkSource={ attributes.ctaUrlSource || '' }
+								linkSources={ LINK_SOURCES_NO_TOP }
 								searchOnly
 							/>
 						</>
@@ -3110,9 +3115,11 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									'sgs-blocks'
 								) }
 								value={ cta2Url || '' }
-								onChange={ ( url ) =>
-									setAttributes( { cta2Url: url } )
+								onChange={ ( url, extra ) =>
+									setAttributes( { cta2Url: url, ...( extra ? { cta2UrlSource: extra.linkSource } : {} ) } )
 								}
+								linkSource={ attributes.cta2UrlSource || '' }
+								linkSources={ LINK_SOURCES_NO_TOP }
 								searchOnly
 							/>
 							<SelectControl

@@ -291,6 +291,11 @@
 						"default": "",
 						"description": "Destination of this item. Non-empty makes the item an <a> (sanitised with esc_url) that never opens the lightbox and is left out of the lightbox's image list; empty keeps the item's lightbox or plain behaviour."
 					},
+					"linkUrlSource": {
+						"type": "string",
+						"default": "",
+						"description": "Where the item's link goes: '' (the typed linkUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed linkUrl is the fallback."
+					},
 					"linkTarget": {
 						"type": "string",
 						"default": "",

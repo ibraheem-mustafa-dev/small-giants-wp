@@ -73,6 +73,21 @@ require_once dirname( __DIR__, 3 ) . '/includes/product-card-swatches.php';
 // pattern or template part), where the block.json handles are not enqueued.
 wp_enqueue_style( 'sgs-button-style' );
 
+// ctaUrlSource / cta2UrlSource: the typed button URL ('') or a page / Site Info link
+// (includes/helpers-link-source.php). Resolved once here, so every branch below that reads
+// ctaUrl or cta2Url prints the resolved href; the typed URL is the fallback.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-source.php';
+$sgs_pc_link_sources = array(
+	'ctaUrl'  => 'ctaUrlSource',
+	'cta2Url' => 'cta2UrlSource',
+);
+foreach ( $sgs_pc_link_sources as $sgs_pc_link_key => $sgs_pc_link_source_key ) {
+	$sgs_pc_link_source = $attributes[ $sgs_pc_link_source_key ] ?? '';
+	if ( is_string( $sgs_pc_link_source ) && '' !== $sgs_pc_link_source ) {
+		$attributes[ $sgs_pc_link_key ] = sgs_link_source_href( $sgs_pc_link_source, (string) ( $attributes[ $sgs_pc_link_key ] ?? '' ) );
+	}
+}
+
 $variant_style  = $attributes['variantStyle'] ?? 'standard';
 $source_mode    = $attributes['sourceMode'] ?? 'typed';
 $card_max_width = isset( $attributes['cardMaxWidth'] ) ? sanitize_text_field( $attributes['cardMaxWidth'] ) : '';

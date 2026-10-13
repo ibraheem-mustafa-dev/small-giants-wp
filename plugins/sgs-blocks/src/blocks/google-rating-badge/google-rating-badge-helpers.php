@@ -10,6 +10,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-source.php';
+
 if ( ! function_exists( 'sgs_grb_https_url' ) ) {
 	/**
 	 * An https URL, or '' for anything else (javascript:, http:, relative, malformed).
@@ -69,8 +71,8 @@ if ( ! function_exists( 'sgs_grb_resolve' ) ) {
 	 * - synced: live Google data only.
 	 * - auto:   the manual chain first, then live.
 	 *
-	 * The link: the block's listingUrl, then (live data only) Google's googleMapsUri, then Site Info
-	 * `socials.google`. https only throughout.
+	 * The link: the block's listingUrl (or what its listingUrlSource resolves to), then (live data
+	 * only) Google's googleMapsUri, then Site Info `socials.google`. https only throughout.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return array{rating: float, count: int, source: string, url: string}|null Null when there is no real rating to show.
@@ -110,7 +112,12 @@ if ( ! function_exists( 'sgs_grb_resolve' ) ) {
 			return null;
 		}
 
-		$url = sgs_grb_https_url( $attributes['listingUrl'] ?? '' );
+		// listingUrlSource: the typed listingUrl ('') or a page / web Site Info link
+		// (includes/helpers-link-source.php), still https only.
+		$source = is_string( $attributes['listingUrlSource'] ?? null ) ? $attributes['listingUrlSource'] : '';
+		$url    = '' === $source
+			? sgs_grb_https_url( $attributes['listingUrl'] ?? '' )
+			: sgs_grb_https_url( sgs_link_source_href( $source, (string) ( $attributes['listingUrl'] ?? '' ) ) );
 		if ( '' === $url ) {
 			$url = $result['url'];
 		}

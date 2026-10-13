@@ -197,6 +197,12 @@ if ( 'menu' === $source ) {
 		if ( ! is_array( $maybe_site_info_item ) ) {
 			continue;
 		}
+		// The item's own link may follow a page, a Site Info link or back to top (`linkSource`,
+		// includes/helpers-link-source.php); the typed url is the fallback.
+		$item_link_source = is_string( $maybe_site_info_item['linkSource'] ?? null ) ? $maybe_site_info_item['linkSource'] : '';
+		if ( '' !== $item_link_source ) {
+			$maybe_site_info_item['url'] = sgs_link_source_href( $item_link_source, (string) ( $maybe_site_info_item['url'] ?? '' ) );
+		}
 		$site_info_source = (string) ( $maybe_site_info_item['siteInfoSource'] ?? '' );
 		if ( ! in_array( $site_info_source, sgs_site_info_item_sources(), true ) ) {
 			$resolved_items[] = $maybe_site_info_item;
@@ -741,7 +747,7 @@ foreach ( $resolved_items as $item ) {
 			'<a href="%s" class="sgs-icon-list__item-link" data-sgs-nav-path="%s"%s>%s</a>',
 			$item_url,
 			esc_attr( wp_parse_url( $item_url, PHP_URL_PATH ) ?? '' ),
-			$item_new_tab ? ' target="_blank" rel="noopener noreferrer"' : '',
+			( $item_new_tab ? ' target="_blank" rel="noopener noreferrer"' : '' ) . sgs_link_source_attrs_html( is_string( $item['linkSource'] ?? null ) ? $item['linkSource'] : '' ),
 			// The label roll (M-25) wraps the text INSIDE the link, so the link
 			// stays the one focus target; unchanged when the roll is off.
 			sgs_label_roll_wrap_html( wp_kses( $item_text, $linked_allowed ), $sgs_ilist_roll ) . $item_description_html

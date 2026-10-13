@@ -624,6 +624,11 @@
 			"default": "",
 			"description": "Where the button goes. A button with no link is not rendered."
 		},
+		"chromeSlotUrlSource": {
+			"type": "string",
+			"default": "",
+			"description": "Where the slot button goes: '' (the typed chromeSlotUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed chromeSlotUrl is the fallback."
+		},
 		"chromeSlotNewTab": {
 			"type": "boolean",
 			"default": false,

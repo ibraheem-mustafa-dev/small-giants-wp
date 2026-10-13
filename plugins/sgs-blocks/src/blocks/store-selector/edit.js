@@ -38,6 +38,7 @@ import {
 	SpacingControl,
 } from '../../components';
 import { usePreviewTier } from '../../utils';
+import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import { flagSizeAtTier, storeSelectorPreviewStyles } from './preview-style';
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -162,7 +163,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							<LinkPopoverField
 								label={ __( 'URL', 'sgs-blocks' ) }
 								value={ store.url || '' }
-								onChange={ ( val ) => updateStore( index, 'url', val ) }
+								onChange={ ( val, extra ) => {
+									// One write for the url and, when it changed with it, the source.
+									const updated = [ ...stores ];
+									updated[ index ] = { ...updated[ index ], url: val, ...( extra || {} ) };
+									setAttributes( { stores: updated } );
+								} }
+								linkSource={ store.linkSource || '' }
+								linkSources={ LINK_SOURCES_PAGES }
 								searchOnly
 							/>
 							<MediaUploadCheck>

@@ -18,6 +18,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/nav-drawer-chrome-css.php';
 require_once __DIR__ . '/nav-drawer-chrome-extras-css.php';
 require_once __DIR__ . '/nav-drawer-chrome-icons.php';
+require_once __DIR__ . '/helpers-link-source.php';
 
 if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_urls' ) ) {
 	/**
@@ -158,7 +159,10 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_slot_html' ) ) {
 		$class     = 'sgs-nav-drawer__chrome-slot sgs-nav-drawer__chrome-slot--' . $type . ' sgs-nav-drawer__chrome-slot--at-' . $placement;
 
 		if ( 'button' === $type ) {
-			$url = esc_url( (string) ( $attributes['chromeSlotUrl'] ?? '' ) );
+			// chromeSlotUrlSource: the typed chromeSlotUrl ('') or a page / Site Info link /
+			// back to top (includes/helpers-link-source.php).
+			$source = is_string( $attributes['chromeSlotUrlSource'] ?? null ) ? $attributes['chromeSlotUrlSource'] : '';
+			$url    = esc_url( sgs_link_source_href( $source, (string) ( $attributes['chromeSlotUrl'] ?? '' ) ) );
 			if ( '' === $url ) {
 				return '';
 			}
@@ -167,7 +171,7 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_slot_html' ) ) {
 				'<a class="%1$s" href="%2$s"%3$s>%4$s%5$s</a>',
 				esc_attr( $class ),
 				$url,
-				$new_tab ? ' target="_blank" rel="noopener"' : '',
+				( $new_tab ? ' target="_blank" rel="noopener"' : '' ) . sgs_link_source_attrs_html( $source ),
 				esc_html( $text ),
 				$new_tab ? '<span class="screen-reader-text"> ' . esc_html__( '(opens in a new tab)', 'sgs-blocks' ) . '</span>' : ''
 			);

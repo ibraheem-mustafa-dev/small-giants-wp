@@ -50,6 +50,7 @@ return array(
 		"LinkOpensNewTab"          => "boolean",
 		"LinkRel"                  => "string",
 		"LinkUrl"                  => "string",
+		"LinkUrlSource"            => "string",
 		"LottieId"                 => "integer",
 		"LottieSpeed"              => "number",
 		"LottieTrigger"            => "string",
@@ -139,6 +140,7 @@ return array(
 			"LinkUrl",
 			"LinkOpensNewTab",
 			"LinkRel",
+			"LinkUrlSource",
 		),
 		"meaning"      => array(
 			"ImageAlt",
@@ -278,6 +280,7 @@ return array(
 			"LinkUrl",
 			"LinkOpensNewTab",
 			"LinkRel",
+			"LinkUrlSource",
 		),
 		"meaning"            => array(
 			"ImageAlt",

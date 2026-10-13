@@ -11,6 +11,7 @@
 import ServerSideRender from '../../components/ServerSideRender';
 import { SsrPreviewGuard } from '../../components';
 import { resolveTier, tierLengthPreview } from '../../utils';
+import { resolveLinkSource } from '../../utils/link-source';
 import { chromeRowStyle, chromeSlotStyle, chromeLogoBoxStyle } from './chrome-preview-style';
 
 /**
@@ -69,7 +70,7 @@ export default function ChromePreview( { attributes, deviceTier, palette, childr
 	const showSlot =
 		'' !== type &&
 		'' !== text &&
-		( 'button' !== type || !! attributes.chromeSlotUrl ) &&
+		( 'button' !== type || !! resolveLinkSource( attributes.chromeSlotUrlSource, attributes.chromeSlotUrl ).url ) &&
 		false !== resolveTier( attributes.chromeSlotShow, tier, true ).value;
 	const placement = attributes.chromeSlotPlacement || 'after-logo';
 	const showRating = !! attributes.chromeRating && false !== resolveTier( attributes.chromeRatingShow, tier, true ).value;

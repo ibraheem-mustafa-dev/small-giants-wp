@@ -165,6 +165,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"listingUrlSource": {
+			"type": "string",
+			"default": "",
+			"description": "Where the badge links: '' (the typed listingUrl), post:<id> (a page or post, followed by ID) or a web Site Info link (directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok). Resolved by includes/helpers-link-source.php, https only; the typed listingUrl is the fallback."
+		},
 		"openInNewTab": {
 			"type": "boolean",
 			"default": true

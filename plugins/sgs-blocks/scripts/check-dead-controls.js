@@ -1051,7 +1051,7 @@ const MEDIA_ELEMENT_ATOM_BASES = {
 	shadow: [ 'BoxShadow', 'BoxShadowColour', 'BoxShadowColourHover' ],
 	'media-padding': [ 'Padding' ],
 	caption: [ 'Caption', 'CaptionTag' ],
-	link: [ 'LinkUrl', 'LinkOpensNewTab', 'LinkRel' ],
+	link: [ 'LinkUrl', 'LinkOpensNewTab', 'LinkRel', 'LinkUrlSource' ],
 };
 
 const MEDIA_ELEMENT_TIERED_BASES = new Set( [

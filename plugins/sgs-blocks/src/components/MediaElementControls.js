@@ -217,7 +217,7 @@ export const MEDIA_BASES = {
 	// new — `sgs/media` never declared a padding attribute before this atom.
 	padding: [ 'Padding' ],
 	caption: [ 'Caption', 'CaptionTag' ],
-	link: [ 'LinkUrl', 'LinkOpensNewTab', 'LinkRel' ],
+	link: [ 'LinkUrl', 'LinkOpensNewTab', 'LinkRel', 'LinkUrlSource' ],
 };
 
 /**
@@ -380,6 +380,8 @@ export const MEDIA_ATTR_TYPES = {
 	LinkUrl: 'string',
 	LinkOpensNewTab: 'boolean',
 	LinkRel: 'string',
+	// Where the link goes ('' = the typed LinkUrl): includes/helpers-link-source.php.
+	LinkUrlSource: 'string',
 };
 
 /**

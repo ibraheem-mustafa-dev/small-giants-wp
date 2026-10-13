@@ -348,6 +348,11 @@
 				"custom"
 			]
 		},
+		"linkUrlSource": {
+			"type": "string",
+			"default": "",
+			"description": "An unbound icon's link destination: '' (the typed linkUrl), post:<id> (a page or post, followed by ID) or top. Resolved by includes/helpers-link-source.php; the typed linkUrl is the fallback. A Site Info link uses the linkUrl binding instead (and linkSource for its precedence), so this is ignored while bound."
+		},
 		"linkTarget": {
 			"type": "string",
 			"default": "_self",

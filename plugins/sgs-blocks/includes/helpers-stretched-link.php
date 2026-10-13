@@ -79,6 +79,9 @@ if ( ! function_exists( 'sgs_stretched_link_apply' ) ) {
 			: array();
 
 		$attrs['sgsBlockLink'] = $url;
+		// The block's own destination is final: a link source chosen in the panel never
+		// redirects it.
+		unset( $attrs['sgsBlockLinkSource'] );
 
 		if ( '' !== $label && '' === trim( (string) ( $attrs['sgsBlockLinkLabel'] ?? '' ) ) ) {
 			$attrs['sgsBlockLinkLabel'] = $label;

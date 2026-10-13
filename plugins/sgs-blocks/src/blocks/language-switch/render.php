@@ -60,7 +60,11 @@ foreach ( $languages_raw as $raw_item ) {
 	}
 	$items[] = array(
 		'code'        => (string) $raw_item['code'],
-		'url'         => isset( $raw_item['url'] ) ? (string) $raw_item['url'] : '',
+		// `linkSource` post:<id> follows a page on this site (includes/helpers-link-source.php).
+		'url'         => sgs_link_source_href(
+			is_string( $raw_item['linkSource'] ?? null ) ? $raw_item['linkSource'] : '',
+			isset( $raw_item['url'] ) ? (string) $raw_item['url'] : ''
+		),
 		'customLabel' => isset( $raw_item['customLabel'] ) ? (string) $raw_item['customLabel'] : '',
 		'isCurrent'   => sgs_language_switch_is_current( (string) $raw_item['code'], $current_locale ),
 	);

@@ -377,6 +377,10 @@
           "link": {
             "type": "string"
           },
+          "linkSource": {
+            "type": "string",
+            "description": "Where the card link goes: '' (the typed link), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed link is the fallback."
+          },
           "linkTarget": {
             "type": "string"
           },
