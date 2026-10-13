@@ -83,6 +83,29 @@ namespace {
 			return ! empty( $GLOBALS['sgs_test_in_loop'] );
 		}
 	}
+	// Asset registration and enqueue stand-ins: record the handle, so a test can read what a render enqueued.
+	if ( ! function_exists( 'wp_register_style' ) ) {
+		function wp_register_style( $handle ) {
+			$GLOBALS['sgs_test_registered'][ 'style:' . $handle ] = true;
+		}
+		function wp_register_script( $handle ) {
+			$GLOBALS['sgs_test_registered'][ 'script:' . $handle ] = true;
+		}
+		function wp_register_script_module( $id ) {
+			$GLOBALS['sgs_test_registered'][ 'module:' . $id ] = true;
+		}
+		function wp_enqueue_script( $handle ) {
+			$GLOBALS['sgs_test_enqueued'][ 'script:' . $handle ] = true;
+		}
+		function wp_enqueue_script_module( $id ) {
+			$GLOBALS['sgs_test_enqueued'][ 'module:' . $id ] = true;
+		}
+	}
+	if ( ! function_exists( 'wp_enqueue_style' ) ) {
+		function wp_enqueue_style( $handle ) {
+			$GLOBALS['sgs_test_enqueued_styles'][] = $handle;
+		}
+	}
 	if ( ! function_exists( 'wp_is_serving_rest_request' ) ) {
 		function wp_is_serving_rest_request() {
 			return false;

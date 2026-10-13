@@ -67,6 +67,14 @@ final class Sgs_Motion_Renderer {
 	private static $content_seen = false;
 
 	/**
+	 * Asset consumers seen this request: `css`, `reveal`, `keyframes`, `scroll` (each true once an attribute needing it
+	 * was printed). `Sgs_Motion_Assets` enqueues from this.
+	 *
+	 * @var array<string,bool>
+	 */
+	private static $used = array();
+
+	/**
 	 * Hook the filters.
 	 *
 	 * @return void
@@ -87,7 +95,43 @@ final class Sgs_Motion_Renderer {
 		self::$stack                       = array();
 		self::$first_pending               = false;
 		self::$content_seen                = false;
+		self::$used                        = array();
 		$GLOBALS['sgs_hover_group_active'] = false;
+	}
+
+	/**
+	 * The asset consumers seen so far this request.
+	 *
+	 * @return array<string,bool>
+	 */
+	public static function used_features(): array {
+		return self::$used;
+	}
+
+	/**
+	 * Record which assets the data attributes just printed need.
+	 *
+	 * @param array<string,mixed> $attrs  Attributes printed on a target or the root.
+	 * @param bool                $layers Whether a motion layer span was injected.
+	 * @return void
+	 */
+	private static function note_features( array $attrs, bool $layers ): void {
+		$css = $layers;
+		foreach ( array( 'data-sgs-mh', 'data-sgs-mc', 'data-sgs-me', 'data-sgs-hover-group', 'data-sgs-mroot' ) as $key ) {
+			$css = $css || isset( $attrs[ $key ] );
+		}
+		if ( $css ) {
+			self::$used['css'] = true;
+		}
+		if ( isset( $attrs['data-sgs-me'] ) && in_array( 'scroll', preg_split( '/\s+/', (string) $attrs['data-sgs-me'] ), true ) ) {
+			self::$used['reveal'] = true;
+		}
+		if ( isset( $attrs['data-sgs-me-keyframes'] ) ) {
+			self::$used['keyframes'] = true;
+		}
+		if ( isset( $attrs['data-sgs-scroll'] ) ) {
+			self::$used['scroll'] = true;
+		}
 	}
 
 	/**
@@ -255,6 +299,10 @@ final class Sgs_Motion_Renderer {
 		}
 		$doc = $frame['doc'];
 		if ( array() === $doc ) {
+			if ( array() !== $root_attrs ) {
+				self::note_features( $root_attrs, false );
+				Sgs_Motion_Assets::enqueue_used();
+			}
 			return array() === $root_attrs ? $block_content : Sgs_Motion_Markup::apply( $block_content, array(), $root_attrs, '' );
 		}
 		foreach ( $frame['dropped'] as $refusal ) {
@@ -295,12 +343,16 @@ final class Sgs_Motion_Renderer {
 				)
 			);
 			$css      .= $emitted['css'];
+			$layers    = Sgs_Motion_Layer_Drops::injected_layers( $element );
+			self::note_features( $emitted['attrs'], array() !== $layers );
 			$plans[]   = array(
 				'match'  => $resolved['match'],
 				'attrs'  => $emitted['attrs'],
-				'layers' => Sgs_Motion_Layer_Drops::injected_layers( $element ),
+				'layers' => $layers,
 			);
 		}
+		self::note_features( $root_attrs, false );
+		Sgs_Motion_Assets::enqueue_used();
 
 		$css_tag = '';
 		if ( '' !== $css ) {
