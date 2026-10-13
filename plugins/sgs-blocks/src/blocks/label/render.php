@@ -292,6 +292,27 @@ if ( '' !== $background_layer_css ) {
 	$scoped_css[] = $background_layer_css;
 }
 
+// --- Leading dot — a decorative `::before` on the root (an empty `content`, so it
+// adds nothing to the label's accessible text). It sits inline before the text,
+// centred on the line by `vertical-align:middle`, whatever the display model above.
+// The dot's own background is not clipped by a text gradient's `background-clip:text`
+// on the root, and the block background stays on the `::after` layer. Size and gap
+// read through sgs_css_length_value() (a bare number is a spacing preset slug); an
+// empty value falls back to the block.json defaults (7px, spacing preset 20). An
+// unset colour follows the text colour. ---
+if ( ! empty( $attributes['dot'] ) ) {
+	$dot_size  = sgs_css_length_value( (string) ( $attributes['dotSize'] ?? '' ) );
+	$dot_gap   = sgs_css_length_value( (string) ( $attributes['dotGap'] ?? '' ) );
+	$dot_paint = sgs_background_paint_decl(
+		(string) ( $attributes['dotColour'] ?? '' ),
+		(string) ( $attributes['dotColourGradient'] ?? '' )
+	);
+	$dot_size     = '' !== $dot_size ? $dot_size : '7px';
+	$dot_gap      = '' !== $dot_gap ? $dot_gap : 'var(--wp--preset--spacing--20)';
+	$dot_paint    = '' !== $dot_paint ? $dot_paint : 'background-color:currentColor';
+	$scoped_css[] = "{$root_sel}::before{content:\"\";display:inline-block;flex-shrink:0;width:{$dot_size};height:{$dot_size};border-radius:50%;vertical-align:middle;margin-inline-end:{$dot_gap};{$dot_paint};}";
+}
+
 // --- Responsive MARGIN tiers — box objects, scoped @media on the SAME selector
 // (contract §B2: tablet max-width:1023px, mobile max-width:767px). Margin tiers
 // are never gated. (Padding tiers are handled inside the box helper above.) ---

@@ -63,7 +63,8 @@
 						"css:font-family": "fontFamily",
 						"css:padding": "padding",
 						"css:margin": "margin",
-						"css:border-radius": "borderRadius"
+						"css:border-radius": "borderRadius",
+						"css:gap": "dotGap"
 					},
 					"states": {
 						"hover": {
@@ -73,7 +74,7 @@
 							}
 						}
 					},
-					"_note": "Single-semantic-element block — the <span> root IS the wrapper (render.php:63, block-level element by contract). `padding` support is declared `false` (spacing.padding=false) — padding is instead the SGS custom object attr `padding` (pill-gated, base + paddingTablet/paddingMobile tiers), not native. No __experimentalBorder support at all — border-radius is the scalar `borderRadius` attr, and border-width/style/colour have no controls on this block (honest gaps: label has no border feature). No box-shadow, no hover states, no width/height/gap/aspect-ratio attrs — all honest gaps; label is a small text chip with no image surface beyond `background-color`, which now lives on its own `background` element below (2026-08-22, text/background pseudo-element split) rather than sharing this element — `css:color`'s `background-clip:text` gradient mode would otherwise overwrite/clip a background painted on the SAME node."
+					"_note": "Single-semantic-element block — the <span> root IS the wrapper (render.php:63, block-level element by contract). `padding` support is declared `false` (spacing.padding=false) — padding is instead the SGS custom object attr `padding` (pill-gated, base + paddingTablet/paddingMobile tiers), not native. No __experimentalBorder support at all — border-radius is the scalar `borderRadius` attr, and border-width/style/colour have no controls on this block (honest gaps: label has no border feature). No box-shadow, no width/height/aspect-ratio attrs — honest gaps (`css:gap` is dotGap, the leading dot's space to the text); label is a small text chip with no image surface beyond `background-color`, which now lives on its own `background` element below (2026-08-22, text/background pseudo-element split) rather than sharing this element — `css:color`'s `background-clip:text` gradient mode would otherwise overwrite/clip a background painted on the SAME node."
 				},
 				"background": {
 					"motion": false,
@@ -88,6 +89,23 @@
 						"css:background-image": "backgroundColourGradient"
 					},
 					"_note": "The block's own background paint, moved off the `label` element onto a `::after` pseudo-element layer (render.php) so a text gradient on the SAME root node (`label` element's `css:color-gradient`) cannot clip or overwrite it via `background-clip:text`. GRADIENT SIBLING (colour-conformance FILL closeout, 2026-09-06): backgroundColourGradient added — the block already calls the shared sgs_block_background_layer_css()/sgs_background_paint_decl() mechanism, it just hardcoded the gradient argument to '' instead of reading a real attribute. No hover sibling — a static decorative label has no :hover CSS anywhere on this block."
+				},
+				"dot": {
+					"motion": false,
+					"label": "Dot",
+					"order": 3,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"isWrapper": false,
+					"attrMap": {
+						"css:background-color": "dotColour",
+						"css:background-image": "dotColourGradient",
+						"css:width": "dotSize",
+						"css:height": "dotSize"
+					},
+					"_note": "The opt-in leading dot (`dot`), painted as a decorative `::before` on the label root (render.php): an empty `content`, so the label text stays the accessible text. dotGap (on the label element) is its margin-inline-end to the text."
 				}
 			}
 		}
@@ -227,6 +245,31 @@
 		"fullWidth": {
 			"type": "boolean",
 			"default": false
+		},
+		"dot": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show a small decorative dot before the label text (a ::before on the label, never part of its accessible text)."
+		},
+		"dotColour": {
+			"type": "string",
+			"default": "",
+			"description": "Dot colour (palette slug or CSS colour). Empty follows the label's text colour (currentColor)."
+		},
+		"dotColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient painting the dot instead of a flat colour (sgs_background_paint_decl()). Non-empty wins over dotColour."
+		},
+		"dotSize": {
+			"type": "string",
+			"default": "7px",
+			"description": "Dot diameter as a CSS length; empty uses 7px."
+		},
+		"dotGap": {
+			"type": "string",
+			"default": "20",
+			"description": "Space between the dot and the text: a spacing preset slug (e.g. '20') or a CSS length, read through sgs_css_length_value(); empty uses spacing preset 20."
 		},
 		"textWrap": {
 			"type": "string",
