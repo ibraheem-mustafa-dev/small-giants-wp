@@ -78,6 +78,8 @@ npm run lint:js       # ESLint
 npm run lint:css      # Stylelint
 ```
 
+**Side-effect modules:** `package.json` `sideEffects` lists the only source files webpack keeps when nothing uses their exports (stylesheets, `src/blocks/extensions/**`, `src/bindings/**`, `src/shared/nav-interactivity/**`, `src/shared/wishlist-store/**`). A new module that does its work just by being imported (a `registerPlugin`, an `addFilter`, a bindings source, an Interactivity `store()`) must sit under one of those globs or be added to the list, or the build silently drops it. Check by counting `registerBlockType`, `addFilter`, `registerPlugin` and `registerBlockBindingsSource` across `build/**/*.js` before and after.
+
 ## A control that "doesn't work" — diff it against a block where it ALREADY works
 
 Do not design a fix from first principles. Ask which blocks already have the attribute:
