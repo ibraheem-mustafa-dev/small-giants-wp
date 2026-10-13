@@ -16,6 +16,8 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/nav-drawer-chrome-css.php';
+require_once __DIR__ . '/nav-drawer-chrome-extras-css.php';
+require_once __DIR__ . '/nav-drawer-chrome-icons.php';
 
 if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_urls' ) ) {
 	/**
@@ -126,11 +128,13 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_html' ) ) {
 if ( ! function_exists( 'sgs_nav_drawer_chrome_slot_types' ) ) {
 	/**
 	 * Every `chromeSlotType` value; '' is "no slot". Mirrors block.json's enum.
+	 * `icons` is the body's leading `sgs/social-icons` group, lifted by
+	 * sgs_nav_drawer_chrome_icons_lift() (nav-drawer-chrome-icons.php).
 	 *
 	 * @return array<int,string>
 	 */
 	function sgs_nav_drawer_chrome_slot_types(): array {
-		return array( '', 'heading', 'label', 'text', 'button' );
+		return array( '', 'heading', 'label', 'text', 'button', 'icons' );
 	}
 }
 
@@ -145,7 +149,7 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_slot_html' ) ) {
 	function sgs_nav_drawer_chrome_slot_html( array $attributes ): string {
 		$type = (string) ( $attributes['chromeSlotType'] ?? '' );
 		$text = trim( (string) ( $attributes['chromeSlotText'] ?? '' ) );
-		if ( '' === $type || '' === $text || ! in_array( $type, sgs_nav_drawer_chrome_slot_types(), true ) ) {
+		if ( '' === $type || 'icons' === $type || '' === $text || ! in_array( $type, sgs_nav_drawer_chrome_slot_types(), true ) ) {
 			return '';
 		}
 
@@ -269,15 +273,17 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome' ) ) {
 	 * @param string $root_sel   The drawer's scoped root selector.
 	 * @param string $close_html The × button markup (trusted).
 	 * @param string $css        The drawer's scoped CSS, appended to.
+	 * @param string $icons_html The lifted `icons` slot (sgs_nav_drawer_chrome_icons_lift(), trusted), or ''.
 	 * @return string The row markup (trusted).
 	 */
-	function sgs_nav_drawer_chrome( array $attributes, string $root_sel, string $close_html, string &$css ): string {
+	function sgs_nav_drawer_chrome( array $attributes, string $root_sel, string $close_html, string &$css, string $icons_html = '' ): string {
 		$urls = sgs_nav_drawer_chrome_logo_urls( $attributes );
 		$logo = sgs_nav_drawer_chrome_logo_html( $attributes, $urls );
-		$slot   = sgs_nav_drawer_chrome_slot_html( $attributes );
+		$slot   = '' !== $icons_html ? $icons_html : sgs_nav_drawer_chrome_slot_html( $attributes );
 		$rating = sgs_nav_drawer_chrome_rating_html( $attributes );
 
 		$css .= sgs_nav_drawer_chrome_css( $attributes, $root_sel, $urls, '' !== $logo, '' !== $slot, '' !== $rating );
+		$css .= sgs_nav_drawer_chrome_extras_css( $attributes, $root_sel, '' !== $logo );
 
 		$class = 'sgs-nav-drawer__chrome' . ( '' === $logo && '' === $slot && '' === $rating ? ' sgs-nav-drawer__chrome--close-only' : '' );
 		return '<div class="' . esc_attr( $class ) . '">' . $close_html . $logo . $slot . $rating . '</div>';

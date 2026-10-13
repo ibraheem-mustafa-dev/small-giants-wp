@@ -11,6 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { BaseControl, Button, PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { ResponsiveBoxControl, ResponsiveLengthControl, SgsColourPanel, fillRow } from '../../components';
+import ChromeLogoBoxControls from './ChromeLogoBoxControls';
 import { TierShow } from './chrome-tier-controls';
 import ChromeSlotControls from './ChromeSlotControls';
 import CloseBoxControls from './CloseBoxControls';
@@ -29,7 +30,7 @@ const LOGO_TIERS = [
  * @param {Function} props.setAttributes Setter.
  * @return {Element} The panel.
  */
-export default function ChromePanel( { name, attributes, setAttributes } ) {
+export default function ChromePanel( { name, attributes, setAttributes, clientId } ) {
 	const {
 		chromeRowHeight,
 		chromeRowGap,
@@ -38,6 +39,7 @@ export default function ChromePanel( { name, attributes, setAttributes } ) {
 		chromeLogoLink,
 		chromeLogoWidth,
 		chromeLogoShow,
+		chromeSticky,
 	} = attributes;
 
 	return (
@@ -118,10 +120,11 @@ export default function ChromePanel( { name, attributes, setAttributes } ) {
 						value={ chromeLogoShow }
 						onChange={ ( obj ) => setAttributes( { chromeLogoShow: obj } ) }
 					/>
+					<ChromeLogoBoxControls attributes={ attributes } setAttributes={ setAttributes } />
 				</>
 			) }
 
-			<ChromeSlotControls attributes={ attributes } setAttributes={ setAttributes } />
+			<ChromeSlotControls attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
 
 			<SgsColourPanel
 				rows={ [
@@ -157,6 +160,14 @@ export default function ChromePanel( { name, attributes, setAttributes } ) {
 					const key = 'base' === tier ? 'desktop' : tier;
 					setAttributes( { chromeRowPadding: { ...( chromeRowPadding || {} ), [ key ]: next } } );
 				} }
+			/>
+
+			<ToggleControl
+				label={ __( 'Keep the top row in place while the menu scrolls', 'sgs-blocks' ) }
+				help={ __( 'Only the drawer content scrolls; the top row and the drawer background stay still.', 'sgs-blocks' ) }
+				checked={ !! chromeSticky }
+				onChange={ ( value ) => setAttributes( { chromeSticky: value } ) }
+				__nextHasNoMarginBottom
 			/>
 
 			<CloseBoxControls attributes={ attributes } setAttributes={ setAttributes } />

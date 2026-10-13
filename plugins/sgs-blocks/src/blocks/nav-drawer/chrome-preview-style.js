@@ -20,6 +20,7 @@ import {
 	tierLengthPreview,
 	typographyPreviewStyle,
 	wrapperBorderPreview,
+	resolveShadowPreviewComposed,
 } from '../../utils';
 import { resolveColourToken } from '../../components';
 
@@ -85,6 +86,38 @@ export function chromeSlotStyle( attributes, tier, palette ) {
 		return { ...style, ...chromeButtonStyle( attributes, palette ) };
 	}
 	return { ...style, ...textPaintPreview( attributes.chromeSlotColour, attributes.chromeSlotColourGradient, palette ) };
+}
+
+/**
+ * The box around the top-row logo: fill, radius, padding and shadow (the twin
+ * of the `chromeLogoBox*` rule in includes/nav-drawer-chrome-extras-css.php).
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {Array}  palette    Theme colour palette.
+ * @return {Object} React style fragment.
+ */
+export function chromeLogoBoxStyle( attributes, palette ) {
+	const style = backgroundPaintPreview( attributes.chromeLogoBoxBg, attributes.chromeLogoBoxBgGradient, palette );
+	if ( attributes.chromeLogoBoxRadius ) {
+		style.borderRadius = attributes.chromeLogoBoxRadius;
+	}
+	Object.assign( style, boxLonghands( attributes.chromeLogoBoxPadding, 'padding' ) );
+	const shadow = resolveShadowPreviewComposed( attributes.chromeLogoBoxShadow, attributes.chromeLogoBoxShadowColour );
+	if ( shadow ) {
+		style.boxShadow = shadow;
+	}
+	return style;
+}
+
+/**
+ * The close button's resting fill (`closeBg`/`closeBgGradient`).
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {Array}  palette    Theme colour palette.
+ * @return {Object} React style fragment.
+ */
+export function closeFillStyle( attributes, palette ) {
+	return backgroundPaintPreview( attributes.closeBg, attributes.closeBgGradient, palette );
 }
 
 /**

@@ -11,7 +11,7 @@
 import ServerSideRender from '../../components/ServerSideRender';
 import { SsrPreviewGuard } from '../../components';
 import { resolveTier, tierLengthPreview } from '../../utils';
-import { chromeRowStyle, chromeSlotStyle } from './chrome-preview-style';
+import { chromeRowStyle, chromeSlotStyle, chromeLogoBoxStyle } from './chrome-preview-style';
 
 /**
  * The logo URL the given tier shows (tablet falls back to desktop, mobile to tablet).
@@ -95,6 +95,7 @@ export default function ChromePreview( { attributes, deviceTier, palette, childr
 			{ showLogo && (
 				<LogoTag
 					className="sgs-nav-drawer__chrome-logo"
+					style={ chromeLogoBoxStyle( attributes, palette ) }
 					{ ...( linkedLogo ? { href: '#', onClick: ( event ) => event.preventDefault() } : {} ) }
 				>
 					<img

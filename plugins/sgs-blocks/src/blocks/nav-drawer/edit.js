@@ -42,7 +42,7 @@ import { useState, useEffect } from '@wordpress/element';
 import MotionPanel from './MotionPanel';
 import ChromePanel from './ChromePanel';
 import ChromePreview from './ChromePreview';
-import { shellBorderStyle, closeBorderStyle } from './chrome-preview-style';
+import { shellBorderStyle, closeBorderStyle, closeFillStyle } from './chrome-preview-style';
 import { useSelect } from '@wordpress/data';
 
 /** backgroundSize control options — mirrors sgs/container's BackgroundPanel. */
@@ -834,7 +834,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					</ToolsPanelItem>
 				</ToolsPanel>
 
-				<ChromePanel name={ name } attributes={ attributes } setAttributes={ setAttributes } />
+				<ChromePanel name={ name } attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
 				<MotionPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
@@ -1407,6 +1407,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							...closePlacementPreviewStyle,
 							// closeBorder* and closeIconSize editor-canvas mirrors: the box border and the glyph size.
 							...closeBorderStyle( attributes, palette ),
+							...closeFillStyle( attributes, palette ),
 							...( tierLengthPreview( attributes.closeIconSize, activeDeviceTier ) ? { '--sgs-nd-editor-close-icon': tierLengthPreview( attributes.closeIconSize, activeDeviceTier ) } : {} ),
 						} }
 					>
