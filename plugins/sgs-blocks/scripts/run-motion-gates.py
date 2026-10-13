@@ -4,11 +4,13 @@
 Discovers by glob, not by list:
   check-motion-*.py    runs `--check` and `--self-test`
   migrate-motion-*.py  runs `--check`
+  migrate-easing-*.js  runs `--check` and `--self-test` under node (the FR-38A-54 single easing list)
 A script that does not mention a flag in its source is shown as "n/a" for it, not as a failure. Writes nothing;
 exits 1 when any run fails. Run from anywhere:  python plugins/sgs-blocks/scripts/run-motion-gates.py
 """
 from __future__ import annotations
 
+import shutil
 import subprocess
 import sys
 import time
@@ -18,7 +20,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 SCRIPTS = Path(__file__).resolve().parent
 REPO = SCRIPTS.parents[2]
 TIMEOUT_SECONDS = 600
-PLAN = (("check-motion-*.py", ("--check", "--self-test")), ("migrate-motion-*.py", ("--check",)))
+PLAN = (("check-motion-*.py", ("--check", "--self-test")), ("migrate-motion-*.py", ("--check",)),
+        ("migrate-easing-*.js", ("--check", "--self-test")))
 
 
 def run(script: Path, flag: str) -> tuple[str, float, str]:
@@ -26,7 +29,10 @@ def run(script: Path, flag: str) -> tuple[str, float, str]:
         return "n/a", 0.0, ""
     started = time.monotonic()
     try:
-        done = subprocess.run([sys.executable, str(script), flag], cwd=REPO, capture_output=True, text=True,
+        interpreter = shutil.which("node") if ".js" == script.suffix else sys.executable
+        if not interpreter:
+            return "FAIL", 0.0, "node not found on PATH"
+        done = subprocess.run([interpreter, str(script), flag], cwd=REPO, capture_output=True, text=True,
                               encoding="utf-8", errors="replace", timeout=TIMEOUT_SECONDS)
     except subprocess.TimeoutExpired:
         return "FAIL", time.monotonic() - started, f"timed out after {TIMEOUT_SECONDS}s"

@@ -23,6 +23,7 @@
     "gate:wired": "python scripts/run-gates.py --assert-wired",
     "check:shadow-fallback": "node scripts/shadow-fallback/run.js --check && python scripts/check-shadow-fallback-php.py --check",
     "gate:selftest": "python scripts/run-gates.py --self-test",
+    "gate:motion": "python scripts/run-motion-gates.py",
     "progress": "python scripts/programme-progress.py",
     "lint:consistency": "python scripts/consistency/run-consistency-gates.py",
     "test:unit": "wp-scripts test-unit-js",
