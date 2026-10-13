@@ -30,7 +30,8 @@ a stored shape can never ship silently again (the gate D182 used and D271 skippe
 DETECTION (all schema/source-derived — no hardcoded block lists, R-31-1)
 ------------------------------------------------------------------------
 * undeclared-attr : attr key absent from block.json attributes, not injected by a declared
-                    media element (supports.sgs.mediaElements), and not a WP-native
+                    media element (supports.sgs.mediaElements) or the motion support
+                    (supports.sgs.motion adds sgsMotion), and not a WP-native
                     / SGS-extension key.
 * type-mismatch   : stored attribute value type does not match the declared type
                     (e.g. string "48px" stored for an object-type attr). WP silently
@@ -213,6 +214,18 @@ OPEN_RE = re.compile(r'<!--\s*wp:(sgs/[\w-]+)(\s+\{)?')
 JS_COMMENT_RE = re.compile(r'/\*.*?\*/|//[^\n]*', re.S)
 
 
+def motion_injected_attrs(block_json: dict) -> dict:
+    """The attr includes/motion/support-registration.php injects at registration (Spec 38A FR-38A-1).
+
+    sgs_motion_register_block_type_args() gives every block whose block.json declares a truthy
+    supports.sgs.motion the object attribute `sgsMotion`; like the media-element attrs it is
+    absent from block.json, so a block.json-only reading would flag every stored motion value.
+    """
+    if ((block_json.get('supports') or {}).get('sgs') or {}).get('motion'):
+        return {'sgsMotion': {'type': 'object'}}
+    return {}
+
+
 def load_schemas():
     """{block name: {'attrs': {name: def}, 'innerblocks_save': bool, 'render': str}}
 
@@ -233,7 +246,7 @@ def load_schemas():
         save_code = JS_COMMENT_RE.sub('', save.read_text(encoding='utf-8')) if save.exists() else ''
         out[d['name']] = {
             # The block's own declarations win over injected ones, as on the server.
-            'attrs': {**media_injected_attrs(d, media_map), **d.get('attributes', {})},
+            'attrs': {**media_injected_attrs(d, media_map), **motion_injected_attrs(d), **d.get('attributes', {})},
             'innerblocks_save': 'InnerBlocks.Content' in save_code,
             'render': render_source(bj.parent),
         }
