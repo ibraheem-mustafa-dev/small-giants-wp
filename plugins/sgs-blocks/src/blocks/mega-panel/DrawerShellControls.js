@@ -1,7 +1,8 @@
 /**
  * SGS Mega Panel — "In the drawer" extras: the drawer copy's card shell
- * (radius, padding, shadow), the link-row hover fill and radius, and the
- * aside card layout. Mounted inside edit.js's "In the drawer" panel. Render
+ * (radius, padding, shadow), the link-row radius and the aside card layout.
+ * Mounted inside edit.js's "In the drawer" panel; the link-row fill is a row
+ * in the block's Styles-tab colour panel (`section-colour-rows.js`). Render
  * side: `includes/mega-panel-drawer-extras-css.php`; canvas twin:
  * `drawer-preview-extras.js`.
  *
@@ -10,7 +11,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { SelectControl } from '@wordpress/components';
-import { SgsBoxControl, SgsColourPanel, SgsLengthControl, ShadowControl, fillRow } from '../../components';
+import { SgsBoxControl, SgsLengthControl, ShadowControl } from '../../components';
 
 const LAYOUT_OPTIONS = [
 	{ label: __( 'As set by "Compact side card"', 'sgs-blocks' ), value: '' },
@@ -45,22 +46,6 @@ export default function DrawerShellControls( { attributes, setAttributes } ) {
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				attrNames={ { base: 'drawerShellShadow', colour: 'drawerShellShadowColour' } }
-			/>
-			<SgsColourPanel
-				rows={ [
-					fillRow( {
-						key: 'drawerLinkBg',
-						label: __( 'Link row background', 'sgs-blocks' ),
-						attrs: {
-							base: 'drawerLinkBg',
-							hover: 'drawerLinkHoverBg',
-							gradient: 'drawerLinkBgGradient',
-							hoverGradient: 'drawerLinkHoverBgGradient',
-						},
-						attributes,
-						setAttributes,
-					} ),
-				] }
 			/>
 			<SgsLengthControl
 				label={ __( 'Link row corner radius', 'sgs-blocks' ) }

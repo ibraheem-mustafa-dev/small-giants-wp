@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/styles-fill-in-settings-direct",
+	"title": "Fixture: a styles InspectorControls written inside a default one (MUST flag)",
+	"category": "sgs",
+	"attributes": {
+		"tint": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}

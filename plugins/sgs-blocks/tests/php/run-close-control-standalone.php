@@ -61,6 +61,7 @@ if ( ! function_exists( 'sgs_nav_shared_icon_markup' ) ) {
 }
 
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-responsive.php';
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-nav-accessible-label.php';
 
 $pass = 0;
 $fail = 0;
@@ -300,6 +301,39 @@ $aria_empty_label = run_close_section(
 	)
 );
 ok( false !== strpos( $aria_empty_label['close_html'], 'aria-label="Close menu"' ) && false === strpos( $aria_empty_label['close_html'], 'aria-label=""' ), 'an empty operator label falls back to the generic name, never an empty aria-label' );
+
+// A glyph-only label (no letter or digit) is not a word: the visible glyph stays, the name is
+// the translated generic one.
+foreach ( array( '×', '✕', ' → ', '☰' ) as $glyph ) {
+	$aria_glyph_label = run_close_section(
+		$section,
+		array(
+			'closeStyle' => array( 'desktop' => 'text-swap' ),
+			'closeLabel' => $glyph,
+		)
+	);
+	ok(
+		false !== strpos( $aria_glyph_label['close_html'], 'aria-label="Close menu"' )
+			&& false !== strpos( $aria_glyph_label['close_html'], '<span class="sgs-nav-drawer__close-text">' . esc_html( trim( $glyph ) ) . '</span>' ),
+		'a glyph-only label (' . trim( $glyph ) . ') keeps the glyph visible and names the button "Close menu"'
+	);
+}
+$aria_word_and_glyph = run_close_section(
+	$section,
+	array(
+		'closeStyle' => array( 'desktop' => 'text-swap' ),
+		'closeLabel' => '× Close',
+	)
+);
+ok( false !== strpos( $aria_word_and_glyph['close_html'], 'aria-label="× Close"' ), 'NEGATIVE CONTROL: a label with a word in it is still the accessible name (Label in Name)' );
+$aria_digit = run_close_section(
+	$section,
+	array(
+		'closeStyle' => array( 'desktop' => 'text-swap' ),
+		'closeLabel' => '2',
+	)
+);
+ok( false !== strpos( $aria_digit['close_html'], 'aria-label="2"' ), 'a digit counts as a word' );
 
 // ════════════════════════════════════════════════════════════════════════════
 // §4.3 — closePlacement / closeOffset.

@@ -323,9 +323,6 @@ require_once SGS_BLOCKS_PATH . 'includes/media-element-attrs-register.php';
 // Parallax scroll — server-side class, custom property, and data-attribute injection.
 require_once SGS_BLOCKS_PATH . 'includes/parallax.php';
 
-// Global block defaults — REST API for save/load per-block defaults.
-require_once SGS_BLOCKS_PATH . 'includes/block-defaults.php';
-
 // Google Reviews settings and API integration.
 require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
 

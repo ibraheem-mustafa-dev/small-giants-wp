@@ -21,6 +21,7 @@ require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
 require_once __DIR__ . '/render-tile.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-gallery-grid-css.php';
 
 // CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
 // declarations inside this block's scoped <style> tag. Strips everything
@@ -832,13 +833,16 @@ if ( $enable_lightbox ) {
 	$gallery_responsive_css .= sgs_scrim_render( $attributes, $uid, array( 'open' => '.' . $uid . '.sgs-gallery__lightbox:modal' ) );
 }
 
+// The gallery's grid is the child `.sgs-gallery__grid`, not the wrapper's own element. The
+// wrapper is handed no `layout`, `columns` or `separators` (it would make its own element a
+// grid with the image grid as one cell, and mark and style an element that is not the grid);
+// the grid layout's grid settings are printed on the image grid instead.
+$sgs_wrapper_attributes  = sgs_gallery_wrapper_attributes( $attributes );
+$gallery_responsive_css .= sgs_gallery_grid_layout_css( $root_sel . ' .sgs-gallery__grid', $attributes );
+
 // Lines between the grid layout's items: the shared Separators setting
-// (includes/helpers-separators.php), flow path. The gallery's grid is the child
-// `.sgs-gallery__grid`, not the wrapper's own element, so the block names that list and
-// marks its own root, and the wrapper is handed no `separators` (it would mark and style
-// an element that is not the grid). Masonry and carousel draw none.
-$sgs_wrapper_attributes = $attributes;
-unset( $sgs_wrapper_attributes['separators'] );
+// (includes/helpers-separators.php), flow path, on the image grid. Masonry and carousel
+// draw none.
 if ( 'grid' === $layout ) {
 	$sgs_gal_sep_css = sgs_separators_css(
 		$attributes['separators'] ?? array(),

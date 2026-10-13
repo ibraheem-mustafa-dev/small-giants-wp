@@ -61,11 +61,10 @@ import {
 	ShadowControl,
 	SurfaceGroundControls,
 	TypographyControls,
-	fillRow,
-	textRow,
 } from '../../components';
 import drawerPreviewCss from './drawer-preview';
 import DrawerShellControls from './DrawerShellControls';
+import sectionColourRows from './section-colour-rows';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import { CursorFieldRowControls } from '../../components/CursorFieldRowControls';
 import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
@@ -739,6 +738,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							},
 						],
 					},
+					...sectionColourRows( { attributes, setAttributes, resolvedVariant } ),
 				] }
 			/>
 			<InspectorControls>
@@ -1012,23 +1012,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									showLetterSpacing
 									showResponsive={ false }
 								/>
-								<SgsColourPanel
-									rows={ [
-										{
-											key: 'brandsEyebrow',
-											label: __( 'Eyebrow colour', 'sgs-blocks' ),
-											states: [
-												{
-													key: 'normal',
-													label: __( 'Normal', 'sgs-blocks' ),
-													value: brandsEyebrowColour,
-													onChange: ( value ) =>
-														setAttributes( { brandsEyebrowColour: value ?? '' } ),
-												},
-											],
-										},
-									] }
-								/>
 								<ResponsiveBoxControl
 									label={ __( 'Eyebrow padding', 'sgs-blocks' ) }
 									presets
@@ -1266,19 +1249,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ToggleGroupControl>
 					{ 'line' === sepStyle && (
 						<>
-							<SgsColourPanel
-								rows={ [
-									fillRow( {
-										key: 'aside-separator-colour',
-										label: __( 'Divider colour', 'sgs-blocks' ),
-										get: () => asideSeparator?.colour,
-										set: ( value ) =>
-									setAttributes( {
-										asideSeparator: { ...asideSeparator, colour: value || '' },
-									} ),
-									} ),
-								] }
-							/>
 							<SgsLengthControl
 								label={ __( 'Divider width', 'sgs-blocks' ) }
 								value={ asideSeparator?.width || '' }
@@ -1327,59 +1297,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToggleGroupControlOption value="desktop" label={ __( 'Desktop', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="drawer" label={ __( 'Drawer', 'sgs-blocks' ) } />
 					</ToggleGroupControl>
-					<SgsColourPanel
-						rows={ [
-							fillRow( {
-								key: 'drawerBg',
-								label: __( 'Drawer ground', 'sgs-blocks' ),
-								attrs: { base: 'drawerBg', gradient: 'drawerBgGradient' },
-								attributes,
-								setAttributes,
-							} ),
-							textRow( {
-								key: 'drawerLinkNumColour',
-								label: __( 'Link number colour', 'sgs-blocks' ),
-								attrs: { base: 'drawerLinkNumColour', gradient: 'drawerLinkNumColourGradient' },
-								attributes,
-								setAttributes,
-							} ),
-							textRow( {
-								key: 'drawerLinkLabelColour',
-								label: __( 'Link label colour', 'sgs-blocks' ),
-								attrs: { base: 'drawerLinkLabelColour', gradient: 'drawerLinkLabelColourGradient' },
-								attributes,
-								setAttributes,
-							} ),
-							textRow( {
-								key: 'drawerLinkDescColour',
-								label: __( 'Link description colour', 'sgs-blocks' ),
-								attrs: { base: 'drawerLinkDescColour', gradient: 'drawerLinkDescColourGradient' },
-								attributes,
-								setAttributes,
-							} ),
-							fillRow( {
-								key: 'drawerLinkDivider',
-								label: __( 'Link divider colour', 'sgs-blocks' ),
-								attrs: { base: 'drawerLinkDivider', gradient: 'drawerLinkDividerGradient' },
-								attributes,
-								setAttributes,
-							} ),
-							fillRow( {
-								key: 'drawerCardBg',
-								label: __( 'Card ground', 'sgs-blocks' ),
-								attrs: { base: 'drawerCardBg', gradient: 'drawerCardBgGradient' },
-								attributes,
-								setAttributes,
-							} ),
-							fillRow( {
-								key: 'drawerCardBorderColour',
-								label: __( 'Card border colour', 'sgs-blocks' ),
-								attrs: { base: 'drawerCardBorderColour', gradient: 'drawerCardBorderColourGradient' },
-								attributes,
-								setAttributes,
-							} ),
-						] }
-					/>
 					<ToggleGroupControl
 						label={ __( 'Side card position', 'sgs-blocks' ) }
 						value={ drawerAsideOrder || 'last' }

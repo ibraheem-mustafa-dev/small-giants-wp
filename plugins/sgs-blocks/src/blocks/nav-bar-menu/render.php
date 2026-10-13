@@ -58,6 +58,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-nav-accessible-label.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-markup.php';
@@ -633,8 +634,12 @@ $burger_icon_is_default = 'lucide' === (string) ( $attributes['triggerIcon']['so
  * text be the accessible name.
  */
 // No tier shows a word: a descriptive name. Some tiers show it: that same word
-// (Label-in-Name). Every tier shows it: the visible word is the name.
-if ( $sgs_nm_trigger_every_tier_text ) {
+// (Label-in-Name). Every tier shows it: the visible word is the name. A label made
+// only of symbols (`☰`) is not a word (sgs_nav_label_is_word()), so it never names
+// the button: the descriptive name stands and the glyph stays visible.
+if ( ! sgs_nav_label_is_word( $trigger_label ) ) {
+	$burger_aria_attr = sprintf( ' aria-label="%s"', esc_attr__( 'Open menu', 'sgs-blocks' ) );
+} elseif ( $sgs_nm_trigger_every_tier_text ) {
 	$burger_aria_attr = '';
 } elseif ( $sgs_nm_trigger_any_text ) {
 	$burger_aria_attr = sprintf( ' aria-label="%s"', esc_attr( $trigger_label ) );

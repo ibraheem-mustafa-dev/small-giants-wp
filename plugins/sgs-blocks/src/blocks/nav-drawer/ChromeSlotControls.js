@@ -2,7 +2,9 @@
  * Nav drawer top-row free slot controls (Spec 36 FR-36-6): ONE optional
  * heading, label, text or button beside the logo. The button type is styled
  * by the shared built-in button emitter (`sgs_button_element_style_css()`,
- * prefix `chromeButton`); every type shares the `chromeSlot` typography.
+ * prefix `chromeButton`); every type shares the `chromeSlot` typography. The
+ * slot's colours are rows in the drawer's Styles-tab colour panel
+ * (`chrome-colour-rows.js`).
  *
  * @package SGS\Blocks
  */
@@ -10,9 +12,6 @@
 import { __ } from '@wordpress/i18n';
 import { SelectControl, TextControl } from '@wordpress/components';
 import {
-	SgsColourPanel,
-	fillRow,
-	textRow,
 	SgsBorderControl,
 	SgsBoxControl,
 	TypographyControls,
@@ -154,35 +153,8 @@ export default function ChromeSlotControls( { attributes, setAttributes, clientI
 							},
 						] }
 					/> }
-					{ isIcons ? null : isButton ? (
+					{ isButton && (
 						<>
-							<SgsColourPanel
-								rows={ [
-									fillRow( {
-										key: 'chromeButtonFill',
-										label: __( 'Button background', 'sgs-blocks' ),
-										attrs: {
-											base: 'chromeButtonColourBackground',
-											hover: 'chromeButtonColourBackgroundHover',
-											gradient: 'chromeButtonColourBackgroundGradient',
-										},
-										attributes,
-										setAttributes,
-									} ),
-									textRow( {
-										key: 'chromeButtonText',
-										label: __( 'Button text', 'sgs-blocks' ),
-										attrs: {
-											base: 'chromeButtonColourText',
-											hover: 'chromeButtonColourTextHover',
-											gradient: 'chromeButtonColourTextGradient',
-											hoverGradient: 'chromeButtonColourTextHoverGradient',
-										},
-										attributes,
-										setAttributes,
-									} ),
-								] }
-							/>
 							<SgsBorderControl
 								label={ __( 'Button border', 'sgs-blocks' ) }
 								widthValues={ chromeButtonBorderWidth ?? {} }
@@ -215,18 +187,6 @@ export default function ChromeSlotControls( { attributes, setAttributes, clientI
 								onChange={ ( next ) => setAttributes( { chromeButtonPadding: next } ) }
 							/>
 						</>
-					) : (
-						<SgsColourPanel
-							rows={ [
-								textRow( {
-									key: 'chromeSlotColour',
-									label: __( 'Extra item colour', 'sgs-blocks' ),
-									attrs: { base: 'chromeSlotColour', gradient: 'chromeSlotColourGradient' },
-									attributes,
-									setAttributes,
-								} ),
-							] }
-						/>
 					) }
 				</>
 			) }

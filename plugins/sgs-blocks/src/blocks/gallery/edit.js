@@ -201,29 +201,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const previewMaxWidth = resolveResponsiveTier( attributes.maxWidth, previewTier )?.value;
 	if ( previewMaxWidth ) inlineStyles.maxWidth = previewMaxWidth;
 
-	// Grid layout preview (justifyItems/alignContent/alignItems/gridAutoRows) —
-	// shared with sgs/container via applyGridLayoutPreview(). This block's own
-	// `layout` attribute (grid/masonry/carousel) doubles as the value the
-	// wrapper reads as its layout-mode switch: class-sgs-container-wrapper.php
-	// only emits these declarations onto the OUTER element when
-	// `'grid' === $layout` — masonry/carousel never match the grid/flex/stack
-	// branches applyGridLayoutPreview() implements, so this call is a correct
-	// no-op for those two layouts. `columns`/`attributes.gridTemplateColumns`
-	// are the SAME attributes the PHP wrapper itself reads (confirmed in
-	// class-sgs-container-wrapper.php) and that this block already uses above
-	// for its own inner `.sgs-gallery__grid` thumbnail-track preview — reusing
-	// them here does not change that existing preview, which stays driven by
-	// `previewGridStyle` below.
-	applyGridLayoutPreview( inlineStyles, {
-		layout,
-		alignItems: attributes.alignItems,
-		justifyItems: attributes.justifyItems,
-		alignContent: attributes.alignContent,
-		gridAutoRows: attributes.gridAutoRows,
-		gridTemplateColumns: attributes.gridTemplateColumns,
-		columns,
-	} );
-
 	// contentWidth band (Layer 2 / `.sgs-container__inner`) — this block
 	// declares no `contentBandPadding` sibling attribute, so band padding is
 	// always empty; the band still exists whenever contentWidth resolves to a
@@ -239,13 +216,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		contentWidth: galleryBandMaxWidth,
 		bandPadding: {},
 		style: inlineStyles,
-		layout,
+		// render.php hands the wrapper no `layout`: the outer element is never a grid.
+		layout: '',
 	} );
-	// gridTemplateRows (a plain string, grid layout only) lands where the wrapper
-	// puts the grid: on the band when one exists, else on the outer element.
-	if ( 'grid' === layout && 'string' === typeof attributes.gridTemplateRows && attributes.gridTemplateRows.trim() ) {
-		( hasBandProps ? bandStyle : inlineStyles ).gridTemplateRows = attributes.gridTemplateRows.trim();
-	}
 
 	const blockProps = useBlockProps( {
 		className: `sgs-gallery sgs-gallery--${ layout } sgs-gallery--hover-${ effectHover }${ isTileMode( attributes ) ? ' sgs-gallery--tile' : '' }`,
@@ -262,6 +235,23 @@ export default function Edit( { attributes, setAttributes } ) {
 		columnCount: layout === 'masonry' ? columnsDesktop : undefined,
 		gap: /^\d+$/.test( String( gapDesktop ) ) ? gapDesktop + 'px' : gapDesktop || '16px',
 	};
+	// The grid layout's grid settings paint the image grid (render.php:
+	// sgs_gallery_grid_layout_css()), never the outer element.
+	if ( 'grid' === layout ) {
+		applyGridLayoutPreview( previewGridStyle, {
+			layout,
+			alignItems: attributes.alignItems,
+			justifyItems: attributes.justifyItems,
+			alignContent: attributes.alignContent,
+			gridAutoRows: attributes.gridAutoRows,
+			gridTemplateColumns: attributes.gridTemplateColumns,
+			columns,
+		} );
+		const previewRows = resolveResponsiveTier( attributes.gridTemplateRows, previewTier )?.value;
+		if ( 'string' === typeof previewRows && previewRows.trim() ) {
+			previewGridStyle.gridTemplateRows = previewRows.trim();
+		}
+	}
 
 	// Separators preview: the lines sit on the grid list (`.sgs-gallery__grid`), the same
 	// element render.php hands to sgs_separators_css(), and only for the grid layout. The

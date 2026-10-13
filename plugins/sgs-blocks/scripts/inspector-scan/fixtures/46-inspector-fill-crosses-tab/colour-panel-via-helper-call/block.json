@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/colour-panel-via-helper-call",
+	"title": "Fixture: SgsColourPanel returned by a helper called inside a Settings fill (MUST flag)",
+	"category": "sgs",
+	"attributes": {
+		"tint": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}

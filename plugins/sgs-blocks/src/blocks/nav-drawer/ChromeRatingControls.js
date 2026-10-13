@@ -9,7 +9,6 @@
 
 import { __ } from '@wordpress/i18n';
 import { ToggleControl } from '@wordpress/components';
-import { SgsColourPanel, textRow } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { TierShow } from './chrome-tier-controls';
 
@@ -55,17 +54,6 @@ export default function ChromeRatingControls( { attributes, setAttributes } ) {
 						checked={ !! chromeRatingShowCount }
 						onChange={ ( value ) => setAttributes( { chromeRatingShowCount: value } ) }
 						__nextHasNoMarginBottom
-					/>
-					<SgsColourPanel
-						rows={ [
-							textRow( {
-								key: 'chromeRatingColour',
-								label: __( 'Rating and caption colour', 'sgs-blocks' ),
-								attrs: { base: 'chromeRatingColour' },
-								attributes,
-								setAttributes,
-							} ),
-						] }
 					/>
 				</>
 			) }

@@ -41,6 +41,7 @@ import {
 import { useState, useEffect } from '@wordpress/element';
 import MotionPanel from './MotionPanel';
 import ChromePanel from './ChromePanel';
+import chromeColourRows from './chrome-colour-rows';
 import ChromePreview from './ChromePreview';
 import { shellBorderStyle, closeBorderStyle, closeFillStyle } from './chrome-preview-style';
 import { useSelect } from '@wordpress/data';
@@ -509,8 +510,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		<>
 			{ /* Grouped, SGS-owned colour panel, rendered FIRST so it sits at the
 			   top of the inspector (Styles tab). Holds every drawer colour
-			   (Background, Text, Close icon colour) so none is scattered across
-			   the panels below. */ }
+			   (Background, Text, Close icon colour, and the top row's rows from
+			   chrome-colour-rows.js) so none is scattered across the panels
+			   below. */ }
 			<SgsColourPanel
 				rows={ [
 					fillRow( {
@@ -564,6 +566,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					/* The scrim behind the open drawer (Wave 3C U-2, family M-14) —
 					   shared row descriptor, includes/helpers-scrim.php is its render twin. */
 					scrimColourRow( { attributes, setAttributes } ),
+					...chromeColourRows( { attributes, setAttributes } ),
 				] }
 			/>
 			{ /* ── Settings tab ─────────────────────────────────────────── */ }

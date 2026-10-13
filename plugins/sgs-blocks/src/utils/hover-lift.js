@@ -38,7 +38,8 @@ export function hoverLiftDecls( raw, resetTransform = false ) {
 }
 
 /**
- * The editor-canvas hover rule for a lift, for a scoped `<style>`.
+ * The editor-canvas hover rule for a lift, for a scoped `<style>`. Like the PHP twin it sits
+ * inside `@media (prefers-reduced-motion:no-preference)`, so reduced motion shows no lift.
  *
  * @param {string} selector Selector for the element (no `:hover` suffix).
  * @param {*}      raw      Stored attribute value.
@@ -46,5 +47,7 @@ export function hoverLiftDecls( raw, resetTransform = false ) {
  */
 export function hoverLiftPreviewRule( selector, raw ) {
 	const decls = hoverLiftDecls( raw );
-	return decls ? `${ selector }:hover{${ decls }}` : '';
+	return decls
+		? `@media (prefers-reduced-motion:no-preference){${ selector }:hover{${ decls }}}`
+		: '';
 }
