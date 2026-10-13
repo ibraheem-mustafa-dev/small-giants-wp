@@ -181,7 +181,7 @@
 				"^(?:#?/?|#/|\\./?|index\\.html?)$"
 			],
 			"flags": "i",
-			"reason": "the link around a logo goes: the logo block links home itself"
+			"reason": "the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself"
 		},
 		"widthWrapper": {
 			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place"
@@ -232,11 +232,11 @@
 		},
 		"pillButton": {
 			"block": "sgs/button",
-			"reason": "a link or button holding one label and an icon is one button (its glyph is the button's own icon); a lone link is a button too, which can be styled as a plain link"
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
 		},
 		"wholeCardLink": {
 			"block": "sgs/container",
-			"reason": "a link holding two or more pieces of text, or a heading, is a container whose whole box is the link (the shared link source, so a Site Info address can be its target)"
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
 		},
 		"siteInfoLink": {
 			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
@@ -266,7 +266,7 @@
 		"label": {
 			"maxWords": 4,
 			"minTrackingEm": 0.06,
-			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label",
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
 			"block": "sgs/label"
 		},
 		"clientBuiltSurface": {
@@ -349,6 +349,11 @@
 				"margin-block"
 			],
 			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)"
+		},
+		"cardAction": {
+			"block": "sgs/button",
+			"maxWords": 4,
+			"reason": "a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)"
 		}
 	}
 }

@@ -32,7 +32,10 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 	if ( bad.length ) {
 		throw new Error( `the decisions data is not sound: ${ bad.join( '; ' ) }` );
 	}
-	const surfaces = Object.entries( skeletons ).map( ( [ slug, x ] ) => ( { slug, id: x.id, kind: x.kind, name: x.name } ) );
+	// A surface the run failed to read (a gap, no inventory) is never refilled from an older run's saved inventory: it keeps
+	// its failed entry and is listed as missing.
+	const read = ( x ) => ! x.gap && null != x.inventory;
+	const surfaces = Object.entries( skeletons ).filter( ( [ , x ] ) => read( x ) ).map( ( [ slug, x ] ) => ( { slug, id: x.id, kind: x.kind, name: x.name } ) );
 	const out = {};
 	const missing = [];
 	for ( const s of surfaces ) {
@@ -46,6 +49,7 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 		const r = proposeSkeleton( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, motion, clientDecisions, picks: picks[ s.slug ] || {}, db } );
 		out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: r.proposal.rows, counts: r.proposal.counts, problems: r.problems, skeleton: r.skeleton, entry: entryOf( s.slug, skeletons[ s.slug ], r, inventory ) };
 	}
+	Object.entries( skeletons ).filter( ( [ , x ] ) => ! read( x ) ).forEach( ( [ slug ] ) => missing.push( slug ) );
 	return { surfaces: out, missing };
 }
 

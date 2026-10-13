@@ -203,7 +203,9 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	try {
 		record = refreshIntakeSkeletons( { intake: record, client: o.client, db: fw, repo: o.repo } ).intake;
 	} catch ( e ) {
-		say( `the motion-aware skeleton pass failed (${ e.message.split( '\n' )[ 0 ] }); the run's own skeleton rows are kept` );
+		const error = `the motion-aware skeleton pass failed (${ e.message.split( '\n' )[ 0 ] }); the run's own skeleton rows are kept, so motion-dependent rules (a marquee) did not apply`;
+		say( error );
+		record = { ...record, gaps: [ ...( record.gaps || [] ), { construct: 'skeleton-refresh', draftId: o.client, error, stage: 'skeletons' } ] };
 	} finally {
 		fw.close();
 	}

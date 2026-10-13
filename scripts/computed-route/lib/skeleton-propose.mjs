@@ -40,8 +40,12 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		removeSubtree( k, why );
 	} );
 	// The children of an element whose block draws them itself: each is a row absorbed into it, never a block.
+	// A child carrying its own client decision is still absorbed (its block draws it), but the row says the decision no
+	// longer applies, so the review shows it instead of dropping it.
 	const absorbSubtree = ( e, top, why, rule ) => m.blockKids( e ).forEach( ( k ) => {
-		record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key } );
+		const own = overrides( k, m.words( k ) );
+		const stale = 'client decision' === own?.source ? `the client decision for ${ k.key } (${ own.block || 'remove' }) no longer applies: ${ top.block } draws this element` : null;
+		record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key, stale } );
 		absorbSubtree( k, top, why, rule );
 	} );
 	const finder = ( e ) => m.tplFinder( e );
@@ -236,7 +240,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const block = top.block;
 		// A rule's attributes are the block's settings; a block that draws its children takes no words from them.
 		const drawn = m.blockKids( e ).length ? ( r.absorb ? `rule ${ r.rule }` : cls.drawsChildren( block ) ) : null;
-		const { a, handover } = r.rule && drawn ? { a: {}, handover: [] } : contentAttrs( block, e, top );
+		// A rule that sets a display type (a business detail) carries the block's settings itself: no generic text attribute.
+		const own = r.rule && ( drawn || top.attributes?.displayType );
+		const { a, handover } = own ? { a: {}, handover: [] } : contentAttrs( block, e, top );
 		Object.assign( a, r.rule ? top.attributes || {} : {} );
 		r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
