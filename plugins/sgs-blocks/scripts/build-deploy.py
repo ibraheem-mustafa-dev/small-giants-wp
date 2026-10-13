@@ -191,6 +191,10 @@ TAR_EXCLUDES = [
     "plugins/sgs-blocks/.pytest_cache",
     "plugins/sgs-blocks/.ruff_cache",
     "plugins/sgs-blocks/.phpunit.cache",
+    # The npm lockfile and the plugin's reports/ folder (design notes and audit
+    # output) are read by nothing on the server; only PHP comments name reports/.
+    "plugins/sgs-blocks/package-lock.json",
+    "plugins/sgs-blocks/reports",
     # --- vendor/: dev-only Composer packages -------------------------------
     # `vendor/autoload.php` IS required unconditionally at plugin bootstrap
     # (sgs-blocks.php) -- vendor/ as a whole is NOT excluded,
