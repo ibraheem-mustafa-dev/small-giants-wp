@@ -12,15 +12,15 @@ import { makeClassifier, overrideFor, finish, W } from './skeleton-classify.mjs'
 const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks || [] ), 0 );
 
 // o: { inventory, facts, surface, surfaceKind, surfaceName, built (the client's own built post for this surface, from
-// sites/<client>/build/skeleton/built-surfaces.json), clientDecisions, picks ({ key: decision }), calKeys (slug ->
+// sites/<client>/build/skeleton/built-surfaces.json), motion (template keys whose own animation loops a translate), clientDecisions, picks ({ key: decision }), calKeys (slug ->
 // calibration element keys), db }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, clientDecisions = {}, picks = {}, calKeys = () => [], db = null } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, motion = new Set(), clientDecisions = {}, picks = {}, calKeys = () => [], db = null } ) {
 	const m = inventoryModel( inventory );
 	const { composition, capsOf, enumOf } = facts;
 	const minLinks = facts.decisions.structural?.linkList?.minLinks ?? 2;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
 	const rowOf = {};
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName }, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName }, motion, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const record = ( e, r, extra = {} ) => {

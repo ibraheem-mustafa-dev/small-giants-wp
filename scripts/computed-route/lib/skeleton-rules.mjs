@@ -40,8 +40,9 @@ const HEADING = /^h[1-6]$/;
 
 // o: { m (lib/skeleton-model.mjs), facts (lib/skeleton-facts.mjs), surface: { slug, kind, name }, hooks: { siteInfoKinds,
 // isColumnLabel, topBlock, blockOfKey } (the classifier's own readings: an element's Site Info kinds, whether it heads a
-// column of links, the block its plain scoring proposes, the block already proposed for an ancestor's key) }.
-export function makeRules( { m, facts, surface = {}, hooks } ) {
+// column of links, the block its plain scoring proposes, the block already proposed for an ancestor's key), motion (a Set
+// of template keys, `<component>/<tpl>`, whose own animation loops a translate for ever: lib/skeleton-rerun.mjs::loopingKeys) }.
+export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() } ) {
 	const R = facts.decisions.rules || {};
 	const arrayBlocks = new Set( facts.q( 'SELECT DISTINCT block_slug FROM array_item_schema' ).map( ( r ) => r.block_slug ) );
 	const drawsListed = Object.fromEntries( ( R.drawsChildren?.blocks || [] ).map( ( d ) => [ d.block, d.reason ] ) );
@@ -62,7 +63,13 @@ export function makeRules( { m, facts, surface = {}, hooks } ) {
 		return drawsListed[ block ] ? `decisions rules.drawsChildren: ${ block } ${ drawsListed[ block ] }` : null;
 	};
 
-	const all = ( e ) => String( e.allText ?? m.words( e ) ).replace( /\s+/g, ' ' ).trim();
+	// All the words of an element: its own, then each block child's, joined by spaces (the inventory's allText runs the
+	// children together, "SundayClosed").
+	const all = ( e ) => {
+		const kids = m.blockKids( e );
+		const text = kids.length ? [ m.words( e ), ...kids.map( all ) ].filter( Boolean ).join( ' ' ) : String( e.allText ?? m.words( e ) );
+		return text.replace( /\s+/g, ' ' ).trim();
+	};
 	const hasSvg = ( e ) => m.kids( e ).some( ( k ) => 'svg' === k.tag );
 	const bare = ( e ) => ! m.words( e ) && ! m.blockKids( e ).length;
 	const iconOnly = ( e ) => bare( e ) && hasSvg( e );
@@ -226,10 +233,74 @@ export function makeRules( { m, facts, surface = {}, hooks } ) {
 		},
 	];
 
+	// The blocks already proposed for the element's ancestors, nearest first (an unwrapped ancestor has none).
+	const ancestorBlocks = ( e ) => {
+		const out = [];
+		for ( let p = m.byKey[ e.parentKey ]; p; p = m.byKey[ p.parentKey ] ) {
+			const b = hooks.blockOfKey?.( p.key );
+			b && out.push( { block: b, key: p.key } );
+		}
+		return out;
+	};
+	const isMedia = ( k ) => 'img' === k.tag || ( k.tag.includes( '-' ) && !! specHit( R.mediaElement, k.tag ) );
+	// The element's own animation loops a translate for ever (the inventory's motion record): a marquee track.
+	const loops = ( e ) => motion.has( String( e.key ).replace( /#\d+$/, '' ) );
+
+	// Composite structures, before the element rules: a marquee, a trust bar, a page's hero and what its hero provides.
+	const STRUCTURES = [
+		// A strip whose own animation loops a translate for ever is a marquee: logos make a brand strip, labels a scrolling
+		// trust bar; the repeated items are its items.
+		( { e, kidsB } ) => {
+			if ( ! loops( e ) || ! kidsB.length ) {
+				return null;
+			}
+			const logos = desc( e ).some( isMedia );
+			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: { [ R.marquee?.logoScrollAttr ]: true }, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: { [ R.marquee?.itemScrollAttr ]: true }, absorb: true } );
+		},
+		// A row of short non-interactive labels, each with at most a glyph, is a trust bar (its badges are its items).
+		( { e, kidsB } ) => {
+			const T = R.trustBar;
+			// A badge is a short label that is not a business detail (an open status, hours or a Site Info value have their
+			// own rules); the badges sit side by side, never stacked.
+			const detail = ( k ) => !! specHit( R.openStatus, all( k ) ) || !! specHit( facts.decisions.siteInfoPatterns?.hours, all( k ) ) || hooks.siteInfoKinds( k ).size > 0;
+			const badge = ( k ) => ! [ 'a', 'button' ].includes( k.tag ) && !! all( k ) && ! /^\d+$/.test( all( k ) ) && all( k ).split( ' ' ).length <= ( T?.maxWords ?? 4 ) && ! detail( k ) && m.blockKids( k ).every( ( g ) => bare( g ) || iconOnly( g ) || bindingGlyph( g ) );
+			// What makes a badge a trust badge is its meaning: at least one names a capability the framework database records
+			// for the trust bar (accreditation, certification, halal and the like), matched on the word's stem.
+			const stem = ( w ) => ( w.length <= 4 ? w : w.slice( 0, 5 ) );
+			const vocab = ( T ? facts.capsOf( T.block ) : [] ).filter( ( c ) => ! c.includes( '-' ) && ! ( T.ignoreCapabilities || [] ).includes( c ) ).map( stem );
+			const trusted = ( k ) => all( k ).toLowerCase().split( /[^a-z]+/ ).some( ( w ) => w.length >= 3 && vocab.includes( w.length <= 4 ? w : stem( w ) ) );
+			if ( ! T || m.words( e ) || [ 'a', 'button' ].includes( e.tag ) || kidsB.length < ( T.minItems ?? 2 ) || ! kidsB.every( badge ) || m.stacked( kidsB ) || detail( e ) || ! kidsB.some( trusted ) ) {
+				return null;
+			}
+			return v( 'trustBar', { block: T.block, absorb: true, attributes: { items: kidsB.map( ( k ) => ( { label: all( k ) } ) ) } } );
+		},
+		// The first section of a page holding its h1 is the hero; with an image inside it is the split hero.
+		( { e, kidsB } ) => {
+			if ( 'page' !== surface.kind || 1 !== e.depth || ! kidsB.length || ! desc( e ).some( ( k ) => 'h1' === k.tag ) ) {
+				return null;
+			}
+			const media = desc( e ).some( isMedia );
+			return v( 'hero', { block: R.hero?.block, attributes: media ? { variant: 'split' } : {}, ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : {} ) } );
+		},
+		// Inside a hero: its image is the hero's own media slot; its layout wrappers go (the hero lays out its content).
+		( { e, kidsB } ) => {
+			const hero = ancestorBlocks( e ).find( ( a ) => a.block === R.hero?.block );
+			if ( ! hero ) {
+				return null;
+			}
+			if ( isMedia( e ) ) {
+				return v( 'heroInner', { action: 'absorbed', into: hero.key } );
+			}
+			// A wrapper holding only links or buttons is the hero's button group (the scoring makes it the multi-button).
+			const buttons = kidsB.length > 1 && kidsB.every( ( k ) => [ 'a', 'button' ].includes( k.tag ) );
+			return ! m.words( e ) && kidsB.length && ! buttons ? v( 'heroInner', { action: 'unwrap' } ) : null;
+		},
+	];
+
 	// The verdict for one element, or null.
 	const ruleFor = ( e, parentBlock = null ) => {
 		const x = { e, st: declared( e ), text: all( e ), kidsB: m.blockKids( e ), parentBlock };
-		for ( const rule of RULES ) {
+		for ( const rule of [ ...STRUCTURES, ...RULES ] ) {
 			const out = rule( x );
 			if ( out ) {
 				return out;

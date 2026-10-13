@@ -18,6 +18,8 @@ import { pageMapProblems } from './intake-pagemap.mjs';
 import { renderReview, applyReview, carryOver, reviewRows, isoDay, ROW_TYPES } from './intake-review.mjs';
 import { mergeBlocked } from './intake-run-collapse.mjs';
 import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } from './intake-run-finalise.mjs';
+import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
+import { openDb } from './db.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '..', '..', '..' );
@@ -192,7 +194,19 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	}
 	stop();
 	fs.rmSync( work, { recursive: true, force: true } );
-	const { record, attempts } = buildRecord( { client: o.client, takenOn: new Date().toISOString(), manifest, result } );
+	const built = buildRecord( { client: o.client, takenOn: new Date().toISOString(), manifest, result } );
+	const { attempts } = built;
+	let { record } = built;
+	// The skeleton rows proposed once more from the inventories this run saved, now the motion inventory is known (a
+	// marquee is recognised by its recorded loop): the rows `--rerun-skeletons` gives, so both paths agree.
+	const fw = openDb();
+	try {
+		record = refreshIntakeSkeletons( { intake: record, client: o.client, db: fw, repo: o.repo } ).intake;
+	} catch ( e ) {
+		say( `the motion-aware skeleton pass failed (${ e.message.split( '\n' )[ 0 ] }); the run's own skeleton rows are kept` );
+	} finally {
+		fw.close();
+	}
 	let previous = null;
 	if ( fs.existsSync( at.intake ) ) {
 		try {

@@ -64,10 +64,10 @@
 		},
 		"hours": {
 			"patterns": [
-				"\\b(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*\\b.*\\d{1,2}[.:]\\d{2}"
+				"\\b(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*\\b.*(?:\\d{1,2}[.:]\\d{2}|\\d{1,2}\\s*(?:am|pm)\\b|\\bclosed\\b)"
 			],
 			"flags": "i",
-			"reason": "a day name followed by a clock time"
+			"reason": "a day name followed by a clock time (9:30, 9am) or \"closed\""
 		},
 		"address": {
 			"patterns": [
@@ -300,6 +300,31 @@
 		"cardTitle": {
 			"block": "sgs/heading",
 			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+		},
+		"marquee": {
+			"logoBlock": "sgs/brand-strip",
+			"logoScrollAttr": "scrolling",
+			"itemBlock": "sgs/trust-bar",
+			"itemScrollAttr": "autoScroll",
+			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip with scrolling on, labels make sgs/trust-bar with auto-scroll on; the repeated items are its items"
+		},
+		"trustBar": {
+			"block": "sgs/trust-bar",
+			"minItems": 2,
+			"maxWords": 4,
+			"reason": "a row of short non-interactive labels side by side, each with at most a glyph, at least one naming a capability the framework database records for sgs/trust-bar (accreditation, certification, halal and the like), is sgs/trust-bar; the labels are its items. The ignored capabilities (collection, features, icons) describe the block, not what its badges say",
+			"ignoreCapabilities": [
+				"collection",
+				"features",
+				"icons"
+			]
+		},
+		"hero": {
+			"block": "sgs/hero",
+			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)"
+		},
+		"heroInner": {
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go: the hero lays out its content"
 		}
 	}
 }
