@@ -2,7 +2,7 @@
  * SGS Floating UI — shared styles.
  *
  * CSS custom properties (--btt-bg, --btt-icon, --btt-pos, --rp-colour,
- * --rp-height) are set inline by the PHP renderer from Customiser values.
+ * --rp-height, and --rp-gradient when set) are set in a scoped style block by the PHP renderer from Customiser values.
  * Defaults here serve as a fallback only.
  */
 
@@ -25,6 +25,7 @@
 	width: var(--rp-progress, 0%);
 	height: var(--rp-height, 4px);
 	background-color: var(--rp-colour, #0f7e80);
+	background-image: var(--rp-gradient, none);
 	z-index: 9999;
 	transition: width 0.1s linear;
 	pointer-events: none;

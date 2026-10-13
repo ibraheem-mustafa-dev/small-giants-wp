@@ -7,7 +7,7 @@
  * safely with the rest of the test suite.
  *
  * Covers:
- *   1. register_controls adds 1 section + 7 settings + 7 controls to WP_Customize_Manager mock.
+ *   1. register_controls adds 1 section + 8 settings + 8 controls to WP_Customize_Manager mock.
  *   2. sanitise_colour rejects a <script> payload, returns empty string.
  *   3. sanitise_height clamps: below min → 2, above max → 8, in-range → unchanged.
  *   4. sanitise_position rejects an invalid string, returns default 'right'.
@@ -148,6 +148,18 @@ if ( ! class_exists( 'WP_Customize_Color_Control' ) ) {
 	}
 }
 
+if ( ! class_exists( 'WP_Customize_Control' ) ) {
+	class WP_Customize_Control {
+		public string $id;
+		public array $args;
+
+		public function __construct( WP_Customize_Manager $manager, string $id, array $args = array() ) {
+			$this->id   = $id;
+			$this->args = $args;
+		}
+	}
+}
+
 // ---------------------------------------------------------------------------
 // Load classes under test.
 // ---------------------------------------------------------------------------
@@ -170,15 +182,15 @@ final class FloatingUiCustomiserTest extends \PHPUnit\Framework\TestCase {
 		$GLOBALS['sgs_test_enqueued_scripts'] = array();
 	}
 
-	// ── Test 1: register_controls registers 1 section + 7 settings + 7 controls ─
+	// ── Test 1: register_controls registers 1 section + 8 settings + 8 controls ─
 
 	public function test_register_controls_adds_expected_counts(): void {
 		$manager = new \WP_Customize_Manager();
 		Sgs_Floating_UI_Customiser::register_controls( $manager );
 
 		$this->assertCount( 1, $manager->sections, 'Expected exactly 1 section.' );
-		$this->assertCount( 7, $manager->settings, 'Expected exactly 7 settings.' );
-		$this->assertCount( 7, $manager->controls, 'Expected exactly 7 controls.' );
+		$this->assertCount( 8, $manager->settings, 'Expected exactly 8 settings.' );
+		$this->assertCount( 8, $manager->controls, 'Expected exactly 8 controls.' );
 	}
 
 	// ── Test 2: sanitise_colour rejects a <script> payload ───────────────────

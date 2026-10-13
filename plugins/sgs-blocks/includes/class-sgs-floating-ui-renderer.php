@@ -72,6 +72,7 @@ final class Sgs_Floating_UI_Renderer {
 
 		$raw_rp_colour = \sanitize_hex_color( (string) \get_option( Sgs_Floating_UI_Customiser::OPT_RP_COLOUR, Sgs_Floating_UI_Customiser::DEFAULT_RP_COLOUR ) );
 		$rp_colour     = ( null !== $raw_rp_colour && '' !== $raw_rp_colour ) ? $raw_rp_colour : Sgs_Floating_UI_Customiser::DEFAULT_RP_COLOUR;
+		$rp_gradient   = Sgs_Floating_UI_Customiser::sanitise_gradient( \get_option( Sgs_Floating_UI_Customiser::OPT_RP_GRADIENT, '' ) );
 		$rp_height     = Sgs_Floating_UI_Customiser::sanitise_height( \get_option( Sgs_Floating_UI_Customiser::OPT_RP_HEIGHT, Sgs_Floating_UI_Customiser::DEFAULT_RP_HEIGHT ) );
 
 		// -- CSS custom properties wrapper -----------------------------------
@@ -84,6 +85,9 @@ final class Sgs_Floating_UI_Renderer {
 					--btt-pos:    <?php echo \esc_attr( $btt_pos ); ?>;
 					--rp-colour:  <?php echo \esc_attr( $rp_colour ); ?>;
 					--rp-height:  <?php echo \esc_attr( (string) $rp_height ); ?>px;
+					<?php if ( '' !== $rp_gradient ) : ?>
+					--rp-gradient: <?php echo \esc_attr( $rp_gradient ); ?>;
+					<?php endif; ?>
 				}
 			</style>
 
