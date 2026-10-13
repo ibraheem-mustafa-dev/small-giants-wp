@@ -336,6 +336,10 @@
 						"type": "string",
 						"role": "url-href"
 					},
+					"linkSource": {
+						"type": "string",
+						"description": "Where the badge link goes: '' (the typed url), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed url is the fallback."
+					},
 					"linkTarget": {
 						"type": "string"
 					},

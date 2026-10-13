@@ -49,6 +49,7 @@ require_once __DIR__ . '/resolve.php';
 require_once __DIR__ . '/vars.php';
 require_once __DIR__ . '/classes.php';
 require_once __DIR__ . '/link-overlay.php';
+require_once __DIR__ . '/../helpers-link-source.php';
 
 add_filter( 'render_block', __NAMESPACE__ . '\\inject_hover_effects', 10, 2 );
 
@@ -103,7 +104,11 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	$hover_border_acc      = (bool) ( $attrs['sgsHoverBorderAccent'] ?? false );
 	$hover_tilt_3d         = (bool) ( $attrs['sgsHoverTilt3D'] ?? false );
 	$focus_ring            = (bool) ( $attrs['sgsFocusRing'] ?? $defaults['focus_ring'] );
-	$block_link            = $attrs['sgsBlockLink'] ?? '';
+	// The typed link, or the page / Site Info link / back-to-top its source names.
+	$block_link_source     = is_string( $attrs['sgsBlockLinkSource'] ?? null ) ? $attrs['sgsBlockLinkSource'] : '';
+	$block_link            = '' === $block_link_source
+		? ( $attrs['sgsBlockLink'] ?? '' )
+		: \sgs_link_source_href( $block_link_source, (string) ( $attrs['sgsBlockLink'] ?? '' ) );
 	$block_link_target     = (bool) ( $attrs['sgsBlockLinkTarget'] ?? false );
 	$block_link_label      = $attrs['sgsBlockLinkLabel'] ?? '';
 	$click_effect          = $attrs['sgsClickEffect'] ?? 'none';
@@ -269,7 +274,8 @@ function inject_hover_effects( string $block_content, array $block ): string {
 			$sgs_root_offset,
 			$block_link,
 			$block_link_target,
-			$block_link_label
+			$block_link_label,
+			\sgs_link_source_attrs_html( $block_link_source )
 		);
 	}
 

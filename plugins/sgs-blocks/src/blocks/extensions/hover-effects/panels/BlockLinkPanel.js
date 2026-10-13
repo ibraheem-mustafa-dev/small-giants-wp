@@ -10,12 +10,15 @@
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { LinkPopoverField } from '../../../../components';
+import { LINK_SOURCES_ALL } from '../../../../shared/link-source-options';
 
 /**
  * @param {Object}   props
  * @param {string}   props.sgsBlockLink
  * @param {boolean}  props.sgsBlockLinkTarget
  * @param {string}   props.sgsBlockLinkLabel
+ * @param {string}   props.sgsBlockLinkSource  Where the link goes ('' = the typed
+ *                                             sgsBlockLink); see LinkSourcePicker.
  * @param {boolean}  props.sgsBlockLinkAuto    Whole-block link using the
  *                                             block's own destination.
  * @param {boolean}  props.hasAutoUrl          The block declares
@@ -31,6 +34,7 @@ export default function BlockLinkPanel( {
 	sgsBlockLink,
 	sgsBlockLinkTarget,
 	sgsBlockLinkLabel,
+	sgsBlockLinkSource = '',
 	sgsBlockLinkAuto = false,
 	hasAutoUrl = false,
 	autoUrlHelp = '',
@@ -107,13 +111,18 @@ export default function BlockLinkPanel( {
 				value={ {
 					url: sgsBlockLink,
 					linkTarget: sgsBlockLinkTarget ? '_blank' : '_self',
+					linkSource: sgsBlockLinkSource,
 				} }
+				linkSources={ LINK_SOURCES_ALL }
 				targetMode="boolean"
 				showRel={ false }
 				onChange={ ( next ) => {
 					const patch = {};
 					if ( undefined !== next.url ) {
 						patch.sgsBlockLink = next.url;
+					}
+					if ( undefined !== next.linkSource ) {
+						patch.sgsBlockLinkSource = next.linkSource;
 					}
 					if ( undefined !== next.linkTarget ) {
 						patch.sgsBlockLinkTarget = '_blank' === next.linkTarget;

@@ -599,6 +599,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"linkUrlSource": {
+			"type": "string",
+			"default": "",
+			"description": "Where the image link goes: '' (the typed linkUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed linkUrl is the fallback."
+		},
 		"videoCaptionsId": {
 			"type": "integer"
 		},

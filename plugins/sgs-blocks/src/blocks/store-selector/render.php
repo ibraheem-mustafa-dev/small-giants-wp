@@ -44,7 +44,10 @@ foreach ( $stores_raw as $row ) {
 	if ( ! is_array( $row ) ) {
 		continue;
 	}
-	$url = isset( $row['url'] ) ? esc_url_raw( (string) $row['url'] ) : '';
+	// `linkSource` post:<id> follows a page on this site (includes/helpers-link-source.php);
+	// the typed url is the fallback.
+	$url_source = is_string( $row['linkSource'] ?? null ) ? $row['linkSource'] : '';
+	$url        = isset( $row['url'] ) || '' !== $url_source ? esc_url_raw( sgs_link_source_href( $url_source, (string) ( $row['url'] ?? '' ) ) ) : '';
 	if ( '' === $url ) {
 		continue;
 	}

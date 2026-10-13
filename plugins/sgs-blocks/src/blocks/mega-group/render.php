@@ -34,7 +34,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$sgs_mega_group_url = isset( $attributes['url'] ) ? trim( (string) $attributes['url'] ) : '';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-source.php';
+
+// The typed url, or the page / Site Info link / back-to-top its `linkSource` names.
+$sgs_mega_group_source = is_string( $attributes['linkSource'] ?? null ) ? $attributes['linkSource'] : '';
+$sgs_mega_group_url    = isset( $attributes['url'] ) ? trim( (string) $attributes['url'] ) : '';
+if ( '' !== $sgs_mega_group_source ) {
+	$sgs_mega_group_url = trim( sgs_link_source_href( $sgs_mega_group_source, $sgs_mega_group_url ) );
+}
 
 // An `<a>` (or a `<button>`, which cannot legally nest inside one either) is
 // interactive content already — nesting the group's own link around it would
@@ -61,7 +68,7 @@ if ( $sgs_mega_group_is_link ) {
 			'opensInNewTab' => ! empty( $attributes['opensInNewTab'] ),
 			'rel'           => (string) ( $attributes['rel'] ?? '' ),
 		)
-	);
+	) . sgs_link_source_attrs_html( $sgs_mega_group_source );
 
 	// $content is do_blocks() output for the child blocks — already-safe
 	// rendered block HTML; get_block_wrapper_attributes() and

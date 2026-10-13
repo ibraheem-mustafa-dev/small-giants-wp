@@ -21,6 +21,7 @@ import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolv
 	TypographyControls,
 	fillRow,
 } from '../../components';
+import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import {
 	colourVar,
 	resolveResponsiveTier,
@@ -1032,12 +1033,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											url: plan.ctaUrl || '',
 											linkTarget: plan.ctaTarget || '_self',
 											rel: plan.ctaRel || '',
+											linkSource: plan.ctaUrlSource || '',
 										} }
+										linkSources={ LINK_SOURCES_ALL }
 										targetMode="boolean"
 										onChange={ ( next ) => {
 											const newPlans = [ ...plans ];
 											const patch = { ...newPlans[ planIndex ] };
 											if ( undefined !== next.url ) patch.ctaUrl = next.url;
+											if ( undefined !== next.linkSource ) patch.ctaUrlSource = next.linkSource;
 											if ( undefined !== next.linkTarget ) patch.ctaTarget = next.linkTarget;
 											if ( undefined !== next.rel ) patch.ctaRel = next.rel;
 											newPlans[ planIndex ] = patch;

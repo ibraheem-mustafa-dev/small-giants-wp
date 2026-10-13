@@ -81,6 +81,10 @@ $caption_colour         = isset( $attributes['captionColour'] ) ? (string) $attr
 $caption_colour_gradient = isset( $attributes['captionColourGradient'] ) ? (string) $attributes['captionColourGradient'] : '';
 
 $link_url           = isset( $attributes['linkUrl'] ) ? (string) $attributes['linkUrl'] : '';
+// linkUrlSource: the typed linkUrl ('') or a page / Site Info link / back to top
+// (includes/helpers-link-source.php, loaded through render-helpers.php).
+$link_url_source    = is_string( $attributes['linkUrlSource'] ?? null ) ? $attributes['linkUrlSource'] : '';
+$link_url           = sgs_link_source_href( $link_url_source, $link_url );
 $link_opens_new_tab = ! empty( $attributes['linkOpensNewTab'] );
 $link_rel           = isset( $attributes['linkRel'] ) ? (string) $attributes['linkRel'] : '';
 
@@ -492,7 +496,7 @@ if ( 'image' === $media_type && '' !== $link_url ) {
 		$link_rel_attr = ' rel="' . esc_attr( sanitize_text_field( $link_rel ) ) . '"';
 	}
 
-	$new_tab_attrs = $link_opens_new_tab ? ' target="_blank"' : '';
+	$new_tab_attrs = ( $link_opens_new_tab ? ' target="_blank"' : '' ) . sgs_link_source_attrs_html( $link_url_source );
 	$link_open     = '<a href="' . esc_url( $link_url ) . '"' . $new_tab_attrs . $link_rel_attr . ' class="sgs-media__link">';
 	$link_close    = '</a>';
 }

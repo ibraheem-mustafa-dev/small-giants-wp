@@ -369,6 +369,12 @@ if ( ! $is_compact && ! empty( $social_links ) ) {
 	$items_html = '';
 	foreach ( $social_links as $link ) {
 		$url = $link['url'] ?? '';
+		// A non-email link may follow a page on this site by ID (`linkSource` post:<id>,
+		// includes/helpers-link-source.php); the typed url is the fallback.
+		$social_source = 'email' !== ( $link['platform'] ?? 'website' ) && is_string( $link['linkSource'] ?? null ) ? $link['linkSource'] : '';
+		if ( '' !== $social_source ) {
+			$url = sgs_link_source_href( $social_source, (string) $url );
+		}
 		if ( empty( $url ) ) {
 			continue;
 		}

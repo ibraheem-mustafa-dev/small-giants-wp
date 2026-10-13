@@ -28,13 +28,15 @@ import { mediaStoredAttrName } from '../../MediaElementControls.js';
 /**
  * @param {string} prefix    Surface prefix.
  * @param {string} blockSlug Block slug, for STORED_AS resolution.
- * @return {{url: string, newTab: string, rel: string}} Stored attribute names.
+ * @return {{url: string, newTab: string, rel: string, source: string}} Stored attribute names.
  */
 export function attrKeys( prefix, blockSlug ) {
 	return {
 		url: mediaStoredAttrName( blockSlug, prefix, 'LinkUrl' ),
 		newTab: mediaStoredAttrName( blockSlug, prefix, 'LinkOpensNewTab' ),
 		rel: mediaStoredAttrName( blockSlug, prefix, 'LinkRel' ),
+		// Where the link goes ('' = the typed URL); src/components/LinkSourcePicker.js.
+		source: mediaStoredAttrName( blockSlug, prefix, 'LinkUrlSource' ),
 	};
 }
 

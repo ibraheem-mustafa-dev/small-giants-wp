@@ -452,6 +452,10 @@
 						"type": "string",
 						"role": "url-href"
 					},
+					"ctaUrlSource": {
+						"type": "string",
+						"description": "Where the plan's button goes: '' (the typed ctaUrl), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php; the typed ctaUrl is the fallback."
+					},
 					"ctaTarget": {
 						"type": "string"
 					},

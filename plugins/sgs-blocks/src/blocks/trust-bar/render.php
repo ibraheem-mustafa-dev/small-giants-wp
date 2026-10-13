@@ -562,6 +562,10 @@ foreach ( $items as $tb_item_index => $item ) {
 	$item       = is_array( $item ) ? $item : array();
 	$item_label = isset( $item['label'] ) ? sanitize_text_field( (string) $item['label'] ) : '';
 	$item_url   = isset( $item['url'] ) ? (string) $item['url'] : '';
+	// `linkSource`: the typed url ('') or a page / Site Info link / back to top
+	// (includes/helpers-link-source.php), resolved before the link is built.
+	$item_url_source = is_string( $item['linkSource'] ?? null ) ? $item['linkSource'] : '';
+	$item_url        = sgs_link_source_href( $item_url_source, $item_url );
 	// Task 2.1) resolved via sgs_link_attributes() — url/linkTarget/linkRel are
 	// the existing per-item storage keys, mapped to the shared SgsLinkControl
 	// object shape { url, opensInNewTab, rel } at render time. Existing items
@@ -573,6 +577,7 @@ foreach ( $items as $tb_item_index => $item ) {
 			'url'           => $item_url,
 			'opensInNewTab' => isset( $item['linkTarget'] ) ? '_blank' === $item['linkTarget'] : true,
 			'rel'           => isset( $item['linkRel'] ) && '' !== $item['linkRel'] ? $item['linkRel'] : 'noreferrer',
+			'source'        => 'top' === $item_url_source ? 'top' : '',
 		)
 	);
 	$item_attrs      = '';

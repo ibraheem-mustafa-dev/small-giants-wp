@@ -799,6 +799,7 @@ if ( ! empty( $logos ) ) {
 				'url'           => $logo['linkUrl'] ?? '',
 				'opensInNewTab' => isset( $logo['linkTarget'] ) && '_blank' === $logo['linkTarget'],
 				'rel'           => $logo['linkRel'] ?? '',
+				'source'        => $logo['linkUrlSource'] ?? '',
 			)
 		);
 		if ( '' !== $link_attrs_str ) {

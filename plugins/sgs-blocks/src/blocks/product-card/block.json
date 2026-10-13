@@ -709,6 +709,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"ctaUrlSource": {
+			"type": "string",
+			"default": "",
+			"description": "Where the primary button goes: '' (the typed ctaUrl), post:<id> (a page or post, followed by ID) or a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok). Resolved once at the top of render.php by includes/helpers-link-source.php; the typed ctaUrl is the fallback."
+		},
 		"ctaColourBackground": {
 			"type": "string",
 			"default": "",
@@ -975,6 +980,11 @@
 		"cta2Url": {
 			"type": "string",
 			"default": ""
+		},
+		"cta2UrlSource": {
+			"type": "string",
+			"default": "",
+			"description": "Where the secondary button goes: '' (the typed cta2Url), post:<id> (a page or post, followed by ID) or a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok). Resolved once at the top of render.php by includes/helpers-link-source.php; the typed cta2Url is the fallback."
 		},
 		"cta2Style": {
 			"type": "string",

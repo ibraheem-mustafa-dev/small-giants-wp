@@ -14,6 +14,7 @@ import {
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
+import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import { EditorIconBare, TrustBarIconPanel, TrustBarItemSpacingPanel, TrustBarMarqueeControls } from './edit-panels';
 import {
 	colourVar,
@@ -296,11 +297,14 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 					url: item.url || '',
 					linkTarget: item.linkTarget || '_blank',
 					rel: item.linkRel || '',
+					linkSource: item.linkSource || '',
 				} }
+				linkSources={ LINK_SOURCES_ALL }
 				targetMode="boolean"
 				onChange={ ( next ) => {
 					const patch = { ...item };
 					if ( undefined !== next.url ) patch.url = next.url;
+					if ( undefined !== next.linkSource ) patch.linkSource = next.linkSource;
 					if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
 					if ( undefined !== next.rel ) patch.linkRel = next.rel;
 					onChange( patch );

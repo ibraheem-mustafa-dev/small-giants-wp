@@ -17,6 +17,7 @@ import { useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
+import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
 	resolveTextColourPreviewStyle,
@@ -739,8 +740,13 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						) }
 						value={ successRedirect || '' }
 						searchOnly
-						onChange={ ( url ) =>
-							setAttributes( { successRedirect: url } )
+						linkSource={ attributes.successRedirectSource || '' }
+						linkSources={ LINK_SOURCES_PAGES }
+						onChange={ ( url, extra ) =>
+							setAttributes( {
+								successRedirect: url,
+								...( extra ? { successRedirectSource: extra.linkSource } : {} ),
+							} )
 						}
 					/>
 					<p className="components-base-control__help">

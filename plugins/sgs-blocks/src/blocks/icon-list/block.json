@@ -310,6 +310,10 @@
 						"type": "boolean",
 						"description": "Site Info items only. Address: link to the Site Info Maps link. Opening hours: link to the item's typed url, else the Google Business profile. Phone and email always link."
 					},
+					"linkSource": {
+						"type": "string",
+						"description": "Where the item's own link goes: '' (the typed url), post:<id> (a page or post, followed by ID), a Site Info link (phone, email, whatsapp, directions, google, facebook, instagram, twitter, linkedin, youtube, tiktok) or top. Resolved by includes/helpers-link-source.php before siteInfoSource, so a phone, email or address item still links to its own Site Info value; the typed url is the fallback."
+					},
 					"newTab": {
 						"type": "boolean",
 						"description": "Open this item's link in a new tab."

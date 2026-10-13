@@ -137,7 +137,10 @@ foreach ( $plans as $plan_index => $plan ) {
 	$plan_desc         = wp_strip_all_tags( $plan['description'] ?? '' );
 	$plan_features_raw = (array) ( $plan['features'] ?? array() );
 	$plan_cta_text     = sanitize_text_field( $plan['ctaText'] ?? __( 'Get started', 'sgs-blocks' ) );
-	$plan_cta_url      = esc_url( $plan['ctaUrl'] ?? '' );
+	// ctaUrlSource: the typed ctaUrl ('') or a page / Site Info link / back to top
+	// (includes/helpers-link-source.php).
+	$plan_cta_source   = is_string( $plan['ctaUrlSource'] ?? null ) ? $plan['ctaUrlSource'] : '';
+	$plan_cta_url      = esc_url( sgs_link_source_href( $plan_cta_source, (string) ( $plan['ctaUrl'] ?? '' ) ) );
 	// Shared SgsLinkControl object shape { url, opensInNewTab, rel } (Spec 35
 	// Task 2.1) resolved via sgs_link_attributes() — ctaUrl/ctaTarget/ctaRel
 	// are the existing per-plan storage keys, unchanged.
@@ -146,6 +149,7 @@ foreach ( $plans as $plan_index => $plan ) {
 			'url'           => $plan['ctaUrl'] ?? '',
 			'opensInNewTab' => isset( $plan['ctaTarget'] ) && '_blank' === $plan['ctaTarget'],
 			'rel'           => $plan['ctaRel'] ?? '',
+			'source'        => $plan_cta_source,
 		)
 	);
 	$plan_highlighted    = (bool) ( $plan['highlighted'] ?? false );

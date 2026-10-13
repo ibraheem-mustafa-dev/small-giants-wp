@@ -31,6 +31,7 @@ import {
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { usePreviewTier } from '../../utils';
+import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import { languageSwitchPreview } from './preview-style';
 
 const LENGTH_UNITS = [
@@ -288,7 +289,9 @@ export default function Edit( { attributes, setAttributes } ) {
 									<LinkPopoverField
 										label={ __( 'URL', 'sgs-blocks' ) }
 										value={ item.url }
-										onChange={ ( val ) => updateLanguage( index, 'url', val || '' ) }
+										onChange={ ( val, extra ) => setAttributes( { languages: languages.map( ( it, i ) => ( i === index ? { ...it, url: val || '', ...( extra || {} ) } : it ) ) } ) }
+										linkSource={ item.linkSource || '' }
+										linkSources={ LINK_SOURCES_PAGES }
 										searchOnly
 									/>
 									<TextControl

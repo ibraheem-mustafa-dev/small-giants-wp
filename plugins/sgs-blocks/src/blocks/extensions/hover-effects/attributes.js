@@ -112,6 +112,10 @@ export function addHoverAttributes( settings ) {
 			// Accessible name for the overlay anchor — required because
 			// an empty anchor has no text content for screen readers.
 			sgsBlockLinkLabel:    { type: 'string',  default: '' },
+			// Where the link goes ('' = the typed sgsBlockLink): a page by ID,
+			// a Site Info link or back to top, resolved server-side by
+			// includes/helpers-link-source.php (shared link popover's source).
+			sgsBlockLinkSource:   { type: 'string',  default: '' },
 		}
 		: {};
 

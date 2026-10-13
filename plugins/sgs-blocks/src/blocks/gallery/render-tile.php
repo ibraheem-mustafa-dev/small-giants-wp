@@ -17,14 +17,19 @@ if ( ! function_exists( 'sgs_gallery_item_link' ) ) {
 	/**
 	 * Read one item's link.
 	 *
+	 * `linkUrlSource` may point the link at a page, a Site Info link or back to top
+	 * (includes/helpers-link-source.php); the typed linkUrl is the fallback.
+	 *
 	 * @param mixed $img One mediaItems entry.
-	 * @return array{url: string, new_tab: bool, label: string}|array{} Empty when the item has no usable link.
+	 * @return array{url: string, new_tab: bool, label: string, source_attrs: string}|array{} Empty when the item has no usable link.
 	 */
 	function sgs_gallery_item_link( $img ): array {
-		if ( ! is_array( $img ) || ! is_scalar( $img['linkUrl'] ?? null ) ) {
+		$source = is_array( $img ) && is_string( $img['linkUrlSource'] ?? null ) ? $img['linkUrlSource'] : '';
+		if ( ! is_array( $img ) || ( '' === $source && ! is_scalar( $img['linkUrl'] ?? null ) ) ) {
 			return array();
 		}
-		$raw = trim( (string) $img['linkUrl'] );
+		$typed = is_scalar( $img['linkUrl'] ?? null ) ? (string) $img['linkUrl'] : '';
+		$raw   = trim( sgs_link_source_href( $source, $typed ) );
 		// Only web, mail and phone destinations; any other scheme (javascript:, data:) is refused outright.
 		if ( preg_match( '#^[a-z][a-z0-9+.-]*:#i', $raw ) && ! preg_match( '#^(https?|mailto|tel):#i', $raw ) ) {
 			return array();
@@ -34,9 +39,10 @@ if ( ! function_exists( 'sgs_gallery_item_link' ) ) {
 			return array();
 		}
 		return array(
-			'url'     => $url,
-			'new_tab' => '_blank' === ( $img['linkTarget'] ?? '' ),
-			'label'   => is_scalar( $img['linkLabel'] ?? null ) ? trim( sanitize_text_field( (string) $img['linkLabel'] ) ) : '',
+			'url'          => $url,
+			'new_tab'      => '_blank' === ( $img['linkTarget'] ?? '' ),
+			'label'        => is_scalar( $img['linkLabel'] ?? null ) ? trim( sanitize_text_field( (string) $img['linkLabel'] ) ) : '',
+			'source_attrs' => sgs_link_source_attrs_html( $source ),
 		);
 	}
 }
@@ -191,7 +197,7 @@ if ( ! function_exists( 'sgs_gallery_linked_item_html' ) ) {
 			/* translators: %s: the link's accessible name */
 			$name = sprintf( __( '%s (opens in a new tab)', 'sgs-blocks' ), $name );
 		}
-		$attrs = ' href="' . $link['url'] . '"';
+		$attrs = ' href="' . $link['url'] . '"' . ( $link['source_attrs'] ?? '' );
 		if ( $link['new_tab'] ) {
 			$attrs .= ' target="_blank" rel="noopener noreferrer"';
 		}

@@ -114,6 +114,10 @@ $submit_label      = $attributes['submitLabel'] ?? __( 'Submit', 'sgs-blocks' );
 $submit_style      = $attributes['submitStyle'] ?? 'primary';
 $success_message   = $attributes['successMessage'] ?? __( 'Thank you! Your submission has been received.', 'sgs-blocks' );
 $success_redirect  = $attributes['successRedirect'] ?? '';
+// successRedirectSource post:<id> follows a page on this site (includes/helpers-link-source.php).
+if ( is_string( $attributes['successRedirectSource'] ?? null ) && '' !== $attributes['successRedirectSource'] ) {
+	$success_redirect = sgs_link_source_href( $attributes['successRedirectSource'], (string) $success_redirect );
+}
 $success_redirect  = $success_redirect ? wp_validate_redirect( $success_redirect, '' ) : '';
 $honeypot          = $attributes['honeypot'] ?? true;
 $store_submissions = $attributes['storeSubmissions'] ?? true;
