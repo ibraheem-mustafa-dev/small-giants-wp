@@ -695,8 +695,8 @@
 		},
 		"autoScrollPauseButton": {
 			"type": "boolean",
-			"default": false,
-			"description": "Show a visible pause / play button while the marquee is running (off by default: the row already pauses on hover, press and keyboard focus). Turn on where a stricter WCAG 2.2.2 reading is needed. Needs autoScroll on; never shown when nothing moves."
+			"default": true,
+			"description": "Show the pause / play button while the marquee is running (on by default). WCAG 2.2.2 needs it: pausing only on hover and focus is not a pause mechanism, so switching it off fails 2.2.2. Needs autoScroll on; never shown when nothing moves."
 		},
 		"autoScrollBelow": {
 			"type": "number",

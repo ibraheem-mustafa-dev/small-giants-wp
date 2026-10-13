@@ -94,7 +94,6 @@ PENDING: frozenset[str] = frozenset({
     "notice-banner",
     "post-grid",
     "testimonial-slider",
-    "trust-bar",
     "trustpilot-reviews",
 })
 

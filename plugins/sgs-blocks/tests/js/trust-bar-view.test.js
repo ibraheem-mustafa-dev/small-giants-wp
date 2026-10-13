@@ -5,6 +5,7 @@
  * numbers jsdom does not compute, then loads the module in isolation.
  *
  *   - Keyboard focus must pause the marquee (WCAG 2.2.2), independently of pause-on-hover.
+ *   - The shared pause / play button shows while the marquee runs and holds a pause.
  *   - Clones must be inert, so focus never lands in aria-hidden content.
  *   - Two matchMedia `change` events while images are still loading must not both init.
  *   - prefers-reduced-motion must leave the bar static.
@@ -29,7 +30,7 @@ const CONTAINER_WIDTH = 300;
  * @param {boolean} opts.image  Add an image that has not loaded yet.
  * @return {{wrapper: Element, track: Element}} The bar.
  */
-function buildBar( { below = '', pause = 'true', image = false } = {} ) {
+function buildBar( { below = '', pause = 'true', image = false, button = true } = {} ) {
 	document.body.innerHTML = `
 		<section class="sgs-trust-bar" data-auto-scroll="true" data-auto-scroll-pause="${ pause }" ${ below ? `data-auto-scroll-below="${ below }"` : '' }>
 			<div class="sgs-trust-bar__track">
@@ -38,6 +39,7 @@ function buildBar( { below = '', pause = 'true', image = false } = {} ) {
 				<span class="sgs-trust-bar__badge">Three</span>
 				${ image ? '<img alt="" src="x.png">' : '' }
 			</div>
+			${ button ? '<button type="button" class="sgs-motion-pause sgs-trust-bar__pause" aria-pressed="false" aria-label="Pause scrolling" data-sgs-motion-pause hidden></button>' : '' }
 		</section>`;
 	const wrapper = document.querySelector( '.sgs-trust-bar' );
 	const track = wrapper.querySelector( '.sgs-trust-bar__track' );
@@ -76,6 +78,12 @@ function loadView() {
 const flush = () => new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
 const clones = ( wrapper ) => wrapper.querySelectorAll( ':scope > [data-sgs-marquee-clone]' );
 const focusEvent = ( type, relatedTarget = null ) => new FocusEvent( type, { bubbles: true, relatedTarget } );
+// jsdom has no PointerEvent: a MouseEvent carrying the pointer type stands in for one.
+const pointerEvent = ( type, pointerType = 'mouse' ) => {
+	const event = new MouseEvent( type );
+	Object.defineProperty( event, 'pointerType', { value: pointerType } );
+	return event;
+};
 
 beforeEach( () => {
 	Object.defineProperty( HTMLElement.prototype, 'offsetWidth', { configurable: true, get: () => CONTAINER_WIDTH } );
@@ -114,7 +122,7 @@ describe( 'trust-bar marquee: keyboard pause (WCAG 2.2.2)', () => {
 		const { wrapper, track } = buildBar( { pause: 'false' } );
 		loadView();
 
-		wrapper.dispatchEvent( new MouseEvent( 'mouseenter' ) );
+		wrapper.dispatchEvent( pointerEvent( 'pointerenter' ) );
 		expect( track.classList.contains( 'is-paused' ) ).toBe( false );
 
 		wrapper.querySelector( 'a' ).dispatchEvent( focusEvent( 'focusin' ) );
@@ -126,12 +134,45 @@ describe( 'trust-bar marquee: keyboard pause (WCAG 2.2.2)', () => {
 		const { wrapper, track } = buildBar();
 		loadView();
 
-		wrapper.dispatchEvent( new MouseEvent( 'mouseenter' ) );
+		wrapper.dispatchEvent( pointerEvent( 'pointerenter' ) );
 		expect( track.classList.contains( 'is-paused' ) ).toBe( true );
 
 		wrapper.querySelector( 'a' ).dispatchEvent( focusEvent( 'focusin' ) );
-		wrapper.dispatchEvent( new MouseEvent( 'mouseleave' ) );
+		wrapper.dispatchEvent( pointerEvent( 'pointerleave' ) );
 		expect( track.classList.contains( 'is-paused' ) ).toBe( true );
+	} );
+} );
+
+describe( 'trust-bar marquee: pause / play button (WCAG 2.2.2)', () => {
+	it( 'is shown while the marquee runs', () => {
+		stubMatchMedia( [] );
+		const { wrapper } = buildBar();
+		loadView();
+		expect( wrapper.querySelector( '[data-sgs-motion-pause]' ).hidden ).toBe( false );
+	} );
+
+	it( 'stays hidden under reduced motion', () => {
+		stubMatchMedia( [ '(prefers-reduced-motion: reduce)' ] );
+		const { wrapper } = buildBar();
+		loadView();
+		expect( wrapper.querySelector( '[data-sgs-motion-pause]' ).hidden ).toBe( true );
+	} );
+
+	it( 'holds the pause on every copy after hover and focus leave, until pressed again', () => {
+		stubMatchMedia( [] );
+		const { wrapper, track } = buildBar();
+		loadView();
+		const button = wrapper.querySelector( '[data-sgs-motion-pause]' );
+
+		wrapper.dispatchEvent( pointerEvent( 'pointerenter' ) );
+		button.click();
+		expect( button.getAttribute( 'aria-pressed' ) ).toBe( 'true' );
+		wrapper.dispatchEvent( pointerEvent( 'pointerleave' ) );
+		expect( track.classList.contains( 'is-paused' ) ).toBe( true );
+		clones( wrapper ).forEach( ( clone ) => expect( clone.classList.contains( 'is-paused' ) ).toBe( true ) );
+
+		button.click();
+		expect( track.classList.contains( 'is-paused' ) ).toBe( false );
 	} );
 } );
 
