@@ -36,6 +36,7 @@ import { initNavIndicator } from '../../shared/effects/nav-indicator';
 import { initMagnet } from '../../shared/effects/magnet';
 import { initDrillDown } from '../../shared/effects/nav-drilldown';
 import { initSeparators } from '../../shared/separators';
+import { initAccordionScroll } from './accordion-scroll';
 
 /**
  * Normalise a path the same way render.php's items do: no trailing slash,
@@ -120,6 +121,9 @@ function initBarEffects( root ) {
 	// beyond the native <details>.
 	if ( 'drill-down' === bar.dataset.sgsNavSubmenuModel ) {
 		activeCleanups.push( initDrillDown( bar ) );
+	} else if ( bar.hasAttribute( 'data-sgs-accordion-scroll' ) ) {
+		// accordionScrollIntoView: an opened row scrolls near the drawer's top.
+		activeCleanups.push( initAccordionScroll( bar ) );
 	}
 }
 

@@ -321,6 +321,9 @@
 					],
 					"prefix": "",
 					"attrMap": {
+						"css:font-family": "ornamentTextFontFamily",
+						"css:font-weight": "ornamentTextFontWeight",
+						"css:letter-spacing": "ornamentTextLetterSpacing",
 						"css:color": "itemOrnamentColour",
 						"css:font-size": "itemOrnamentSize",
 						"css:display": "itemOrnament",
@@ -335,6 +338,41 @@
 						}
 					},
 					"_note": "Wave 3C U-7, M-22: the decorative leading number or glyph (.sgs-nav-drawer-menu__ornament) before each primary row label."
+				},
+				"caret-box": {
+					"label": "Expander circle",
+					"order": 12.1,
+					"clusters": [
+						"fill",
+						"layout",
+						"border"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:background-color": "caretBoxBg",
+						"css:background-image": "caretBoxBgGradient",
+						"css:width": "caretBoxSize",
+						"css:height": "caretBoxSize",
+						"css:border-width": "caretBoxBorderWidth",
+						"css:border-style": "caretBoxBorderStyle",
+						"css:border-color": "caretBoxBorderColour"
+					},
+					"_note": "The ringed circle round the accordion expander (.sgs-nav-drawer-menu__caret), and round each trailing icon (.sgs-nav-drawer-menu__trailing-icon) when caretBoxOnTrailingIcon is on (includes/nav-drawer-menu-caret-box-css.php). A declared part, so motion (Spec 38A) can target it; its hover glow and turn timing belong to motion, not here."
+				},
+				"caret-box-open": {
+					"label": "Expander circle (open)",
+					"order": 12.2,
+					"clusters": [
+						"fill",
+						"border"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:background-color": "caretBoxBgOpen",
+						"css:background-image": "caretBoxBgOpenGradient",
+						"css:border-color": "caretBoxBorderColourOpen"
+					},
+					"_note": "The expander circle while its row's <details> is open. Its own element, like item-open: `open` is not in the state vocabulary (hover/current/scrolled)."
 				},
 				"expander": {
 					"label": "Accordion expander",
@@ -665,6 +703,26 @@
 			"default": "",
 			"description": "Space between the ornament and the label. Unset 0.5em."
 		},
+		"ornamentTextFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "The row ornament's font family (the `ornamentText` typography set, sgs_typography_css_rule()). '' inherits the row's font."
+		},
+		"ornamentTextFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "The row ornament's font weight. '' inherits."
+		},
+		"ornamentTextLetterSpacing": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier ({desktop,tablet,mobile}): the row ornament's letter spacing, in ornamentTextLetterSpacingUnit. Unset emits nothing."
+		},
+		"ornamentTextLetterSpacingUnit": {
+			"type": "string",
+			"default": "em",
+			"description": "Unit for ornamentTextLetterSpacing."
+		},
 		"ornamentHiddenItemIds": {
 			"type": "array",
 			"default": [],
@@ -758,6 +816,61 @@
 			"type": "string",
 			"default": "",
 			"description": "A hand-typed cubic-bezier() curve, read only when submenuCaretTurnEasing is 'custom'."
+		},
+		"caretBoxSize": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier ({desktop,tablet,mobile}): the diameter of the circle drawn round the accordion expander (and, with caretBoxOnTrailingIcon, round each trailing icon). Unset: 40px once the circle is on (a size, fill or border width is set). includes/nav-drawer-menu-caret-box-css.php."
+		},
+		"caretBoxBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width box of the expander circle (one box for every device, the SgsBorderControl family). Unset: no border."
+		},
+		"caretBoxBorderStyle": {
+			"type": "string",
+			"default": "solid",
+			"description": "Border style of the expander circle; written only alongside a width."
+		},
+		"caretBoxBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of the expander circle at rest."
+		},
+		"caretBoxBorderColourOpen": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of the expander circle while its row is open. '' keeps the resting colour."
+		},
+		"caretBoxBg": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of the expander circle at rest. '' paints nothing."
+		},
+		"caretBoxBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient fill of the expander circle at rest; wins over caretBoxBg."
+		},
+		"caretBoxBgOpen": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of the expander circle while its row is open. '' keeps the resting fill."
+		},
+		"caretBoxBgOpenGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient fill of the expander circle while its row is open; wins over caretBoxBgOpen."
+		},
+		"caretBoxOnTrailingIcon": {
+			"type": "boolean",
+			"default": false,
+			"description": "Draw the same circle round every row trailing icon (itemTrailingIcons), so a row with no submenu shows a matching ringed arrow. Off by default."
+		},
+		"accordionScrollIntoView": {
+			"type": "boolean",
+			"default": false,
+			"description": "When an accordion row opens, scroll the drawer so the row sits near the top if it is above the visible area or below its top 40%, after the row has expanded; instant under prefers-reduced-motion (accordion-scroll.js). Off by default."
 		},
 		"submenuAnimation": {
 			"type": "string",
