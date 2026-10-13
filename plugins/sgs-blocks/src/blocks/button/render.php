@@ -914,7 +914,7 @@ if ( $icon_html && 'none' !== $label_collapse ) {
 // bare) so the labelCollapse feature can visually clip it while keeping the
 // text in the accessibility tree.
 $label_html = '<span class="sgs-button__label">' . wp_kses(
-	$sgs_label_is_site_info ? esc_html( $label ) : $label,
+	$sgs_label_is_site_info ? sgs_button_site_info_label_html( $label, $link_source ) : $label,
 	array(
 		'br'     => array(),
 		'strong' => array(),
