@@ -2,8 +2,8 @@
 /**
  * Motion targets: each sgsMotion target to its CSS selector and its markup matcher (Spec 38A §6.2, §6.5).
  *
- * A target is `root`, a part the block declares in `supports.sgs.elements` (its element carries the class
- * `sgs-<block slug>__<part>`; a part marked `isWrapper` is the root itself), or a cloning-only `custom:<n>` whose
+ * A target is `root`, a part the block declares in `supports.sgs.elements` (its element is the part's declared
+ * `selector`, else the class `sgs-<block slug>__<part>`; a part marked `isWrapper` is the root itself), or a cloning-only `custom:<n>` whose
  * stored selector (already schema-checked) is prefixed by the scoped root. Parts are read from the registered block
  * type at render time, the same `block.json` source `scripts/dbschema/seed_motion_fields.py` seeds `motion_targets`
  * from.
@@ -39,6 +39,28 @@ final class Sgs_Motion_Targets {
 			$out[ (string) $key ] = is_array( $spec ) && ! empty( $spec['isWrapper'] );
 		}
 		return $out;
+	}
+
+	/**
+	 * The selector a part declares (`supports.sgs.elements.<part>.selector`), relative to the block root: one or more
+	 * classes joined by single descendant spaces. Empty when the part declares none or an unsafe value; the part then
+	 * resolves to its BEM class.
+	 *
+	 * @param string $block_name Block name.
+	 * @param string $part       Part key.
+	 * @return string
+	 */
+	public static function declared_selector( string $block_name, string $part ): string {
+		if ( ! class_exists( '\WP_Block_Type_Registry' ) ) {
+			return '';
+		}
+		$type = \WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
+		$spec = is_object( $type ) && isset( $type->supports['sgs']['elements'][ $part ] ) ? $type->supports['sgs']['elements'][ $part ] : null;
+		if ( ! is_array( $spec ) || ! isset( $spec['selector'] ) || ! is_string( $spec['selector'] ) ) {
+			return '';
+		}
+		$selector = trim( $spec['selector'] );
+		return 1 === preg_match( '/^\.[A-Za-z][A-Za-z0-9_-]*( \.[A-Za-z][A-Za-z0-9_-]*)*$/', $selector ) ? $selector : '';
 	}
 
 	/**
@@ -82,6 +104,11 @@ final class Sgs_Motion_Targets {
 		}
 		if ( $parts[ $target ] ) {
 			return self::shape( $root, true, array(), null );
+		}
+		$declared = self::declared_selector( $block_name, $target );
+		if ( '' !== $declared ) {
+			$last = self::last_compound( $declared );
+			return self::shape( $root . ' ' . $declared, false, $last['classes'], null );
 		}
 		$class = self::part_class( $block_name, $target );
 		return self::shape( $root . ' .' . $class, false, array( $class ), null );

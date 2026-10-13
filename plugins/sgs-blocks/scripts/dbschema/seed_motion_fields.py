@@ -4,7 +4,8 @@
 Two small tables replace the one-`block_attributes`-row-per-field-per-target-per-block shape (decision 3, option B):
 
   motion_targets  one row per block declaring `supports.sgs.motion`: the `root` target plus one row per part declared
-                  in `supports.sgs.elements`. Read from `src/blocks/*/block.json`.
+                  in `supports.sgs.elements`. Read from `src/blocks/*/block.json`. `css_element` holds the part's declared
+                  `selector`, else the part key (its element is then the class `sgs-<slug>__<part>`).
   motion_fields   one row per schema field per panel layer. Read from the `x-sgs-field` annotations of
                   `schemas/motion.schema.json`; the path each field lives at (`elements.<target>.hover.state.values.scale`)
                   is found by walking the schema from its root, so no layer or effect is named here.
@@ -150,7 +151,7 @@ def target_rows(blocks_dir: Path | None = None) -> list[tuple]:
         rows.append((slug, "root", "root", "root", int(bool(declared_root.get("isWrapper"))), declared_root.get("label") or "Block root", support))
         for part, spec in parts.items():
             if part != "root":
-                rows.append((slug, part, part, "part", int(bool(spec.get("isWrapper"))), spec.get("label"), support))
+                rows.append((slug, part, spec.get("selector") or part, "part", int(bool(spec.get("isWrapper"))), spec.get("label"), support))
     return rows
 
 

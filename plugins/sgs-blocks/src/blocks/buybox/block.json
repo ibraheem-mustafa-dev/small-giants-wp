@@ -209,6 +209,7 @@
 					"_note": "The per-row \"save X%\" text (.value-ladder__saving). style.css sizes it absolutely, so the wrapper setting cannot reach it - it has its own prefix. No colour attribute exists for this element - an honest gap."
 				},
 				"notifyHeading": {
+					"selector": ".sgs-buybox__notify-heading",
 					"label": "Notify heading",
 					"order": 10,
 					"clusters": [
@@ -232,6 +233,7 @@
 					"_note": "The back-in-stock form heading (.sgs-buybox__notify-heading)."
 				},
 				"notifyLabel": {
+					"selector": ".sgs-buybox__notify-label",
 					"label": "Notify labels",
 					"order": 11,
 					"clusters": [
@@ -278,6 +280,7 @@
 					"_note": "The typed text and placeholder of the back-in-stock email field (.sgs-buybox__notify-email)."
 				},
 				"notifySubmit": {
+					"selector": ".sgs-buybox__notify-submit",
 					"label": "Notify button",
 					"order": 13,
 					"clusters": [
@@ -301,6 +304,7 @@
 					"_note": "The back-in-stock form submit button label (.sgs-buybox__notify-submit)."
 				},
 				"notifyStatus": {
+					"selector": ".sgs-buybox__notify-status",
 					"label": "Notify status message",
 					"order": 14,
 					"clusters": [
@@ -324,6 +328,7 @@
 					"_note": "The success or error message written under the back-in-stock form (.sgs-buybox__notify-status)."
 				},
 				"savingBadge": {
+					"selector": ".sgs-buybox__saving-badge",
 					"label": "Gallery saving badge",
 					"order": 15,
 					"clusters": [

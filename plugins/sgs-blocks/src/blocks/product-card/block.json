@@ -400,6 +400,7 @@
 					"_note": "Colour-dot row (Frame Card component): each dot's hue is DATA (colourSwatches[].colour or the variation's colour term), not an operator styling property, mirroring sgs/option-picker's swatch chip. The operator sets the dot size (swatchSize, width and height via --sgs-pc-swatch-size) and how far a dot grows when pointed at (swatchHoverGrow, a transform via --sgs-pc-swatch-hover-scale), both emitted by includes/product-card-card-parts.php::sgs_product_card_parts_css. Rendered via sgs_product_card_swatches_markup() (includes/product-card-swatches.php), which emits a real <button> for any dot that knows its own attribute term and a decorative <span> for one an operator typed."
 				},
 				"attributeTag": {
+					"selector": ".sgs-product-card__attribute-tag",
 					"label": "Attribute tag",
 					"order": 17,
 					"clusters": [
