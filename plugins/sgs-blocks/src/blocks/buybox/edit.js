@@ -13,7 +13,7 @@ import { BuyboxExtraSettingsPanels2 } from './inspector-extra-2';
 import { BuyboxExtraStylesPanels } from './inspector-extra-3';
 import { BuyboxExtraSettingsPanels3 } from './inspector-extra-4';
 import ButtonActionPanel from './ButtonActionPanel';
-import GuidedPanel from './GuidedPanel';
+import GuidedPanel, { guidedColourRows } from './GuidedPanel';
 
 // Curated extras for below the add-to-cart form (any block can still be inserted from the list view).
 const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [ 'sgs/button', 'sgs/whatsapp-cta', 'sgs/icon-list' ];
@@ -67,6 +67,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			setAttributes,
 		} ),
 		...getBuyboxExtraColourRows( { attributes, setAttributes } ),
+		...guidedColourRows( { attributes, setAttributes } ),
 	];
 
 	// Contrast check for border colour against the buybox's own background.

@@ -16,8 +16,6 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../components';
-import fillRow from '../../components/colour-variants/fillRow';
-import textRow from '../../components/colour-variants/textRow';
 import { usePreviewTier } from '../../utils';
 import { buildWrapperStyle, buildBackButtonPreviewStyle } from './preview-style';
 import ChromePreview from './ChromePreview';
@@ -27,6 +25,7 @@ import FlowLayoutPanel from './FlowLayoutPanel';
 import ShowcasePanel from './ShowcasePanel';
 import LinkedFlowPanel from './LinkedFlowPanel';
 import ChromePanel from './ChromePanel';
+import choiceFlowColourRows from './colour-rows';
 import FlowNavigationPanel from './FlowNavigationPanel';
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
@@ -450,6 +449,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			{ /* Every colour row of the block, first so it heads the Styles tab. */ }
+			<SgsColourPanel rows={ choiceFlowColourRows( { attributes, setAttributes } ) } />
 			<InspectorControls>
 				<LinkedFlowPanel
 					flowId={ flowId }
@@ -521,36 +522,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
-				{ /* User-reported gap (2026-09-15) — Back button colour/border,
-				   rendered via the shared sgs_button_element_style_css()
+				{ /* User-reported gap (2026-09-15) — Back button border (its
+				   colours are rows in colour-rows.js), rendered via the shared
+				   sgs_button_element_style_css()
 				   helper. Defaults are grounded in the real lens-configurator
 				   source, not the theme's 'primary' preset — see the 'back'
 				   element's own block.json _note for the evidence. */ }
 				<PanelBody title={ __( 'Back button', 'sgs-blocks' ) } initialOpen={ false }>
-					<SgsColourPanel
-						rows={ [
-							fillRow( {
-								key: 'back-fill',
-								label: __( 'Background', 'sgs-blocks' ),
-								attrs: {
-									base: 'backColourBackground',
-									hover: 'backColourBackgroundHover',
-								},
-								attributes,
-								setAttributes,
-							} ),
-							textRow( {
-								key: 'back-text',
-								label: __( 'Text', 'sgs-blocks' ),
-								attrs: {
-									base: 'backColourText',
-									hover: 'backColourTextHover',
-								},
-								attributes,
-								setAttributes,
-							} ),
-						] }
-					/>
 					<SgsBorderControl
 						widthValues={ backBorderWidth ?? {} }
 						onWidthChange={ ( next ) => setAttributes( { backBorderWidth: next } ) }

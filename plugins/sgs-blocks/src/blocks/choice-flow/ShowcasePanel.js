@@ -1,9 +1,10 @@
 /**
  * sgs/choice-flow — the full-screen flow's finishing settings (Spec 43
  * FR-43-19, FR-43-24): how progress counts, the position line's wording,
- * the logo's height, the stage and help-note colours, the note's icon, the
- * stage's placeholder line, the footer's skip link, the option cards'
- * '?' toggle colours and picture size (OptionCardsPanel).
+ * the logo's height, the note's icon, the stage's placeholder line, the
+ * footer's skip link and the option cards' picture size (OptionCardsPanel).
+ * The stage, help-note, header step-name and '?' toggle colours are rows in
+ * the block's Styles-tab colour panel (`colour-rows.js`).
  *
  * Its own component: edit.js is over its size cap, so it mounts this with
  * one import and one render line (the ChromePanel/FlowLayoutPanel pattern).
@@ -14,9 +15,6 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, RangeControl, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
-import { SgsColourPanel } from '../../components';
-import fillRow from '../../components/colour-variants/fillRow';
-import textRow from '../../components/colour-variants/textRow';
 import OptionCardsPanel from './OptionCardsPanel';
 
 /**
@@ -106,59 +104,6 @@ export default function ShowcasePanel( { attributes, setAttributes } ) {
 					onChange={ ( val ) => setAttributes( { stageNoteIcon: val } ) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
-				<SgsColourPanel
-					rows={ [
-						fillRow( {
-							key: 'stage',
-							label: __( 'Stage and chosen card', 'sgs-blocks' ),
-							attrs: { base: 'stageColour', gradient: 'stageColourGradient' },
-							attributes,
-							setAttributes,
-						} ),
-						fillRow( {
-							key: 'note-icon',
-							label: __( 'Help note icon', 'sgs-blocks' ),
-							attrs: { base: 'stageNoteIconColour', gradient: 'stageNoteIconColourGradient' },
-							attributes,
-							setAttributes,
-						} ),
-						fillRow( {
-							key: 'note-border',
-							label: __( 'Help note border', 'sgs-blocks' ),
-							attrs: { base: 'stageNoteBorderColour' },
-							attributes,
-							setAttributes,
-						} ),
-						fillRow( {
-							key: 'note-hover',
-							label: __( 'Help note on hover', 'sgs-blocks' ),
-							attrs: { base: 'stageNoteHoverColour', gradient: 'stageNoteHoverColourGradient' },
-							attributes,
-							setAttributes,
-						} ),
-						textRow( {
-							key: 'eyebrow',
-							label: __( 'Header step name', 'sgs-blocks' ),
-							attrs: { base: 'headerEyebrowColour' },
-							attributes,
-							setAttributes,
-						} ),
-						textRow( {
-							key: 'toggle',
-							label: __( 'Option ’?’ toggle', 'sgs-blocks' ),
-							attrs: { base: 'infoToggleColour' },
-							attributes,
-							setAttributes,
-						} ),
-						fillRow( {
-							key: 'toggle-border',
-							label: __( 'Option ’?’ toggle border', 'sgs-blocks' ),
-							attrs: { base: 'infoToggleBorderColour' },
-							attributes,
-							setAttributes,
-						} ),
-					] }
 				/>
 			</PanelBody>
 

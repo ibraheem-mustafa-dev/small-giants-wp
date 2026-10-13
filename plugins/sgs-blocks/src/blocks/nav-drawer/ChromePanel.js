@@ -2,7 +2,8 @@
  * Nav drawer "Top row" panel (Spec 36 FR-36-6): the chrome row that carries the
  * × close, an optional per-device logo and one optional free slot. The render
  * side is `includes/nav-drawer-chrome.php` + `nav-drawer-chrome-css.php`; the
- * slot's own controls are `ChromeSlotControls.js`.
+ * slot's own controls are `ChromeSlotControls.js`. The top row's colours are
+ * rows in the drawer's Styles-tab colour panel (`chrome-colour-rows.js`).
  *
  * @package SGS\Blocks
  */
@@ -10,7 +11,7 @@
 import { __ } from '@wordpress/i18n';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { BaseControl, Button, PanelBody, TextControl, ToggleControl } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveLengthControl, SgsColourPanel, fillRow } from '../../components';
+import { ResponsiveBoxControl, ResponsiveLengthControl } from '../../components';
 import ChromeLogoBoxControls from './ChromeLogoBoxControls';
 import { TierShow } from './chrome-tier-controls';
 import ChromeSlotControls from './ChromeSlotControls';
@@ -126,17 +127,6 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 
 			<ChromeSlotControls attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
 
-			<SgsColourPanel
-				rows={ [
-					fillRow( {
-						key: 'chromeRowBg',
-						label: __( 'Top row background', 'sgs-blocks' ),
-						attrs: { base: 'chromeRowBg', gradient: 'chromeRowBgGradient' },
-						attributes,
-						setAttributes,
-					} ),
-				] }
-			/>
 			<ResponsiveLengthControl
 				label={ __( 'Top row height', 'sgs-blocks' ) }
 				value={ chromeRowHeight }
