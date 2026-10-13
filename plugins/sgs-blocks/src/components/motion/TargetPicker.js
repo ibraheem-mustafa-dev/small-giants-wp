@@ -14,7 +14,7 @@ import ChoiceAtom from './ChoiceAtom';
 export const ROOT_TARGET = 'root';
 const CUSTOM_PREFIX = 'custom:';
 
-const humanise = ( key ) => {
+export const humanise = ( key ) => {
 	const text = key.replace( /[-_]/g, ' ' );
 	return text.charAt( 0 ).toUpperCase() + text.slice( 1 );
 };

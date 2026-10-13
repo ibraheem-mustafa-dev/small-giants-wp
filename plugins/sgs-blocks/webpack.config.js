@@ -151,6 +151,10 @@ if ( moduleConfig ) {
 		// private copy of that state and reduced-motion teardown would only
 		// ever revert one effect's tweens.
 		'@sgs/motion-provider': '@sgs/motion-provider',
+		// The shared scroll driver (Spec 38A FR-38A-21): one listener and one
+		// rAF queue for every block bundle, so it is externalised like the
+		// provider. PHP registers it as the script module `@sgs/scroll-driver`.
+		'@sgs/scroll-driver': '@sgs/scroll-driver',
 		// Tier H Lottie player (D1151). The vendor shim bundles lottie-web's
 		// light build; fx-lottie.js imports it by this id so no other module
 		// carries a second copy.
@@ -227,6 +231,13 @@ if ( moduleConfig ) {
 				'shared',
 				'effects',
 				'fx-lottie.js'
+			),
+			'shared/effects/scroll-driver': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'scroll-driver.js'
 			),
 			'shared/effects/gsap/provider': path.resolve(
 				process.cwd(),

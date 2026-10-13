@@ -1121,6 +1121,11 @@
 							"initial": "0px"
 						}
 					]
+				},
+				{
+					"owner": "wave-gradient",
+					"runtime": "css-keyframes",
+					"properties": []
 				}
 			]
 		},
@@ -1143,6 +1148,11 @@
 							"initial": "0"
 						}
 					]
+				},
+				{
+					"owner": "wave-gradient",
+					"runtime": "css-keyframes",
+					"properties": []
 				}
 			]
 		},

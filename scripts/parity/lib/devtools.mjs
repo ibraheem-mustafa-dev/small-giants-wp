@@ -41,31 +41,42 @@ export async function settleAnimations( page, { floor = 300, cap = 6000, step = 
 // In-page: the entrances still holding their un-played start pose. An armed entrance is a finite document-timeline
 // animation that is paused (created by animation-observer.js and played once its element nears the viewport), so
 // unfinishedAnimations never counts it and an element read now sits at its start frame. Returns one descriptor per
-// armed element, in document order: { index, tag, id, cls, animation, top } with `top` the page-relative offset.
+// armed element: { index, tag, id, cls, animation, top } with `top` the page-relative offset.
 export function armedEntrances() {
 	const out = [];
 	const seen = new Set();
-	for ( const a of document.getAnimations() ) {
-		const el = a.effect?.target;
-		if ( 'paused' !== a.playState || a.timeline !== document.timeline || ! el || seen.has( el ) || ! Number.isFinite( a.effect.getComputedTiming().endTime ) ) {
-			continue;
-		}
+	const push = ( el, animation ) => {
 		seen.add( el );
 		out.push( {
 			index: out.length,
 			tag: el.localName,
 			id: el.id || '',
 			cls: String( el.getAttribute( 'class' ) || '' ),
-			animation: el.getAttribute( 'data-sgs-animation' ) || '',
+			animation,
 			top: Math.round( el.getBoundingClientRect().top + window.scrollY ),
 		} );
+	};
+	for ( const a of document.getAnimations() ) {
+		const el = a.effect?.target;
+		if ( 'paused' !== a.playState || a.timeline !== document.timeline || ! el || seen.has( el ) || ! Number.isFinite( a.effect.getComputedTiming().endTime ) ) {
+			continue;
+		}
+		push( el, el.getAttribute( 'data-sgs-animation' ) || '' );
+	}
+	// A CSS scroll reveal (Spec 38A) is armed until the reveal module sets data-sgs-in; a load entrance never waits for it.
+	for ( const el of document.querySelectorAll( '[data-sgs-me~="scroll"]:not([data-sgs-in])' ) ) {
+		if ( ! seen.has( el ) ) {
+			push( el, el.getAttribute( 'data-sgs-me' ) || '' );
+		}
 	}
 	return out;
 }
 
 // In-page: scrolls the `index`th armed element to the middle of the viewport. Returns false when it is gone.
 export function scrollArmedIntoView( index ) {
-	const el = [ ...new Set( document.getAnimations().filter( ( a ) => 'paused' === a.playState && a.timeline === document.timeline ).map( ( a ) => a.effect?.target ).filter( Boolean ) ) ][ index ];
+	const armed = new Set( document.getAnimations().filter( ( a ) => 'paused' === a.playState && a.timeline === document.timeline ).map( ( a ) => a.effect?.target ).filter( Boolean ) );
+	document.querySelectorAll( '[data-sgs-me~="scroll"]:not([data-sgs-in])' ).forEach( ( e ) => armed.add( e ) );
+	const el = [ ...armed ][ index ];
 	if ( ! el ) {
 		return false;
 	}

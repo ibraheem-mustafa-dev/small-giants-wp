@@ -1,10 +1,9 @@
 /**
- * Parallax scroll fallback — IntersectionObserver + requestAnimationFrame.
+ * Element parallax — requestAnimationFrame scroll writer for every browser.
  *
- * Activates only when CSS Scroll-Driven Animations are NOT supported
- * (i.e. pre-Chrome 115, pre-Firefox 135, Safari < 18).
- *
- * Uses translateY on the element. ('background' variant — background-
+ * Writes the registered `--sgs-plx-y` custom property (px) on the element;
+ * CSS moves it (`extensions.css` `.sgs-parallax-element`, or the `translate`
+ * composite in `motion.css`). No inline transform is written. ('background' variant — background-
  * position on the block's own background image — was RETIRED 2026-08-19;
  * BackgroundPanel's own bgKenBurns/bgParallax pair is the real, working
  * background-motion mechanism.)
@@ -19,13 +18,9 @@
 ( function () {
 	'use strict';
 
-	// Bail if CSS Scroll-Driven Animations are supported — the CSS handles it.
-	if ( CSS.supports( 'animation-timeline', 'scroll()' ) ) {
-		return;
-	}
-
 	// Respect the user's motion preference.
-	if ( window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) {
+	var reducedQuery = window.matchMedia( '(prefers-reduced-motion: reduce)' );
+	if ( reducedQuery.matches ) {
 		return;
 	}
 
@@ -45,6 +40,10 @@
 	 * one rAF per scroll event.
 	 */
 	function updateParallax() {
+		if ( reducedQuery.matches ) {
+			ticking = false;
+			return;
+		}
 		var vh = window.innerHeight;
 
 		blocks.forEach( function ( el ) {
@@ -72,7 +71,7 @@
 			var offset = ( progress - 0.5 ) * strength;
 
 			if ( 'element' === type ) {
-				el.style.transform = 'translateY(' + offset + 'px)';
+				el.style.setProperty( '--sgs-plx-y', offset.toFixed( 2 ) + 'px' );
 			}
 		} );
 
@@ -90,6 +89,17 @@
 	}
 
 	window.addEventListener( 'scroll', onScroll, { passive: true } );
+
+	// A mid-session switch to reduced motion stops the effect and clears the offset.
+	reducedQuery.addEventListener( 'change', function () {
+		if ( ! reducedQuery.matches ) {
+			return;
+		}
+		window.removeEventListener( 'scroll', onScroll );
+		blocks.forEach( function ( el ) {
+			el.style.removeProperty( '--sgs-plx-y' );
+		} );
+	} );
 
 	// Set initial positions on page load before the user scrolls.
 	updateParallax();

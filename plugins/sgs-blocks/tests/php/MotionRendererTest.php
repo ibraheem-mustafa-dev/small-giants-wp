@@ -307,6 +307,25 @@ final class MotionRendererTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-tilt-x', $this->css(), 'tilt keeps its own return timing' );
 	}
 
+	public function test_sheen_return_transition_uses_its_own_duration_and_easing(): void {
+		$motion = array(
+			'v'        => 1,
+			'elements' => array(
+				'root' => array(
+					'hover' => array(
+						'effects' => array(
+							array( 'id' => 'h1', 'effect' => 'sheen', 'values' => array( 'duration' => 750, 'easing' => 'cubic-bezier(0.2, 0.8, 0.2, 1)' ) ),
+						),
+					),
+				),
+			),
+		);
+		$this->render( $motion );
+		$css = $this->css();
+		$this->assertMatchesRegularExpression( '/--sgs-sheen-x 750ms cubic-bezier\(0\.2,\s*0\.8,\s*0\.2,\s*1\) 0ms/', $css );
+		$this->assertStringNotContainsString( '--sgs-sheen-x var(--wp--custom--duration--medium)', $css, 'the sheen no longer falls back to the medium token' );
+	}
+
 	public function test_editor_preview_keeps_the_css_in_the_block(): void {
 		$GLOBALS['sgs_test_is_admin'] = true;
 		$out                          = $this->render( self::media_hover( array( 'scale' => 1.04 ) ) );

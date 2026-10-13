@@ -291,8 +291,8 @@ final class Sgs_Motion_Emitter {
 	}
 
 	/**
-	 * A hover effect's own return transition: its owner properties (from `x-sgs-channels`) on its stored `*Duration`
-	 * and `*Easing` values.
+	 * A hover effect's own return transition: its owner properties (from `x-sgs-channels`) on its stored duration and easing
+	 * fields (keyed `duration`/`easing`, else ending `Duration`/`Easing`).
 	 *
 	 * @param array<string,mixed>             $layer A hover effect layer.
 	 * @param array<string,array<int,string>> $trans Per-tier transition entries (by reference).
@@ -315,8 +315,8 @@ final class Sgs_Motion_Emitter {
 		$dur_key  = null;
 		$ease_key = null;
 		foreach ( self::fields( $def ) as $key => $field ) {
-			$dur_key  = null === $dur_key && 'duration' === $field['type'] && 'Duration' === substr( $key, -8 ) ? $key : $dur_key;
-			$ease_key = null === $ease_key && 'easing' === $field['type'] && 'Easing' === substr( $key, -6 ) ? $key : $ease_key;
+			$dur_key  = self::better_timing_key( $dur_key, $key, 'duration' === $field['type'], 'Duration' );
+			$ease_key = self::better_timing_key( $ease_key, $key, 'easing' === $field['type'], 'Easing' );
 		}
 		$duration = self::token_or( 'token:duration.medium', '300ms' );
 		$easing   = self::token_or( 'token:easing.ease-out', 'ease-out' );
@@ -336,6 +336,29 @@ final class Sgs_Motion_Emitter {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Which of two same-typed timing fields the return transition reads: the field keyed exactly `duration` or `easing`
+	 * wins, then the first key ending in `Duration` or `Easing`.
+	 *
+	 * @param string|null $current  The key chosen so far.
+	 * @param string      $key      The candidate field key.
+	 * @param bool        $is_type  Whether the candidate has the wanted field type.
+	 * @param string      $suffix   `Duration` or `Easing`.
+	 * @return string|null
+	 */
+	private static function better_timing_key( ?string $current, string $key, bool $is_type, string $suffix ): ?string {
+		if ( ! $is_type ) {
+			return $current;
+		}
+		if ( strtolower( $suffix ) === $key ) {
+			return $key;
+		}
+		if ( null === $current && substr( $key, -strlen( $suffix ) ) === $suffix ) {
+			return $key;
+		}
+		return $current;
 	}
 
 	/**

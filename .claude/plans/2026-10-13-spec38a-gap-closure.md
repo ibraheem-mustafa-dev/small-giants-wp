@@ -26,7 +26,7 @@ Follow `.claude/skills/migration-method/SKILL.md` and `.claude/rules/migration-s
 
 ## Task 2: shared atoms for boolean and part-reference fields
 
-Status: not done; resumes in S3.
+Status: done (2026-10-13, `fbf77ac8d`; review Minors `a7301d0d0`, `d0d59072a`). `field-types.js` holds no atom map (the atoms import it), so `src/components/motion/atom-registry.js::ATOM_FOR_FIELD_TYPE` maps every field type to its atom; `tokenReference` is embedded in duration, distance and easing.
 
 Problem: 18 schema fields are field type `boolean` (tilt glare, parallax background, the stagger helper's apply and restart-each-row, others) and one is `partReference` (magnet `movingPart`), and the atom kit in `plugins/sgs-blocks/src/components/motion/` has no atom for either; `check-motion-atoms.py` forbids a raw WP control in a panel, so the M3 panels cannot draw these fields.
 
@@ -37,7 +37,7 @@ Problem: 18 schema fields are field type `boolean` (tilt glare, parallax backgro
 
 ## Task 3: sheen timing and the paint-slot owner lists
 
-Status: not done; resumes in S3.
+Status: done (2026-10-13). `effect_transition` picks the timing field keyed exactly `duration`/`easing` first (`better_timing_key`), and `MotionRendererTest::test_sheen_return_transition_uses_its_own_duration_and_easing` was red before. Wave-gradient joins the `::before` and `::after` owner lists as `"runtime": "css-keyframes"` with no registered properties: its pseudo-elements read `--sgs-wave-*` palette colours, `<color>` is not an `@property` syntax the schema check allows, and only CSS keyframes animate them (the same form scrub uses with `gsap-inline`). The two allow-list entries are deleted; spec §10 already named wave-gradient, and the generated editor extract carries no owners, so neither changed.
 
 1. Sheen bug: `includes/motion/class-sgs-motion-emitter.php::effect_transition` only reads fields whose keys end in `Duration` or `Easing`, so sheen's `duration` and `easing` are ignored and a 750ms sheen emits the medium token. Make it take the effect's field of type `duration` (and `easing`) whatever its key: an exact key `duration`/`easing` first, then a key ending in `Duration`/`Easing`. Add a `MotionRendererTest` case: a sheen with duration 750 and a cubic-bezier easing emits `--sgs-sheen-x 750ms cubic-bezier(...)` (red before).
 2. Paint-slot owner lists: in `plugins/sgs-blocks/schemas/motion.schema.json`, add `wave-gradient` as an owner of the `::before` and `::after` channels in `x-sgs-channels`, with the custom properties its stylesheet actually uses for those pseudo-elements (read `plugins/sgs-blocks/assets/css/fx-wave-gradient*.css` or the effect's stylesheet named in `fx_effects`; each with a valid `@property` syntax and identity initial value), and make sure `x-sgs-writes` for wave-gradient names both slots. Keep the JSON byte format (tabs, CRLF as the file has; round-trip with `json.dumps(indent='\t', ensure_ascii=False)` and the file's line endings). Regenerate `src/components/motion/generated-motion-defs.json` with `python plugins/sgs-blocks/scripts/generate-motion-editor-defs.py`. Update spec §10's channel table rows for `::before` and `::after` so `check-motion-schema.py --check` passes. Then delete the two `motion-paint-slots` allow-list entries whose pattern names the `::before`/`::after` owners; `check-motion-paint-slots.py --check` must pass without them. If wave-gradient's properties need a reader in `assets/css/motion.css` for `check-motion-token-consumers.py` or the CSS contract test, add the `@property` registration there.
