@@ -2139,38 +2139,43 @@ def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
     if "allowedBlocks" not in text and "ALLOWED_BLOCKS" not in text:
         return None
 
-    # Locate the first opening bracket of an allowedBlocks declaration.
-    match = _ALLOWED_BLOCKS_OPEN_RE.search(text)
-    if not match:
+    # Every allowedBlocks declaration counts: a block that sets its list per variant (sgs/mega-panel's media-cards,
+    # cards-with-aside and default variants) accepts the union of them, in order of first appearance.
+    matches = list(_ALLOWED_BLOCKS_OPEN_RE.finditer(text))
+    if not matches:
         # Keyword present but not in a recognisable pattern — treat as dynamic.
         return None
 
-    bracket_start = text.index("[", match.start())
+    slugs: list[str] = []
+    for match in matches:
+        bracket_start = text.index("[", match.start())
 
-    # Walk forward to find the matching closing bracket, respecting nesting.
-    depth = 0
-    array_end = bracket_start
-    for i, ch in enumerate(text[bracket_start:], start=bracket_start):
-        if ch == "[":
-            depth += 1
-        elif ch == "]":
-            depth -= 1
-            if depth == 0:
-                array_end = i
-                break
+        # Walk forward to find the matching closing bracket, respecting nesting.
+        depth = 0
+        array_end = bracket_start
+        for i, ch in enumerate(text[bracket_start:], start=bracket_start):
+            if ch == "[":
+                depth += 1
+            elif ch == "]":
+                depth -= 1
+                if depth == 0:
+                    array_end = i
+                    break
 
-    array_body = text[bracket_start : array_end + 1]
+        array_body = text[bracket_start : array_end + 1]
 
-    # Check for dynamic markers — if found, skip the whole declaration.
-    for marker in _DYNAMIC_MARKERS:
-        if marker in array_body:
-            # Signal "dynamic" by returning the sentinel DYNAMIC_SKIP constant.
-            # Callers check `result is _DYNAMIC_SKIP`.
-            return _DYNAMIC_SKIP  # type: ignore[return-value]
+        # A dynamic marker in any declaration makes the whole list unknowable statically.
+        for marker in _DYNAMIC_MARKERS:
+            if marker in array_body:
+                # Signal "dynamic" by returning the sentinel DYNAMIC_SKIP constant.
+                # Callers check `result is _DYNAMIC_SKIP`.
+                return _DYNAMIC_SKIP  # type: ignore[return-value]
 
-    # Extract all quoted block-slug strings from the array body.
-    # Group 1 = quote character, group 2 = the slug — use group 2.
-    slugs = [m.group(2) for m in _BLOCK_SLUG_RE.finditer(array_body)]
+        # Extract all quoted block-slug strings from the array body.
+        # Group 1 = quote character, group 2 = the slug — use group 2.
+        for m in _BLOCK_SLUG_RE.finditer(array_body):
+            if m.group(2) not in slugs:
+                slugs.append(m.group(2))
 
     # If the pattern matched but yielded no slugs (e.g. empty array or
     # only comments), honour NULL semantics — empty restriction ≠ no restriction.

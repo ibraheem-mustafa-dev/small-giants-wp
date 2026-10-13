@@ -1599,5 +1599,15 @@
     "added_commit": null,
     "budget_ms": 500,
     "order": 179
+  },
+  {
+    "id": "migrate-core-blocks-tests",
+    "cmd": "python -m pytest scripts/tests/test_list_pairing.py scripts/tests/test_allowed_blocks_scrape.py -k \"ListPairing or list or TestScrapeAllowedBlocksParser\" -q -p no:cacheprovider",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 4000,
+    "order": 180,
+    "tier_reason": "The core-block migrator's list pairing and the seeder's allowedBlocks parser (which unions per-variant lists): their fixture tests, each with a case that fails when the mapping or the union is broken. Pre-deploy: they change only when the migrator or the seeder does."
   }
 ]

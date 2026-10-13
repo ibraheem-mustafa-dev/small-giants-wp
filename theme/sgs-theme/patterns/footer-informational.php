@@ -30,7 +30,7 @@
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Links and Contact"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/heading {"content":"Quick Links","level":"h2","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
-<!-- wp:sgs/icon-list {"markerType":"bullet","items":[{"text":"Home","url":"#"},{"text":"About","url":"#"},{"text":"Services","url":"#"},{"text":"Contact","url":"#"}],"gap":"0","itemLineHeight":2.2,"itemLineHeightUnit":"","padding":{"desktop":{"left":"0"}},"textColour":"text-inverse","itemFontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/icon-list {"markerType":"none","items":[{"text":"Home","url":"#"},{"text":"About","url":"#"},{"text":"Services","url":"#"},{"text":"Contact","url":"#"}],"gap":"0","itemLineHeight":2.2,"itemLineHeightUnit":"","padding":{"desktop":{"left":"0"}},"textColour":"text-inverse","itemFontSize":{"desktop":"small"}} /-->
 
 <!-- wp:sgs/heading {"content":"Contact","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 

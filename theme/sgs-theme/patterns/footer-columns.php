@@ -25,13 +25,13 @@
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Company Links"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/heading {"content":"Company","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
-<!-- wp:sgs/icon-list {"markerType":"bullet","items":[{"text":"About Us","url":"#"},{"text":"Our Team","url":"#"},{"text":"Careers","url":"#"},{"text":"Contact","url":"#"}],"gap":"0","itemLineHeight":2,"itemLineHeightUnit":"","padding":{"desktop":{"left":"0"}},"textColour":"text-inverse","itemFontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/icon-list {"markerType":"none","items":[{"text":"About Us","url":"#"},{"text":"Our Team","url":"#"},{"text":"Careers","url":"#"},{"text":"Contact","url":"#"}],"gap":"0","itemLineHeight":2,"itemLineHeightUnit":"","padding":{"desktop":{"left":"0"}},"textColour":"text-inverse","itemFontSize":{"desktop":"small"}} /-->
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Services Links"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/heading {"content":"Services","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
-<!-- wp:sgs/icon-list {"markerType":"bullet","items":[{"text":"Web Design","url":"#"},{"text":"Development","url":"#"},{"text":"SEO","url":"#"},{"text":"Branding","url":"#"}],"gap":"0","itemLineHeight":2,"itemLineHeightUnit":"","padding":{"desktop":{"left":"0"}},"textColour":"text-inverse","itemFontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/icon-list {"markerType":"none","items":[{"text":"Web Design","url":"#"},{"text":"Development","url":"#"},{"text":"SEO","url":"#"},{"text":"Branding","url":"#"}],"gap":"0","itemLineHeight":2,"itemLineHeightUnit":"","padding":{"desktop":{"left":"0"}},"textColour":"text-inverse","itemFontSize":{"desktop":"small"}} /-->
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Newsletter"},"flexWrap":"wrap"} -->

@@ -16,5 +16,6 @@
   "ul": ["sgs/icon-list", "Unordered list → SGS icon-list"],
   "ol": ["sgs/icon-list", "Ordered list → SGS icon-list (ordered flag set via _atomic_attrs_for items)"],
   "audio": ["sgs/audio", "Audio element → dedicated sgs/audio block (D268)"],
-  "details": ["sgs/collapsible-text", "Native disclosure → sgs/collapsible-text"]
+  "details": ["sgs/accordion-item", "Native disclosure (details and its summary) → sgs/accordion-item, which replaces core/details (Bean, 2026-10-13, Spec 48 FR-48-6)"],
+  "hr": ["sgs/separator", "Thematic break → sgs/separator, which replaces core/separator"]
 }
