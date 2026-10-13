@@ -252,7 +252,7 @@
 					"_note": "CORRECTION 2026-08-15: same pattern as 'description' above - the DB tags priceNoteFontSize css_element='priceNote' (matching the ORIGINAL key) and only priceNoteColour css_element='price-note'. 'priceNote' is restored above; this bare 'price-note' element exists purely to satisfy the audit script's exact-key-match. priceNoteColour already resolves fine functionally under 'priceNote' (prefix 'priceNote' + suffix Colour, default convention). Found live 2026-08-15: DB tagged 1 attr css_element='price-note', undeclared until now."
 				},
 				"priceFromLabel": {
-					"selector": ".price-from-label",
+					"selector": ".sgs-product-card__price-from-label",
 					"label": "\"From\" label",
 					"order": 8,
 					"clusters": [
@@ -517,7 +517,7 @@
 					"_note": "The comparative per-pack price ladder wrapper (.product-card__value-ladder); its font settings cascade to the pack and per-unit text. No colour attribute exists for this element - an honest gap. Emitted by render.php sgs_typography_css_rule( $attributes, 'valueLadder', '.' . $sgs_card_uid . ' .product-card__value-ladder' )."
 				},
 				"valueLadderSaving": {
-					"selector": ".value-ladder__saving",
+					"selector": ".product-card__value-ladder__saving",
 					"label": "Value ladder saving",
 					"order": 21,
 					"clusters": [

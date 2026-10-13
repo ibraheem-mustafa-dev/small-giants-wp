@@ -334,7 +334,7 @@ function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $defau
 		$html .= '<span class="value-ladder__per-unit">' . esc_html( $row['per_unit_display'] ) . '</span>';
 
 		if ( '' !== $row['saving_display'] && ! $row['suppressed'] ) {
-			$html .= '<span class="value-ladder__saving">' . esc_html( $row['saving_display'] ) . '</span>';
+			$html .= '<span class="value-ladder__saving ' . esc_attr( $wrapper_class ) . '__saving">' . esc_html( $row['saving_display'] ) . '</span>';
 		}
 
 		if ( $row['is_target'] ) {

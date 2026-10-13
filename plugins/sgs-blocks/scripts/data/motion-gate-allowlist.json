@@ -4,23 +4,5 @@
     "pattern": "transition.slow",
     "reason": "transition.slow has no stylesheet reader, preset reference or field-type offer (transition.fast and .medium do). M5.18 sweeps motion literals onto tokens: it gives transition.slow a reader if a literal equals it, otherwise it retires the token from theme.json and the nine snapshots.",
     "delete_in_unit": "M5.18"
-  },
-  {
-    "gate": "motion-paint-slots",
-    "pattern": "recorded:ripple",
-    "reason": "ripple has no fx_effects row until the M1.11 reseed seeds the slot claims. M3.1 seeds the nine effect slugs that have no fx_effects row (Spec 38A section 6.2 Layers bullet).",
-    "delete_in_unit": "M3.1"
-  },
-  {
-    "gate": "motion-paint-slots",
-    "pattern": "recorded:sheen",
-    "reason": "sheen has no fx_effects row until the M1.11 reseed seeds the slot claims. M3.1 seeds the nine effect slugs that have no fx_effects row (Spec 38A section 6.2 Layers bullet).",
-    "delete_in_unit": "M3.1"
-  },
-  {
-    "gate": "motion-paint-slots",
-    "pattern": "recorded:tilt",
-    "reason": "tilt has no fx_effects row until the M1.11 reseed seeds the slot claims. M3.1 seeds the nine effect slugs that have no fx_effects row (Spec 38A section 6.2 Layers bullet).",
-    "delete_in_unit": "M3.1"
   }
 ]

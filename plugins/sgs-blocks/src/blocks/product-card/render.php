@@ -1131,7 +1131,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			<div class="sgs-product-card__price-group">
 			<?php if ( ! empty( $data['price_from_html'] ) ) : ?>
 				<div class="price price--from">
-					<span class="price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
+					<span class="price-from-label sgs-product-card__price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
 					<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
 				</div>
 			<?php elseif ( ! empty( $data['price_html'] ) ) : ?>
@@ -2067,7 +2067,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 		if ( ! empty( $data['is_variable'] ) && ! empty( $data['price_from_html'] ) ) :
 			?>
 			<div class="price price--from">
-				<span class="price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
+				<span class="price-from-label sgs-product-card__price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
 				<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
 			</div>
 		<?php else : ?>

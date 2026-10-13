@@ -8,7 +8,7 @@
  * scripts/seed-motion-fx-registry.py. To change these values, edit FX_EFFECTS
  * in seed-motion-fx-registry.py, re-run it, then re-run this generator.
  *
- * Effects: 22
+ * Effects: 31
  *
  * Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §4.4 + §6.1/§11.2.
  *
@@ -36,6 +36,12 @@ function sgs_get_motion_fx_effects() {
 	static $effects = null;
 	if ( null === $effects ) {
 		$effects = array(
+			'ambient-float' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'load', 'visible' ),
+			),
 			'carousel-loop' => array(
 				'plugin_set'            => array(),
 				'owns_scroll_transform' => false,
@@ -90,6 +96,12 @@ function sgs_get_motion_fx_effects() {
 				'pins'                  => false,
 				'triggers'              => array( 'scroll' ),
 			),
+			'ken-burns' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'load', 'visible' ),
+			),
 			'lottie' => array(
 				'plugin_set'            => array(),
 				'owns_scroll_transform' => false,
@@ -101,6 +113,12 @@ function sgs_get_motion_fx_effects() {
 				'owns_scroll_transform' => false,
 				'pins'                  => false,
 				'triggers'              => array( 'hover' ),
+			),
+			'marquee' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'load', 'visible' ),
 			),
 			'morph' => array(
 				'plugin_set'            => array( 'MorphSVG' ),
@@ -120,6 +138,12 @@ function sgs_get_motion_fx_effects() {
 				'pins'                  => false,
 				'triggers'              => array( 'load' ),
 			),
+			'parallax' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'scroll' ),
+			),
 			'particles' => array(
 				'plugin_set'            => array(),
 				'owns_scroll_transform' => false,
@@ -132,11 +156,23 @@ function sgs_get_motion_fx_effects() {
 				'pins'                  => true,
 				'triggers'              => array( 'scroll' ),
 			),
+			'ripple' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'pointerdown', 'click' ),
+			),
 			'scramble' => array(
 				'plugin_set'            => array( 'ScrambleText', 'ScrollTrigger' ),
 				'owns_scroll_transform' => false,
 				'pins'                  => false,
 				'triggers'              => array( 'scroll', 'load', 'hover' ),
+			),
+			'scroll-progress' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'scroll' ),
 			),
 			'scroll-smoother' => array(
 				'plugin_set'            => array(),
@@ -150,6 +186,12 @@ function sgs_get_motion_fx_effects() {
 				'pins'                  => false,
 				'triggers'              => array( 'scroll', 'load', 'hover' ),
 			),
+			'sheen' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'hover' ),
+			),
 			'split-reveal' => array(
 				'plugin_set'            => array( 'SplitText', 'ScrollTrigger' ),
 				'owns_scroll_transform' => true,
@@ -161,6 +203,18 @@ function sgs_get_motion_fx_effects() {
 				'owns_scroll_transform' => false,
 				'pins'                  => false,
 				'triggers'              => array( 'load' ),
+			),
+			'svg-loop' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'load', 'visible' ),
+			),
+			'tilt' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'hover' ),
 			),
 			'wave-gradient' => array(
 				'plugin_set'            => array(),

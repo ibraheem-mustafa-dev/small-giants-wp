@@ -95,7 +95,7 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 		?>
 	<button
 		type="button"
-		class="product-card__thumb"
+		class="product-card__thumb sgs-buybox__gallery-thumb"
 		role="listitem"
 		data-index="<?php echo esc_attr( (string) $buybox_thumb_idx ); ?>"
 		aria-current="<?php echo 0 === $buybox_thumb_idx ? 'true' : 'false'; ?>"

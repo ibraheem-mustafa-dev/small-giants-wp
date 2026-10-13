@@ -1,4 +1,26 @@
 {
+	"ambient-float": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [
+				"translate"
+			],
+			"properties": [
+				"--sgs-float-x",
+				"--sgs-float-y"
+			],
+			"slots": []
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
+		"pins": false,
+		"triggers": [
+			"load",
+			"visible"
+		]
+	},
 	"carousel-loop": {
 		"in_picker": false,
 		"owned_properties": {
@@ -173,6 +195,30 @@
 			"scroll"
 		]
 	},
+	"ken-burns": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [
+				"translate",
+				"scale"
+			],
+			"properties": [
+				"--sgs-kb-x",
+				"--sgs-kb-y",
+				"--sgs-kb-s"
+			],
+			"slots": []
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
+		"pins": false,
+		"triggers": [
+			"load",
+			"visible"
+		]
+	},
 	"lottie": {
 		"in_picker": false,
 		"owned_properties": {
@@ -211,6 +257,23 @@
 		"pins": false,
 		"triggers": [
 			"hover"
+		]
+	},
+	"marquee": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
+		"pins": false,
+		"triggers": [
+			"load",
+			"visible"
 		]
 	},
 	"morph": {
@@ -263,6 +326,30 @@
 			"load"
 		]
 	},
+	"parallax": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [
+				"translate",
+				"background-position"
+			],
+			"properties": [
+				"--sgs-plx-x",
+				"--sgs-plx-y",
+				"--sgs-plx-bg-x",
+				"--sgs-plx-bg-y"
+			],
+			"slots": []
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
+		"pins": false,
+		"triggers": [
+			"scroll"
+		]
+	},
 	"particles": {
 		"in_picker": true,
 		"owned_properties": {
@@ -297,6 +384,33 @@
 			"scroll"
 		]
 	},
+	"ripple": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [
+				"::after"
+			],
+			"properties": [
+				"--sgs-ripple-s",
+				"--sgs-ripple-op"
+			],
+			"slots": [
+				{
+					"label": "Ripple",
+					"slot": "::after"
+				}
+			]
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
+		"pins": false,
+		"triggers": [
+			"pointerdown",
+			"click"
+		]
+	},
 	"scramble": {
 		"in_picker": true,
 		"owned_properties": {
@@ -315,6 +429,22 @@
 			"scroll",
 			"load",
 			"hover"
+		]
+	},
+	"scroll-progress": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
+		"pins": false,
+		"triggers": [
+			"scroll"
 		]
 	},
 	"scroll-smoother": {
@@ -358,6 +488,31 @@
 			"hover"
 		]
 	},
+	"sheen": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [
+				"injected"
+			],
+			"properties": [
+				"--sgs-sheen-x"
+			],
+			"slots": [
+				{
+					"label": "Sheen",
+					"slot": "injected"
+				}
+			]
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"hover"
+		],
+		"pins": false,
+		"triggers": [
+			"hover"
+		]
+	},
 	"split-reveal": {
 		"in_picker": true,
 		"owned_properties": {
@@ -391,6 +546,52 @@
 		"pins": false,
 		"triggers": [
 			"load"
+		]
+	},
+	"svg-loop": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"effects"
+		],
+		"pins": false,
+		"triggers": [
+			"load",
+			"visible"
+		]
+	},
+	"tilt": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [
+				"transform",
+				"injected"
+			],
+			"properties": [
+				"--sgs-tilt-persp",
+				"--sgs-tilt-x",
+				"--sgs-tilt-y"
+			],
+			"slots": [
+				{
+					"label": "Tilt glare",
+					"slot": "injected",
+					"when": "glare"
+				}
+			]
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"hover"
+		],
+		"pins": false,
+		"triggers": [
+			"hover"
 		]
 	},
 	"wave-gradient": {

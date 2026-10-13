@@ -117,7 +117,7 @@
 					}
 				},
 				"current": {
-					"motion": false,
+					"selector": ".sgs-breadcrumbs__item--current",
 					"label": "Current page",
 					"order": 4,
 					"clusters": [

@@ -74,16 +74,16 @@ foreach ( $items as $index => $item ) :
 	}
 	$media_html = ! empty( $item_media ) ? sgs_render_media( $item_media, 'sgs/card-grid' ) : '';
 	// Media-element atom layer (rule 37-media-no-handroll fix) — append the
-	// `.sgs-media-el` marker + per-instance scope class onto the FIRST
+	// `sgs-card-grid__media` hook (the motion part `image`), `.sgs-media-el` marker + per-instance scope class onto the FIRST
 	// <img>/<video> tag `sgs_render_media()` returned, so this element inherits
 	// the `--sgs-media-object-fit` custom property set on $root_sel above and
 	// picks up assets/css/media-atoms/object-fit.css's rule. `sgs_render_media()`
 	// has no classes parameter (shared helper, out of this fix's scope), so the
 	// class is appended here via a scoped regex rather than editing that helper.
-	if ( '' !== $media_html && ! empty( $sgs_cg_media_classes ) ) {
+	if ( '' !== $media_html ) {
 		$media_html = preg_replace(
 			'/(<(?:img|video)\b[^>]*\bclass=")/',
-			'$1' . esc_attr( implode( ' ', $sgs_cg_media_classes ) ) . ' ',
+			'$1' . esc_attr( implode( ' ', array_merge( array( 'sgs-card-grid__media' ), $sgs_cg_media_classes ) ) ) . ' ',
 			$media_html,
 			1
 		);

@@ -1065,6 +1065,204 @@ FX_EFFECTS: list[dict] = [
         # measurement D459 forced for cursor-field/wave-gradient.
         "creates_panel": 0,
     },
+    {
+        # Spec 38A FR-38A-43 (effect table row "parallax", Effects, Tier V, Part). Writes --sgs-plx-x / --sgs-plx-y from assets/js/parallax.js.
+        "effect": "parallax",
+        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
+        # (schemas/motion.schema.json::x-sgs-effects.parallax), never a `data-sgs-fx` value, so it is not in
+        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        "in_picker": 0,
+        "pins": 0,
+        "triggers": "scroll",
+        # Tier V (Spec 38A section 5 effect table): plain CSS and vanilla JS, no GSAP plugin.
+        "tier": "V",
+        "plugin_set": [],
+        # 0: its contribution composes by the section 10 channel table (sum per axis or product), so it never
+        # needs an entrance suppressed.
+        "owns_scroll_transform": 0,
+        # Suppress: the resting offset is the element at its laid-out position, which is the finished state.
+        "reduced_motion": "suppress",
+        "editor_story": "end-state",
+        "scope": "element",
+        "requires": "none",
+        "creates_panel": 0,
+    },
+    {
+        # Spec 38A FR-38A-41 (Hover, Tier V, Part). Writes --sgs-tilt-x / --sgs-tilt-y from assets/js/tilt-3d.js; the .sgs-has-tilt-3d rule in extensions.css composes the transform.
+        "effect": "tilt",
+        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
+        # (schemas/motion.schema.json::x-sgs-effects.tilt), never a `data-sgs-fx` value, so it is not in
+        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        "in_picker": 0,
+        "pins": 0,
+        "triggers": "hover",
+        # Tier V (Spec 38A section 5 effect table): plain CSS and vanilla JS, no GSAP plugin.
+        "tier": "V",
+        "plugin_set": [],
+        # 0: its contribution composes by the section 10 channel table (sum per axis or product), so it never
+        # needs an entrance suppressed.
+        "owns_scroll_transform": 0,
+        # Suppress: untilted is the finished state, and tilt-3d.js removes its listeners when the preference is reduce.
+        "reduced_motion": "suppress",
+        "editor_story": "end-state",
+        "scope": "element",
+        "requires": "none",
+        "creates_panel": 0,
+    },
+    {
+        # Spec 38A FR-38A-45 (Effects, Tier V, Part). assets/js/ripple.js sets --ripple-x / --ripple-y and toggles .is-rippling; extensions.css .sgs-has-click-ripple paints the ::after circle.
+        "effect": "ripple",
+        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
+        # (schemas/motion.schema.json::x-sgs-effects.ripple), never a `data-sgs-fx` value, so it is not in
+        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        "in_picker": 0,
+        "pins": 0,
+        "triggers": "pointerdown,click",
+        # Tier V (Spec 38A section 5 effect table): plain CSS and vanilla JS, no GSAP plugin.
+        "tier": "V",
+        "plugin_set": [],
+        # 0: its contribution composes by the section 10 channel table (sum per axis or product), so it never
+        # needs an entrance suppressed.
+        "owns_scroll_transform": 0,
+        # Suppress: ripple.js returns early and plays nothing under reduce (FR-38A-45).
+        "reduced_motion": "suppress",
+        "editor_story": "end-state",
+        "scope": "element",
+        "requires": "none",
+        "creates_panel": 0,
+    },
+    {
+        # Spec 38A FR-38A-35 (Hover, Tier V, CSS only, Part). A band in an injected span.sgs-motion-layer, painted by assets/css/motion.css with --sgs-sheen-x.
+        "effect": "sheen",
+        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
+        # (schemas/motion.schema.json::x-sgs-effects.sheen), never a `data-sgs-fx` value, so it is not in
+        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        "in_picker": 0,
+        "pins": 0,
+        "triggers": "hover",
+        # Tier V (Spec 38A section 5 effect table): plain CSS and vanilla JS, no GSAP plugin.
+        "tier": "V",
+        "plugin_set": [],
+        # 0: its contribution composes by the section 10 channel table (sum per axis or product), so it never
+        # needs an entrance suppressed.
+        "owns_scroll_transform": 0,
+        # Suppress: the band does not play under reduce (FR-38A-35).
+        "reduced_motion": "suppress",
+        "editor_story": "end-state",
+        "scope": "element",
+        "requires": "none",
+        "creates_panel": 0,
+    },
+    {
+        # Spec 38A FR-38A-36 (Effects, Tier V, Part). Replaces assets/js/scroll-progress.js; reads the shared scroll driver and writes a bar scale or counter text.
+        "effect": "scroll-progress",
+        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
+        # (schemas/motion.schema.json::x-sgs-effects.scroll-progress), never a `data-sgs-fx` value, so it is not in
+        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        "in_picker": 0,
+        "pins": 0,
+        "triggers": "scroll",
+        # Tier V (Spec 38A section 5 effect table): plain CSS and vanilla JS, no GSAP plugin.
+        "tier": "V",
+        "plugin_set": [],
+        # 0: its contribution composes by the section 10 channel table (sum per axis or product), so it never
+        # needs an entrance suppressed.
+        "owns_scroll_transform": 0,
+        # Simplify: the indicator is information, not decoration, so it still reports position while its own easing stops.
+        "reduced_motion": "simplify",
+        "editor_story": "end-state",
+        "scope": "element",
+        "requires": "none",
+        "creates_panel": 0,
+    },
+    {
+        # Spec 38A FR-38A-37 (Effects, Tier V, Part). A CSS loop writing --sgs-float-x / --sgs-float-y into the translate channel.
+        "effect": "ambient-float",
+        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
+        # (schemas/motion.schema.json::x-sgs-effects.ambient-float), never a `data-sgs-fx` value, so it is not in
+        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        "in_picker": 0,
+        "pins": 0,
+        "triggers": "load,visible",
+        # Tier V (Spec 38A section 5 effect table): plain CSS and vanilla JS, no GSAP plugin.
+        "tier": "V",
+        "plugin_set": [],
+        # 0: its contribution composes by the section 10 channel table (sum per axis or product), so it never
+        # needs an entrance suppressed.
+        "owns_scroll_transform": 0,
+        # Suppress: the element rests at its laid-out position.
+        "reduced_motion": "suppress",
+        "editor_story": "end-state",
+        "scope": "element",
+        "requires": "none",
+        "creates_panel": 0,
+    },
+    {
+        # Spec 38A FR-38A-44 (Effects, Tier V, Block (track)). The shared marquee primitive for sgs/brand-strip and sgs/trust-bar; the target is the track, so requires=track as for draggable and carousel-loop.
+        "effect": "marquee",
+        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
+        # (schemas/motion.schema.json::x-sgs-effects.marquee), never a `data-sgs-fx` value, so it is not in
+        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        "in_picker": 0,
+        "pins": 0,
+        "triggers": "load,visible",
+        # Tier V (Spec 38A section 5 effect table): plain CSS and vanilla JS, no GSAP plugin.
+        "tier": "V",
+        "plugin_set": [],
+        # 0: its contribution composes by the section 10 channel table (sum per axis or product), so it never
+        # needs an entrance suppressed.
+        "owns_scroll_transform": 0,
+        # Simplify: the logos or items must stay readable, so the row shows static (wrapped) rather than disappearing.
+        "reduced_motion": "simplify",
+        "editor_story": "end-state",
+        "scope": "block",
+        "requires": "track",
+        "creates_panel": 0,
+    },
+    {
+        # Spec 38A FR-38A-52 (Effects, Tier V, Surface). Writes --sgs-kb-x / --sgs-kb-y / --sgs-kb-s into the translate and scale channels of the surface part.
+        "effect": "ken-burns",
+        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
+        # (schemas/motion.schema.json::x-sgs-effects.ken-burns), never a `data-sgs-fx` value, so it is not in
+        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        "in_picker": 0,
+        "pins": 0,
+        "triggers": "load,visible",
+        # Tier V (Spec 38A section 5 effect table): plain CSS and vanilla JS, no GSAP plugin.
+        "tier": "V",
+        "plugin_set": [],
+        # 0: its contribution composes by the section 10 channel table (sum per axis or product), so it never
+        # needs an entrance suppressed.
+        "owns_scroll_transform": 0,
+        # Suppress: the surface holds its start zoom, which is the finished state.
+        "reduced_motion": "suppress",
+        "editor_story": "end-state",
+        "scope": "block",
+        "requires": "surface",
+        "creates_panel": 0,
+    },
+    {
+        # Spec 38A FR-38A-52 (Effects, Tier V, Part (SVG) or background SVG layer). Pulse or wave, no GSAP.
+        "effect": "svg-loop",
+        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
+        # (schemas/motion.schema.json::x-sgs-effects.svg-loop), never a `data-sgs-fx` value, so it is not in
+        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        "in_picker": 0,
+        "pins": 0,
+        "triggers": "load,visible",
+        # Tier V (Spec 38A section 5 effect table): plain CSS and vanilla JS, no GSAP plugin.
+        "tier": "V",
+        "plugin_set": [],
+        # 0: its contribution composes by the section 10 channel table (sum per axis or product), so it never
+        # needs an entrance suppressed.
+        "owns_scroll_transform": 0,
+        # Suppress: the SVG rests in its drawn shape.
+        "reduced_motion": "suppress",
+        "editor_story": "end-state",
+        "scope": "element",
+        "requires": "svg-subtree",
+        "creates_panel": 0,
+    },
 ]
 
 # ---------------------------------------------------------------------------

@@ -37,7 +37,8 @@ MODES
                      excluded part (passes), a `motion` value other than false (caught), a wrapper block's content-band
                      (passes), the same without the wrapper's motion band force (caught), a declared selector naming the
                      wrapper's band class (passes), a declared class that is only a prefix of a printed class (caught)
-                     and a declared class printed only after a dot, in a CSS selector string (caught)
+                     a declared class printed only after a dot, in a CSS selector string (caught) and a declared selector
+                     whose last compound is another block's class behind a block-owned ancestor (caught)
 
 EXCEPTIONS live in plugins/sgs-blocks/scripts/data/motion-gate-allowlist.json (gate "motion-part-selectors"; pattern is
 `<block slug>:<part>`). An entry that matches no unresolved part is an error, and so is one whose delete_in_unit landed.
@@ -77,12 +78,31 @@ CONFIRMED = {
     "testimonial:reviewer-name": "sgs-testimonial__name",
     "testimonial:reviewer-role": "sgs-testimonial__role",
 }
-# Classes a shared helper builds from a BEM root argument, so the whole class is never a literal: class -> (helper, the
-# class template the helper prints). `helper_built` proves each one: the helper is defined with that template and is
-# called with the class's root as a literal argument.
+# Classes a shared helper builds from a root argument, so the whole class is never a literal: class -> (helper, the
+# template the helper prints, the root the block passes, a regex finding the block's call with that root). `helper_built`
+# proves each one: the helper is defined with that template and the call is present.
 BUILT = {
-    "sgs-nav-bar-menu__badge": ("sgs_nav_shared_badge_html", 'class="%1$s__badge"'),
-    "sgs-nav-drawer-menu__badge": ("sgs_nav_shared_badge_html", 'class="%1$s__badge"'),
+    "sgs-nav-bar-menu__badge": ("sgs_nav_shared_badge_html", 'class="%1$s__badge"', "sgs-nav-bar-menu",
+                                r"sgs_nav_shared_badge_html\([^\n]*'sgs-nav-bar-menu'"),
+    "sgs-nav-drawer-menu__badge": ("sgs_nav_shared_badge_html", 'class="%1$s__badge"', "sgs-nav-drawer-menu",
+                                   r"sgs_nav_shared_badge_html\([^\n]*'sgs-nav-drawer-menu'"),
+    "sgs-google-reviews__arrow": ("sgs_slider_nav_arrow_html", "$block . '__arrow',", "sgs-google-reviews",
+                                  r"sgs_slider_nav_render\(\s*array\([^;]*?'block'\s*=>\s*'sgs-google-reviews'"),
+    "buybox__value-ladder__saving": ("sgs_value_ladder_markup", ". '__saving\">'", "buybox__value-ladder",
+                                     r"sgs_value_ladder_markup\(\s*'buybox__value-ladder'"),
+    "product-card__value-ladder__saving": ("sgs_value_ladder_markup", ". '__saving\">'", "product-card__value-ladder",
+                                           r"sgs_value_ladder_markup\(\s*'product-card__value-ladder'"),
+}
+# BEM roots a block has always printed that are not `sgs-<slug>`, `block slug -> class prefixes`. A class under one of
+# them stamps only that block's own elements, because a part selector is resolved inside its block's scoped root:
+# `product-card__` is also printed inside sgs/buybox, but buybox cannot declare a `product-card__` part, since only
+# product-card owns that root here.
+LEGACY_ROOTS = {
+    "buybox": ("buybox__", "sgs-buybox-guided__"),
+    "product-card": ("product-card__",),
+    "countdown-timer": ("sgs-countdown__",),
+    "table-of-contents": ("sgs-toc__",),
+    "business-info": ("sgs-business-hours__",),
 }
 SELECTOR_OK = re.compile(r"^\.[A-Za-z][A-Za-z0-9_-]*(?: \.[A-Za-z][A-Za-z0-9_-]*)*$")
 
@@ -113,14 +133,21 @@ def prints_class(text: str, cls: str) -> bool:
     return re.search(r"(?<![.\w-])" + re.escape(cls) + r"(?![\w-])", text) is not None
 
 
+def owns_class(slug: str, cls: str) -> bool:
+    """Whether `cls` is the block's own BEM root (`sgs-<slug>`), one of its elements (`sgs-<slug>__...`), the root class
+    WordPress prints from the block name (`wp-block-sgs-<slug>__...`) or an element under one of the block's
+    `LEGACY_ROOTS`."""
+    return (cls == f"sgs-{slug}" or cls.startswith((f"sgs-{slug}__", f"wp-block-sgs-{slug}__"))
+            or cls.startswith(LEGACY_ROOTS.get(slug, ())))
+
+
 def helper_built(texts: list[str], cls: str) -> bool:
     """Whether a `BUILT` class is printed: its helper is defined with the template and called with the class's root."""
     if cls not in BUILT:
         return False
-    helper, template = BUILT[cls]
-    root = cls.split("__", 1)[0]
+    helper, template, _root, call = BUILT[cls]
     defined = any(f"function {helper}(" in t and template in t for t in texts)
-    called = any(re.search(re.escape(helper) + r"\([^\n]*'" + re.escape(root) + r"'", t) for t in texts)
+    called = any(re.search(call, t, re.S) for t in texts)
     return defined and called
 
 
@@ -206,6 +233,9 @@ def declared_problems(rows: list[dict], blocks: Path, includes: Path) -> list[st
             problems.append(f"{r['block']}:{r['part']} declared selector {sel!r} is not a class selector (classes joined by single spaces)")
             continue
         last = sel.split(" ")[-1][1:]
+        if not owns_class(r["block"], last):
+            problems.append(f"{r['block']}:{r['part']} declared selector {sel!r}: its last compound {last!r} is not a class of the block (it must be sgs-{r['block']}, begin with sgs-{r['block']}__ or sit under one of its LEGACY_ROOTS), so the stamper would mark every element of that class in the block")
+            continue
         text = source_text(blocks / r["block"])
         if not prints_class(text, last) and not any(prints_class(s, last) for s in shared) and not helper_built([text, *shared], last) and last != wrapper_band(text, r["block"], forced):
             problems.append(f"{r['block']}:{r['part']} declared selector {sel!r}: neither the block's render source nor a shared include prints {last!r}")
@@ -337,9 +367,10 @@ def self_test() -> int:
         _plant(tmp, "skipped", {"label": "Thing", "motion": False}, "<?php echo '<div></div>';")
         _plant(tmp, "badflag", {"label": "Thing", "motion": "no"}, "<?php echo '<i class=\"sgs-badflag__thing\"></i>';")
         _plant(tmp, "banded", {"label": "Thing", "selector": ".sgs-banded__content-band"}, "<?php echo SGS_Container_Wrapper::render( $a, $b, $c );")
-        _plant(tmp, "shared", {"label": "Thing", "selector": ".sgs-helper__thing"}, "<?php echo sgs_helper_markup();")
-        (empty_includes / "helper.php").write_text("<?php function sgs_helper_markup() { return '<i class=\"sgs-helper__thing\"></i>'; }", encoding="utf-8")
-        _plant(tmp, "prefix", {"label": "Thing", "selector": ".sgs-cart__pan"}, "<?php echo '<ul class=\"sgs-cart__panel-items\"></ul>';")
+        _plant(tmp, "shared", {"label": "Thing", "selector": ".sgs-shared__thing"}, "<?php echo sgs_helper_markup();")
+        (empty_includes / "helper.php").write_text("<?php function sgs_helper_markup() { return '<i class=\"sgs-shared__thing\"></i>'; }", encoding="utf-8")
+        _plant(tmp, "prefix", {"label": "Thing", "selector": ".sgs-prefix__pan"}, "<?php echo '<ul class=\"sgs-prefix__panel-items\"></ul>';")
+        _plant(tmp, "foreign", {"label": "Thing", "selector": ".sgs-foreign__wrap .sgs-media"}, "<?php echo '<i class=\"sgs-foreign__wrap\"><b class=\"sgs-media\"></b></i>';")
         _plant(tmp, "cssonly", {"label": "Thing", "selector": ".sgs-cssonly__ghost"}, "<?php $css = '.' . $uid . ' .sgs-cssonly__ghost{color:red}'; echo '<i class=\"sgs-cssonly__other\"></i>';")
         (empty_includes / WRAPPER_FILE).write_text("<?php if ( Sgs_Motion_Targets::names_band( $attributes ) ) { $do_wrap = true; }", encoding="utf-8")
         band_dir = tmp / "bandpart"
@@ -366,6 +397,8 @@ def self_test() -> int:
             ("a declared selector naming the wrapper's band class passes", not any(p.startswith("banded:") for p in problems)),
             ("a declared selector a shared include prints passes", not any(p.startswith("shared:") for p in problems)),
             ("a declared class that is only a prefix of a printed class is caught", any(p.startswith("prefix:") for p in problems)),
+            ("a declared selector whose last compound is not a class of the block is caught", any(p.startswith("foreign:") and "not a class of the block" in p for p in problems)),
+            ("a declared selector ending in the block's own class passes the ownership rule", not any("not a class of the block" in p for p in problems if not p.startswith(("foreign:", "shared:")))),
             ("a declared class printed only after a dot (a CSS selector) is caught", any(p.startswith("cssonly:") for p in problems)),
             ("a content-band part without the wrapper's motion band force is unresolved", unforced["bandpart"]["how"] == "unresolved"),
             ("a declared band selector without the wrapper's motion band force is caught", any(p.startswith("banded:") for p in unforced_problems)),
