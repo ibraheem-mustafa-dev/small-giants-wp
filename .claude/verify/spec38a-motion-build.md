@@ -8,24 +8,24 @@ Reference: `.claude/plans/2026-10-12-spec38a-motion-build.md` (spec `.claude/spe
 |---|---|---|---|
 | Baseline committed before the support registration | `git merge-base --is-ancestor $(git log --format=%h -1 --diff-filter=A -- plugins/sgs-blocks/scripts/perf/editor-typing-baseline.json) $(git log --format=%h -1 --diff-filter=A -- plugins/sgs-blocks/includes/motion/support-registration.php)` | exit 0 | PASS (9a9995d97 before 1277cd09e) |
 
-## M1 — Foundations (PENDING)
+## M1 — Foundations (PENDING, the spec status row open)
 
 | Criterion | Command | Expected | STATUS |
 |---|---|---|---|
 | Schema check green and self-test catches plants | `python plugins/sgs-blocks/scripts/check-motion-schema.py --check && python plugins/sgs-blocks/scripts/check-motion-schema.py --self-test` | exit 0, every plant reported caught | PASS (2026-10-13) |
 | Old easing and ms helpers gone | `git grep -n "sgs_motion_valid_cubic_bezier\|sgs_motion_ms" -- plugins` | no output | PASS (2026-10-13) |
 | `sgsMotion` never declared in a block.json | `git grep -n '"sgsMotion"' -- 'plugins/sgs-blocks/src/blocks/*/block.json'` | no output | PASS (2026-10-13) |
-| Every motion gate passes | `python plugins/sgs-blocks/scripts/run-motion-gates.py` | exit 0 | PASS (10/10, 2026-10-13; recheck at M1 close) |
-| One easing list definition | `git grep -nE "const (MOTION_EASING_OPTIONS\|EASING_OPTIONS\|FX_EASE_OPTIONS) =" -- plugins/sgs-blocks/src` | one line, in `src/components/motion/EasingAtom.js` | PENDING |
-| Motion field rows (decision 3 option B: `motion_targets`, `motion_fields` and the view `motion_field_rows`; nothing in `block_attributes`) | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT COUNT(*) FROM motion_field_rows"` and `python plugins/sgs-blocks/scripts/check-motion-db-rows.py --check` | non-zero; exit 0 | PENDING (M1.7 built the tables, view, seeder and check; the shared DB is filled by the M1.11 reseed) |
+| Every motion gate passes | `python plugins/sgs-blocks/scripts/run-motion-gates.py` | exit 0 | PASS (18/18, 2026-10-13, Gate 2; `gate:motion` runs it in the full tier, 126 s) |
+| One easing list definition | `git grep -nE "const (MOTION_EASING_OPTIONS\|EASING_OPTIONS\|FX_EASE_OPTIONS) =" -- plugins/sgs-blocks/src` | one line, in `src/components/motion/easing-master-list.js` (re-exported by `EasingAtom.js`) | PASS (2026-10-13, M1.9 `0448d4365`; one match) |
+| Motion field rows (decision 3 option B: `motion_targets`, `motion_fields` and the view `motion_field_rows`; nothing in `block_attributes`) | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT COUNT(*) FROM motion_field_rows"` and `python plugins/sgs-blocks/scripts/check-motion-db-rows.py --check` | non-zero; exit 0 | PASS (2026-10-13, M1.11 `ac74ff0f7`; `check-motion-db-rows.py --check`: OK, 279 schema fields (289 `motion_fields` rows), 418 targets after the M2.1b exclusions, 268,774 `motion_field_rows` view rows, 0 allow-list entries) |
 | Presets table in, old table out | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT name FROM sqlite_master WHERE name IN ('motion_presets','animation_tokens')"` | `motion_presets` only | PASS (2026-10-13) |
-| Spec status lines | `grep -nE "^- \*\*FR-38A-(1\|3\|14\|15\|55\|56) " .claude/specs/38A-SGS-MOTION-MODEL.md` | each says built | PENDING |
+| Spec status lines | `grep -nE "^- \*\*FR-38A-(1\|3\|14\|15\|55\|56) " .claude/specs/38A-SGS-MOTION-MODEL.md` | each says built | PENDING (14, 15, 55 and 56 say built at M1.11; FR-38A-1 and 3 close with their live editor, server and reader checks in M2.9, M3.3 and M7) |
 
 ## M2 — Renderer and runtime (PENDING)
 
 | Criterion | Command | Expected | STATUS |
 |---|---|---|---|
-| Renderer and refusal tests | `cd plugins/sgs-blocks && vendor/bin/phpunit --filter "MotionRendererTest\|MotionRefusalsTest"` | pass | PENDING |
+| Renderer and refusal tests | `cd plugins/sgs-blocks && vendor/bin/phpunit --filter "MotionRendererTest\|MotionRefusalsTest"` | pass | PASS (2026-10-13, M2.1 `4217b7f5a`; 28 tests, 93 assertions) |
 | Runtime stagger removed, formula frozen | `git grep -n staggerOffset -- plugins; ls plugins/sgs-blocks/tests/fixtures/motion/legacy-stagger-offset.json` | no grep output; file exists | PENDING |
 | Scripts write custom properties only | `python plugins/sgs-blocks/scripts/check-motion-style-writes.py --check` | exit 0 (and `--self-test` exit 1) | PENDING |
 | Live model probe, three engines | `node plugins/sgs-blocks/scripts/motion-qa/probe-motion-model.mjs` | pass, each negative control red | PENDING |
