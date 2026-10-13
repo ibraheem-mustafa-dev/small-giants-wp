@@ -11,10 +11,15 @@ contributions the stylesheet multiplies or adds.
 A WRITE (comments are stripped first):
   el.style.transform = ...            el.style['opacity'] = ...         el.style.setProperty('filter', ...)
   Object.assign(el.style, ...)        el.style.cssText = ...            el.setAttribute('style', ...)
-  el.style = '...'                    el.style[`opacity`] = ...         el.style['-webkit-transform'] = ...
+  el.style = '...'  (only when the receiver is a recognisable DOM element: a name such as el, elem, element, node,
+                     target, card, slide, wrapper, body, or a local assigned from querySelector / getElementById /
+                     createElement / closest / an event target; `cfg.style = 'outline'` is not judged)
+  el.style[`opacity`] = ...         el.style['-webkit-transform'] = ...
   el.style.webkitTransform = ...      el?.style?.setProperty('opacity') el?.style.opacity = ...
   el.attributeStyleMap.set('transform', ...)
-  const s = el.style; s.opacity = ...      (an alias is a local bound to `<expr>.style` in the same file)
+  const s = el.style; s.opacity = ...      (an alias is a local bound to `<expr>.style`; it is scoped to the
+                                            innermost `{...}` block that holds the declaration, so an unrelated `s`
+                                            in another function is not judged)
   const { style } = el; style.opacity = ... (destructuring; `style: s` renames the alias)
   el.style[p] = ...                         where `p = 'opacity'` assigns a channel-name literal in the same file
   el.animate({ opacity: 0 }, ...) / el.animate([{ transform: 'x' }], ...): a WAAPI frame LITERAL whose channel key holds
@@ -59,6 +64,9 @@ BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
 LINE_COMMENT = re.compile(r"(?m)(^|[\s;{}(),])//[^\n]*")
 ALIAS_DECL = re.compile(r"""(?<![\w.$])(?:(?:const|let|var)\s+)?([A-Za-z_$][\w$]*)\s*=\s*[^;=\n]*?\.style\s*(?=[;\n,)]|$)""")
 DESTRUCTURE_DECL = re.compile(r"(?:const|let|var)\s*\{([^}]*)\}\s*=")
+ELEMENT_NAME = re.compile(r"^(?:el|els|elem|element|node|target|currentTarget|item|card|slide|wrapper|root|container|body|documentElement|[A-Za-z]+(?:El|Elem|Element|Node))$")
+DOM_LOCAL = re.compile(r"""(?<![\w.$])([A-Za-z_$][\w$]*)\s*=\s*[^;\n]*?(?:querySelector|getElementById|createElement|closest|\.target\b|\.currentTarget\b)""")
+BARE_STYLE_ASSIGN = re.compile(r"([A-Za-z_$][\w$]*)\s*\??\.style\s*=(?!=)")
 ANIMATE_CALL = re.compile(r"(?<![\w$])animate\s*\(\s*(?=[\[{])")
 QUOTE = r"""['"`]"""
 
@@ -94,15 +102,50 @@ def name_alternations(props: list[str]) -> tuple[str, str]:
     return names, kebab
 
 
-def aliases_of(clean: str) -> list[str]:
-    """Locals bound to `<expr>.style`, or destructured as `style` / `style: name`."""
-    found = {m.group(1) for m in ALIAS_DECL.finditer(clean)}
+def scope_end(text: str, pos: int) -> int:
+    """End offset of the innermost `{...}` block holding `pos` (the end of the file at top level)."""
+    opens: list[int] = []
+    quote = ""
+    i = 0
+    while i < pos:
+        ch = text[i]
+        if quote:
+            if ch == "\\":
+                i += 1
+            elif ch == quote:
+                quote = ""
+        elif ch in "'\"`":
+            quote = ch
+        elif ch == "{":
+            opens.append(i)
+        elif ch == "}" and opens:
+            opens.pop()
+        i += 1
+    if not opens:
+        return len(text)
+    close = matching_close(text, opens[-1])
+    return len(text) if close < 0 else close + 1
+
+
+def aliases_of(clean: str) -> list[tuple[str, int, int]]:
+    """(name, start, end) of locals bound to `<expr>.style`, or destructured as `style` / `style: name`.
+
+    The range runs from the declaration to the end of its innermost enclosing block."""
+    found: set[tuple[str, int, int]] = set()
+    for m in ALIAS_DECL.finditer(clean):
+        found.add((m.group(1), m.start(), scope_end(clean, m.start())))
     for m in DESTRUCTURE_DECL.finditer(clean):
         for part in m.group(1).split(","):
             bits = [b.strip() for b in part.split(":")]
             if bits[0] == "style":
-                found.add(bits[-1].split("=")[0].strip() or "style")
+                name = bits[-1].split("=")[0].strip() or "style"
+                found.add((name, m.start(), scope_end(clean, m.start())))
     return sorted(found)
+
+
+def element_receivers(clean: str) -> set[str]:
+    """Locals assigned from a DOM lookup, so `<local>.style = ...` is known to write an element's style."""
+    return {m.group(1) for m in DOM_LOCAL.finditer(clean)}
 
 
 def key_variables(clean: str, names: str, kebab: str) -> list[str]:
@@ -124,7 +167,6 @@ def build_patterns(props: list[str], aliases: list[str] | None = None,
         ("setProperty", re.compile(rf"{target}\s*\??\.setProperty\s*\??\.?\(\s*{QUOTE}(?:-webkit-)?(?:{kebab}){QUOTE}")),
         ("Object.assign onto style", re.compile(rf"Object\.assign\(\s*(?:[\w.$\[\]?]*\.style|{alias_alt or '(?!)'})\s*,")),
         ("cssText", re.compile(rf"{target}\s*\??\.cssText\s*\+?=(?!=)")),
-        ("whole style string", re.compile(r"\.style\s*=(?!=)")),
         ("style attribute", re.compile(rf"\??\.setAttribute\s*\??\.?\(\s*{QUOTE}style{QUOTE}")),
         ("attributeStyleMap", re.compile(rf"attributeStyleMap\s*\??\.(?:set|append)\s*\??\.?\(\s*{QUOTE}(?:-webkit-)?(?:{kebab}){QUOTE}")),
     ]
@@ -194,11 +236,23 @@ def find_hits(plugin: Path, props: list[str]) -> list[tuple[str, int, str, str]]
             rel = path.relative_to(plugin).as_posix()
             clean = strip_comments(source)
             lines = source.splitlines()
-            patterns = build_patterns(props, aliases_of(clean), key_variables(clean, names, kebab))
-            for kind, pattern in patterns:
+            key_vars = key_variables(clean, names, kebab)
+
+            def add(kind: str, offset: int) -> None:
+                line = clean.count(chr(10), 0, offset) + 1
+                hits.add((rel, line, kind, lines[line - 1].strip()))
+
+            for kind, pattern in build_patterns(props, [], key_vars):
                 for match in pattern.finditer(clean):
-                    line = clean.count("\n", 0, match.start()) + 1
-                    hits.add((rel, line, kind, lines[line - 1].strip()))
+                    add(kind, match.start())
+            for name, start, end in aliases_of(clean):
+                for kind, pattern in build_patterns(props, [name], key_vars):
+                    for match in pattern.finditer(clean, start, end):
+                        add(kind, match.start())
+            receivers = element_receivers(clean)
+            for match in BARE_STYLE_ASSIGN.finditer(clean):
+                if ELEMENT_NAME.match(match.group(1)) or match.group(1) in receivers:
+                    add("whole style string", match.start())
             for offset in waapi_hits(clean, props):
                 line = clean.count("\n", 0, offset) + 1
                 hits.add((rel, line, "animate() frame channel", lines[line - 1].strip()))
@@ -257,6 +311,12 @@ PLANTS = [
     plant("vendor bracket: el.style['-webkit-transform'] =", "el.style['-webkit-transform'] = 'none';\n", True),
     plant("vendor camel: el.style.webkitTransform =", "el.style.webkitTransform = 'none';\n", True),
     plant("whole string: el.style = '...'", "el.style = 'opacity:0';\n", True),
+    plant("whole string on a DOM local", "const box = document.querySelector('.a');\nbox.style = 'opacity:0';\n", True),
+    plant("alias in function a, unrelated s.opacity in function b",
+          "function a( el ) {\n\tconst s = el.style;\n\ts.setProperty('--x', '1');\n}\nfunction b( s ) {\n\ts.opacity = 0;\n}\n", False),
+    plant("alias written inside its own function", "function a( el ) {\n\tconst s = el.style;\n\ts.opacity = '0';\n}\n", True),
+    plant("non-element object: cfg.style = 'outline'", "cfg.style = 'outline';\n", False),
+    plant("schema-only channel: el.style.clipPath =", "el.style.clipPath = 'x';\n", True),
     plant("style.cssText via destructured alias", "const { style } = el;\nstyle.cssText = 'opacity:0';\n", True),
     plant("attributeStyleMap.set('transform')", "el.attributeStyleMap.set('transform', 'none');\n", True),
     plant("WAAPI literal frame with a raw opacity", "el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1 });\n", True),

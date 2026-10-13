@@ -447,7 +447,7 @@ final class Sgs_Motion_Emitter {
 			return null;
 		}
 		$out = array();
-		foreach ( array_values( $list ) as $index => $frame ) {
+		foreach ( self::sorted_frames( $list ) as $index => $frame ) {
 			$row = array();
 			foreach ( is_array( $frame ) ? $frame : array() as $key => $value ) {
 				if ( 'offset' === $key ) {
@@ -468,9 +468,30 @@ final class Sgs_Motion_Emitter {
 					}
 				}
 			}
+			if ( 0 === $index && isset( $row['offset'] ) && $row['offset'] > 0 ) {
+				$row['offset'] = 0;
+			}
 			$out[] = $row;
 		}
 		return (string) wp_json_encode( $out );
+	}
+
+	/**
+	 * Stored frames in offset order; a frame without a numeric offset keeps its list position (it sorts with the frame before it).
+	 *
+	 * @param array<int|string,mixed> $list Stored frames.
+	 * @return array<int,mixed>
+	 */
+	private static function sorted_frames( array $list ): array {
+		$keyed = array();
+		$last  = 0;
+		foreach ( array_values( $list ) as $frame ) {
+			$offset = is_array( $frame ) ? ( $frame['offset'] ?? null ) : null;
+			$last   = is_int( $offset ) || is_float( $offset ) ? $offset : $last;
+			$keyed[] = array( $last, $frame );
+		}
+		usort( $keyed, static fn ( array $a, array $b ): int => $a[0] <=> $b[0] );
+		return array_column( $keyed, 1 );
 	}
 
 	/**
