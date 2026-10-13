@@ -219,7 +219,8 @@
 	[data-sgs-me~="filter"] { --sgs-me-a-filter: sgs-me-filter; }
 	[data-sgs-me~="clip-path"] { --sgs-me-a-clip-path: sgs-me-clip-path; }
 
-	[data-sgs-me]:is([data-sgs-me~="load"], [data-sgs-in]) {
+	/* A multi-keyframe entrance is played by the WAAPI module (motion-keyframes.js), never by these two-state rules. */
+	[data-sgs-me]:not([data-sgs-me-keyframes]):is([data-sgs-me~="load"], [data-sgs-in]) {
 		animation-name: var(--sgs-me-a-translate), var(--sgs-me-a-rotate), var(--sgs-me-a-scale), var(--sgs-me-a-opacity), var(--sgs-me-a-filter), var(--sgs-me-a-clip-path);
 	}
 
