@@ -11,7 +11,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { Button, ToggleControl } from '@wordpress/components';
 import { NumberControl } from '../primitives';
-import defs from './generated-motion-defs.json';
+import defs from './motion-defs';
 import {
 	boundsOf,
 	numberDraft,

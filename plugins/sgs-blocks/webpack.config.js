@@ -21,6 +21,66 @@ const scriptConfig = configs.find(
 );
 
 /* ==========================================================================
+ * Shared motion schema extract (Spec 38A). `src/components/motion/motion-defs.js`
+ * imports the id `@sgs/motion-defs`; here the script config's dependency-extraction
+ * plugin turns that id into the `window.sgsMotionDefs` global and the
+ * `sgs-motion-defs` handle, so every bundle that reaches it (95 block editor
+ * bundles through the components barrel) lists the handle in its generated
+ * `index.asset.php` instead of inlining the 92 KB extract. The handle's own file
+ * is the `motion-defs/index` entry below; PHP registers it in
+ * `includes/motion/motion-defs-script.php`.
+ *
+ * The plugin instance wp-scripts created is replaced by one of the same class
+ * with the same options plus the two mapping callbacks, so every default
+ * (`@wordpress/*`, React, lodash) still externalises exactly as before. The
+ * module config is untouched: no script module imports the extract.
+ * ========================================================================== */
+
+const MOTION_DEFS_REQUEST = '@sgs/motion-defs';
+const MOTION_DEFS_GLOBAL = 'sgsMotionDefs';
+const MOTION_DEFS_HANDLE = 'sgs-motion-defs';
+
+if ( scriptConfig && Array.isArray( scriptConfig.plugins ) ) {
+	const extractionIndex = scriptConfig.plugins.findIndex(
+		( plugin ) =>
+			plugin?.constructor?.name === 'DependencyExtractionWebpackPlugin'
+	);
+
+	if ( extractionIndex === -1 ) {
+		// WP_NO_EXTERNALS disables the plugin, and with it the external: the
+		// id would then be unresolvable, so fail the build loudly instead.
+		throw new Error(
+			`webpack.config.js: no DependencyExtractionWebpackPlugin in the script config, so ${ MOTION_DEFS_REQUEST } cannot be externalised`
+		);
+	}
+
+	const DependencyExtraction =
+		scriptConfig.plugins[ extractionIndex ].constructor;
+	const previousOptions =
+		scriptConfig.plugins[ extractionIndex ].options || {};
+
+	scriptConfig.plugins[ extractionIndex ] = new DependencyExtraction( {
+		...previousOptions,
+		requestToExternal( request ) {
+			if ( request === MOTION_DEFS_REQUEST ) {
+				return MOTION_DEFS_GLOBAL;
+			}
+			return typeof previousOptions.requestToExternal === 'function'
+				? previousOptions.requestToExternal( request )
+				: undefined;
+		},
+		requestToHandle( request ) {
+			if ( request === MOTION_DEFS_REQUEST ) {
+				return MOTION_DEFS_HANDLE;
+			}
+			return typeof previousOptions.requestToHandle === 'function'
+				? previousOptions.requestToHandle( request )
+				: undefined;
+		},
+	} );
+}
+
+/* ==========================================================================
  * Tier G (GSAP) module wiring — Spec 38 §4.4 / D409.
  *
  * This block touches the MODULE config, which everything above deliberately
@@ -500,6 +560,16 @@ if ( ! scriptConfig ) {
 					'bindings',
 					'index.js'
 				),
+				// The shared motion schema extract, published as
+				// window.sgsMotionDefs and registered as the `sgs-motion-defs`
+				// handle (see the dependency-extraction block at the top).
+				'motion-defs/index': path.resolve(
+					process.cwd(),
+					'src',
+					'components',
+					'motion',
+					'motion-defs-global.js'
+				),
 			} ) );
 		}
 
@@ -530,6 +600,15 @@ if ( ! scriptConfig ) {
 				'src',
 				'bindings',
 				'index.js'
+			),
+			// The shared motion schema extract — see the identical entry in the
+			// promise branch above.
+			'motion-defs/index': path.resolve(
+				process.cwd(),
+				'src',
+				'components',
+				'motion',
+				'motion-defs-global.js'
 			),
 		};
 	};

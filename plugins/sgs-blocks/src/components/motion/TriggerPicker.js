@@ -7,7 +7,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import defs from './generated-motion-defs.json';
+import defs from './motion-defs';
 import ChoiceAtom from './ChoiceAtom';
 
 const DEFS = defs.$defs;

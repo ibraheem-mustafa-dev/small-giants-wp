@@ -81,6 +81,11 @@ module.exports = {
 		'^@wordpress/plugins$': `${ MOCKS_DIR }/@wordpress/plugins.js`,
 		'^@wordpress/server-side-render$': `${ MOCKS_DIR }/@wordpress/server-side-render.js`,
 
+		// The motion schema extract: a webpack external (window.sgsMotionDefs,
+		// handle sgs-motion-defs) in the build, the generated JSON in tests.
+		'^@sgs/motion-defs$':
+			'<rootDir>/src/components/motion/generated-motion-defs.json',
+
 		// lucide-react and lucide-static are not installed as node_modules.
 		'^lucide-react$': `${ MOCKS_DIR }/lucide-react.js`,
 		'^lucide-static$': `${ MOCKS_DIR }/lucide-react.js`,

@@ -6,7 +6,8 @@
  * node (its narrowing `minimum`, `maximum`, `enum`, `multipleOf` and `x-sgs-range`); nothing here restates a bound.
  *
  * The `$defs` come from `generated-motion-defs.json`, the build-time extract of `schemas/motion.schema.json`
- * (`scripts/generate-motion-editor-defs.py`), so the editor bundle never carries the whole schema.
+ * (`scripts/generate-motion-editor-defs.py`), read through `motion-defs.js`, so the editor never carries the whole schema and
+ * every block bundle shares the one `sgs-motion-defs` script instead of inlining the extract.
  *
  * The PHP twin is `includes/motion/class-sgs-motion-field-types.php`; `tests/js/motion-field-types-parity.test.js`
  * proves both give the same verdict and the same CSS for the same value.
@@ -14,7 +15,7 @@
  * Every function takes a plain value and an optional field node, never an sgsMotion path.
  */
 
-import defs from './generated-motion-defs.json';
+import defs from './motion-defs';
 import {
 	createEvaluator,
 	isAnnotation,
