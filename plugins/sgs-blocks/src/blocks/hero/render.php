@@ -836,6 +836,14 @@ if ( $is_split ) {
 	}
 	$responsive_css .= implode( '', $split_media_border['rules'] );
 
+	// ── box shadow — the shared `shadow` atom (prefix 'splitMedia') sets
+	// `--sgs-media-box-shadow`/`--sgs-media-box-shadow-hover` on the same scope class,
+	// painted by the shared `.sgs-media-el` rule (assets/css/media-atoms/shadow.css) on the
+	// framed element that also carries the split media's border and radius. The split
+	// column (`.sgs-hero__media`) is `overflow:visible` (style.css) and the hero root is
+	// `overflow-x:clip;overflow-y:visible` (the wrapper's hoverSpillScale rule), so the
+	// shadow is clipped only at the hero's own left/right edges, or by the column itself
+	// in the Ken Burns mode, which clips it to animate inside it.
 	// ── object-fit / object-position — Wave 6 (2026-09-01). Now emitted by the
 	// shared `object-fit`/`focal-point` atoms (prefix 'splitMedia', which
 	// reproduces `splitMediaObjectFit`/`splitMediaObjectPosition*` EXACTLY —
@@ -858,7 +866,7 @@ if ( $is_split ) {
 		'splitMedia',
 		'sgs/hero',
 		$uid,
-		array( 'object-fit', 'focal-point' )
+		array( 'object-fit', 'focal-point', 'shadow' )
 	);
 }
 

@@ -37,6 +37,7 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 				colour: keys.colour,
 				hoverColour: keys.hoverColour,
 			} }
+			liftPrefix={ prefix }
 		/>
 	);
 }

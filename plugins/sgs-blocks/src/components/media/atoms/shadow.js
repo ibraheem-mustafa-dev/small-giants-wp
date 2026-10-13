@@ -78,6 +78,33 @@ export function validate( value ) {
 }
 
 /**
+ * The lift switch attribute for a surface prefix: the block-root `shadowLiftOnHover` when
+ * unprefixed, `{prefix}ShadowLiftOnHover` otherwise. Mirrors `ShadowLiftControls.js::
+ * shadowLiftAttrKeys()` (not imported: that module carries JSX, which the purity contract bars).
+ *
+ * @param {string} prefix Surface prefix ('' when unprefixed).
+ * @return {string} The lift switch attribute name.
+ */
+export function liftAttrName( prefix = '' ) {
+	return '' === prefix ? 'shadowLiftOnHover' : `${ prefix }ShadowLiftOnHover`;
+}
+
+/**
+ * Does this media element's automatic lift-on-hover apply? An unprefixed element follows the
+ * block-root switch (on unless switched off); a prefixed element lifts only when its block
+ * declares its own `{prefix}ShadowLiftOnHover` and it is on, so a block's root switch never
+ * reaches a second surface. PHP twin: `includes/media/atoms/shadow.php::sgs_media_atom_shadow_lift_on`.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {string} prefix     Surface prefix.
+ * @return {boolean} True when the automatic lift is drawn.
+ */
+export function liftOn( attributes = {}, prefix = '' ) {
+	const value = attributes[ liftAttrName( prefix ) ];
+	return '' === prefix ? false !== value : true === value;
+}
+
+/**
  * Custom-property declarations for this atom. Mirrors
  * `includes/media/atoms/shadow.php`'s `sgs_media_atom_shadow_css()` exactly.
  *
@@ -112,12 +139,12 @@ export function css( { attributes, prefix = '', blockSlug = '', hoverMap } = {} 
 		if ( hover ) {
 			decls.push( `--sgs-media-box-shadow-hover:${ hover }` );
 		}
-	} else if ( false !== attributes.shadowLiftOnHover ) {
+	} else if ( liftOn( attributes, prefix ) ) {
 		// AUTOMATIC LIFT — only when NO explicit hover colour is set; the explicit branch
 		// above always wins outright. Mirrors `sgs_media_atom_shadow_css()`'s PHP branch,
 		// minus the block-TYPE-level `supports.sgs.shadowLift` gate (unavailable to a
-		// plain-Node-importable module without a WordPress import — sgs/media is not an
-		// overlay block, so the attribute-level switch alone is the gate that matters here).
+		// plain-Node-importable module without a WordPress import — no media-atom adopter is
+		// an overlay block, so the attribute-level switch alone is the gate that matters here).
 		const lift = 'string' === typeof shape ? shadowHoverValue( shape, colour, hoverMap ) : '';
 		if ( lift ) {
 			decls.push( `--sgs-media-box-shadow-hover:${ lift }` );

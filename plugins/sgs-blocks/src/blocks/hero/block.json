@@ -59,7 +59,8 @@
 						"box-shape",
 						"media-padding",
 						"overlay",
-						"motion"
+						"motion",
+						"shadow"
 					]
 				}
 			],
@@ -120,6 +121,9 @@
 					"splitMediaParallax",
 					"splitMediaKenBurns",
 					"splitMediaAnimationDuration",
+					"splitMediaBoxShadow",
+					"splitMediaBoxShadowColour",
+					"splitMediaBoxShadowColourHover",
 					"splitContentOrder"
 				]
 			},
@@ -348,13 +352,16 @@
 						"css:border-width": "splitMediaBorderWidth",
 						"css:padding": "splitMediaPadding",
 						"css:object-fit": "splitMediaObjectFit",
-						"css:object-position": "splitMediaObjectPosition"
+						"css:object-position": "splitMediaObjectPosition",
+						"css:box-shadow": "splitMediaBoxShadow",
+						"css:box-shadow-color": "splitMediaBoxShadowColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:border-color": "splitMediaBorderColourHover",
-								"css:border-color-gradient": "splitMediaBorderColourHoverGradient"
+								"css:border-color-gradient": "splitMediaBorderColourHoverGradient",
+								"css:box-shadow-color": "splitMediaBoxShadowColourHover"
 							}
 						}
 					},
@@ -726,6 +733,21 @@
 			"type": "string",
 			"default": "",
 			"description": "Hover gradient — wins over splitMediaBorderColourHover when set. Only takes effect when splitMediaBorderColourGradient (resting) is also set, matching sgs/button's own accepted masked-gradient limitation (D636)."
+		},
+		"splitMediaBoxShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Split media box shadow SHAPE, painted on the framed media element by the shared shadow media atom: a theme shadow preset slug, layers ([inset] X Y BLUR SPREAD, comma-separated), or none. Colour is splitMediaBoxShadowColour."
+		},
+		"splitMediaBoxShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Split media box shadow colour: site, a palette slug or a CSS colour, with an optional N% opacity; one entry for every layer or a list matching the layers."
+		},
+		"splitMediaBoxShadowColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Split media box shadow colour on hover (same shape as splitMediaBoxShadowColour). Only applies once splitMediaBoxShadow is set."
 		},
 		"splitMediaPadding": {
 			"type": "object",

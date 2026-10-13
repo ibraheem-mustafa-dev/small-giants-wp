@@ -9,7 +9,7 @@ import {
 	SelectControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, textRow, SgsLengthControl, LinkUnderlineControl } from '../../components';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, textRow, fillRow, SgsLengthControl, SpacingControl, LinkUnderlineControl } from '../../components';
 import {
 	colourVar,
 	SGS_LENGTH_UNITS,
@@ -25,6 +25,7 @@ import {
 	isCssGradient,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { labelDotPreviewCss } from './dot-preview';
 
 const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
@@ -203,6 +204,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		margin,
 		borderRadius,
 		fullWidth,
+		dot,
+		dotSize,
+		dotGap,
 	} = attributes;
 
 	const previewTier = usePreviewTier();
@@ -215,6 +219,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		mode: linkUnderline,
 		thickness: linkUnderlineThickness,
 	} );
+	// The leading dot: the same `::before` rule render.php prints, scoped to this canvas element.
+	const dotCss = labelDotPreviewCss( `.sgs-lbl-ed-${ clientId }`, attributes );
 
 	return (
 		<>
@@ -254,7 +260,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							},
 						],
 					},
-				] }
+					dot &&
+						fillRow( {
+							key: 'dot',
+							label: __( 'Dot colour', 'sgs-blocks' ),
+							attrs: {
+								base: 'dotColour',
+								gradient: 'dotColourGradient',
+							},
+							attributes,
+							setAttributes,
+						} ),
+				].filter( Boolean ) }
 			/>
 			<InspectorControls group="styles">
 				<PanelBody
@@ -528,6 +545,34 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 				</PanelBody>
+				<PanelBody title={ __( 'Dot', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToggleControl
+						label={ __( 'Show a dot before the text', 'sgs-blocks' ) }
+						help={ __( 'A small decorative dot; its colour is under Colour (it follows the text colour until you pick one).', 'sgs-blocks' ) }
+						checked={ !! dot }
+						onChange={ ( val ) => setAttributes( { dot: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					{ dot && (
+						<>
+							<SgsLengthControl
+								label={ __( 'Dot size', 'sgs-blocks' ) }
+								value={ dotSize ?? '' }
+								units={ SGS_LENGTH_UNITS }
+								onChange={ ( val ) =>
+									setAttributes( { dotSize: sgsNormaliseLength( val ) } )
+								}
+								presets={ false }
+							/>
+							<SpacingControl
+								custom
+								label={ __( 'Space between dot and text', 'sgs-blocks' ) }
+								value={ dotGap ?? '' }
+								onChange={ ( val ) => setAttributes( { dotGap: val ?? '' } ) }
+							/>
+						</>
+					) }
+				</PanelBody>
 				<PanelBody title={ __( 'Links', 'sgs-blocks' ) } initialOpen={ false }>
 					<LinkUnderlineControl
 						mode={ linkUnderline }
@@ -539,6 +584,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			{ linkUnderlineCss && <style>{ linkUnderlineCss }</style> }
+			{ dotCss && <style>{ dotCss }</style> }
 			<RichText
 				{ ...blockProps }
 				tagName="span"
