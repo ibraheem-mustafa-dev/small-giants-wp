@@ -2,6 +2,7 @@
 // reads every hover by forcing :hover through the DevTools protocol, and reads declared sizes from the matched rules.
 import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'fs';
 import path from 'path';
 import { resolveFinder, hoverStyles } from '../../parity/lib/collect.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
@@ -135,6 +136,31 @@ test( 'MUST NOT OVER-SUPPRESS: an entrance that never fires surfaces as unfired,
 	assert.equal( t.unfired.length, 1, 'the walker reports the reveal it cannot resolve' );
 	assert.equal( t.unfired[ 0 ].animation, 'fade-up' );
 	assert.equal( await riseOpacity( page ), '0', 'and the element really is still at its start frame' );
+	await page.close();
+} );
+
+// A CSS scroll reveal (Spec 38A): hidden under .sgs-motion-ready until the real reveal module sets data-sgs-in.
+const REVEAL_JS = fs.readFileSync( path.resolve( import.meta.dirname, '../../../plugins/sgs-blocks/assets/js/motion-reveal.js' ), 'utf8' );
+const CSS_REVEAL = '<style>.gap { height: 2400px } .sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in]) { opacity: 0 }</style><div class="gap"></div><p class="rise" data-sgs-me="scroll opacity">Hi</p><div class="gap"></div>';
+
+test( 'MUST FAIL TO MISS A CSS REVEAL: a [data-sgs-me] element without data-sgs-in is armed and triggerArmed fires it', async () => {
+	const page = await pageWith( `${ CSS_REVEAL }<script>${ REVEAL_JS }</script>` );
+	const armed = await page.evaluate( armedEntrances );
+	assert.equal( armed.length, 1, 'the CSS reveal is armed' );
+	assert.equal( armed[ 0 ].animation, 'scroll opacity' );
+	assert.equal( await riseOpacity( page ), '0', 'negative control: it rests at its hidden start' );
+	const t = await triggerArmed( page, { floor: 100 } );
+	assert.deepEqual( [ t.armed, t.played, t.unfired.length ], [ 1, 1, 0 ] );
+	assert.equal( await page.evaluate( () => document.querySelector( '.rise' ).hasAttribute( 'data-sgs-in' ) ), true );
+	assert.equal( ( await page.evaluate( armedEntrances ) ).length, 0, 'and it is no longer armed once revealed' );
+	await page.close();
+} );
+
+test( 'MUST NOT OVER-SUPPRESS: a CSS reveal whose module never runs surfaces as unfired; a load entrance is never armed', async () => {
+	const page = await pageWith( `${ CSS_REVEAL }<p class="load" data-sgs-me="load opacity">Hi</p>` );
+	assert.equal( ( await page.evaluate( armedEntrances ) ).length, 1, 'only the scroll reveal counts' );
+	const t = await triggerArmed( page, { floor: 100, cap: 1000 } );
+	assert.deepEqual( [ t.armed, t.played, t.unfired.length ], [ 1, 0, 1 ] );
 	await page.close();
 } );
 
