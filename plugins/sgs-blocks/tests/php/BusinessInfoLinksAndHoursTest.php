@@ -98,4 +98,25 @@ final class BusinessInfoLinksAndHoursTest extends TestCase {
 		$this->assertStringContainsString( 'sgs-business-hours__row', $default['html'], 'positive control: the hours rows rendered' );
 		$this->assertStringNotContainsString( 'justify-content:flex-start', $default['css'] );
 	}
+
+	public function test_the_business_map_searches_for_the_decoded_name_and_address(): void {
+		// WordPress stores the site title HTML-escaped (`&#039;`) and kses stores `&` in an address as `&amp;`.
+		$this->site_info( array( 'business_name' => 'Joe&#039;s Cafe', 'address' => 'Unit 3 &amp; 4<br>High St' ) );
+		$html = $this->render_block( 'sgs/business-info', array( 'displayType' => 'map', 'mapSource' => 'business' ) )['html'];
+
+		$this->assertMatchesRegularExpression( '#src="https://maps\.google\.com/maps\?q=([^"&]+)#', $html, 'positive control: the map rendered' );
+		preg_match( '#src="https://maps\.google\.com/maps\?q=([^"&]+)#', $html, $m );
+		$this->assertSame( "Joe's Cafe, Unit 3 & 4, High St", rawurldecode( $m[1] ) );
+		$this->assertStringNotContainsString( '%26%23039%3B', $html );
+		$this->assertStringNotContainsString( '%26amp%3B', $html );
+	}
+
+	public function test_the_address_link_searches_for_the_decoded_address(): void {
+		$this->site_info( array( 'address' => 'Unit 3 &amp; 4<br>O&#039;Neill Rd' ) );
+		$html = $this->render_block( 'sgs/business-info', array( 'displayType' => 'address', 'addressLink' => true ) )['html'];
+
+		$this->assertMatchesRegularExpression( '#query=([^"&]+)"#', $html, 'positive control: the address linked to a Maps search' );
+		preg_match( '#query=([^"&]+)"#', $html, $m );
+		$this->assertSame( "Unit 3 & 4, O'Neill Rd", rawurldecode( $m[1] ) );
+	}
 }
