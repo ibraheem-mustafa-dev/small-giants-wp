@@ -132,6 +132,20 @@ final class MotionRendererTest extends TestCase {
 		$this->assertStringContainsString( '<p data-sgs-mc="translate" data-sgs-mh="self" class="lede">', $out );
 	}
 
+	public function test_happy_declared_part_selector_finds_the_real_element(): void {
+		$html   = '<div class="wp-block-sgs-testimonial"><blockquote class="sgs-testimonial__quote">Great</blockquote><cite class="sgs-testimonial__name">Ann</cite></div>';
+		$motion = array(
+			'v'        => 1,
+			'elements' => array( 'quote-text' => array( 'hover' => array( 'state' => array( 'values' => array( 'translateY' => -4 ) ) ) ) ),
+		);
+		$out    = sgs_test_render_motion_block( array( 'blockName' => 'sgs/testimonial', 'attrs' => array( 'sgsMotion' => $motion ) ), $html );
+		$scope  = $this->scope( $out );
+		$this->assertStringContainsString( '.' . $scope . ' .sgs-testimonial__quote{--sgs-mh-to-ty:-4px;', $this->css(), 'the part resolves to its declared selector' );
+		$this->assertStringNotContainsString( 'sgs-testimonial__quote-text', $this->css(), 'not the part key as a class' );
+		$this->assertStringContainsString( '<blockquote data-sgs-mc="translate" data-sgs-mh="self" class="sgs-testimonial__quote">', $out, 'data-sgs-mh lands on the real element' );
+		$this->assertStringNotContainsString( '<cite data-sgs-mh', $out, 'the sibling is untouched' );
+	}
+
 	private static function load_fade( bool $allow = false, string $trigger = 'load' ): array {
 		$values = array( 'from' => array( 'opacity' => 0, 'translateY' => 24 ), 'duration' => 600 );
 		if ( $allow ) {
