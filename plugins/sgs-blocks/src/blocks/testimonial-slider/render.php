@@ -36,6 +36,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
 
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (textTransform / fontWeight / fontStyle / border-style) —
@@ -377,12 +378,24 @@ if ( $show_dots && $total_testimonials > 0 ) {
 	$dots_html .= '</div>';
 }
 
-// ── Controls bar (dots + pause button slot) — always rendered when there are
-// slides, so view.js can always inject the pause button into __controls, even
-// when dots are hidden.
+// ── Pause / play button (WCAG 2.2.2) — the shared control, printed whenever
+// autoplay is on and there is more than one slide to move to. Rendered hidden;
+// view.js shows it once autoplay runs (never under reduced motion).
+$pause_html = '';
+if ( $autoplay && $total_testimonials > 1 ) {
+	$pause_html = sgs_motion_pause_button(
+		array(
+			'block'     => 'sgs-testimonial-slider',
+			'label'     => __( 'Pause testimonials', 'sgs-blocks' ),
+			'placement' => 'inline',
+		)
+	);
+}
+
+// ── Controls bar (dots + pause button) — rendered when there are slides.
 $controls_html = '';
 if ( $total_testimonials > 0 ) {
-	$controls_html = '<div class="sgs-testimonial-slider__controls">' . $dots_html . '</div>';
+	$controls_html = '<div class="sgs-testimonial-slider__controls">' . $dots_html . $pause_html . '</div>';
 }
 
 
@@ -414,7 +427,7 @@ if ( ! empty( $schema_items ) ) {
  *       .sgs-testimonial-slider__arrow--prev
  *       .sgs-testimonial-slider__track
  *       .sgs-testimonial-slider__arrow--next
- *     .sgs-testimonial-slider__controls  (below row: dots + injected pause btn)
+ *     .sgs-testimonial-slider__controls  (below row: dots + pause button)
  *       .sgs-testimonial-slider__dots
  *
  * Arrows flank the track as flex siblings — they never overlap card content.

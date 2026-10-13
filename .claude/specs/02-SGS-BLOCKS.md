@@ -344,6 +344,8 @@ Attributes: `/wp-blocks schema sgs/testimonial-slider`. `layout` is `full` or `s
 
 **Render:** Dynamic `render.php` (via `SGS_Container_Wrapper::render(..., 'layout', ...)`) + `viewScriptModule` for carousel logic. **No external carousel library**: CSS scroll-snap plus minimal JS for autoplay/navigation.
 
+**Autoplay pause (WCAG 2.2.2):** with `autoplay` on and two or more slides, `render.php` prints the shared pause/play button (`includes/helpers-motion-pause.php::sgs_motion_pause_button`, "Pause testimonials", after the dots in `__controls`) and `view.js` wires it through `src/shared/motion-pause/index.js::initMotionPause`: the button holds a pause until pressed again; hover, a finger press and keyboard focus pause while they last; an arrow, dot, drag or key press is a held pause. Under `prefers-reduced-motion` autoplay never starts and the button stays hidden.
+
 ---
 
 ### Process Steps (`sgs/process-steps`)

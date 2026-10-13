@@ -23,14 +23,17 @@ final class MotionPauseRenderTest extends TestCase {
 	/**
 	 * Render a block and return its HTML.
 	 *
-	 * @param string               $slug  Block slug.
-	 * @param array<string, mixed> $attrs Block attributes.
+	 * @param string                           $slug  Block slug.
+	 * @param array<string, mixed>             $attrs Block attributes.
+	 * @param array<int, array<string, mixed>> $inner Inner blocks: {name, attributes, html}.
 	 * @return string
 	 */
-	private function html( string $slug, array $attrs ): string {
+	private function html( string $slug, array $attrs, array $inner = array() ): string {
 		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$file    = tempnam( sys_get_temp_dir(), 'sgsmp' );
+		$inner_f = tempnam( sys_get_temp_dir(), 'sgsmi' );
 		file_put_contents( $file, json_encode( (object) $attrs, JSON_THROW_ON_ERROR ) );
+		file_put_contents( $inner_f, json_encode( $inner, JSON_THROW_ON_ERROR ) );
 		$override = (string) getenv( 'SGS_TEST_RENDER_FILE' );
 
 		try {
@@ -38,10 +41,12 @@ final class MotionPauseRenderTest extends TestCase {
 				. ' ' . escapeshellarg( $harness )
 				. ' --slug ' . escapeshellarg( $slug )
 				. ( '' !== $override ? ' --render-file ' . escapeshellarg( $override ) : '' )
-				. ' --attrs-file ' . escapeshellarg( $file ) . ' 2>&1';
+				. ' --attrs-file ' . escapeshellarg( $file )
+				. ' --inner-blocks-file ' . escapeshellarg( $inner_f ) . ' 2>&1';
 			$out = (string) shell_exec( $cmd );
 		} finally {
 			@unlink( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- temp file.
+			@unlink( $inner_f ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- temp file.
 		}
 
 		$decoded = json_decode( $out, true );
@@ -131,6 +136,35 @@ final class MotionPauseRenderTest extends TestCase {
 
 	public function test_brand_strip_prints_no_button_when_static(): void {
 		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/brand-strip', array( 'logos' => $this->brand_logos() ) ) ) );
+	}
+
+	/**
+	 * Testimonial children for the slider.
+	 *
+	 * @param int $count How many.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private function testimonials( int $count ): array {
+		$out = array();
+		for ( $i = 1; $i <= $count; $i++ ) {
+			$out[] = array(
+				'name'       => 'sgs/testimonial',
+				'attributes' => array( 'name' => 'Person ' . $i ),
+				'html'       => '<div class="sgs-testimonial">Quote ' . $i . '</div>',
+			);
+		}
+		return $out;
+	}
+
+	public function test_testimonial_slider_prints_the_button_when_autoplay_is_on(): void {
+		$html = $this->html( 'sgs/testimonial-slider', array( 'autoplay' => true ), $this->testimonials( 3 ) );
+		$this->assert_button( $html, 'sgs-testimonial-slider', 'Pause testimonials' );
+		$this->assertMatchesRegularExpression( '#sgs-testimonial-slider__controls">.*data-sgs-motion-pause#s', $html, 'in the controls bar' );
+	}
+
+	public function test_testimonial_slider_prints_no_button_without_autoplay_or_with_one_slide(): void {
+		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/testimonial-slider', array( 'autoplay' => false ), $this->testimonials( 3 ) ) ) );
+		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/testimonial-slider', array( 'autoplay' => true ), $this->testimonials( 1 ) ) ) );
 	}
 
 	public function test_trust_bar_prints_no_button_when_nothing_scrolls_or_it_is_switched_off(): void {
