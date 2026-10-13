@@ -105,7 +105,7 @@ def process(path, rel, write):
         log.append((text[: run[0].start].count('\n') + 1, len(run)))
 
     if write:
-        path.write_text(new_text, encoding='utf-8')
+        path.write_text(new_text, encoding='utf-8', newline='')
         parse_blocks(path.read_text(encoding='utf-8'), rel)  # round-trip guard
     return {'rel': rel, 'log': log, 'diff': new_text != text, 'new_text': new_text, 'old': text}
 

@@ -90,7 +90,7 @@ def main():
                 print(f'  {rel}:{line}  {note}')
                 changed_nodes += 1
             if args.write:
-                path.write_text(new_text, encoding='utf-8')
+                path.write_text(new_text, encoding='utf-8', newline='')
                 parse_blocks(path.read_text(encoding='utf-8'), rel)  # round-trip guard
             changed_files += 1
 

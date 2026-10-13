@@ -99,6 +99,7 @@ PAIRING_ORDER = [
     'core/paragraph', 'core/heading', 'core/image', 'core/audio',
     'core/video', 'core/quote', 'core/pullquote', 'core/icon',
     'core/buttons', 'core/button',
+    'core/list', 'core/list-item',
     'core/columns', 'core/column',
     'core/row', 'core/stack',
     'core/group',
@@ -237,7 +238,7 @@ def main():
         text.splitlines(keepends=True), new_text.splitlines(keepends=True),
         fromfile=f'a/{args.rel}', tofile=f'b/{args.rel}'))
     if args.fix:
-        pathlib.Path(args.fix).write_text(new_text, encoding='utf-8')
+        pathlib.Path(args.fix).write_text(new_text, encoding='utf-8', newline='')
         print(f'\n[fix] migrated markup -> {args.fix} ({len(new_text)} bytes). '
               f'Apply via the editor (wp.blocks.parse -> replaceBlocks -> savePost) after an agent judges the diff.')
     else:
