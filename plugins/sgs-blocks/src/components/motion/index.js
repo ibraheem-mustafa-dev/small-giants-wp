@@ -1,5 +1,6 @@
 /**
- * The motion control kit's value atoms (Spec 38A FR-38A-54). Every motion panel is composed from these; each validates
+ * The motion control kit (Spec 38A FR-38A-54): the value atoms, the non-value atoms (target, trigger, intensity,
+ * replay, stagger helper) and the one stagger delay function. Every motion panel is composed from these; each validates
  * through `field-types.js` and passes on nothing the schema refuses.
  *
  * @package
@@ -32,3 +33,23 @@ export {
 } from './PerDeviceAtom';
 export { default as CustomisedTag } from './CustomisedTag';
 export { presetValueFor, sameValue } from './atom-utils';
+export { default as TargetPicker, targetOptions, ROOT_TARGET } from './TargetPicker';
+export { default as TriggerPicker, triggersFor } from './TriggerPicker';
+export {
+	default as IntensityPicker,
+	INTENSITIES,
+	intensityRowsFor,
+	restampValues,
+	restampLayer,
+} from './IntensityPicker';
+export { default as ReplayButton } from './ReplayButton';
+export {
+	default as StaggerHelper,
+	STAGGER_DEFAULTS,
+	effectiveStagger,
+} from './StaggerHelper';
+export {
+	computeStaggerDelays,
+	computeCloseDelays,
+	STAGGER_ORDERS,
+} from './stagger-delays';

@@ -3,6 +3,8 @@
  */
 import { __ } from '@wordpress/i18n';
 import { MEDIA_SIZING_RATIO_OPTIONS } from '../../../components';
+import { CSS_EASING_OPTIONS as EASING_OPTIONS } from '../../../components/motion/easing-master-list';
+export { EASING_OPTIONS };
 
 // -------------------------------------------------------------------------
 // Static option arrays (defined outside component to avoid re-creation)
@@ -30,14 +32,6 @@ export const IMAGE_SIZE_OPTIONS = [
 	{ label: __( 'Medium large (768w)', 'sgs-blocks' ), value: 'medium_large' },
 	{ label: __( 'Large (1024×1024)', 'sgs-blocks' ), value: 'large' },
 	{ label: __( 'Full size', 'sgs-blocks' ), value: 'full' },
-];
-
-export const EASING_OPTIONS = [
-	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
-	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
 export const HOVER_EFFECT_OPTIONS = [

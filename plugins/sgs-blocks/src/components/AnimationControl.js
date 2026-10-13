@@ -12,6 +12,7 @@ import { NumberControl } from './primitives';
 import { __ } from '@wordpress/i18n';
 import DurationAtom from './motion/DurationAtom';
 import { clampToRange } from './motion/atom-utils';
+import { ANIMATION_EASING_OPTIONS as EASINGS } from './motion/easing-master-list';
 
 /** Clamp a custom duration to a safe range in milliseconds (mirrors includes/animation-timing-clamp.php). */
 const MAX_CUSTOM_DURATION_MS = 5000;
@@ -128,19 +129,6 @@ function fromDurationValue( value ) {
 		? String( Math.round( value ) )
 		: value.slice( DURATION_TOKEN_PREFIX.length );
 }
-
-/**
- * Easing options reference theme.json motion tokens:
- * settings.custom.easing.* — var(--wp--custom--easing--<value>)
- */
-const EASINGS = [
-	{ label: __( 'Default (Material)', 'sgs-blocks' ),  value: 'default' },
-	{ label: __( 'Ease out (snappy)', 'sgs-blocks' ),   value: 'ease-out' },
-	{ label: __( 'Ease in (gentle)', 'sgs-blocks' ),    value: 'ease-in' },
-	{ label: __( 'Spring (bouncy)', 'sgs-blocks' ),     value: 'spring' },
-	{ label: __( 'Linear (constant)', 'sgs-blocks' ),   value: 'linear' },
-	{ label: __( 'Ease (CSS default curve)', 'sgs-blocks' ), value: 'ease' },
-];
 
 export default function AnimationControl( {
 	blockName,

@@ -7,6 +7,8 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
+import { THEME_EASING_OPTIONS as EASING_OPTIONS } from '../../../components/motion/easing-master-list';
+export { EASING_OPTIONS };
 
 export const SCALE_PRESET_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
@@ -27,15 +29,3 @@ export const DURATION_OPTIONS = [
 	{ label: __( 'Extra slow (800ms)', 'sgs-blocks' ), value: 'extra-slow' },
 ];
 
-/**
- * Easing options sourced from theme.json settings.custom.easing tokens.
- * CSS custom property: var(--wp--custom--easing--{slug})
- */
-export const EASING_OPTIONS = [
-	{ label: __( 'Default (Material)', 'sgs-blocks' ), value: 'default' },
-	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-	{ label: __( 'Spring', 'sgs-blocks' ), value: 'spring' },
-	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
-	{ label: __( 'Custom curve…', 'sgs-blocks' ), value: 'custom' },
-];

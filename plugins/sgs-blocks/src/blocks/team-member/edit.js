@@ -45,6 +45,7 @@ import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOptio
 import { usePreviewTier, typographyPreviewStyle } from '../../utils';
 import { buildWrapperStyle, textSurfaceStyle } from './preview-style';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import { CSS_EASING_OPTIONS_IN_OUT_FIRST as EASING_OPTIONS } from '../../components/motion/easing-master-list';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -57,14 +58,6 @@ const PHOTO_SHAPES = [
 	{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
 	{ label: __( 'Rounded', 'sgs-blocks' ), value: 'rounded' },
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
-];
-
-const EASING_OPTIONS = [
-	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
-	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's

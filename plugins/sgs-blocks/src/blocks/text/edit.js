@@ -49,6 +49,7 @@ import {
 	sgsBorderPreview,
 } from '../../utils';
 import { composeShadow } from '../../utils/shadow-layers';
+import { CSS_EASING_OPTIONS as EASING_OPTIONS } from '../../components/motion/easing-master-list';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -101,14 +102,6 @@ const CUSTOM_WIDTH_UNITS = [
 	{ value: '%', label: '%', default: 50 },
 	{ value: 'vw', label: 'vw', default: 50 },
 	{ value: 'vh', label: 'vh', default: 50 },
-];
-
-const EASING_OPTIONS = [
-	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
-	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
 // LETTER_SPACING_UNITS removed — letter-spacing is now rendered exclusively by
