@@ -118,6 +118,14 @@ const unique = ( list ) => {
 // all covers). Skeleton: the finaliser agent picked it, no block fits, or its confidence is low. Missing feature: it is
 // on the main flow, or it proposes no block (Accept all cannot mark it).
 export const NEEDS_ORDER = [ 'agent-pick', 'unresolved', 'low', 'main-flow', 'no-block' ];
+// The cause that settled a skeleton row, for grouping the review by cause (Spec 48 FR-48-6): the client's built post or
+// the standing rule (lib/skeleton-rules.mjs), with its reason; {} for a row the scoring proposed.
+const causeOf = ( r ) => {
+	if ( r.builtPost ) {
+		return { cause: `built post ${ r.builtPost.postType } ${ r.builtPost.postId }`, causeReason: `the client already built this surface (${ r.builtPost.title || r.builtPost.postType } on ${ r.builtPost.site })` };
+	}
+	return r.rule && 'agent' !== r.finalisedBy ? { cause: `rule ${ r.rule }`, causeReason: r.reason || '' } : {};
+};
 const skeletonNeeds = ( r ) => ( 'agent' === r.finalisedBy ? 'agent-pick' : 'unresolved' === r.action ? 'unresolved' : r.low ? 'low' : null );
 const proposalText = ( r ) => ( r.block ? `block:${ r.block }` : r.action && 'unresolved' !== r.action ? r.action : 'no block' );
 const skeletonNote = ( r ) => ( 'agent' === r.finalisedBy
@@ -169,8 +177,8 @@ export function reviewRows( intake ) {
 		taken.add( next );
 		return next;
 	};
-	const add = ( rowType, row, draftId, shows, proposed = '', note = '', acceptAll = MARKS[ rowType ][ 0 ].value, needs = undefined ) => out.push( {
-		rowId: rowIdOf( row.rowId ), rowType, draftId: String( draftId ?? '' ), contentHash: contentHash( rowType, row, draftId ), shows, proposed, note, acceptAll, ...( undefined === needs ? {} : { needs } ),
+	const add = ( rowType, row, draftId, shows, proposed = '', note = '', acceptAll = MARKS[ rowType ][ 0 ].value, needs = undefined, extra = {} ) => out.push( {
+		rowId: rowIdOf( row.rowId ), rowType, draftId: String( draftId ?? '' ), contentHash: contentHash( rowType, row, draftId ), shows, proposed, note, acceptAll, ...( undefined === needs ? {} : { needs } ), ...extra,
 	} );
 	unique( ( intake.pageMap || [] ).map( ( r ) => ( { ...r, rowId: `page:${ r.postType }:${ r.slug }` } ) ) ).forEach( ( r ) => add( 'page-map', r, r.route ?? r.slug,
 		`${ r.route ?? '(no route)' } → ${ r.title } (${ r.postType }, ${ r.collection }${ r.template ? `, ${ r.template }` : '' })`,
@@ -189,7 +197,7 @@ export function reviewRows( intake ) {
 	const sk = intake.skeletons || {};
 	( Array.isArray( sk ) ? sk : Object.entries( sk ).map( ( [ surface, s ] ) => ( { surface, ...s } ) ) ).forEach( ( s ) => ( s.rows || [] ).forEach( ( r ) => add( 'skeleton-block',
 		{ surface: s.surface, ...r, action: r.action && 'unresolved' !== r.action ? r.action : undefined, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,
-		`${ s.surface } ${ r.key } <${ r.tag ?? '?' }>${ r.words ? ` "${ text( r.words ) }"` : '' }`, proposalText( r ), skeletonNote( r ), MARKS[ 'skeleton-block' ][ 0 ].value, skeletonNeeds( r ) ) ) );
+		`${ s.surface } ${ r.key } <${ r.tag ?? '?' }>${ r.words ? ` "${ text( r.words ) }"` : '' }`, proposalText( r ), skeletonNote( r ), MARKS[ 'skeleton-block' ][ 0 ].value, skeletonNeeds( r ), causeOf( r ) ) ) );
 	( intake.inventory?.diff || [] ).forEach( ( r ) => add( 'inventory-diff', { ...r, rowId: r.rowId || `inventory:${ r.draftId }` }, r.draftId, describe( r ), 'ours', text( r.why ?? r.reason ) ) );
 	( intake.notices?.prose || [] ).forEach( ( r ) => add( 'notice', { kind: 'prose', file: r.file, text: r.text, rowId: `notice:${ r.rowId }` }, `${ r.file }:${ r.line }`, `${ r.file }:${ r.line } ${ r.text }`, 'noted', r.why || '' ) );
 	const hosts = new Map();
@@ -215,6 +223,35 @@ const splitByNeed = ( rows, changed ) => [
 	rows.filter( ( r ) => ! changed.has( r.rowId ) && ! r.needs ).sort( byId ),
 ];
 const SPLIT = new Set( [ 'skeleton-block', 'missing-feature' ] );
+
+// The skeleton rows grouped by cause, never by page: [ [ heading, rows ] ]. First the rows changed since the last export
+// (`changed`, a Set of row IDs: they lost their mark), then the rows still needing Bean's judgement, by what they need (NEEDS_ORDER) and the block proposed; then each standing rule and built post with its
+// reason, so one rule's rows are approved together; then the confident scored proposals.
+export function byCause( rows, changed = new Set() ) {
+	const groups = new Map();
+	const put = ( key, order, heading, r ) => {
+		const g = groups.get( key ) || groups.set( key, { order, heading, list: [] } ).get( key );
+		g.list.push( r );
+		// The heading takes the rule's own reason: the first row stating it, not a row absorbed into another or one
+		// whose reason the cross-surface collapse prefixed.
+		heading && ( ! g.heading || g.heading.endsWith( ': ' ) ) && ( g.heading = heading );
+	};
+	for ( const r of rows ) {
+		if ( changed.has( r.rowId ) ) {
+			put( '-', '-', 'Changed since the last export', r );
+		} else if ( r.needs ) {
+			put( `0 ${ NEEDS_ORDER.indexOf( r.needs ) } ${ r.proposed }`, `0 ${ NEEDS_ORDER.indexOf( r.needs ) } ${ r.proposed }`, `Needs a decision (${ r.needs }): ${ r.proposed }`, r );
+		} else if ( r.cause ) {
+			const reason = String( r.causeReason ?? '' ).replace( /^\d+ copies of one template element(?: on \d+ surfaces)?; /, '' );
+			put( `1 ${ r.cause }`, `1 ${ r.cause }`, /^drawn by /.test( reason ) ? `Settled by ${ r.cause }: ` : `Settled by ${ r.cause }: ${ cell( reason.replace( /\|/g, '/' ) ) }`, r );
+		} else {
+			put( '2', '2', CONFIDENT_HEADING, r );
+		}
+	}
+	const sorted = [ ...groups.values() ].sort( ( a, b ) => ( a.order < b.order ? -1 : a.order > b.order ? 1 : 0 ) );
+	// A group whose every row is absorbed into another block states what absorbed means.
+	return sorted.map( ( g ) => [ `${ g.heading.replace( /: $/, ': the block each sits in draws it (each row\'s reason names that block)' ) } (${ g.list.length })`, g.list ] );
+}
 export const CONFIDENT_HEADING = 'Confident proposals (Accept all covers these)';
 
 // { total, read, confident, skeleton, missing }: rows Bean reads one by one versus the confident skeleton and
@@ -232,8 +269,10 @@ const manifestHash = ( m ) => sha( canonical( m?.files || {} ) ).slice( 0, 16 );
 
 // The Markdown of review.md. `changed` is the rowIds changed since the previous export (by default the review rows
 // carryOver set `changed: true` on); they are listed first in their section (and surface) with a **changed** marker.
-// In the skeleton (per surface) and missing-feature sections the rows needing judgement come next (NEEDS_ORDER), then
-// the confident rows under a `### ... Confident proposals (Accept all covers these)` sub-heading; the header states how
+// The skeleton section is grouped by cause (byCause: the rows needing judgement by need and proposed block, then each
+// standing rule or built post with its reason, then the confident proposals); in the missing-feature section the rows
+// needing judgement come next (NEEDS_ORDER), then the confident rows under a `### Confident proposals (Accept all
+// covers these)` sub-heading; the header states how
 // many rows need reading. Marks already in intake.review (carried or applied before) show in the Mark cell.
 // Byte-identical for identical input.
 export function renderReview( intake, { changed = ( intake.review || [] ).filter( ( r ) => r.changed ).map( ( r ) => r.rowId ) } = {} ) {
@@ -257,8 +296,11 @@ export function renderReview( intake, { changed = ( intake.review || [] ).filter
 			continue;
 		}
 		out.push( '', `## ${ SECTION_TITLES[ t ] } (${ t })`, '', 'Accept all: [ ]' );
-		const groups = 'skeleton-block' === t ? [ ...new Set( of.map( ( r ) => r.rowId.split( ':' )[ 1 ] ) ) ].sort().map( ( s ) => [ s, of.filter( ( r ) => r.rowId.split( ':' )[ 1 ] === s ) ] ) : [ [ null, of ] ];
-		for ( const [ name, list ] of groups ) {
+		if ( 'skeleton-block' === t ) {
+			byCause( of, ch ).forEach( ( [ heading, list ] ) => out.push( '', `### ${ heading }`, '', ...TABLE_HEAD, ...ordered( list, ch ).map( line ) ) );
+			continue;
+		}
+		for ( const [ name, list ] of [ [ null, of ] ] ) {
 			if ( ! SPLIT.has( t ) ) {
 				out.push( '', ...( name ? [ `### ${ name }`, '' ] : [] ), ...TABLE_HEAD, ...ordered( list, ch ).map( line ) );
 				continue;

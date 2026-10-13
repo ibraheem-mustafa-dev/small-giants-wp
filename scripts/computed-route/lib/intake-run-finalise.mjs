@@ -16,6 +16,7 @@ import path from 'path';
 import { openDb } from './db.mjs';
 import { finaliseRequest, readPicks, recordDecision, skeletonDir } from './skeleton-finalise.mjs';
 import { reviewRows, renderReview, readingCounts } from './intake-review.mjs';
+import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
 
 export const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
 export const LOW_BELOW = 0.7;
@@ -264,5 +265,62 @@ export function runRender( at, o, { log } ) {
 	const intake = readJson( at.intake );
 	fs.writeFileSync( at.review, renderReview( intake ) );
 	log( `[intake --render] ${ o.client }: review.md rewritten from intake.json; ${ countLine( intake ) }` );
+	return 0;
+}
+
+// --rerun-skeletons (Spec 48 FR-48-6): the skeleton rows proposed again offline from the inventories the last run saved,
+// with today's standing rules and database (lib/skeleton-rerun.mjs::refreshIntakeSkeletons); every other part of
+// intake.json is kept. The finaliser request is rewritten for the rows that still await it, and the earlier picks for
+// those rows are carried over (a row a rule now settles drops its pick). The previous record is kept as intake.prev.json.
+// Returns the exit code.
+export function runRerunSkeletons( at, o, { log, recordProblems } ) {
+	const say = ( l ) => log( `[intake --rerun-skeletons] ${ l }` );
+	if ( ! fs.existsSync( at.intake ) ) {
+		say( `${ at.intake } is missing: run the intake first` );
+		return 1;
+	}
+	const intake = readJson( at.intake );
+	const db = openDb();
+	let res;
+	try {
+		res = refreshIntakeSkeletons( { intake, client: o.client, db, repo: o.repo } );
+	} catch ( e ) {
+		say( `the skeletons could not be proposed again: ${ e.message }` );
+		return 1;
+	} finally {
+		db.close();
+	}
+	res.missing.length && say( `no saved inventory for ${ res.missing.join( ', ' ) }: those surfaces keep their rows (run the intake to save them)` );
+	let next = res.intake;
+	const request = intakeFinaliseRequest( next );
+	const files = { request: path.join( at.dir, 'finalise-request.json' ), picks: path.join( at.dir, 'finalise-picks.json' ) };
+	let carried = 0;
+	if ( fs.existsSync( files.picks ) ) {
+		const awaiting = ( s, key ) => ( request.surfaces?.[ s ]?.rows || [] ).some( ( r ) => r.key === key );
+		const keep = Object.fromEntries( Object.entries( readPicks( files.picks ) ).map( ( [ s, list ] ) => [ s, ( list || [] ).filter( ( p ) => awaiting( s, p?.key ) ) ] ).filter( ( [ , list ] ) => list.length ) );
+		const kb = dbKnownBlock();
+		let problems;
+		try {
+			problems = picksProblems( keep, request, next, kb.known );
+		} finally {
+			kb.close();
+		}
+		if ( problems.length ) {
+			say( `the earlier picks were not carried over:\n${ problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
+		} else {
+			next = applyIntakePicks( next, keep ).intake;
+			carried = Object.values( keep ).reduce( ( n, l ) => n + l.length, 0 );
+		}
+	}
+	const bad = recordProblems( next );
+	if ( bad.length ) {
+		say( `the record does not validate, nothing written:\n${ bad.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
+		return 1;
+	}
+	fs.copyFileSync( at.intake, at.prev );
+	writeJson( at.intake, next );
+	writeJson( files.request, request, '\t' );
+	fs.writeFileSync( at.review, renderReview( next ) );
+	say( `${ o.client }: ${ res.before } rows, ${ res.after } after collapsing; ${ request.counts.rows } still await the finaliser, ${ carried } earlier picks carried over; review.md rewritten, ${ countLine( next ) }` );
 	return 0;
 }

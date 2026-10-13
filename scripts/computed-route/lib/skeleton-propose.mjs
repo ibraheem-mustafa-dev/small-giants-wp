@@ -286,7 +286,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const rootNode = buildNode( m.root, null );
 	const skeleton = [].concat( rootNode || [] );
 	// A surface the client already built as a post: that post's block tree is the skeleton, so every row is settled by it.
-	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built } ) );
+	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
 	const problems = [ ...skeletonProblems( skeleton ), ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName,

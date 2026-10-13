@@ -230,7 +230,9 @@ test( 'a re-run after one draft text change carries unchanged marks and lists th
 	const kept = intake.review.filter( ( x ) => ! x.changed );
 	assert.ok( kept.every( ( x ) => x.mark && x.carriedFrom === was.takenOn ), 'every unchanged row keeps its mark' );
 	const md = bytes( CLIENT, 'intake', 'review.md' );
-	const about = md.slice( md.indexOf( '### page-about' ) ).split( '\n' ).filter( ( l ) => l.startsWith( '| `' ) );
+	const skeleton = md.slice( md.indexOf( '## Skeleton block choices' ) );
+	assert.ok( skeleton.includes( '### Changed since the last export (1)' ), 'the changed row has its own group, first' );
+	const about = skeleton.split( '\n' ).filter( ( l ) => l.startsWith( '| `' ) );
 	assert.match( about[ 0 ], /^\| `skeleton:page-about:Home\/24#0` \| \*\*changed\*\* .*1963/ );
 	assert.match( about[ 1 ], /\| accept \|$/, 'a carried mark shows in its Mark cell' );
 } );

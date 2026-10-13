@@ -8,6 +8,8 @@ import path from 'path';
 import { proposeSkeleton } from './skeleton-propose.mjs';
 import { loadFacts, decisionsProblems, REPO } from './skeleton-facts.mjs';
 import { readDecisions, skeletonDir } from './skeleton-finalise.mjs';
+import { rowsOf, summaryOf } from './intake-skeletons.mjs';
+import { collapseSkeletons } from './intake-run-collapse.mjs';
 
 // o: { client, db, repo?, skeletons (intake.json's `skeletons`: { <slug>: { id, kind, name } }), picks? ({ surface: { key:
 // decision } }), useBuilt? (false proposes
@@ -37,7 +39,23 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, picks = {}
 		const inventory = JSON.parse( fs.readFileSync( file, 'utf8' ) );
 		const b = built[ s.id ] || built[ s.slug ] || null;
 		const r = proposeSkeleton( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, clientDecisions, picks: picks[ s.slug ] || {}, db } );
-		out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: r.proposal.rows, counts: r.proposal.counts, problems: r.problems, skeleton: r.skeleton };
+		out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: r.proposal.rows, counts: r.proposal.counts, problems: r.problems, skeleton: r.skeleton, entry: entryOf( s.slug, skeletons[ s.slug ], r, inventory ) };
 	}
 	return { surfaces: out, missing };
+}
+
+// One surface's entry in the shape the intake run writes (lib/intake-skeletons.mjs::proposeSkeletons), keeping the root
+// and opener the run recorded.
+const entryOf = ( slug, was, r, inventory ) => ( {
+	surface: slug, id: was.id, kind: was.kind, name: was.name, route: was.route ?? null, ...( was.root ? { root: was.root } : {} ), ...( was.opened ? { opened: was.opened } : {} ),
+	inventory: summaryOf( inventory ), rows: rowsOf( slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems,
+} );
+
+// intake.json with its `skeletons` proposed again offline and collapsed as the intake run collapses them. A surface
+// whose inventory was not saved keeps its old entry and is listed in `missing`. Returns { intake, missing, before, after }.
+export function refreshIntakeSkeletons( { intake, client, db, repo = REPO } ) {
+	const run = rerunSkeletons( { client, db, repo, skeletons: intake.skeletons } );
+	const entries = Object.keys( intake.skeletons ).map( ( slug ) => run.surfaces[ slug ]?.entry || { surface: slug, ...intake.skeletons[ slug ] } );
+	const c = collapseSkeletons( entries );
+	return { intake: { ...intake, skeletons: c.skeletons }, missing: run.missing, before: c.before, after: c.after };
 }
