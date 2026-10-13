@@ -54,8 +54,75 @@
 				"copyright",
 				"description",
 				"map",
-				"attribution"
+				"attribution",
+				"open-status"
 			]
+		},
+		"mapSource": {
+			"type": "string",
+			"default": "address",
+			"enum": [ "address", "business" ],
+			"description": "Only read by displayType 'map'. 'address' embeds a Google Map searched by the Site Info address (a bare pin). 'business' searches for the business name plus its address so the map shows the business's own listing card; with no business name it falls back to the address."
+		},
+		"openStatusOpenLabel": {
+			"type": "string",
+			"default": "Open now",
+			"description": "Only read by displayType 'open-status'. The pill text while the business is open. Empty uses 'Open now'."
+		},
+		"openStatusClosedLabel": {
+			"type": "string",
+			"default": "Closed",
+			"description": "Only read by displayType 'open-status'. The pill text while the business is closed. Empty uses 'Closed'."
+		},
+		"openStatusClosesLabel": {
+			"type": "string",
+			"default": "Closes at",
+			"description": "Only read by displayType 'open-status'. The words before the closing time, e.g. 'Closes at 5pm today'."
+		},
+		"openStatusOpensLabel": {
+			"type": "string",
+			"default": "Opens at",
+			"description": "Only read by displayType 'open-status'. The words before the next opening time, e.g. 'Opens at 9:30am tomorrow'."
+		},
+		"openStatusReopensLabel": {
+			"type": "string",
+			"default": "Closed until",
+			"description": "Only read by displayType 'open-status'. The words before a same-day reopening between split sessions, e.g. 'Closed until 2:30pm'."
+		},
+		"openStatusShowLine": {
+			"type": "boolean",
+			"default": true,
+			"description": "Only read by displayType 'open-status'. Shows the line under the pill (when it closes or next opens). Off shows the pill alone."
+		},
+		"openStatusOpenDot": {
+			"type": "string",
+			"default": "",
+			"description": "Only read by displayType 'open-status'. Colour of the dot while open. Empty keeps the stylesheet green."
+		},
+		"openStatusClosedDot": {
+			"type": "string",
+			"default": "",
+			"description": "Only read by displayType 'open-status'. Colour of the dot while closed. Empty keeps the stylesheet red."
+		},
+		"openStatusOpenText": {
+			"type": "string",
+			"default": "",
+			"description": "Only read by displayType 'open-status'. Pill text colour while open. Empty inherits the surrounding text colour."
+		},
+		"openStatusClosedText": {
+			"type": "string",
+			"default": "",
+			"description": "Only read by displayType 'open-status'. Pill text colour while closed. Empty inherits the surrounding text colour."
+		},
+		"openStatusOpenBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Only read by displayType 'open-status'. Pill background while open. Empty keeps a faint tint of the text colour."
+		},
+		"openStatusClosedBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Only read by displayType 'open-status'. Pill background while closed. Empty keeps a faint tint of the text colour."
 		},
 		"showIcon": {
 			"type": "boolean",
@@ -558,6 +625,29 @@
 				"inserter",
 				"transform"
 			]
+		},
+		{
+			"name": "open-status",
+			"title": "Open Now Status",
+			"description": "An Open now or Closed pill with the next closing or opening time, worked out from the opening hours in Business Details.",
+			"icon": "clock",
+			"keywords": [
+				"open",
+				"closed",
+				"open now",
+				"status",
+				"hours"
+			],
+			"attributes": {
+				"displayType": "open-status"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		}
 	],
 	"supports": {
@@ -758,5 +848,6 @@
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
+	"viewScriptModule": "file:./view.js",
 	"style": "file:./style-index.css"
 }
