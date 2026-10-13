@@ -21,17 +21,7 @@
 				<!-- wp:sgs/text {"text":"<strong>£997</strong>","textAlign":"center","fontSize":{"desktop":"xx-large"},"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}} /-->
 				<!-- wp:sgs/text {"text":"Perfect for small businesses just getting started.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"small"}} /-->
 				<!-- wp:sgs/separator {"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}} /-->
-				<!-- wp:list {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"textColor":"text-muted"} -->
-				<ul class="has-text-muted-color has-text-color"><!-- wp:list-item -->
-				<li>Up to 5 pages</li>
-				<!-- /wp:list-item --><!-- wp:list-item -->
-				<li>Mobile responsive</li>
-				<!-- /wp:list-item --><!-- wp:list-item -->
-				<li>Contact form</li>
-				<!-- /wp:list-item --><!-- wp:list-item -->
-				<li>Basic SEO setup</li>
-				<!-- /wp:list-item --></ul>
-				<!-- /wp:list -->
+				<!-- wp:sgs/icon-list {"markerType":"bullet","items":[{"text":"Up to 5 pages"},{"text":"Mobile responsive"},{"text":"Contact form"},{"text":"Basic SEO setup"}],"gap":"10","textColour":"text-muted"} /-->
 				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
 					<!-- wp:sgs/button {"label":"Choose Starter","inheritStyle":"outline","widthType":{"desktop":"custom"},"customWidth":{"desktop":100},"customWidthUnit":{"desktop":"%"},"borderRadius":{"desktop":"8px"}} /-->
 				<!-- /wp:sgs/multi-button -->
@@ -45,19 +35,7 @@
 				<!-- wp:sgs/text {"text":"<strong>£2,497</strong>","textAlign":"center","fontSize":{"desktop":"xx-large"},"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}} /-->
 				<!-- wp:sgs/text {"text":"For growing businesses that need more power and flexibility.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"small"}} /-->
 				<!-- wp:sgs/separator {"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}} /-->
-				<!-- wp:list {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"textColor":"text-muted"} -->
-				<ul class="has-text-muted-color has-text-color"><!-- wp:list-item -->
-				<li>Up to 15 pages</li>
-				<!-- /wp:list-item --><!-- wp:list-item -->
-				<li>Everything in Starter</li>
-				<!-- /wp:list-item --><!-- wp:list-item -->
-				<li>Blog setup</li>
-				<!-- /wp:list-item --><!-- wp:list-item -->
-				<li>Advanced SEO</li>
-				<!-- /wp:list-item --><!-- wp:list-item -->
-				<li>Priority support</li>
-				<!-- /wp:list-item --></ul>
-				<!-- /wp:list -->
+				<!-- wp:sgs/icon-list {"markerType":"bullet","items":[{"text":"Up to 15 pages"},{"text":"Everything in Starter"},{"text":"Blog setup"},{"text":"Advanced SEO"},{"text":"Priority support"}],"gap":"10","textColour":"text-muted"} /-->
 				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
 					<!-- wp:sgs/button {"label":"Choose Professional","inheritStyle":"primary","widthType":{"desktop":"custom"},"customWidth":{"desktop":100},"customWidthUnit":{"desktop":"%"},"borderRadius":{"desktop":"8px"}} /-->
 				<!-- /wp:sgs/multi-button -->
@@ -70,19 +48,7 @@
 				<!-- wp:sgs/text {"text":"<strong>Custom</strong>","textAlign":"center","fontSize":{"desktop":"xx-large"},"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}} /-->
 				<!-- wp:sgs/text {"text":"Tailored solutions for large organisations and complex requirements.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"small"}} /-->
 				<!-- wp:sgs/separator {"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}} /-->
-				<!-- wp:list {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"textColor":"text-muted"} -->
-				<ul class="has-text-muted-color has-text-color"><!-- wp:list-item -->
-				<li>Unlimited pages</li>
-				<!-- /wp:list-item --><!-- wp:list-item -->
-				<li>Everything in Professional</li>
-				<!-- /wp:list-item --><!-- wp:list-item -->
-				<li>Custom integrations</li>
-				<!-- /wp:list-item --><!-- wp:list-item -->
-				<li>E-commerce features</li>
-				<!-- /wp:list-item --><!-- wp:list-item -->
-				<li>Dedicated account manager</li>
-				<!-- /wp:list-item --></ul>
-				<!-- /wp:list -->
+				<!-- wp:sgs/icon-list {"markerType":"bullet","items":[{"text":"Unlimited pages"},{"text":"Everything in Professional"},{"text":"Custom integrations"},{"text":"E-commerce features"},{"text":"Dedicated account manager"}],"gap":"10","textColour":"text-muted"} /-->
 				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
 					<!-- wp:sgs/button {"label":"Contact Us","inheritStyle":"outline","widthType":{"desktop":"custom"},"customWidth":{"desktop":100},"customWidthUnit":{"desktop":"%"},"borderRadius":{"desktop":"8px"}} /-->
 				<!-- /wp:sgs/multi-button -->
