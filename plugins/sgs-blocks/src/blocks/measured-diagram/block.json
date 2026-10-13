@@ -85,6 +85,7 @@
 					]
 				},
 				"line": {
+					"motion": false,
 					"label": "Line",
 					"order": 2,
 					"clusters": [
@@ -99,6 +100,7 @@
 					"_note": "prefix \"\" with an explicit attrMap: css:stroke-gradient is not a cluster member (same scope boundary as sgs/before-after's handle element), so prefix scanning would report the gradient as an orphan. tickLength is geometry (SVG path data), not CSS."
 				},
 				"extension": {
+					"motion": false,
 					"label": "Extension lines",
 					"order": 3,
 					"clusters": [
@@ -114,6 +116,7 @@
 					"_note": "prefix \"\" with an explicit attrMap: css:stroke-gradient and css:stroke-dasharray (extensionStyle drives the dash rhythm) are not cluster members."
 				},
 				"label": {
+					"motion": false,
 					"label": "Label",
 					"order": 4,
 					"clusters": [],
@@ -124,6 +127,7 @@
 					"_note": "Each child's own label position (labelX/labelY, css:left/css:top) is declared on sgs/diagram-dimension's manifest; the gap between a label's caption and value is set once here for every label in the diagram."
 				},
 				"value": {
+					"motion": false,
 					"label": "Value",
 					"order": 5,
 					"clusters": [
@@ -149,6 +153,7 @@
 					"_note": "prefix \"\" with every typography member mapped explicitly: css:writing-mode is not a text-cluster member, so prefix scanning would report it as an orphan."
 				},
 				"caption": {
+					"motion": false,
 					"label": "Caption",
 					"order": 6,
 					"clusters": [

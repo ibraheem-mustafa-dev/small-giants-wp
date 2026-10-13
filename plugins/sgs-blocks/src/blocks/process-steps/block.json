@@ -211,12 +211,14 @@
 					"_note": "Colour and the full typography family (prefix 'description') are independently controlled. Typography emits through sgs_typography_css_rule() as a descendant of the block root, so it out-ranks style.css's `:where()` defaults; unset, those defaults paint."
 				},
 				"connector": {
+					"motion": false,
 					"label": "Connector line",
 					"order": 6,
 					"clusters": [],
 					"_note": "connectorStyle (line/none) is a structural variant selector — no colour/fill control exists for the connector on this block (unlike sgs/timeline's connectorColour). Declared for documentation only; orphan-scan-exempt (no prefix). The connector never renders when `layout` is 'list' (style.css hides the step's ::after regardless of connectorStyle), since a stacked list of plain numbered copy has no line to connect."
 				},
 				"animation": {
+					"motion": false,
 					"label": "Scroll-reveal animation",
 					"order": 7,
 					"clusters": [

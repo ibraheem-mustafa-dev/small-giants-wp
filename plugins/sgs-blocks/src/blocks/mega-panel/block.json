@@ -66,6 +66,7 @@
 					"_note": "The `.sgs-mega-panel` root + its `.sgs-mega-panel__content` row (groupGap is pinned onto this SAME element rather than a separate content element). Block-private (this composite uses no SGS_Container_Wrapper grid/section machinery of its own; it hand-rolls its own flex/grid content-row per `style`, mirroring the wrapper's fill/box capability only). variant/style/colourScheme/accent/headings/surfaceBlur/surfaceSaturate/surfaceOpacity are variant-selector + arrangement-mode attrs, not css: property mappings, so they are deliberately absent from attrMap — they select WHICH scoped rule applies. Column COUNT is not a separate attribute — the panel accepts a flexible 1-N sgs/mega-group children (add/remove/reorder), so the number of columns IS the number of groups. group-heading/link/desc/marker are CHILD-OWNED (sgs/heading, sgs/icon-list) and are declared on THOSE blocks' own manifests, not repeated here, even though this panel's CSS paints their colour/shape uniformly. panelBg has no hover pair: the panel is a disclosure surface toggled by the `sgs/nav-bar-menu` mega-item trigger, not an element a visitor points at — there is no genuine `:hover` moment on the ROOT once it is open, only on its children (which have their own hover controls, e.g. the `icon` element below)."
 				},
 				"aside": {
+					"motion": false,
 					"label": "Aside slot",
 					"layer": "CONTENT",
 					"order": 2,
@@ -80,6 +81,7 @@
 					"_note": "The optional `.sgs-mega-aside` grid column, when a sgs/mega-aside child is present (asideSeparator's border-left divider is a compound value — colour+width+style — so it is documented here rather than mapped to a single css: key). accentBackgroundImageGradient is a gradient sibling for accentBackgroundImage — that base attribute feeds only a COLOUR STOP inside the spotlight glow's radial-gradient (via the derived --sgs-mm-soft-image 10% tint), which a gradient cannot be meaningfully passed through the same way a flat colour can, so when set this BYPASSES that derivation entirely and replaces the WHOLE background-image on the same `[data-spotlight]::before` selector with the raw gradient. Default empty string: the slug+color-mix() behaviour applies when unset."
 				},
 				"drawer": {
+					"motion": false,
 					"label": "Drawer ground",
 					"layer": "GRID",
 					"order": 5,
@@ -99,6 +101,7 @@
 					"_note": "The panel root and its content row when this panel renders inside the mobile drawer (sgs_mega_render_context() = 'drawer'). GRID layer: the row arranges the groups and the aside, and drawerAsideOrder places the aside first or last in it. Empty drawerBg paints transparent."
 				},
 				"drawerLinks": {
+					"motion": false,
 					"label": "Drawer link rows",
 					"layer": "CONTENT",
 					"order": 5.1,
@@ -126,6 +129,7 @@
 					"_note": "Each direct-child sgs/container of `.sgs-mega-group`, in the drawer only."
 				},
 				"drawerLinkNumber": {
+					"motion": false,
 					"label": "Drawer link number",
 					"layer": "CONTENT",
 					"order": 5.2,
@@ -140,6 +144,7 @@
 					"_note": "The row's direct-child sgs/text, in the drawer only."
 				},
 				"drawerLinkLabel": {
+					"motion": false,
 					"label": "Drawer link label",
 					"layer": "CONTENT",
 					"order": 5.3,
@@ -154,6 +159,7 @@
 					"_note": "The sgs/heading inside a link row, in the drawer only."
 				},
 				"drawerLinkDesc": {
+					"motion": false,
 					"label": "Drawer link description",
 					"layer": "CONTENT",
 					"order": 5.4,
@@ -168,6 +174,7 @@
 					"_note": "The sgs/text inside a link row's nested container, in the drawer only."
 				},
 				"drawerCard": {
+					"motion": false,
 					"label": "Drawer aside card",
 					"layer": "CONTENT",
 					"order": 5.5,
@@ -188,6 +195,7 @@
 					"_note": "The aside as a compact horizontal card in the drawer (drawerCardCompact). drawerCardSpacing is margin-bottom when drawerAsideOrder is 'first', margin-top otherwise."
 				},
 				"drawerCardThumb": {
+					"motion": false,
 					"label": "Drawer card thumbnail",
 					"layer": "CONTENT",
 					"order": 5.6,
@@ -200,6 +208,7 @@
 					"_note": "The aside's first slot (media frame), square, in the compact card."
 				},
 				"drawerCardTag": {
+					"motion": false,
 					"label": "Drawer card tag",
 					"layer": "CONTENT",
 					"order": 5.7,
@@ -215,6 +224,7 @@
 					"_note": "The aside's second slot (tag label), in the compact card."
 				},
 				"drawerCardTitle": {
+					"motion": false,
 					"label": "Drawer card title",
 					"layer": "CONTENT",
 					"order": 5.8,
@@ -228,6 +238,7 @@
 					"_note": "The aside's third slot, in the compact card."
 				},
 				"drawerCardLink": {
+					"motion": false,
 					"label": "Drawer card link",
 					"layer": "CONTENT",
 					"order": 5.9,
@@ -240,6 +251,7 @@
 					"_note": "The aside's fifth slot (link button), in the compact card."
 				},
 				"icon": {
+					"motion": false,
 					"label": "Icon chip",
 					"layer": "CONTENT",
 					"order": 3,
@@ -266,6 +278,7 @@
 					"_note": "CROSS-BLOCK REUSE: the actual rendered selector is `.sgs-icon-list__icon` — a CHILD block's (sgs/icon-list) own BEM class, reused here as markup inside this panel's parent-paints-child model (see the `panel` element's note). This element exists so iconBackground/iconColour (the icon-chip background-color/color painted uniformly across all 3 group styles — columns/cards/minimal) classify to a real owning element. iconColourGradient is the sibling gradient attribute, mapped to the SAME `icon` element, matching `panel`/`group`'s own css:border-color-gradient siblings. iconBackgroundHover/iconBackgroundGradientHover are a hover pair, scoped in render.php/style.css to ONLY the `cards` style's `.sgs-mega-group:hover .sgs-icon-list__icon` — the one style where the icon chip's ancestor has a real hover trigger (the group tile's own lift/shadow hover, see the `group` element note below). Default empty string on both: no colour override at hover until an operator sets one. When set, REPLACES the derived --sgs-mm-soft 10%-tint entirely for the hover state — painted raw, never re-derived through color-mix() (same design choice as accentBackgroundImageGradient on the `aside` element). iconColourHover/iconColourHoverGradient are wired to the SAME `cards`-only ancestor-hover trigger as iconBackgroundHover, for the same reason (columns/minimal have no genuine :hover moment on `.sgs-mega-group`). This element ALSO paints a real background on the SAME selector at BOTH states (the --sgs-mm-soft tint at rest, --sgs-mm-icon-hover-bg on hover) — render.php only swaps the HOVER background onto its own ::after layer when the resolved hover text value is actually a gradient (conditional-swap pattern, as in brand-strip's itemTextColourHover); the flat-colour case (the common one) is byte-identical to the plain iconBackgroundHover rule."
 				},
 				"group": {
+					"motion": false,
 					"label": "Group tile",
 					"layer": "CONTENT",
 					"order": 4,
@@ -292,6 +305,7 @@
 					"_note": "Targets `.sgs-mega-group` (resting) and `.sgs-mega-group:hover, .sgs-mega-group:focus-within` (hover) — both scoped to the `cards` style's tile only (card hover-lift); `columns`/`minimal` styles render no group-tile border at all. Two attribute pairs share one paired css:border-color + css:border-color-gradient shape in a single attrMap entry: groupBorderColour/groupBorderColourGradient are the RESTING pair (this element's BASE attrMap), default empty string so a fresh instance renders no colour override at rest — the `cards` tile keeps its --sgs-mm-panel-border-derived border (from the `panel` element's shared token) until an operator sets one; groupBorderColourHover/groupBorderColourGradientHover are the HOVER/focus-within pair (base name = resting, base+Hover = hover, as with backgroundColourHover). panelCardLift (M-21) replaces the previously-hardcoded `translateY(-3px)` on the same hover/focus-within rule -- default '3px', empty or '0' emits no transform at all (see render.php/style.css)."
 				},
 				"item": {
+					"motion": false,
 					"label": "Group item",
 					"layer": "CONTENT",
 					"order": 4.5,

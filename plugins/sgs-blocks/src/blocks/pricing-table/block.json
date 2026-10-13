@@ -103,6 +103,7 @@
 					"_note": "Mirrors sgs/container's wrapper/grid split. Typography (fontSize/lineHeight) migrated OFF this element's WP-native support onto the `title` element's own titleFontSize*/titleLineHeight* attrs (D971/D972 full-replacement track) — the native support always rendered onto `.sgs-pricing-table__name` via `selectors.typography`, not the wrapper, so this was a mis-scoped mapping being corrected, not a capability removed. The remaining text-cluster members (letterSpacing/textTransform/textAlign/fontFamily) are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element."
 				},
 				"inner": {
+					"selector": ".sgs-pricing-table__content-band",
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
@@ -125,6 +126,7 @@
 					"_note": "composite wrapper grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared (ROLLOUT REQUIREMENT 1). This block has NO `alignItems` attribute — an honest gap."
 				},
 				"title": {
+					"selector": ".sgs-pricing-table__name",
 					"label": "Plan name",
 					"order": 3,
 					"prefix": "title",
@@ -241,12 +243,14 @@
 					"_note": "`ribbonColour`/`ribbonText` vary PER PLAN INSTANCE inside the `plans` repeater array (not flat block attributes), so they cannot resolve via the block-attribute convention this manifest checks. Rendered per-instance as a `--sgs-pt-ribbon-bg` CSS custom-property VALUE (no-inline contract compliant), consumed by a single static scoped rule."
 				},
 				"plan-card": {
+					"selector": ".sgs-pricing-table__plan",
 					"label": "Plan card (repeater item)",
 					"order": 9,
 					"clusters": [],
 					"_note": "name/description/features/ctaText/ctaUrl/iconName/highlighted/period/savingsBadgeText are per-plan CONTENT fields inside the `plans` array, not independent style controls — mirrors sgs/card-grid's card-tile/card-badge documentation pattern for `arrayContentLift` blocks."
 				},
 				"behaviour": {
+					"motion": false,
 					"label": "Toggle + animation behaviour",
 					"order": 10,
 					"clusters": [

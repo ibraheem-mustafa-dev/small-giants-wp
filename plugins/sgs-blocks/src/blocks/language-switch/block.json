@@ -52,6 +52,7 @@
 					}
 				},
 				"current": {
+					"motion": false,
 					"label": "Current language",
 					"order": 2,
 					"clusters": [

@@ -61,12 +61,14 @@
 					}
 				},
 				"quote-body": {
+					"motion": false,
 					"label": "Quote text",
 					"order": 2,
 					"clusters": [],
 					"_note": "Body paragraphs are native InnerBlocks children (mirrors core/quote) — each child carries its own typography inspector, so this block declares no text cluster for them. The root's native typography.fontSize/lineHeight are wrapper-level inherited defaults, not a per-element control set."
 				},
 				"attribution": {
+					"selector": ".wp-block-sgs-quote__attribution",
 					"label": "Attribution",
 					"order": 3,
 					"clusters": [

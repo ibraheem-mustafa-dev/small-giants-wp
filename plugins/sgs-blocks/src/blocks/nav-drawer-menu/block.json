@@ -182,6 +182,7 @@
 					"_note": "The nav item LINK — every stateful control on this element targets the <a>, never the <li> (Spec 36 section 14 FR-41-1). Three states are declared: base, `hover` (render.php's `$hover_targets` = `:hover, :focus-visible`) and `current` (`[aria-current=\"page\"]`), so a visitor can distinguish WHERE THEY ARE from WHAT THEY ARE POINTING AT. The current-page state is operator-controllable through `itemColourCurrent` / `itemBgCurrent` / `itemFontWeightCurrent` (Spec 36 section 14 FR-41-1); `itemFontWeightCurrent` is the non-colour signal that satisfies WCAG 1.4.1 without relying on colour alone. `current` deliberately maps DIFFERENT attribute names from `hover`: the classifier's `extract-signatures.py::_record` is last-write-wins, so a state map byte-identical to `hover` silently overwrites the hover derivation and tags those attributes with a css_state they never render in. Every state member is EXPLICIT rather than left to the `{prefix}Suffix` convention — `css:font-weight`, `css:text-decoration` and `css:text-transform` each carry a base attribute AND a state sibling, and without an explicit entry per state both derive to the same (property, element, state=NULL) slot and collide on one routing destination. The base `css:font-weight` -> `itemFontWeight` entry is load-bearing for the same reason: a state entry with no base is the STATE_WITHOUT_BASE shape the manifest gate flags. `css:border-radius` -> `itemBorderRadius` is base-only — radius has no state on `SgsBorderControl` (Spec 36 section 14 FR-41-7). M-21 (2026-09-23): `css:opacity` -> itemOpacity/itemOpacityHover and `css:padding-inline-start` -> itemPaddingShiftHover (hover-only) added; itemPaddingShiftHover is ALSO mapped on the `sublink` element below (dropdown/accordion submenu link) — the SAME attribute reused across both elements, deliberately, because the reference sites only ever set one padding-shift value per instance; itemOpacity/itemOpacityHover are NOT reused on `sublink` because fantasy's own reference needs a genuinely DIFFERENT rest/hover opacity pair on its sub-link (0.6 to 1) from its item link (1 to 0.5)."
 				},
 				"indicator": {
+					"motion": false,
 					"label": "Sliding indicator",
 					"order": 5,
 					"clusters": [
@@ -191,6 +192,7 @@
 					"_note": "The `.sgs-nav-drawer-menu__indicator` sliding pill, view.js-animated behind the active/hovered item. It is rendered under `itemBgHoverTreatment === 'highlight'` and paints from the item Background row's OWN Hover swatch — `itemBgHover` / `itemBgHoverGradient`, claimed by the `item` element's `states.hover` (Spec 36 section 14 FR-41-25) — so this element routes no attribute of its own: one picker, one property, three ways of applying it. `clusters: [\"fill\"]` is retained (not `[]`) because the forward-resolution pass only visits a cluster's members when the cluster is declared; with an empty attrMap the fill members are honest GAPs, ungated and correct, since this element has no controls of its own. `supports.sgs.colourExemptions.indicator` records why it carries no hover state: style.css declares `.sgs-nav-drawer-menu__indicator { pointer-events: none; }`, so the element is structurally unhoverable."
 				},
 				"featured": {
+					"motion": false,
 					"label": "Featured item",
 					"order": 6,
 					"clusters": [
@@ -273,6 +275,7 @@
 					"_note": "The submenu LINK — <a class=\"sgs-nav-drawer-menu__sublink\">, painted at render.php's own scoped `.sgs-nav-drawer-menu__sublink{...}` rule. It carries three states: base, `hover` (`sgs_hover_state_rules()` on `:hover, :focus-visible`) and `current` (`[aria-current=\"page\"]`), matching the bar item's own three-state model (Spec 36 section 14 FR-41-1 / FR-41-9). `\"prefix\": \"\"` is a deliberate, permanent opt-out from the `{prefix}Suffix` convention: a `submenu` prefix would wrongly claim submenuAlign/Caret/CloseGrace/MinWidth/Padding and the whole submenuBorder* family, which belong to the submenu PANEL (the `submenu-panel` element) rather than to this anchor. The `submenu`-prefixed typography attributes that DO belong to this anchor reach it through the explicit attrMap entries above, one per property — that is the resolution, not a prefix (Spec 36 section 14 FR-41-22c). With an empty prefix nothing here resolves by convention, so every member is explicit by necessity: each state's `css:color`, `css:background-color`, `css:font-weight`, `css:text-decoration` and `css:text-transform` names a DIFFERENT attribute from its base sibling, because without an explicit entry a base and its state sibling both derive to (property, sublink, state=NULL) and collide on one routing slot. `\"fill\"` is declared alongside `\"text\"` so the forward-resolution pass actually visits css:background-color / css:background-image and consults this attrMap; a cluster that is not declared is never iterated. submenuColourGradient is routed as a DIRECT declaration (sgs_text_colour_decl / sgs_resolve_text_colour_or_gradient) rather than a colour-valued custom property, because a `var(--x, …)` chain feeding a fixed `color:` declaration cannot switch to `background-image` for a gradient (survey.js's `paints-via-colour-valued-custom-property`  submenuOpacity/submenuOpacityHover (M-21, this task) close the fantasy reference gap left open by the item element's own opacity pair — fantasy needs the sublink resting at 0.6 opacity and brightening to 1 on hover, the OPPOSITE direction from the item's 1-to-0.5, so a genuinely separate attribute pair was required rather than reusing itemOpacity/itemOpacityHover here."
 				},
 				"submenu-panel": {
+					"selector": ".sgs-nav-drawer-menu__submenu",
 					"label": "Submenu panel",
 					"order": 9,
 					"clusters": [
@@ -295,6 +298,7 @@
 					"_note": "The open accordion SECTION — <ul class=\"sgs-nav-drawer-menu__submenu\"> — as distinct from the links inside it, which are the `sublink` element (Spec 36 section 14 FR-41-9). Base only: NO `states` key at all, because the panel has neither a hover nor a current state for any property. Its visibility is a binary open/closed disclosure toggled by the trigger; once open the pointer is always over an interactive CHILD, so a pointer-driven change on the panel surface itself is never perceivable — the hoverable surface inside the panel is the LINK background (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent on `sublink`). Recorded as `supports.sgs.colourExemptions.submenu-bg` and `.submenu-border`. `\"prefix\": \"\"` for the same reason `sublink` carries it: a `submenu` prefix would claim submenuColour* and the submenu typography family, which belong to the LINK. Every member is therefore explicit. submenuBorderRadius, submenuShadow and submenuShadowColour paint the section's own box (includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_section_box_css). submenuMinWidth is not declared here: a section is exactly as wide as the drawer, so a minimum width has nothing to protect against."
 				},
 				"item-dimmed": {
+					"motion": false,
 					"label": "Dimmed sibling item",
 					"order": 10,
 					"clusters": [
@@ -340,6 +344,7 @@
 					"_note": "Wave 3C U-7, M-22: the decorative leading number or glyph (.sgs-nav-drawer-menu__ornament) before each primary row label."
 				},
 				"caret-box": {
+					"selector": ".sgs-nav-drawer-menu__caret",
 					"label": "Expander circle",
 					"order": 12.1,
 					"clusters": [
@@ -360,6 +365,7 @@
 					"_note": "The ringed circle round the accordion expander (.sgs-nav-drawer-menu__caret), and round each trailing icon (.sgs-nav-drawer-menu__trailing-icon) when caretBoxOnTrailingIcon is on (includes/nav-drawer-menu-caret-box-css.php). A declared part, so motion (Spec 38A) can target it; its hover glow and turn timing belong to motion, not here."
 				},
 				"caret-box-open": {
+					"motion": false,
 					"label": "Expander circle (open)",
 					"order": 12.2,
 					"clusters": [
@@ -375,6 +381,7 @@
 					"_note": "The expander circle while its row's <details> is open. Its own element, like item-open: `open` is not in the state vocabulary (hover/current/scrolled)."
 				},
 				"expander": {
+					"selector": ".sgs-nav-drawer-menu__caret",
 					"label": "Accordion expander",
 					"order": 12,
 					"clusters": [
@@ -402,6 +409,7 @@
 					"_note": "Wave 3C U-7, M-15/M-22: the per-item featured-image thumbnail (.sgs-nav-drawer-menu__media). itemMediaReveal is per tier: none / always / hover (grows from width 0)."
 				},
 				"item-open": {
+					"motion": false,
 					"label": "Item text (open)",
 					"order": 4,
 					"clusters": [
@@ -414,6 +422,7 @@
 					"_note": "G-11, 2026-09-28: the label colour of a top-level accordion item while its own <details> is open. Declared as its own element, NOT as a state on `item` (same reasoning as the `disabled-item` element below): `open` is not in golden-controls.json's `_meta.stateVocabulary` (hover/current/scrolled), and it is not the same concept as `current` (page identity vs disclosure state) — conflating them would apply the wrong colour to a currently-open, not-current-page section. Painted via a `:has()` sibling-state rule keyed to the accordion's own `[open]` attribute (includes/nav-drawer-menu-extras-css.php); no JS."
 				},
 				"badge": {
+					"selector": ".sgs-nav-drawer-menu__badge",
 					"label": "Item badge",
 					"order": 6.5,
 					"clusters": [
@@ -432,6 +441,7 @@
 					"_note": "Parity with sgs/nav-bar-menu, 2026-09-28. The optional per-item marker chip (\"SOON\", \"NEW\") rendered after an item's label via the SHARED includes/nav-menu-markup.php::sgs_nav_shared_badge_html() call already present in sgs_nav_drawer_menu_render_items(); this block previously declared no colour attributes for it. Badge COPY is per-item (the operator's classic-menu-item Description field); badge COLOUR is block-level, one Colour-panel row applying to every badge this drawer renders. No hover state — a badge is never itself interactive."
 				},
 				"disabled-item": {
+					"motion": false,
 					"label": "Disabled item",
 					"order": 3,
 					"clusters": [

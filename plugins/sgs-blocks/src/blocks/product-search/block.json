@@ -53,6 +53,7 @@
 			},
 			"elements": {
 				"scrim": {
+					"motion": false,
 					"label": "Backdrop / scrim",
 					"order": 5,
 					"clusters": [
@@ -137,6 +138,7 @@
 					"_note": "The results <ul class=\"sgs-product-search__results\" role=\"listbox\"> resultHoverBackgroundColour is modelled here as the results element's hover state (the row-highlight colour a client sees when interacting with the listbox), matching the wrapper/input elements' base+hover attrMap convention above, even though the physical paint target is a [role=\"option\"] child rather than the <ul> itself."
 				},
 				"result-title": {
+					"motion": false,
 					"label": "Result title",
 					"order": 4,
 					"clusters": [

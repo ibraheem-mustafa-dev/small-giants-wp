@@ -101,6 +101,7 @@
           "_note": "The root IS the flex arranger (own scoped CSS in render.php, not the shared wrapper's grid layer) — layer OUTER is correct per the MF-3 guard, same reasoning as sgs/card-grid's `grid` element. `spacing.margin`/`spacing.padding` are declared (2026-08-13/2026-08-16). `typography` remains an honest gap. `display` is hardcoded to flex in render.php — not attribute-controlled, an honest gap. Background media (image/video/SVG) + overlay colour/gradient render through the shared SGS_Container_Wrapper (D6, universal regardless of kind) — mapped by convention, not every bg sub-attr individually. Attribute names diverge from the default suffix convention (`direction`/`wrap`, not `flexDirection`/`flexWrap`) — every arrangement member is explicitly mapped per ROLLOUT REQUIREMENT 1."
         },
         "button": {
+          "motion": false,
           "label": "Button",
           "order": 2,
           "clusters": [],

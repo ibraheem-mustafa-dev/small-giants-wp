@@ -495,8 +495,8 @@ if ( $sgs_nb_enhanced ) {
 		$sgs_inner_html .= '<button class="sgs-notice-banner__pause" type="button" aria-pressed="false" aria-label="' . esc_attr__( 'Pause announcements', 'sgs-blocks' ) . '" data-wp-on--click="actions.togglePause" data-wp-bind--aria-pressed="context.pausedByButton"><span class="sgs-notice-banner__pause-icon" aria-hidden="true"></span></button>';
 
 		if ( $sgs_nb_show_arrows ) {
-			$sgs_inner_html .= '<button class="sgs-notice-banner__prev" type="button" aria-label="' . esc_attr__( 'Previous announcement', 'sgs-blocks' ) . '" data-wp-on--click="actions.prevMessage"><span aria-hidden="true">&lsaquo;</span></button>';
-			$sgs_inner_html .= '<button class="sgs-notice-banner__next" type="button" aria-label="' . esc_attr__( 'Next announcement', 'sgs-blocks' ) . '" data-wp-on--click="actions.nextMessage"><span aria-hidden="true">&rsaquo;</span></button>';
+			$sgs_inner_html .= '<button class="sgs-notice-banner__arrows sgs-notice-banner__prev" type="button" aria-label="' . esc_attr__( 'Previous announcement', 'sgs-blocks' ) . '" data-wp-on--click="actions.prevMessage"><span aria-hidden="true">&lsaquo;</span></button>';
+			$sgs_inner_html .= '<button class="sgs-notice-banner__arrows sgs-notice-banner__next" type="button" aria-label="' . esc_attr__( 'Next announcement', 'sgs-blocks' ) . '" data-wp-on--click="actions.nextMessage"><span aria-hidden="true">&rsaquo;</span></button>';
 		}
 	}
 } else {

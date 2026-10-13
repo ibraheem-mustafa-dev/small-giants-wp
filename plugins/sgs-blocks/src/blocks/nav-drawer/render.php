@@ -1130,6 +1130,8 @@ $sgs_nd_close_icon = sgs_nav_shared_icon_markup(
 		'name'   => 'x',
 	)
 );
+$sgs_nd_close_icon_tags = class_exists( 'WP_HTML_Tag_Processor' ) ? new WP_HTML_Tag_Processor( $sgs_nd_close_icon ) : null; // The glyph's own tag carries sgs-nav-drawer__close-icon, the motion part closeIcon (Spec 38A §6.2).
+$sgs_nd_close_icon      = $sgs_nd_close_icon_tags && $sgs_nd_close_icon_tags->next_tag() && $sgs_nd_close_icon_tags->add_class( 'sgs-nav-drawer__close-icon' ) ? $sgs_nd_close_icon_tags->get_updated_html() : $sgs_nd_close_icon;
 
 $sgs_nd_close_text = sprintf(
 	'<span class="sgs-nav-drawer__close-text">%s</span>',

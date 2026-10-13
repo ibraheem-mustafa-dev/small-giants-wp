@@ -74,6 +74,7 @@
 			],
 			"elements": {
 				"scrim": {
+					"motion": false,
 					"label": "Backdrop / scrim",
 					"order": 5,
 					"clusters": [
@@ -91,6 +92,7 @@
 					"_note": "The shared viewport scrim (Wave 3C U-2, `includes/helpers-scrim.php::sgs_scrim_render`): the see-through layer printed at wp_footer that dims the page while this block's drawer, dialog or panel is open. Mapped here so the converter can route a draft's scrim colour, strength and blur to these attributes."
 				},
 				"curtain": {
+					"motion": false,
 					"label": "Curtain (open animation)",
 					"order": 6,
 					"clusters": [
@@ -191,6 +193,7 @@
 					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColourHover is wired in render.php via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routes both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) is uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor), following the site-wide focus token, which is correct behaviour, just not this element's colour attrs. closeHoverOpacity (hover fade) is deliberately UNMAPPED: css:opacity is a fill-cluster member and this element declares no fill cluster, so it is classified through attr-classification-overrides.json (css_property opacity, css_state hover), like sgs/button scaleHover. closePadding and closeLineHeight (the label line-height, emitted by sgs_typography_css_rule() on .sgs-nav-drawer__close-text) are mapped. closeSize (mirrors sgs/nav-bar-menu's burgerSize, css:width+css:height) and the close-LABEL typography quintet (closeFontSize/closeFontFamily/closeFontWeight/closeTextTransform/closeLetterSpacing, mirrors sgs/nav-bar-menu's burgerFontSize/burgerFontFamily/burgerFontWeight/burgerTextTransform/burgerLetterSpacing) use the same mechanism (sgs_typography_css_rule()) -- see render.php's close-typography block for the closeStyle-dependent text-transform resolution, and closeSize for the icon-vs-text width branch mirroring burgerSize's own triggerMode branch. toggleCloseColourHoverGradient is the Hover gradient sibling of toggleCloseColourGradient; no smart-contrast swap applies to the close button (unlike the bar's itemColourHover). Spec 35 §12 audit item 5 (2026-09-24) added closeRadius (css:border-radius, already a `layout`-cluster member this element declares) and closeOffset (css:transform, a translate() nudge -- also a `layout`-cluster member). closePlacement is DELIBERATELY UNMAPPED: it is an enum POSITION MODE (top-row-end | top-row-start | same-slot), not a routable CSS length/colour/timing value -- the converter's attrMap contract routes a cluster member to a CSS-VALUE-bearing attribute, and closePlacement instead selects which static position rule (top/left/inset-inline-*) applies, which the css:transform/closeOffset entry above already carries the moving part of. Ruling: closePlacement stays out of attrMap by design, not as an oversight. The close box border (closeBorderWidth box object, closeBorderStyle, closeBorderColour) is emitted by includes/nav-drawer-chrome-css.php, with the style written only alongside a real width. The close glyph size (closeIconSize) is its own `closeIcon` element because css:width here already routes to closeSize."
 				},
 				"closeIcon": {
+					"selector": ".sgs-nav-drawer__close-icon",
 					"label": "Close icon",
 					"order": 2,
 					"clusters": [
@@ -222,6 +225,7 @@
 					"_note": "The chrome row (Spec 36 FR-36-6): `.sgs-nav-drawer__chrome`, the band at the top of the dialog that holds the close button, the optional logo and the one optional free slot. Rendered by includes/nav-drawer-chrome.php as fixed chrome, never InnerBlocks, and it replaces the 64px top padding the body used to reserve for the close button. A row holding only the close button carries `--close-only` and is dropped with the button under the FR-36-6 `trigger` predicate, so it costs no space."
 				},
 				"chromeLogo": {
+					"selector": ".sgs-nav-drawer__chrome-logo",
 					"label": "Top row logo",
 					"order": 2,
 					"clusters": [
@@ -242,6 +246,7 @@
 					"_note": "The optional logo in the chrome row: a `<picture>` art-directed per device from chromeLogoId/chromeLogoUrl and their Tablet/Mobile siblings (the sgs/responsive-logo pattern). It opts out of the generic imageControls path on purpose, per Spec 36 FR-36-6: a logo is a different image per device, not one image with fit and focal controls. chromeLogoShow hides it per device; chromeLogoLink links it home."
 				},
 				"chromeSlot": {
+					"selector": ".sgs-nav-drawer__chrome-slot",
 					"label": "Top row slot",
 					"order": 2,
 					"clusters": [
@@ -257,6 +262,7 @@
 					"_note": "The one optional free slot in the chrome row (chromeSlotType heading, label, text or button; chromeSlotText is its words). The typography set uses the `chromeSlot` prefix through sgs_typography_css_rule(); chromeSlotHeadingLevel sets the tag for the heading type (the product-card headingLevel precedent). The button type's look is the separate `chromeButton` element."
 				},
 				"chromeRating": {
+					"selector": ".sgs-nav-drawer__chrome-rating",
 					"label": "Top row Google rating",
 					"order": 2,
 					"clusters": [
@@ -269,6 +275,7 @@
 					"_note": "The Google rating badge in the chrome row (chromeRating on), independent of the free slot so both can sit in one row. It renders the sgs/google-rating-badge block with the rating, count and link from Site Info (or live Google data); chromeRatingColour paints its score and caption, chromeRatingShow hides it per device, chromeRatingPlacement puts it centred or at the end beside the close button."
 				},
 				"chromeButton": {
+					"motion": false,
 					"label": "Top row button",
 					"order": 2,
 					"clusters": [
@@ -301,6 +308,7 @@
 					"_note": "The free slot when chromeSlotType is `button`: a link styled by the shared built-in button emitter, sgs_button_element_style_css() with the `chromeButton` prefix (the sgs/modal and sgs/product-card precedent). Its words and typography are the chromeSlot set."
 				},
 				"decorative": {
+					"motion": false,
 					"label": "Decorative background",
 					"layer": "OUTER",
 					"order": 4,

@@ -203,6 +203,7 @@
           }
         },
         "category-badge": {
+          "selector": ".sgs-post-grid__badge",
           "label": "Category badge",
           "order": 7,
           "clusters": [
@@ -228,6 +229,7 @@
           "_note": "css:color resolves via the default convention (categoryBadgeColour). categoryBadgeColourGradient (2026-09-05) is the text-colour gradient sibling, same D956-shape recipe as title/meta/readMore on this block -- emitted as a direct decl targeting both .sgs-post-grid__badge and .sgs-post-grid__category in render.php (the two mutually-exclusive elements this one block-level attribute drives, per cardStyle). Hover background/gradient (categoryBadgeBgColourHover/categoryBadgeBgColourHoverGradient) follow the same pattern as sgs/before-after's handleColourHover: emitted as custom properties via sgs_custom_property_gradient_decls() in card_vars_decls(), consumed by style.css hover rules with fallback chain so unset hover is byte-identical to before."
         },
         "read-more": {
+          "selector": ".sgs-post-grid__readmore",
           "label": "Read more link",
           "order": 8,
           "clusters": [

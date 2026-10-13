@@ -164,6 +164,7 @@
 					"_note": "U-15 — rotate mode's previous/next controls only (block.json::messageMode). Explicit attrMap (not the default {prefix}{suffix} convention) because the block has no `arrow` PREFIX declared. Emitted scoped on `.sgs-notice-banner__prev`/`.sgs-notice-banner__next` via sgs_hover_state_rules(), gated on arrowColour being set."
 				},
 				"icon-glyph": {
+					"motion": false,
 					"label": "Icon glyph size",
 					"order": 2,
 					"clusters": [

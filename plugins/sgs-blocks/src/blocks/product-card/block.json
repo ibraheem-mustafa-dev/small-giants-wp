@@ -207,6 +207,7 @@
 					"_note": "The struck-through RRP beside a live card's price (rrpMetaKey): `.sgs-product-card__rrp`, markup from includes/product-card-live-fill.php::sgs_product_card_rrp_markup. rrpColour is emitted by includes/product-card-card-parts.php."
 				},
 				"desc": {
+					"selector": ".sgs-product-card__description",
 					"label": "Description",
 					"order": 6,
 					"clusters": [
@@ -235,6 +236,7 @@
 					"_note": "CORRECTION 2026-08-15: an earlier pass in this same fix RENAMED 'desc' to 'description', which was WRONG - the DB tags descFontSize/descLineHeight css_element='desc' (matching the ORIGINAL key) and only descColour css_element='description'. Renaming would have cleared 1 orphan while creating 2 new ones. 'desc' is restored above; this bare 'description' element exists purely so the audit script's exact-key-match sees 'description' declared too. descColour already resolves fine functionally under 'desc' (prefix 'desc' + suffix Colour, default convention, text cluster) regardless of this element's own (empty) clusters. Found live 2026-08-15: DB tagged 1 attr css_element='description', undeclared until now."
 				},
 				"priceNote": {
+					"selector": ".sgs-product-card__price-note",
 					"label": "Price note",
 					"order": 7,
 					"clusters": [
@@ -250,6 +252,7 @@
 					"_note": "CORRECTION 2026-08-15: same pattern as 'description' above - the DB tags priceNoteFontSize css_element='priceNote' (matching the ORIGINAL key) and only priceNoteColour css_element='price-note'. 'priceNote' is restored above; this bare 'price-note' element exists purely to satisfy the audit script's exact-key-match. priceNoteColour already resolves fine functionally under 'priceNote' (prefix 'priceNote' + suffix Colour, default convention). Found live 2026-08-15: DB tagged 1 attr css_element='price-note', undeclared until now."
 				},
 				"priceFromLabel": {
+					"selector": ".price-from-label",
 					"label": "\"From\" label",
 					"order": 8,
 					"clusters": [
@@ -297,6 +300,7 @@
 					}
 				},
 				"pill": {
+					"motion": false,
 					"label": "Option-picker pill",
 					"order": 10,
 					"clusters": [
@@ -354,6 +358,7 @@
 					"_note": "The brand overlaid top-left on the product image (Frame Card component) - the brand's LOGO when it has one and brandUseLogo is on, else the brand name as a wordmark. The typography and colour settings here style the wordmark form; the logo form is sized by .sgs-product-card__brand-logo in style.css. brandColour resolves via the default {prefix}Colour convention; brandFontSize/Unit via the shared TypographyControls prefix. Rendered by sgs_product_card_brand_markup() (product-card-builtin-render.php), called from every render branch's media area per R-31-9."
 				},
 				"savingBadge": {
+					"selector": ".sgs-product-card__saving-badge",
 					"label": "Saving badge",
 					"order": 15,
 					"clusters": [
@@ -432,6 +437,7 @@
 					"_note": "Frame Card component: generic tag next to the product title shown when the resolved product carries a chosen WooCommerce product-attribute term or product tag (attributeTagSource/attributeTagTaxonomy/attributeTagTerm) — never hardcoded to one client's vocabulary (e.g. an optician site's 'Polarised' lens attribute). Distinct from the existing 'tag' element (trial/featured, keyed to variantStyle) and 'savingBadge' (media-overlay, independent of variant): this one sits inline beside the title, matching Frame Card.dc.html's title-row markup. css:color needed an EXPLICIT attrMap entry (2026-09-24 compliance fix) — the default `{prefix}Colour` convention would look for `attributeTagColour`, which does not exist; the real attribute is `attributeTagTextColour`, so the prior note claiming the convention resolved it was wrong and the colour reached the DB with no css_property (check-colour-attr-css-property finding). `attributeTagBorderWidth` (2026-09-24, Spec 35 C1 compliance fix) is new — border colour now lives in `SgsBorderControl` alongside width/radius rather than as a sibling `SgsColourPanel` row (radius stays the block's existing scalar `SgsLengthControl`, outside the border-control pair, per Spec 32 §6.1's pill/tag/badge scalar-radius carve-out — `onRadiusChange` is deliberately not wired to `SgsBorderControl`). Rendered via sgs_product_card_attribute_tag_markup()/sgs_product_card_wrap_title_with_attribute_tag() (src/blocks/product-card/attribute-tag.php — a block-directory-private file, NOT includes/product-card-builtin-render.php, because the typed-mode title element is owned by that shared file and this task's touch-only-this-block-directory scope could not edit it; the typed branch is instead wired by post-processing the shared render's returned HTML — see that file's own docblock)."
 				},
 				"ratingStars": {
+					"selector": ".sgs-product-card__rating-stars",
 					"label": "Rating stars",
 					"order": 22,
 					"clusters": [
@@ -455,6 +461,7 @@
 					"_note": "The star glyphs inside the rating row (.sgs-product-card__rating-stars): its own surface so the letter spacing between stars is a control. Colour is the rating element's ratingColour."
 				},
 				"swatchMore": {
+					"selector": ".sgs-product-card__swatch-more",
 					"label": "Colour swatch overflow count",
 					"order": 23,
 					"clusters": [
@@ -477,6 +484,7 @@
 					"_note": "The \"+N\" count after the colour dots (.sgs-product-card__swatch-more), emitted by includes/product-card-swatches.php::sgs_product_card_swatches_markup and mirrored in typed-canvas.js::TypedSwatches. A count, not a control: it owns a typography surface only."
 				},
 				"cta2": {
+					"selector": ".sgs-product-card__cta--secondary",
 					"label": "Secondary call to action",
 					"order": 24,
 					"clusters": [
@@ -489,6 +497,7 @@
 					"_note": "The secondary learn-more link (.sgs-product-card__cta--secondary typed, .product-card__cta-secondary bound). cta2TextAlign is emitted by render.php through sgs_button_element_text_align()."
 				},
 				"noImageLabel": {
+					"selector": ".product-card__no-image-label",
 					"label": "No-photo label",
 					"order": 18,
 					"clusters": [
@@ -498,6 +507,7 @@
 					"_note": "The text in the no-photo box (noImageLabel, e.g. 'Photo to come') shown on a product whose image is empty, WooCommerce's placeholder or the site's chosen placeholder image (includes/product-card-no-photo.php). Colour resolves by the default {prefix}Colour convention (noImageLabelColour)."
 				},
 				"valueLadder": {
+					"selector": ".product-card__value-ladder",
 					"label": "Value ladder",
 					"order": 20,
 					"clusters": [
@@ -507,6 +517,7 @@
 					"_note": "The comparative per-pack price ladder wrapper (.product-card__value-ladder); its font settings cascade to the pack and per-unit text. No colour attribute exists for this element - an honest gap. Emitted by render.php sgs_typography_css_rule( $attributes, 'valueLadder', '.' . $sgs_card_uid . ' .product-card__value-ladder' )."
 				},
 				"valueLadderSaving": {
+					"selector": ".value-ladder__saving",
 					"label": "Value ladder saving",
 					"order": 21,
 					"clusters": [
@@ -516,6 +527,7 @@
 					"_note": "The per-row \"save X%\" text (.value-ladder__saving). style.css sizes it absolutely, so the wrapper setting cannot reach it - it has its own prefix. No colour attribute exists for this element - an honest gap."
 				},
 				"priceRow": {
+					"selector": ".sgs-product-card__price-row",
 					"label": "Price row",
 					"order": 19,
 					"clusters": [

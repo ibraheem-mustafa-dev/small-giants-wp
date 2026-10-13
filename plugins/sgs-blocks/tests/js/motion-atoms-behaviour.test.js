@@ -77,9 +77,13 @@ function mount( Atom, props, initial ) {
 }
 
 describe( 'the target picker', () => {
-	it( 'for sgs/info-box lists root plus exactly the parts the block declares', () => {
-		const declared = Object.keys( infoBox.supports.sgs.elements );
-		expect( declared.length ).toBeGreaterThan( 1 );
+	it( 'for sgs/info-box lists root plus exactly the parts the block declares as targets', () => {
+		const elements = infoBox.supports.sgs.elements;
+		const declared = Object.keys( elements ).filter( ( key ) => elements[ key ].motion !== false );
+		const excluded = Object.keys( elements ).filter( ( key ) => elements[ key ].motion === false );
+		expect( declared.length ).toBeGreaterThan( 0 );
+		// A part marked `"motion": false` (Spec 38A §6.2) is never offered.
+		expect( excluded.length ).toBeGreaterThan( 0 );
 		expect( targetOptions( infoBox.supports.sgs.elements ).map( ( o ) => o.value ) ).toEqual( [ 'root', ...declared ] );
 		mount( TargetPicker, { elements: infoBox.supports.sgs.elements }, 'root' );
 		expect( shownOptions() ).toEqual( [ 'root', ...declared ] );
