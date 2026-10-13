@@ -1,0 +1,69 @@
+/**
+ * Shared pause / play button for content that moves on its own (WCAG 2.2.2).
+ *
+ * Markup: includes/helpers-motion-pause.php (sgs_motion_pause_button()); behaviour:
+ * src/shared/motion-pause/index.js. Enqueued only when a button renders, and always in the
+ * editor canvas.
+ *
+ * The target size, focus ring, icon swap and placement are the contract and sit at normal
+ * specificity. The look (border, radius, ground, colour) sits inside :where(), so a block's
+ * own `{block}__pause` rule, or the selector list it shares with its arrows, paints the button
+ * with the block's existing colour controls without fighting this file.
+ */
+
+.sgs-motion-pause {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+}
+
+:where(.sgs-motion-pause) {
+	border: 1px solid currentColor;
+	border-radius: 999px;
+	background-color: var(--wp--preset--color--surface, Canvas);
+	color: var(--wp--preset--color--text, CanvasText);
+}
+
+.sgs-motion-pause[hidden] {
+	display: none;
+}
+
+.sgs-motion-pause:focus-visible {
+	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, currentColor);
+	outline-offset: 2px;
+}
+
+/* Over the end edge of the moving region, vertically centred: it takes no place in the row.
+   The region positions it (a marquee's root is position: relative). The ring sits inside the
+   button because a marquee clips anything outside its own height. */
+.sgs-motion-pause--overlay-end {
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-end: 0;
+	transform: translateY(-50%);
+	z-index: 1;
+}
+
+.sgs-motion-pause--overlay-end:focus-visible {
+	outline-offset: -4px;
+}
+
+.sgs-motion-pause__icon {
+	display: block;
+	flex-shrink: 0;
+}
+
+.sgs-motion-pause__icon--play,
+.sgs-motion-pause[aria-pressed="true"] .sgs-motion-pause__icon--pause {
+	display: none;
+}
+
+.sgs-motion-pause[aria-pressed="true"] .sgs-motion-pause__icon--play {
+	display: block;
+}

@@ -1,0 +1,352 @@
+{
+  "blocks": [
+    {
+      "block": "brand-strip",
+      "verdict": "PENDING",
+      "signals": [
+        "css-loop"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [
+        {
+          "kind": "missing-render",
+          "signals": [
+            "css-loop"
+          ]
+        },
+        {
+          "kind": "missing-runtime",
+          "signals": [
+            "css-loop"
+          ]
+        }
+      ],
+      "exempt": []
+    },
+    {
+      "block": "container",
+      "verdict": "EXEMPT",
+      "signals": [
+        "css-loop"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "deferred",
+          "reason": "Ken Burns background zoom and background SVG pulse/float/wave loops"
+        }
+      ]
+    },
+    {
+      "block": "gallery",
+      "verdict": "PENDING",
+      "signals": [
+        "js-timer"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [
+        {
+          "kind": "missing-render",
+          "signals": [
+            "js-timer"
+          ]
+        },
+        {
+          "kind": "missing-runtime",
+          "signals": [
+            "js-timer"
+          ]
+        }
+      ],
+      "exempt": []
+    },
+    {
+      "block": "google-reviews",
+      "verdict": "PENDING",
+      "signals": [
+        "js-timer"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [
+        {
+          "kind": "missing-render",
+          "signals": [
+            "js-timer"
+          ]
+        },
+        {
+          "kind": "missing-runtime",
+          "signals": [
+            "js-timer"
+          ]
+        }
+      ],
+      "exempt": []
+    },
+    {
+      "block": "hero",
+      "verdict": "EXEMPT",
+      "signals": [
+        "css-loop",
+        "video-autoplay"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "deferred",
+          "reason": "Ken Burns background and split-media zoom"
+        },
+        {
+          "signal": "video-autoplay",
+          "kind": "deferred",
+          "reason": "muted looping background video, aria-hidden"
+        }
+      ]
+    },
+    {
+      "block": "media",
+      "verdict": "EXEMPT",
+      "signals": [
+        "css-loop",
+        "video-autoplay"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "deferred",
+          "reason": "SVG pulse/float/wave loops"
+        },
+        {
+          "signal": "video-autoplay",
+          "kind": "deferred",
+          "reason": "autoplaying video; native controls when the block shows them"
+        }
+      ]
+    },
+    {
+      "block": "nav-drawer",
+      "verdict": "EXEMPT",
+      "signals": [
+        "css-loop"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "deferred",
+          "reason": "decorative drift on .sgs-drift shapes in the drawer"
+        }
+      ]
+    },
+    {
+      "block": "notice-banner",
+      "verdict": "PENDING",
+      "signals": [
+        "js-timer"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": true,
+      "handrolled_view": false,
+      "findings": [
+        {
+          "kind": "missing-render",
+          "signals": [
+            "js-timer"
+          ]
+        },
+        {
+          "kind": "missing-runtime",
+          "signals": [
+            "js-timer"
+          ]
+        },
+        {
+          "kind": "hand-rolled",
+          "signals": [
+            "render"
+          ]
+        }
+      ],
+      "exempt": []
+    },
+    {
+      "block": "post-grid",
+      "verdict": "PENDING",
+      "signals": [
+        "css-loop",
+        "js-timer"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [
+        {
+          "kind": "missing-render",
+          "signals": [
+            "js-timer"
+          ]
+        },
+        {
+          "kind": "missing-runtime",
+          "signals": [
+            "js-timer"
+          ]
+        }
+      ],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "loading",
+          "reason": "the .sgs-post-grid skeleton shimmer runs only while posts load"
+        }
+      ]
+    },
+    {
+      "block": "product-search",
+      "verdict": "EXEMPT",
+      "signals": [
+        "css-loop"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "loading",
+          "reason": "the results skeleton shimmer runs only while results load"
+        }
+      ]
+    },
+    {
+      "block": "testimonial-slider",
+      "verdict": "PENDING",
+      "signals": [
+        "js-timer"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": true,
+      "findings": [
+        {
+          "kind": "missing-render",
+          "signals": [
+            "js-timer"
+          ]
+        },
+        {
+          "kind": "missing-runtime",
+          "signals": [
+            "js-timer"
+          ]
+        },
+        {
+          "kind": "hand-rolled",
+          "signals": [
+            "view"
+          ]
+        }
+      ],
+      "exempt": []
+    },
+    {
+      "block": "trust-bar",
+      "verdict": "PENDING",
+      "signals": [
+        "css-loop"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": true,
+      "handrolled_view": false,
+      "findings": [
+        {
+          "kind": "missing-render",
+          "signals": [
+            "css-loop"
+          ]
+        },
+        {
+          "kind": "missing-runtime",
+          "signals": [
+            "css-loop"
+          ]
+        },
+        {
+          "kind": "hand-rolled",
+          "signals": [
+            "render"
+          ]
+        }
+      ],
+      "exempt": []
+    },
+    {
+      "block": "trustpilot-reviews",
+      "verdict": "PENDING",
+      "signals": [
+        "js-timer"
+      ],
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [
+        {
+          "kind": "missing-render",
+          "signals": [
+            "js-timer"
+          ]
+        },
+        {
+          "kind": "missing-runtime",
+          "signals": [
+            "js-timer"
+          ]
+        }
+      ],
+      "exempt": []
+    }
+  ],
+  "stale_exemptions": [],
+  "stale_pending": [],
+  "counts": {
+    "COMPLIANT": 0,
+    "FLAGGED": 0,
+    "PENDING": 8,
+    "EXEMPT": 5
+  }
+}

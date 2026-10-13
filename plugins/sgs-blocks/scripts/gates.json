@@ -1609,5 +1609,23 @@
     "budget_ms": 4000,
     "order": 180,
     "tier_reason": "The core-block migrator's list pairing and the seeder's allowedBlocks parser (which unions per-variant lists): their fixture tests, each with a case that fails when the mapping or the union is broken. Pre-deploy: they change only when the migrator or the seeder does."
+  },
+  {
+    "id": "check-motion-pause-control",
+    "cmd": "python scripts/check-motion-pause-control.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 181
+  },
+  {
+    "id": "check-motion-pause-control-selftest",
+    "cmd": "python scripts/check-motion-pause-control.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 182
   }
 ]
