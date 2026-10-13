@@ -9898,15 +9898,6 @@
     },
     {
       "slug": "sgs/google-reviews",
-      "attr": "backgroundColourGradient",
-      "fields": {
-        "css_property": "background-color-gradient",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/google-reviews",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -13360,10 +13351,10 @@
     },
     {
       "slug": "sgs/label",
-      "attr": "backgroundColourGradient",
+      "attr": "dotSize",
       "fields": {
-        "css_property": "background-image",
-        "css_element": "background"
+        "css_property": "height,width",
+        "css_element": "dot"
       }
     },
     {
@@ -29937,6 +29928,15 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -30514,6 +30514,34 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "splitMediaBoxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaBoxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaBoxShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "splitMediaObjectFit",
       "fields": {
         "css_property": "object-fit",
@@ -30882,9 +30910,43 @@
     },
     {
       "slug": "sgs/label",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "background"
+      }
+    },
+    {
+      "slug": "sgs/label",
       "attr": "borderRadius",
       "fields": {
         "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "dotColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "dot"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "dotColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "dot"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "dotGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
         "css_element": "wrapper"
       }
     },
