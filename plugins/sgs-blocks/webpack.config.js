@@ -8,6 +8,7 @@
  */
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 const path = require( 'path' );
+const fs = require( 'fs' );
 
 // The default config may be an array [scriptConfig, moduleConfig]
 // or a single object. Handle both cases.
@@ -163,6 +164,28 @@ if ( moduleConfig ) {
 
 	const VENDOR_DIR = 'src/vendor-modules';
 
+	/**
+	 * Webpack entries for every `fx-*.js` in a directory, keyed
+	 * `<outputPrefix>/<name>` without the extension.
+	 *
+	 * @param {string}   outputPrefix Output path prefix.
+	 * @param {string[]} segments     Directory segments under the plugin root.
+	 * @return {Object} Entry map.
+	 */
+	const fxEntries = ( outputPrefix, segments ) => {
+		const dir = path.resolve( process.cwd(), ...segments );
+		return Object.fromEntries(
+			fs
+				.readdirSync( dir )
+				.filter( ( file ) => /^fx-[a-z0-9-]+\.js$/.test( file ) )
+				.sort()
+				.map( ( file ) => [
+					`${ outputPrefix }/${ file.replace( /\.js$/, '' ) }`,
+					path.join( dir, file ),
+				] )
+		);
+	};
+
 	const existingModuleEntry = moduleConfig.entry;
 
 	moduleConfig.entry = () => {
@@ -220,18 +243,6 @@ if ( moduleConfig ) {
 			 * "exactly core + ScrollTrigger" guarantee in FR-38-3 would be
 			 * unmeetable. One module per effect keeps loading honest.
 			 */
-			/*
-			 * Tier H Lottie runtime (Spec 38 §1.2a, D1151). Loads the player
-			 * (`@sgs/lottie-web`) with a dynamic import after its trigger fires,
-			 * never under reduced motion.
-			 */
-			'shared/effects/fx-lottie': path.resolve(
-				process.cwd(),
-				'src',
-				'shared',
-				'effects',
-				'fx-lottie.js'
-			),
 			'shared/effects/scroll-driver': path.resolve(
 				process.cwd(),
 				'src',
@@ -278,198 +289,20 @@ if ( moduleConfig ) {
 				'bound-sync.js'
 			),
 			/*
-			 * Cursor field (FR-38-25) — Tier V, so it sits HERE beside
-			 * smooth-scroll rather than in the `gsap/fx-*` list below. Both
-			 * shipped field types paint in pure CSS and the only JS is one
-			 * rAF-throttled custom-property write, so this module pulls in no
-			 * GSAP at all: a page using it and no Tier G effect ships zero
-			 * GSAP bytes.
-			 *
-			 * The FILENAME is load-bearing exactly as it is for the gsap
-			 * entries: the PHP registry derives its module ID as
-			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
-			 * `cursor-field` — so this must stay `fx-cursor-field.js`.
+			 * Every effect runtime: one entry per `fx-*.js` file, found by name.
+			 * Tier V/W/H effects sit in `src/shared/effects/`, Tier G effects in
+			 * `src/shared/effects/gsap/`. The FILENAME is load-bearing: the PHP
+			 * registry derives a module ID as '@sgs/fx-' . <fx_effects.effect>, so
+			 * each filename must match its DB effect key exactly. A new effect file
+			 * needs no edit here.
 			 */
-			'shared/effects/fx-cursor-field': path.resolve(
-				process.cwd(),
+			...fxEntries( 'shared/effects', [ 'src', 'shared', 'effects' ] ),
+			...fxEntries( 'shared/effects/gsap', [
 				'src',
 				'shared',
 				'effects',
-				'fx-cursor-field.js'
-			),
-			/*
-			 * Magnetic pull (Spec 38 FR-38-30) — Tier V, same shape as
-			 * fx-cursor-field above: one rAF-throttled listener writing two
-			 * custom properties, no GSAP import, so a page using this and no
-			 * Tier G effect ships zero GSAP bytes.
-			 *
-			 * FILENAME is load-bearing exactly as it is for the entries above:
-			 * the PHP registry derives its module ID as
-			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
-			 * `magnet` — so this must stay `fx-magnet.js`.
-			 */
-			/*
-			 * Wave gradient (Spec 38 FR-38-31) — Tier W, SECOND entry. Unlike
-			 * every Tier V entry around it this one DOES carry a WebGL
-			 * dependency, but still no GSAP, so a page using it and no Tier G
-			 * effect ships zero GSAP bytes.
-			 *
-			 * FILENAME is load-bearing: the PHP registry derives its module ID
-			 * as '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
-			 * `wave-gradient` — so this must stay `fx-wave-gradient.js`.
-			 */
-			'shared/effects/fx-wave-gradient': path.resolve(
-				process.cwd(),
-				'src',
-				'shared',
-				'effects',
-				'fx-wave-gradient.js'
-			),
-			'shared/effects/fx-magnet': path.resolve(
-				process.cwd(),
-				'src',
-				'shared',
-				'effects',
-				'fx-magnet.js'
-			),
-			/*
-			 * Particle trail (Spec 38 FR-38-32) — Tier V, same shape as
-			 * fx-magnet above: a <canvas> 2D pool + one rAF loop, no GSAP
-			 * import, so a page using this and no Tier G effect ships zero
-			 * GSAP bytes.
-			 *
-			 * FILENAME is load-bearing exactly as it is for the entries
-			 * above: the PHP registry derives its module ID as
-			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
-			 * `particles` — so this must stay `fx-particles.js`.
-			 */
-			'shared/effects/fx-particles': path.resolve(
-				process.cwd(),
-				'src',
-				'shared',
-				'effects',
-				'fx-particles.js'
-			),
-			/*
-			 * Cursor grid-dot field (Spec 38 FR-38-33) — Tier V, same shape as
-			 * fx-particles above: a <canvas> 2D lattice + one self-terminating
-			 * rAF loop, no GSAP import, so a page using this and no Tier G
-			 * effect ships zero GSAP bytes.
-			 *
-			 * FILENAME is load-bearing exactly as it is for the entries above:
-			 * the PHP registry derives its module ID as
-			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
-			 * `grid-dots` — so this must stay `fx-grid-dots.js`.
-			 *
-			 * ⛔ This entry is the THIRD of the three registration points with
-			 * no gate at all (D784). Nothing checks that a shipped effect has a
-			 * webpack entry: miss it and `build/shared/effects/fx-grid-dots.js`
-			 * simply never exists, the registry enqueues a 404, and the client
-			 * gets a configured effect that does nothing.
-			 */
-			'shared/effects/fx-grid-dots': path.resolve(
-				process.cwd(),
-				'src',
-				'shared',
-				'effects',
-				'fx-grid-dots.js'
-			),
-			/*
-			 * Infinite-loop carousels (Spec 38 §11 loop FR) — Tier V, same
-			 * shape as fx-cursor-field above: pure DOM clone + scrollLeft
-			 * management, no GSAP import, so a page using this and no Tier G
-			 * effect ships zero GSAP bytes. Sniffed on its OWN attribute
-			 * (`data-sgs-loop`), independent of the `data-sgs-fx` grammar —
-			 * see `includes/class-sgs-motion-registry.php` and the module's
-			 * own docblock for why.
-			 *
-			 * FILENAME is load-bearing exactly as it is for the gsap
-			 * entries: the PHP registry derives its module ID as
-			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
-			 * `carousel-loop` — so this must stay `fx-carousel-loop.js`.
-			 */
-			'shared/effects/fx-carousel-loop': path.resolve(
-				process.cwd(),
-				'src',
-				'shared',
-				'effects',
-				'fx-carousel-loop.js'
-			),
-			/*
-			 * Surface treatment (Tier W / WebGL, Spec 38 §1.2b, D479) — same
-			 * shape as fx-cursor-field/fx-carousel-loop above: this entry
-			 * pulls in the `webgl/` rendering substrate and
-			 * `surface-treatments/` preset modules as plain imports, so they
-			 * bundle straight into this one module rather than needing their
-			 * own entries or externals. No GSAP import anywhere in the
-			 * graph, so a page using this and no Tier G effect still ships
-			 * zero GSAP bytes.
-			 *
-			 * FILENAME is load-bearing exactly as it is for the gsap
-			 * entries: the PHP registry derives its module ID as
-			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
-			 * `surface-treatment` — so this must stay
-			 * `fx-surface-treatment.js`.
-			 */
-			'shared/effects/fx-surface-treatment': path.resolve(
-				process.cwd(),
-				'src',
-				'shared',
-				'effects',
-				'fx-surface-treatment.js'
-			),
-			/*
-			 * Generative background (Tier W, Spec 38, D874 technique spec —
-			 * v1 static build only). No GSAP, no WebGL for v1 — plain
-			 * Canvas 2D colour maths, so a page using this and no Tier G
-			 * effect still ships zero GSAP bytes.
-			 *
-			 * FILENAME is load-bearing exactly as it is for the sibling
-			 * entries: the PHP registry derives its module ID as
-			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
-			 * `generative-background` — so this must stay
-			 * `fx-generative-background.js`.
-			 */
-			'shared/effects/fx-generative-background': path.resolve(
-				process.cwd(),
-				'src',
-				'shared',
-				'effects',
-				'fx-generative-background.js'
-			),
-			...Object.fromEntries(
-				[
-					'fx-scrub',
-					'fx-pin-scrub',
-					'fx-horizontal-panel',
-					'fx-split-reveal',
-					// Wave C. Names are load-bearing: the PHP registry derives
-					// a module ID as '@sgs/fx-' . <fx_effects.effect>, so each
-					// filename must match its DB effect key exactly.
-					'fx-draggable',
-					'fx-draw',
-					'fx-morph',
-					'fx-motion-path',
-					'fx-scramble',
-					'fx-image-sequence',
-					// Flip (FR-38-12, redirected 2026-08-20 to WooCommerce Product
-					// Collection — see fx-flip.js's docblock). Name is load-bearing
-					// exactly like its siblings: the PHP registry derives a module
-					// ID as '@sgs/fx-' . <fx_effects.effect>, and the DB effect key
-					// is `flip`.
-					'fx-flip',
-				].map( ( name ) => [
-					`shared/effects/gsap/${ name }`,
-					path.resolve(
-						process.cwd(),
-						'src',
-						'shared',
-						'effects',
-						'gsap',
-						`${ name }.js`
-					),
-				] )
-			),
+				'gsap',
+			] ),
 		};
 
 		// Mirror the promise/sync handling the script entry above uses — which

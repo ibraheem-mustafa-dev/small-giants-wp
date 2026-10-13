@@ -126,7 +126,7 @@ const SHIPPED_EFFECTS = [
 	// produces real motion — on all four legs, verified end to end rather than
 	// assumed: the runtime module exists (`shared/effects/fx-cursor-field.js`),
 	// the registry enqueues it and its stylesheet on the same conditional terms
-	// (`class-sgs-motion-registry.php` MODULES + EFFECT_STYLES), the render
+	// (`class-sgs-motion-registry.php` MODULES + the `fx-<effect>.css` convention), the render
 	// layer marks the emitter and emits per-instance overrides
 	// (`includes/fx-cursor-field.php`), and the panel below carries three real
 	// controls (field style / colour / size).
@@ -156,7 +156,7 @@ const SHIPPED_EFFECTS = [
 	// module exists (`shared/effects/fx-magnet.js`, driving the generalised
 	// `magnet.js` that has shipped since the mega-menu build), the registry
 	// enqueues it AND its stylesheet on the same conditional terms
-	// (`class-sgs-motion-registry.php` MODULES + EFFECT_STYLES), the generic
+	// (`class-sgs-motion-registry.php` MODULES + the `fx-<effect>.css` convention), the generic
 	// `fx-attributes.php` injector stamps its three params from FX_ATTR_MAP,
 	// and the panel below carries three real controls (pull / range / axis).
 	//
@@ -176,7 +176,7 @@ const SHIPPED_EFFECTS = [
 	// the runtime modules exist (`shared/effects/fx-particles.js` +
 	// `shared/effects/particles.js`), the registry enqueues both the module
 	// AND its stylesheet (`class-sgs-motion-registry.php` MODULES +
-	// EFFECT_STYLES — the stylesheet is load-bearing here for the same
+	// `effect_stylesheet()` — the stylesheet is load-bearing here for the same
 	// reason it is for magnet/cursor-field: without it the canvas would
 	// track the pointer and paint nothing visible would move into place),
 	// the generic `fx-attributes.php` injector stamps its three params from
@@ -191,7 +191,7 @@ const SHIPPED_EFFECTS = [
 	// array's own warning demands: the runtime modules exist
 	// (`shared/effects/fx-grid-dots.js` + `shared/effects/grid-dots.js`), the
 	// webpack entry emits them, and the registry enqueues BOTH the module and
-	// its stylesheet (`class-sgs-motion-registry.php` MODULES + EFFECT_STYLES
+	// its stylesheet (`class-sgs-motion-registry.php` MODULES + the `fx-<effect>.css` convention
 	// — the stylesheet is load-bearing here exactly as it is for
 	// magnet/cursor-field/particles: it positions the canvas AND carries the
 	// `color` channel the JS reads its paint colour from, so without it the
@@ -834,7 +834,7 @@ function treatmentThumbnail( id ) {
  * Filled rather than stroked (unlike `routeThumbnail`, which draws a line):
  * a morph target is a SHAPE, not a path to travel along, so the thumbnail
  * reads the same way the render layer will actually paint it
- * (`fill: currentColor` in `assets/css/fx-shape-routes.css`).
+ * (`fill: currentColor` in `assets/css/fx-morph.css`).
  *
  * @param {string|null} d Path data, or null for the custom-upload option.
  * @return {Object} An SVG element.

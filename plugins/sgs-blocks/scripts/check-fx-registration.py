@@ -14,11 +14,12 @@ exist, in three different files, none of which is gated by anything today:
      Miss it and `build/shared/effects[/gsap]/fx-<slug>.js` is never produced, so the
      MODULES row above points at a file that does not exist on the server. A 404 for a
      module is silent to everything except the browser console.
-  3. `SGS_Motion_Registry::EFFECT_STYLES` (per-effect CSS, WHERE THE EFFECT HAS ANY)
-     For several effects the stylesheet IS the effect (cursor-field, magnet, particles,
-     wave-gradient) - the JS only publishes custom-property VALUES. Ship the module
-     without the stylesheet and the module faithfully tracks a pointer that moves
-     nothing at all.
+  3. The stylesheet `assets/css/fx-<slug>.css` (per-effect CSS, WHERE THE EFFECT HAS ANY)
+     `SGS_Motion_Registry::effect_stylesheet()` finds it by that naming convention; there
+     is no map. For several effects the stylesheet IS the effect (cursor-field, magnet,
+     particles, wave-gradient) - the JS only publishes custom-property VALUES. A
+     stylesheet whose name names no effect is never enqueued, so the module faithfully
+     tracks a pointer that moves nothing at all.
 
 In every case the effect still registers, the panel still appears in the editor, the
 client still configures it, and the page does nothing. Five features have hit this shape
@@ -38,13 +39,14 @@ gates are complementary, not duplicates.)
 CSS IS OPT-IN - "EVERY EFFECT HAS A STYLESHEET" IS A FALSE INVARIANT
 ----------------------------------------------------------------------------------------
 Only some effects need CSS, and asserting otherwise would produce a gate that fails on a
-correct tree and gets its floor lowered until it means nothing. So R3 asserts the two
-things that ARE true in both directions: every EFFECT_STYLES row names a real effect and
-a file that exists, and every `assets/css/fx-*.css` file on disk is either enqueued by a
-row or explicitly exempt WITH a written reason. That catches the real failure - a
-stylesheet written, committed, and never enqueued - without the false one. Note also that
-a filename need not match its slug: `morph` enqueues `fx-shape-routes.css`, so nothing
-here may assume `fx-<slug>.css`.
+correct tree and gets its floor lowered until it means nothing. Stylesheets resolve by
+naming convention (`assets/css/fx-<effect>.css`), so R3 asserts what is true in both
+directions: every `assets/css/fx-*.css` file on disk names a known effect (a key of
+`x-sgs-effects` in motion.schema.json, or a `fx_effects` row when the framework DB is
+reachable, opened read-only), and the registry's `effect_stylesheet()` still resolves by
+that convention and no hand-written effect => file map has come back. That catches the
+real failure - a stylesheet written, committed, and never enqueued because its name
+matches no effect - without the false one.
 
 THE PARSER MUST NOT PASS VACUOUSLY
 ----------------------------------------------------------------------------------------
@@ -82,11 +84,15 @@ this dynamic-import pattern without the pragma would ship a guard that never wor
 nothing here would say so.
 
 Run: python plugins/sgs-blocks/scripts/check-fx-registration.py
+     python plugins/sgs-blocks/scripts/check-fx-registration.py --check
      python plugins/sgs-blocks/scripts/check-fx-registration.py --self-test
 """
 from __future__ import annotations
 
+import json
+import os
 import re
+import sqlite3
 import sys
 from dataclasses import dataclass, replace
 from pathlib import Path
@@ -105,9 +111,9 @@ GATE = "fx-registration"
 # indistinguishable from a defect somebody silenced.
 # ---------------------------------------------------------------------------
 
-# R3 reverse direction: `assets/css/fx-*.css` files that deliberately have NO
-# EFFECT_STYLES row. EMPTY TODAY - every fx-*.css on disk is enqueued by a row. If you
-# add a name here, add the reason with it; "it's fine" is not a reason.
+# R3: `assets/css/fx-*.css` files that deliberately name no effect. EMPTY TODAY - every
+# fx-*.css on disk is an effect's stylesheet. If you add a name here, add the reason with
+# it; "it's fine" is not a reason.
 DECLARED_CSS_EXEMPT: dict[str, str] = {}
 
 MODULE_PREFIX = "@sgs/fx-"
@@ -190,6 +196,9 @@ class Tree:
     # R5's self-test override: {view.js Path -> perturbed text}, read INSTEAD of disk
     # when a path is a key here. None everywhere else, so real runs never consult it.
     view_js_overrides: "dict[Path, str] | None" = None
+    # R3's self-test override: extra `assets/css/<name>` files treated as present on
+    # disk, so a planted orphan stylesheet can be proven red without writing to the tree.
+    css_planted: "tuple[str, ...]" = ()
 
     @property
     def registry_path(self) -> Path:
@@ -314,7 +323,7 @@ def parse_modules(tree: Tree) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# Target 2 - the webpack entries. TWO shapes, and a third construct that is a trap.
+# Target 2 - the webpack entries. Explicit entries plus two `fxEntries()` globs.
 # ---------------------------------------------------------------------------
 
 # `path.resolve( process.cwd(), 'src', ... )` - the inner `process.cwd()` parentheses
@@ -329,29 +338,31 @@ _EXPLICIT_NAME_RE = re.compile(
     r"'(" + re.escape(ENTRY_PREFIX) + r"[A-Za-z0-9/_-]+)'\s*:\s*path\.resolve\("
 )
 
-# Anchored on the `shared/effects/` prefix INSIDE the template literal, never on
-# `Object.fromEntries` - the other fromEntries in this file emits `vendor-modules/${name}`
-# GSAP plugin entries, which this must not collect.
-_MAPPED_ENTRY_RE = re.compile(
-    r"\[([^\[\]]*)\]\s*\.map\(\s*\(\s*\w+\s*\)\s*=>\s*\[\s*"
-    r"`(" + re.escape(ENTRY_PREFIX) + r"[A-Za-z0-9/_-]*)\$\{",
-    re.DOTALL,
+# `...fxEntries( 'shared/effects[/gsap]', [ 'src', 'shared', ... ] )`: webpack globs the
+# `fx-*.js` files of that directory, so every module on disk has an entry named for its
+# tier. The call's prefix and directory segments are what this gate reads.
+_FX_GLOB_CALL_RE = re.compile(
+    r"\.\.\.fxEntries\(\s*'(" + re.escape(ENTRY_PREFIX.rstrip("/")) + r"(?:/gsap)?)'\s*,"
+    r"\s*\[([^\]]*)\]\s*\)"
 )
+# The helper's filename filter, so a glob that stopped selecting `fx-*.js` is noticed.
+_FX_GLOB_FILTER_RE = re.compile(r"/\^fx-\[a-z0-9-\]\+\\\.js\$/")
 
 
 def parse_webpack_entries(tree: Tree) -> dict[str, str]:
     """entry name -> the source file it resolves to, relative to the plugin root.
 
-    Covers both fx entry shapes plus the two non-fx `shared/effects/` entries
-    (`gsap/provider`, `smooth-scroll`), which R4 checks resolve to real files just like
-    the rest.
+    Covers the explicit non-fx `shared/effects/` entries (`gsap/provider`,
+    `smooth-scroll`, `scroll-driver`), which R4 checks resolve to real files, and the two
+    `fxEntries()` globs, which are expanded against the `fx-*.js` files on disk exactly as
+    webpack expands them.
     """
     path = tree.webpack_path
     text = _strip_js_comments(tree.webpack_js)
     entries: dict[str, str] = {}
 
     explicit = _EXPLICIT_ENTRY_RE.findall(text)
-    _floor(explicit, 4, path, f"the explicit '{ENTRY_PREFIX}...' : path.resolve(...) entries")
+    _floor(explicit, 3, path, f"the explicit '{ENTRY_PREFIX}...' : path.resolve(...) entries")
     declared_names = _EXPLICIT_NAME_RE.findall(text)
     unparsed = sorted(set(declared_names) - {name for name, _args in explicit})
     if unparsed:
@@ -365,42 +376,68 @@ def parse_webpack_entries(tree: Tree) -> dict[str, str]:
         segments = re.findall(r"'([^']+)'", args)
         entries[name] = "/".join(segments) if segments else ""
 
-    mapped = _MAPPED_ENTRY_RE.findall(text)
-    _floor(mapped, 1, path, f"the [...].map(...) block emitting `{ENTRY_PREFIX}...` entries")
-    mapped_names: list[str] = []
-    for array_body, prefix in mapped:
-        for name in re.findall(r"'([A-Za-z0-9/_-]+)'", array_body):
-            mapped_names.append(name)
-            tier_dir = prefix[len(ENTRY_PREFIX):].strip("/")
-            source = ["src", "shared", "effects"] + ([tier_dir] if tier_dir else []) + [f"{name}.js"]
-            entries[f"{prefix}{name}"] = "/".join(source)
-    _floor(mapped_names, 4, path, "the effect names inside that .map(...) array")
+    if not _FX_GLOB_FILTER_RE.search(text):
+        raise VacuousParse(
+            f"{path}: the `fxEntries()` helper no longer filters on /^fx-[a-z0-9-]+\\.js$/. "
+            "Every R2 comparison against its globs would verify nothing. Fix the parser "
+            "in check-fx-registration.py."
+        )
+    calls = _FX_GLOB_CALL_RE.findall(text)
+    _floor(calls, 2, path, "the `...fxEntries( 'shared/effects[/gsap]', [...] )` globs")
+    for prefix, segment_body in calls:
+        segments = re.findall(r"'([^']+)'", segment_body)
+        directory = tree.root.joinpath(*segments)
+        for module in sorted(directory.glob("fx-*.js")):
+            entries[f"{prefix}/{module.stem}"] = "/".join([*segments, module.name])
 
     _floor(entries, 10, path, f"all '{ENTRY_PREFIX}...' webpack entries combined")
     return entries
 
 
 # ---------------------------------------------------------------------------
-# Target 3 - the per-effect CSS map.
+# Target 3 - the per-effect CSS, resolved by naming convention.
 # ---------------------------------------------------------------------------
 
-def parse_effect_styles(tree: Tree) -> dict[str, str]:
-    """`private const EFFECT_STYLES` -> {bare slug: stylesheet path}.
+_SLUG_RE = re.compile(r"^[a-z0-9-]+$")
 
-    Keys are BARE slugs here, not `@sgs/`-prefixed, and the filename need not match the
-    slug (`morph` => `fx-shape-routes.css`).
-    """
-    path = tree.registry_path
-    body = _strip_php_comments(
+
+def known_effects(tree: Tree) -> set[str]:
+    """Effect names: keys of `x-sgs-effects` in motion.schema.json, plus the `fx_effects`
+    rows of the framework DB when it is reachable (opened read-only; absent in a deploy
+    worktree, where the schema alone answers)."""
+    schema_path = tree.root / "schemas" / "motion.schema.json"
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        effects = set(schema["x-sgs-effects"])
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise VacuousParse(
+            f"{schema_path}: cannot read the `x-sgs-effects` keys ({exc}). R3 has no "
+            "effect list to compare stylesheets against."
+        ) from exc
+    _floor(effects, 10, schema_path, "the `x-sgs-effects` keys")
+    db = Path(os.environ.get("SGS_FRAMEWORK_DB")
+              or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db")
+    if db.is_file():
+        try:
+            conn = sqlite3.connect(f"file:{db.as_posix()}?mode=ro", uri=True)
+            try:
+                effects |= {row[0] for row in conn.execute("SELECT effect FROM fx_effects")}
+            finally:
+                conn.close()
+        except sqlite3.Error as exc:
+            print(f"[fx-registration] note: fx_effects not read ({exc}); schema effects only", file=sys.stderr)
+    return effects
+
+
+def parse_stylesheet_resolver(tree: Tree) -> str:
+    """The body of `SGS_Motion_Registry::effect_stylesheet()`, comments stripped."""
+    return _strip_php_comments(
         _block_after(
             tree.registry_php,
-            r"private\s+const\s+EFFECT_STYLES\s*=\s*array\s*\(",
-            "(", ")", path, "SGS_Motion_Registry::EFFECT_STYLES",
+            r"public\s+static\s+function\s+effect_stylesheet\s*\([^)]*\)[^{]*",
+            "{", "}", tree.registry_path, "SGS_Motion_Registry::effect_stylesheet()",
         )
     )
-    rows = dict(re.findall(r"'([a-z0-9-]+)'\s*=>\s*'([^']+)'", body))
-    _floor(rows, 4, path, "the rows of EFFECT_STYLES")
-    return rows
 
 
 # ---------------------------------------------------------------------------
@@ -572,7 +609,8 @@ def css_files_on_disk(tree: Tree) -> set[str]:
             f"{directory} does not exist as a directory - R3's reverse direction reads "
             "it and cannot verify anything without it."
         )
-    return {f"assets/css/{p.name}" for p in directory.glob("fx-*.css")}
+    found = {f"assets/css/{p.name}" for p in directory.glob("fx-*.css")}
+    return found | {f"assets/css/{name}" for name in tree.css_planted}
 
 
 # ---------------------------------------------------------------------------
@@ -589,7 +627,7 @@ class Violation:
 _RULES = {
     "R1": "every fx module has a MODULES row whose path matches its source tier",
     "R2": "every fx module has a webpack entry named for its source tier",
-    "R3": "EFFECT_STYLES rows name real effects and real files, and no fx-*.css is orphaned",
+    "R3": "every fx-*.css names a known effect, and effect_stylesheet() resolves by that naming convention",
     "R4": "no MODULES row or shared/effects webpack entry points at a missing source file",
     "R5": "every view.js dynamic import( '@sgs/...' ) carries the webpackIgnore pragma",
     "R6": "every built view.js static bare @sgs/* import is a declared dependency somewhere",
@@ -600,8 +638,10 @@ def evaluate(tree: Tree) -> list[Violation]:
     drivers = parse_drivers(tree)
     modules = parse_modules(tree)
     entries = parse_webpack_entries(tree)
-    styles = parse_effect_styles(tree)
+    resolver = parse_stylesheet_resolver(tree)
+    effects = known_effects(tree)
     css_on_disk = css_files_on_disk(tree)
+    _floor(css_on_disk, 4, tree.root / "assets" / "css", "the fx-*.css files on disk")
     dynamic_import_sites = parse_view_js_dynamic_imports(tree)
     # Floor of 2, not 1: today's two known call sites (before-after, testimonial-slider).
     # A parse that suddenly finds 0 or 1 has lost the construct, not proven the tree
@@ -664,52 +704,58 @@ def evaluate(tree: Tree) -> list[Violation]:
                 f"`build/{wanted}.js` is therefore never produced, so the MODULES row "
                 "that registers it points at a file that does not exist on the server. "
                 "The build passes green and the effect does nothing.",
-                f"Add '{wanted}' to the vendorEntries object in webpack.config.js "
-                + ("(the `.map(...)` array of gsap effect names)." if tier else
-                   "(an explicit `path.resolve( process.cwd(), 'src', 'shared', "
-                   "'effects', ... )` entry)."),
+                f"Make sure an `fxEntries( '{(ENTRY_PREFIX + tier).rstrip('/')}', [...] )` "
+                f"glob in webpack.config.js covers "
+                f"`src/{ENTRY_PREFIX}{tier + '/' if tier else ''}` and emits '{wanted}'.",
             ))
 
-    # ---- R3: CSS, both directions --------------------------------------------
-    # NOT "every effect has CSS" - CSS is opt-in and only 8 of the effects use it.
-    for slug in sorted(styles):
-        asset = styles[slug]
-        if slug not in drivers:
-            violations.append(Violation(
-                "R3",
-                f"`EFFECT_STYLES` enqueues `{asset}` for effect `{slug}`, which has no "
-                f"`fx-{slug}.js` module on disk. The row is dead - either the effect was "
-                "removed and this was left behind, or the key is misspelled and the real "
-                "effect is shipping with no stylesheet at all.",
-                f"Delete the `{slug}` row from EFFECT_STYLES, or correct the key to the "
-                "slug of the module it was meant to style.",
-            ))
-        if not (tree.root / asset).is_file():
-            violations.append(Violation(
-                "R3",
-                f"`EFFECT_STYLES['{slug}']` points at `{asset}`, which does not exist. "
-                "The enqueue resolves to a missing file, so for any effect whose "
-                "stylesheet IS the effect the module runs and paints nothing.",
-                f"Create {asset}, or correct the path in EFFECT_STYLES "
-                "(includes/class-sgs-motion-registry.php).",
-            ))
-
-    referenced = set(styles.values())
-    for asset in sorted(css_on_disk - referenced):
-        name = asset.rsplit("/", 1)[-1]
-        if name in DECLARED_CSS_EXEMPT:
-            continue
+    # ---- R3: CSS by naming convention ----------------------------------------
+    # NOT "every effect has CSS" - CSS is opt-in and only some effects use it.
+    if "'assets/css/fx-' . $effect . '.css'" not in resolver or not re.search(
+        r"preg_match\(\s*'/\^\[a-z0-9-\]\+\\z/'", resolver
+    ):
         violations.append(Violation(
             "R3",
-            f"`{asset}` exists but no `EFFECT_STYLES` row enqueues it. A stylesheet that "
-            "is written, committed and never enqueued is the exact failure this gate "
-            "exists for: the effect registers, the panel appears, the client configures "
-            "it, and nothing paints.",
-            f"Add a row to EFFECT_STYLES mapping the owning effect slug to '{asset}' "
-            f"(includes/class-sgs-motion-registry.php), or - if it is enqueued some "
-            f"other way or deliberately unused - add '{name}' to DECLARED_CSS_EXEMPT in "
-            "check-fx-registration.py WITH the reason.",
+            "`SGS_Motion_Registry::effect_stylesheet()` no longer builds "
+            "`'assets/css/fx-' . $effect . '.css'` behind a `[a-z0-9-]+` slug check. "
+            "Stylesheets resolve by that naming convention alone, so any other shape "
+            "leaves effects whose CSS IS the effect running with nothing painted.",
+            "Restore the convention in effect_stylesheet() "
+            "(includes/class-sgs-motion-registry.php).",
         ))
+    if re.search(r"\bEFFECT_STYLES\b", _strip_php_comments(tree.registry_php)):
+        violations.append(Violation(
+            "R3",
+            "`EFFECT_STYLES` is back in the registry. A hand-written effect => file map "
+            "can drift from the files on disk (R-31-1); stylesheets resolve by naming "
+            "convention.",
+            "Delete the map and name the stylesheet `assets/css/fx-<effect>.css`.",
+        ))
+    for asset in sorted(css_on_disk):
+        name = asset.rsplit("/", 1)[-1]
+        slug = name[len("fx-"):-len(".css")]
+        if name in DECLARED_CSS_EXEMPT:
+            continue
+        if slug not in effects:
+            violations.append(Violation(
+                "R3",
+                f"`{asset}` names no known effect (`{slug}` is not a key of "
+                "`x-sgs-effects` in motion.schema.json or an `fx_effects` row). "
+                "`effect_stylesheet()` only ever looks up `assets/css/fx-<effect>.css` "
+                "for a real effect, so this stylesheet is never enqueued: the effect "
+                "registers, the panel appears, the client configures it, and nothing "
+                "paints.",
+                f"Rename {asset} to `fx-<effect>.css` for the effect it styles, or - if "
+                f"it is deliberately not an effect stylesheet - add '{name}' to "
+                "DECLARED_CSS_EXEMPT in check-fx-registration.py WITH the reason.",
+            ))
+        elif not _SLUG_RE.match(slug):
+            violations.append(Violation(
+                "R3",
+                f"`{asset}`: effect `{slug}` is not a plain [a-z0-9-]+ slug, so "
+                "`effect_stylesheet()` refuses to resolve it.",
+                "Rename the effect or widen the slug check in effect_stylesheet().",
+            ))
 
     # ---- R4: reverse / dangling ----------------------------------------------
     for slug in sorted(modules):
@@ -871,29 +917,39 @@ _CASES = (
         "'build/shared/effects/fx-scrub.js'",
     ),
     _Case(
-        "R2", "delete the explicit fx-particles webpack entry",
+        # The gsap glob pointed at a directory that holds no modules: every Tier G
+        # effect then has no webpack entry.
+        "R2", "point the gsap fxEntries glob at a directory with no modules",
         "webpack_js",
-        r"'shared/effects/fx-particles'\s*:\s*path\.resolve\([^)]*\),",
-        "",
+        r"(\.\.\.fxEntries\(\s*'shared/effects/gsap',\s*\[\s*'src',\s*'shared',\s*'effects',\s*)'gsap'",
+        r"\1'gsap-missing'",
     ),
     _Case(
-        # Proves shape (b) - the `.map(...)` array - is genuinely parsed, not assumed.
-        "R2", "delete 'fx-flip' from the gsap .map(...) array",
+        # The root-tier glob emitting under the wrong output prefix: the entry exists
+        # but at a path MODULES does not register.
+        "R2", "emit the root-tier fx entries under the wrong output prefix",
         "webpack_js",
-        r"\n\t+'fx-flip',",
-        "",
+        r"\.\.\.fxEntries\(\s*'shared/effects',",
+        "...fxEntries( 'shared/effects/gsap',",
     ),
     _Case(
-        "R3", "point an EFFECT_STYLES row at a stylesheet that does not exist",
+        "R3", "make the resolver look for a different file naming",
         "registry_php",
-        r"'magnet'(\s*)=>(\s*)'assets/css/fx-magnet\.css',",
-        r"'magnet'\1=>\2'assets/css/fx-magnet-does-not-exist.css',",
+        r"'assets/css/fx-' \. \$effect",
+        "'assets/css/ex-' . $effect",
     ),
     _Case(
-        "R3", "add an EFFECT_STYLES key that is not a real effect slug",
+        "R3", "bring a hand-written EFFECT_STYLES map back",
         "registry_php",
-        r"('particles'\s*=>\s*'assets/css/fx-particles\.css',)",
-        r"\1\n\t\t'selftest-ghost'  => 'assets/css/fx-particles.css',",
+        r"(public static function effect_stylesheet)",
+        r"private const EFFECT_STYLES = array();\n\t\1",
+    ),
+    _Case(
+        # field="css_planted:<file name>": a synthetic field that adds a stylesheet to
+        # the disk view without writing it.
+        "R3", "plant an fx-*.css that names no effect",
+        "css_planted:fx-selftest-orphan.css",
+        "", "",
     ),
     _Case(
         "R4", "add a dangling @sgs/fx-ghost row to MODULES",
@@ -929,23 +985,18 @@ _CASES = (
         "private const MODULES_RENAMED_BY_SELFTEST = array(",
     ),
     _Case(
-        # NOT count=1: renaming a single occurrence leaves the other eighteen entries
-        # perfectly parseable, so the gate would correctly report a violation and the
-        # blindness arm would never be exercised. A construct reshape rewrites them ALL.
-        "VACUOUS", "reshape every shared/effects entry name in webpack.config.js",
+        # Renaming the helper leaves no glob call for the parse to find.
+        "VACUOUS", "rename the fxEntries glob helper so its parse matches nothing",
         "webpack_js",
-        r"shared/effects/",
-        "shared/effectsRENAMED/",
-        # 9 occurrences today (8 explicit entry names + the one gsap template
-        # literal); the floor is 5 so the case still asserts a MASS rewrite landed
-        # without re-breaking every time an entry is added or removed.
-        min_hits=5,
+        r"fxEntries",
+        "fxEntriesRenamedBySelftest",
+        min_hits=3,
     ),
     _Case(
-        "VACUOUS", "rename EFFECT_STYLES so its parse matches nothing",
+        "VACUOUS", "rename effect_stylesheet so its parse matches nothing",
         "registry_php",
-        r"private const EFFECT_STYLES\s*=\s*array\(",
-        "private const EFFECT_STYLES_RENAMED_BY_SELFTEST = array(",
+        r"public static function effect_stylesheet",
+        "public static function effect_stylesheet_renamed_by_selftest",
     ),
 )
 
@@ -966,7 +1017,8 @@ def _self_test() -> int:
         drivers = parse_drivers(clean)
         modules = parse_modules(clean)
         entries = parse_webpack_entries(clean)
-        styles = parse_effect_styles(clean)
+        resolver = parse_stylesheet_resolver(clean)
+        effects = known_effects(clean)
     except VacuousParse as exc:
         print(f"[{GATE} --self-test] FAIL - baseline parse is vacuous: {exc}")
         return 1
@@ -978,13 +1030,29 @@ def _self_test() -> int:
         return 1
     print(f"[{GATE} --self-test] [0] negative control: clean tree passes; parses are "
           f"non-vacuous ({len(drivers)} drivers, {len(modules)} MODULES fx rows, "
-          f"{len(entries)} shared/effects entries, {len(styles)} EFFECT_STYLES rows)")
+          f"{len(entries)} shared/effects entries, resolver body {len(resolver)} chars, "
+          f"{len(effects)} known effects)")
 
     for index, case in enumerate(_CASES, start=1):
         # "view_js:<relative path>" is a synthetic field only R5 uses: it perturbs ONE
         # named file inside Tree.view_js_overrides rather than one of the two cached
         # text blobs, because R5's corpus is "every view.js on disk", not a single file.
         is_view_js_case = case.field.startswith("view_js:")
+        if case.field.startswith("css_planted:"):
+            broken = replace(clean, css_planted=(case.field[len("css_planted:"):],))
+            try:
+                found = evaluate(broken)
+            except VacuousParse as exc:
+                found = []
+                print(f"[{GATE} --self-test] [{index}] {case.rule}: parse went vacuous: {exc}")
+            caught = [v for v in found if v.rule == case.rule]
+            if caught:
+                print(f"[{GATE} --self-test] [{index}] {case.rule}: {case.label} - caught "
+                      f"({len(caught)} msg): {caught[0].detail[:88]}...")
+            else:
+                failures.append(f"{case.rule}/{case.label}")
+                print(f"[{GATE} --self-test] [{index}] {case.rule}: {case.label} - NOT CAUGHT")
+            continue
         if is_view_js_case:
             rel = case.field[len("view_js:"):]
             target_path = clean.root / "src" / "blocks" / rel

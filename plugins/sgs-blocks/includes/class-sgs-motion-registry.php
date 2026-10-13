@@ -391,132 +391,6 @@ class SGS_Motion_Registry {
 	const SETTINGS_OPTION = 'sgs_motion_settings';
 
 	/**
-	 * Effects that ship a companion stylesheet, as effect => asset-relative path.
-	 *
-	 * Enqueued on the SAME conditional terms as the effect's script module: a
-	 * page with no horizontal panel gets no horizontal-panel CSS. The Tier V
-	 * anti-pattern this must not repeat (§4.4) is exactly an unconditional
-	 * enqueue that self-gates at runtime.
-	 *
-	 * The horizontal panel needs one for a reason worth stating: its fallback is
-	 * what makes the content REACHABLE on a phone or under reduced motion. The
-	 * effect module cannot own that fallback, because the module never runs in
-	 * either of those cases.
-	 *
-	 * Motion-path needs one for a different reason: the render layer appends a
-	 * hidden route `<svg>` (Spec 38 §11.2, D427) whose box IS its geometry, so
-	 * without this stylesheet the route resolves to a stray in-flow SVG of
-	 * intrinsic size. That is a Spec 32 obligation as much as a functional one
-	 * — the render layer must not inline those declarations onto the element.
-	 *
-	 * @var array<string, string>
-	 */
-	private const EFFECT_STYLES = array(
-		'horizontal-panel' => 'assets/css/fx-horizontal-panel.css',
-		'motion-path'      => 'assets/css/fx-motion-path.css',
-
-		/*
-		 * Morph needs one for the same reason motion-path does: the render
-		 * layer (`includes/fx-shape-routes.php`, Spec 38 §11.2 D427) appends a
-		 * visible FROM `<svg>` and a hidden TO `<svg>` after the qualifying
-		 * block, and both need positioning so they cover the block's box
-		 * instead of sitting in-flow at their intrinsic size.
-		 */
-		'morph'            => 'assets/css/fx-shape-routes.css',
-
-		/*
-		 * Lottie (Tier H, D1151): the poster/animation stack, the wrapper
-		 * background layer and the 44px pause control, on Lottie pages only.
-		 */
-		'lottie'           => 'assets/css/fx-lottie.css',
-
-		/*
-		 * The cursor field needs one for the strongest reason of the four: for
-		 * this effect the stylesheet IS the effect. Every field type paints in
-		 * CSS, and the JS does nothing but publish two custom-property values.
-		 * Without this enqueue the module would faithfully track a pointer that
-		 * moves nothing at all — the shape of bug where every artefact looks
-		 * correct and the page does nothing, which is how morph sat broken for
-		 * months (D452).
-		 */
-		'cursor-field'     => 'assets/css/fx-cursor-field.css',
-
-		/*
-		 * Magnet needs one for the same reason cursor-field does: the JS
-		 * writes only `--magnet-x`/`--magnet-y` VALUES (Spec 32), so without
-		 * this stylesheet the module would faithfully track a pointer while
-		 * nothing on the page moved — the bug shape where every artefact looks
-		 * correct and the page does nothing, which is how morph sat broken for
-		 * months (D452).
-		 */
-		'magnet'           => 'assets/css/fx-magnet.css',
-
-		/*
-		 * Particle trail needs one for the same reason magnet does: the JS
-		 * paints entirely onto its OWN canvas element, which
-		 * `assets/css/fx-particles.css` positions/layers (Spec 32 — no
-		 * inline styling). Without this enqueue the canvas would exist with
-		 * no size and no stacking position, so the pool would run and paint
-		 * nothing a visitor could ever see.
-		 */
-		'particles'        => 'assets/css/fx-particles.css',
-
-		/*
-		 * The wave gradient's stylesheet is its FALLBACK CONTRACT, not
-		 * decoration. Tier W's usual "the untouched <img> is the fallback"
-		 * guarantee cannot apply to a generative effect — there is no
-		 * untouched anything — so this stylesheet paints the static gradient
-		 * from the same custom properties the shader reads. Without this
-		 * enqueue a no-WebGL visitor gets a blank box, which is precisely the
-		 * failure Tier W's invariant existed to make impossible.
-		 */
-		'wave-gradient'    => 'assets/css/fx-wave-gradient.css',
-
-		/*
-		 * Generative background (Tier W, Spec 38, D874 technique spec — v1
-		 * static build only). Same reason as the wave gradient's own row
-		 * immediately above: this is a GENERATIVE effect with no untouched
-		 * source image to fall back to, so this stylesheet paints the static
-		 * gradient from the same custom properties the JS-built OKLCH image
-		 * reads. Without this enqueue a no-JS visitor gets a blank box.
-		 */
-		'generative-background' => 'assets/css/fx-generative-background.css',
-
-		/*
-		 * Surface treatment (Tier W / WebGL, Spec 38 §1.2b, D479). The
-		 * stylesheet positions the `<canvas class="sgs-webgl-surface">` the
-		 * boot module appends over its sibling `<img>` — the render/JS
-		 * layers write zero CSS property declarations of their own
-		 * (Spec 32), so without this enqueue the canvas would paint at its
-		 * intrinsic size instead of covering the image it treats.
-		 */
-		'surface-treatment' => 'assets/css/fx-surface-treatment.css',
-
-		/*
-		 * Cursor grid-dot field (Spec 38 FR-38-33). LOAD-BEARING, not
-		 * decoration, for two independent reasons — either alone would make
-		 * the effect look broken rather than absent:
-		 *
-		 *  1. It positions the `<canvas class="sgs-grid-dots__canvas">` the
-		 *     engine appends (Spec 32: that module writes buffer-size
-		 *     ATTRIBUTES only, never inline style), so without it the canvas
-		 *     paints at its intrinsic 300x150 in the corner.
-		 *  2. It carries the `color` channel the engine READS its paint colour
-		 *     from. The JS deliberately does not read the custom property —
-		 *     `getPropertyValue()` returns the `var(...)` text unresolved and a
-		 *     canvas cannot paint with a string — so without this stylesheet
-		 *     the lattice computes perfectly and paints in whatever `color`
-		 *     happens to be inherited. That is D846's exact failure: a canvas
-		 *     firing correctly at 1.44:1 contrast, invisible, with every
-		 *     automated signal green.
-		 *
-		 * ⛔ This map is the SECOND of the three registration points with no
-		 * gate at all (D784).
-		 */
-		'grid-dots'         => 'assets/css/fx-grid-dots.css',
-	);
-
-	/**
 	 * Page-transition styles (FR-38-19) => the keyframe pair + duration.
 	 *
 	 * `none` is deliberately NOT a member: it is the absence of a transition,
@@ -719,7 +593,7 @@ class SGS_Motion_Registry {
 			? (string) $raw['treatment_palette_base']
 			: 'primary';
 
-		if ( ! \preg_match( '/^[a-z0-9-]+$/', $palette_base ) ) {
+		if ( ! \preg_match( '/^[a-z0-9-]+\z/', $palette_base ) ) {
 			$palette_base = 'primary';
 		}
 
@@ -1232,6 +1106,25 @@ class SGS_Motion_Registry {
 	}
 
 	/**
+	 * The companion stylesheet of an effect, by naming convention.
+	 *
+	 * An effect that ships CSS keeps it at `assets/css/fx-<effect>.css`; the
+	 * stylesheet loads on the same conditional terms as the effect's script
+	 * module, so a page with no such effect loads no `fx-*.css`. The slug must be
+	 * a plain effect name, which keeps a crafted value from leaving the folder.
+	 *
+	 * @param string $effect Effect name from `data-sgs-fx`.
+	 * @return string|null Plugin-relative path, or null when the effect has no stylesheet.
+	 */
+	public static function effect_stylesheet( string $effect ): ?string {
+		if ( 1 !== \preg_match( '/^[a-z0-9-]+\z/', $effect ) ) {
+			return null;
+		}
+		$rel = 'assets/css/fx-' . $effect . '.css';
+		return \file_exists( SGS_BLOCKS_PATH . $rel ) ? $rel : null;
+	}
+
+	/**
 	 * Enqueue the modules one effect needs, once per request.
 	 *
 	 * @param string $effect Effect name from `data-sgs-fx`.
@@ -1270,16 +1163,14 @@ class SGS_Motion_Registry {
 		}
 
 		// Companion stylesheet, on the same conditional terms as the script.
-		if ( isset( self::EFFECT_STYLES[ $effect ] ) ) {
-			$rel = self::EFFECT_STYLES[ $effect ];
-			if ( \file_exists( SGS_BLOCKS_PATH . $rel ) ) {
-				\wp_enqueue_style(
-					'sgs-fx-' . $effect,
-					SGS_BLOCKS_URL . $rel,
-					array(),
-					SGS_BLOCKS_VERSION
-				);
-			}
+		$rel = self::effect_stylesheet( $effect );
+		if ( null !== $rel ) {
+			\wp_enqueue_style(
+				'sgs-fx-' . $effect,
+				SGS_BLOCKS_URL . $rel,
+				array(),
+				SGS_BLOCKS_VERSION
+			);
 		}
 
 		// The effect's own runtime module. Its declared dependencies pull the

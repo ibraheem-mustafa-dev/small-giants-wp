@@ -7,7 +7,7 @@
  *   focus-visible-parity, reveal-hidden-only-when-ready, js-blocked-visible, js-blocked-load-entrance,
  *   fade-plays-on-part-only, entrance-ends-translate-none, distance-token-resolves, lcp-first-section-opacity,
  *   load-later-fades, keyframes-three-with-delay, entrance-then-hover-lift, scroll-driver-progress (+ cross-engine),
- *   tilt-no-inline-transform, no-inline-style:<marker>, no-motion-assets, reduced-no-movement, reduced-delays-zero,
+ *   tilt-no-inline-transform, no-inline-style:<marker>, no-motion-assets, no-fx-stylesheet, reduced-no-movement, reduced-delays-zero,
  *   reduced-colour-hover, reduced-mid-session-switch.
  *
  * OUT OF SCOPE FOR M2 (listed with the unit that closes each):
@@ -45,6 +45,36 @@ import { fadeChecks, loadChecks, keyframeChecks, scrollDriverChecks, assetChecks
 const BROWSERS = { chromium, firefox, webkit };
 const MARKERS = [ '.m29-hover-card', '.m29-fade-part', '.m29-load-first', '.m29-kf', '.m29-both', '.m29-tilt', '.m29-nomotion', '.m29-first' ];
 const HEIGHT = 900;
+
+const FX_STYLESHEET = /\/fx-[a-z0-9-]+\.css/;
+
+/**
+ * A page that uses no fx effect loads no `fx-<effect>.css` (Spec 38A: effect stylesheets load on the same terms as
+ * their script). The fixture pages carry no fx effect, so no request on any of them may match. The control fetches a
+ * real effect stylesheet from the first page; the detector must see that request, so a listener that sees nothing
+ * cannot pass the check.
+ */
+async function fxStylesheetChecks( ctx ) {
+	const { rep, browser, width, base, urls } = ctx;
+	const load = async ( url, probeUrl ) => {
+		const context = await browser.newContext( { viewport: { width, height: HEIGHT } } );
+		const page = await context.newPage();
+		const seen = [];
+		page.on( 'request', ( r ) => seen.push( r.url() ) );
+		const res = await page.goto( url, { waitUntil: 'load' } );
+		if ( probeUrl ) await page.evaluate( ( u ) => fetch( u ).catch( () => null ), probeUrl );
+		await page.waitForTimeout( 800 );
+		await context.close();
+		return { status: res ? res.status() : 0, hits: seen.filter( ( u ) => FX_STYLESHEET.test( u ) ) };
+	};
+	for ( const url of urls ) {
+		const got = await load( url );
+		rep.check( 'no-fx-stylesheet', { selector: url, property: 'network requests matching fx-<effect>.css', measured: got.hits, expected: [], pass: got.status === 200 && got.hits.length === 0 } );
+	}
+	const probeUrl = `${ base }/wp-content/plugins/sgs-blocks/assets/css/fx-morph.css`;
+	const seen = await load( urls[ 0 ], probeUrl );
+	rep.control( 'no-fx-stylesheet', { selector: urls[ 0 ], property: 'the same listener while the page fetches fx-morph.css', measured: seen.hits, expected: 'at least one request', red: seen.hits.length > 0 } );
+}
 
 /** Which given page carries each marker class (the first that does). */
 async function findMarkers( browser, urls ) {
@@ -93,8 +123,8 @@ async function main() {
 				await page.waitForTimeout( 300 );
 				return { page, close: () => context.close() };
 			};
-			const ctx = { browser, engine, width, base, args, markers, rep, newPage, shared };
-			for ( const run of [ hoverChecks, touchAndFocusChecks, fadeChecks, loadChecks, keyframeChecks, scrollDriverChecks, tiltAndInlineChecks, assetChecks, reducedMotionChecks ] ) {
+			const ctx = { browser, engine, width, base, args, markers, rep, newPage, shared, urls };
+			for ( const run of [ hoverChecks, touchAndFocusChecks, fadeChecks, loadChecks, keyframeChecks, scrollDriverChecks, tiltAndInlineChecks, assetChecks, fxStylesheetChecks, reducedMotionChecks ] ) {
 				try {
 					await run( ctx );
 				} catch ( e ) {

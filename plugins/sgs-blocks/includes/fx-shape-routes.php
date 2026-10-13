@@ -427,7 +427,7 @@ function sgs_expand_fx_shape_pair( string $block_content ): string {
 	 * block's own grid/flex relationship with its parent would change the
 	 * layout of a page that only asked for an effect. The visible shape is
 	 * positioned to cover the block's own box via CSS Anchor Positioning
-	 * (`assets/css/fx-shape-routes.css`) — see that file for the mechanism
+	 * (`assets/css/fx-morph.css`) — see that file for the mechanism
 	 * and the `@supports` fallback for browsers without it.
 	 */
 	return $content;
