@@ -247,6 +247,7 @@
 /* ===== 3D Tilt on Hover ===== */
 
 .sgs-has-tilt-3d {
+    transform: perspective(var(--sgs-tilt-persp, 800px)) rotateX(var(--sgs-tilt-x, 0deg)) rotateY(var(--sgs-tilt-y, 0deg));
     transform-style: preserve-3d;
     transition: transform 100ms ease-out;
     will-change: transform;
