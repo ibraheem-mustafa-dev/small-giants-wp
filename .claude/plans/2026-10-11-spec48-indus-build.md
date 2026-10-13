@@ -10,7 +10,7 @@ status: in progress
 
 **Purpose.** Spec 48 Appendix B lists the 25 ordered steps that turn the Indus Claude Design export (`sites/indus-foods/handoff/`) into a working SGS site through stages 0 to 5. This plan groups them into phases, each closed by the done-when of the requirement it cites, and fixes who runs what, in which order, beside what. Quality and reliability come first; a speed or cost gain is taken only where it adds no risk (Bean, 2026-10-11).
 
-**Where it stands (2026-10-12).** Phase 1 (steps 1 to 8) and steps 9 to 12 are done: all 17 Indus blocks are current and the stage-0 calibration baseline is written. Steps 13 and 14 are done (intake lane); 14b is next, then 15; steps 16 to 25 are not started or are in the other lanes. Progress per step is marked in the phases below.
+**Where it stands (2026-10-13).** Phase 1 (steps 1 to 8) and steps 9 to 12 are done: all 17 Indus blocks are current and the stage-0 calibration baseline is written. Steps 13, 14 and 14b are done; step 15 (Bean's review) is in progress, see its Progress note; steps 16 to 25 are not started. Progress per step is marked in the phases below.
 
 ## Orchestration
 
@@ -20,8 +20,8 @@ status: in progress
 | Route | session A (the one that wrote this plan) | 3 → 5 → 6 → 7 → 8 | 8 needs 4 | 3 h 15 |
 | Mirror | session A, background subagent | 4, later 2 | nothing | 45 min, then 5 min |
 | Framework | session B (done 2026-10-12) | 9 → 10 → 11 → 12 | nothing | 2 h 55 |
-| Intake | session C (13 and 14 done 2026-10-12) | 13 → 14 → 14b | 3 pushed | 6 h |
-| Join | one session, from 14b (Bean, 2026-10-12: one prompt replaces the three lanes' prompts) | 15 → 16 → 17 → 18 → 19 → 20 → 20b | 14b | from Appendix B per step |
+| Intake | session C (13, 14 and 14b done 2026-10-12) | 13 → 14 → 14b | 3 pushed | 6 h |
+| Join | one session, from 15 (Bean, 2026-10-12: one prompt replaces the three lanes' prompts) | 15 → 16 → 17 → 18 → 19 → 20 → 20b | 14b | from Appendix B per step |
 
 The lanes join at step 15 (needs 8, 9, 14 and 14b), and one session runs the join row in order from there: steps 16 to 18 share `indus-test` work (Appendix A's step 5 is plan step 17's snapshot, its step 11 is step 18's site build). The critical path is the intake lane (3, 13, 14: about 5 h 45 by the spec's figures, against about 12 h with every set-up and intake step in a row).
 
