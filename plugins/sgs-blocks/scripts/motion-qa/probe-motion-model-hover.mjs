@@ -217,7 +217,7 @@ export async function tiltAndInlineChecks( ctx ) {
 		const { page, close } = await ctx.newPage( markers[ '.m29-tilt' ] );
 		try {
 			const sel = '.m29-tilt';
-			await page.$eval( sel, ( el ) => el.scrollIntoView( { block: 'center' } ) );
+			await settleInView( page, sel );
 			const box = await ( await page.$( sel ) ).boundingBox();
 			await page.mouse.move( 0, 0 );
 			await page.waitForTimeout( 150 );
