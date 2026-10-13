@@ -549,6 +549,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					menuRef={ ref }
 					menuOptions={ menuOptions }
 					isResolving={ isResolving }
+					accordionScrollIntoView={ attributes.accordionScrollIntoView }
 					setAttributes={ setAttributes }
 				/>
 
@@ -665,6 +666,16 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								showLineHeight: false,
 								showLetterSpacing: true,
 								showTransform: true,
+							},
+							{
+								key: 'ornamentText',
+								label: __( 'Row number or glyph', 'sgs-blocks' ),
+								prefix: 'ornamentText',
+								showSize: false,
+								showStyle: false,
+								showLineHeight: false,
+								showFontFamily: true,
+								showLetterSpacing: true,
 							},
 							{
 								key: 'drillBack',

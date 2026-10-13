@@ -1,9 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, SelectControl } from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 
 /**
  * SGS Nav Drawer Menu (sgs/nav-drawer-menu) — Settings tab: the "Menu" panel
- * (menu source picker only).
+ * (the menu source picker and the accordion's scroll-into-view switch).
  *
  * Only the "Menu" panel (the `ref` source picker — every menu-rendering block
  * needs it). The bar block's "Burger Menu" panel (`collapsePoint`) is BAR-only:
@@ -17,12 +17,14 @@ import { PanelBody, SelectControl } from '@wordpress/components';
  *                                       reserved JSX prop name.
  * @param {Array}    root0.menuOptions   From useNavMenuSource().
  * @param {boolean}  root0.isResolving   From useNavMenuSource().
+ * @param {boolean}  root0.accordionScrollIntoView Scroll an opened row near the top.
  * @param {Function} root0.setAttributes The block's attribute setter.
  */
 export default function MenuSettingsPanel( {
 	menuRef,
 	menuOptions,
 	isResolving,
+	accordionScrollIntoView,
 	setAttributes,
 } ) {
 	return (
@@ -41,6 +43,13 @@ export default function MenuSettingsPanel( {
 				) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
+			/>
+			<ToggleControl
+				label={ __( 'Scroll an opened section into view', 'sgs-blocks' ) }
+				help={ __( 'When a section opens low down, the drawer scrolls so it sits near the top. Instant for visitors who prefer reduced motion.', 'sgs-blocks' ) }
+				checked={ !! accordionScrollIntoView }
+				onChange={ ( value ) => setAttributes( { accordionScrollIntoView: value } ) }
+				__nextHasNoMarginBottom
 			/>
 		</PanelBody>
 	);

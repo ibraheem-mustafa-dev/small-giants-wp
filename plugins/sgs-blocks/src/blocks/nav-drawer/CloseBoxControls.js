@@ -11,7 +11,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { RangeControl } from '@wordpress/components';
-import { SgsBorderControl, ResponsiveBoxControl, ResponsiveLengthControl } from '../../components';
+import { SgsBorderControl, ResponsiveBoxControl, ResponsiveLengthControl, SgsColourPanel, fillRow } from '../../components';
 
 /**
  * @param {Object}   props               Props.
@@ -24,6 +24,22 @@ export default function CloseBoxControls( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					fillRow( {
+						key: 'closeBg',
+						label: __( 'Close button background', 'sgs-blocks' ),
+						attrs: {
+							base: 'closeBg',
+							hover: 'closeBgHover',
+							gradient: 'closeBgGradient',
+							hoverGradient: 'closeBgHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+				] }
+			/>
 			<SgsBorderControl
 				label={ __( 'Close button border', 'sgs-blocks' ) }
 				widthValues={ closeBorderWidth ?? {} }

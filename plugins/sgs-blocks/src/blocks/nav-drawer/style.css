@@ -1076,3 +1076,41 @@
 		translate: 0 var(--sgs-nd-stagger-dist, var(--wp--custom--entrance--distance, 16px));
 	}
 }
+
+/* ── Ambient drift (opt-in class `sgs-drift`, set in a block's Additional CSS
+   class field; no inspector control). A decorative element inside the drawer,
+   such as an sgs/decorative-image ring, floats slowly back and forth while the
+   drawer is open. `sgs-drift--alt` drifts the other way on a longer period so
+   two rings never move together. Travel, scale and period are custom
+   properties with defaults (`--sgs-drift-x`, `--sgs-drift-y`,
+   `--sgs-drift-scale`, `--sgs-drift-duration`, `--sgs-drift-delay`). It uses the
+   individual `translate`/`scale` properties, so it composes with the element's
+   own `transform` (position, rotation). `!important` keeps it running over the
+   drawer's item entrance, which sets `animation` on the body's direct
+   children: an ambient decoration does not take the entrance. Off under
+   prefers-reduced-motion. ── */
+@media (prefers-reduced-motion: no-preference) {
+	.wp-block-sgs-nav-drawer .sgs-drift {
+		animation: sgs-drift var(--sgs-drift-duration, 9s) var(--sgs-drift-easing, ease-in-out) var(--sgs-drift-delay, 0s) infinite alternate both !important;
+	}
+
+	.wp-block-sgs-nav-drawer .sgs-drift.sgs-drift--alt {
+		--sgs-drift-x: -14px;
+		--sgs-drift-y: 12px;
+		--sgs-drift-scale: 1.08;
+		--sgs-drift-duration: 12s;
+		--sgs-drift-delay: -4s;
+	}
+}
+
+@keyframes sgs-drift {
+	from {
+		translate: 0 0;
+		scale: 1;
+	}
+
+	to {
+		translate: var(--sgs-drift-x, 12px) var(--sgs-drift-y, -10px);
+		scale: var(--sgs-drift-scale, 1.06);
+	}
+}

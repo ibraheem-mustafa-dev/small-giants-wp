@@ -20,6 +20,7 @@ import {
 } from '../../components';
 import { TierShow } from './chrome-tier-controls';
 import ChromeRatingControls from './ChromeRatingControls';
+import ChromeIconsSlotNotice from './ChromeIconsSlotNotice';
 
 const TYPE_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
@@ -27,6 +28,7 @@ const TYPE_OPTIONS = [
 	{ label: __( 'Label', 'sgs-blocks' ), value: 'label' },
 	{ label: __( 'Text', 'sgs-blocks' ), value: 'text' },
 	{ label: __( 'Button', 'sgs-blocks' ), value: 'button' },
+	{ label: __( 'Icons (Social Icons group)', 'sgs-blocks' ), value: 'icons' },
 ];
 
 const LEVEL_OPTIONS = [ 'h2', 'h3', 'h4', 'p' ].map( ( level ) => ( {
@@ -44,9 +46,10 @@ const PLACEMENT_OPTIONS = [
  * @param {Object}   props               Props.
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Setter.
+ * @param {string}   props.clientId      The drawer block's client id.
  * @return {Element} The controls.
  */
-export default function ChromeSlotControls( { attributes, setAttributes } ) {
+export default function ChromeSlotControls( { attributes, setAttributes, clientId } ) {
 	const {
 		chromeSlotType,
 		chromeSlotText,
@@ -62,6 +65,7 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 	} = attributes;
 	const type = chromeSlotType || '';
 	const isButton = 'button' === type;
+	const isIcons = 'icons' === type;
 
 	return (
 		<>
@@ -73,15 +77,16 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+			{ isIcons && <ChromeIconsSlotNotice clientId={ clientId } /> }
 			{ '' !== type && (
 				<>
-					<TextControl
+					{ ! isIcons && <TextControl
 						label={ isButton ? __( 'Button label', 'sgs-blocks' ) : __( 'Words', 'sgs-blocks' ) }
 						value={ chromeSlotText || '' }
 						onChange={ ( value ) => setAttributes( { chromeSlotText: value } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					/> }
 					{ 'heading' === type && (
 						<SelectControl
 							label={ __( 'Heading level', 'sgs-blocks' ) }
@@ -128,7 +133,7 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 						value={ chromeSlotShow }
 						onChange={ ( obj ) => setAttributes( { chromeSlotShow: obj } ) }
 					/>
-					<TypographyControls
+					{ ! isIcons && <TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						targets={ [
@@ -141,8 +146,8 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 								showLetterSpacing: true,
 							},
 						] }
-					/>
-					{ isButton ? (
+					/> }
+					{ isIcons ? null : isButton ? (
 						<>
 							<SgsColourPanel
 								rows={ [

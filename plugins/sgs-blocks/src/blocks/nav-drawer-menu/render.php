@@ -76,6 +76,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-menu-parity-css.php';
 // item-level parity"), plus the shared caret helper the bar also calls.
 require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-menu-section-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-caret-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-menu-caret-box-css.php';
 // nav-menu-trigger-css.php is deliberately NOT required — this block never
 // emits a burger/trigger, so sgs_nav_bar_menu_trigger_css() is never called.
 // class-sgs-container-wrapper.php is deliberately NOT required — this block
@@ -589,6 +590,10 @@ if ( $magnet_enabled && is_numeric( $sgs_nm_item_magnet_strength ) ) {
 // enhance at all.
 $bar_class       = 'sgs-nav-drawer-menu__bar sgs-nav-drawer-menu__bar--drawer';
 $bar_data_attrs .= ' data-sgs-nav-submenu-model="' . esc_attr( $submenu_model_ctx ) . '"';
+// accordionScrollIntoView: view.js scrolls an opened row near the top of the drawer.
+if ( ! empty( $attributes['accordionScrollIntoView'] ) ) {
+	$bar_data_attrs .= ' data-sgs-accordion-scroll';
+}
 
 $bar_html = sprintf(
 	'<ul class="%3$s"%2$s>%1$s</ul>',
@@ -638,6 +643,8 @@ $css .= sgs_nav_drawer_menu_section_box_css( $attributes, $uid_sel );
 // The drill-down Back button (injected by src/shared/effects/nav-drilldown.js, so it has no PHP
 // markup) is a text element of its own: the item and submenu typography do not reach it.
 $css .= sgs_typography_css_rule( $attributes, 'drillBack', $uid_sel . ' .sgs-nav-drawer-menu__drill-back-btn' );
+// The row ornament's own type (font family, weight, letter spacing): the `ornamentText` set.
+$css .= sgs_typography_css_rule( $attributes, 'ornamentText', $uid_sel . ' .sgs-nav-drawer-menu__ornament' );
 // The Back button is a full-width flex row (arrow + label), so text-align alone moves nothing:
 // justify-content places the arrow and label along the row.
 $sgs_nm_back_justify = array(
@@ -695,6 +702,8 @@ $css              .= sgs_nav_menu_caret_css(
 			. $sgs_nm_caret_root . 'accordion-summary:focus-visible .sgs-nav-drawer-menu__caret',
 	)
 );
+// The caret's ringed circle box (caretBox*), also round the trailing icons when asked.
+$css .= sgs_nav_drawer_menu_caret_box_css( $attributes, $uid_sel );
 
 // ── 5. Assemble — BLOCK-PRIVATE root.
 // Same as the bar block's render.php — see that file's own §5 comment for the

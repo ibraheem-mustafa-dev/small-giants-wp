@@ -154,7 +154,8 @@
 					"order": 2,
 					"clusters": [
 						"text",
-						"layout"
+						"layout",
+						"fill"
 					],
 					"prefix": "toggleClose",
 					"attrMap": {
@@ -173,13 +174,17 @@
 						"css:transform": "closeOffset",
 						"css:border-width": "closeBorderWidth",
 						"css:border-style": "closeBorderStyle",
-						"css:border-color": "closeBorderColour"
+						"css:border-color": "closeBorderColour",
+						"css:background-color": "closeBg",
+						"css:background-image": "closeBgGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "toggleCloseColourHover",
-								"css:color-gradient": "toggleCloseColourHoverGradient"
+								"css:color-gradient": "toggleCloseColourHoverGradient",
+								"css:background-color": "closeBgHover",
+								"css:background-image": "closeBgHoverGradient"
 							}
 						}
 					},
@@ -211,7 +216,8 @@
 						"css:background-image": "chromeRowBgGradient",
 						"css:min-height": "chromeRowHeight",
 						"css:gap": "chromeRowGap",
-						"css:padding": "chromeRowPadding"
+						"css:padding": "chromeRowPadding",
+						"css:position": "chromeSticky"
 					},
 					"_note": "The chrome row (Spec 36 FR-36-6): `.sgs-nav-drawer__chrome`, the band at the top of the dialog that holds the close button, the optional logo and the one optional free slot. Rendered by includes/nav-drawer-chrome.php as fixed chrome, never InnerBlocks, and it replaces the 64px top padding the body used to reserve for the close button. A row holding only the close button carries `--close-only` and is dropped with the button under the FR-36-6 `trigger` predicate, so it costs no space."
 				},
@@ -219,12 +225,19 @@
 					"label": "Top row logo",
 					"order": 2,
 					"clusters": [
+						"fill",
 						"layout"
 					],
 					"prefix": "chromeLogo",
 					"attrMap": {
 						"css:width": "chromeLogoWidth",
-						"css:display": "chromeLogoShow"
+						"css:display": "chromeLogoShow",
+						"css:background-color": "chromeLogoBoxBg",
+						"css:background-image": "chromeLogoBoxBgGradient",
+						"css:border-radius": "chromeLogoBoxRadius",
+						"css:padding": "chromeLogoBoxPadding",
+						"css:box-shadow": "chromeLogoBoxShadow",
+						"css:box-shadow-color": "chromeLogoBoxShadowColour"
 					},
 					"_note": "The optional logo in the chrome row: a `<picture>` art-directed per device from chromeLogoId/chromeLogoUrl and their Tablet/Mobile siblings (the sgs/responsive-logo pattern). It opts out of the generic imageControls path on purpose, per Spec 36 FR-36-6: a logo is a different image per device, not one image with fit and focal controls. chromeLogoShow hides it per device; chromeLogoLink links it home."
 				},
@@ -425,6 +438,26 @@
 			"default": "",
 			"description": "Close box border colour: a palette slug or any colour. Unset follows the close button's text colour."
 		},
+		"closeBg": {
+			"type": "string",
+			"default": "",
+			"description": "Close button fill at rest. '' paints nothing (the button stays transparent)."
+		},
+		"closeBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Close button gradient fill at rest; wins over closeBg."
+		},
+		"closeBgHover": {
+			"type": "string",
+			"default": "",
+			"description": "Close button fill on hover and keyboard focus (touch-guarded)."
+		},
+		"closeBgHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Close button gradient fill on hover and keyboard focus; wins over closeBgHover."
+		},
 		"closeIconSize": {
 			"type": "object",
 			"default": {},
@@ -461,6 +494,11 @@
 			"type": "object",
 			"default": {},
 			"description": "Top row padding per device, a {top,right,bottom,left} box. Unset is 0 top and bottom, 12px either side."
+		},
+		"chromeSticky": {
+			"type": "boolean",
+			"default": false,
+			"description": "The top row stays at the top while the drawer body scrolls: the body becomes the scrolling area and the drawer fill stays fixed behind the row (includes/nav-drawer-chrome-extras-css.php). Off by default: the whole drawer scrolls."
 		},
 		"chromeRowBg": {
 			"type": "string",
@@ -521,6 +559,36 @@
 			"default": {},
 			"description": "Show the logo, per device (true or false). Unset shows it wherever a logo is set."
 		},
+		"chromeLogoBoxBg": {
+			"type": "string",
+			"default": "",
+			"description": "Fill behind the top-row logo (a box around it). '' paints nothing."
+		},
+		"chromeLogoBoxBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient fill behind the top-row logo; wins over chromeLogoBoxBg."
+		},
+		"chromeLogoBoxRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Corner radius of the box around the top-row logo (a CSS length). '' emits nothing."
+		},
+		"chromeLogoBoxPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding inside the box around the top-row logo (one box for every device). Unset sides emit nothing."
+		},
+		"chromeLogoBoxShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow of the box around the top-row logo (ShadowControl value). '' emits nothing."
+		},
+		"chromeLogoBoxShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow colour for chromeLogoBoxShadow."
+		},
 		"chromeSlotType": {
 			"type": "string",
 			"default": "",
@@ -529,9 +597,10 @@
 				"heading",
 				"label",
 				"text",
-				"button"
+				"button",
+				"icons"
 			],
-			"description": "The top row's one free slot: none, a heading, a label, a line of text or a button."
+			"description": "The top row's one free slot: none, a heading, a label, a line of text, a button, or `icons` (the drawer body's first block, when it is an sgs/social-icons group, is shown in the top row instead of the body; includes/nav-drawer-chrome-icons.php)."
 		},
 		"chromeSlotText": {
 			"type": "string",

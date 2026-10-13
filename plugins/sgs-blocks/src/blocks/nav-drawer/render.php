@@ -46,6 +46,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-chrome.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-chrome-extras-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-chrome-icons.php';
 // ⚠ The source-aware icon resolver sgs/icon and sgs/nav-bar-menu's trigger both use.
 // It lives in includes/nav-menu-treatments.php, which is require_once'd PER-INSTANCE
 // from sgs/nav-bar-menu's own render.php rather than at plugin bootstrap -- so its
@@ -1245,8 +1247,10 @@ if ( $bg_image_needs_note ) {
 	);
 }
 
-// The chrome row (FR-36-6): the × plus the optional logo and free slot.
-$close_html = sgs_nav_drawer_chrome( $attributes, $root_sel, $close_html, $css );
+// The chrome row (FR-36-6): the × plus the optional logo and free slot. An
+// `icons` slot lifts the body's leading sgs/social-icons group out of $content.
+$sgs_nd_icons_html = sgs_nav_drawer_chrome_icons_lift( $attributes, $block, $content );
+$close_html        = sgs_nav_drawer_chrome( $attributes, $root_sel, $close_html, $css, $sgs_nd_icons_html );
 
 // ── The scrim itself is now queued by sgs_scrim_render() above (printed at
 // wp_footer as a direct child of <body> — includes/helpers-scrim.php) and no

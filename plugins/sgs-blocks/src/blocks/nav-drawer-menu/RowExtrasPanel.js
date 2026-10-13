@@ -4,6 +4,7 @@ import { IconPicker, ResponsiveLengthControl, SgsLengthControl } from '../../com
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import OrnamentFramesControls from './OrnamentFramesControls';
 import ExpanderCaretControls from './ExpanderCaretControls';
+import CaretBoxControls from './CaretBoxControls';
 import {
 	ORNAMENT_OPTIONS,
 	ORNAMENT_REVEAL_MODE_OPTIONS,
@@ -135,6 +136,7 @@ export default function RowExtrasPanel( { attributes, setAttributes } ) {
 			/>
 			{ /* The expander's size, gap, opacity and turn timing: the bar's arrow controls, on the same glyph. */ }
 			<ExpanderCaretControls attributes={ attributes } setAttributes={ setAttributes } />
+			<CaretBoxControls attributes={ attributes } setAttributes={ setAttributes } />
 
 			<ToggleGroupControl
 				label={ __( 'Item image', 'sgs-blocks' ) }

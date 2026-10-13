@@ -20,6 +20,7 @@
  */
 
 import { colourVar, isCssGradient } from '../../utils';
+import { drawerShellPreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss } from './drawer-preview-extras';
 
 const SAFE_LENGTH_RE = /^[-\w.\s%(),+*/]+$/;
 const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -119,6 +120,9 @@ export default function drawerPreviewCss( scope, v ) {
 		}
 	} );
 
+	// Card shell and link-row hover (drawer-preview-extras.js).
+	css += drawerShellPreviewCss( scope, row, v );
+
 	// Aside position and card.
 	const orderFirst = 'first' === v.drawerAsideOrder;
 	if ( orderFirst ) {
@@ -131,7 +135,14 @@ export default function drawerPreviewCss( scope, v ) {
 	if ( v.drawerCardSpacing ) {
 		cardDecls += `${ orderFirst ? 'margin-bottom' : 'margin-top' }:${ v.drawerCardSpacing };`;
 	}
+	if ( 'stacked-overlay' === v.drawerCardLayout ) {
+		const ring = v.drawerCardBorderColour || gradient( v.drawerCardBorderColourGradient )
+			? `border:1px solid transparent;${ borderPaint( v.drawerCardBorderColour, v.drawerCardBorderColourGradient ) }`
+			: '';
+		return css + drawerStackedPreviewCss( aside, cardDecls + ring, v );
+	}
 	if ( ! v.drawerCardCompact ) {
+		cardDecls += drawerCardBoxPreviewDecls( v );
 		return cardDecls ? `${ css }${ aside }{${ cardDecls }}` : css;
 	}
 

@@ -108,6 +108,7 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius",
 						"css:overflow": "scrollSideways",
+						"css:position": "pinEdge",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:aspect-ratio": "boxAspectRatio",
@@ -693,6 +694,11 @@
 			"type": "object",
 			"default": {},
 			"description": "Per tier CSS length: the width of each item in a sideways-scrolling row. Unset: 80%."
+		},
+		"pinEdge": {
+			"type": "object",
+			"default": {},
+			"description": "Pin to edge, per device tier: 'top' or 'bottom' keeps the container stuck to that edge of its nearest scrolling ancestor (a drawer, a panel or the page) with the safe-area inset added to its padding on that edge; 'none' or unset is not pinned (includes/container-pin-edge-css.php). Unset everywhere emits nothing."
 		},
 		"contentWidth": {
 			"type": "object",

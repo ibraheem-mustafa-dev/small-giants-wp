@@ -65,6 +65,7 @@ import {
 	textRow,
 } from '../../components';
 import drawerPreviewCss from './drawer-preview';
+import DrawerShellControls from './DrawerShellControls';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import { CursorFieldRowControls } from '../../components/CursorFieldRowControls';
 import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
@@ -276,6 +277,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		drawerCardTitleLineHeight,
 		drawerCardTagMargin,
 		drawerCardLinkSize,
+		drawerShellRadius,
+		drawerShellPadding,
+		drawerShellShadow,
+		drawerShellShadowColour,
+		drawerLinkBg,
+		drawerLinkBgGradient,
+		drawerLinkHoverBg,
+		drawerLinkHoverBgGradient,
+		drawerLinkRadius,
+		drawerCardLayout,
 		brandsEyebrow,
 		brandsEyebrowFontFamily,
 		brandsEyebrowFontSize,
@@ -530,6 +541,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				drawerCardTitleLineHeight,
 				drawerCardTagMargin,
 				drawerCardLinkSize,
+				drawerShellRadius,
+				drawerShellPadding,
+				drawerShellShadow,
+				drawerShellShadowColour,
+				drawerLinkBg,
+				drawerLinkBgGradient,
+				drawerLinkHoverBg,
+				drawerLinkHoverBgGradient,
+				drawerLinkRadius,
+				drawerCardLayout,
 		  } )
 		: '';
 
@@ -1400,6 +1421,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( value ) => setAttributes( { drawerLinkPaddingY: value || '' } ) }
 						presets={ false }
 					/>
+					<DrawerShellControls attributes={ attributes } setAttributes={ setAttributes } />
 					<ToggleControl
 						label={ __( 'Compact side card', 'sgs-blocks' ) }
 						help={ __(
@@ -1416,8 +1438,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( value ) => setAttributes( { drawerCardSpacing: value || '' } ) }
 						presets={ false }
 					/>
-					{ drawerCardCompact && (
-						<>
 					<SgsLengthControl
 						label={ __( 'Card corner radius', 'sgs-blocks' ) }
 						value={ drawerCardRadius || '' }
@@ -1430,6 +1450,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( value ) => setAttributes( { drawerCardPadding: value || '' } ) }
 						presets={ false }
 					/>
+					{ drawerCardCompact && (
+						<>
 					<SgsLengthControl
 						label={ __( 'Card thumbnail gap', 'sgs-blocks' ) }
 						value={ drawerCardGap || '' }
