@@ -1,6 +1,7 @@
 /* Post grid: carousel prev/next/dots controls. */
 
 import { REDUCED_MOTION } from './view-fetch.js';
+import { initMotionPause } from '../../shared/motion-pause/index.js';
 
 // ==========================================================================
 // Carousel
@@ -11,6 +12,11 @@ import { REDUCED_MOTION } from './view-fetch.js';
  *
  * The inner grid scrolls horizontally with CSS scroll-snap;
  * this script manages dot state and keyboard navigation.
+ *
+ * Autoplay pausing (WCAG 2.2.2) goes through the shared runtime
+ * (src/shared/motion-pause): the server-rendered pause / play button holds a
+ * pause until pressed again; hover, a finger press and keyboard focus pause it
+ * while they last, each independently.
  *
  * @param {Element} gridEl    The .sgs-post-grid root element.
  * @param {Object}  queryData Block query parameters.
@@ -52,6 +58,11 @@ export function initCarousel( gridEl, queryData ) {
 	let currentIndex  = 0;
 	let autoplayTimer = null;
 	const totalCards  = cards.length;
+	const autoplayOn  = !! queryData.carouselAutoplay && ! REDUCED_MOTION && totalCards > 1;
+	// The callback runs on a visitor's input, after the timer functions below exist.
+	const pauser      = initMotionPause( gridEl, {
+		onChange: ( paused ) => ( paused ? stopAutoplay() : startAutoplay() ),
+	} );
 
 	/**
 	 * Sync `currentIndex` plus the dots/arrows UI to a card index, WITHOUT
@@ -179,11 +190,12 @@ export function initCarousel( gridEl, queryData ) {
 		}
 	} );
 
-	// Autoplay (disabled when prefers-reduced-motion is set).
+	// Autoplay (never under prefers-reduced-motion); restarts from the current card after a pause.
 	const startAutoplay = () => {
-		if ( ! queryData.carouselAutoplay || REDUCED_MOTION ) {
+		if ( ! autoplayOn || pauser.isPaused() ) {
 			return;
 		}
+		stopAutoplay();
 		autoplayTimer = setInterval( () => {
 			const next = currentIndex + 1 >= totalCards ? 0 : currentIndex + 1;
 			scrollToCard( next );
@@ -201,12 +213,6 @@ export function initCarousel( gridEl, queryData ) {
 		stopAutoplay();
 		startAutoplay();
 	};
-
-	// Pause on hover or focus to prevent users losing their place.
-	gridEl.addEventListener( 'mouseenter', stopAutoplay );
-	gridEl.addEventListener( 'mouseleave', startAutoplay );
-	gridEl.addEventListener( 'focusin', stopAutoplay );
-	gridEl.addEventListener( 'focusout', startAutoplay );
 
 	/*
 	 * Sync dots/arrows to the ACTUAL scroll position, however it got there.
@@ -236,6 +242,7 @@ export function initCarousel( gridEl, queryData ) {
 		} );
 	}, { passive: true } );
 
+	pauser.setRunning( autoplayOn );
 	startAutoplay();
 	scrollToCard( 0 );
 }

@@ -5,7 +5,7 @@
  * Partial of render.php, included with a plain require so it shares render.php's
  * local scope (required once per block instance).
  *
- * Reads: $attributes, $layout, $query, $show_filters, $filter_taxonomy, $card_params, $image_decorative, $carousel_show_arrows, $carousel_show_dots, $pagination, $total_pages, $current_page.
+ * Reads: $attributes, $layout, $query, $show_filters, $filter_taxonomy, $card_params, $image_decorative, $carousel_show_arrows, $carousel_show_dots, $carousel_autoplay, $pagination, $total_pages, $current_page.
  * Writes: output only (echoed into the open output buffer); sets $card_params['_card_index'] and its own loop locals.
  *
  * @package SGS\Blocks
@@ -106,6 +106,17 @@ if ( 'carousel' === $layout ) {
 	}
 	if ( $carousel_show_dots ) {
 		echo '<div class="sgs-post-grid__carousel-dots" role="tablist" aria-label="' . esc_attr__( 'Carousel navigation', 'sgs-blocks' ) . '"></div>';
+	}
+	// Pause / play button (WCAG 2.2.2), the shared control: rendered hidden, view-carousel.js
+	// shows it once autoplay runs (never under reduced motion).
+	if ( $carousel_autoplay ) {
+		echo sgs_motion_pause_button( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes its own output.
+			array(
+				'block'     => 'sgs-post-grid',
+				'label'     => __( 'Pause carousel', 'sgs-blocks' ),
+				'placement' => 'inline',
+			)
+		);
 	}
 }
 

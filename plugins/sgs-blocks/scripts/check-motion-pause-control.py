@@ -90,7 +90,6 @@ SIGNALS = (
 PENDING: frozenset[str] = frozenset({
     "google-reviews",
     "notice-banner",
-    "post-grid",
     "trustpilot-reviews",
 })
 

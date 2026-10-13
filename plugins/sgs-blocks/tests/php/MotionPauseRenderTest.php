@@ -211,6 +211,33 @@ final class MotionPauseRenderTest extends TestCase {
 		);
 	}
 
+	public function test_post_grid_carousel_prints_the_button_when_autoplay_is_on(): void {
+		$html = $this->html(
+			'sgs/post-grid',
+			array(
+				'layout'           => 'carousel',
+				'carouselAutoplay' => true,
+			)
+		);
+		$this->assert_button( $html, 'sgs-post-grid', 'Pause carousel' );
+	}
+
+	public function test_post_grid_prints_no_button_without_autoplay_or_outside_the_carousel(): void {
+		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/post-grid', array( 'layout' => 'carousel' ) ) ) );
+		$this->assertSame(
+			'',
+			$this->pause_button(
+				$this->html(
+					'sgs/post-grid',
+					array(
+						'layout'           => 'grid',
+						'carouselAutoplay' => true,
+					)
+				)
+			)
+		);
+	}
+
 	public function test_trust_bar_prints_no_button_when_nothing_scrolls_or_it_is_switched_off(): void {
 		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/trust-bar', array( 'items' => $this->trust_items() ) ) ) );
 		$this->assertSame(
