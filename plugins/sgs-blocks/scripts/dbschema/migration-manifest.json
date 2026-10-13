@@ -205,6 +205,12 @@
       "classification": "DB-MIGRATION",
       "evidence": "sqlite3.connect(DB) then CREATE TABLE motion_presets and ALTER TABLE fx_effects ADD COLUMN owned_properties and panels. Idempotent: skips a table or column already present. DB is $SGS_FRAMEWORK_DB when set.",
       "also_writes_files": false
+    },
+    {
+      "filename": "2026-10-13-motion-fields-tables.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) then CREATE TABLE motion_targets, CREATE TABLE motion_fields and CREATE VIEW motion_field_rows, statements read from dbschema/schema.sql. Idempotent: skips an object already present. DB is $SGS_FRAMEWORK_DB when set.",
+      "also_writes_files": false
     }
   ],
   "deleted_2026_08_02": {

@@ -2054,6 +2054,20 @@ def _run_motion_fx_registry_seed(conn: sqlite3.Connection) -> None:
         print(f"Stage 1 tail (motion-fx registry seed): WARN {exc}")
 
 
+def _run_motion_fields_seed(conn: sqlite3.Connection) -> None:
+    """Seed `motion_targets` and `motion_fields` (Spec 38A FR-38A-3) from the motion schema and the block.json files."""
+    try:
+        dbschema = Path(__file__).resolve().parent / "dbschema"
+        if str(dbschema) not in sys.path:
+            sys.path.insert(0, str(dbschema))
+        from seed_motion_fields import seed_motion_fields  # noqa: PLC0415
+        targets, fields = seed_motion_fields(conn)
+        print(f"Stage 1 tail (motion fields seed): motion_targets={targets}, motion_fields={fields}")
+    except Exception as exc:  # noqa: BLE001
+        conn.rollback()
+        print(f"Stage 1 tail (motion fields seed): WARN {exc}")
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 sub-step — scrape allowedBlocks from edit.js files
 # ---------------------------------------------------------------------------
@@ -3482,6 +3496,10 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         #     above so the fx:* namespace is already correct before this step's
         #     own table (fx_effects) is reconciled. ---
         _run_motion_fx_registry_seed(conn)
+
+        # --- Stage 1 tail: seed motion_targets and motion_fields (Spec 38A
+        #     FR-38A-3); the view motion_field_rows joins them at read time. ---
+        _run_motion_fields_seed(conn)
 
         # --- Stage 1 tail: rebuild the `components` unification adoption ledger
         #     (D763, 2026-08-24). Runs last because it shells out to the Node
@@ -5938,6 +5956,22 @@ def _prune_orphans_on_conn(
             [(rid,) for rid in ghost_attr_ids],
         )
 
+    # ---- (e) Motion targets of a block that is gone or no longer declares supports.sgs.motion ----
+    # motion_fields has no block column (it is the schema's fields, replaced whole by its seeder), so only
+    # motion_targets can hold an orphan. motion_targets is rebuilt whole by seed_motion_fields.py in Stage 1,
+    # so any row here whose block has retired is stale.
+    orphan_motion_targets = 0
+    if c.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='motion_targets'").fetchone():
+        orphan_motion_targets = c.execute(
+            "SELECT COUNT(*) FROM motion_targets "
+            "WHERE block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs')"
+        ).fetchone()[0]
+        if not dry_run and orphan_motion_targets:
+            c.execute(
+                "DELETE FROM motion_targets "
+                "WHERE block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs')"
+            )
+
     if not dry_run:
         conn.commit()
 
@@ -5948,7 +5982,8 @@ def _prune_orphans_on_conn(
         f"orphan_capabilities_deleted={len(orphan_cap_ids)}, "
         f"orphan_attributes_deleted={len(orphan_attr_ids)}, "
         f"stale_supports_{stale_verb}={len(stale_support_ids)}, "
-        f"orphan_attributes_deleted_attr_level={len(ghost_attr_ids)}"
+        f"orphan_attributes_deleted_attr_level={len(ghost_attr_ids)}, "
+        f"orphan_motion_targets_deleted={orphan_motion_targets}"
         + (" [DRY-RUN — no writes]" if dry_run else "")
     )
 
@@ -5960,6 +5995,7 @@ def _prune_orphans_on_conn(
         f"stale_supports_{stale_verb}": len(stale_support_ids),
         "stale_supports_actioned": len(stale_support_ids),
         "orphan_attributes_deleted_attr_level": len(ghost_attr_ids),
+        "orphan_motion_targets_deleted": orphan_motion_targets,
         f"orphan_blocks_{stale_d_verb}": len(retired_block_slugs),
         "orphan_blocks_actioned": len(retired_block_slugs),
         "prune_mode": prune_mode,

@@ -198,6 +198,40 @@ CREATE TABLE modifier_suffixes (
                 notes TEXT
             );
 
+-- view: motion_field_rows
+CREATE VIEW motion_field_rows AS
+SELECT t.block_slug, t.target, t.css_element, f.panel, f.layer, f.effect, f.def_name, f.field,
+       replace(f.field_path, '<target>', t.target) AS attr_path, f.field_path, f.field_type, f.css_property,
+       f.state, f.per_device, f.intensity, f.unit, f.range_min, f.range_max, f.enum_json, tr.tier
+FROM motion_targets t
+CROSS JOIN motion_fields f
+JOIN (SELECT 'desktop' AS tier, 1 AS per_device
+      UNION ALL SELECT 'tablet', 1
+      UNION ALL SELECT 'mobile', 1
+      UNION ALL SELECT 'all', 0) tr ON tr.per_device = f.per_device;
+
+-- table: motion_fields
+CREATE TABLE motion_fields (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    def_name      TEXT NOT NULL,
+    field         TEXT NOT NULL,
+    panel         TEXT NOT NULL CHECK (panel IN ('hover', 'entrance', 'effects')),
+    layer         TEXT NOT NULL,
+    effect        TEXT,
+    field_path    TEXT NOT NULL UNIQUE,
+    field_type    TEXT NOT NULL,
+    css_property  TEXT,
+    state         TEXT,
+    per_device    INTEGER NOT NULL CHECK (per_device IN (0, 1)),
+    intensity     INTEGER NOT NULL DEFAULT 0 CHECK (intensity IN (0, 1)),
+    is_list       INTEGER NOT NULL DEFAULT 0 CHECK (is_list IN (0, 1)),
+    unit          TEXT,
+    range_min     REAL,
+    range_max     REAL,
+    enum_json     TEXT,
+    created_at    TEXT DEFAULT (datetime('now'))
+);
+
 -- table: motion_presets
 CREATE TABLE motion_presets (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -234,6 +268,20 @@ CREATE TABLE motion_shape_signatures (
                 CHECK(easing_curve IN ('linear','ease','ease-in','ease-out','ease-in-out')),
             created_at          TEXT DEFAULT (datetime('now'))
         , "co_animates_opacity" INTEGER CHECK (co_animates_opacity IN (0, 1) OR co_animates_opacity IS NULL));
+
+-- table: motion_targets
+CREATE TABLE motion_targets (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    block_slug      TEXT NOT NULL,
+    target          TEXT NOT NULL,
+    css_element     TEXT NOT NULL,
+    kind            TEXT NOT NULL CHECK (kind IN ('root', 'part')),
+    is_wrapper      INTEGER NOT NULL DEFAULT 0 CHECK (is_wrapper IN (0, 1)),
+    label           TEXT,
+    motion_support  TEXT NOT NULL DEFAULT 'true',
+    created_at      TEXT DEFAULT (datetime('now')),
+    UNIQUE (block_slug, target)
+);
 
 -- table: pattern_coverage
 CREATE TABLE pattern_coverage (
