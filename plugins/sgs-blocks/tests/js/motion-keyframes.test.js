@@ -34,7 +34,7 @@ beforeEach( () => {
 	reduced = false;
 	animate = jest.fn( () => ( { cancel: jest.fn() } ) );
 	Element.prototype.animate = animate;
-	global.matchMedia = jest.fn( ( q ) => ( { matches: reduced && q.includes( 'reduce' ) } ) );
+	global.matchMedia = jest.fn( ( q ) => ( { matches: reduced && '(prefers-reduced-motion: reduce)' === q } ) );
 } );
 
 describe( 'motion-keyframes', () => {
@@ -67,6 +67,51 @@ describe( 'motion-keyframes', () => {
 			const block = css.split( '@keyframes sgs-me-' + channel + ' {' )[ 1 ].split( '\n}' )[ 0 ];
 			expect( block ).toContain( CHANNEL_FORMULA[ channel ][ 0 ] + ': ' + CHANNEL_FORMULA[ channel ][ 1 ] + ';' );
 		} );
+	} );
+
+	it( 'maps every owner property to its channel and declares only the channels touched', () => {
+		const { play, CHANNEL_FORMULA } = load();
+		const every = { offset: 0, '--sgs-me-tx': '8px', '--sgs-me-ty': '4px', '--sgs-me-rot': '5deg', '--sgs-me-s': '0.9', '--sgs-me-op': '0', '--sgs-me-blur': '6px', '--sgs-me-clip': '0 0 100% 0' };
+		play( target( { frames: [ every, { ...every, offset: 1, '--sgs-me-op': '1' } ] } ) );
+		const [ frames ] = animate.mock.calls[ 0 ];
+		frames.forEach( ( f ) => {
+			Object.keys( every ).filter( ( k ) => k !== 'offset' ).forEach( ( k ) => expect( f[ k ] ).toBeDefined() );
+			[ 'translate', 'rotate', 'scale', 'opacity', 'filter', 'clip-path' ].forEach( ( channel ) =>
+				expect( f[ CHANNEL_FORMULA[ channel ][ 0 ] ] ).toBe( CHANNEL_FORMULA[ channel ][ 1 ] )
+			);
+		} );
+		expect( Object.keys( frames[ 0 ] ).sort() ).toEqual(
+			[ 'offset', '--sgs-me-tx', '--sgs-me-ty', '--sgs-me-rot', '--sgs-me-s', '--sgs-me-op', '--sgs-me-blur', '--sgs-me-clip', 'translate', 'rotate', 'scale', 'opacity', 'filter', 'clip-path' ].sort()
+		);
+	} );
+
+	it( 'maps each owner property alone to exactly its own channel', () => {
+		const { play, CHANNEL_FORMULA } = load();
+		const table = { 'tx': 'translate', 'ty': 'translate', 'rot': 'rotate', 's': 'scale', 'op': 'opacity', 'blur': 'filter', 'clip': 'clip-path' };
+		Object.keys( table ).forEach( ( suffix ) => {
+			document.body.innerHTML = '';
+			animate.mockClear();
+			play( target( { frames: [ { offset: 0, [ `--sgs-me-${ suffix }` ]: '1' }, { offset: 1, [ `--sgs-me-${ suffix }` ]: '0' } ] } ) );
+			const f = animate.mock.calls[ 0 ][ 0 ][ 0 ];
+			const declared = Object.keys( f ).filter( ( k ) => ! k.startsWith( '--' ) && 'offset' !== k );
+			expect( declared ).toEqual( [ CHANNEL_FORMULA[ table[ suffix ] ][ 0 ] ] );
+		} );
+	} );
+
+	it( 'falls back to the default easing when animate() rejects the stored one', () => {
+		let firstEasing;
+		animate.mockImplementationOnce( ( frames, options ) => {
+			firstEasing = options.easing;
+			throw new TypeError( 'bad easing' );
+		} );
+		const { play } = load();
+		const el = target( {} );
+		const result = play( el );
+		expect( animate ).toHaveBeenCalledTimes( 2 );
+		expect( firstEasing ).toBe( 'ease-in' );
+		expect( animate.mock.calls[ 1 ][ 1 ] ).toEqual( { duration: 900, delay: 120, easing: 'ease-out', fill: 'backwards' } );
+		expect( result ).not.toBeNull();
+		expect( el.getAttribute( 'data-sgs-me-kf' ) ).toBe( 'played' );
 	} );
 
 	it( 'writes no inline style', () => {

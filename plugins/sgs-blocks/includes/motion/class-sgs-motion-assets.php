@@ -13,7 +13,7 @@
  * so templates render before `wp_head` and an enqueue during `render_block` reaches the head; in a classic theme the
  * stylesheet and scripts print in the footer instead. The scripts are deferred in the footer: the hidden start state
  * applies only under `.sgs-motion-ready`, which `motion-reveal.js` adds, so nothing is hidden before it runs. The
- * hidden-start rules themselves travel in the CSS collector (`sgs_collect_css`), which prints in the head.
+ * hidden-start rules live in `assets/css/motion.css`; only the per-instance values go through the CSS collector (`sgs_collect_css`), which prints in the head.
  *
  * The editor iframe gets `motion.css` through `enqueue_block_assets`, guarded by `is_admin()` so the front end never
  * loads it through that hook. A request that is not a front-end render (a REST block preview) enqueues nothing.

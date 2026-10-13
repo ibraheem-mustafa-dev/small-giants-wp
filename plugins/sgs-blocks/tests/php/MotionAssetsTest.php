@@ -37,6 +37,7 @@ final class MotionAssetsTest extends TestCase {
 		Sgs_Motion_Renderer::reset();
 		$GLOBALS['sgs_collected_css']   = array();
 		$GLOBALS['sgs_test_is_admin']   = false;
+		$GLOBALS['sgs_test_rest']       = false;
 		$GLOBALS['sgs_test_in_loop']    = false;
 		$GLOBALS['sgs_test_actions']    = array();
 		$GLOBALS['sgs_test_registered'] = array();
@@ -120,6 +121,19 @@ final class MotionAssetsTest extends TestCase {
 		$this->assert_loaded( false, false, false, false, 'admin render' );
 	}
 
+	public function test_fail_rest_request_enqueues_nothing(): void {
+		$GLOBALS['sgs_test_rest'] = true;
+		$this->assertTrue( wp_is_serving_rest_request(), 'the switch reaches the stand-in' );
+		$this->render( self::entrance( 'scroll', array( 'keyframes' => array( array( 'offset' => 0, 'opacity' => 0 ), array( 'offset' => 100, 'opacity' => 1 ) ) ) ) );
+		$reflection = new ReflectionMethod( Sgs_Motion_Renderer::class, 'note_features' );
+		$reflection->invoke( null, array( 'data-sgs-scroll' => '' ), false );
+		Sgs_Motion_Assets::enqueue_used();
+		$this->assert_loaded( false, false, false, false, 'REST block preview' );
+		$GLOBALS['sgs_test_rest'] = false;
+		Sgs_Motion_Assets::enqueue_used();
+		$this->assert_loaded( true, true, true, true, 'the same recorded features on a front-end request' );
+	}
+
 	public function test_edge_scroll_driver_module_follows_data_sgs_scroll(): void {
 		$reflection = new ReflectionMethod( Sgs_Motion_Renderer::class, 'note_features' );
 		$reflection->invoke( null, array( 'data-sgs-scroll' => '' ), false );
@@ -136,9 +150,28 @@ final class MotionAssetsTest extends TestCase {
 	}
 
 	public function test_happy_assets_are_registered(): void {
-		Sgs_Motion_Assets::register_assets();
-		$this->assertArrayHasKey( 'style:sgs-motion', $GLOBALS['sgs_test_registered'] );
-		$this->assertArrayHasKey( 'script:sgs-motion-reveal', $GLOBALS['sgs_test_registered'] );
-		$this->assertArrayHasKey( 'script:sgs-motion-keyframes', $GLOBALS['sgs_test_registered'] );
+		$driver = SGS_BLOCKS_PATH . 'build/shared/effects/scroll-driver.js';
+		$made   = ! file_exists( $driver );
+		if ( $made ) {
+			@mkdir( dirname( $driver ), 0777, true );
+			file_put_contents( $driver, '' );
+		}
+		try {
+			Sgs_Motion_Assets::register_assets();
+		} finally {
+			if ( $made ) {
+				@unlink( $driver );
+			}
+		}
+		$registered = $GLOBALS['sgs_test_registered'];
+		$this->assertArrayHasKey( 'style:sgs-motion', $registered );
+		foreach ( array( 'sgs-motion-reveal', 'sgs-motion-keyframes' ) as $handle ) {
+			$this->assertArrayHasKey( 'script:' . $handle, $registered );
+			$this->assertSame( array( 'strategy' => 'defer', 'in_footer' => true ), $registered[ 'script:' . $handle ]['args'], $handle . ' loads deferred in the footer' );
+			$this->assertStringStartsWith( 'https://example.test/sgs-blocks/assets/js/', $registered[ 'script:' . $handle ]['src'] );
+		}
+		$this->assertArrayHasKey( 'module:@sgs/scroll-driver', $registered, 'the scroll driver registers as a script module' );
+		$this->assertArrayNotHasKey( 'script:@sgs/scroll-driver', $registered );
+		$this->assertStringEndsWith( 'build/shared/effects/scroll-driver.js', $registered['module:@sgs/scroll-driver']['src'] );
 	}
 }

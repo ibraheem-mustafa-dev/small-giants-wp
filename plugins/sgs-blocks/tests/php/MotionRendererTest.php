@@ -231,6 +231,35 @@ final class MotionRendererTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-me-from-op:1;', $this->css() );
 	}
 
+	private static function keyframe_entrance( string $trigger ): array {
+		$values = array(
+			'keyframes' => array(
+				array( 'offset' => 0, 'opacity' => 0, 'translateY' => 40 ),
+				array( 'offset' => 60, 'opacity' => 1, 'translateY' => -6 ),
+				array( 'offset' => 100, 'opacity' => 1, 'translateY' => 0 ),
+			),
+		);
+		return array(
+			'v'        => 1,
+			'elements' => array( 'root' => array( 'entrance' => array( 'base' => array( 'trigger' => $trigger, 'values' => $values ) ) ) ),
+		);
+	}
+
+	public function test_edge_scroll_keyframes_without_from_hide_the_start_state_from_frame_zero(): void {
+		$out = $this->render( self::keyframe_entrance( 'scroll' ) );
+		$css = $this->css();
+		$this->assertStringContainsString( '--sgs-me-from-op:0;', $css, 'frame 0 opacity is the hidden start' );
+		$this->assertStringContainsString( '--sgs-me-from-ty:40px;', $css, 'frame 0 translate is the hidden start' );
+		$this->assertStringContainsString( 'data-sgs-me-keyframes', $out );
+	}
+
+	public function test_edge_first_section_load_keyframes_keep_from_opacity_1(): void {
+		$this->render_as_first_section( self::keyframe_entrance( 'load' ) );
+		$css = $this->css();
+		$this->assertStringContainsString( '--sgs-me-from-op:1;', $css );
+		$this->assertStringContainsString( '--sgs-me-from-ty:40px;', $css, 'movement still plays' );
+	}
+
 	public function test_tokens_resolve_to_theme_custom_properties(): void {
 		$this->render(
 			self::media_hover( array( 'translateY' => 'token:distance.sm', 'duration' => 'token:duration.fast', 'easing' => 'token:easing.spring' ) )

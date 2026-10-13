@@ -11,18 +11,15 @@
  * performance. Only blocks near the viewport (±1 viewport height) are updated
  * each frame to keep the CPU cost negligible on long pages.
  *
- * Respects prefers-reduced-motion — bails entirely when the user has opted out.
+ * Respects prefers-reduced-motion — writes nothing while the user has opted out, and follows a mid-session change
+ * of that preference in both directions. Scroll and resize share one throttled handler.
  *
  * @package SGS\Blocks
  */
 ( function () {
 	'use strict';
 
-	// Respect the user's motion preference.
 	var reducedQuery = window.matchMedia( '(prefers-reduced-motion: reduce)' );
-	if ( reducedQuery.matches ) {
-		return;
-	}
 
 	var blocks = Array.from( document.querySelectorAll( '[data-sgs-parallax]' ) );
 
@@ -79,7 +76,7 @@
 	}
 
 	/**
-	 * Scroll handler — gates rAF calls via the ticking flag.
+	 * Scroll and resize handler — gates rAF calls via the ticking flag.
 	 */
 	function onScroll() {
 		if ( ! ticking ) {
@@ -88,19 +85,43 @@
 		}
 	}
 
-	window.addEventListener( 'scroll', onScroll, { passive: true } );
+	var listening = false;
 
-	// A mid-session switch to reduced motion stops the effect and clears the offset.
-	reducedQuery.addEventListener( 'change', function () {
-		if ( ! reducedQuery.matches ) {
+	/**
+	 * Listen for scroll and resize and set the initial positions.
+	 */
+	function start() {
+		if ( listening ) {
 			return;
 		}
+		listening = true;
+		window.addEventListener( 'scroll', onScroll, { passive: true } );
+		window.addEventListener( 'resize', onScroll );
+		updateParallax();
+	}
+
+	/**
+	 * Stop listening and clear every written offset.
+	 */
+	function stop() {
+		listening = false;
 		window.removeEventListener( 'scroll', onScroll );
+		window.removeEventListener( 'resize', onScroll );
 		blocks.forEach( function ( el ) {
 			el.style.removeProperty( '--sgs-plx-y' );
 		} );
+	}
+
+	// A mid-session change of the motion preference stops or resumes the effect.
+	reducedQuery.addEventListener( 'change', function () {
+		if ( reducedQuery.matches ) {
+			stop();
+		} else {
+			start();
+		}
 	} );
 
-	// Set initial positions on page load before the user scrolls.
-	updateParallax();
+	if ( ! reducedQuery.matches ) {
+		start();
+	}
 }() );

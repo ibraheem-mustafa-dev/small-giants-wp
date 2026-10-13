@@ -4,14 +4,16 @@
  */
 const SCRIPT = '../../assets/js/tilt-3d.js';
 
+const REDUCED_QUERY = '(prefers-reduced-motion: reduce)';
+
 let reduced;
 let listeners;
 
 function installMatchMedia() {
 	listeners = [];
-	window.matchMedia = jest.fn( () => ( {
+	window.matchMedia = jest.fn( ( query ) => ( {
 		get matches() {
-			return reduced;
+			return REDUCED_QUERY === query && reduced;
 		},
 		addEventListener: ( type, fn ) => listeners.push( fn ),
 		removeEventListener: () => {},
@@ -80,9 +82,12 @@ describe( 'tilt-3d', () => {
 		expect( el.style.getPropertyValue( '--sgs-tilt-y' ) ).toBe( '-6.00deg' );
 	} );
 
-	it( 'planted fault: a script that writes style.transform is caught by the same assertion', () => {
-		const el = document.createElement( 'div' );
-		el.style.transform = 'rotateX(1deg)';
-		expect( () => expect( el.style.transform ).toBe( '' ) ).toThrow();
+	it( 'asks for the reduced-motion query and writes only the two tilt custom properties across a pointer path', () => {
+		const el = mount();
+		expect( window.matchMedia ).toHaveBeenCalledWith( REDUCED_QUERY );
+		[ [ 0, 0 ], [ 100, 50 ], [ 200, 100 ], [ 20, 90 ] ].forEach( ( [ x, y ] ) => move( el, x, y ) );
+		const written = Array.from( el.style );
+		expect( written.sort() ).toEqual( [ '--sgs-tilt-x', '--sgs-tilt-y' ] );
+		expect( el.style.transform ).toBe( '' );
 	} );
 } );

@@ -5,6 +5,7 @@
 require( './motion-atoms-harness' );
 const { FIELD_TYPE_NAMES: fieldTypes } = require( '../../src/components/motion/field-types' );
 const { ATOM_FOR_FIELD_TYPE, EMBEDDED_FIELD_TYPES } = require( '../../src/components/motion/atom-registry' );
+const atom = ( name ) => require( `../../src/components/motion/${ name }` ).default;
 const fs = require( 'fs' );
 const path = require( 'path' );
 
@@ -14,6 +15,26 @@ describe( 'the atom registry', () => {
 			( type ) => typeof ATOM_FOR_FIELD_TYPE[ type ] !== 'function' && ! EMBEDDED_FIELD_TYPES.includes( type )
 		);
 		expect( unmapped ).toEqual( [] );
+	} );
+
+	it( 'pins the whole field-type to atom table', () => {
+		expect( ATOM_FOR_FIELD_TYPE ).toEqual( {
+			duration: atom( 'DurationAtom' ),
+			easing: atom( 'EasingAtom' ),
+			distance: atom( 'DistanceAtom' ),
+			angle: atom( 'AngleAtom' ),
+			ratio: atom( 'NumberAtom' ),
+			scale: atom( 'NumberAtom' ),
+			percentage: atom( 'NumberAtom' ),
+			opacity: atom( 'NumberAtom' ),
+			colourReference: atom( 'ColourReferenceAtom' ),
+			assetReference: atom( 'AssetAtom' ),
+			choice: atom( 'ChoiceAtom' ),
+			propertyRow: atom( 'PropertyRowAtom' ),
+			boolean: atom( 'BooleanAtom' ),
+			partReference: atom( 'PartReferenceAtom' ),
+		} );
+		expect( [ ...EMBEDDED_FIELD_TYPES ] ).toEqual( [ 'tokenReference' ] );
 	} );
 
 	it( 'names no type the schema does not define', () => {
