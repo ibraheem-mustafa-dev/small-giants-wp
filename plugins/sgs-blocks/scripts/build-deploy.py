@@ -1387,9 +1387,14 @@ def run_isolated(args: "argparse.Namespace") -> int:
         # the worktree by the normal step_tar() call, same as any other run —
         # the symlink target is the shared vendor/, so that write lands in the
         # shared checkout too, exactly as it does for a single-checkout run).
+        # scripts/computed-route/node_modules is linked too: the prebuild's
+        # run-motion-fx-generators.js runs validate-motion-presets.mjs, which
+        # imports scripts/computed-route/lib/motion-schema.mjs and its ajv 8
+        # (plugins/sgs-blocks/node_modules holds only ajv 6, without dist/2020).
         for rel in (
             Path("plugins/sgs-blocks/node_modules"),
             Path("plugins/sgs-blocks/vendor"),
+            Path("scripts/computed-route/node_modules"),
         ):
             src = REPO_ROOT / rel
             dst = wt_dir / rel
