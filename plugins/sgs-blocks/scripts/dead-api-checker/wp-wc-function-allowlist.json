@@ -421,6 +421,7 @@
     "wp_parse_url",
     "wp_register_font_collection",
     "wp_register_script",
+    "wp_register_script_module",
     "wp_register_style",
     "wp_remote_get",
     "wp_remote_post",
