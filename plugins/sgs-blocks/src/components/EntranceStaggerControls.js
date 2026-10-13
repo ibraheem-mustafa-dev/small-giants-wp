@@ -24,8 +24,9 @@
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
-import { SelectControl } from '@wordpress/components';
 import { NumberControl } from './primitives';
+import TriggerPicker from './motion/TriggerPicker';
+import { clampToRange } from './motion/atom-utils';
 
 /**
  * Store a number field's value as a clamped whole-number string, or '' when cleared.
@@ -39,11 +40,8 @@ function toAttr( value, min, max ) {
 	if ( '' === value || null === value || undefined === value ) {
 		return '';
 	}
-	const num = Number( value );
-	if ( ! Number.isFinite( num ) ) {
-		return '';
-	}
-	return String( Math.max( min, Math.min( max, Math.round( num ) ) ) );
+	const clamped = clampToRange( value, min, max, null );
+	return null === clamped ? '' : String( clamped );
 }
 
 export default function EntranceStaggerControls( {
@@ -70,17 +68,16 @@ export default function EntranceStaggerControls( {
 		<>
 			{ hasAnimation && (
 				<>
-					<SelectControl
-						label={ __( 'Start when', 'sgs-blocks' ) }
+					<TriggerPicker
+						panel="entrance"
+						effectTriggers={ [ 'load', 'scroll' ] }
+						labels={ {
+							load: __( 'Page loads', 'sgs-blocks' ),
+							scroll: __( 'Block scrolls into view', 'sgs-blocks' ),
+						} }
 						help={ __( 'Page loads plays the entrance as the page opens, even for a block below the first screen. Block scrolls into view waits until the visitor reaches it.', 'sgs-blocks' ) }
-						value={ 'load' === sgsAnimationStart ? 'load' : '' }
-						options={ [
-							{ label: __( 'Block scrolls into view', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Page loads', 'sgs-blocks' ), value: 'load' },
-						] }
+						value={ 'load' === sgsAnimationStart ? 'load' : 'scroll' }
 						onChange={ ( val ) => setAttributes( { sgsAnimationStart: 'load' === val ? 'load' : '' } ) }
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
 					/>
 					{ 'load' !== sgsAnimationStart && (
 					<NumberControl
