@@ -959,7 +959,7 @@
       "title": "SGS Icon List",
       "category": "sgs-content",
       "tier": "block",
-      "replaces": null,
+      "replaces": "core/list,core/list-item",
       "has_render_php": true,
       "surfaces": {
         "styling": true,
@@ -970,7 +970,14 @@
       },
       "qualifies": {
         "paintDeclarations": 3,
-        "replacedCoreSupports": []
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "spacing",
+          "splitting",
+          "typography"
+        ]
       }
     },
     {

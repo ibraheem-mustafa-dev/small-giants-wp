@@ -801,5 +801,35 @@
         "wave": "Wave-parity-1"
       }
     }
+  },
+  "sgs/icon-list": {
+    "core/list": {
+      "ordered": {
+        "reason": "Equivalent to markerType 'numbered' (rendered as list ::marker numbers); verified in sgs/icon-list block.json and render.php.",
+        "wave": "over-report"
+      },
+      "values": {
+        "reason": "Equivalent to the `items` array attribute (one entry per item, text and link per item); core stores the inner HTML, SGS stores the items.",
+        "wave": "over-report"
+      },
+      "start": {
+        "reason": "No start-number setting: a numbered icon-list always counts from 1. The core-block migrator (migrate-core-blocks/pairings/list_pairing.py) refuses a list carrying it, so such a list stays core and nothing is lost until it is built.",
+        "wave": "Wave-parity-1"
+      },
+      "reversed": {
+        "reason": "No reversed-numbering setting. The core-block migrator (migrate-core-blocks/pairings/list_pairing.py) refuses a list carrying it, so such a list stays core and nothing is lost until it is built.",
+        "wave": "Wave-parity-1"
+      },
+      "type": {
+        "reason": "numberFormat offers decimal and decimal-leading-zero only, no letter or roman numbering. The core-block migrator (migrate-core-blocks/pairings/list_pairing.py) refuses a list carrying it, so such a list stays core and nothing is lost until it is built.",
+        "wave": "Wave-parity-1"
+      }
+    },
+    "core/list-item": {
+      "content": {
+        "reason": "Equivalent to items[].text (inline HTML allowed through wp_kses_post).",
+        "wave": "over-report"
+      }
+    }
   }
 }
