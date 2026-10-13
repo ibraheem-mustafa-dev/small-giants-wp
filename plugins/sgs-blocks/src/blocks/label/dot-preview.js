@@ -57,7 +57,7 @@ export function labelDotPreviewCss( selector, attributes = {} ) {
 		return '';
 	}
 	const size = safeLength( sgsLengthPreview( attributes.dotSize ) ) || '7px';
-	const gap = safeLength( gapVar( attributes.dotGap ) ) || 'var(--wp--preset--spacing--20)';
+	const gap = safeLength( gapVar( attributes.dotGap ) ) || '8px';
 	const paint = dotPaint( attributes.dotColour, attributes.dotColourGradient );
 	return `${ selector }::before{content:"";display:inline-block;flex-shrink:0;width:${ size };height:${ size };border-radius:50%;vertical-align:middle;margin-inline-end:${ gap };${ paint };}`;
 }

@@ -57,7 +57,7 @@ final class LabelDotTest extends TestCase {
 	public function test_defaults_paint_a_current_colour_dot(): void {
 		$out = $this->label( array( 'dot' => true ) );
 
-		$this->assertMatchesRegularExpression( '/::before\{content:"";[^}]*width:7px;height:7px;[^}]*margin-inline-end:var\(--wp--preset--spacing--20\);background-color:currentColor;\}/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/::before\{content:"";[^}]*width:7px;height:7px;[^}]*margin-inline-end:8px;background-color:currentColor;\}/', $out['css'] );
 	}
 
 	/**

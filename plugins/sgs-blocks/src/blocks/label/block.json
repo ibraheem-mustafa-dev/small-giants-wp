@@ -268,8 +268,8 @@
 		},
 		"dotGap": {
 			"type": "string",
-			"default": "20",
-			"description": "Space between the dot and the text: a spacing preset slug (e.g. '20') or a CSS length, read through sgs_css_length_value(); empty uses spacing preset 20."
+			"default": "8px",
+			"description": "Space between the dot and the text: a CSS length (default 8px) or a spacing preset slug (e.g. '20'), read through sgs_css_length_value(); empty uses 8px."
 		},
 		"textWrap": {
 			"type": "string",
