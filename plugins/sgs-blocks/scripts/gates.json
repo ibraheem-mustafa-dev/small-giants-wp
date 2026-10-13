@@ -1590,5 +1590,14 @@
     "budget_ms": 126530,
     "order": 178,
     "tier_reason": "Pre-deploy: runs every check-motion-*.py --check and --self-test and migrate-motion-*.py --check (Spec 38A); check-motion-db-rows.py reads the reseeded framework DB, so it belongs with the pre-deploy tier that build-deploy.py runs."
+  },
+  {
+    "id": "check-link-source-adoption",
+    "cmd": "python scripts/check-link-source-adoption.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 179
   }
 ]

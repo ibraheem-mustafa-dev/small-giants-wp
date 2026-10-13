@@ -426,6 +426,60 @@
 	border: 0;
 }
 
+/* ── Open status ─────────────────────────────────────────────────────────────
+   view.js sets data-state="open|closed" on the root once it has worked the status out; until
+   then the server's plain hours text shows and the pill stays hidden. The dot and pill colours
+   are the --sgs-os-* custom properties (block attributes), each with a default here. The pill
+   text and tint follow the surrounding text colour so it reads on a light or a dark ground, and
+   state is carried by the words as well as the dot colour. */
+.sgs-open-status {
+	--sgs-os-dot: var(--sgs-os-open-dot, #22c55e);
+	--sgs-os-pill-text: var(--sgs-os-open-text, currentColor);
+	--sgs-os-pill-bg: var(--sgs-os-open-bg, color-mix(in srgb, currentColor 12%, transparent));
+}
+
+.sgs-open-status[data-state="closed"] {
+	--sgs-os-dot: var(--sgs-os-closed-dot, #ef4444);
+	--sgs-os-pill-text: var(--sgs-os-closed-text, currentColor);
+	--sgs-os-pill-bg: var(--sgs-os-closed-bg, color-mix(in srgb, currentColor 12%, transparent));
+}
+
+.sgs-open-status__pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0;
+	padding: 0.25em 0.75em;
+	border-radius: 999px;
+	background: var(--sgs-os-pill-bg);
+	color: var(--sgs-os-pill-text);
+}
+
+.sgs-open-status__pill[hidden] {
+	display: none;
+}
+
+.sgs-open-status__dot {
+	flex: none;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--sgs-os-dot);
+}
+
+.sgs-open-status__line {
+	margin: 0.4em 0 0;
+}
+
+.sgs-open-status__line[hidden] {
+	display: none;
+}
+
+.sgs-open-status:not([data-state]) .sgs-open-status__line,
+.sgs-open-status[data-state=""] .sgs-open-status__line {
+	margin-top: 0;
+}
+
 /* ── "Button" block style (Spec 37 §3.8 — labelCollapse) ──────────────────────
    A first-class, client-selectable display style: renders the contact item
    (phone/email/address/…) as a prominent button. Block-private, theme-token

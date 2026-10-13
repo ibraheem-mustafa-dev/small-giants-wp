@@ -10,6 +10,7 @@ import {
 	FocalPointPicker,
 } from '@wordpress/components';
 import { LinkPopoverField, IconPicker } from '../../../components';
+import { LINK_SOURCES_ALL } from '../../../shared/link-source-options';
 import MediaPicker from '../../../components/MediaPicker';
 
 const BADGE_VARIANT_OPTIONS = [
@@ -197,11 +198,14 @@ export default function ItemEditor( { item, index, onChange, onRemove } ) {
 					url: item.link || '',
 					linkTarget: item.linkTarget || '_self',
 					rel: item.linkRel || '',
+					linkSource: item.linkSource || '',
 				} }
+				linkSources={ LINK_SOURCES_ALL }
 				targetMode="boolean"
 				onChange={ ( next ) => {
 					const patch = { ...item };
 					if ( undefined !== next.url ) patch.link = next.url;
+					if ( undefined !== next.linkSource ) patch.linkSource = next.linkSource;
 					if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
 					if ( undefined !== next.rel ) patch.linkRel = next.rel;
 					onChange( patch );

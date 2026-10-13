@@ -1,0 +1,42 @@
+{
+    "phone": {
+        "html": "<style></style><div class=\"sgs-business-info-wrap sgs-business-info-wrap--phone sgs-biz-5b2b5f25\"><p class=\"sgs-business-info sgs-business-phone\"><a href=\"tel:01210000000\" class=\"sgs-business-info__link\"><span class=\"sgs-business-info__label\"><span class=\"sgs-business-info__text\">0121 000 0000</span></span></a></p></div>",
+        "css": ""
+    },
+    "email": {
+        "html": "<style>.sgs-biz-bbb6e34d{color:#123456}</style><div class=\"sgs-business-info-wrap sgs-business-info-wrap--email sgs-biz-bbb6e34d\"><p class=\"sgs-business-info sgs-business-email\"><a href=\"mailto:hello@example.test\" class=\"sgs-business-info__link\"><span class=\"sgs-business-info__label\"><span class=\"sgs-business-info__text\">hello@example.test</span></span></a></p></div>",
+        "css": ".sgs-biz-bbb6e34d{color:#123456}"
+    },
+    "address": {
+        "html": "<style></style><div class=\"sgs-business-info-wrap sgs-business-info-wrap--address sgs-biz-2519d4b2\"><address class=\"sgs-business-info sgs-business-address\"><a href=\"https://maps.google.com/?cid=1234567890\" class=\"sgs-business-info__link\" rel=\"noopener\"><span class=\"sgs-business-info__label\"><span class=\"sgs-business-info__text\">644 Washwood Heath Rd<br>Birmingham B8 2HQ</span></span></a></address></div>",
+        "css": ""
+    },
+    "hours": {
+        "html": "<style></style><div class=\"sgs-business-info-wrap sgs-business-info-wrap--hours sgs-biz-41ef9964\"><dl class=\"sgs-business-info sgs-business-hours\"><div class=\"sgs-business-hours__row\"><dt class=\"sgs-business-hours__day\">Monday</dt><dd class=\"sgs-business-hours__time\">9:30am-5pm</dd></div><div class=\"sgs-business-hours__row\"><dt class=\"sgs-business-hours__day\">Tuesday</dt><dd class=\"sgs-business-hours__time\">9:30am-5pm</dd></div><div class=\"sgs-business-hours__row\"><dt class=\"sgs-business-hours__day\">Wednesday</dt><dd class=\"sgs-business-hours__time\">9:30am-5pm</dd></div><div class=\"sgs-business-hours__row\"><dt class=\"sgs-business-hours__day\">Thursday</dt><dd class=\"sgs-business-hours__time\">9:30am-5pm</dd></div><div class=\"sgs-business-hours__row\"><dt class=\"sgs-business-hours__day\">Friday</dt><dd class=\"sgs-business-hours__time\">09:30-12:00, 14:30-17:00</dd></div><div class=\"sgs-business-hours__row\"><dt class=\"sgs-business-hours__day\">Saturday</dt><dd class=\"sgs-business-hours__time\">10-14</dd></div><div class=\"sgs-business-hours__row\"><dt class=\"sgs-business-hours__day\">Sunday</dt><dd class=\"sgs-business-hours__time\">Closed</dd></div></dl></div>",
+        "css": ""
+    },
+    "hours-condensed": {
+        "html": "<style></style><div class=\"sgs-business-info-wrap sgs-business-info-wrap--hours sgs-biz-086a61fc\"><dl class=\"sgs-business-info sgs-business-hours sgs-business-hours--condensed\"><div class=\"sgs-business-hours__row\"><dt class=\"sgs-business-hours__day\">Mon–Thu</dt><dd class=\"sgs-business-hours__time\">9:30am-5pm</dd></div><div class=\"sgs-business-hours__row\"><dt class=\"sgs-business-hours__day\">Fri</dt><dd class=\"sgs-business-hours__time\">09:30-12:00, 14:30-17:00</dd></div><div class=\"sgs-business-hours__row\"><dt class=\"sgs-business-hours__day\">Sat</dt><dd class=\"sgs-business-hours__time\">10-14</dd></div><div class=\"sgs-business-hours__row\"><dt class=\"sgs-business-hours__day\">Sun</dt><dd class=\"sgs-business-hours__time\">Closed</dd></div></dl></div>",
+        "css": ""
+    },
+    "socials": {
+        "html": "<style></style><div class=\"sgs-business-info-wrap sgs-business-info-wrap--socials sgs-biz-a6ad254d\"><ul class=\"sgs-business-info sgs-business-socials\"><li class=\"sgs-business-socials__item\"><a href=\"https://facebook.com/example\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"Facebook\" class=\"sgs-business-socials__link\"><!-- @license lucide-static v0.564.0 - ISC --><svg class=\"lucide lucide-facebook\" xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"> <path d=\"M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z\" /></svg></a></li></ul></div>",
+        "css": ""
+    },
+    "copyright": {
+        "html": "<style></style><div class=\"sgs-business-info-wrap sgs-business-info-wrap--copyright sgs-biz-967195b1\"><p class=\"sgs-business-info sgs-business-copyright\">Copyright &copy; 2026 Eye Care Test Ltd</p></div>",
+        "css": ""
+    },
+    "description": {
+        "html": "<style></style><div class=\"sgs-business-info-wrap sgs-business-info-wrap--description sgs-biz-8539ff76\"><p class=\"sgs-business-info sgs-business-description\">Looking after your eyes</p></div>",
+        "css": ""
+    },
+    "map": {
+        "html": "<style></style><div class=\"sgs-business-info-wrap sgs-business-info-wrap--map sgs-biz-3c79d05b\"><div class=\"sgs-business-info sgs-business-map\"><iframe src=\"https://maps.google.com/maps?q=644%20Washwood%20Heath%20Rd%2C%20Birmingham%20B8%202HQ&z=15&hl=en&t=m&output=embed&iwloc=near\" width=\"100%\" height=\"400\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\" title=\"Business location map\"></iframe></div></div>",
+        "css": ""
+    },
+    "attribution": {
+        "html": "<style></style><div class=\"sgs-business-info-wrap sgs-business-info-wrap--attribution sgs-biz-182ebc6f\"><p class=\"sgs-business-info sgs-business-attribution\"><a href=\"https://smallgiantsstudio.co.uk/\" class=\"sgs-business-info__link\" rel=\"noopener\">Website by Small Giants Studio</a></p></div>",
+        "css": ""
+    }
+}

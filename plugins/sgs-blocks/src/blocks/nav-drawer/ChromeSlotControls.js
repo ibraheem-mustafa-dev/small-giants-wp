@@ -18,6 +18,7 @@ import {
 	TypographyControls,
 	LinkPopoverField,
 } from '../../components';
+import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import { TierShow } from './chrome-tier-controls';
 import ChromeRatingControls from './ChromeRatingControls';
 import ChromeIconsSlotNotice from './ChromeIconsSlotNotice';
@@ -55,6 +56,7 @@ export default function ChromeSlotControls( { attributes, setAttributes, clientI
 		chromeSlotText,
 		chromeSlotHeadingLevel,
 		chromeSlotUrl,
+		chromeSlotUrlSource,
 		chromeSlotNewTab,
 		chromeSlotPlacement,
 		chromeSlotShow,
@@ -105,12 +107,17 @@ export default function ChromeSlotControls( { attributes, setAttributes, clientI
 								value={ {
 									url: chromeSlotUrl || '',
 									linkTarget: chromeSlotNewTab ? '_blank' : '_self',
+									linkSource: chromeSlotUrlSource || '',
 								} }
+								linkSources={ LINK_SOURCES_ALL }
 								targetMode="boolean"
 								onChange={ ( next ) => {
 									const patch = {};
 									if ( undefined !== next.url ) {
 										patch.chromeSlotUrl = next.url;
+									}
+									if ( undefined !== next.linkSource ) {
+										patch.chromeSlotUrlSource = next.linkSource;
 									}
 									if ( undefined !== next.linkTarget ) {
 										patch.chromeSlotNewTab = '_blank' === next.linkTarget;

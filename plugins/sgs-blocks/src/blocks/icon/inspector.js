@@ -37,6 +37,9 @@ import { isOutlineShape } from '../../utils/icon-shapes';
 import ShapePanels from './inspector-shape';
 import IconLabelPanel from './inspector-label';
 import { metadataWithoutLinkBinding } from './icon-state';
+import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
+
+const ICON_LINK_SOURCES = [ ...LINK_SOURCES_PAGES, 'top' ];
 import { BrandHoverControl, HoverMotionFields, IconShadowPanel, ICON_MOTION_NAMES, ICON_SHADOW_KEYS } from './motion-panels';
 
 /**
@@ -279,11 +282,14 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						<LinkPopoverField
 							label={ __( 'Link', 'sgs-blocks' ) }
 							help={ __( 'Search your site or paste a URL to make this icon clickable.', 'sgs-blocks' ) }
-							value={ { url: linkUrl, linkTarget, rel: linkRel } }
+							value={ { url: linkUrl, linkTarget, rel: linkRel, linkSource: attributes.linkUrlSource || '' } }
+							// Site Info links come through the Site Info binding above, so only a page or back to top.
+							linkSources={ ICON_LINK_SOURCES }
 							targetMode="boolean"
 							onChange={ ( next ) => {
 								const patch = {};
 								if ( undefined !== next.url ) patch.linkUrl = next.url;
+								if ( undefined !== next.linkSource ) patch.linkUrlSource = next.linkSource;
 								if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
 								if ( undefined !== next.rel ) patch.linkRel = next.rel;
 								setAttributes( patch );

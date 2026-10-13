@@ -136,6 +136,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			sgsBlockLink,
 			sgsBlockLinkTarget,
 			sgsBlockLinkLabel,
+			sgsBlockLinkSource,
 			sgsBlockLinkAuto,
 			sgsClickEffect,
 			sgsClickRippleColour,
@@ -235,6 +236,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							sgsBlockLink={ sgsBlockLink }
 							sgsBlockLinkTarget={ sgsBlockLinkTarget }
 							sgsBlockLinkLabel={ sgsBlockLinkLabel }
+							sgsBlockLinkSource={ sgsBlockLinkSource }
 							sgsBlockLinkAuto={ sgsBlockLinkAuto }
 							hasAutoUrl={ hasAutoUrl }
 							autoUrlHelp={ autoUrlHelp }

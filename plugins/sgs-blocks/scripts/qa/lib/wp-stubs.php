@@ -862,6 +862,39 @@ if ( ! function_exists( 'wp_enqueue_script_module' ) ) {
 	}
 }
 
+if ( ! function_exists( 'generate_block_asset_handle' ) ) {
+	function generate_block_asset_handle( string $block_name, string $field_name, int $index = 0 ): string {
+		// Core's rule for a non-core block: "<namespace>-<name>-<field as kebab words>".
+		$fields = array(
+			'editorScript'     => 'editor-script',
+			'script'           => 'script',
+			'viewScript'       => 'view-script',
+			'viewScriptModule' => 'view-script-module',
+			'editorStyle'      => 'editor-style',
+			'style'            => 'style',
+			'viewStyle'        => 'view-style',
+		);
+		return str_replace( '/', '-', $block_name ) . '-' . ( $fields[ $field_name ] ?? $field_name ) . ( $index > 0 ? '-' . ( $index + 1 ) : '' );
+	}
+}
+
+if ( ! function_exists( 'wp_validate_redirect' ) ) {
+	function wp_validate_redirect( $location, $fallback_url = '' ) {
+		// Core's rule in short: a relative path, or an http(s) URL on this site's host (home_url()).
+		$location = trim( (string) $location );
+		if ( '' === $location ) {
+			return $fallback_url;
+		}
+		if ( '/' === $location[0] && ( ! isset( $location[1] ) || '/' !== $location[1] ) ) {
+			return $location;
+		}
+		$host = wp_parse_url( $location, PHP_URL_HOST );
+		$home = wp_parse_url( home_url(), PHP_URL_HOST );
+		$ok   = in_array( wp_parse_url( $location, PHP_URL_SCHEME ), array( 'http', 'https' ), true ) && $host === $home;
+		return $ok ? $location : $fallback_url;
+	}
+}
+
 if ( ! function_exists( 'sanitize_title' ) ) {
 	function sanitize_title( $title ): string {
 		$title = strtolower( wp_strip_all_tags( (string) $title ) );

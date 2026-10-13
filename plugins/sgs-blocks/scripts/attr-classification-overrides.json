@@ -7264,6 +7264,70 @@
 				"css_element": "item",
 				"_why": "2026-10-12 (Spec 48 step 8). Painted by includes/nav-menu-css.php through sgs_typography_css_rule($attributes, 'item', $link_sel) with the rest of the item typography, whose siblings (size, weight, style, line height, transform) the derived layer already maps to 'item'. Only the family row lacked a css_property, so calibration never planned it."
 			}
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "successRedirectSource",
+			"fields": {
+				"role": "enum-mode"
+			},
+			"_reason": "2026-10-13 (shared link source, plan item 10). Where the link goes: '' (the typed URL), post:<id>, a Site Info source or top, resolved by includes/helpers-link-source.php. A mode switch that paints no CSS property, classified as sgs/button::linkSource already is."
+		},
+		{
+			"slug": "sgs/google-rating-badge",
+			"attr": "listingUrlSource",
+			"fields": {
+				"role": "enum-mode"
+			},
+			"_reason": "2026-10-13 (shared link source, plan item 10). Where the link goes: '' (the typed URL), post:<id>, a Site Info source or top, resolved by includes/helpers-link-source.php. A mode switch that paints no CSS property, classified as sgs/button::linkSource already is."
+		},
+		{
+			"slug": "sgs/icon",
+			"attr": "linkUrlSource",
+			"fields": {
+				"role": "enum-mode"
+			},
+			"_reason": "2026-10-13 (shared link source, plan item 10). Where the link goes: '' (the typed URL), post:<id>, a Site Info source or top, resolved by includes/helpers-link-source.php. A mode switch that paints no CSS property, classified as sgs/button::linkSource already is."
+		},
+		{
+			"slug": "sgs/media",
+			"attr": "linkUrlSource",
+			"fields": {
+				"role": "enum-mode"
+			},
+			"_reason": "2026-10-13 (shared link source, plan item 10). Where the link goes: '' (the typed URL), post:<id>, a Site Info source or top, resolved by includes/helpers-link-source.php. A mode switch that paints no CSS property, classified as sgs/button::linkSource already is."
+		},
+		{
+			"slug": "sgs/mega-group",
+			"attr": "linkSource",
+			"fields": {
+				"role": "enum-mode"
+			},
+			"_reason": "2026-10-13 (shared link source, plan item 10). Where the link goes: '' (the typed URL), post:<id>, a Site Info source or top, resolved by includes/helpers-link-source.php. A mode switch that paints no CSS property, classified as sgs/button::linkSource already is."
+		},
+		{
+			"slug": "sgs/nav-drawer",
+			"attr": "chromeSlotUrlSource",
+			"fields": {
+				"role": "enum-mode"
+			},
+			"_reason": "2026-10-13 (shared link source, plan item 10). Where the link goes: '' (the typed URL), post:<id>, a Site Info source or top, resolved by includes/helpers-link-source.php. A mode switch that paints no CSS property, classified as sgs/button::linkSource already is."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "ctaUrlSource",
+			"fields": {
+				"role": "enum-mode"
+			},
+			"_reason": "2026-10-13 (shared link source, plan item 10). Where the link goes: '' (the typed URL), post:<id>, a Site Info source or top, resolved by includes/helpers-link-source.php. A mode switch that paints no CSS property, classified as sgs/button::linkSource already is."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "cta2UrlSource",
+			"fields": {
+				"role": "enum-mode"
+			},
+			"_reason": "2026-10-13 (shared link source, plan item 10). Where the link goes: '' (the typed URL), post:<id>, a Site Info source or top, resolved by includes/helpers-link-source.php. A mode switch that paints no CSS property, classified as sgs/button::linkSource already is."
 		}
 	]
 }

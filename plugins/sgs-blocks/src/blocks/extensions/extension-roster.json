@@ -73,7 +73,8 @@
 			"attributes": {
 				"sgsBlockLink": { "type": "string", "default": "", "role": "behaviour" },
 				"sgsBlockLinkTarget": { "type": "boolean", "default": false, "role": "behaviour" },
-				"sgsBlockLinkLabel": { "type": "string", "default": "", "role": "behaviour" }
+				"sgsBlockLinkLabel": { "type": "string", "default": "", "role": "behaviour" },
+				"sgsBlockLinkSource": { "type": "string", "default": "", "role": "behaviour" }
 			}
 		},
 		{

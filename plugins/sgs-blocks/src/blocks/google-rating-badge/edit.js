@@ -34,6 +34,7 @@ import {
 	textRow,
 	LinkPopoverField,
 } from '../../components';
+import { LINK_SOURCES_WEB } from '../../shared/link-source-options';
 
 const typoTarget = ( prefix, label ) => ( {
 	key: prefix,
@@ -72,6 +73,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		reviewCount,
 		placeId,
 		listingUrl,
+		listingUrlSource,
 		openInNewTab,
 		linkLabel,
 		showCount,
@@ -241,11 +243,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ {
 							url: listingUrl || '',
 							linkTarget: openInNewTab ? '_blank' : '_self',
+							linkSource: listingUrlSource || '',
 						} }
+						linkSources={ LINK_SOURCES_WEB }
 						targetMode="boolean"
 						onChange={ ( next ) => {
 							const patch = {};
 							if ( undefined !== next.url ) patch.listingUrl = next.url;
+							if ( undefined !== next.linkSource ) patch.listingUrlSource = next.linkSource;
 							if ( undefined !== next.linkTarget ) patch.openInNewTab = '_blank' === next.linkTarget;
 							setAttributes( patch );
 						} }

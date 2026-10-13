@@ -14,6 +14,7 @@
 import { __ } from '@wordpress/i18n';
 
 import LinkPopoverField from '../../LinkPopoverControl.js';
+import { LINK_SOURCES_ALL } from '../../../shared/link-source-options.js';
 import { attrKeys } from './link.js';
 
 /**
@@ -41,12 +42,17 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 				url: attributes[ keys.url ] || '',
 				linkTarget: attributes[ keys.newTab ] ? '_blank' : '_self',
 				rel: attributes[ keys.rel ] || '',
+				linkSource: attributes[ keys.source ] || '',
 			} }
+			linkSources={ LINK_SOURCES_ALL }
 			targetMode="boolean"
 			onChange={ ( next ) => {
 				const patch = {};
 				if ( undefined !== next.url ) {
 					patch[ keys.url ] = next.url;
+				}
+				if ( undefined !== next.linkSource ) {
+					patch[ keys.source ] = next.linkSource;
 				}
 				if ( undefined !== next.linkTarget ) {
 					patch[ keys.newTab ] = '_blank' === next.linkTarget;

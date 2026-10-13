@@ -9,6 +9,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useBlockProps, BlockControls, useSettings, store as blockEditorStore } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import { LogicalAlignToolbar } from '../../components';
+import { resolveLinkSource } from '../../utils/link-source';
 import {
 	colourVar,
 	tierBoxLonghands,
@@ -197,7 +198,9 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 	const brand = resolveBrand( attributes, boundKey );
 	const name = accessibleName( { ariaLabel: attributes.ariaLabel, boundKey: nameKey, glyphBrand: brand.glyphBrand, url: boundUrl } );
 	// A bound link the editor cannot resolve still names the label from its key, as the page does once it resolves.
-	const labelNameArgs = { ariaLabel: attributes.ariaLabel, boundKey: nameKey, glyphBrand: brand.glyphBrand, url: link.bound ? boundUrl : linkUrl };
+	// An unbound link is the typed one, or the page / back-to-top its linkUrlSource names.
+	const unboundUrl = resolveLinkSource( attributes.linkUrlSource, linkUrl ).url;
+	const labelNameArgs = { ariaLabel: attributes.ariaLabel, boundKey: nameKey, glyphBrand: brand.glyphBrand, url: link.bound ? boundUrl : unboundUrl };
 	const defaultLabel = visibleLabel( '', labelNameArgs );
 	const labelText = attributes.showLabel ? visibleLabel( attributes.labelText, labelNameArgs ) : '';
 	const labelPosition = labelPositionFor( attributes.labelPosition, '' );
@@ -251,7 +254,7 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 
 	const labelRootStyle = labelText ? canvasLabelRootStyle( attributes, tier, presetSlugs ) : {};
 	const blockProps = useBlockProps( { className, style: { ...canvasRootStyle( attributes, tier, brand, presetSlugs, shadowHoverMap || {} ), ...outline.style, ...labelRootStyle } } );
-	const linked = !! linkUrl || link.bound;
+	const linked = !! unboundUrl || link.bound;
 	const shapeEl = (
 		<span className="sgs-icon__shape" style={ shapeStyle }>
 			{ outline.outline && ( showBg || outline.stroke ) && <CanvasOutline shape={ shape } /> }

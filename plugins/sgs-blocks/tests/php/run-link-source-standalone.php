@@ -80,6 +80,17 @@ namespace {
 			return 'https://example.test/wp-login.php';
 		}
 	}
+
+	// The `top` source enqueues sgs/button's view module so any block's top link gets its focus handling.
+	if ( ! function_exists( 'wp_enqueue_script_module' ) ) {
+		function wp_enqueue_script_module( $id ) {}
+	}
+
+	if ( ! function_exists( 'generate_block_asset_handle' ) ) {
+		function generate_block_asset_handle( $block_name, $field_name ) {
+			return str_replace( '/', '-', $block_name ) . '-view-script-module';
+		}
+	}
 }
 
 // Sgs_Site_Info stub — a controllable in-memory store instead of the real

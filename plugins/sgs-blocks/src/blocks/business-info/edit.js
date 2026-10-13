@@ -14,6 +14,8 @@ import { PanelBody, SelectControl, ToggleControl, TextControl, Notice } from '@w
 import ServerSideRender from '../../components/ServerSideRender';
 import { ResponsiveBoxControl, SgsColourPanel, SsrPreviewGuard, textRow, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl, SgsSeparatorControl, LinkUnderlineControl } from '../../components';
 
+import { openStatusColourRows, OpenStatusPanel, MapSourcePanel } from './OpenStatusPanels';
+
 /** Labels for the type selector drop-down. */
 const TYPE_OPTIONS = [
 	{ label: __( 'Phone Number', 'sgs-blocks' ),     value: 'phone'       },
@@ -25,6 +27,7 @@ const TYPE_OPTIONS = [
 	{ label: __( 'Tagline / Description', 'sgs-blocks' ), value: 'description' },
 	{ label: __( 'Google Maps Embed', 'sgs-blocks' ), value: 'map'        },
 	{ label: __( 'Website Credit / Attribution', 'sgs-blocks' ), value: 'attribution' },
+	{ label: __( 'Open Now Status', 'sgs-blocks' ), value: 'open-status' },
 ];
 
 /** Types that support the showIcon toggle. */
@@ -156,6 +159,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							attributes,
 							setAttributes,
 						} ),
+					...( 'open-status' === displayType ? openStatusColourRows( attributes, setAttributes ) : [] ),
 				] }
 			/>
 			<InspectorControls>
@@ -176,6 +180,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ __( 'Edit this site’s business data at Appearance → SGS Site Info.', 'sgs-blocks' ) }
 					</Notice>
 				</PanelBody>
+
+				{ 'open-status' === displayType && (
+					<OpenStatusPanel attributes={ attributes } setAttributes={ setAttributes } />
+				) }
+				{ 'map' === displayType && (
+					<MapSourcePanel attributes={ attributes } setAttributes={ setAttributes } />
+				) }
 
 				{ ICON_TYPES.has( displayType ) && (
 					<PanelBody title={ __( 'Display Options', 'sgs-blocks' ) } initialOpen={ false }>

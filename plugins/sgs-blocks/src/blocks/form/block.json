@@ -650,6 +650,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"successRedirectSource": {
+			"type": "string",
+			"default": "",
+			"description": "Where the form redirects after a successful submission: '' (the typed successRedirect) or post:<id> (a page or post on this site, followed by ID). Resolved by includes/helpers-link-source.php, then checked with wp_validate_redirect(); the typed successRedirect is the fallback."
+		},
 		"honeypot": {
 			"type": "boolean",
 			"default": true

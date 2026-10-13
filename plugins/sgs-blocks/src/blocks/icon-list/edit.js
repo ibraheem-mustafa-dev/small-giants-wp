@@ -32,6 +32,8 @@ import {
   LinkPopoverField,
 } from "../../components";
 import { SITE_INFO_ADMIN_URL } from "../icon/icon-state";
+import { LINK_SOURCES_ALL } from "../../shared/link-source-options";
+import { resolveLinkSource } from "../../utils/link-source";
 import { CONTENT_SOURCE_OPTIONS, usesSiteInfo, siteInfoItemPreview, contentSourcePatch } from "./site-info-items";
 import ItemEffectsPanel from "../../shared/nav-menu-panels/ItemEffectsPanel";
 import { colourVar, gapVar, separatorsLineCss, usePreviewTier, tierBoxLonghands, sgsBorderPreview, linkUnderlinePreviewCss } from "../../utils";
@@ -190,11 +192,14 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
             url: item.url || "",
             linkTarget: item.newTab ? "_blank" : "_self",
             rel: "",
+            linkSource: item.linkSource || "",
           }}
+          linkSources={LINK_SOURCES_ALL}
           targetMode="boolean"
           onChange={(next) => {
             const patch = { ...item };
             if (undefined !== next.url) patch.url = next.url;
+            if (undefined !== next.linkSource) patch.linkSource = next.linkSource;
             if (undefined !== next.linkTarget) patch.newTab = "_blank" === next.linkTarget ? true : undefined;
             onChange(patch);
           }}
@@ -416,7 +421,11 @@ export default function Edit({ attributes, setAttributes, clientId }) {
       )}
     </>
   );
-  const listItemNodes = items.map((item, index) => {
+  // The item with the url its link source resolves to, as render.php resolves it before anything else.
+  const withResolvedLink = (item) =>
+    item?.linkSource ? { ...item, url: resolveLinkSource(item.linkSource, item.url).url } : item;
+  const listItemNodes = items.map((rawItem, index) => {
+    const item = withResolvedLink(rawItem);
     const resolved = resolveItemIcon(item, fallback);
     // A Site Info item prints Site Info's value and link; a blank value hides it on the site, so the canvas
     // keeps it selectable but dims it and says why.
@@ -471,7 +480,8 @@ export default function Edit({ attributes, setAttributes, clientId }) {
   // FR-36-26a rule 3: the `<nav>` landmark is opt-in for typed lists, and
   // NEVER offered for a url-less typed list — a list nobody can navigate
   // through is not a navigation landmark.
-  const itemsHaveUrls = (items || []).some((item) => {
+  const itemsHaveUrls = (items || []).some((rawItem) => {
+    const item = withResolvedLink(rawItem);
     if (!usesSiteInfo(item)) return !!item.url;
     return !!siteInfoItemPreview(item, window.sgsBlocksData?.siteInfo, window.sgsBlocksData?.siteInfoHours).url;
   });

@@ -32,6 +32,7 @@ foreach ( $items as $index => $item ) :
 			'url'           => $item['link'] ?? '',
 			'opensInNewTab' => isset( $item['linkTarget'] ) && '_blank' === $item['linkTarget'],
 			'rel'           => $item['linkRel'] ?? '',
+			'source'        => $item['linkSource'] ?? '',
 		)
 	);
 	$has_link  = '' !== $link_attr;

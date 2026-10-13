@@ -3,6 +3,8 @@ import { useBlockProps, useInnerBlocksProps, InspectorControls, useBlockEditCont
 import { useSelect } from '@wordpress/data';
 import { PanelBody, Notice } from '@wordpress/components';
 import { LinkPopoverField } from '../../components';
+import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
+import { resolveLinkSource } from '../../utils/link-source';
 
 /**
  * SGS Mega Group — block editor UI.
@@ -58,8 +60,10 @@ function blockTreeHasLinkOrButton( blocks ) {
 }
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { url, opensInNewTab, rel } = attributes;
+	const { url, opensInNewTab, rel, linkSource } = attributes;
 	const { clientId } = useBlockEditContext();
+	// The href the page prints: the typed url, or what its link source resolves to.
+	const href = resolveLinkSource( linkSource, url ).url;
 
 	const hasNestedLinkOrButton = useSelect(
 		( select ) => {
@@ -69,10 +73,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		[ clientId ]
 	);
 
-	const linkIgnored = !! url && hasNestedLinkOrButton;
+	const linkIgnored = !! href && hasNestedLinkOrButton;
 
 	const blockProps = useBlockProps( {
-		className: [ 'sgs-mega-group', url && ! linkIgnored && 'sgs-mega-group--link' ].filter( Boolean ).join( ' ' ),
+		className: [ 'sgs-mega-group', href && ! linkIgnored && 'sgs-mega-group--link' ].filter( Boolean ).join( ' ' ),
 	} );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		template: TEMPLATE,
@@ -90,11 +94,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							url: url || '',
 							linkTarget: opensInNewTab ? '_blank' : '_self',
 							rel: rel || '',
+							linkSource: linkSource || '',
 						} }
+						linkSources={ LINK_SOURCES_ALL }
 						targetMode="boolean"
 						onChange={ ( next ) => {
 							const patch = {};
 							if ( undefined !== next.url ) patch.url = next.url;
+							if ( undefined !== next.linkSource ) patch.linkSource = next.linkSource;
 							if ( undefined !== next.linkTarget ) patch.opensInNewTab = '_blank' === next.linkTarget;
 							if ( undefined !== next.rel ) patch.rel = next.rel;
 							setAttributes( patch );

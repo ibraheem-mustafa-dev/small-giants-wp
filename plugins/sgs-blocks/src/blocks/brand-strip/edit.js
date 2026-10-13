@@ -15,6 +15,7 @@ import {
 } from '@wordpress/components';
 import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsSeparatorControl, SpacingControl, MediaGalleryPicker } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
+import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import { generateItemKey, withStableItemKeys } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { SourcePanel, BrandTextStylePanel } from './source-controls';
@@ -168,11 +169,14 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 					url: logo.linkUrl || '',
 					linkTarget: logo.linkTarget || '_self',
 					rel: logo.linkRel || '',
+					linkSource: logo.linkUrlSource || '',
 				} }
+				linkSources={ LINK_SOURCES_ALL }
 				targetMode="boolean"
 				onChange={ ( next ) => {
 					const patch = { ...logo };
 					if ( undefined !== next.url ) patch.linkUrl = next.url;
+					if ( undefined !== next.linkSource ) patch.linkUrlSource = next.linkSource;
 					if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
 					if ( undefined !== next.rel ) patch.linkRel = next.rel;
 					onChange( patch );

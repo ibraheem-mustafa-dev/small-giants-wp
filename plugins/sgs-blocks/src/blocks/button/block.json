@@ -163,10 +163,18 @@
 				"phone",
 				"email",
 				"whatsapp",
+				"directions",
+				"google",
+				"facebook",
+				"instagram",
+				"twitter",
+				"linkedin",
+				"youtube",
+				"tiktok",
 				"top",
 				"account"
 			],
-			"description": "Where the button's link comes from. 'url' (default) uses the typed URL/internal-link fields below. 'phone'/'email'/'whatsapp' read the value live from Appearance > SGS Site Info (Sgs_Site_Info::get()) and fall back to the typed URL when that Site Info field is empty. 'top' scrolls to the top of the page (view.js manages focus). 'account' links to the WooCommerce My Account page, or the login screen when WooCommerce is inactive."
+			"description": "Where the button's link comes from. 'url' (default) uses the typed URL/internal-link fields below. 'phone'/'email'/'whatsapp', 'directions' (the Site Info Maps link, else an address search), 'google' (the Google Business Profile link) and the socials read the value live from Appearance > SGS Site Info through includes/helpers-link-source.php::sgs_resolve_link_source() and fall back to the typed URL when that Site Info field is empty. 'top' scrolls to the top of the page (view.js manages focus). 'account' links to the WooCommerce My Account page, or the login screen when WooCommerce is inactive."
 		},
 		"labelFromSiteInfo": {
 			"type": "boolean",

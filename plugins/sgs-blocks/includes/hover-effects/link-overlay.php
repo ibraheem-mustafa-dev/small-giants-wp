@@ -223,6 +223,9 @@ function block_link_add_class( string $attrs, string $class_name ): string {
  * @param string $block_link         Block-link URL.
  * @param bool   $block_link_target  Whether the link opens in a new tab.
  * @param string $block_link_label   Operator-supplied accessible label, or ''.
+ * @param string $source_attrs       Escaped extra attributes the link's source needs on the
+ *                                   overlay (sgs_link_source_attrs_html(): the `top` source's
+ *                                   data attribute), or ''.
  * @return string $block_content with the overlay inserted, or unchanged if the root's closing tag
  *                could not be found.
  */
@@ -231,11 +234,12 @@ function insert_block_link_overlay(
 	int $sgs_root_offset,
 	string $block_link,
 	bool $block_link_target,
-	string $block_link_label
+	string $block_link_label,
+	string $source_attrs = ''
 ): string {
-	$target_attr = $block_link_target
+	$target_attr = ( $block_link_target
 		? ' target="_blank" rel="noopener noreferrer"'
-		: '';
+		: '' ) . $source_attrs;
 
 	$sgs_root = substr( $block_content, $sgs_root_offset );
 
