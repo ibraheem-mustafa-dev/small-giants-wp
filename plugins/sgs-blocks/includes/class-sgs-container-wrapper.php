@@ -1116,7 +1116,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$grid_on_inner = true;
 			}
 			// A motion layer on the band parts (`content-band`, `inner`; Spec 38A §6.2) needs the band to exist, so it forces the two-layer structure the same way container queries do, here, at $band_will_render and at $do_wrap, unless the caller turned the band off (`wrap_inner` false).
-			$sgs_motion_band = false !== $opt_wrap_inner && class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Targets' ) && \SGS\Blocks\Motion\Sgs_Motion_Targets::names_band( $attributes );
+			$sgs_motion_band = false !== $opt_wrap_inner && class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Targets' ) && \SGS\Blocks\Motion\Sgs_Motion_Targets::names_band( $attributes, $block instanceof \WP_Block ? (string) $block->name : '' );
 			if ( $sgs_motion_band && null === $opt_wrap_inner && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
 				$grid_on_inner = true;
 			}

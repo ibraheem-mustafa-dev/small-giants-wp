@@ -402,4 +402,19 @@ final class ContainerWrapperTest extends TestCase {
 		$other = array( 'sgsMotion' => array( 'v' => 1, 'elements' => array( 'root' => array( 'hover' => array( 'state' => array( 'values' => array( 'translateY' => -4 ) ) ) ) ) ) );
 		$this->assertStringNotContainsString( 'sgs-container__inner', SGS_Container_Wrapper::render( $other, $block, '<p>x</p>', 'content' ), 'a root layer does not force the band' );
 	}
+
+	/**
+	 * A layer on a part NAMED `inner` that resolves to the block's own `__inner` class (post-grid, form) is not a wrapper
+	 * band, so it must not make the wrapper print `sgs-container__inner`.
+	 */
+	#[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+	public function test_a_motion_inner_part_that_is_not_the_wrapper_band_adds_no_band(): void {
+		require_once __DIR__ . '/fixtures/wp-block-band-stub.php';
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/motion/class-sgs-motion-targets.php';
+		$attrs = array( 'sgsMotion' => array( 'v' => 1, 'elements' => array( 'inner' => array( 'hover' => array( 'state' => array( 'values' => array( 'translateY' => -4 ) ) ) ) ) ) );
+		foreach ( array( 'sgs/post-grid', 'sgs/form' ) as $name ) {
+			$html = SGS_Container_Wrapper::render( $attrs, sgs_test_band_block( $name ), '<p>x</p>', 'content' );
+			$this->assertStringNotContainsString( 'sgs-container__inner', $html, "{$name} inner resolves to its own class: no wrapper band" );
+		}
+	}
 }

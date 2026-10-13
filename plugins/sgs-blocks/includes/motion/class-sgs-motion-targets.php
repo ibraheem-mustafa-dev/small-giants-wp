@@ -136,16 +136,23 @@ final class Sgs_Motion_Targets {
 	}
 
 	/**
-	 * Whether a block's sgsMotion names a band part (`content-band` or `inner`), so the container wrapper must print
-	 * the band for the layer to reach it.
+	 * Whether a block's sgsMotion carries a layer on a part that resolves to the wrapper's band class, so the container
+	 * wrapper must print the band for the layer to reach it. A part named `inner` or `content-band` that resolves to the
+	 * block's own class (post-grid and form `inner`) is not the wrapper band and forces nothing.
 	 *
 	 * @param array<string,mixed> $attributes Block attributes.
+	 * @param string              $block_name Block name (`sgs/<slug>`).
 	 * @return bool
 	 */
-	public static function names_band( array $attributes ): bool {
+	public static function names_band( array $attributes, string $block_name = '' ): bool {
 		$elements = isset( $attributes['sgsMotion']['elements'] ) && is_array( $attributes['sgsMotion']['elements'] ) ? $attributes['sgsMotion']['elements'] : array();
 		foreach ( array( 'content-band', 'inner' ) as $part ) {
-			if ( ! empty( $elements[ $part ] ) ) {
+			if ( empty( $elements[ $part ] ) ) {
+				continue;
+			}
+			$declared = self::declared_selector( $block_name, $part );
+			$class    = '' !== $declared ? substr( $declared, 1 ) : self::part_class( $block_name, $part );
+			if ( in_array( $class, self::band_classes( $block_name ), true ) ) {
 				return true;
 			}
 		}
