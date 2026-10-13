@@ -30,9 +30,14 @@ import { useSettings } from '@wordpress/block-editor';
  * @return {{lift: string, hover: string}} The two attribute names.
  */
 export function shadowLiftAttrKeys( prefix = '' ) {
-	return prefix
-		? { lift: `${ prefix }ShadowLiftOnHover`, hover: `${ prefix }SgsHoverShadow` }
-		: { lift: 'shadowLiftOnHover', hover: 'sgsHoverShadow' };
+	// Known prefixes are written out so the wiring and inspector scans can see the names.
+	if ( '' === prefix ) {
+		return { lift: 'shadowLiftOnHover', hover: 'sgsHoverShadow' };
+	}
+	if ( 'submit' === prefix ) {
+		return { lift: 'submitShadowLiftOnHover', hover: 'submitSgsHoverShadow' };
+	}
+	return { lift: `${ prefix }ShadowLiftOnHover`, hover: `${ prefix }SgsHoverShadow` };
 }
 
 /** Flatten a theme/default/custom origin object (or a plain list) into one list. */

@@ -171,6 +171,13 @@ function sgs_shadow_lift_attr_names( string $prefix = '' ): array {
 			'hover' => 'sgsHoverShadow',
 		);
 	}
+	// Known prefixes are written out so the wiring and inspector scans can see the names.
+	if ( 'submit' === $prefix ) {
+		return array(
+			'lift'  => 'submitShadowLiftOnHover',
+			'hover' => 'submitSgsHoverShadow',
+		);
+	}
 	return array(
 		'lift'  => $prefix . 'ShadowLiftOnHover',
 		'hover' => $prefix . 'SgsHoverShadow',
