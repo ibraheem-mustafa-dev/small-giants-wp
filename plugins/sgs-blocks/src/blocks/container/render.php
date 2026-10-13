@@ -18,6 +18,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/shape-dividers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/container-pin-edge-css.php';
 
 // sgs_sanitize_grid_template() and sgs_container_gap_value() live in render-helpers.php.
 // SGS_Container_Wrapper::render() handles the full wrapper + responsive-CSS assembly.
@@ -273,6 +274,10 @@ if ( empty( $sgs_container_supports_uid ) ) {
 }
 $sgs_container_typography_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
 $sgs_container_supports_css  .= sgs_typography_css_rule( $attributes, '', $sgs_container_typography_sel, $sgs_container_typography_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
+
+// Pin to edge (`pinEdge`, includes/container-pin-edge-css.php): sticky to the top or
+// bottom of the nearest scrolling ancestor at the pinned tiers; unset emits nothing.
+$sgs_container_supports_css .= sgs_container_pin_edge_css( $sgs_container_typography_sel, $attributes );
 
 $sgs_container_wrapper_opts = array( 'tag' => $html_tag );
 if ( ! empty( $sgs_container_supports_classes ) ) {
