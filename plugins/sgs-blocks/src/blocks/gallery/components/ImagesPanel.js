@@ -17,6 +17,7 @@ export default function ImagesPanel( {
 	handleDrop,
 	toggleItemDecorative,
 	updateItemCrop,
+	updateItemLink,
 } ) {
 	const { imageSize } = attributes;
 
@@ -51,6 +52,7 @@ export default function ImagesPanel( {
 									onDrop={ handleDrop }
 									onToggleDecorative={ toggleItemDecorative }
 									onUpdateCrop={ updateItemCrop }
+									onUpdateLink={ updateItemLink }
 								/>
 							) ) }
 						</div>

@@ -329,6 +329,60 @@
 }
 
 /* ==========================================================================
+   Linked item (an item with its own link; never opens the lightbox)
+   ========================================================================== */
+
+.sgs-gallery__item-link {
+	display:         block;
+	width:           100%;
+	min-height:      44px;
+	color:           inherit;
+	text-decoration: none;
+	cursor:          pointer;
+}
+
+/* The tile clips its edges, so the focus ring sits inside it. */
+.sgs-gallery__item-link:focus-visible {
+	outline:        2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline-offset: -4px;
+}
+
+/* A linked tile lifts and shades smoothly (the lift itself is the Lift hover effect). */
+.sgs-gallery__item--linked {
+	transition:
+		transform var( --sgs-transition-duration ) var( --sgs-transition-easing ),
+		box-shadow var( --sgs-transition-duration ) var( --sgs-transition-easing ),
+		background-color var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
+/* ==========================================================================
+   Tile mode (Tile height set): the tile takes its own height, not the aspect
+   ratio, and the image is laid inside it. Padding, border and fill are set
+   in the block's scoped stylesheet.
+   ========================================================================== */
+
+.sgs-gallery--tile .sgs-gallery__item {
+	display:      grid;
+	aspect-ratio: auto;
+}
+
+.sgs-gallery--tile .sgs-gallery__item-btn,
+.sgs-gallery--tile .sgs-gallery__item-link {
+	position: relative;
+}
+
+.sgs-gallery--tile .sgs-gallery__img-wrap {
+	position: absolute;
+	inset:    0;
+	width:    auto;
+}
+
+.sgs-gallery--tile .sgs-gallery__img {
+	width:  100%;
+	height: 100%;
+}
+
+/* ==========================================================================
    Caption
    ========================================================================== */
 

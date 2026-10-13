@@ -72,6 +72,19 @@ export default function useGalleryItems( { items, setAttributes } ) {
 	};
 
 	/**
+	 * Patch a single item's link fields (linkUrl, linkTarget and/or linkLabel).
+	 *
+	 * @param {number} index Index of the item to update.
+	 * @param {Object} patch Partial item patch.
+	 */
+	const updateItemLink = ( index, patch ) => {
+		const next = items.map( ( item, i ) =>
+			i === index ? { ...item, ...patch } : item
+		);
+		setAttributes( { mediaItems: next } );
+	};
+
+	/**
 	 * Handle a selection from MediaGalleryPicker.
 	 * MediaGalleryPicker already maps each raw WP media object to the
 	 * unified SGS media-slot shape (via the resolveItem prop, bound below
@@ -90,6 +103,7 @@ export default function useGalleryItems( { items, setAttributes } ) {
 		removeImage,
 		toggleItemDecorative,
 		updateItemCrop,
+		updateItemLink,
 		onSelectImages,
 	};
 }

@@ -2,7 +2,8 @@
  * Draggable thumbnail for the sgs/gallery inspector's image strip.
  */
 import { __ } from '@wordpress/i18n';
-import { SelectControl, ToggleControl, FocalPointPicker } from '@wordpress/components';
+import { SelectControl, TextControl, ToggleControl, FocalPointPicker } from '@wordpress/components';
+import { LinkPopoverField } from '../../../components';
 import { focalPointToObjectPosition } from '../../../utils';
 
 /**
@@ -15,6 +16,7 @@ import { focalPointToObjectPosition } from '../../../utils';
  * @param {Function} props.onDragStart Called when drag begins.
  * @param {Function} props.onDragOver  Called when dragged over this item.
  * @param {Function} props.onDrop      Called when dropped on this item.
+ * @param {Function} props.onUpdateLink Called with (index, patch) to set the item's linkUrl, linkTarget or linkLabel.
  */
 export default function GalleryThumbnail( {
 	image,
@@ -25,6 +27,7 @@ export default function GalleryThumbnail( {
 	onDrop,
 	onToggleDecorative,
 	onUpdateCrop,
+	onUpdateLink,
 } ) {
 	const fit = image.objectFit || 'cover';
 	return (
@@ -74,6 +77,39 @@ export default function GalleryThumbnail( {
 				onChange={ ( value ) => onToggleDecorative( index, value ) }
 				__nextHasNoMarginBottom
 			/>
+			{ /* Per-item link: a linked item renders as an <a> to this URL and never opens the
+			     lightbox. The label is the link's accessible name (empty falls back to the alt text). */ }
+			<LinkPopoverField
+				label={ __( 'Link', 'sgs-blocks' ) }
+				emptyLabel={ __( 'Link this item', 'sgs-blocks' ) }
+				value={ { url: image.linkUrl || '', linkTarget: image.linkTarget || '' } }
+				targetMode="boolean"
+				showRel={ false }
+				onChange={ ( next ) => {
+					const patch = {};
+					if ( 'url' in next ) {
+						patch.linkUrl = next.url;
+						if ( ! next.url ) {
+							patch.linkTarget = '';
+							patch.linkLabel = '';
+						}
+					}
+					if ( 'linkTarget' in next ) {
+						patch.linkTarget = '_blank' === next.linkTarget ? '_blank' : '';
+					}
+					onUpdateLink( index, patch );
+				} }
+			/>
+			{ !! image.linkUrl && (
+				<TextControl
+					label={ __( 'Link label', 'sgs-blocks' ) }
+					help={ __( 'Read out by screen readers. Empty uses the image description.', 'sgs-blocks' ) }
+					value={ image.linkLabel || '' }
+					onChange={ ( val ) => onUpdateLink( index, { linkLabel: val } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
 			{ /* Spec 35 Part 4 — per-item crop, same shape as sgs/card-grid's
 			     repeater panel. 'image' type only: object-fit on a <video>
 			     thumbnail here shows a static poster frame, not a meaningful
