@@ -607,7 +607,8 @@
 				"rotate",
 				"scale",
 				"opacity",
-				"filter"
+				"filter",
+				"padding-inline-start"
 			]
 		},
 		"magnet": {
@@ -1038,6 +1039,23 @@
 							"name": "--sgs-mh-bright",
 							"syntax": "<number>",
 							"initial": "1"
+						}
+					]
+				}
+			]
+		},
+		{
+			"channel": "padding-inline-start",
+			"composition": "sum",
+			"formula": "padding-inline-start: calc(var(--sgs-pad-start-rest, 0px) + var(--sgs-mh-indent))",
+			"owners": [
+				{
+					"owner": "hoverState",
+					"properties": [
+						{
+							"name": "--sgs-mh-indent",
+							"syntax": "<length>",
+							"initial": "0px"
 						}
 					]
 				}
@@ -2070,7 +2088,7 @@
 					"$ref": "#/$defs/distance",
 					"x-sgs-field": {
 						"fieldType": "distance",
-						"cssProperty": "padding-inline-start",
+						"cssProperty": "--sgs-mh-indent",
 						"state": "hover",
 						"perDevice": true
 					}

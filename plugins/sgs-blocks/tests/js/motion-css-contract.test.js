@@ -209,6 +209,29 @@ function tokensRead( css ) {
 	return found;
 }
 
+/**
+ * Every `--sgs-mh-to-*` the renderer can emit for a hover state, derived the way the emitter names them: an owner
+ * property `--sgs-mh-<x>` gives `--sgs-mh-to-<x>`, any other non-timing field gives `--sgs-mh-to-<field key>`, and
+ * the rest rotate (`--sgs-rot-rest`) and the timing fields emit no to-value of their own.
+ */
+function emittedHoverToValues() {
+	const out = new Set();
+	for ( const [ key, field ] of Object.entries( SCHEMA.$defs.HoverStateValues.properties ) ) {
+		const prop = field[ 'x-sgs-field' ]?.cssProperty;
+		if ( ! prop || prop.startsWith( 'transition-' ) || '--sgs-rot-rest' === prop ) {
+			continue;
+		}
+		out.add( prop.startsWith( '--sgs-mh-' ) ? `--sgs-mh-to-${ prop.slice( '--sgs-mh-'.length ) }` : `--sgs-mh-to-${ key }` );
+	}
+	return out;
+}
+
+/** The emitted to-values the sheet never reads through var(). */
+function unreadToValues( css ) {
+	const text = css.replace( /\/\*[\s\S]*?\*\//g, '' );
+	return [ ...emittedHoverToValues() ].filter( ( name ) => ! text.includes( `var(${ name }` ) );
+}
+
 const CSS = fs.readFileSync( CSS_FILE, 'utf8' );
 
 describe( 'motion.css contract', () => {
@@ -222,6 +245,19 @@ describe( 'motion.css contract', () => {
 		expect( read.has( 'duration.instant' ) ).toBe( true );
 		const stale = ALLOWLIST.filter( ( e ) => 'M2.2' === e.delete_in_unit && read.has( e.pattern ) );
 		expect( stale ).toEqual( [] );
+	} );
+} );
+
+describe( 'hover to-values', () => {
+	test( 'every --sgs-mh-to-* the renderer can emit has a reader in the sheet', () => {
+		expect( emittedHoverToValues().size ).toBeGreaterThanOrEqual( 9 );
+		expect( unreadToValues( CSS ) ).toEqual( [] );
+	} );
+
+	test( 'negative control: a sheet without the indent reader is caught', () => {
+		const planted = CSS.replace( /--sgs-mh-indent: calc\(var\(--sgs-mh-to-indent[^;]*;/, '' );
+		expect( planted ).not.toBe( CSS );
+		expect( unreadToValues( planted ) ).toEqual( [ '--sgs-mh-to-indent' ] );
 	} );
 } );
 

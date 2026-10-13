@@ -5,9 +5,10 @@
  * (includes/motion/), never a `style` attribute. The contract with the renderer:
  *
  *   data-sgs-mh="self|root|group"    the target holds a hover state; the value is its source (§6.2)
- *   --sgs-mh-to-<tx|ty|rot|s|op|blur|gray|bright>
+ *   --sgs-mh-to-<tx|ty|rot|s|op|blur|gray|bright|indent>
  *                                     the hover state's to-values (plain, unregistered; per device). The rotate
  *                                     to-value is the hover angle minus the rest angle (§10)
+ *   --sgs-pad-start-rest              the resting inline-start padding an indent hover adds to (default 0px)
  *   --sgs-rot-rest                    the rest rotate, a resting styling value (FR-38A-42)
  *   data-sgs-mroot                    a block root whose targets use source root
  *   data-sgs-hover-group              the hover-group block (source group reads the nearest one)
@@ -56,6 +57,7 @@
 @property --sgs-mh-blur { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-mh-gray { syntax: '<number>'; inherits: false; initial-value: 0; }
 @property --sgs-mh-bright { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-mh-indent { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-me-clip { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
 @property --sgs-plx-bg-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-plx-bg-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
@@ -86,6 +88,9 @@
 }
 [data-sgs-mc~="transform"] {
 	transform: perspective(var(--sgs-tilt-persp)) rotateX(var(--sgs-tilt-x)) rotateY(var(--sgs-tilt-y));
+}
+[data-sgs-mc~="padding-inline-start"] {
+	padding-inline-start: calc(var(--sgs-pad-start-rest, 0px) + var(--sgs-mh-indent));
 }
 [data-sgs-mc~="background-position"] {
 	background-position: calc(50% + var(--sgs-plx-bg-x)) calc(50% + var(--sgs-plx-bg-y));
@@ -120,6 +125,7 @@
 	--sgs-mh-blur: calc(var(--sgs-mh-to-blur, 0px) * var(--sgs-mh-on));
 	--sgs-mh-gray: calc(var(--sgs-mh-to-gray, 0) * var(--sgs-mh-on));
 	--sgs-mh-bright: calc(1 + (var(--sgs-mh-to-bright, 1) - 1) * var(--sgs-mh-on));
+	--sgs-mh-indent: calc(var(--sgs-mh-to-indent, 0px) * var(--sgs-mh-on));
 }
 
 /* ── Entrance (§9 entrance rule, FR-38A-18): each touched channel plays its own animation of the --sgs-me-*
@@ -271,6 +277,7 @@
    only under no-preference. The rest rotate is a styling value and stays. ── */
 @media (prefers-reduced-motion: reduce) {
 	[data-sgs-mh] {
+		--sgs-mh-indent: 0px;
 		--sgs-mh-tx: 0px;
 		--sgs-mh-ty: 0px;
 		--sgs-mh-rot: 0deg;
