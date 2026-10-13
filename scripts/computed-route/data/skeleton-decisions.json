@@ -306,7 +306,8 @@
 			"logoScrollAttr": "scrolling",
 			"itemBlock": "sgs/trust-bar",
 			"itemScrollAttr": "autoScroll",
-			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip with scrolling on, labels make sgs/trust-bar with auto-scroll on; the repeated items are its items"
+			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip with scrolling on, labels make sgs/trust-bar with auto-scroll on; the repeated items are its items",
+			"logoFadeAttr": "fadeEdges"
 		},
 		"trustBar": {
 			"block": "sgs/trust-bar",
@@ -325,6 +326,29 @@
 		},
 		"heroInner": {
 			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays"
+		},
+		"marqueeFrame": {
+			"reason": "the frame that only clips or fades a marquee track goes: sgs/brand-strip draws its own overflow, and a masked edge fade is its fadeEdges setting (Bean, 2026-10-13)"
+		},
+		"alignWrapper": {
+			"properties": [
+				"text-align",
+				"padding",
+				"padding-top",
+				"padding-right",
+				"padding-bottom",
+				"padding-left",
+				"padding-inline",
+				"padding-block",
+				"margin",
+				"margin-top",
+				"margin-right",
+				"margin-bottom",
+				"margin-left",
+				"margin-inline",
+				"margin-block"
+			],
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)"
 		}
 	}
 }

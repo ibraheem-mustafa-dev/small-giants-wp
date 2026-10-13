@@ -262,7 +262,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 			if ( ! logos && ! pageSection( e, R.marquee?.itemBlock ) ) {
 				return null;
 			}
-			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: { [ R.marquee?.logoScrollAttr ]: true }, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: { [ R.marquee?.itemScrollAttr ]: true }, absorb: true } );
+			// A frame that fades the track's edges with a mask is the strip's own edge fade.
+			const parent = m.byKey[ e.parentKey ];
+			const fades = !! parent && Object.keys( declared( parent ) ).some( ( p ) => /^(?:-webkit-)?mask(?:-image)?$/.test( p ) );
+			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: { [ R.marquee?.logoScrollAttr ]: true, ...( fades && R.marquee?.logoFadeAttr ? { [ R.marquee.logoFadeAttr ]: true } : {} ) }, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: { [ R.marquee?.itemScrollAttr ]: true }, absorb: true } );
 		},
 		// A row of short non-interactive labels, each with at most a glyph, is a trust bar (its badges are its items).
 		( { e, kidsB } ) => {
@@ -270,12 +273,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 			// A badge is a short label that is not a business detail (an open status, hours or a Site Info value have their
 			// own rules); the badges sit side by side, never stacked.
 			const detail = ( k ) => !! specHit( R.openStatus, all( k ) ) || !! specHit( facts.decisions.siteInfoPatterns?.hours, all( k ) ) || hooks.siteInfoKinds( k ).size > 0;
-			const badge = ( k ) => ! [ 'a', 'button' ].includes( k.tag ) && !! all( k ) && ! /^\d+$/.test( all( k ) ) && all( k ).split( ' ' ).length <= ( T?.maxWords ?? 4 ) && ! detail( k ) && m.blockKids( k ).every( ( g ) => bare( g ) || iconOnly( g ) || bindingGlyph( g ) );
+			const badge = ( k ) => ! [ 'a', 'button' ].includes( k.tag ) && ! HEADING.test( k.tag ) && !! all( k ) && ! /^\d+$/.test( all( k ) ) && all( k ).split( ' ' ).length <= ( T?.maxWords ?? 4 ) && ! detail( k ) && m.blockKids( k ).every( ( g ) => bare( g ) || iconOnly( g ) || bindingGlyph( g ) );
 			// What makes a badge a trust badge is its meaning: at least one names a capability the framework database records
 			// for the trust bar (accreditation, certification, halal and the like), matched on the word's stem.
 			const stem = ( w ) => ( w.length <= 4 ? w : w.slice( 0, 5 ) );
-			const vocab = ( T ? facts.capsOf( T.block ) : [] ).filter( ( c ) => ! c.includes( '-' ) && ! ( T.ignoreCapabilities || [] ).includes( c ) ).map( stem );
-			const trusted = ( k ) => all( k ).toLowerCase().split( /[^a-z]+/ ).some( ( w ) => w.length >= 3 && vocab.includes( w.length <= 4 ? w : stem( w ) ) );
+			const vocab = new Set( ( T ? facts.capsOf( T.block ) : [] ).filter( ( c ) => ! c.includes( '-' ) && ! ( T.ignoreCapabilities || [] ).includes( c ) ).map( stem ) );
+			const trusted = ( k ) => all( k ).toLowerCase().split( /[^a-z]+/ ).some( ( w ) => w.length >= 3 && vocab.has( w.length <= 4 ? w : stem( w ) ) );
 			if ( ! T || ! pageSection( e, T.block ) || m.words( e ) || [ 'a', 'button' ].includes( e.tag ) || kidsB.length < ( T.minItems ?? 2 ) || ! kidsB.every( badge ) || m.stacked( kidsB ) || detail( e ) || ! kidsB.some( trusted ) ) {
 				return null;
 			}
@@ -288,6 +291,15 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 			}
 			const media = desc( e ).some( isMedia );
 			return v( 'hero', { block: R.hero?.block, attributes: media ? { variant: 'split' } : {}, ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : {} ) } );
+		},
+		// The frame that only clips or fades a marquee track goes: the strip draws its own overflow and edge fade.
+		( { e, kidsB } ) => ( ! m.words( e ) && 1 === kidsB.length && loops( kidsB[ 0 ] ) && desc( kidsB[ 0 ] ).some( isMedia ) ? v( 'marqueeFrame', { action: 'unwrap' } ) : null ),
+		// A wrapper that only aligns or spaces its content (text-align, padding, margin) goes: the blocks around and inside
+		// it align and pad themselves. Anything that paints (a background, border, shadow), positions or lays out stays.
+		( { e, st, kidsB, parentBlock } ) => {
+			const props = Object.keys( st );
+			const only = new Set( R.alignWrapper?.properties || [] );
+			return parentBlock && ! m.words( e ) && kidsB.length && props.length && props.every( ( p ) => only.has( p ) ) ? v( 'alignWrapper', { action: 'unwrap' } ) : null;
 		},
 		// Inside a hero: its image is the hero's own media slot; its layout wrappers go (the hero lays out its content).
 		( { e, kidsB } ) => {

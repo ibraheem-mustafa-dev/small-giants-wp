@@ -1842,6 +1842,176 @@
     "beanQuote": "726 - This is not a button, I think the back to top button is also something from the floating UI settings",
     "approvalBasis": "corrected by Bean in message 2759; the assistant's corrected table (message 2778) was not separately re-approved. No explicit 'approve batch 4' message exists; the assistant recorded the designs as approved (message 3154) and Bean then said 'Batch 5 next session' (3535)"
    }
+  ],
+  "batch5": [
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/203#0",
+    "surface": "page-home",
+    "draftElement": "<section> first section holding the h1",
+    "approvedBlock": "sgs/hero (split)",
+    "correction": "the split image needs a shadow setting (built) and the draft's scroll drift as a parallax direction and strength (Spec 38A M5.7)",
+    "beanQuote": "1. Yes, it can be a hero block but it just depends on if the split image can be set to the same size and have the same hover behaviour and border styles. || yes to all 3"
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/204#0",
+    "surface": "page-home",
+    "draftElement": "<div> hero content-beside-media grid",
+    "approvedBlock": "remove (the hero lays out its columns)",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/205#0",
+    "surface": "page-home",
+    "draftElement": "<div> hero content column",
+    "approvedBlock": "remove (the hero lays out its columns)",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/206#0",
+    "surface": "page-home",
+    "draftElement": "<h1> \"Leading Indian Food & Drinks Wholesaler\"",
+    "approvedBlock": "sgs/heading (h1)",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/207#0",
+    "surface": "page-home",
+    "draftElement": "<p> intro",
+    "approvedBlock": "sgs/text",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/208#0",
+    "surface": "page-home",
+    "draftElement": "<div> two CTA links in a row",
+    "approvedBlock": "sgs/multi-button",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/209#0",
+    "surface": "page-home",
+    "draftElement": "<a> \"Apply For A Trade Account\"",
+    "approvedBlock": "sgs/button",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/210#0",
+    "surface": "page-home",
+    "draftElement": "<a> \"Request Our Catalogue\"",
+    "approvedBlock": "sgs/button",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/211#0",
+    "surface": "page-home",
+    "draftElement": "<div> row of selling-point badges",
+    "approvedBlock": "sgs/container (a row of three labels)",
+    "correction": "not a trust bar: a trust bar is a section block",
+    "beanQuote": "2. Those selling point badges are not a trust bar because trust bars are a section class block. They are 3 label blocks placed next to eachother."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/213",
+    "surface": "page-home",
+    "draftElement": "<span> \"BRC certified\" (and the two other badges)",
+    "approvedBlock": "sgs/label",
+    "correction": "each badge is a label; its dot is the label's leading dot setting (built)",
+    "beanQuote": "2. Those selling point badges are not a trust bar because trust bars are a section class block. They are 3 label blocks placed next to eachother. || yes to all 3"
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/214",
+    "surface": "page-home",
+    "draftElement": "<span> the badge dot",
+    "approvedBlock": "absorbed into sgs/label (leading dot)",
+    "correction": "",
+    "beanQuote": "2. Those selling point badges are not a trust bar because trust bars are a section class block. They are 3 label blocks placed next to eachother. || yes to all 3"
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/215#0",
+    "surface": "page-home",
+    "draftElement": "<div> hero media column",
+    "approvedBlock": "remove (the hero lays out its columns)",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/216#0",
+    "surface": "page-home",
+    "draftElement": "<div data-hero-img> image frame (3:2, 22px radius, 5px white border, shadow)",
+    "approvedBlock": "remove (the hero's split image settings: ratio, radius, border, background, shadow)",
+    "correction": "",
+    "beanQuote": "1. Yes, it can be a hero block but it just depends on if the split image can be set to the same size and have the same hover behaviour and border styles. || yes to all 3"
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/217#0",
+    "surface": "page-home",
+    "draftElement": "<image-slot> hero image",
+    "approvedBlock": "absorbed into sgs/hero (split image)",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/218#0",
+    "surface": "page-home",
+    "draftElement": "<section> blue brands band",
+    "approvedBlock": "sgs/container",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/219#0",
+    "surface": "page-home",
+    "draftElement": "<div> text-align centre and side padding wrapper",
+    "approvedBlock": "remove",
+    "correction": "the band and the heading align and pad themselves",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/220#0",
+    "surface": "page-home",
+    "draftElement": "<h2> \"Our Brands\"",
+    "approvedBlock": "sgs/heading (h2)",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/221#0",
+    "surface": "page-home",
+    "draftElement": "<div> overflow and edge-fade mask around the logos",
+    "approvedBlock": "remove (sgs/brand-strip fadeEdges on)",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/222#0",
+    "surface": "page-home",
+    "draftElement": "<div> endless scrolling logo track",
+    "approvedBlock": "sgs/brand-strip (scrolling)",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/224",
+    "surface": "page-home",
+    "draftElement": "<a> logo link",
+    "approvedBlock": "absorbed into sgs/brand-strip items",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   },
+   {
+    "rowId": "skeleton:page-home:Indus Foods Website v2/225",
+    "surface": "page-home",
+    "draftElement": "<image-slot> logo image",
+    "approvedBlock": "absorbed into sgs/brand-strip items",
+    "correction": "",
+    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+   }
   ]
  },
  "batchDecisions": {
@@ -1901,6 +2071,20 @@
     "address": "55-58 Stratford St N, Birmingham B11 1BU"
    },
    "beanQuote": "For the address of the GBP - Here's the URL - https://share.google/llQBqDGp0tMA9EtAS"
+  },
+  "batch5": {
+   "decided": "2026-10-13",
+   "builds": [
+    "sgs/hero split-image shadow",
+    "sgs/label leading dot",
+    "hero split-image parallax direction and strength (Spec 38A M5.7)"
+   ],
+   "quotes": [
+    "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect.",
+    "1. Yes, it can be a hero block but it just depends on if the split image can be set to the same size and have the same hover behaviour and border styles.",
+    "2. Those selling point badges are not a trust bar because trust bars are a section class block. They are 3 label blocks placed next to eachother.",
+    "yes to all 3"
+   ]
   }
  },
  "batch5RowIds": [
@@ -2018,6 +2202,14 @@
   {
    "rule": "Draft opening hours in the footer are a footer item linking to the Google Business Profile with the site-wide underline hover, not a card.",
    "beanQuote": "the opening hours on our footer just look like another menu item and we've added a hyperlink to our GMB link and the hover effect is just the site-wide underline. It's not a card"
+  },
+  {
+   "rule": "A section-class block (block_composition.container_kind section: sgs/trust-bar, sgs/hero) is only a page's own section; badges inside a section are sgs/label blocks side by side.",
+   "beanQuote": "2. Those selling point badges are not a trust bar because trust bars are a section class block. They are 3 label blocks placed next to eachother."
+  },
+  {
+   "rule": "A wrapper that only aligns or pads, or only clips and fades a marquee, is removed (the blocks around it do that).",
+   "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
   }
  ],
  "unresolved": [

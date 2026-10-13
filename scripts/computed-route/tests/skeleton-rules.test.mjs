@@ -256,6 +256,24 @@ test( 'hero and heroInner: a page\'s first section holding its h1 is the split h
 	assert.notEqual( byTag( run( page, { kind: 'header' } ), 'section' ).rule, 'hero', 'a hero is a page section' );
 } );
 
+test( 'marqueeFrame: the frame that clips and fades a logo marquee goes and the strip fades its own edges; MUST FAIL without the rule', () => {
+	const tree = section( [ E( 'div', { style: 'overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)' }, [ E( 'div', {}, [ E( 'a', { attrs: { href: '/a' } }, [ E( 'image-slot' ) ] ), E( 'a', { attrs: { href: '/b' } }, [ E( 'image-slot' ) ] ) ] ) ] ) ] );
+	const motion = new Set( [ 'Root/3' ] );
+	const r = run( tree, { motion } );
+	assert.deepEqual( settled( r.proposal.rows[ 1 ] ), { block: null, action: 'unwrap', rule: 'marqueeFrame' } );
+	const strip = r.skeleton[ 0 ].innerBlocks[ 0 ];
+	assert.deepEqual( [ strip.name, strip.attributes.scrolling, strip.attributes.fadeEdges ], [ 'sgs/brand-strip', true, true ], 'the mask becomes the strip\'s own edge fade' );
+	assert.notEqual( run( tree, { motion, facts: facts( 'marqueeFrame' ) } ).proposal.rows[ 1 ].action, 'unwrap' );
+} );
+
+test( 'alignWrapper: a wrapper that only aligns or pads its content goes; one that paints stays; MUST FAIL without the rule', () => {
+	const tree = section( [ E( 'div', { style: 'text-align:center;padding:0 40px' }, [ E( 'h2', { words: 'Our Brands' } ), E( 'p', { words: 'Trusted names' } ) ] ), E( 'div', { style: 'text-align:center;background:#0A7EA8' }, [ E( 'h2', { words: 'Band' } ) ] ) ] );
+	const r = run( tree );
+	assert.deepEqual( settled( r.proposal.rows[ 1 ] ), { block: null, action: 'unwrap', rule: 'alignWrapper' } );
+	assert.notEqual( row( r, ( x ) => 'div' === x.tag && x.order > 1 && x.depth === 1 )?.action, 'unwrap', 'a wrapper with a background stays' );
+	assert.notEqual( run( tree, { facts: facts( 'alignWrapper' ) } ).proposal.rows[ 1 ].action, 'unwrap' );
+} );
+
 test( 'drawsChildren: a leaf, an array-item block and a named block draw their children; MUST FAIL with the name removed', () => {
 	const m = inventoryModel( inventory( E( 'div' ) ) );
 	const hooks = { siteInfoKinds: () => new Map(), isColumnLabel: () => false, topBlock: () => null, blockOfKey: () => null };
