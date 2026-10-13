@@ -153,7 +153,7 @@ function visitOf( route, { entry, routing } ) {
 	return { error: `route ${ route } is reached by the ${ r.adapter } adapter's state, which a URL cannot open` };
 }
 
-const summaryOf = ( inv ) => ( {
+export const summaryOf = ( inv ) => ( {
 	elements: inv.elements.length,
 	checks: {
 		rootName: inv.checks.rootName, rootKey: inv.checks.rootKey, duplicateKeys: inv.checks.duplicateKeys, perWidthCounts: inv.checks.perWidthCounts,
@@ -187,7 +187,8 @@ export function contextOf( inventory, proposal, key ) {
 	return { parent: parent ? ref( parent ) : null, siblings: near.map( ( { x } ) => ref( x ) ), siblingCount: sibs.length, boxes: boxes.length ? boxes : null };
 }
 
-const rowsOf = ( surface, proposal, inventory ) => proposal.rows.map( ( r ) => ( {
+// A proposal's rows as intake.json holds them (row id, the finaliser's context, the rule that settled each).
+export const rowsOf = ( surface, proposal, inventory ) => proposal.rows.map( ( r ) => ( {
 	rowId: `skeleton:${ surface }:${ r.key }`, key: r.key, tag: r.tag, words: r.words, block: r.block, confidence: r.confidence, low: r.low, reason: r.reason, rule: r.rule ?? null,
 	...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ), ...( r.builtPost ? { builtPost: r.builtPost } : {} ),
 	candidates: r.candidates.slice( 0, 3 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share } ) ), action: r.action, snippet: r.snippet, screenshots: r.screenshots,

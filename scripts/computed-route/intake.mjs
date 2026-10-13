@@ -13,9 +13,12 @@
 //   node scripts/computed-route/intake.mjs --apply-picks <client>   applies that agent's finalise-picks.json to
 //     intake.json and re-renders review.md (no browser stage); an invalid pick writes nothing.
 //   node scripts/computed-route/intake.mjs --render <client>        re-renders review.md from intake.json.
+//   node scripts/computed-route/intake.mjs --rerun-skeletons <client>   proposes the skeleton rows again offline from
+//     the inventories the last run saved, with today's standing rules (no browser), carries the finaliser's earlier
+//     picks for rows that still await it, and re-renders review.md.
 // Exit 0 pass, 1 a failure (named on stderr), 2 usage. --repo points every path at another repository root (tests).
 import { parseArgs, runIntake, applyIntakeReview, recordProblems, pathsFor, USAGE } from './lib/intake-run.mjs';
-import { runFinalise, runApplyPicks, runRender } from './lib/intake-run-finalise.mjs';
+import { runFinalise, runApplyPicks, runRender, runRerunSkeletons } from './lib/intake-run-finalise.mjs';
 
 const o = parseArgs( process.argv.slice( 2 ) );
 if ( o.error ) {
@@ -29,6 +32,7 @@ const modes = {
 	finalise: () => runFinalise( at, o, { log } ),
 	'apply-picks': () => runApplyPicks( at, o, { log, recordProblems } ),
 	render: () => runRender( at, o, { log } ),
+	'rerun-skeletons': () => runRerunSkeletons( at, o, { log, recordProblems } ),
 	run: () => runIntake( o ),
 };
 process.exitCode = await modes[ o.mode ]();

@@ -27,12 +27,12 @@ const WIDTHS = [ 375, 768, 1440 ];
 export const USAGE = [
 	'usage: node scripts/computed-route/intake.mjs <client> [--record] [--widths 375,768,1440] [--surfaces a,b] [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --apply-review <client> [--repo <path>]',
-	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> [--repo <path>]',
+	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> | --rerun-skeletons <client> [--repo <path>]',
 ].join( '\n' );
 
-const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-picks': 'apply-picks', '--render': 'render' };
+const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-picks': 'apply-picks', '--render': 'render', '--rerun-skeletons': 'rerun-skeletons' };
 
-// argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render', client, record, widths, surfaces,
+// argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render'|'rerun-skeletons', client, record, widths, surfaces,
 // repo } or { error }.
 export function parseArgs( argv ) {
 	const o = { mode: 'run', client: null, record: false, widths: WIDTHS, surfaces: null, repo: REPO };

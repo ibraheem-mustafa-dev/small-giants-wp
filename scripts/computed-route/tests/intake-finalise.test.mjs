@@ -179,15 +179,17 @@ test( 'MUST FAIL: applied picks become the proposal with the original kept, and 
 	const md = read( 'review.md' );
 	assert.match( md, /\| `skeleton:header:Site\/2#0` \|[^\n]*\| accept \|$/m, 'the carried mark shows in the re-rendered Mark cell' );
 	assert.match( md, /\| `skeleton:header:Site\/5#0` \| [^|]+ \| block:sgs\/business-info \| agent pick 0\.85: a phone number reads Site Info; was block:sgs\/text 0\.25 \|  \|/ );
-	assert.deepEqual( tableIds( md, '### header', `### header: ${ CONFIDENT_HEADING }` ), [ 'skeleton:header:Site/5#0', 'skeleton:header:Site/9#0' ], 'finaliser picks are listed with the rows needing judgement' );
+	const skeletonOf = ( text ) => text.slice( text.indexOf( '## Skeleton block choices' ) );
+	assert.deepEqual( tableIds( skeletonOf( md ), '### Needs a decision', `### ${ CONFIDENT_HEADING }` ), [ 'skeleton:header:Site/5#0', 'skeleton:footer:Site/18', 'skeleton:header:Site/9#0' ], 'finaliser picks are listed with the rows needing judgement, grouped by the block picked whatever their surface' );
 	assert.equal( run( '--apply-picks', CLIENT ).code, 1, 'picks already applied are not applied twice' );
 } );
 
 test( 'MUST FAIL: review.md lists rows needing judgement first, the confident ones under their own sub-heading, and still reads every Mark cell', () => {
 	const intake = fixture();
 	const md = renderReview( intake );
-	assert.deepEqual( tableIds( md, '### header', `### header: ${ CONFIDENT_HEADING }` ), [ 'skeleton:header:Site/9#0', 'skeleton:header:Site/5#0' ], 'unresolved, then low' );
-	assert.deepEqual( tableIds( md, `### header: ${ CONFIDENT_HEADING }`, '### ' ), [ 'skeleton:header:Site/2#0' ] );
+	const sk = md.slice( md.indexOf( '## Skeleton block choices' ) );
+	assert.deepEqual( tableIds( sk, '### Needs a decision', `### ${ CONFIDENT_HEADING }` ), [ 'skeleton:header:Site/9#0', 'skeleton:footer:Site/18', 'skeleton:header:Site/5#0' ], 'unresolved, then low, the low rows grouped by the block proposed whatever their surface' );
+	assert.deepEqual( tableIds( sk, `### ${ CONFIDENT_HEADING }`, '## ' ), [ 'skeleton:footer:Site/12#0', 'skeleton:header:Site/2#0' ], 'one confident group, whatever the surface' );
 	assert.deepEqual( tableIds( md, '## Missing features', `### ${ CONFIDENT_HEADING }` ), [ 'missing:Quiz:1', 'missing:Site:9' ], 'main flow, then rows Accept all cannot mark' );
 	assert.deepEqual( tableIds( md, `### ${ CONFIDENT_HEADING }`, '## ' ), [ 'missing:Map:1' ] );
 	assert.match( md, /^Rows: 9; 6 need reading, 3 are confident proposals that Accept all covers \(skeleton block choices 2, missing features 1\)\.$/m );

@@ -207,8 +207,9 @@ test( 'listWrapper: a bare wrapper of stacked links, or of a grid of links each 
 
 test( 'clientBuiltSurface: every row of a surface the client built as a post names that post; MUST FAIL without the rule', () => {
 	const built = { site: 'canary', postType: 'sgs_drawer', postId: 1 };
-	const tree = E( 'div', {}, [ E( 'p', { words: 'Menu' } ) ] );
-	assert.ok( run( tree, { kind: 'drawer', built } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' === x.rule && x.builtPost === built ) );
+	const tree = E( 'div', {}, [ E( 'span', { words: 'Menu' } ) ] );
+	assert.ok( run( tree, { kind: 'drawer', built } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' === x.rule && x.builtPost === built && ! x.low ), 'every row is settled by the post, so none awaits the finaliser' );
+	assert.ok( run( tree, { kind: 'drawer' } ).proposal.rows.some( ( x ) => x.low ), 'the same surface unbuilt has a row the finaliser would be asked about' );
 	assert.ok( run( tree, { kind: 'drawer', built, facts: facts( 'clientBuiltSurface' ) } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' !== x.rule ) );
 } );
 

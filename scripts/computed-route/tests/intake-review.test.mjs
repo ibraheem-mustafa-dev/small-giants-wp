@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
-import { reviewRows, renderReview, parseReview, applyReview, carryOver, markProblem, notDefectLine, MARKS, ROW_TYPES } from '../lib/intake-review.mjs';
+import { reviewRows, renderReview, parseReview, applyReview, carryOver, markProblem, notDefectLine, MARKS, ROW_TYPES, byCause, CONFIDENT_HEADING } from '../lib/intake-review.mjs';
 import { deadCodeWhy } from '../lib/intake-defects-static.mjs';
 import { deadFieldVerdict } from '../lib/intake-defects-deadfield.mjs';
 import { diffAnimations } from '../lib/intake-inventory-diff.mjs';
@@ -202,7 +202,27 @@ test( 'MUST FAIL the output is deterministic: two renders are byte-identical wha
 	const shuffled = fixture( { flags: [ ...fixture().flags ], palette: { ...fixture().palette, rows: [ ...fixture().palette.rows ].reverse() }, skeletons: { footer: fixture().skeletons.footer, header: fixture().skeletons.header } } );
 	assert.equal( renderReview( shuffled ), a );
 	assert.equal( renderReview( fixture() ), a );
-	assert.ok( a.indexOf( '### footer' ) < a.indexOf( '### header' ) );
+	assert.ok( a.includes( `### ${ CONFIDENT_HEADING } (2)` ), 'both confident rows sit in one group whatever their surface' );
+} );
+
+test( 'MUST FAIL (FR-48-6): skeleton rows are grouped by cause, never by page: one heading per rule with its reason, the rows needing a decision first', () => {
+	const pill = ( surface, key ) => ( { rowId: `skeleton:${ surface }:${ key }`, key, tag: 'a', words: 'Call', block: 'sgs/button', confidence: 1, rule: 'pillButton', reason: 'a link holding one label and an icon is one button' } );
+	const intake = fixture( { skeletons: {
+		header: { rows: [ pill( 'header', 'call' ), { rowId: 'skeleton:header:wrap', key: 'wrap', tag: 'div', words: '', block: 'sgs/container', confidence: 0.4, low: true, reason: 'wrapper' } ] },
+		footer: { rows: [ pill( 'footer', 'call' ), { rowId: 'skeleton:footer:nav', key: 'nav', tag: 'nav', words: '', block: 'sgs/nav-drawer-menu', confidence: 1, rule: 'clientBuiltSurface', builtPost: { site: 'canary', postType: 'sgs_drawer', postId: 7, title: 'Drawer' } } ] },
+	} } );
+	const md = renderReview( intake );
+	const sk = md.slice( md.indexOf( '## Skeleton block choices' ) ).split( '\n## ' )[ 0 ];
+	const headings = sk.split( '\n' ).filter( ( l ) => l.startsWith( '### ' ) );
+	assert.deepEqual( headings, [
+		'### Needs a decision (low): block:sgs/container (1)',
+		'### Settled by built post sgs_drawer 7: the client already built this surface (Drawer on canary) (1)',
+		'### Settled by rule pillButton: a link holding one label and an icon is one button (2)',
+	] );
+	const group = sk.slice( sk.indexOf( '### Settled by rule pillButton' ) ).split( '\n### ' )[ 0 ];
+	assert.ok( group.includes( '`skeleton:header:call`' ) && group.includes( '`skeleton:footer:call`' ), 'one rule\'s rows from two surfaces sit together' );
+	assert.ok( ! /^### (header|footer)$/m.test( sk ), 'no heading per page' );
+	assert.deepEqual( byCause( reviewRows( intake ).filter( ( r ) => 'skeleton-block' === r.rowType ) ).map( ( [ h ] ) => h ), headings.map( ( h ) => h.slice( 4 ) ) );
 } );
 
 // A Nav draft whose toggle handler is handed to the template as onToggle, and the template's binding names it.
