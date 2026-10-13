@@ -5,8 +5,9 @@
 // pick overrides the scoring (Bean's recorded choice is the top evidence).
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { specHit } from './skeleton-facts.mjs';
+import { makeRules } from './skeleton-rules.mjs';
 
-export const W = { tag: 0.5, composition: 0.35, capability: 0.25, structure: 0.4, siteInfo: 0.3, pattern: 0.5, decision: 1, logo: 0.5 };
+export const W = { tag: 0.5, composition: 0.35, capability: 0.25, structure: 0.4, siteInfo: 0.3, pattern: 0.5, decision: 1, logo: 0.5, rule: 1 };
 
 const add = ( C, block, kind, w, text, extra = {} ) => {
 	const c = ( C[ block ] ||= { block, evidence: [] } );
@@ -28,15 +29,17 @@ export function finish( C ) {
 
 // SGS bans core blocks: every core candidate, whatever proposed it (the tag map, a precedent tree, a decision, a
 // finaliser pick), becomes its SGS replacement (replacedBy: lib/skeleton-facts.mjs, from blocks.replaces) with the
-// rewrite as evidence, or is dropped and listed in `rejectedCore` when none exists. Candidates naming one block merge.
-export function sgsOnly( result, replacedBy = {} ) {
+// rewrite as evidence, or is dropped and listed in `rejectedCore` when none exists, unless the decisions data names it
+// as an exception (`rules.coreExceptions`, each with its reason). Candidates naming one block merge.
+export function sgsOnly( result, replacedBy = {}, exceptions = [] ) {
 	if ( ! result?.candidates?.some( ( c ) => c.block?.startsWith( 'core/' ) ) ) {
 		return result;
 	}
 	const C = {};
 	const rejectedCore = [];
 	for ( const c of result.candidates ) {
-		const core = c.block.startsWith( 'core/' );
+		const kept = exceptions.find( ( x ) => x.block === c.block );
+		const core = c.block.startsWith( 'core/' ) && ! kept;
 		const block = core ? replacedBy[ c.block ] : c.block;
 		if ( ! block ) {
 			rejectedCore.push( c.block );
@@ -44,7 +47,7 @@ export function sgsOnly( result, replacedBy = {} ) {
 		}
 		const { score, share, evidence, ...rest } = c;
 		const into = ( C[ block ] ||= { ...rest, block, evidence: [] } );
-		into.evidence.push( ...evidence, ...( core ? [ { kind: 'db', w: 0, text: `blocks.replaces: ${ c.block } -> ${ block } (SGS bans core blocks)` } ] : [] ) );
+		into.evidence.push( ...evidence, ...( core ? [ { kind: 'db', w: 0, text: `blocks.replaces: ${ c.block } -> ${ block } (SGS bans core blocks)` } ] : [] ), ...( kept ? [ { kind: 'decision', w: 0, text: `rules.coreExceptions: ${ c.block } is kept (${ kept.reason })` } ] : [] ) );
 	}
 	return { ...result, ...finish( C ), ...( rejectedCore.length ? { rejectedCore } : {} ) };
 }
@@ -64,7 +67,7 @@ export function overrideFor( e, { clientDecisions = {}, picks = {}, facts, surfa
 	return hit ? { block: hit.block || null, remove: 'remove' === hit.action, attributes: hit.attributes, reason: hit.reason, source: `standing decision ${ hit.id }` } : null;
 }
 
-export function makeClassifier( { m, facts, overrides } ) {
+export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey = () => null } ) {
 	const { composition, capsOf, tagMap, decisions } = facts;
 	const minLinks = decisions.structural?.linkList?.minLinks ?? 2;
 	const textBlock = tagMap.p?.core_block_slug || null;
@@ -111,11 +114,27 @@ export function makeClassifier( { m, facts, overrides } ) {
 		return !! m.words( e ) && 'a' !== e.tag && ! m.blockKids( e ).length && sibs[ 0 ] === e && sibs.slice( 1 ).filter( m.isTextLink ).length >= minLinks;
 	};
 
+	const rules = makeRules( { m, facts, surface, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block } } );
+	// A rule verdict in the classifier's result shape (lib/skeleton-rules.mjs).
+	const fromRule = ( r ) => {
+		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ) };
+		if ( r.action ) {
+			return { ...base, action: r.action, ...( r.into ? { into: r.into } : {} ), candidates: [] };
+		}
+		const C = {};
+		add( C, r.block, 'rule', W.rule, `rule ${ r.rule }: ${ r.reason }`, { attributes: r.attributes } );
+		return { ...finish( C ), ...base, absorb: !! r.absorb };
+	};
+
 	// The candidates for one element. ctx: { parentBlock, typedBrand (the element is part of a typed brand name) }.
 	function classify( e, parentBlock = null, ctx = {} ) {
 		const C = {};
 		const words = m.words( e );
 		const over = overrides( e, words );
+		const verdict = ! ctx.typedBrand && 'client decision' !== over?.source ? rules.ruleFor( e, parentBlock ) : null;
+		if ( verdict ) {
+			return fromRule( verdict );
+		}
 		if ( over?.remove ) {
 			return { action: 'remove', reason: over.reason || over.source, source: over.source, candidates: [], confidence: 1 };
 		}
@@ -227,5 +246,5 @@ export function makeClassifier( { m, facts, overrides } ) {
 		return { ...finish( C ), stale };
 	}
 
-	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy ), brandFor, siteInfoKinds, isColumnLabel, briefOnly };
+	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), brandFor, siteInfoKinds, isColumnLabel, briefOnly, drawsChildren: rules.drawsChildren };
 }

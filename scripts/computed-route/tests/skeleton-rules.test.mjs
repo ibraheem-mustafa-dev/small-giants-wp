@@ -1,0 +1,254 @@
+// The skeleton writer's standing rules (Spec 48 FR-48-6, lib/skeleton-rules.mjs, data/skeleton-decisions.json `rules`):
+// each rule on a small fixture slice in the inventory's shape, then MUST FAIL with its decisions entry removed (every
+// rule is switched on by its entry, so removing it is removing the rule).
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { openDb } from '../lib/db.mjs';
+import { loadFacts } from '../lib/skeleton-facts.mjs';
+import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
+import { sgsOnly } from '../lib/skeleton-classify.mjs';
+import { makeRules } from '../lib/skeleton-rules.mjs';
+import { inventoryModel } from '../lib/skeleton-model.mjs';
+import { skeletonProblems } from '../lib/fill-skeleton.mjs';
+
+const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
+const db = openDb();
+// Facts for a client with no Site Info map and no decisions; `off` removes those rules from a copy of the decisions.
+const facts = ( ...off ) => {
+	const f = loadFacts( { db, client: 'fixture-client', repo: REPO } );
+	f.decisions = structuredClone( f.decisions );
+	off.forEach( ( id ) => ( id.includes( '.' ) ? delete f.decisions[ id.split( '.' )[ 0 ] ][ id.split( '.' )[ 1 ] ] : delete f.decisions.rules[ id ] ) );
+	return f;
+};
+
+// A fixture tree: E( tag, { words, attrs, style, snippet, display, box }, children ) -> an inventory in the shape
+// lib/skeleton-inventory.mjs reads (keys Root/<n>#0, parent keys, depth, words, allText, boxes and visibility).
+const E = ( tag, o = {}, kids = [] ) => ( { tag, o, kids } );
+function inventory( root ) {
+	const elements = [];
+	let n = 0;
+	const walk = ( node, parentKey, depth ) => {
+		const id = ++n;
+		const key = `Root/${ id }#0`;
+		const attrs = { ...( node.o.attrs || {} ), ...( node.o.style ? { style: node.o.style } : {} ) };
+		const words = node.o.words || '';
+		const el = { key, parentKey, depth, tag: node.tag, template: 'Root', tpl: id, attrs, words, allText: words, membership: [], srcTag: node.tag, srcOwnText: words,
+			snippet: node.o.snippet || `<${ node.tag } data-dc-tpl="${ id }">${ words }</${ node.tag }>`,
+			box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, node.o.box || { x: 0, y: node.o.y ?? 0, w: 100, h: 20 } ] ) ),
+			visible: { 375: true, 768: true, 1440: true }, display: node.o.display || 'block', flexDirection: 'row', screenshots: {} };
+		elements.push( el );
+		const texts = node.kids.map( ( k ) => walk( k, key, depth + 1 ) );
+		el.allText = [ words, ...texts ].filter( Boolean ).join( ' ' );
+		return el.allText;
+	};
+	walk( root, null, 0 );
+	return { checks: {}, source: 'fixture', root: root.tag, generated: 'fixture', elements };
+}
+const run = ( root, o = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', built: o.built || null, db } );
+const row = ( r, pred ) => r.proposal.rows.find( pred );
+const byWords = ( r, w ) => row( r, ( x ) => x.words === w );
+const byTag = ( r, t ) => row( r, ( x ) => x.tag === t );
+const settled = ( x ) => ( x ? { block: x.block, action: x.action, rule: x.rule } : null );
+const svg = () => E( 'svg', {}, [ E( 'path' ) ] );
+const section = ( kids ) => E( 'section', { display: 'block' }, kids );
+
+test( 'the decisions data names only real blocks and every rule pattern compiles', async () => {
+	const { decisionsProblems } = await import( '../lib/skeleton-facts.mjs' );
+	assert.deepEqual( decisionsProblems( facts() ), [] );
+} );
+
+test( 'surfaceRoot: a top bar surface is the header\'s top row; MUST FAIL without the rule', () => {
+	const tree = E( 'div', { display: 'flex' }, [ E( 'a', { words: 'Call', attrs: { href: 'tel:01217714330' } } ), E( 'a', { words: 'Email', attrs: { href: 'mailto:a@b.co' } } ) ] );
+	assert.equal( run( tree, { kind: 'global', name: 'Top bar' } ).proposal.rows[ 0 ].block, 'sgs/site-header-row' );
+	assert.notEqual( run( tree, { kind: 'global', name: 'Top bar', facts: facts( 'surfaceRoot' ) } ).proposal.rows[ 0 ].block, 'sgs/site-header-row' );
+} );
+
+test( 'readingProgress: a fixed full-width 3px bar is removed (a Floating UI setting); MUST FAIL without the rule', () => {
+	const tree = section( [ E( 'div', { style: 'position:fixed;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,#EBDD78,#E7D768)', attrs: { 'aria-hidden': 'true' } } ), E( 'p', { words: 'Body' } ) ] );
+	assert.deepEqual( settled( byTag( run( tree ), 'div' ) ), { block: null, action: 'remove', rule: 'readingProgress' } );
+	assert.notEqual( byTag( run( tree, { facts: facts( 'readingProgress' ) } ), 'div' ).rule, 'readingProgress' );
+} );
+
+test( 'decorationLayer and decorativeShape: a glow layer folds into the background, a ring is a decorative image; MUST FAIL without each', () => {
+	const tree = section( [ E( 'span', { style: 'position:absolute;inset:0;background:radial-gradient(circle,#fff,transparent)', attrs: { 'aria-hidden': 'true' } } ), E( 'i', { style: 'position:absolute;width:80px;height:80px;border:2px solid #E7D768;border-radius:50%' } ), E( 'p', { words: 'Body' } ) ] );
+	assert.deepEqual( settled( byTag( run( tree ), 'span' ) ), { block: null, action: 'remove', rule: 'decorationLayer' } );
+	assert.deepEqual( settled( byTag( run( tree ), 'i' ) ), { block: 'sgs/decorative-image', action: null, rule: 'decorativeShape' } );
+	assert.notEqual( byTag( run( tree, { facts: facts( 'decorationLayer' ) } ), 'span' ).rule, 'decorationLayer' );
+	assert.notEqual( byTag( run( tree, { facts: facts( 'decorativeShape' ) } ), 'i' ).block, 'sgs/decorative-image' );
+} );
+
+test( 'typedDivider: a typed "|" between items is removed (the separators setting); MUST FAIL without the rule', () => {
+	const tree = section( [ E( 'span', { words: 'Copyright 2026' } ), E( 'span', { words: '|' } ), E( 'span', { words: 'Terms' } ) ] );
+	assert.equal( byWords( run( tree ), '|' ).rule, 'typedDivider' );
+	assert.notEqual( byWords( run( tree, { facts: facts( 'typedDivider' ) } ), '|' ).action, 'remove' );
+} );
+
+test( 'logoElement and homeLink: a <brand-logo> is the logo block and its home link goes; MUST FAIL without each', () => {
+	const tree = section( [ E( 'a', { attrs: { href: '#/' } }, [ E( 'acme-logo', { box: { x: 0, y: 0, w: 120, h: 40 } } ) ] ), E( 'p', { words: 'Body' } ) ] );
+	const r = run( tree );
+	assert.deepEqual( settled( byTag( r, 'a' ) ), { block: null, action: 'unwrap', rule: 'homeLink' } );
+	assert.equal( byTag( r, 'acme-logo' ).block, facts().logoBlocks[ 0 ] );
+	assert.ok( r.skeleton[ 0 ].innerBlocks.some( ( n ) => n.name === facts().logoBlocks[ 0 ] ), 'the logo takes the link\'s place' );
+	assert.notEqual( byTag( run( tree, { facts: facts( 'homeLink' ) } ), 'a' ).action, 'unwrap' );
+	assert.notEqual( byTag( run( tree, { facts: facts( 'logoElement' ) } ), 'acme-logo' ).rule, 'logoElement' );
+} );
+
+test( 'mediaElement and logoGrid: <image-slot> is media; links each holding one image are a gallery; MUST FAIL without each', () => {
+	const tile = () => E( 'a', { attrs: { href: '/brand' } }, [ E( 'image-slot' ) ] );
+	const tree = section( [ E( 'div', { display: 'grid' }, [ tile(), tile(), tile() ] ), E( 'image-slot' ) ] );
+	const r = run( tree );
+	assert.deepEqual( settled( byTag( r, 'div' ) ), { block: 'sgs/gallery', action: null, rule: 'logoGrid' } );
+	assert.ok( r.proposal.rows.filter( ( x ) => 'a' === x.tag ).every( ( x ) => 'absorbed' === x.action ), 'the links are the gallery\'s items' );
+	assert.equal( r.proposal.rows.at( -1 ).block, 'sgs/media' );
+	assert.notEqual( byTag( run( tree, { facts: facts( 'logoGrid' ) } ), 'div' ).block, 'sgs/gallery' );
+	assert.notEqual( run( tree, { facts: facts( 'mediaElement' ) } ).proposal.rows.at( -1 ).block, 'sgs/media' );
+} );
+
+test( 'widthWrapper: a centred block wrapper under a footer goes and its rows take its place; a centred grid there is the row; MUST FAIL without the rule', () => {
+	const rowEl = ( w ) => E( 'div', { display: 'grid' }, [ E( 'p', { words: w } ), E( 'p', { words: `${ w } 2` } ) ] );
+	const tree = E( 'footer', {}, [ E( 'div', { style: 'position:relative;max-width:1240px;margin:0 auto' }, [ rowEl( 'One' ), rowEl( 'Two' ) ] ) ] );
+	const r = run( tree, { kind: 'footer' } );
+	assert.deepEqual( settled( r.proposal.rows[ 1 ] ), { block: null, action: 'unwrap', rule: 'widthWrapper' } );
+	assert.equal( r.skeleton[ 0 ].innerBlocks.length, 2, 'both rows sit directly in the footer' );
+	assert.notEqual( run( tree, { kind: 'footer', facts: facts( 'widthWrapper' ) } ).proposal.rows[ 1 ].action, 'unwrap' );
+	const grid = E( 'footer', {}, [ E( 'div', { style: 'max-width:1440px;margin:0 auto;display:grid', display: 'grid' }, [ E( 'div', {}, [ E( 'p', { words: 'A' } ) ] ), E( 'div', {}, [ E( 'p', { words: 'B' } ) ] ) ] ) ] );
+	assert.notEqual( run( grid, { kind: 'footer' } ).proposal.rows[ 1 ].action, 'unwrap', 'a centred grid under the footer is its row' );
+} );
+
+test( 'backToTop: a back-to-top control holding a label and a glyph is a container linked to "top"; MUST FAIL without the rule', () => {
+	const tree = section( [ E( 'button', { attrs: { 'aria-label': 'Back to top' }, snippet: '<button sc-camel-on-click="{{ toTop }}">' }, [ E( 'span', { words: 'Back to top' } ), E( 'span', {}, [ svg() ] ) ] ) ] );
+	const r = byTag( run( tree ), 'button' );
+	assert.deepEqual( [ r.block, r.rule, r.attributes.sgsBlockLinkSource ], [ 'sgs/container', 'backToTop', 'top' ] );
+	assert.notEqual( byTag( run( tree, { facts: facts( 'backToTop' ) } ), 'button' ).rule, 'backToTop' );
+} );
+
+test( 'mapEmbed: an embedded Google map is business-info\'s map display; MUST FAIL without the rule', () => {
+	const tree = section( [ E( 'iframe', { snippet: '<iframe title="Map" src="https://maps.google.com/maps?q=B11&amp;output=embed" data-dc-tpl="2"></iframe>' } ) ] );
+	const r = byTag( run( tree ), 'iframe' );
+	assert.deepEqual( [ r.block, r.attributes.displayType ], [ 'sgs/business-info', 'map' ] );
+	assert.notEqual( byTag( run( tree, { facts: facts( 'mapEmbed' ) } ), 'iframe' ).block, 'sgs/business-info' );
+} );
+
+test( 'openStatus and hoursRows: a live open line is the open-status display, the next line part of it; an hours row is the hours display; MUST FAIL without each', () => {
+	const tree = section( [ E( 'span', { words: 'Open now' }, [ E( 'span', { style: 'width:8px;height:8px;border-radius:50%' } ) ] ), E( 'span', { words: 'Closes at 5pm today' } ), E( 'div', { display: 'flex' }, [ E( 'span', { words: 'Monday – Thursday' } ), E( 'span', { words: '9:30am – 5pm' } ) ] ) ] );
+	const r = run( tree );
+	assert.deepEqual( [ byWords( r, 'Open now' ).block, byWords( r, 'Open now' ).attributes.displayType ], [ 'sgs/business-info', 'open-status' ] );
+	assert.deepEqual( settled( byWords( r, 'Closes at 5pm today' ) ), { block: null, action: 'absorbed', rule: 'openStatus' } );
+	const hours = row( r, ( x ) => 'div' === x.tag && x.depth === 1 );
+	assert.deepEqual( [ hours.block, hours.attributes.displayType ], [ 'sgs/business-info', 'hours' ] );
+	assert.equal( byWords( r, '9:30am – 5pm' ).action, 'absorbed' );
+	assert.notEqual( byWords( run( tree, { facts: facts( 'openStatus' ) } ), 'Open now' ).rule, 'openStatus' );
+	assert.notEqual( row( run( tree, { facts: facts( 'hoursRows' ) } ), ( x ) => 'div' === x.tag && x.depth === 1 ).rule, 'hoursRows' );
+} );
+
+test( 'pillButton and wholeCardLink: a label and an icon is one button reading Site Info; two pieces of text are a linked card; MUST FAIL without each', () => {
+	const pill = E( 'a', { attrs: { href: 'tel:01217714330' } }, [ E( 'span', {}, [ svg() ] ), E( 'span', { words: '0121 771 4330' } ) ] );
+	const card = E( 'a', { attrs: { href: 'mailto:sales@example.co.uk' } }, [ E( 'span', { words: 'Email us' } ), E( 'span', { words: 'We reply within a day' } ) ] );
+	const r = run( section( [ pill, card ] ) );
+	const p = r.proposal.rows[ 1 ];
+	assert.deepEqual( [ p.block, p.rule, p.attributes.linkSource, p.attributes.labelFromSiteInfo ], [ 'sgs/button', 'pillButton', 'phone', true ] );
+	assert.ok( r.proposal.rows.filter( ( x ) => x.into === p.key ).length >= 2, 'the label and glyph are the button\'s own' );
+	const c = row( r, ( x ) => 'a' === x.tag && x.key !== p.key );
+	assert.deepEqual( [ c.block, c.rule, c.attributes.sgsBlockLinkSource ], [ 'sgs/container', 'wholeCardLink', 'email' ] );
+	assert.notEqual( run( section( [ pill, card ] ), { facts: facts( 'pillButton' ) } ).proposal.rows[ 1 ].rule, 'pillButton' );
+	assert.notEqual( row( run( section( [ pill, card ] ), { facts: facts( 'wholeCardLink' ) } ), ( x ) => 'a' === x.tag && x.words === '' && x.order > 3 )?.rule, 'wholeCardLink' );
+} );
+
+test( 'siteInfoLink: a lone link to a maps host is a button linked to directions; MUST FAIL without the rule', () => {
+	const tree = section( [ E( 'a', { words: 'Get directions', attrs: { href: 'https://maps.google.com/?q=B11' } } ) ] );
+	const r = byWords( run( tree ), 'Get directions' );
+	assert.deepEqual( [ r.block, r.attributes.linkSource ], [ 'sgs/button', 'directions' ] );
+	assert.notEqual( byWords( run( tree, { facts: facts( 'siteInfoLink' ) } ), 'Get directions' ).rule, 'siteInfoLink' );
+} );
+
+test( 'navigation: a header nav is the menu bar block and draws its items; MUST FAIL without the rule', () => {
+	const tree = E( 'header', {}, [ E( 'nav', { display: 'flex' }, [ E( 'button', { words: 'About' } ), E( 'button', { words: 'Sectors' } ) ] ) ] );
+	const r = run( tree, { kind: 'header' } );
+	assert.equal( byTag( r, 'nav' ).block, 'sgs/nav-bar-menu' );
+	assert.ok( r.proposal.rows.filter( ( x ) => 'button' === x.tag ).every( ( x ) => 'absorbed' === x.action ) );
+	assert.notEqual( byTag( run( tree, { kind: 'header', facts: facts( 'navigation' ) } ), 'nav' ).rule, 'navigation' );
+} );
+
+test( 'solitaryIcon: a glyph injected from a script value and an emoji alone are sgs/icon, an emoji in a sentence stays text; MUST FAIL without the rule', () => {
+	const tree = section( [ E( 'span', { snippet: '<span style="width:40px;height:40px" data-dc-tpl="2">{{ arrowIcon }}</span>', box: { x: 0, y: 0, w: 40, h: 40 } } ), E( 'span', { words: '🔥' } ), E( 'p', { words: 'Hot deals this week 🔥' } ) ] );
+	const r = run( tree );
+	assert.equal( r.proposal.rows[ 1 ].block, 'sgs/icon' );
+	assert.equal( byWords( r, '🔥' ).block, 'sgs/icon' );
+	assert.equal( byWords( r, 'Hot deals this week 🔥' ).block, 'sgs/text' );
+	assert.notEqual( run( tree, { facts: facts( 'solitaryIcon' ) } ).proposal.rows[ 1 ].block, 'sgs/icon' );
+} );
+
+test( 'label, columnHeading and cardTitle: a kicker is a label, a footer column\'s first text heads it, a card\'s first text titles it; MUST FAIL without each', () => {
+	const kicker = 'font-weight:700;letter-spacing:.14em;text-transform:uppercase';
+	// The links sit in their own wrapper (so the column-label decision, which needs the links beside the text, does not
+	// apply) and a button follows.
+	const col = E( 'div', {}, [ E( 'div', { words: 'Quick links', style: kicker } ), E( 'div', { display: 'grid' }, [ E( 'a', { words: 'Trade', attrs: { href: '/trade' }, y: 30 } ), E( 'a', { words: 'Blog', attrs: { href: '/blog' }, y: 60 } ) ] ), E( 'a', { words: 'Apply now', attrs: { href: '/apply' }, y: 90 } ) ] );
+	const footer = E( 'footer', {}, [ E( 'div', { display: 'grid' }, [ col, E( 'div', {}, [ E( 'p', { words: 'About us' } ) ] ) ] ) ] );
+	assert.deepEqual( settled( byWords( run( footer, { kind: 'footer' } ), 'Quick links' ) ), { block: 'sgs/heading', action: null, rule: 'columnHeading' } );
+	assert.notEqual( byWords( run( footer, { kind: 'footer', facts: facts( 'columnHeading' ) } ), 'Quick links' ).block, 'sgs/heading' );
+	const page = section( [ E( 'span', { words: 'Call us', style: kicker } ), E( 'a', { attrs: { href: '/story' } }, [ E( 'span', { words: 'Our Story' } ), E( 'span', { words: 'Six decades of family heritage' } ) ] ) ] );
+	assert.equal( byWords( run( page ), 'Call us' ).block, 'sgs/label' );
+	assert.equal( byWords( run( page, { facts: facts( 'label' ) } ), 'Call us' ).rule, null );
+	assert.deepEqual( settled( byWords( run( page ), 'Our Story' ) ), { block: 'sgs/heading', action: null, rule: 'cardTitle' } );
+	assert.notEqual( byWords( run( page, { facts: facts( 'cardTitle' ) } ), 'Our Story' ).rule, 'cardTitle' );
+} );
+
+test( 'listWrapper: a bare wrapper of stacked links, or of a grid of links each with a marker dot, is the list itself; MUST FAIL without the rule', () => {
+	const link = ( w, y ) => E( 'a', { attrs: { href: `/${ w }` }, y }, [ E( 'span', { style: 'width:6px;height:6px;border-radius:50%' } ), E( 'span', { words: w } ) ] );
+	const tree = section( [ E( 'div', { display: 'grid', style: 'display:grid;grid-template-columns:repeat(2,1fr)' }, [ link( 'Trade', 0 ), link( 'Brands', 0 ), link( 'Blog', 30 ) ] ) ] );
+	const r = run( tree );
+	assert.deepEqual( settled( byTag( r, 'div' ) ), { block: null, action: 'unwrap', rule: 'listWrapper' } );
+	assert.equal( r.skeleton[ 0 ].innerBlocks[ 0 ].name, facts().listSlug );
+	assert.deepEqual( r.skeleton[ 0 ].innerBlocks[ 0 ].attributes.items.map( ( i ) => i.text ), [ 'Trade', 'Brands', 'Blog' ] );
+	assert.notEqual( byTag( run( tree, { facts: facts( 'listWrapper' ) } ), 'div' ).action, 'unwrap' );
+} );
+
+test( 'clientBuiltSurface: every row of a surface the client built as a post names that post; MUST FAIL without the rule', () => {
+	const built = { site: 'canary', postType: 'sgs_drawer', postId: 1 };
+	const tree = E( 'div', {}, [ E( 'p', { words: 'Menu' } ) ] );
+	assert.ok( run( tree, { kind: 'drawer', built } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' === x.rule && x.builtPost === built ) );
+	assert.ok( run( tree, { kind: 'drawer', built, facts: facts( 'clientBuiltSurface' ) } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' !== x.rule ) );
+} );
+
+test( 'drawsChildren: a leaf, an array-item block and a named block draw their children; MUST FAIL with the name removed', () => {
+	const m = inventoryModel( inventory( E( 'div' ) ) );
+	const hooks = { siteInfoKinds: () => new Map(), isColumnLabel: () => false, topBlock: () => null, blockOfKey: () => null };
+	const on = makeRules( { m, facts: facts(), hooks } );
+	assert.match( on.drawsChildren( 'sgs/button' ), /leaf/ );
+	assert.match( on.drawsChildren( 'sgs/icon-list' ), /array_item_schema/ );
+	assert.match( on.drawsChildren( 'sgs/business-info' ), /Site Info/ );
+	assert.equal( on.drawsChildren( 'sgs/container' ), null );
+	const f = facts();
+	f.decisions.rules.drawsChildren.blocks = f.decisions.rules.drawsChildren.blocks.filter( ( b ) => 'sgs/business-info' !== b.block );
+	assert.equal( makeRules( { m, facts: f, hooks } ).drawsChildren( 'sgs/business-info' ), null );
+} );
+
+test( 'coreExceptions: a named core block survives the core ban, any other core block is rewritten or refused; MUST FAIL without the entry', () => {
+	const result = { candidates: [ { block: 'core/list', score: 1, share: 1, evidence: [ { kind: 'db', w: 1, text: 'tag map' } ] } ], confidence: 1 };
+	assert.equal( sgsOnly( result, { 'core/list': 'sgs/icon-list' } ).candidates[ 0 ].block, 'sgs/icon-list' );
+	assert.equal( sgsOnly( result, { 'core/list': 'sgs/icon-list' }, [ { block: 'core/list', reason: 'fixture' } ] ).candidates[ 0 ].block, 'core/list' );
+	assert.deepEqual( sgsOnly( result, {} ).rejectedCore, [ 'core/list' ] );
+} );
+
+test( 'siteInfoPatterns: a typed phone number and email address are Site Info; MUST FAIL without the patterns', () => {
+	const tree = section( [ E( 'span', { words: '0121 771 4330' } ), E( 'span', { words: 'sales@example.co.uk' } ) ] );
+	const r = run( tree );
+	assert.deepEqual( [ byWords( r, '0121 771 4330' ).block, byWords( r, 'sales@example.co.uk' ).block ], [ 'sgs/business-info', 'sgs/business-info' ] );
+	const off = run( tree, { facts: facts( 'siteInfoPatterns.phone', 'siteInfoPatterns.email' ) } );
+	assert.notEqual( byWords( off, '0121 771 4330' ).block, 'sgs/business-info' );
+} );
+
+test( 'briefOnlyLines: a placeholder photography credit is removed; MUST FAIL without the line', () => {
+	const tree = section( [ E( 'span', { words: 'Placeholder photography via Unsplash' } ) ] );
+	assert.equal( run( tree ).proposal.rows[ 1 ].action, 'remove' );
+	const f = facts();
+	f.decisions.briefOnlyLines = f.decisions.briefOnlyLines.filter( ( b ) => 'photo-credit-note' !== b.id );
+	assert.notEqual( run( tree, { facts: f } ).proposal.rows[ 1 ].action, 'remove' );
+} );
+
+test( 'every fixture skeleton passes the skeleton rules (no style value, valid handovers)', () => {
+	const trees = [ section( [ E( 'iframe', { snippet: '<iframe src="https://maps.google.com/maps?q=B11" data-dc-tpl="2"></iframe>' } ), E( 'acme-logo' ) ] ) ];
+	trees.forEach( ( t ) => assert.deepEqual( skeletonProblems( run( t ).skeleton ), [] ) );
+} );

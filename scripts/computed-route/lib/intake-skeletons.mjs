@@ -188,7 +188,8 @@ export function contextOf( inventory, proposal, key ) {
 }
 
 const rowsOf = ( surface, proposal, inventory ) => proposal.rows.map( ( r ) => ( {
-	rowId: `skeleton:${ surface }:${ r.key }`, key: r.key, tag: r.tag, words: r.words, block: r.block, confidence: r.confidence, low: r.low, reason: r.reason,
+	rowId: `skeleton:${ surface }:${ r.key }`, key: r.key, tag: r.tag, words: r.words, block: r.block, confidence: r.confidence, low: r.low, reason: r.reason, rule: r.rule ?? null,
+	...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ), ...( r.builtPost ? { builtPost: r.builtPost } : {} ),
 	candidates: r.candidates.slice( 0, 3 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share } ) ), action: r.action, snippet: r.snippet, screenshots: r.screenshots,
 	...contextOf( inventory, proposal, r.key ),
 } ) );
@@ -302,11 +303,12 @@ function factsFor( { db, client, repo, facts } ) {
 // `census`'s template handlers link to it through `opened_by`), read, then closed again; the entry's `opened` says how,
 // where it renders and which widths were read at a neighbour (`readAt`). `openStates: false` switches opening off (the
 // tests' negative control). o: { folder, harPath, surfaces, client, db?, facts?, entry?, routing?, site?, shotsDir?,
-// widths, repo?, harness? (harness options), log?, census?, openStates? }. Returns { skeletons: [{ surface, id, kind,
+// widths, repo?, harness? (harness options), log?, census?, openStates?, inventoriesDir? (each surface's full inventory is
+// written there as <surface>.json, so lib/skeleton-rerun.mjs can propose again offline) }. Returns { skeletons: [{ surface, id, kind,
 // name, route, opened?, inventory, rows, counts, problems, gap? }], gaps, runs: [{ file, hash, surfaces, requests,
 // unlisted, blocked, proxyAttempts, ms }] }. A surface whose inventory or proposal throws, or that no opener renders,
 // keeps its entry with `gap` and adds a gap row naming what was tried.
-export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true } ) {
+export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true, inventoriesDir = null } ) {
 	if ( [ ...widths ].sort().join() !== [ ...INVENTORY_WIDTHS ].sort().join() ) {
 		throw new Error( `the skeleton inventory reads at ${ INVENTORY_WIDTHS.join( ', ' ) } (Spec 48 §3.4), not ${ widths.join( ', ' ) }` );
 	}
@@ -330,6 +332,10 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 		into.gaps.push( gap( 'skeleton', `${ s.component }:${ s.rootTpl }`, `${ s.slug }: ${ error }` ) );
 		into.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, inventory: null, rows: [], counts: null, problems: [], gap: error } );
 	};
+	// The client's own built posts (a header, drawer or mega menu it already built), keyed by surfaces.json id or slug.
+	const builtFile = path.join( repo, 'sites', client, 'build', 'skeleton', 'built-surfaces.json' );
+	const builtMap = fs.existsSync( builtFile ) ? JSON.parse( fs.readFileSync( builtFile, 'utf8' ) ).surfaces || {} : {};
+	const builtFor = ( s ) => builtMap[ s.id ] || builtMap[ s.slug ] || null;
 	const groups = new Map();
 	for ( const s of surfaces ) {
 		const v = visitOf( s.route, { entry: index, routing: routeInfo } );
@@ -381,10 +387,12 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						} else {
 							inventory = await readInventory( { page: h.page, root: s.selector, settle, shotsDir: shotsDir ? path.join( shotsDir, s.slug ) : null, url: h.page.url() } );
 						}
+						inventoriesDir && fs.writeFileSync( path.join( inventoriesDir, `${ s.slug }.json` ), `${ JSON.stringify( inventory ) }
+` );
 						if ( f.error ) {
 							throw new Error( f.error );
 						}
-						const r = proposeSkeleton( { inventory, facts: f.facts, surface: s.slug, clientDecisions: f.clientDecisions, calKeys, db: theDb } );
+						const r = proposeSkeleton( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, calKeys, db: theDb } );
 						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, tried: open.tried };
 						u.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems } );
 						log( `${ s.slug }: ${ inventory.elements.length } elements, ${ r.proposal.rows.length } rows` );

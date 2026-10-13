@@ -195,7 +195,7 @@ export const STAGES = [
 		const fw = frameworkFacts( job );
 		let r;
 		try {
-			r = await proposeSkeletons( { folder: job.folder, harPath: job.harPath, surfaces, client: job.client, entry: job.entry, routing: ctx.routing, repo: job.repo, census: ctx.censusFull, db: fw.db, facts: fw.facts ?? null, log: ( l ) => log( `  ${ l }` ) } );
+			r = await proposeSkeletons( { folder: job.folder, harPath: job.harPath, surfaces, client: job.client, entry: job.entry, routing: ctx.routing, repo: job.repo, census: ctx.censusFull, db: fw.db, facts: fw.facts ?? null, inventoriesDir: job.inventoriesDir ?? null, log: ( l ) => log( `  ${ l }` ) } );
 		} finally {
 			fw.db.close();
 		}

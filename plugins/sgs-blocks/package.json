@@ -2,6 +2,14 @@
   "name": "sgs-blocks",
   "version": "0.1.0",
   "private": true,
+  "sideEffects": [
+    "*.css",
+    "*.scss",
+    "./src/blocks/extensions/**",
+    "./src/bindings/**",
+    "./src/shared/nav-interactivity/**",
+    "./src/shared/wishlist-store/**"
+  ],
   "description": "Custom Gutenberg block library for Small Giants Studio",
   "scripts": {
     "check:transform-parity": "node scripts/generative-background/verify-transform.mjs",

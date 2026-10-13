@@ -138,6 +138,21 @@ allowedBlocks: [
         assert isinstance(result, list)
         assert result == ["sgs/button", "sgs/icon"]
 
+    def test_per_variant_lists_are_unioned(self, tmp_path: Path) -> None:
+        """A block that sets allowedBlocks per variant accepts every list's blocks, in order of first appearance."""
+        edit = _write_edit_js(tmp_path, """
+function configFor( variant ) {
+    if ( 'media-cards' === variant ) {
+        return { allowedBlocks: [ 'sgs/card-grid' ], template: [] };
+    }
+    if ( 'cards-aside' === variant ) {
+        return { allowedBlocks: [ 'sgs/card-grid', 'sgs/mega-aside' ], template: [] };
+    }
+    return { allowedBlocks: [ 'sgs/mega-group', 'sgs/mega-aside' ], template: [] };
+}
+""")
+        assert scrape_allowed_blocks(edit) == ["sgs/card-grid", "sgs/mega-aside", "sgs/mega-group"]
+
     def test_double_quoted_slugs(self, tmp_path: Path) -> None:
         """Double-quoted slugs are parsed identically to single-quoted."""
         edit = _write_edit_js(tmp_path, """

@@ -276,7 +276,7 @@ def transform_file(path, rel, core_type, module, declared, write):
     if new_text == original:
         return {'rel': rel, 'changed': False, 'log': log}
     if write:
-        path.write_text(new_text, encoding='utf-8')
+        path.write_text(new_text, encoding='utf-8', newline='')
         if b'\x00' in path.read_bytes():
             raise SystemExit(f'{rel}: NUL byte after write — investigate before continuing.')
         parse_blocks(path.read_text(encoding='utf-8'), rel)  # round-trip guard

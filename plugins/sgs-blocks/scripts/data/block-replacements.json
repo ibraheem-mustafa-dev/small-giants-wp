@@ -41,6 +41,10 @@
   "sgs/icon": [
     "core/icon"
   ],
+  "sgs/icon-list": [
+    "core/list",
+    "core/list-item"
+  ],
   "sgs/media": [
     "core/image",
     "core/video"

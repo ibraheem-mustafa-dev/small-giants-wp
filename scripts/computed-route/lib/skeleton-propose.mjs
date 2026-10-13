@@ -11,20 +11,23 @@ import { makeClassifier, overrideFor, finish, W } from './skeleton-classify.mjs'
 
 const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks || [] ), 0 );
 
-// o: { inventory, facts, surface, clientDecisions, picks ({ key: decision }), calKeys (slug -> calibration element keys), db }.
-export function proposeSkeleton( { inventory, facts, surface, clientDecisions = {}, picks = {}, calKeys = () => [], db = null } ) {
+// o: { inventory, facts, surface, surfaceKind, surfaceName, built (the client's own built post for this surface, from
+// sites/<client>/build/skeleton/built-surfaces.json), clientDecisions, picks ({ key: decision }), calKeys (slug ->
+// calibration element keys), db }.
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, clientDecisions = {}, picks = {}, calKeys = () => [], db = null } ) {
 	const m = inventoryModel( inventory );
 	const { composition, capsOf, enumOf } = facts;
 	const minLinks = facts.decisions.structural?.linkList?.minLinks ?? 2;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
-	const cls = makeClassifier( { m, facts, overrides } );
-	const rows = [];
 	const rowOf = {};
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName }, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	const R = facts.decisions.rules || {};
+	const rows = [];
 	const record = ( e, r, extra = {} ) => {
 		const top = r.candidates?.[ 0 ];
 		const row = {
 			order: rows.length, key: e.key, tag: e.tag, depth: e.depth, words: m.words( e ), block: top?.block ?? null, action: r.action || null, reason: r.reason || null, source: r.source || null,
-			confidence: r.confidence, low: r.confidence < 0.7, stale: r.stale || null,
+			confidence: r.confidence, low: r.confidence < 0.7, stale: r.stale || null, rule: r.rule || null, ...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ),
 			candidates: ( r.candidates || [] ).slice( 0, 5 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share, evidence: c.evidence.map( ( ev ) => ev.text ) } ) ),
 			parts: m.kids( e ).filter( m.isPart ).map( ( k ) => k.key ), screenshots: e.screenshots, snippet: e.snippet, attributes: {}, ...extra,
 		};
@@ -35,6 +38,11 @@ export function proposeSkeleton( { inventory, facts, surface, clientDecisions = 
 	const removeSubtree = ( e, why ) => m.kids( e ).filter( ( k ) => ! m.isPart( k ) ).forEach( ( k ) => {
 		record( k, { action: 'remove', reason: why, confidence: 1, candidates: [] } );
 		removeSubtree( k, why );
+	} );
+	// The children of an element whose block draws them itself: each is a row absorbed into it, never a block.
+	const absorbSubtree = ( e, top, why, rule ) => m.blockKids( e ).forEach( ( k ) => {
+		record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key } );
+		absorbSubtree( k, top, why, rule );
 	} );
 	const finder = ( e ) => m.tplFinder( e );
 	const base = ( e, name, attributes ) => ( { name, attributes, draftRef: finder( e ), draftFingerprint: m.fingerprint( e ), innerBlocks: [] } );
@@ -59,23 +67,28 @@ export function proposeSkeleton( { inventory, facts, surface, clientDecisions = 
 		}
 		return null;
 	};
-	const linkRun = ( list, i ) => {
+	// A list item link: words of its own, or one piece of text beside bare decorations only (a marker dot, a glyph), which
+	// the list block draws as its marker. One such link alone is a pill button; two or more stacked are a list.
+	const listLink = ( e ) => m.isTextLink( e ) || ( 'a' === e.tag && !! String( e.allText ?? '' ).trim() && m.blockKids( e ).every( ( k ) => ! m.blockKids( k ).length ) && m.blockKids( e ).filter( ( k ) => m.words( k ) ).length <= 1 );
+	// A run of list links: stacked one above the next, or every child of a grid (a list laid out in columns).
+	const linkRun = ( list, i, parent = null ) => {
 		const span = [];
-		for ( let j = i; j < list.length && ( m.isTextLink( list[ j ] ) || removedBy( list[ j ] ) ); j++ ) {
+		for ( let j = i; j < list.length && ( listLink( list[ j ] ) || removedBy( list[ j ] ) ); j++ ) {
 			span.push( list[ j ] );
 		}
 		while ( span.length && removedBy( span[ span.length - 1 ] ) ) {
 			span.pop();
 		}
 		const links = span.filter( ( k ) => ! removedBy( k ) );
-		return links.length >= minLinks && m.stacked( links ) && ! removedBy( span[ 0 ] ) ? span : [];
+		const gridList = 'grid' === parent?.display && span.length === list.length;
+		return links.length >= minLinks && ( m.stacked( links ) || gridList ) && ! removedBy( span[ 0 ] ) ? span : [];
 	};
 	const unitsOf = ( e ) => {
 		const list = m.blockKids( e );
 		const out = [];
 		for ( let i = 0; i < list.length; ) {
 			const brand = typedBrandRun( list, i );
-			const run = brand ? [] : linkRun( list, i );
+			const run = brand ? [] : linkRun( list, i, e );
 			if ( brand ) {
 				out.push( { type: 'brand', els: brand } );
 				i += brand.length;
@@ -121,7 +134,7 @@ export function proposeSkeleton( { inventory, facts, surface, clientDecisions = 
 			if ( ! real ) {
 				handover.push( { owner: 'behaviour', kind: 'link', detail: `draft link "${ m.words( l ) }" is "#": its destination is not in the draft, url left empty` } );
 			}
-			return { [ li.text ]: m.words( l ), ...( real ? { [ li.url ]: href } : {} ) };
+			return { [ li.text ]: m.words( l ) || String( l.allText ?? '' ).replace( /\s+/g, ' ' ).trim(), ...( real ? { [ li.url ]: href } : {} ) };
 		} );
 		const C = {};
 		const ev = ( b, kind, w, text ) => ( C[ b ] ||= { block: b, evidence: [] } ).evidence.push( { kind, w, text } );
@@ -140,7 +153,9 @@ export function proposeSkeleton( { inventory, facts, surface, clientDecisions = 
 				return record( l, { action: 'remove', reason: b ? `brief-only line (${ b.id }): ${ b.reason }` : o.reason || o.source, source: b ? `decisions ${ b.id }` : o.source, confidence: 0.9, candidates: [] } );
 			}
 			const at = items[ els.filter( ( x, j ) => j < i && ! removedBy( x ) ).length ];
-			return record( l, i === els.findIndex( ( x ) => ! removedBy( x ) ) ? r : { ...r, candidates: r.candidates.slice( 0, 1 ) }, { unit: 'list', item: at, ...( at[ li.siteInfoSource ] ? { siteInfoKind: at[ li.siteInfoSource ] } : {} ) } );
+			const row = record( l, i === els.findIndex( ( x ) => ! removedBy( x ) ) ? r : { ...r, candidates: r.candidates.slice( 0, 1 ) }, { unit: 'list', item: at, ...( at[ li.siteInfoSource ] ? { siteInfoKind: at[ li.siteInfoSource ] } : {} ) } );
+			absorbSubtree( l, { block: slug, key: l.key }, 'the list item\'s marker', 'drawsChildren' );
+			return row;
 		} );
 		return node;
 	}
@@ -192,10 +207,25 @@ export function proposeSkeleton( { inventory, facts, surface, clientDecisions = 
 	}
 
 	function buildNode( e, parentBlock ) {
+		// A bare wrapper whose children are exactly one list: the list block is that wrapper (unless the client decided it).
+		const units = m.words( e ) || 'client decision' === overrides( e, '' )?.source ? [] : unitsOf( e );
+		if ( R.listWrapper && 1 === units.length && 'list' === units[ 0 ].type && units[ 0 ].els.length === m.blockKids( e ).length ) {
+			record( e, { action: 'unwrap', rule: 'listWrapper', source: 'rule listWrapper', reason: R.listWrapper.reason, confidence: 1, candidates: [] } );
+			return [ buildList( units[ 0 ].els ) ];
+		}
 		const r = cls.classify( e, parentBlock );
 		if ( 'remove' === r.action ) {
 			record( e, r );
 			removeSubtree( e, `inside a removed element (${ e.key })` );
+			return null;
+		}
+		if ( 'unwrap' === r.action ) {
+			record( e, r );
+			return buildChildren( e, parentBlock );
+		}
+		if ( 'absorbed' === r.action ) {
+			record( e, r );
+			absorbSubtree( e, { block: 'the element before it', key: r.into }, r.reason, r.rule );
 			return null;
 		}
 		const top = r.candidates[ 0 ];
@@ -204,7 +234,11 @@ export function proposeSkeleton( { inventory, facts, surface, clientDecisions = 
 			return null;
 		}
 		const block = top.block;
-		const { a, handover } = contentAttrs( block, e, top );
+		// A rule's attributes are the block's settings; a block that draws its children takes no words from them.
+		const drawn = m.blockKids( e ).length ? ( r.absorb ? `rule ${ r.rule }` : cls.drawsChildren( block ) ) : null;
+		const { a, handover } = r.rule && drawn ? { a: {}, handover: [] } : contentAttrs( block, e, top );
+		Object.assign( a, r.rule ? top.attributes || {} : {} );
+		r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
 		handover.length && ( node.handover = handover );
 		const row = record( e, r, { attributes: a } );
@@ -216,6 +250,10 @@ export function proposeSkeleton( { inventory, facts, surface, clientDecisions = 
 		if ( Object.keys( slots ).length ) {
 			node.draftSlots = slots;
 			row.slots = slots;
+		}
+		if ( drawn ) {
+			absorbSubtree( e, { block, key: e.key }, drawn, r.rule || 'drawsChildren' );
+			return node;
 		}
 		const kids = m.blockKids( e );
 		const rowBlock = facts.rowBlocks.find( ( x ) => x.slug === block );
@@ -231,7 +269,8 @@ export function proposeSkeleton( { inventory, facts, surface, clientDecisions = 
 			1 === targets.length && ( node.childAttributes = { linkTarget: targets[ 0 ] } );
 			row.rowNote = `icons generated by Fill from siteInfoRow ${ JSON.stringify( node.siteInfoRow ) }`;
 			kidTops.forEach( ( x ) => {
-				const kr = record( x.k, x.r, { attributes: contentAttrs( x.r.candidates[ 0 ].block, x.k, x.r.candidates[ 0 ] ).a, generatedBy: e.key } );
+				// Fill generates each icon from the row's Site Info list, so the draft's own link is absorbed into the row.
+				const kr = record( x.k, { ...x.r, action: 'absorbed', rule: 'drawsChildren', into: e.key, reason: `drawn by ${ block }: Fill generates its icons from the Site Info row` }, { attributes: contentAttrs( x.r.candidates[ 0 ].block, x.k, x.r.candidates[ 0 ] ).a, generatedBy: e.key } );
 				kr.parts = m.kids( x.k ).filter( m.isPart ).map( ( p ) => p.key );
 			} );
 			return node;
@@ -241,16 +280,18 @@ export function proposeSkeleton( { inventory, facts, surface, clientDecisions = 
 	}
 
 	function buildChildren( e, parentBlock ) {
-		return unitsOf( e ).map( ( u ) => ( 'brand' === u.type ? buildBrand( u.els ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) ) ).filter( Boolean );
+		return unitsOf( e ).flatMap( ( u ) => ( 'brand' === u.type ? buildBrand( u.els ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) ) ).filter( Boolean );
 	}
 
 	const rootNode = buildNode( m.root, null );
-	const skeleton = rootNode ? [ rootNode ] : [];
+	const skeleton = [].concat( rootNode || [] );
+	// A surface the client already built as a post: that post's block tree is the skeleton, so every row is settled by it.
+	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built } ) );
 	const problems = [ ...skeletonProblems( skeleton ), ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName,
-		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W,
-		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => 'remove' === r.action || 'absorbed' === r.action ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length },
+		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
+		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
 		problems, rows,
 	};
 	return { skeleton, proposal, problems };

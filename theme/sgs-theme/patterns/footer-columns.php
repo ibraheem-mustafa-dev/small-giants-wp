@@ -25,33 +25,13 @@
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Company Links"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/heading {"content":"Company","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
-<!-- wp:list {"style":{"typography":{"lineHeight":"2"},"spacing":{"padding":{"left":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
-<ul style="padding-left:0;line-height:2" class="has-text-inverse-color has-text-color has-small-font-size"><!-- wp:list-item -->
-<li><a href="#">About Us</a></li>
-<!-- /wp:list-item --><!-- wp:list-item -->
-<li><a href="#">Our Team</a></li>
-<!-- /wp:list-item --><!-- wp:list-item -->
-<li><a href="#">Careers</a></li>
-<!-- /wp:list-item --><!-- wp:list-item -->
-<li><a href="#">Contact</a></li>
-<!-- /wp:list-item --></ul>
-<!-- /wp:list -->
+<!-- wp:sgs/icon-list {"markerType":"none","items":[{"text":"About Us","url":"#"},{"text":"Our Team","url":"#"},{"text":"Careers","url":"#"},{"text":"Contact","url":"#"}],"gap":"0","itemLineHeight":2,"itemLineHeightUnit":"","padding":{"desktop":{"left":"0"}},"textColour":"text-inverse","itemFontSize":{"desktop":"small"}} /-->
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Services Links"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/heading {"content":"Services","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
-<!-- wp:list {"style":{"typography":{"lineHeight":"2"},"spacing":{"padding":{"left":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
-<ul style="padding-left:0;line-height:2" class="has-text-inverse-color has-text-color has-small-font-size"><!-- wp:list-item -->
-<li><a href="#">Web Design</a></li>
-<!-- /wp:list-item --><!-- wp:list-item -->
-<li><a href="#">Development</a></li>
-<!-- /wp:list-item --><!-- wp:list-item -->
-<li><a href="#">SEO</a></li>
-<!-- /wp:list-item --><!-- wp:list-item -->
-<li><a href="#">Branding</a></li>
-<!-- /wp:list-item --></ul>
-<!-- /wp:list -->
+<!-- wp:sgs/icon-list {"markerType":"none","items":[{"text":"Web Design","url":"#"},{"text":"Development","url":"#"},{"text":"SEO","url":"#"},{"text":"Branding","url":"#"}],"gap":"0","itemLineHeight":2,"itemLineHeightUnit":"","padding":{"desktop":{"left":"0"}},"textColour":"text-inverse","itemFontSize":{"desktop":"small"}} /-->
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Newsletter"},"flexWrap":"wrap"} -->

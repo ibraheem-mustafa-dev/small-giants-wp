@@ -1,0 +1,10 @@
+{
+	"doc": "Surfaces this client already built as posts (Spec 48 FR-48-6, rule clientBuiltSurface): the skeleton writer settles every row of such a surface by the post's block tree. Keyed by the export's surfaces.json id. Checked over SSH on 2026-10-13 with `wp post get <id> --field=post_type` and `--field=post_title` on the canary.",
+	"surfaces": {
+		"S-03": { "site": "sandybrown", "postType": "sgs_header", "postId": 4461, "title": "QA copy Indus mega menu" },
+		"S-04": { "site": "sandybrown", "postType": "sgs_mega_menu", "postId": 4426, "title": "[QA] Indus mega: About" },
+		"S-05": { "site": "sandybrown", "postType": "sgs_mega_menu", "postId": 4443, "title": "[QA] Indus mega: Sectors" },
+		"S-06": { "site": "sandybrown", "postType": "sgs_mega_menu", "postId": 4440, "title": "[QA] Indus mega: Brands" },
+		"S-09": { "site": "sandybrown", "postType": "sgs_drawer", "postId": 4456, "title": "[QA] Indus mobile drawer" }
+	}
+}
