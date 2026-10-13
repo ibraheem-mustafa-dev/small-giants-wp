@@ -61,6 +61,7 @@
 @property --sgs-me-clip { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
 @property --sgs-plx-bg-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-plx-bg-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-scroll-progress { syntax: '<number>'; inherits: false; initial-value: 0; }
 @property --sgs-cursor-field-radius { syntax: '<length>'; inherits: true; initial-value: 0px; }
 @property --sgs-ripple-s { syntax: '<number>'; inherits: true; initial-value: 0; }
 @property --sgs-ripple-op { syntax: '<number>'; inherits: true; initial-value: 0; }

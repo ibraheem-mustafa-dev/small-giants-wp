@@ -528,31 +528,16 @@
 	.sgs-parallax-element {
 		animation: none !important;
 		transform: none !important;
+		translate: none !important;
 	}
 }
 
-/* Modern browsers: CSS Scroll-Driven Animations (Chrome 115+, Firefox 135+) */
-@supports (animation-timeline: scroll()) {
-	@media (prefers-reduced-motion: no-preference) {
-		.sgs-parallax-element {
-			animation: sgs-parallax-element linear both;
-			animation-timeline: scroll(root);
-		}
-
-		@keyframes sgs-parallax-element {
-			from {
-				transform: translateY(
-					calc(var(--sgs-parallax-strength, 30) * 0.5px)
-				);
-			}
-			to {
-				transform: translateY(
-					calc(var(--sgs-parallax-strength, 30) * -0.5px)
-				);
-			}
-		}
-	}
+/* The parallax script writes --sgs-plx-y on every browser; this rule moves the element by it. An element that
+ * also holds a motion translate channel takes the composite in motion.css instead. */
+.sgs-parallax-element:not([data-sgs-mc~="translate"]) {
+	translate: 0 var(--sgs-plx-y, 0px);
 }
+
 /* ── End parallax extension ─────────────────────────────────────────────── */
 
 /* ===== Image Controls Extension ===== */

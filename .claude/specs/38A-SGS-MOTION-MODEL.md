@@ -310,6 +310,7 @@ The full emitted contract, shared by the renderer (`includes/motion/`) and the s
 | `data-sgs-me="<trigger> <channels>"` | renderer, on the target | an entrance: trigger `load\|scroll\|open\|state`, then the channels it touches |
 | `--sgs-me-from-*`, `--sgs-me-to-*`, `--sgs-me-dur`, `--sgs-me-delay`, `--sgs-me-ease`, `--sgs-me-start` | renderer, in the scoped rule | the entrance's values and timing; to-values default to the identity |
 | `data-sgs-me-keyframes` | renderer, on the target | the entrance's keyframes as JSON, read by the WAAPI module (M2.4) |
+| `data-sgs-scroll="page\|view"` | effect layers that read scroll progress (M5); the scroll driver (M2.5) also takes elements through `observe()` | the element receives `--sgs-scroll-progress` (0 to 1) from the one scroll driver |
 | `data-sgs-mroot` | renderer, on the block root | a root whose targets use source `root` |
 | `data-sgs-hover-group` | renderer, on a block with a whole-block link | the hover group that source `group` reads (§6.2) |
 | `sgs-m-<10 hex>` | renderer, class on the block root | the scope class every scoped rule is prefixed with |
