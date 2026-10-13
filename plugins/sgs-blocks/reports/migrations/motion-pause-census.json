@@ -1,0 +1,269 @@
+{
+  "blocks": [
+    {
+      "block": "brand-strip",
+      "verdict": "COMPLIANT",
+      "signals": [
+        "css-loop"
+      ],
+      "option": "pauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": []
+    },
+    {
+      "block": "container",
+      "verdict": "EXEMPT",
+      "signals": [
+        "css-loop"
+      ],
+      "option": null,
+      "option_default": null,
+      "option_control": false,
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "deferred",
+          "reason": "Ken Burns background zoom and background SVG pulse/float/wave loops"
+        }
+      ]
+    },
+    {
+      "block": "gallery",
+      "verdict": "COMPLIANT",
+      "signals": [
+        "js-timer"
+      ],
+      "option": "carouselPauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": []
+    },
+    {
+      "block": "google-reviews",
+      "verdict": "COMPLIANT",
+      "signals": [
+        "js-timer"
+      ],
+      "option": "pauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": []
+    },
+    {
+      "block": "hero",
+      "verdict": "EXEMPT",
+      "signals": [
+        "css-loop",
+        "video-autoplay"
+      ],
+      "option": null,
+      "option_default": null,
+      "option_control": false,
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "deferred",
+          "reason": "Ken Burns background and split-media zoom"
+        },
+        {
+          "signal": "video-autoplay",
+          "kind": "deferred",
+          "reason": "muted looping background video, aria-hidden"
+        }
+      ]
+    },
+    {
+      "block": "media",
+      "verdict": "EXEMPT",
+      "signals": [
+        "css-loop",
+        "video-autoplay"
+      ],
+      "option": null,
+      "option_default": null,
+      "option_control": false,
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "deferred",
+          "reason": "SVG pulse/float/wave loops"
+        },
+        {
+          "signal": "video-autoplay",
+          "kind": "deferred",
+          "reason": "autoplaying video; native controls when the block shows them"
+        }
+      ]
+    },
+    {
+      "block": "nav-drawer",
+      "verdict": "EXEMPT",
+      "signals": [
+        "css-loop"
+      ],
+      "option": null,
+      "option_default": null,
+      "option_control": false,
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "deferred",
+          "reason": "decorative drift on .sgs-drift shapes in the drawer"
+        }
+      ]
+    },
+    {
+      "block": "notice-banner",
+      "verdict": "COMPLIANT",
+      "signals": [
+        "js-timer"
+      ],
+      "option": "pauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": []
+    },
+    {
+      "block": "post-grid",
+      "verdict": "COMPLIANT",
+      "signals": [
+        "css-loop",
+        "js-timer"
+      ],
+      "option": "carouselPauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "loading",
+          "reason": "the .sgs-post-grid skeleton shimmer runs only while posts load"
+        }
+      ]
+    },
+    {
+      "block": "product-search",
+      "verdict": "EXEMPT",
+      "signals": [
+        "css-loop"
+      ],
+      "option": null,
+      "option_default": null,
+      "option_control": false,
+      "render_call": false,
+      "view_call": false,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": [
+        {
+          "signal": "css-loop",
+          "kind": "loading",
+          "reason": "the results skeleton shimmer runs only while results load"
+        }
+      ]
+    },
+    {
+      "block": "testimonial-slider",
+      "verdict": "COMPLIANT",
+      "signals": [
+        "js-timer"
+      ],
+      "option": "pauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": []
+    },
+    {
+      "block": "trust-bar",
+      "verdict": "COMPLIANT",
+      "signals": [
+        "css-loop"
+      ],
+      "option": "autoScrollPauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": []
+    },
+    {
+      "block": "trustpilot-reviews",
+      "verdict": "COMPLIANT",
+      "signals": [
+        "js-timer"
+      ],
+      "option": "pauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
+      "handrolled_render": false,
+      "handrolled_view": false,
+      "findings": [],
+      "exempt": []
+    }
+  ],
+  "stale_exemptions": [],
+  "stale_pending": [],
+  "counts": {
+    "COMPLIANT": 8,
+    "FLAGGED": 0,
+    "PENDING": 0,
+    "EXEMPT": 5
+  }
+}

@@ -28,6 +28,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-media-element.php';
 // live in their own files (this render.php is already over the file-length cap).
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-trust-bar-item.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-trust-bar-marquee.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
 
 // --- Unique ID for scoped typography <style> ----------------------------------
 $uid = wp_unique_id( 'sgs-tb-' );
@@ -748,19 +749,17 @@ $badges_html = $auto_scroll
 	? '<div class="sgs-trust-bar__track">' . $items_html . '</div>'
 	: $items_html;
 
-// Pause / play button (WCAG 2.2.2). Rendered hidden: view.js un-hides it only while the
-// marquee is actually running, so a bar that does not scroll never shows a dead control.
-// Placed after the track (a sibling of it) so it adds no badge before the track's
-// :nth-child-scoped rules.
+// Pause / play button (WCAG 2.2.2), the shared control (includes/helpers-motion-pause.php), an
+// option (autoScrollPauseButton, off by default). Rendered hidden: view.js un-hides it only while the marquee is actually running, so a bar
+// that does not scroll never shows a dead control. Placed after the track (a sibling of it) so
+// it adds no badge before the track's :nth-child-scoped rules.
 if ( $auto_scroll && $auto_scroll_btn ) {
-	// A toggle button keeps one name; aria-pressed="true" says it is paused.
-	$tb_label_pause = __( 'Pause scrolling', 'sgs-blocks' );
-	$badges_html   .= sprintf(
-		'<button type="button" class="sgs-trust-bar__pause" aria-pressed="false" aria-label="%1$s" hidden>'
-		. '<svg class="sgs-trust-bar__pause-icon sgs-trust-bar__pause-icon--pause" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>'
-		. '<svg class="sgs-trust-bar__pause-icon sgs-trust-bar__pause-icon--play" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>'
-		. '</button>',
-		esc_attr( $tb_label_pause )
+	$badges_html .= sgs_motion_pause_button(
+		array(
+			'block'     => 'sgs-trust-bar',
+			'label'     => __( 'Pause scrolling', 'sgs-blocks' ),
+			'placement' => 'overlay-end',
+		)
 	);
 }
 

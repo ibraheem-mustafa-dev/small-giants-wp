@@ -559,7 +559,12 @@
 		"pauseOnHover": {
 			"type": "boolean",
 			"default": true,
-			"description": "rotate mode only — hover or focus within the banner pauses rotation."
+			"description": "rotate mode only — hover or a finger press on the banner pauses rotation. Keyboard focus within the banner always pauses it."
+		},
+		"pauseButton": {
+			"type": "boolean",
+			"default": false,
+			"description": "rotate mode only — show a pause / play button (off by default). Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients."
 		},
 		"arrowColour": {
 			"type": "string",

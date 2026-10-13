@@ -139,6 +139,11 @@
 			"type": "number",
 			"default": 5000
 		},
+		"pauseButton": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show a pause / play button while autoplay runs (off by default). Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients. Keyboard focus, hover and touch pause autoplay either way."
+		},
 		"showDots": {
 			"type": "boolean",
 			"default": true

@@ -215,6 +215,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		columns,
 		showNames,
 		pauseOnHover,
+		pauseButton,
 		nameColour,
 		nameColourGradient,
 		nameTextAlign,
@@ -701,12 +702,24 @@ export default function Edit( { attributes, setAttributes } ) {
 							<ToggleControl
 								label={ __( 'Pause on hover', 'sgs-blocks' ) }
 								help={ __(
-									'Stop the marquee while a visitor’s pointer is over it — required for WCAG 2.2.2 (Pause, Stop, Hide) on auto-moving content.',
+									'Also stop the marquee while a visitor’s pointer is over it, or a finger taps it. Keyboard focus inside the strip always pauses it.',
 									'sgs-blocks'
 								) }
 								checked={ pauseOnHover }
 								onChange={ ( val ) =>
 									setAttributes( { pauseOnHover: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __( 'Show pause button', 'sgs-blocks' ) }
+								help={ __(
+									'Adds a pause/play button. Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients.',
+									'sgs-blocks'
+								) }
+								checked={ !! pauseButton }
+								onChange={ ( val ) =>
+									setAttributes( { pauseButton: val } )
 								}
 								__nextHasNoMarginBottom
 							/>

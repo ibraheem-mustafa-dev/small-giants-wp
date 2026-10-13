@@ -13,11 +13,17 @@
  *
  * Animation runs on the GPU compositor thread (CSS transform), not JS.
  *
+ * Pausing goes through the shared runtime (src/shared/motion-pause): keyboard focus inside the
+ * strip always pauses it; hover or a touch tap pause it unless the "Pause on hover" control is
+ * off; and the optional pause / play button ("Show pause button", off by default; WCAG 2.2.2
+ * needs it) holds a pause until pressed again. Hover and focus pauses alone do not meet 2.2.2.
+ *
  * Loaded as a viewScriptModule (ES module, frontend only).
  */
 
 import { initSeparators } from '../../shared/separators';
 import { prefersReducedMotion } from '../../shared/effects/motion-utils.js';
+import { initMotionPause } from '../../shared/motion-pause/index.js';
 
 // Lines between brands on a static strip, in a browser without CSS gap decorations.
 initSeparators();
@@ -129,6 +135,13 @@ strips.forEach( ( strip ) => {
 		for ( let i = 0; i < clonesToAdd; i++ ) {
 			const clone = originalSet.cloneNode( true );
 			clone.setAttribute( 'aria-hidden', 'true' );
+			// aria-hidden alone leaves a linked logo in the tab order inside hidden content:
+			// `inert` takes the copy out of focus and the accessibility tree, tabindex=-1
+			// covers engines without `inert`.
+			clone.setAttribute( 'inert', '' );
+			clone.querySelectorAll( 'a, button, [tabindex]' ).forEach( ( el ) => {
+				el.setAttribute( 'tabindex', '-1' );
+			} );
 			track.appendChild( clone );
 		}
 
@@ -137,49 +150,23 @@ strips.forEach( ( strip ) => {
 
 		// Start animation only after clones are in place.
 		track.classList.add( 'sgs-brand-strip__track--ready' );
+		pauser.setRunning( true );
 	}
 
-	// Pause on hover (WCAG 2.2.2 pause affordance for auto-moving content) —
-	// gated by the editor's "Pause on hover" toggle (pauseOnHover attr, default
-	// true; the block root carries `.sgs-brand-strip--no-pause` when the
-	// operator has switched it off — see render.php). Toggles a CLASS, not an
-	// inline style property (no-inline migration contract §A:
-	// `.style.animationPlayState` would write a real inline CSS property
-	// declaration; `.sgs-brand-strip__track--paused` is a scoped class rule in
-	// style.css instead).
-	if ( ! strip.classList.contains( 'sgs-brand-strip--no-pause' ) ) {
-		// Two independent flags — hover (mouse/pen) and tap-toggle (touch) —
-		// combine into the one pause class so neither input method cancels
-		// the other's pause. Touch devices have no hover state, so a tap
-		// TOGGLES pause (tap to pause, tap again to resume): the same
-		// deliberate control mouse users get from hover, satisfying WCAG
-		// 2.2.2 without an arbitrary auto-resume timer.
-		let isHovered = false;
-		let isTouchPaused = false;
-		const updatePauseState = () => {
-			track.classList.toggle(
-				'sgs-brand-strip__track--paused',
-				isHovered || isTouchPaused
-			);
-		};
-		strip.addEventListener( 'mouseenter', () => {
-			isHovered = true;
-			updatePauseState();
-		} );
-		strip.addEventListener( 'mouseleave', () => {
-			isHovered = false;
-			updatePauseState();
-		} );
-		// `pointerdown` + pointerType guard avoids reacting to the synthetic
-		// mouse events some browsers fire after a real touch.
-		strip.addEventListener( 'pointerdown', ( event ) => {
-			if ( event.pointerType !== 'touch' ) {
-				return;
-			}
-			isTouchPaused = ! isTouchPaused;
-			updatePauseState();
-		} );
-	}
+	// Pause: the optional button (persistent), keyboard focus (always), and hover or a touch tap unless
+	// the "Pause on hover" control is off (the root then carries `.sgs-brand-strip--no-pause`,
+	// see render.php). A touch device has no hover, so a tap toggles the pause instead. The
+	// paused state is a CLASS, not an inline style property (no-inline migration contract §A:
+	// `.style.animationPlayState` would write a real inline CSS declaration;
+	// `.sgs-brand-strip__track--paused` is a scoped class rule in style.css instead).
+	const hoverPauses = ! strip.classList.contains( 'sgs-brand-strip--no-pause' );
+	const pauser = initMotionPause( strip, {
+		hover: hoverPauses,
+		touch: hoverPauses ? 'toggle' : 'none',
+		onChange: ( paused ) => {
+			track.classList.toggle( 'sgs-brand-strip__track--paused', paused );
+		},
+	} );
 
 	init();
 } );

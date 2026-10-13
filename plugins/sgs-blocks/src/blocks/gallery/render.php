@@ -22,6 +22,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
 require_once __DIR__ . '/render-tile.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-gallery-grid-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
 
 // CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
 // declarations inside this block's scoped <style> tag. Strips everything
@@ -704,6 +705,20 @@ ob_start();
 				aria-label="<?php esc_attr_e( 'Gallery navigation', 'sgs-blocks' ); ?>"
 			></div>
 		<?php endif; ?>
+
+		<?php
+		// Pause / play button (WCAG 2.2.2), the shared control, an option (carouselPauseButton, off
+		// by default): rendered hidden, view.js shows it once autoplay runs (never under reduced motion).
+		if ( $carousel_autoplay && ! empty( $attributes['carouselPauseButton'] ) ) {
+			echo sgs_motion_pause_button( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes its own output.
+				array(
+					'block'     => 'sgs-gallery',
+					'label'     => __( 'Pause slideshow', 'sgs-blocks' ),
+					'placement' => 'inline',
+				)
+			);
+		}
+		?>
 
 	<?php endif; ?>
 

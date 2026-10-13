@@ -12,10 +12,10 @@
  *  4. If track width > container width (overflow): clone items, set
  *     --sgs-scroll-distance, add --ready class to start CSS animation.
  *  5. If no overflow: do nothing (badges display statically).
- *  6. Pause while the pointer is over the bar (mouse hover, or a finger pressed on it) if
- *     data-auto-scroll-pause="true", and ALWAYS pause while keyboard
- *     focus is inside the bar (WCAG 2.2.2: moving content needs a way to stop it that
- *     does not depend on a pointer). Clones are inert, so focus never enters them.
+ *  6. Pause through the shared runtime (src/shared/motion-pause): while the pointer is over
+ *     the bar (mouse hover, or a finger pressed on it) if data-auto-scroll-pause="true",
+ *     ALWAYS while keyboard focus is inside the bar, and persistently from the optional pause /
+ *     play button (WCAG 2.2.2 needs the button). Clones are inert, so focus never enters them.
  *
  * Marquee below a breakpoint (data-auto-scroll-below="768" | "1024"): steps 3-4 only run
  * while the viewport is narrower than that width, and re-run if the window is resized into
@@ -33,8 +33,8 @@
  * Marquee and drop coexist: while the marquee runs every badge is in the scrolling track
  * (restoreDropped() runs before cloning, so no clone inherits a hidden badge). Leaving the
  * range removes the clones and the row class, and overflow-drop.js then drops what does not
- * fit. The optional pause/play button (off by default; autoScrollPauseButton) is un-hidden
- * only while the scroll runs; a user pause persists over hover-out and focus-out.
+ * fit. The optional pause / play button (autoScrollPauseButton, off by default) is un-hidden only
+ * while the scroll runs; a user pause persists over hover-out and focus-out.
  *
  * Loaded as a viewScriptModule (ES module, frontend only — never runs in editor).
  */
@@ -45,6 +45,7 @@
 import { restoreDropped } from './overflow-drop.js';
 import { marqueeRangeQuery } from './marquee-mode.js';
 import { watchWidth } from './width-watch.js';
+import { initMotionPause } from '../../shared/motion-pause/index.js';
 
 const wrappers = document.querySelectorAll( '.sgs-trust-bar[data-auto-scroll="true"]' );
 
@@ -65,7 +66,6 @@ wrappers.forEach( ( wrapper ) => {
 	// null = scroll at every width. Otherwise scroll only while the viewport matches.
 	const marqueeQuery = marqueeRangeQuery( wrapper );
 	const inRange = () => ! marqueeQuery || marqueeQuery.matches;
-	const pauseButton = wrapper.querySelector( '.sgs-trust-bar__pause' );
 
 	// The clones sit beside the track inside its own parent (the wrapper, or the content band
 	// when there is one) so the copies form one row, at every width and below a breakpoint alike.
@@ -208,70 +208,23 @@ wrappers.forEach( ( wrapper ) => {
 		setPauseButtonVisible( false );
 	}
 
-	// Pause on hover (controllable via block attribute), on keyboard focus (always) and
-	// on the visible pause button (user choice, persists). D298 pattern: toggle a class
-	// instead of writing the property inline — the declaration lives in style.css
-	// (`.sgs-trust-bar__track.is-paused`), never on the element. Each cause is tracked
-	// separately so leaving one does not resume a bar another is still holding.
-	// Pressing play is an explicit choice: it overrides the hover and focus pause
-	// (the button itself sits inside the bar, so using it always hovers or focuses
-	// the bar) until both have ended.
-	let hovered = false;
-	let focused = false;
-	let userPaused = false;
-	let userPlayed = false;
-	const syncPause = () => {
-		const paused = userPaused || ( ! userPlayed && ( hovered || focused ) );
+	// Pause on hover (controllable via block attribute), on press, on keyboard focus (always)
+	// and on the pause / play button (persists), through the shared runtime. D298 pattern:
+	// toggle a class instead of writing the property inline — the declaration lives in
+	// style.css (`.sgs-trust-bar__track.is-paused`), never on the element.
+	const pauser = initMotionPause( wrapper, {
+		hover: pauseOnHover,
+		touch: pauseOnHover ? 'press' : 'none',
+		onChange: () => syncPause(),
+	} );
+	function syncPause() {
+		const paused = pauser.isPaused();
 		allTracks().forEach( ( el ) => el.classList.toggle( 'is-paused', paused ) );
-	};
-	const releasePlay = () => {
-		if ( ! hovered && ! focused ) {
-			userPlayed = false;
-		}
-	};
+	}
 
 	function setPauseButtonVisible( visible ) {
-		if ( pauseButton ) {
-			pauseButton.hidden = ! visible;
-		}
+		pauser.setRunning( visible );
 	}
-
-	if ( pauseButton ) {
-		pauseButton.addEventListener( 'click', () => {
-			userPaused = ! userPaused;
-			userPlayed = ! userPaused;
-			pauseButton.setAttribute( 'aria-pressed', userPaused ? 'true' : 'false' );
-			syncPause();
-		} );
-	}
-
-	if ( pauseOnHover ) {
-		// Pointer events, not mouse events: a mouse pauses while over the bar, and a finger
-		// pauses it while pressed (pointerleave fires on lift), with no sticky hover left
-		// behind after a tap.
-		wrapper.addEventListener( 'pointerenter', () => {
-			hovered = true;
-			syncPause();
-		} );
-		wrapper.addEventListener( 'pointerleave', () => {
-			hovered = false;
-			releasePlay();
-			syncPause();
-		} );
-	}
-	wrapper.addEventListener( 'focusin', () => {
-		focused = true;
-		syncPause();
-	} );
-	wrapper.addEventListener( 'focusout', ( event ) => {
-		// Focus moving to another badge inside the bar is not leaving it.
-		if ( event.relatedTarget && wrapper.contains( event.relatedTarget ) ) {
-			return;
-		}
-		focused = false;
-		releasePlay();
-		syncPause();
-	} );
 
 	// Start now, or as soon as the viewport is in range; stop when it leaves it.
 	function start() {

@@ -297,45 +297,5 @@
 	opacity: 1;
 }
 
-/* Pause icon — two bars (playing); the CSS-only "paused" look is a single
- * triangle, driven off aria-pressed so no extra JS-toggled class is needed.
- * :where() keeps this fixed glyph box at zero specificity: no attribute sizes
- * it, and the pressed-state rule below still outranks it. */
-:where(.sgs-notice-banner__pause-icon) {
-	display: inline-block;
-	width: 12px;
-	height: 12px;
-	position: relative;
-}
-
-.sgs-notice-banner__pause-icon::before,
-.sgs-notice-banner__pause-icon::after {
-	content: '';
-	position: absolute;
-	top: 0;
-	width: 4px;
-	height: 100%;
-	background: currentcolor;
-}
-
-.sgs-notice-banner__pause-icon::before {
-	left: 0;
-}
-
-.sgs-notice-banner__pause-icon::after {
-	left: 8px;
-}
-
-.sgs-notice-banner__pause[aria-pressed="true"] .sgs-notice-banner__pause-icon {
-	width: 0;
-	height: 0;
-	border-top: 6px solid transparent;
-	border-bottom: 6px solid transparent;
-	border-left: 10px solid currentcolor;
-	background: none;
-}
-
-.sgs-notice-banner__pause[aria-pressed="true"] .sgs-notice-banner__pause-icon::before,
-.sgs-notice-banner__pause[aria-pressed="true"] .sgs-notice-banner__pause-icon::after {
-	content: none;
-}
+/* The pause / play button is the shared control (assets/css/motion-pause.css: its icons and
+ * the swap on aria-pressed); the rule above gives it the bar's look beside the arrows. */

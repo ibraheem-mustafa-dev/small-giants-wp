@@ -140,7 +140,7 @@
 
 /* ===== Controls bar — sits below the stage row ===== */
 /*
- * Houses dots + the pause/play button injected by view.js.
+ * Houses the dots and the pause / play button.
  * Always centred and never takes width away from the card row.
  */
 .sgs-testimonial-slider__controls {
@@ -298,15 +298,13 @@
 	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
 }
 
-/* ===== Pause/Play button — WCAG 2.2.2 compliant ===== */
+/* ===== Pause / play button (WCAG 2.2.2) ===== */
 /*
- * Injected by view.js into .sgs-testimonial-slider__controls (after the dots).
- * __controls provides margin-top and flex centering — no extra margin needed here.
+ * The shared control (includes/helpers-motion-pause.php, assets/css/motion-pause.css),
+ * after the dots in .sgs-testimonial-slider__controls, which provides the margin-top
+ * and centring. This rule gives it the slider's look.
  */
-.sgs-testimonial-slider__pause-btn {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+.sgs-testimonial-slider__pause {
 	width: 44px;
 	height: 44px;
 	border-radius: 50%;
@@ -320,20 +318,15 @@
 	margin: 0;
 }
 
-.sgs-testimonial-slider__pause-btn:hover {
+.sgs-testimonial-slider__pause:hover {
 	background: var(--wp--preset--color--primary, #0f7e80);
 	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff));
 	border-color: var(--wp--preset--color--primary, #0f7e80);
 }
 
-.sgs-testimonial-slider__pause-btn:focus-visible {
+.sgs-testimonial-slider__pause:focus-visible {
 	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
 	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
-}
-
-:where(.sgs-testimonial-slider__pause-icon) {
-	font-size: 14px;
-	line-height: 1;
 }
 
 /* ===== Responsive ===== */
@@ -406,7 +399,7 @@
 	.sgs-testimonial-slider__dot,
 	.sgs-testimonial-slider__dot::before,
 	.sgs-testimonial-slider__slide--card,
-	.sgs-testimonial-slider__pause-btn {
+	.sgs-testimonial-slider__pause {
 		transition-duration: 0.01ms !important;
 		animation-duration: 0.01ms !important;
 	}

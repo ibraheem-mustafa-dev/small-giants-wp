@@ -125,6 +125,8 @@ function extract_section( string $source, string $start_marker, string $end_mark
 // ════════════════════════════════════════════════════════════════════════════
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-tokens.php';
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-hover-state.php';
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-motion-pause.php';
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-motion-pause.php';
 require_once dirname( __DIR__, 2 ) . '/src/blocks/notice-banner/helpers.php';
 require_once dirname( __DIR__, 2 ) . '/src/blocks/notice-message/helpers.php';
 
@@ -211,7 +213,8 @@ function run_section( string $code, array $fixture ): array {
 	$sgs_nb_rotate_interval    = $fixture['sgs_nb_rotate_interval'] ?? 5;
 	$sgs_nb_transition         = $fixture['sgs_nb_transition'] ?? 'fade';
 	$sgs_nb_pause_on_hover     = $fixture['sgs_nb_pause_on_hover'] ?? true;
-	$sgs_nb_message_count      = $fixture['sgs_nb_message_count'] ?? 0;
+	$sgs_nb_pause_button       = $fixture['sgs_nb_pause_button'] ?? false;
+	$sgs_nb_message_count     = $fixture['sgs_nb_message_count'] ?? 0;
 
 	eval( $code ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating the extracted render.php span (structural test only).
 
@@ -286,7 +289,10 @@ $rotate_fixture = array(
 );
 $rotate_result = run_section( $current_section, $rotate_fixture );
 ok( false !== strpos( $rotate_result['sgs_inner_html'], 'sgs-notice-banner__messages' ) && false !== strpos( $rotate_result['sgs_inner_html'], 'aria-live="off"' ), 'ROTATE MODE: the messages wrapper renders with aria-live="off"' );
-ok( false !== strpos( $rotate_result['sgs_inner_html'], 'sgs-notice-banner__pause' ) && false !== strpos( $rotate_result['sgs_inner_html'], 'aria-pressed="false"' ), 'ROTATE MODE: the pause button renders with aria-pressed="false"' );
+ok( false === strpos( $rotate_result['sgs_inner_html'], 'data-sgs-motion-pause' ), 'ROTATE MODE: no pause button by default (pauseButton is an option, off by default)' );
+$rotate_button_fixture = array_merge( $rotate_fixture, array( 'sgs_nb_pause_button' => true ) );
+$rotate_button_result  = run_section( $current_section, $rotate_button_fixture );
+ok( false !== strpos( $rotate_button_result['sgs_inner_html'], 'sgs-notice-banner__pause' ) && false !== strpos( $rotate_button_result['sgs_inner_html'], 'data-sgs-motion-pause' ) && false !== strpos( $rotate_button_result['sgs_inner_html'], 'aria-pressed="false"' ), 'ROTATE MODE with pauseButton: the shared pause button renders with aria-pressed="false"' );
 ok( false === strpos( $rotate_result['sgs_inner_html'], 'sgs-notice-banner__prev' ) && false === strpos( $rotate_result['sgs_inner_html'], 'sgs-notice-banner__next' ), 'ROTATE MODE without showMessageArrows: no arrow buttons render' );
 ok( isset( $rotate_result['extra_attrs']['data-wp-interactive'] ) && 'sgs/notice-banner' === $rotate_result['extra_attrs']['data-wp-interactive'], 'ROTATE MODE: the root carries data-wp-interactive="sgs/notice-banner"' );
 ok( isset( $rotate_result['extra_attrs']['data-wp-class--is-enhanced'] ), 'ROTATE MODE: the root carries the is-enhanced class directive' );
@@ -298,7 +304,13 @@ $rotate_arrows_result  = run_section( $current_section, $rotate_arrows_fixture )
 ok( false !== strpos( $rotate_arrows_result['sgs_inner_html'], 'sgs-notice-banner__prev' ) && false !== strpos( $rotate_arrows_result['sgs_inner_html'], 'sgs-notice-banner__next' ), 'ROTATE MODE with showMessageArrows: both arrow buttons render' );
 
 // ── Random mode — no pause button at all ─────────────────────────────────────
-$random_fixture = array_merge( $rotate_fixture, array( 'sgs_nb_message_mode' => 'random' ) );
+$random_fixture = array_merge(
+	$rotate_fixture,
+	array(
+		'sgs_nb_message_mode' => 'random',
+		'sgs_nb_pause_button' => true,
+	)
+);
 $random_result  = run_section( $current_section, $random_fixture );
 ok( false !== strpos( $random_result['sgs_inner_html'], 'sgs-notice-banner__messages' ), 'RANDOM MODE: the messages wrapper still renders' );
 ok( false === strpos( $random_result['sgs_inner_html'], 'sgs-notice-banner__pause' ), 'RANDOM MODE: no pause button renders' );
@@ -309,13 +321,13 @@ ok( false === strpos( $random_result['sgs_inner_html'], 'sgs-notice-banner__prev
 // rotate assertion above must go red.
 // ════════════════════════════════════════════════════════════════════════════
 $mutated_section = str_replace(
-	"\t\t\$sgs_inner_html .= '<button class=\"sgs-notice-banner__pause\" type=\"button\" aria-pressed=\"false\" aria-label=\"' . esc_attr__( 'Pause announcements', 'sgs-blocks' ) . '\" data-wp-on--click=\"actions.togglePause\" data-wp-bind--aria-pressed=\"context.pausedByButton\"><span class=\"sgs-notice-banner__pause-icon\" aria-hidden=\"true\"></span></button>';\n",
-	'',
+	'if ( $sgs_nb_pause_button ) {',
+	'if ( false ) {',
 	$current_section
 );
 ok( $mutated_section !== $current_section, 'negative control setup: the pause-button mutation was actually applied to a copy of the section' );
 
-$mutated_result = run_section( $mutated_section, $rotate_fixture );
+$mutated_result = run_section( $mutated_section, $rotate_button_fixture );
 ok(
 	false === strpos( $mutated_result['sgs_inner_html'], 'sgs-notice-banner__pause' ),
 	'NEGATIVE CONTROL: with the pause button removed from the render, "ROTATE MODE: the pause button renders" goes RED — proving that assertion watches real, removable code'

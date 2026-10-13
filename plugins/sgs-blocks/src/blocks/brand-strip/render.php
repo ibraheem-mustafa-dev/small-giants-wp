@@ -59,6 +59,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
 require_once __DIR__ . '/product-brands-source.php';
 require_once __DIR__ . '/brand-display-render.php';
 
@@ -842,8 +843,21 @@ if ( $scoped_css ) :
 	<?php
 endif;
 
+// Pause / play button (WCAG 2.2.2), the shared control, an option (pauseButton, off by default):
+// rendered hidden, view.js shows it once the marquee runs. A static strip prints none.
+$sgs_bs_pause_html = ( $scrolling && ! empty( $attributes['pauseButton'] ) )
+	? sgs_motion_pause_button(
+		array(
+			'block'     => 'sgs-brand-strip',
+			'label'     => __( 'Pause scrolling', 'sgs-blocks' ),
+			'placement' => 'overlay-end',
+		)
+	)
+	: '';
+
 printf(
-	'<div %1$s><div class="sgs-brand-strip__track"><div class="sgs-brand-strip__set">%2$s</div></div></div>',
+	'<div %1$s><div class="sgs-brand-strip__track"><div class="sgs-brand-strip__set">%2$s</div></div>%3$s</div>',
 	$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	$logos_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from sgs_render_media(), which escapes its own output.
+	$logos_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from sgs_render_media(), which escapes its own output.
+	$sgs_bs_pause_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_motion_pause_button() escapes its own output.
 );

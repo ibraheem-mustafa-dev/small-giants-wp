@@ -27,6 +27,7 @@
  */
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
+import { initMotionPause } from '../../shared/motion-pause/index.js';
 
 const SCROLL_EPSILON = 4; // px tolerance when comparing scroll positions.
 
@@ -352,16 +353,25 @@ store( 'sgs/google-reviews', {
 				}
 			};
 
-			let timer = setInterval( slideNext, speed );
-
-			// Pause on hover/focus — a user interacting with the slider
-			// (including via keyboard-focused arrows/dots) shouldn't have
-			// their position yanked mid-interaction.
-			root.addEventListener( 'mouseenter', () => clearInterval( timer ) );
-			root.addEventListener( 'focusin', () => clearInterval( timer ) );
-			root.addEventListener( 'mouseleave', () => {
+			// WCAG 2.2.2 through the shared runtime: the server-rendered pause /
+			// play button holds a pause until pressed again; hover, a finger
+			// press and keyboard focus (on the arrows and dots too) pause it
+			// while they last, each independently. One interval at a time,
+			// resuming from where it stopped after a pause.
+			let timer = null;
+			const stop = () => {
+				clearInterval( timer );
+				timer = null;
+			};
+			const play = () => {
+				stop();
 				timer = setInterval( slideNext, speed );
+			};
+			const pauser = initMotionPause( root, {
+				onChange: ( paused ) => ( paused ? stop() : play() ),
 			} );
+			pauser.setRunning( true );
+			play();
 		},
 	},
 } );

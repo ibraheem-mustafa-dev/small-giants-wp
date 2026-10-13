@@ -5,7 +5,7 @@
  * Partial of render.php, included with a plain require so it shares render.php's
  * local scope (required once per block instance).
  *
- * Reads: $attributes, $variant, $reviews, $all_reviews, $data, $rating, $rating_count and the $gr_* locals.
+ * Reads: $attributes, $variant, $reviews, $all_reviews, $data, $rating, $rating_count, $autoplay and the $gr_* locals.
  * Writes: $inner_html and the $gr_* interior locals.
  *
  * @package SGS\Blocks
@@ -182,10 +182,27 @@ if ( ! $gr_header_shown ) {
  * are the slider's single-pointer alternative to dragging (WCAG 2.5.7).
  */
 $gr_nav_enabled = ( 'slider' === $variant && count( $reviews ) > 1 );
-// The footnote takes the navigation's leading slot when there is one, so it shares the arrows' row.
-$gr_footnote_html = '' !== $gr_footnote
-	? '<p class="' . esc_attr( 'sgs-google-reviews__footnote' . ( $gr_nav_enabled ? ' sgs-slider-nav__lead' : '' ) ) . '">' . esc_html( $gr_footnote ) . '</p>'
+// Pause / play button (WCAG 2.2.2), the shared control, an option (pauseButton, off by default): an
+// autoplaying slider prints it in the navigation's leading slot, before the footnote. Rendered hidden;
+// view.js shows it once autoplay runs (never under reduced motion). It wears the arrows' colours
+// (render-wrapper.php, style.css).
+$gr_pause_html = ( $gr_nav_enabled && ! empty( $autoplay ) && ! empty( $attributes['pauseButton'] ) )
+	? sgs_motion_pause_button(
+		array(
+			'block'     => 'sgs-google-reviews',
+			'label'     => __( 'Pause reviews', 'sgs-blocks' ),
+			'placement' => 'inline',
+		)
+	)
 	: '';
+// The footnote takes the navigation's leading slot when there is one, so it shares the arrows' row; with a
+// pause button the slot is a row holding both.
+$gr_footnote_html = '' !== $gr_footnote
+	? '<p class="' . esc_attr( 'sgs-google-reviews__footnote' . ( $gr_nav_enabled && '' === $gr_pause_html ? ' sgs-slider-nav__lead' : '' ) ) . '">' . esc_html( $gr_footnote ) . '</p>'
+	: '';
+if ( '' !== $gr_pause_html ) {
+	$gr_footnote_html = '<div class="sgs-google-reviews__lead sgs-slider-nav__lead">' . $gr_pause_html . $gr_footnote_html . '</div>';
+}
 $gr_list_class    = 'sgs-google-reviews__list' . ( $gr_nav_enabled ? ' sgs-slider-nav__rail' : '' );
 // The active dot is re-measured on scroll only when there are dots to keep in step.
 $gr_list_sync_attr = ( $gr_nav_enabled && 'dots' === $gr_pagination ) ? ' data-wp-on--scroll="actions.syncActiveDot"' : '';

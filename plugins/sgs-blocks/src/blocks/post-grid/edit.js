@@ -38,6 +38,7 @@ import HoverEffectsPanel from './components/HoverEffectsPanel';
 import CarouselPanel from './components/CarouselPanel';
 import PostGridTypographyPanel from './components/PostGridTypographyPanel';
 import BorderPanel from './components/BorderPanel';
+import MotionPausePreview from '../../components/MotionPausePreview';
 
 // -------------------------------------------------------------------------
 // Main edit component
@@ -530,6 +531,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			     ============================================================ */ }
 			<div { ...blockProps }>
 				{ postGridHoverPreviewCss && <style>{ postGridHoverPreviewCss }</style> }
+				{ 'carousel' === layout && attributes.carouselAutoplay && attributes.carouselPauseButton && (
+					<MotionPausePreview block="sgs-post-grid" />
+				) }
 				{ isResolving && (
 					<div className="sgs-post-grid-editor__loading">
 						<Spinner />

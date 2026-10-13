@@ -32,6 +32,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // calls above (__DIR__ === dirname( __FILE__ )); it matches the form used by
 // the sibling grid blocks and keeps this new line phpcs-clean.
 require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
 
 // Decorative-image helper (item 18, WCAG 1.1.1) — rewrites the alt attribute
 // and adds aria-hidden on the ONE <img class="sgs-post-grid__img"> that

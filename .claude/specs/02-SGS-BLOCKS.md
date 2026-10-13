@@ -308,7 +308,7 @@ CTAs use the `sgs/multi-button` composition slot (see Button architecture above)
 
 **Status: ACTIVE.** The badge/trust-signal strip. `sgs/trust-bar` is **typed-only**: it has NO `sourceMode` attribute (check: `git grep -c sourceMode -- plugins/sgs-blocks/src/blocks/trust-bar/block.json` finds nothing). It carries the certification-badge use-cases (`badgeStyle` variants: icon-circle / text-only / image-badge + auto-scroll marquee); counter use-cases belong to `sgs/counter`. The live WC configurator modes (`wc-product`/`sgs-cpt`) belong to `sgs/product-card`, not this block.
 
-Auto-scroll marquee behaviour: the badge row loops seamlessly with no empty space (the runtime clones the track and every copy animates in step, each carrying `--sgs-scroll-distance`); it pauses while a mouse hovers it or a finger presses it (`autoScrollPauseOnHover`, default on) and always while keyboard focus is inside it; a visible pause/play button is an opt-in (`autoScrollPauseButton`, default off, shown only while the row actually scrolls); `prefers-reduced-motion` keeps the row static. The icon circle has an overridable default border; a title placeholder never leaks (trim guard); `iconCircleSize` governs badge size for icon-circle mode. Typography uses the shared `TypographyControls` component. `plugins/sgs-blocks/src/blocks/trust-bar/` is the active directory.
+Auto-scroll marquee behaviour: the badge row loops seamlessly with no empty space (the runtime clones the track and every copy animates in step, each carrying `--sgs-scroll-distance`); it pauses while a mouse hovers it or a finger presses it (`autoScrollPauseOnHover`, default on) and always while keyboard focus is inside it; an optional pause/play button (`autoScrollPauseButton`, default off; the shared control, `includes/helpers-motion-pause.php::sgs_motion_pause_button` with runtime `src/shared/motion-pause/index.js::initMotionPause`) shows while the row actually scrolls and holds a pause until pressed again; the inspector help says it is needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients; `prefers-reduced-motion` keeps the row static. The icon circle has an overridable default border; a title placeholder never leaks (trim guard); `iconCircleSize` governs badge size for icon-circle mode. Typography uses the shared `TypographyControls` component. `plugins/sgs-blocks/src/blocks/trust-bar/` is the active directory.
 
 ---
 
@@ -343,6 +343,8 @@ Attributes: `/wp-blocks schema sgs/testimonial-slider`. `layout` is `full` or `s
 `supports.sgs.containerKind: layout`: renders its outer wrapper through `SGS_Container_Wrapper`.
 
 **Render:** Dynamic `render.php` (via `SGS_Container_Wrapper::render(..., 'layout', ...)`) + `viewScriptModule` for carousel logic. **No external carousel library**: CSS scroll-snap plus minimal JS for autoplay/navigation.
+
+**Autoplay pause (WCAG 2.2.2):** `view.js` wires autoplay through `src/shared/motion-pause/index.js::initMotionPause`: hover, a finger press and keyboard focus pause it while they last; an arrow, dot, drag or key press is a held pause. With the `pauseButton` option on (default off), autoplay on and two or more slides, `render.php` also prints the shared pause/play button (`includes/helpers-motion-pause.php::sgs_motion_pause_button`, "Pause testimonials", after the dots in `__controls`), which holds a pause until pressed again. Under `prefers-reduced-motion` autoplay never starts and the button stays hidden.
 
 ---
 
@@ -382,6 +384,8 @@ Attributes: `/wp-blocks schema sgs/testimonial-slider`. `layout` is `full` or `s
 
 **Render:** **Dynamic** (`render.php`) with an optional CSS scrolling animation.
 
+Scrolling (`scrolling`) behaviour: `view.js` clones the logo set (each copy `aria-hidden` and `inert`) and the track loops seamlessly; keyboard focus inside the strip always pauses it; hover, or a tap on touch, pauses it while `pauseOnHover` is on (default), through `src/shared/motion-pause/index.js::initMotionPause`; the `pauseButton` option (default off) adds the shared pause/play button (`includes/helpers-motion-pause.php::sgs_motion_pause_button`) over the strip's end edge while it scrolls, holding a pause until pressed again (WCAG 2.2.2). `prefers-reduced-motion` keeps the strip static and the button hidden.
+
 ---
 
 ### WhatsApp CTA (`sgs/whatsapp-cta`)
@@ -407,7 +411,7 @@ Variant background, border and colour are overridable via `:where()` (E9). `icon
 
 **Render:** Dynamic `render.php` echoes `$content` (the `sgs/text` InnerBlocks child carrying the notice message). `save.js` returns `<InnerBlocks.Content />`; `render.php` drives all frontend output.
 
-**Self-changing messages (Wave 3C U-15):** with two or more `sgs/notice-message` children, `messageMode` `rotate` advances every `rotateInterval` seconds (default 5) with a `messageTransition` (`none`, `fade`, `slide-up`, `slide-left`; instant under reduced motion), an always-visible 44px pause button (WCAG 2.2.2), optional previous/next arrows (`showMessageArrows`) and pause on hover and focus (`pauseOnHover`); the messages region is `aria-live="off"` while playing and `polite` while paused. `random` shows one message per page load, chosen in the browser so the page cache cannot freeze it. Each message's colour pair repaints the whole bar through one `:has()` rule. Without JavaScript every message shows, stacked. `static`, or fewer than two messages, renders exactly as before. A live clock is an `sgs/local-time` inside a message.
+**Self-changing messages (Wave 3C U-15):** with two or more `sgs/notice-message` children, `messageMode` `rotate` advances every `rotateInterval` seconds (default 5) with a `messageTransition` (`none`, `fade`, `slide-up`, `slide-left`; instant under reduced motion), an optional 44px pause/play button (`pauseButton`, default off; the shared control, WCAG 2.2.2), optional previous/next arrows (`showMessageArrows`, each a held pause), pause on keyboard focus always and on hover or a finger press while `pauseOnHover` is on (through `src/shared/motion-pause/index.js::initMotionPause`); the messages region is `aria-live="off"` while playing and `polite` while paused. `random` shows one message per page load, chosen in the browser so the page cache cannot freeze it. Each message's colour pair repaints the whole bar through one `:has()` rule. Without JavaScript every message shows, stacked. `static`, or fewer than two messages, renders exactly as before. A live clock is an `sgs/local-time` inside a message.
 
 ---
 
@@ -882,6 +886,10 @@ All animations check `prefers-reduced-motion: reduce`:
     }
 }
 ```
+
+### Auto-moving content: the shared pause control (WCAG 2.2.2)
+
+Content that moves on its own for more than five seconds beside other content (a marquee, an autoplaying carousel, rotating messages) uses ONE pause implementation: `includes/helpers-motion-pause.php::sgs_motion_pause_button( block, label, placement )` prints a real `<button>` (one translated name, `aria-pressed` true while paused, 44px target, visible focus, `hidden` until the motion runs; look in `assets/css/motion-pause.css` at zero specificity so the block's own controls paint it), and `src/shared/motion-pause/index.js::initMotionPause( root, { onChange, hover, touch } )` makes the button a persistent toggle and pauses while the region is hovered, pressed or holds keyboard focus, each independently. Pausing only on hover or focus is not a pause mechanism (W3C Understanding 2.2.2). Keyboard-focus pause is always on. The visible button is an option, off by default on every block (Bean, 2026-10-13): a boolean `pauseButton` / `<prefix>PauseButton` attribute with an inspector toggle whose help reads "Adds a pause/play button. Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients." Under `prefers-reduced-motion` the motion does not start and the button stays hidden (notice-banner rotation, a content change, still runs). Blocks (option attribute): `sgs/trust-bar` (`autoScrollPauseButton`), `sgs/brand-strip`, `sgs/testimonial-slider`, `sgs/trustpilot-reviews`, `sgs/google-reviews` and `sgs/notice-banner` (`pauseButton`), `sgs/gallery` and `sgs/post-grid` (`carouselPauseButton`). Gate: `plugins/sgs-blocks/scripts/check-motion-pause-control.py --check` (fast tier) fails a block whose view runs `setInterval`, whose stylesheet runs an infinite animation or whose render autoplays a `<video>` unless it calls both halves and declares the option (default false) with an inspector control, and a hand-rolled pause button; exempt signals carry a reason in the script (loading shimmers; decorative ambient loops awaiting Bean's ruling under Spec 38A FR-38A-37).
 
 ### Visibility Extension
 

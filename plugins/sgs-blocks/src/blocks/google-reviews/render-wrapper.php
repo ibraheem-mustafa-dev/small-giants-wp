@@ -161,6 +161,9 @@ $gr_btn_attrs       = static function ( string $prefix ) use ( $attributes ): ar
 $gr_responsive_css .= sgs_button_element_style_css( $gr_btn_attrs( 'writeReview' ), 'writeReview', $gr_root_sel . ' .sgs-google-reviews__write-review', true, false );
 $gr_responsive_css .= sgs_button_element_style_css( $gr_btn_attrs( 'seeAll' ), 'seeAll', $gr_root_sel . ' .sgs-google-reviews__see-all', true, false );
 $gr_responsive_css .= sgs_button_element_style_css( $gr_btn_attrs( 'arrow' ), 'arrow', $gr_root_sel . ' .sgs-google-reviews__arrow', true, true );
+// The slider's pause / play button wears the arrows' colours (it is static in the leading slot, so the
+// helper adds its own position for the background layer).
+$gr_responsive_css .= sgs_button_element_style_css( $gr_btn_attrs( 'arrow' ), 'arrow', $gr_root_sel . ' .sgs-google-reviews__pause', true, false );
 
 // Lift on hover for the two header buttons: off by default (Google's own buttons stay still); a site that
 // lifts its buttons sets buttonHoverLift. Touch-guarded and skipped under reduced motion.

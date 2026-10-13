@@ -445,6 +445,13 @@
 	animation-play-state: paused;
 }
 
+/* The pause / play button (WCAG 2.2.2) is the shared control, assets/css/motion-pause.css,
+   overlaid at the end edge of this position: relative strip. It sits above the fade-edge
+   gradients (z-index 2) so the edge fade never washes it out. */
+.sgs-brand-strip .sgs-brand-strip__pause {
+	z-index: 3;
+}
+
 @keyframes sgs-brand-scroll {
 	0% {
 		transform: translateX(0);
@@ -612,6 +619,11 @@
 @media (prefers-reduced-motion: reduce) {
 	.sgs-brand-strip--scrolling .sgs-brand-strip__track--ready {
 		animation: none;
+	}
+
+	/* Nothing moves, so there is nothing to pause. */
+	.sgs-brand-strip .sgs-brand-strip__pause {
+		display: none;
 	}
 
 	.sgs-brand-strip--effect-grayscale .sgs-brand-strip__logo,

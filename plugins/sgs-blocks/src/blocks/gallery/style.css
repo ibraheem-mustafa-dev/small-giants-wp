@@ -139,8 +139,23 @@
 	right: 8px;
 }
 
+/* Pause / play button (WCAG 2.2.2): the shared control, over the carousel's top end corner,
+   in the arrows' look. */
+.sgs-gallery__pause {
+	position:       absolute;
+	top:            8px;
+	inset-inline-end: 8px;
+	z-index:        10;
+	border:         none;
+	border-radius:  50%;
+	background:     rgba( 0, 0, 0, 0.55 );
+	color:          var( --wp--preset--color--text-inverse, #ffffff );
+	transition:     background var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
 .sgs-gallery__carousel-prev:hover,
-.sgs-gallery__carousel-next:hover {
+.sgs-gallery__carousel-next:hover,
+.sgs-gallery__pause:hover {
 	background: rgba( 0, 0, 0, 0.8 );
 }
 
@@ -753,6 +768,7 @@ body.sgs-gallery-lightbox-open {
 	.sgs-gallery__img-wrap::after,
 	.sgs-gallery__carousel-prev,
 	.sgs-gallery__carousel-next,
+	.sgs-gallery__pause,
 	.sgs-gallery__dot,
 	.sgs-gallery__lightbox,
 	.sgs-gallery__lightbox-close,

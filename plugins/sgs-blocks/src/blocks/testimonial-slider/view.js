@@ -18,9 +18,15 @@
  *   loop reads as continuous.
  * - Touch/pointer drag implements swipe (native scroll does not provide it here).
  *
- * prefers-reduced-motion: transform still updates (so autoplay/arrows still
- * work) but with no transition — the scroll-behavior:auto equivalent, per
- * WCAG 2.3.3.
+ * prefers-reduced-motion: arrows, dots and drag still move the track, with no
+ * transition (the scroll-behavior:auto equivalent, per WCAG 2.3.3), and autoplay
+ * never starts, so nothing moves on its own.
+ *
+ * Autoplay pausing (WCAG 2.2.2) goes through the shared runtime
+ * (src/shared/motion-pause): the server-rendered pause / play button holds a pause
+ * until pressed again, hover, a finger press and keyboard focus pause it while they
+ * last, and an arrow, dot, drag or key press is a deliberate pause held like the
+ * button's.
  *
  * No-inline contract: the track position is driven entirely by a
  * CSS custom PROPERTY VALUE (--sgs-slider-offset, allowed — a var value is not
@@ -59,6 +65,8 @@
  * dead-weight enqueue this design avoids. See the "Drag momentum"
  * block below `endDrag()` for the implementation and its reduced-motion note.
  */
+
+import { initMotionPause } from '../../shared/motion-pause/index.js';
 
 /**
  * Are we running inside wp-admin (the block editor) rather than the frontend?
@@ -125,7 +133,12 @@ sliders.forEach( ( slider ) => {
 	let visualIndex = cloneCount; // position inside the padded list
 	let slideStep = 0; // px — one slide's width + gap
 	let autoplayTimer = null;
-	let isPaused = false;
+	// Autoplay runs only when the block asks for it, there is more than one slide to move
+	// to, and the visitor has not asked for reduced motion.
+	const autoplayOn = shouldAutoplay && total > 1 && ! prefersReducedMotion;
+	const pauser = initMotionPause( slider, {
+		onChange: ( paused ) => ( paused ? stopAutoplay() : startAutoplay() ),
+	} );
 
 	/**
 	 * Wrap an index to [0, total) — enables infinite looping.
@@ -484,9 +497,9 @@ sliders.forEach( ( slider ) => {
 		}, 150 );
 	} );
 
-	/* Autoplay — loops infinitely */
+	/* Autoplay — loops infinitely; restarts from the current slide after a pause. */
 	function startAutoplay() {
-		if ( ! shouldAutoplay || isPaused ) {
+		if ( ! autoplayOn || pauser.isPaused() ) {
 			return;
 		}
 		stopAutoplay();
@@ -503,98 +516,16 @@ sliders.forEach( ( slider ) => {
 	}
 
 	/**
-	 * Permanently pause autoplay — called when the user explicitly interacts.
-	 * Prevents autoplay resuming when the mouse leaves or focus shifts.
-	 * The pause button re-enables it.
+	 * An explicit interaction (arrow, dot, drag, key) pauses autoplay and holds the pause
+	 * until the visitor presses play.
 	 */
 	function pausePermanently() {
-		isPaused = true;
-		stopAutoplay();
-		if ( pauseBtn ) {
-			pauseBtn.setAttribute( 'aria-label', 'Play testimonials' );
-			pauseBtn.setAttribute( 'aria-pressed', 'false' );
-			pauseBtn.querySelector(
-				'.sgs-testimonial-slider__pause-icon'
-			).textContent = '▶';
-		}
-	}
-
-	function resumeAutoplay() {
-		isPaused = false;
-		startAutoplay();
-		if ( pauseBtn ) {
-			pauseBtn.setAttribute( 'aria-label', 'Pause testimonials' );
-			pauseBtn.setAttribute( 'aria-pressed', 'true' );
-			pauseBtn.querySelector(
-				'.sgs-testimonial-slider__pause-icon'
-			).textContent = '⏸';
-		}
-	}
-
-	/* Pause temporarily on hover and focus (while not permanently paused) */
-	slider.addEventListener( 'mouseenter', () => {
-		if ( ! isPaused ) {
-			stopAutoplay();
-		}
-	} );
-	slider.addEventListener( 'focusin', () => {
-		if ( ! isPaused ) {
-			stopAutoplay();
-		}
-	} );
-	slider.addEventListener( 'mouseleave', () => {
-		if ( ! isPaused ) {
-			startAutoplay();
-		}
-	} );
-	slider.addEventListener( 'focusout', ( e ) => {
-		if ( ! isPaused && ! slider.contains( e.relatedTarget ) ) {
-			startAutoplay();
-		}
-	} );
-
-	/*
-	 * WCAG 2.2.2 — Pause, Stop, Hide
-	 *
-	 * Auto-playing content that lasts more than 5 seconds MUST provide a
-	 * mechanism to pause, stop, or hide it. We inject a pause/play toggle
-	 * button into .sgs-testimonial-slider__controls (after the dots). If
-	 * prefers-reduced-motion is set the button is omitted — the browser has
-	 * already suppressed animation so no auto-advancing motion occurs.
-	 */
-	let pauseBtn = null;
-
-	if ( shouldAutoplay && ! prefersReducedMotion ) {
-		pauseBtn = document.createElement( 'button' );
-		pauseBtn.type = 'button';
-		pauseBtn.className = 'sgs-testimonial-slider__pause-btn';
-		pauseBtn.setAttribute( 'aria-label', 'Pause testimonials' );
-		pauseBtn.setAttribute( 'aria-pressed', 'true' );
-		pauseBtn.setAttribute( 'aria-live', 'polite' );
-
-		const icon = document.createElement( 'span' );
-		icon.className = 'sgs-testimonial-slider__pause-icon';
-		icon.setAttribute( 'aria-hidden', 'true' );
-		icon.textContent = '⏸';
-		pauseBtn.appendChild( icon );
-
-		pauseBtn.addEventListener( 'click', () => {
-			if ( isPaused ) {
-				resumeAutoplay();
-			} else {
-				pausePermanently();
-			}
-		} );
-
-		if ( controls ) {
-			controls.appendChild( pauseBtn );
-		} else {
-			slider.appendChild( pauseBtn );
-		}
+		pauser.pause();
 	}
 
 	/* Initialise */
 	measure();
 	render( false );
+	pauser.setRunning( autoplayOn );
 	startAutoplay();
 } );

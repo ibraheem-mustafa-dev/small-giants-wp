@@ -682,6 +682,7 @@ a.sgs-google-reviews__author:hover {
 
 /* Keyboard focus: Google blue, 2px, clear of the border (the shared slider-nav ring is the theme's primary). */
 .sgs-google-reviews .sgs-google-reviews__arrow:focus-visible,
+.sgs-google-reviews .sgs-google-reviews__pause:focus-visible,
 .sgs-google-reviews .sgs-google-reviews__write-review:focus-visible,
 .sgs-google-reviews .sgs-google-reviews__see-all:focus-visible {
 	outline: 2px solid var( --sgs-gr-blue );
@@ -751,6 +752,21 @@ a.sgs-google-reviews__author:hover {
 	position: relative;
 }
 
+/* The pause / play button (WCAG 2.2.2, the shared control) sits in the leading slot, before the
+   footnote, and takes the arrows' look and colours. */
+.sgs-google-reviews__lead {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var( --sgs-slider-nav-gap, 8px );
+}
+
+.sgs-google-reviews__pause {
+	position: relative;
+	isolation: isolate;
+	flex-shrink: 0;
+}
+
 .sgs-google-reviews__arrow {
 	position: relative;
 	isolation: isolate;
@@ -767,6 +783,9 @@ a.sgs-google-reviews__author:hover {
 :where( .sgs-google-reviews__arrow ) {
 	width: var( --sgs-slider-nav-arrow-size, 40px );
 	height: var( --sgs-slider-nav-arrow-size, 40px );
+}
+
+:where( .sgs-google-reviews__arrow, .sgs-google-reviews__pause ) {
 	border: 1px solid var( --sgs-gr-line );
 	border-radius: 50%;
 	background-color: var( --sgs-gr-surface );
@@ -774,7 +793,8 @@ a.sgs-google-reviews__author:hover {
 }
 
 @media ( prefers-reduced-motion: no-preference ) {
-	.sgs-google-reviews__arrow {
+	.sgs-google-reviews__arrow,
+	.sgs-google-reviews__pause {
 		transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 	}
 }
@@ -788,13 +808,22 @@ a.sgs-google-reviews__author:hover {
 	border-color: var( --sgs-gr-blue );
 }
 
+:where( .sgs-google-reviews__pause:hover, .sgs-google-reviews__pause:focus-visible ) {
+	border-color: var( --sgs-gr-blue );
+}
+
 :where( .sgs-google-reviews__arrow:active ) {
 	background-color: var( --sgs-gr-blue-tint-strong );
 	border-color: var( --sgs-gr-blue-dark );
 }
 
+:where( .sgs-google-reviews__pause:active ) {
+	background-color: var( --sgs-gr-blue-tint-strong );
+	border-color: var( --sgs-gr-blue-dark );
+}
+
 @media ( prefers-reduced-motion: no-preference ) {
-	:where( .sgs-google-reviews__arrow ) {
+	:where( .sgs-google-reviews__arrow, .sgs-google-reviews__pause ) {
 		transition: background-color 150ms ease, border-color 150ms ease;
 	}
 }
@@ -855,6 +884,7 @@ a.sgs-google-reviews__author:hover {
 
 @media ( prefers-reduced-motion: reduce ) {
 	.sgs-google-reviews__arrow,
+	.sgs-google-reviews__pause,
 	.sgs-google-reviews__dot::before {
 		transition: none !important;
 	}

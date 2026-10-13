@@ -19,9 +19,15 @@
  * trapped inside the lightbox modal while it is open.
  *
  * prefers-reduced-motion: all transitions and carousel autoplay are disabled.
+ *
+ * Autoplay pausing (WCAG 2.2.2) goes through the shared runtime
+ * (src/shared/motion-pause): the server-rendered pause / play button holds a
+ * pause until pressed again; hover, a finger press and keyboard focus pause it
+ * while they last, each independently.
  */
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
+import { initMotionPause } from '../../shared/motion-pause/index.js';
 
 const REDUCED_MOTION = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
@@ -264,6 +270,10 @@ function initCarousel( galleryEl ) {
 
 	let currentIndex  = 0;
 	let autoplayTimer = null;
+	const autoplayOn  = shouldAutoplay && ! REDUCED_MOTION && totalItems > 1;
+	const pauser      = initMotionPause( galleryEl, {
+		onChange: ( paused ) => ( paused ? stopAutoplay() : startAutoplay() ),
+	} );
 
 	/**
 	 * Scroll the carousel to a specific item index.
@@ -397,9 +407,9 @@ function initCarousel( galleryEl ) {
 		{ passive: true }
 	);
 
-	// Autoplay.
+	// Autoplay: restarts from the current item after a pause.
 	function startAutoplay() {
-		if ( ! shouldAutoplay || REDUCED_MOTION ) {
+		if ( ! autoplayOn || pauser.isPaused() ) {
 			return;
 		}
 		stopAutoplay();
@@ -421,13 +431,8 @@ function initCarousel( galleryEl ) {
 		startAutoplay();
 	}
 
-	// Pause autoplay on hover and focus to prevent users losing their place.
-	galleryEl.addEventListener( 'mouseenter', stopAutoplay );
-	galleryEl.addEventListener( 'mouseleave', startAutoplay );
-	galleryEl.addEventListener( 'focusin',    stopAutoplay );
-	galleryEl.addEventListener( 'focusout',   startAutoplay );
-
 	// Initialise.
+	pauser.setRunning( autoplayOn );
 	startAutoplay();
 	goToItem( 0 );
 }

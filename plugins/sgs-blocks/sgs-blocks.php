@@ -124,6 +124,9 @@ require_once SGS_BLOCKS_PATH . 'includes/shadow-dark-assets.php';
 // Shared slider navigation (arrows, dots, placements): markup helpers + its on-demand stylesheet.
 require_once SGS_BLOCKS_PATH . 'includes/helpers-slider-nav.php';
 
+// Shared pause / play button for content that moves on its own (WCAG 2.2.2): markup + stylesheet.
+require_once SGS_BLOCKS_PATH . 'includes/helpers-motion-pause.php';
+
 // SGS Cart — dequeue wc-cart-fragments on pages using sgs/cart + inject REST config.
 require_once SGS_BLOCKS_PATH . 'includes/wc-cart-fragments.php';
 require_once SGS_BLOCKS_PATH . 'includes/cart-item-extensions.php';
