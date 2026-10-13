@@ -89,6 +89,7 @@
 					}
 				},
 				"star-empty": {
+					"selector": ".sgs-star-rating__star--empty",
 					"label": "Star (unfilled)",
 					"order": 3,
 					"clusters": [

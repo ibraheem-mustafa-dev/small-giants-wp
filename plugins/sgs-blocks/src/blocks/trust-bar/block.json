@@ -141,6 +141,7 @@
 					"_note": "gridTemplateColumns/Rows, gap, justify-*/align-content/flex-* are consumed by SGS_Container_Wrapper via the universal wrapper mechanism (render.php:214-220 comment). No alignItems/display/overflow/aspect-ratio/width/height/max-height attrs exist — honest gaps."
 				},
 				"icon-badge": {
+					"selector": ".sgs-trust-bar__circle",
 					"label": "Icon badge (icon-circle variant)",
 					"order": 2,
 					"clusters": [
@@ -228,6 +229,7 @@
 					"_note": "titleColourHover/titleColourHoverGradient (2026-09-07) added the hover pair — this element declares no css:background-color of its own (that lives on the separate `wrapper` element/selector), so no bg-layer precondition applies."
 				},
 				"item": {
+					"selector": ".sgs-trust-bar__badge",
 					"label": "Badge item",
 					"layer": "GRID_AREA",
 					"order": 5,
@@ -242,6 +244,7 @@
 					"_note": "The badge box of every variant (`.sgs-trust-bar__badge` as rendered; a draft may write it as `__item`, the element key per-area routing matches on, keyed on the draft's BEM element token). Declared `layer: GRID_AREA` (a per-child area of the band, like sgs/hero's content area) so the css_layer classifier does NOT fall back to its arrangement rule, which labelled itemGap GRID and let the icon-to-label gap capture the band's own items gap (`gap: 6px 32px`) that belongs in `gap`. itemGap is the icon-to-label gap inside one badge; itemPadding is the badge's own padding; both are responsive tier objects emitted as scoped rules on `.{uid}.wp-block-sgs-trust-bar .sgs-trust-bar__badge` by includes/helpers-trust-bar-item.php::sgs_trust_bar_item_css. Per-item fillStyle/fillColour (image-badge and text-only item content) remain repeater-row fields, not block-level style controls."
 				},
 				"icon-bare": {
+					"selector": ".sgs-trust-bar__icon",
 					"label": "Bare icon (icon-bare variant)",
 					"order": 7,
 					"clusters": [

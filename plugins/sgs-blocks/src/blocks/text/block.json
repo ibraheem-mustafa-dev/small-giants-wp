@@ -101,6 +101,7 @@
 					"_note": "Single-semantic-element block — the <p> root IS the wrapper. `color` support is `false` in this block's supports (no native color path), so css:color maps to the SGS custom textColour attr directly, not native:. No `layer` — no children to arrange. scaleHover has no Spec 35 vocabulary member and is left unclaimed. `css:background-color`/`css:background-image` (+ their Hover siblings) moved OFF this element onto the new `background` element below (2026-08-22, text/background pseudo-element split) — this element's `css:color-gradient` paints via `background-clip:text`, which would otherwise overwrite/clip a background painted on the SAME node."
 				},
 				"background": {
+					"motion": false,
 					"label": "Background",
 					"order": 3,
 					"clusters": [
@@ -122,6 +123,7 @@
 					"_note": "The block's own background paint, moved off the `text` element onto a `::after` pseudo-element layer (render.php) so a text gradient on the SAME root node (`text` element's `css:color-gradient`) cannot clip or overwrite it via `background-clip:text`."
 				},
 				"first-letter": {
+					"motion": false,
 					"label": "Drop cap (first letter)",
 					"order": 2,
 					"clusters": [

@@ -88,6 +88,7 @@
 					"_note": "block.json declares no `typography` support at all on this block — every text-cluster member beyond colour is an honest gap. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element."
 				},
 				"inner": {
+					"selector": ".sgs-tabs__content-band",
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,

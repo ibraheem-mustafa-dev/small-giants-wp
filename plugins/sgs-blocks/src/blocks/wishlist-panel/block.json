@@ -43,6 +43,7 @@
 					}
 				},
 				"itemName": {
+					"motion": false,
 					"label": "Item name",
 					"order": 2,
 					"clusters": [
@@ -54,6 +55,7 @@
 					}
 				},
 				"price": {
+					"motion": false,
 					"label": "Price",
 					"order": 3,
 					"clusters": [
@@ -65,6 +67,7 @@
 					}
 				},
 				"button": {
+					"motion": false,
 					"label": "Move to basket button",
 					"order": 4,
 					"clusters": [
@@ -78,6 +81,7 @@
 					}
 				},
 				"link": {
+					"motion": false,
 					"label": "Remove / notify link",
 					"order": 5,
 					"clusters": [
@@ -95,6 +99,7 @@
 					}
 				},
 				"priceDrop": {
+					"motion": false,
 					"label": "Price drop text",
 					"order": 6,
 					"clusters": [
@@ -105,6 +110,7 @@
 					}
 				},
 				"stockChip": {
+					"motion": false,
 					"label": "Stock chip",
 					"order": 7,
 					"clusters": [
@@ -117,6 +123,7 @@
 					}
 				},
 				"bar": {
+					"motion": false,
 					"label": "Guest prompt / alerts bar background",
 					"order": 8,
 					"clusters": [
@@ -128,6 +135,7 @@
 					}
 				},
 				"shareField": {
+					"motion": false,
 					"label": "Share link field",
 					"order": 9,
 					"clusters": [

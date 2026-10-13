@@ -57,6 +57,7 @@
 					}
 				},
 				"panel": {
+					"selector": ".sgs-store-selector__list",
 					"label": "Store list",
 					"order": 2,
 					"clusters": [
