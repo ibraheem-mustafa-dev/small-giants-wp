@@ -95,6 +95,14 @@ final class MotionRendererTest extends TestCase {
 		$this->assertStringNotContainsString( 'data-sgs-mroot', $out );
 	}
 
+	public function test_indent_hover_writes_its_to_value_owner_transition_and_channel(): void {
+		$out = $this->render( self::media_hover( array( 'indent' => 8 ), array() ) );
+		$css = $this->css();
+		$this->assertStringContainsString( '--sgs-mh-to-indent:8px;', $css );
+		$this->assertStringContainsString( 'transition:--sgs-mh-indent ', $css, 'the indent owner transitions, not padding-inline-start itself' );
+		$this->assertStringContainsString( 'data-sgs-mc="padding-inline-start"', $out, 'the shared stylesheet composes padding-inline-start only where the channel is named' );
+	}
+
 	public function test_edge_tablet_only_override_writes_only_the_1023px_block(): void {
 		$this->render( self::media_hover( array( 'scale' => 1.04 ), array( 'tablet' => array( 'scale' => 1.1 ) ) ) );
 		$css = $this->css();
