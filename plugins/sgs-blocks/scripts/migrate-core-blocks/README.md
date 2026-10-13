@@ -23,7 +23,7 @@ Both share `driver.transform_text()` (leaf-first, re-parse-per-swap, with the **
    python lint-page.py --input page.html --rel page-<id> --fix out.html --json report.json  # migrate
    ```
 2. **Judge** — an agent reads `report.json` (`{swapped, refused:[{pairing,line,reason}], skipped_pairings, residual_banned, diff}`) and returns a verdict — **safe** (0 refused, 0 residual), **needs-tweak** (honest `dropped`/`refused` reasons but acceptable), or **unsafe** (residual banned with no pairing, or a refusal that smells like content loss) — WITHOUT re-running anything.
-3. **Apply** — ONLY after a safe verdict: push `out.html` into the page via the **editor** (the wp-cli hook blocks direct DB writes). See **APPLY.md** for the exact `wp.blocks.parse → replaceBlocks → savePost` sequence, the backup-first rule, and the one-section-at-a-time guidance.
+3. **Apply** — ONLY after a safe verdict: push `out.html` into the page via the **editor** (the page still holds static core blocks, whose saved HTML must match their `save()` output; the editor's parse and save keeps every block valid). See **APPLY.md** for the exact `wp.blocks.parse → replaceBlocks → savePost` sequence, the backup-first rule, and the one-section-at-a-time guidance.
 
 ## Status
 Proven on Indus page 13: 26/26 auto-migrate, 0 refused; editor-apply proven live on the CTA section (renders identically, no invalid-block warnings). /qc-inline: 92/100 (ship).

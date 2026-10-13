@@ -675,6 +675,9 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	// unconditionally below, not just here).
 	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-media-cli-commands.php';
 	\WP_CLI::add_command( 'sgs media', Sgs_Media_Cli_Commands::class );
+
+	// Motion model migration sweep (Spec 38A FR-38A-32); the class is loaded by includes/motion-loader.php.
+	\WP_CLI::add_command( 'sgs motion-migrate', Motion\Sgs_Motion_Migrate_Command::class );
 }
 
 SGS_Blocks::instance();
