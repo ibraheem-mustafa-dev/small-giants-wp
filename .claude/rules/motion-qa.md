@@ -31,8 +31,8 @@ The runner registers only the FOUR probes that are standing checks with negative
 | 2603 | pin-scrub pin + good-by-default |
 | 2740 | FR-38-31 flowing gradient, single `pastel` instance |
 | 3037 | wave-gradient SIX-variant canvas split — the 0/0/0/0/1/1 proof |
-| 5223 | Spec 38A motion model: hover lift and scale, part Fade up, load entrances, reveal (`probe-motion-model.mjs`) |
-| 5226 | Spec 38A motion model: three-keyframe entrance, tilt, scroll driver host (`probe-motion-model.mjs`) |
+| 5223 | Spec 38A motion model: hover lift and scale, part Fade up, load entrances, reveal, the scroll-driver host element (`probe-motion-model.mjs`) |
+| 5226 | Spec 38A motion model: three-keyframe entrance and tilt (`probe-motion-model.mjs`) |
 | 5229 | Spec 38A motion model: a page with no motion, the asset-guard reference (`probe-motion-model.mjs`) |
 
 Page 5196 (a draft, "Editor typing baseline (200 blocks)") is not a deploy-gate fixture: it is Spec 38A FR-38A-29's editor typing-latency page (`plugins/sgs-blocks/scripts/perf/editor-typing-baseline.json`), re-measured by M3.11. Never edit or delete it; its tree is `plugins/sgs-blocks/scripts/perf/fixtures/editor-200-blocks.json`.

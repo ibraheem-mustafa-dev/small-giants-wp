@@ -31,7 +31,9 @@ function load( { reduced = false } = {} ) {
 		queue = [];
 	};
 	const media = makeMatchMedia( reduced );
-	window.matchMedia = () => media.query;
+	const none = { matches: false, addEventListener() {}, removeEventListener() {} };
+	window.matchMedia = ( query ) =>
+		'(prefers-reduced-motion: reduce)' === query ? media.query : none;
 	Object.defineProperty( window, 'innerHeight', {
 		value: VH,
 		configurable: true,
@@ -125,6 +127,16 @@ describe( 'scroll driver', () => {
 		expect( read( el ) ).toBe( '' );
 		flush();
 		expect( read( el ) ).toBe( '0' );
+
+		el.getBoundingClientRect = () => ( {
+			top: ( VH - 400 ) / 2,
+			height: 400,
+			bottom: ( VH - 400 ) / 2 + 400,
+		} );
+		window.dispatchEvent( new Event( 'scroll' ) );
+		expect( read( el ) ).toBe( '0' );
+		flush();
+		expect( read( el ) ).toBe( '0.5' );
 		spy.mockRestore();
 	} );
 

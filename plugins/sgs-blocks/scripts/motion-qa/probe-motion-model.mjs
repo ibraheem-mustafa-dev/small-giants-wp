@@ -1,7 +1,8 @@
 /**
  * Spec 38A unit M2.9: live acceptance of the motion model on a deployed site.
  *
- * WHAT IT MEASURES (one check per measurement, each with a negative control that must come out red):
+ * WHAT IT MEASURES (one check per measurement; each has a negative control that reads a different element, arm or
+ * state and must come out red, so a vacuous check cannot pass; a control that comes out not red fails the run):
  *   hover-transition-property, hover-duration-token, hover-lift-scale, hover-magnet-sum, hover-none-tap,
  *   focus-visible-parity, reveal-hidden-only-when-ready, js-blocked-visible, js-blocked-load-entrance,
  *   fade-plays-on-part-only, entrance-ends-translate-none, distance-token-resolves, lcp-first-section-opacity,

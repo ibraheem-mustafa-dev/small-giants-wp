@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { resolveFinder, hoverStyles } from '../../parity/lib/collect.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
-import { openDevtools, settleAnimations, triggerArmed, armedEntrances, forcedHover, declaredValues, cascadeWinner } from '../../parity/lib/devtools.mjs';
+import { openDevtools, settleAnimations, triggerArmed, armedEntrances, scrollArmedIntoView, forcedHover, declaredValues, cascadeWinner } from '../../parity/lib/devtools.mjs';
 
 const { chromium } = await import( 'playwright' );
 const RESOLVE = resolveFinder.toString();
@@ -167,5 +167,32 @@ test( 'MUST NOT OVER-SUPPRESS: a CSS reveal whose module never runs surfaces as 
 test( 'a page with no armed entrance reports nothing', async () => {
 	const page = await pageWith( FADE );
 	assert.deepEqual( await triggerArmed( page, { floor: 50 } ), { armed: 0, played: 0, unfired: [] } );
+	await page.close();
+} );
+
+// The armed list the walker reports and the list its scroll step indexes are one list: a paused infinite loop is not
+// armed, so it must not shift the index of the entrances after it.
+const MIXED = `<style>.gap { height: 1500px } .sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in]) { opacity: 0 }</style>
+	<p class="pa">A</p><div class="gap"></div><p class="pb">B</p><div class="gap"></div><p class="pc">C</p><div class="gap"></div><p class="pd" data-sgs-me="scroll opacity">D</p><div class="gap"></div>
+	<script>
+		document.documentElement.classList.add( 'sgs-motion-ready' );
+		const arm = ( sel, timing ) => document.querySelector( sel ).animate( [ { opacity: 0 }, { opacity: 1 } ], timing ).pause();
+		arm( '.pa', { duration: 400 } ); arm( '.pb', { duration: 400, iterations: Infinity } ); arm( '.pc', { duration: 400 } );
+	</script>`;
+const centredClass = ( page ) => page.evaluate( () => {
+	const mid = window.innerHeight / 2;
+	const near = [ ...document.querySelectorAll( '.pa, .pb, .pc, .pd' ) ].map( ( e ) => ( { c: e.className.split( ' ' )[ 0 ], d: Math.abs( e.getBoundingClientRect().top + e.getBoundingClientRect().height / 2 - mid ) } ) );
+	return near.sort( ( a, b ) => a.d - b.d )[ 0 ].c;
+} );
+
+test( 'MUST FAIL TO DRIFT: the Nth armed element scrolled is the Nth listed, past a paused infinite loop', async () => {
+	const page = await pageWith( MIXED );
+	const listed = await page.evaluate( armedEntrances );
+	assert.deepEqual( listed.map( ( d ) => d.cls.split( ' ' )[ 0 ] ), [ 'pa', 'pc', 'pd' ], 'the infinite loop is not armed' );
+	for ( const d of listed ) {
+		assert.equal( await scrollArmedIntoView( page, d.index ), true );
+		assert.equal( await centredClass( page ), d.cls.split( ' ' )[ 0 ], `armed #${ d.index } scrolls the element listed at that index` );
+	}
+	assert.equal( await scrollArmedIntoView( page, listed.length ), false, 'an index past the list scrolls nothing' );
 	await page.close();
 } );

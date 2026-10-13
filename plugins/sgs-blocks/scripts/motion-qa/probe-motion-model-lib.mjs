@@ -6,6 +6,7 @@
  * @package SGS\Blocks
  */
 
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -38,9 +39,17 @@ export function parseArgs( argv ) {
 	return args;
 }
 
-/** The site's public base URL from `.claude/secrets/<site>.env` (the first WP_URL_* line; credentials are never read). */
+/**
+ * The site's public base URL from `.claude/secrets/<site>.env` (the first WP_URL_* line; credentials are never read).
+ * The secrets folder is gitignored, so a run inside a git worktree (build-deploy.py's isolated deploy tree) reads it
+ * from the main checkout, found through the worktree's common git directory.
+ */
 export function siteBase( site ) {
-	const file = path.join( REPO, '.claude', 'secrets', `${ site }.env` );
+	let file = path.join( REPO, '.claude', 'secrets', `${ site }.env` );
+	if ( ! fs.existsSync( file ) ) {
+		const common = execFileSync( 'git', [ 'rev-parse', '--path-format=absolute', '--git-common-dir' ], { cwd: REPO, encoding: 'utf8' } ).trim();
+		file = path.join( path.dirname( common ), '.claude', 'secrets', `${ site }.env` );
+	}
 	const line = fs.readFileSync( file, 'utf8' ).split( /\r?\n/ ).find( ( l ) => /^WP_URL_[A-Z0-9]+=/.test( l ) );
 	if ( ! line ) throw new Error( `No WP_URL_* line in ${ file }` );
 	return line.slice( line.indexOf( '=' ) + 1 ).trim().replace( /^['"]|['"]$/g, '' ).replace( /\/+$/, '' );
@@ -53,6 +62,20 @@ export function collectMotion( blocks, found = [] ) {
 		if ( attrs.sgsMotion ) found.push( { block: b.name, className: attrs.className || '', motion: attrs.sgsMotion } );
 		collectMotion( b.innerBlocks || [], found );
 	}
+	return found;
+}
+
+/** The stored delays in a block tree: every non-zero `delay` number under an entrance or a hover state. Returns { entrance, hover } counts. */
+export function storedDelays( blocks ) {
+	const found = { entrance: 0, hover: 0 };
+	const walk = ( node, kind ) => {
+		if ( ! node || typeof node !== 'object' ) return;
+		for ( const [ key, value ] of Object.entries( node ) ) {
+			if ( key === 'delay' && typeof value === 'number' && value > 0 && kind ) found[ kind ]++;
+			else walk( value, key === 'entrance' ? 'entrance' : key === 'hover' ? 'hover' : kind );
+		}
+	};
+	for ( const item of collectMotion( blocks ) ) walk( item.motion, '' );
 	return found;
 }
 
@@ -165,6 +188,12 @@ export function selfTest() {
 	expectFalse( 'style without transform', styleWritesTransform( 'color:red; --sgs-mag-x: 4px' ) );
 	const fixtures = validateFixtures();
 	if ( ! fixtures.ok ) failures.push( `fixtures: ${ JSON.stringify( fixtures.rows.filter( ( r ) => ! r.valid ) ) }` );
+	const hoverEntrance = JSON.parse( fs.readFileSync( path.join( FIXTURE_DIR, 'hover-entrance.json' ), 'utf8' ) );
+	const delays = storedDelays( hoverEntrance );
+	if ( delays.entrance < 1 || delays.hover < 1 ) failures.push( `hover-entrance fixture must store an entrance delay and a hover delay so reduced-delays-zero is not vacuous: ${ JSON.stringify( delays ) }` );
+	const stripped = JSON.parse( JSON.stringify( hoverEntrance ), ( k, v ) => ( k === 'delay' ? undefined : v ) );
+	const strippedDelays = storedDelays( stripped );
+	if ( strippedDelays.entrance !== 0 || strippedDelays.hover !== 0 ) failures.push( 'storedDelays counted a delay in a tree with none' );
 	const planted = checkMotion( { v: 1, elements: { root: { hover: { state: { values: { translateY: -6, nonsense: 1 } } } } } } );
 	if ( planted.valid ) failures.push( 'schema accepted a planted unknown key' );
 	return failures;

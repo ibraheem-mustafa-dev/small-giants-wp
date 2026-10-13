@@ -408,7 +408,7 @@ final class Sgs_Motion_Emitter {
 				}
 			}
 		}
-		$keyframes = self::keyframes( $tiers['desktop']['keyframes'] ?? null, $used, $keep_op );
+		$keyframes = self::keyframes( $tiers['desktop']['keyframes'] ?? null, $used, $keep_op, $decls['desktop'] );
 		if ( $keep_op ) {
 			$op_from = self::ME_PREFIX . 'from-op';
 			foreach ( array( 'tablet', 'mobile' ) as $tier ) {
@@ -432,19 +432,22 @@ final class Sgs_Motion_Emitter {
 	}
 
 	/**
-	 * The desktop keyframes as JSON for the WAAPI module: offset 0 to 1 and each owner property's CSS.
+	 * The desktop keyframes as JSON for the WAAPI module: offset 0 to 1 and each owner property's CSS. The first frame
+	 * is also the hidden start state: each of its owner properties with no stored desktop from-value is written to
+	 * `--sgs-me-from-<suffix>`, so the stylesheet hides the element before the animation plays.
 	 *
-	 * @param mixed              $list    Stored keyframe list.
-	 * @param array<string,bool> $used    Owner properties touched (by reference through the caller's array).
-	 * @param bool               $keep_op Whether the LCP rule holds opacity at 1.
+	 * @param mixed                $list    Stored keyframe list.
+	 * @param array<string,bool>   $used    Owner properties touched (by reference through the caller's array).
+	 * @param bool                 $keep_op Whether the LCP rule holds opacity at 1.
+	 * @param array<string,string> $desktop Desktop declarations (by reference).
 	 * @return string|null
 	 */
-	private static function keyframes( $list, array &$used, bool $keep_op ): ?string {
+	private static function keyframes( $list, array &$used, bool $keep_op, array &$desktop ): ?string {
 		if ( ! is_array( $list ) || array() === $list ) {
 			return null;
 		}
 		$out = array();
-		foreach ( $list as $frame ) {
+		foreach ( array_values( $list ) as $index => $frame ) {
 			$row = array();
 			foreach ( is_array( $frame ) ? $frame : array() as $key => $value ) {
 				if ( 'offset' === $key ) {
@@ -459,6 +462,10 @@ final class Sgs_Motion_Emitter {
 				if ( null !== $prop && null !== $css ) {
 					$row[ $prop ]  = $keep_op && self::ME_PREFIX . 'op' === $prop ? '1' : $css;
 					$used[ $prop ] = true;
+					$from          = self::ME_PREFIX . 'from-' . substr( $prop, strlen( self::ME_PREFIX ) );
+					if ( 0 === $index && ! isset( $desktop[ $from ] ) ) {
+						$desktop[ $from ] = $css;
+					}
 				}
 			}
 			$out[] = $row;

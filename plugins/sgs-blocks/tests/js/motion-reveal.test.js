@@ -31,12 +31,17 @@ class MockIO {
 	}
 }
 
-const fire = ( io, el, isIntersecting, top = 100 ) =>
-	io.cb( [ { target: el, isIntersecting, boundingClientRect: { top } } ], io );
+const fire = ( io, el, isIntersecting, top = 100, intersectionRatio = isIntersecting ? 0.5 : 0 ) =>
+	io.cb( [ { target: el, isIntersecting, intersectionRatio, boundingClientRect: { top } } ], io );
 const live = () => observers.filter( ( o ) => ! o.disconnected );
-const add = ( attrs = '', style = '' ) => {
+const cropped = () => live().filter( ( o ) => o.opts.rootMargin );
+const uncropped = () => live().find( ( o ) => ! o.opts.rootMargin );
+// The element's top edge in the viewport; jsdom's default is 0, so tests place it below the fold unless they say otherwise.
+const add = ( attrs = '', style = '', top = 2000 ) => {
 	document.body.insertAdjacentHTML( 'beforeend', `<div data-sgs-me="scroll opacity" ${ attrs } style="${ style }"></div>` );
-	return document.body.lastElementChild;
+	const el = document.body.lastElementChild;
+	el.getBoundingClientRect = () => ( { top, bottom: top + 40, height: 40 } );
+	return el;
 };
 const run = () => window.eval( SRC );
 
@@ -47,9 +52,9 @@ beforeEach( () => {
 	document.documentElement.className = '';
 	document.body.innerHTML = '';
 	window.IntersectionObserver = MockIO;
-	window.matchMedia = () => ( {
+	window.matchMedia = ( query ) => ( {
 		get matches() {
-			return reduced;
+			return '(prefers-reduced-motion: reduce)' === query && reduced;
 		},
 		addEventListener: ( type, fn ) => listeners.push( fn ),
 	} );
@@ -60,22 +65,22 @@ test( 'adds sgs-motion-ready and sets data-sgs-in on intersection', () => {
 	run();
 	expect( document.documentElement.classList.contains( READY ) ).toBe( true );
 	expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( false );
-	fire( observers[ 0 ], el, true );
+	fire( cropped()[ 0 ], el, true );
 	expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( true );
-	expect( observers[ 0 ].targets.has( el ) ).toBe( false );
+	expect( cropped()[ 0 ].targets.has( el ) ).toBe( false );
 } );
 
 test( 'does not reveal an element that is not intersecting', () => {
 	const el = add();
 	run();
-	fire( observers[ 0 ], el, false, 900 );
+	fire( cropped()[ 0 ], el, false, 900 );
 	expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( false );
 } );
 
 test( 'reveals an element already scrolled above the viewport', () => {
 	const el = add();
 	run();
-	fire( observers[ 0 ], el, false, -300 );
+	fire( cropped()[ 0 ], el, false, -300 );
 	expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( true );
 } );
 
@@ -91,9 +96,9 @@ test( 'never sets data-sgs-in before sgs-motion-ready, and only observes scroll 
 	};
 	run();
 	MockIO.prototype.observe = spy;
-	expect( seen ).toEqual( [ true ] );
-	expect( observers[ 0 ].targets.has( load ) ).toBe( false );
-	expect( observers[ 0 ].targets.has( el ) ).toBe( true );
+	expect( seen ).toEqual( [ true, true ] );
+	expect( cropped()[ 0 ].targets.has( load ) ).toBe( false );
+	expect( cropped()[ 0 ].targets.has( el ) ).toBe( true );
 	expect( load.hasAttribute( 'data-sgs-in' ) ).toBe( false );
 } );
 
@@ -102,11 +107,12 @@ test( 'honours the start line from --sgs-me-start and shares one observer per li
 	const b = add( '', '--sgs-me-start: 20%' );
 	const c = add();
 	run();
-	const margins = observers.map( ( o ) => o.opts.rootMargin ).sort();
+	const margins = cropped().map( ( o ) => o.opts.rootMargin ).sort();
 	expect( margins ).toEqual( [ '0px 0px -20% 0px', '0px 0px -6% 0px' ] );
 	const io20 = observers.find( ( o ) => '0px 0px -20% 0px' === o.opts.rootMargin );
 	expect( [ ...io20.targets ] ).toEqual( [ a, b ] );
-	expect( observers.find( ( o ) => o !== io20 ).targets.has( c ) ).toBe( true );
+	expect( cropped().find( ( o ) => o !== io20 ).targets.has( c ) ).toBe( true );
+	expect( [ ...uncropped().targets ] ).toEqual( [ a, b, c ] );
 } );
 
 test( 'with reduced motion on at load nothing is hidden or observed', () => {
@@ -122,7 +128,7 @@ test( 'a mid-session change to reduced motion releases the observers and drops t
 	const done = add();
 	const el = add();
 	run();
-	fire( observers[ 0 ], done, true );
+	fire( cropped()[ 0 ], done, true );
 	reduced = true;
 	listeners.forEach( ( fn ) => fn() );
 	expect( document.documentElement.classList.contains( READY ) ).toBe( false );
@@ -130,8 +136,45 @@ test( 'a mid-session change to reduced motion releases the observers and drops t
 	reduced = false;
 	listeners.forEach( ( fn ) => fn() );
 	expect( document.documentElement.classList.contains( READY ) ).toBe( true );
-	const [ io ] = live();
-	expect( [ ...io.targets ] ).toEqual( [ el ] );
+	expect( [ ...cropped()[ 0 ].targets ] ).toEqual( [ el ] );
+} );
+
+test( 'an element shorter than the start band at the end of the page reveals once fully visible in the uncropped viewport', () => {
+	const el = add( '', '', 740 );
+	run();
+	expect( uncropped().opts ).toEqual( { threshold: 1 } );
+	// Cropped observer: at maximum scroll the element stays inside the band, so it never intersects.
+	fire( cropped()[ 0 ], el, false, 740 );
+	expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+	// Partly visible in the uncropped viewport: not yet.
+	fire( uncropped(), el, true, 760, 0.4 );
+	expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+	fire( uncropped(), el, true, 728, 1 );
+	expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( true );
+	expect( [ ...uncropped().targets ] ).toEqual( [] );
+	expect( [ ...cropped()[ 0 ].targets ] ).toEqual( [] );
+} );
+
+test( 'an element already above its start line is revealed before the class is added, and never observed', () => {
+	let classAtReveal = null;
+	const spy = Element.prototype.setAttribute;
+	Element.prototype.setAttribute = function ( name, value ) {
+		if ( 'data-sgs-in' === name ) {
+			classAtReveal = document.documentElement.classList.contains( READY );
+		}
+		return spy.call( this, name, value );
+	};
+	const above = add( '', '', 100 );
+	const edge = add( '', '--sgs-me-start: 20%', 700 );
+	const below = add( '', '', 2000 );
+	run();
+	Element.prototype.setAttribute = spy;
+	expect( classAtReveal ).toBe( false );
+	expect( above.hasAttribute( 'data-sgs-in' ) ).toBe( true );
+	expect( edge.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+	expect( below.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+	expect( cropped().flatMap( ( o ) => [ ...o.targets ] ) ).not.toContain( above );
+	expect( [ ...uncropped().targets ] ).toEqual( [ edge, below ] );
 } );
 
 test( 'without IntersectionObserver the class is never added', () => {

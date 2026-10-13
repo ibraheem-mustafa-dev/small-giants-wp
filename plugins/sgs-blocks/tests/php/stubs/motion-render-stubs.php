@@ -85,14 +85,14 @@ namespace {
 	}
 	// Asset registration and enqueue stand-ins: record the handle, so a test can read what a render enqueued.
 	if ( ! function_exists( 'wp_register_style' ) ) {
-		function wp_register_style( $handle ) {
-			$GLOBALS['sgs_test_registered'][ 'style:' . $handle ] = true;
+		function wp_register_style( $handle, $src = '', $deps = array(), $ver = false, $media = 'all' ) {
+			$GLOBALS['sgs_test_registered'][ 'style:' . $handle ] = array( 'src' => $src, 'deps' => $deps, 'ver' => $ver, 'args' => $media );
 		}
-		function wp_register_script( $handle ) {
-			$GLOBALS['sgs_test_registered'][ 'script:' . $handle ] = true;
+		function wp_register_script( $handle, $src = '', $deps = array(), $ver = false, $args = array() ) {
+			$GLOBALS['sgs_test_registered'][ 'script:' . $handle ] = array( 'src' => $src, 'deps' => $deps, 'ver' => $ver, 'args' => $args );
 		}
-		function wp_register_script_module( $id ) {
-			$GLOBALS['sgs_test_registered'][ 'module:' . $id ] = true;
+		function wp_register_script_module( $id, $src = '', $deps = array(), $ver = false ) {
+			$GLOBALS['sgs_test_registered'][ 'module:' . $id ] = array( 'src' => $src, 'deps' => $deps, 'ver' => $ver, 'args' => array() );
 		}
 		function wp_enqueue_script( $handle ) {
 			$GLOBALS['sgs_test_enqueued'][ 'script:' . $handle ] = true;
@@ -108,7 +108,7 @@ namespace {
 	}
 	if ( ! function_exists( 'wp_is_serving_rest_request' ) ) {
 		function wp_is_serving_rest_request() {
-			return false;
+			return ! empty( $GLOBALS['sgs_test_rest'] );
 		}
 	}
 

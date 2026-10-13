@@ -36,7 +36,8 @@ export async function fadeChecks( ctx ) {
 
 		const sm = await page.evaluate( () => { const d = document.createElement( 'div' ); d.setAttribute( 'style', 'margin-top: var(--wp--custom--distance--sm, 0px)' ); document.body.appendChild( d ); const v = getComputedStyle( d ).marginTop; d.remove(); return v; } );
 		rep.check( 'distance-token-resolves', { selector: PART, property: '--sgs-me-from-ty', measured: pre.fromTy, expected: sm, pass: sm === '0px' ? null : pre.fromTy === sm, why: sm === '0px' ? 'distance.sm did not resolve on this site' : '' } );
-		rep.control( 'distance-token-resolves', { selector: PART, property: '--sgs-me-from-ty', measured: pre.fromTy, expected: 'not 24px (a literal) when the token is used', red: pre.fromTy !== '24px' } );
+		const siblingTy = await page.evaluate( ( s ) => { const el = document.querySelector( s ); return el ? getComputedStyle( el ).getPropertyValue( '--sgs-me-from-ty' ).trim() : null; }, SIBLING );
+		rep.control( 'distance-token-resolves', { selector: SIBLING, property: '--sgs-me-from-ty', measured: siblingTy, expected: `an element with no entrance does not read ${ sm }, so the same token comparison rejects it`, red: siblingTy === null || sm === '0px' ? null : siblingTy !== sm } );
 
 		await page.$eval( PART, ( el ) => el.scrollIntoView( { block: 'center' } ) );
 		await page.waitForSelector( `${ PART }[data-sgs-in]`, { timeout: 3000 } ).catch( () => null );
@@ -45,8 +46,8 @@ export async function fadeChecks( ctx ) {
 		rep.check( 'fade-plays-on-part-only', { selector: PART, property: 'getAnimations().length', measured: { part: mid.animations, sibling: sib ? sib.animations : null, inAttr: mid.inAttr }, expected: 'part >= 1 animation and data-sgs-in; sibling 0', pass: mid.animations >= 1 && mid.inAttr && sib !== null && sib.animations === 0 } );
 		rep.control( 'fade-plays-on-part-only', { selector: SIBLING, property: 'getAnimations().length', measured: sib ? sib.animations : null, expected: '0 (an unanimated sibling is not reported as playing)', red: !! sib && sib.animations === 0 && mid.animations !== sib.animations } );
 
-		const inFlight = await page.evaluate( ( s ) => { const el = document.querySelector( s ); const a = el.getAnimations()[ 0 ]; if ( ! a ) return null; a.pause(); a.currentTime = 100; const t = getComputedStyle( el ).translate; a.play(); return t; }, PART );
-		await page.waitForTimeout( 900 );
+		const inFlight = await page.evaluate( ( s ) => { const el = document.querySelector( s ); const a = el.getAnimations()[ 0 ]; if ( ! a ) return null; a.pause(); a.currentTime = ( a.effect.getTiming().delay || 0 ) + 100; const t = getComputedStyle( el ).translate; a.play(); return t; }, PART );
+		await page.waitForTimeout( 1200 );
 		const end = await page.evaluate( STATE, PART );
 		rep.check( 'entrance-ends-translate-none', { selector: PART, property: 'translate / opacity (after end)', measured: { translate: end.translate, opacity: end.opacity, animations: end.animations }, expected: 'translate none, opacity 1, no running animation', pass: end.translate === 'none' && end.opacity === 1 && end.animations === 0 } );
 		rep.control( 'entrance-ends-translate-none', { selector: PART, property: 'translate (paused mid-animation)', measured: inFlight, expected: 'not none while the animation runs', red: inFlight !== null && parseTranslate( inFlight ).none === false } );
@@ -72,7 +73,10 @@ async function jsBlocked( ctx ) {
 			const lp = await ctx.newPage( markers[ '.m29-load-first' ], { javaScriptEnabled: false } );
 			try {
 				const load = await lp.page.evaluate( STATE, '.m29-load-first[data-sgs-me]' ).catch( () => null );
-				rep.check( 'js-blocked-load-entrance', { selector: '.m29-load-first', property: 'animation-name', measured: load && { animName: load.animName, animDur: load.animDur }, expected: 'an sgs-me animation with a non-zero duration', pass: !! load && /sgs-me/.test( load.animName ) && parseFloat( load.animDur ) > 0 } );
+				const animates = ( s ) => !! s && /sgs-me/.test( s.animName ) && parseFloat( s.animDur ) > 0;
+				rep.check( 'js-blocked-load-entrance', { selector: '.m29-load-first', property: 'animation-name', measured: load && { animName: load.animName, animDur: load.animDur }, expected: 'an sgs-me animation with a non-zero duration', pass: animates( load ) } );
+				const still = await lp.page.evaluate( STATE, '.m29-fade-sibling' ).catch( () => null );
+				rep.control( 'js-blocked-load-entrance', { selector: '.m29-fade-sibling', property: 'animation-name', measured: still && { animName: still.animName, animDur: still.animDur }, expected: 'an element with no entrance (same page, JavaScript off) is rejected by the same animation judge', red: !! still && ! animates( still ) } );
 			} finally {
 				await lp.close();
 			}
@@ -112,6 +116,7 @@ export async function loadChecks( ctx ) {
 		rep.check( 'lcp-first-section-opacity', { selector: '.m29-load-first', property: 'opacity (min over first 1.5 s) and --sgs-me-from-op', measured: { min: r.min[ '.m29-load-first' ], fromOp: r.first }, expected: 'min opacity 1, from-opacity 1 (movement only)', pass: r.min[ '.m29-load-first' ] === 1 && r.first === '1' } );
 		rep.control( 'lcp-first-section-opacity', { selector: '.m29-load-later', property: 'opacity (min) and --sgs-me-from-op', measured: { min: r.min[ '.m29-load-later' ], fromOp: r.later }, expected: 'the same reading on a non-first load entrance is below 1 (the check can see a fade)', red: r.min[ '.m29-load-later' ] < 1 && r.later === '0' } );
 		rep.check( 'load-later-fades', { selector: '.m29-load-later', property: '--sgs-me-from-op', measured: r.later, expected: '0 (the LCP rule exempts only the first section)', pass: r.later === '0' } );
+		rep.control( 'load-later-fades', { selector: '.m29-load-first', property: '--sgs-me-from-op', measured: r.first, expected: 'the first-section entrance reads 1, so the from-opacity-0 judge rejects it', red: r.first !== '0' && r.first !== '' } );
 	} finally {
 		await close();
 	}
