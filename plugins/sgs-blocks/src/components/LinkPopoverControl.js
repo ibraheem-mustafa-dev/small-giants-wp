@@ -33,188 +33,22 @@
  * only when the target's `render.php` resolves them (currently `sgs/button`
  * only; see each block's own dispatch notes for why).
  *
+ * LINK SOURCE (opt-in per call site): `linkSources` on the Field adds a "Link to" choice
+ * (typed URL, page or post, Site Info, back to top). Data shape and naming rule:
+ * `LinkSourcePicker.js`'s header.
+ *
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
 import { useState, useRef, forwardRef, useImperativeHandle } from '@wordpress/element';
-import { LinkControl } from '@wordpress/block-editor';
-import {
-	BaseControl,
-	Button,
-	Popover,
-	SelectControl,
-	TextControl,
-	ToggleControl,
-} from '@wordpress/components';
+import { BaseControl, Button } from '@wordpress/components';
 import { useInstanceId } from '@wordpress/compose';
 import { link as linkIcon } from '@wordpress/icons';
-import { VStack } from './primitives';
+import { LinkPopoverContent } from './LinkPopoverContent';
+import { linkSourceRowText } from './LinkSourcePicker';
 import './LinkPopoverControl.css';
 
-export const TARGET_ENUM_OPTIONS = [
-	{ label: __( 'Same tab (_self)', 'sgs-blocks' ), value: '_self' },
-	{ label: __( 'New tab (_blank)', 'sgs-blocks' ), value: '_blank' },
-	{ label: __( 'Parent frame (_parent)', 'sgs-blocks' ), value: '_parent' },
-	{ label: __( 'Full window (_top)', 'sgs-blocks' ), value: '_top' },
-];
-
-/**
- * The popover primitive. Mount ONE instance; swap `anchor` between however
- * many triggers should open it (see `sgs/button/edit.js`).
- *
- * @param {Object}    props
- * @param {Element}   props.anchor               DOM node the popover is pinned to.
- * @param {Function}  props.onClose              Fires on Escape / outside click.
- * @param {string}    props.url                  Stored url string.
- * @param {string}    [props.linkId]             Internal post/term ID (string); '' = none.
- *                                                Only meaningful when `enableInternalResolution`.
- * @param {string}    [props.linkKind]           LinkControl `kind`; '' = none.
- * @param {string}    [props.linkTarget]         HTML target — enum string ('_self'…) or
- *                                                'boolean' mode's `''`/`'_blank'`.
- * @param {string}    [props.rel]                Rel attribute string.
- * @param {boolean}   [props.download]           Download-link toggle value.
- * @param {Function}  props.onChangeLink         Receives { url, linkId, linkKind } (linkId/
- *                                                linkKind omitted when `enableInternalResolution`
- *                                                is false — caller's onChange only needs `url`).
- * @param {Function}  [props.onChangeTarget]     Receives the next linkTarget value. Omit the
- *                                                whole target row by omitting this prop.
- * @param {Function}  [props.onChangeRel]        Receives the next rel string. Omit to hide.
- * @param {Function}  [props.onChangeDownload]   Receives the next download boolean. Omit to hide.
- * @param {'enum'|'boolean'} [props.targetMode]  'enum' = 4-value SelectControl (_self/_blank/
- *                                                _parent/_top, `sgs/button`'s shape). 'boolean' =
- *                                                a single "Open in new tab" ToggleControl mapped
- *                                                to `''`/`'_blank'` (icon/media's existing shape).
- * @param {boolean}   [props.enableInternalResolution] When true, `onChangeLink` receives
- *                                                { url, linkId, linkKind } from LinkControl's
- *                                                internal-search result. When false (default),
- *                                                only { url } is passed — a plain pasted/typed
- *                                                URL string, matching the pre-migration contract
- *                                                for consumers whose render.php has no ID
- *                                                resolution.
- * @param {Function}  [props.renderExtraFields]  ( { url } ) => JSX, rendered after the standard
- *                                                fields, only when a url is set. For a consumer's
- *                                                own bespoke field (e.g. the block-link extension's
- *                                                accessible-label field).
- * @param {Object}    [props.suggestionsQuery]   Passed straight to LinkControl's own
- *                                                suggestionsQuery prop (e.g. { type: 'post',
- *                                                subtype: 'page' }) to scope suggestions to
- *                                                one PUBLIC post type/subtype. Core search
- *                                                rejects non-public post types (HTTP 400); use
- *                                                SavedPostPicker for those. Omit for the
- *                                                default unscoped search.
- */
-export function LinkPopoverContent( {
-	anchor,
-	onClose,
-	url,
-	linkId,
-	linkKind,
-	linkTarget,
-	rel,
-	download,
-	onChangeLink,
-	onChangeTarget,
-	onChangeRel,
-	onChangeDownload,
-	targetMode = 'enum',
-	enableInternalResolution = false,
-	renderExtraFields,
-	suggestionsQuery,
-} ) {
-	const linkValue = {
-		url: url || '',
-		id: enableInternalResolution && linkId ? linkId : undefined,
-		kind: enableInternalResolution && linkKind ? linkKind : undefined,
-	};
-
-	const handleLinkChange = ( next ) => {
-		if ( enableInternalResolution ) {
-			onChangeLink( {
-				url: next.url || '',
-				linkId: next.id ? String( next.id ) : '',
-				linkKind: next.kind || '',
-			} );
-		} else {
-			onChangeLink( { url: next.url || '' } );
-		}
-	};
-
-	const handleRemove = () => {
-		onChangeLink(
-			enableInternalResolution
-				? { url: '', linkId: '', linkKind: '' }
-				: { url: '' }
-		);
-	};
-
-	return (
-		<Popover
-			anchor={ anchor }
-			onClose={ onClose }
-			placement="bottom-start"
-			offset={ 8 }
-			shift
-			className="sgs-link-popover"
-		>
-			{ /* `VStack spacing={4}` = the WP grid-unit-20 (16px) rhythm — matches
-			   core's own popover spacing. Every control below carries
-			   `__nextHasNoMarginBottom` so VStack is the ONLY source of the
-			   gap (mixing the two would double it up). */ }
-			<VStack className="sgs-link-popover__inner" spacing={ 4 }>
-				<LinkControl
-					searchInputPlaceholder={ __( 'Search or paste a URL', 'sgs-blocks' ) }
-					value={ linkValue }
-					settings={ [] }
-					onChange={ handleLinkChange }
-					onRemove={ handleRemove }
-					forceIsEditingLink={ ! linkValue.url }
-					suggestionsQuery={ suggestionsQuery }
-				/>
-				{ !! linkValue.url && (
-					<VStack spacing={ 4 }>
-						{ onChangeTarget && 'enum' === targetMode && (
-							<SelectControl
-								label={ __( 'Open in', 'sgs-blocks' ) }
-								value={ linkTarget }
-								options={ TARGET_ENUM_OPTIONS }
-								onChange={ onChangeTarget }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-						{ onChangeTarget && 'boolean' === targetMode && (
-							<ToggleControl
-								label={ __( 'Open in new tab', 'sgs-blocks' ) }
-								checked={ '_blank' === linkTarget }
-								onChange={ ( checked ) => onChangeTarget( checked ? '_blank' : '_self' ) }
-								__nextHasNoMarginBottom
-							/>
-						) }
-						{ onChangeRel && (
-							<TextControl
-								label={ __( 'Rel attribute', 'sgs-blocks' ) }
-								value={ rel }
-								onChange={ onChangeRel }
-								help={ __( 'e.g. noopener noreferrer nofollow', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-						{ onChangeDownload && (
-							<ToggleControl
-								label={ __( 'Download link', 'sgs-blocks' ) }
-								checked={ !! download }
-								onChange={ onChangeDownload }
-								__nextHasNoMarginBottom
-							/>
-						) }
-						{ renderExtraFields && renderExtraFields( { url: linkValue.url } ) }
-					</VStack>
-				) }
-			</VStack>
-		</Popover>
-	);
-}
+export { LinkPopoverContent, TARGET_ENUM_OPTIONS } from './LinkPopoverContent';
 
 /**
  * Self-contained trigger row + popover for the common single-trigger case.
@@ -228,10 +62,21 @@ export function LinkPopoverContent( {
  * @param {Object}   props
  * @param {string}   props.label                 Row/BaseControl label.
  * @param {string}   [props.help]                Help text.
- * @param {Object}   props.value                 { url, linkId, linkKind, linkTarget, rel, download }.
+ * @param {Object}   props.value                 { url, linkId, linkKind, linkTarget, rel, download,
+ *                                                 linkSource }.
  * @param {Function} props.onChange               Receives the next partial value object — merge
  *                                                 into attributes yourself (matches `setAttributes`'s
- *                                                 own merge semantics).
+ *                                                 own merge semantics). With `linkSources` it may
+ *                                                 carry `linkSource` (map it to the call site's
+ *                                                 source attribute like any other key).
+ * @param {string[]} [props.linkSources]          Turns on the "Link to" choice and lists the
+ *                                                 sources offered besides the typed URL
+ *                                                 (`LINK_SOURCES_ALL` / `_WEB` / `_PAGES`). The
+ *                                                 stored source is `value.linkSource`, or the
+ *                                                 `linkSource` prop with `searchOnly`, where
+ *                                                 `onChange( url, { linkSource } )` gets it as a
+ *                                                 second argument whenever it changes.
+ * @param {string}   [props.linkSource]           searchOnly only: the stored source.
  * @param {'enum'|'boolean'} [props.targetMode]   See `LinkPopoverContent`. Default 'boolean'
  *                                                 (matches icon/media's existing SgsLinkControl shape).
  * @param {boolean}  [props.showTarget=true]      Show the open-in-new-tab control.
@@ -247,13 +92,7 @@ export function LinkPopoverContent( {
  *                                                `searchOnly` contract, which this supersedes.
  *                                                Forces target/rel/download rows off regardless of
  *                                                the show* props.
- * @param {Object}   [props.suggestionsQuery]     Passed straight to LinkControl's own
- *                                                suggestionsQuery prop (e.g. { type: 'post',
- *                                                subtype: 'page' }) to scope suggestions to
- *                                                one PUBLIC post type/subtype. Core search
- *                                                rejects non-public post types (HTTP 400); use
- *                                                SavedPostPicker for those. Omit for the
- *                                                default unscoped search.
+ * @param {Object}   [props.suggestionsQuery]     See `LinkPopoverContent`.
  * @param {string}   [props.emptyLabel]           Button text while nothing is chosen (default
  *                                                "Add link"), e.g. "Choose a saved form".
  */
@@ -272,6 +111,8 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 		searchOnly = false,
 		suggestionsQuery,
 		emptyLabel,
+		linkSources,
+		linkSource: searchOnlySource = '',
 	},
 	ref
 ) {
@@ -283,6 +124,22 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 	} ) );
 
 	const url = searchOnly ? ( value || '' ) : ( value?.url || '' );
+	const sourceOn = Array.isArray( linkSources ) && linkSources.length > 0;
+	const linkSource = ( searchOnly ? searchOnlySource : value?.linkSource ) || '';
+	const rowText = sourceOn ? linkSourceRowText( linkSource, url ) : url;
+	// searchOnly hands the url as a string, so a source change rides as a second argument.
+	const emitLink = ( next ) => {
+		if ( ! searchOnly ) {
+			onChange( next );
+			return;
+		}
+		if ( 'linkSource' in next ) {
+			onChange( next.url || '', { linkSource: next.linkSource } );
+		} else {
+			onChange( next.url || '' );
+		}
+	};
+	const emitSource = ( next ) => ( searchOnly ? onChange( url, { linkSource: next } ) : onChange( { linkSource: next } ) );
 
 	// `id` is required for BaseControl to give its own `help` paragraph an id
 	// (`${id}__help`, the same convention every native self-wiring control
@@ -299,12 +156,12 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 				variant="tertiary"
 				className="sgs-link-popover__row"
 				icon={ linkIcon }
-				title={ url || undefined }
+				title={ rowText || undefined }
 				aria-describedby={ helpId }
 				onClick={ () => setIsOpen( true ) }
 			>
 				<span className="sgs-link-popover__row-label">
-					{ url ? url : emptyLabel || __( 'Add link', 'sgs-blocks' ) }
+					{ rowText ? rowText : emptyLabel || __( 'Add link', 'sgs-blocks' ) }
 				</span>
 			</Button>
 			{ isOpen && (
@@ -319,12 +176,15 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 					download={ searchOnly ? undefined : value?.download }
 					targetMode={ targetMode }
 					enableInternalResolution={ ! searchOnly && enableInternalResolution }
-					onChangeLink={ ( next ) => onChange( searchOnly ? ( next.url || '' ) : next ) }
+					onChangeLink={ emitLink }
 					onChangeTarget={ ! searchOnly && showTarget ? ( val ) => onChange( { linkTarget: val } ) : undefined }
 					onChangeRel={ ! searchOnly && showRel ? ( val ) => onChange( { rel: val } ) : undefined }
 					onChangeDownload={ ! searchOnly && showDownload ? ( val ) => onChange( { download: val } ) : undefined }
 					renderExtraFields={ searchOnly ? undefined : renderExtraFields }
 					suggestionsQuery={ suggestionsQuery }
+					linkSource={ linkSource }
+					linkSources={ linkSources }
+					onChangeLinkSource={ sourceOn ? emitSource : undefined }
 				/>
 			) }
 		</BaseControl>

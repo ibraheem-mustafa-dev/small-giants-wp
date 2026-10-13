@@ -15,6 +15,7 @@ import {
 	Button,
 	TextControl,
 	SelectControl,
+	ComboboxControl,
 	RangeControl,
 	ToggleControl,
 	ToolbarGroup,
@@ -430,11 +431,12 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 					   (render.php), so the URL popover is disabled rather than
 					   removed: the typed value is kept as a fallback for when the
 					   chosen Site Info field is empty. */ }
-					<SelectControl
+					<ComboboxControl
 						label={ __( 'Link source', 'sgs-blocks' ) }
 						value={ linkSource || 'url' }
 						options={ LINK_SOURCE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { linkSource: val } ) }
+						onChange={ ( val ) => setAttributes( { linkSource: val || 'url' } ) }
+						allowReset={ false }
 						help={ 'url' === ( linkSource || 'url' ) ? undefined : LINK_SOURCE_HELP[ linkSource ] }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize

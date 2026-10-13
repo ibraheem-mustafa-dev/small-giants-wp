@@ -87,13 +87,14 @@ $effective_url = $resolved_url ? $resolved_url : $stored_url;
 // itself resolves, instead of a typed URL. 'url' (the default) leaves
 // $effective_url from the resolution above untouched. Resolution itself
 // lives in sgs_resolve_link_source() (includes/helpers-link-source.php,
-// U-12 §F) so this render.php stays a thin caller: 'phone'/'email'/
-// 'whatsapp' fall back to $effective_url (typed URL or resolved internal
-// link) when the Site Info field is empty; 'top'/'account' always resolve
-// to a real destination and ignore the typed URL.
+// U-12 §F) so this render.php stays a thin caller: every Site Info source
+// (phone, email, WhatsApp, directions, Google Business Profile, socials)
+// falls back to $effective_url (typed URL or resolved internal link) when
+// its Site Info field is empty; 'top'/'account' always resolve to a real
+// destination and ignore the typed URL.
 $link_source                 = isset( $attributes['linkSource'] ) ? sanitize_text_field( $attributes['linkSource'] ) : 'url';
 $sgs_link_source_wrapper_extra = array();
-if ( in_array( $link_source, array( 'phone', 'email', 'whatsapp', 'top', 'account' ), true ) ) {
+if ( in_array( $link_source, array_merge( array( 'phone', 'email', 'whatsapp', 'top', 'account' ), array_keys( sgs_link_source_site_info_keys() ) ), true ) ) {
 	$sgs_resolved_link = sgs_resolve_link_source( $link_source, $effective_url );
 	$effective_url     = $sgs_resolved_link['url'];
 	foreach ( $sgs_resolved_link['attrs'] as $sgs_link_attr_key => $sgs_link_attr_val ) {

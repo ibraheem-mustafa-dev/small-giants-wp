@@ -95,6 +95,10 @@ require_once $sgs_blocks_dir . '/includes/forms/field-render-helpers.php';
 // bootstrap loads from this file (sgs-blocks.php), not the render.php itself.
 require_once $sgs_blocks_dir . '/includes/trustpilot-helpers.php';
 
+// Real SGS code: sgs_link_attributes(), which sgs/mega-group calls and the plugin bootstrap loads
+// through includes/render-helpers.php rather than the render.php itself.
+require_once $sgs_blocks_dir . '/includes/helpers-link.php';
+
 /**
  * Parse --flag value / --flag=value style CLI args.
  *

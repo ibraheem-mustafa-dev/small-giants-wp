@@ -14,6 +14,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-link-source.php';
+
 /**
  * Resolve an `SgsLinkControl` object attr into a safe HTML attribute string
  * for an `<a>` tag (href + target + rel), ready to interpolate directly
@@ -30,11 +32,20 @@ defined( 'ABSPATH' ) || exit;
  * back into `window.opener` (security; matches `sgs/icon`'s existing
  * `'_blank' === $link_target && '' === $effective_rel` auto-rel behaviour).
  *
- * @param array|null $link Link attribute value: { url, opensInNewTab, rel }.
+ * `source` is the link's stored link source (the shared link popover's `<urlAttr>Source`
+ * sibling, includes/helpers-link-source.php): '' keeps `url` as typed, anything else
+ * resolves through sgs_resolve_link_source() with `url` as the fallback, and the `top`
+ * source adds its data attribute.
+ *
+ * @param array|null $link Link attribute value: { url, opensInNewTab, rel, source }.
  * @return string HTML attribute string (leading space), or '' when no url.
  */
 function sgs_link_attributes( ?array $link ): string {
-	$url = isset( $link['url'] ) ? trim( (string) $link['url'] ) : '';
+	$url    = isset( $link['url'] ) ? trim( (string) $link['url'] ) : '';
+	$source = isset( $link['source'] ) && is_string( $link['source'] ) ? $link['source'] : '';
+	if ( '' !== $source ) {
+		$url = trim( sgs_link_source_href( $source, $url ) );
+	}
 	if ( '' === $url ) {
 		return '';
 	}
@@ -62,5 +73,5 @@ function sgs_link_attributes( ?array $link ): string {
 		$attrs .= ' rel="' . esc_attr( implode( ' ', array_unique( $rel_tokens ) ) ) . '"';
 	}
 
-	return $attrs;
+	return $attrs . sgs_link_source_attrs_html( $source );
 }
