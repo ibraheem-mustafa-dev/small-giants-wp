@@ -1,0 +1,45 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-nomotion-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "A page with no motion",
+					"level": "h2",
+					"className": "m29-nomotion"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Nothing here animates, so no motion stylesheet or script should load."
+				}
+			}
+		]
+	}
+]

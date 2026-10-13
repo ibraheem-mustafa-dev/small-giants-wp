@@ -1,0 +1,7 @@
+# Motion acceptance fixture pages (Spec 38A M2.9)
+
+Block trees for `scripts/wp-build-page.js`, probed by `plugins/sgs-blocks/scripts/motion-qa/probe-motion-model.mjs`. The probe finds each page by its `.m29-*` marker classes, so any page ID built from these trees works. Build with `--create page` (never over the motion-QA fixture pages), then record the new IDs in `.claude/rules/motion-qa.md`.
+
+- `hover-entrance.json`: a first-section heading with a page-load entrance (`.m29-load-first`, LCP rule), a later page-load entrance that fades (`.m29-load-later`), an info-box card with a hover lift, scale, token duration and colour hover (`.m29-hover-card`) beside a plain control card (`.m29-plain-card`), and a container whose inner part has a below-the-fold Fade up on a distance token (`.m29-fade-part`) beside an unanimated sibling (`.m29-fade-sibling`).
+- `keyframes-tilt.json`: a below-the-fold three-keyframe entrance with a stored 500 ms delay (`.m29-kf`) beside a sibling with none, a heading with both a scroll entrance and a hover lift (`.m29-both`), and an info-box with the legacy 3D tilt (`.m29-tilt`, class `sgs-has-tilt-3d` from `sgsHoverTilt3D`).
+- `no-motion.json`: a heading and text with no motion at all (`.m29-nomotion`), for the check that no motion stylesheet or script loads.

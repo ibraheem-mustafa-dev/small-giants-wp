@@ -47,11 +47,16 @@ const PROBES = [
 		file: 'probe-good-by-default.mjs',
 		what: 'scrub/scramble/split-reveal/pin-scrub are safe by default (pages 2103, 2603)',
 	},
+	{
+		file: 'probe-motion-model.mjs',
+		what: 'Spec 38A motion model: hover, entrances, reveal, keyframes, tilt, asset guard, scroll driver across engines (pages 5223, 5226, 5229)',
+		args: [ '--page', '5223', '--page', '5226', '--page', '5229', '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
+	},
 ];
 
-const run = ( file ) =>
+const run = ( file, args = [] ) =>
 	new Promise( ( resolve ) => {
-		const child = spawn( process.execPath, [ path.join( HERE, file ) ], {
+		const child = spawn( process.execPath, [ path.join( HERE, file ), ...args ], {
 			stdio: 'inherit',
 		} );
 		child.on( 'close', ( code ) => resolve( code ?? 1 ) );
@@ -63,7 +68,7 @@ console.log( `[motion-qa] running ${ PROBES.length } live probe(s) against the c
 const failed = [];
 for ( const probe of PROBES ) {
 	console.log( `[motion-qa] --- ${ probe.file }: ${ probe.what }` );
-	const code = await run( probe.file );
+	const code = await run( probe.file, probe.args );
 	if ( code !== 0 ) failed.push( probe.file );
 	console.log( '' );
 }

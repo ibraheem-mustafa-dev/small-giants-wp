@@ -1,0 +1,362 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-first"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Plain sentences keep a first screen readable",
+					"level": "h2",
+					"className": "m29-load-first",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "load",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 24
+											},
+											"duration": 600
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "The first section holds a heading with a page-load entrance."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "700px",
+					"right": "24px",
+					"bottom": "700px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "700px",
+					"right": "24px",
+					"bottom": "700px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "700px",
+					"right": "24px",
+					"bottom": "700px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-spacer"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Scroll space so the next section starts below the first screen."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-second"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "A heading with its own page-load entrance",
+					"level": "h2",
+					"className": "m29-load-later",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "load",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 24
+											},
+											"duration": 600
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "This section is below the first screen."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-cards"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Hover card",
+					"description": "This card lifts and scales on hover.",
+					"backgroundColourHover": "accent",
+					"className": "m29-hover-card",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "root",
+										"values": {
+											"translateY": -6,
+											"scale": 1.04,
+											"duration": "token:duration.fast",
+											"easing": "ease-out"
+										}
+									}
+								}
+							}
+						}
+					},
+					"effectHover": "none",
+					"shadowLiftOnHover": false,
+					"sgsHoverScalePreset": "none",
+					"sgsHoverShadow": "none",
+					"sgsHoverImageZoom": false
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Plain card",
+					"description": "This card has no motion and is the control.",
+					"className": "m29-plain-card",
+					"effectHover": "none",
+					"shadowLiftOnHover": false,
+					"sgsHoverScalePreset": "none",
+					"sgsHoverShadow": "none",
+					"sgsHoverImageZoom": false
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "700px",
+					"right": "24px",
+					"bottom": "700px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "700px",
+					"right": "24px",
+					"bottom": "700px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "700px",
+					"right": "24px",
+					"bottom": "700px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-spacer"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Scroll space so the next section starts below the first screen."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-fade-part",
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"inner": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateY": "token:distance.sm"
+									},
+									"duration": 400,
+									"easing": "ease-out"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "The container part animates; the sibling text does not."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-fade-sibling-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "A sibling section with no motion",
+					"level": "h2",
+					"className": "m29-fade-sibling"
+				}
+			}
+		]
+	}
+]

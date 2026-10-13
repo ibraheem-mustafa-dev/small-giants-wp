@@ -1,0 +1,264 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-b-first-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Keyframes and tilt page",
+					"level": "h2",
+					"className": "m29-b-first"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "First screen filler for the keyframes page."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "700px",
+					"right": "24px",
+					"bottom": "700px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "700px",
+					"right": "24px",
+					"bottom": "700px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "700px",
+					"right": "24px",
+					"bottom": "700px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-spacer"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Scroll space so the next section starts below the first screen."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-kf-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Three keyframes with a stored delay",
+					"level": "h2",
+					"className": "m29-kf",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "scroll",
+										"values": {
+											"keyframes": [
+												{
+													"offset": 0,
+													"opacity": 0,
+													"translateY": 40
+												},
+												{
+													"offset": 50,
+													"opacity": 0.6,
+													"translateY": 10
+												},
+												{
+													"offset": 100,
+													"opacity": 1,
+													"translateY": 0
+												}
+											],
+											"duration": 2000,
+											"delay": 500,
+											"easing": "ease-out"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Sibling without keyframes",
+					"level": "h2",
+					"className": "m29-kf-sibling"
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-both-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Entrance first, hover lift on the same heading",
+					"level": "h2",
+					"className": "m29-both",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"values": {
+											"translateY": -6,
+											"duration": "token:duration.fast",
+											"easing": "ease-out"
+										}
+									}
+								},
+								"entrance": {
+									"base": {
+										"trigger": "scroll",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 24
+											},
+											"duration": 400,
+											"easing": "ease-out"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m29-tilt-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Tilt card",
+					"description": "This card uses the legacy 3D tilt.",
+					"className": "m29-tilt",
+					"sgsHoverTilt3D": true
+				}
+			}
+		]
+	}
+]
