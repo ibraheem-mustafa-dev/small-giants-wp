@@ -54,6 +54,7 @@ import genbgPositionRanges from './fx-genbg-position-ranges.json';
 import fxPathRoutes from '../../../includes/fx-path-routes.json';
 import fxShapeRoutes from '../../../includes/fx-shape-routes.json';
 import { ToggleGroupControl, ToggleGroupControlOption, ToggleGroupControlOptionIcon, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { GSAP_EASING_OPTIONS as FX_EASE_OPTIONS } from '../../components/motion/easing-master-list';
 
 /**
  * Every runtime effect module that actually exists under
@@ -267,36 +268,6 @@ function fxOptionsForBlock( name ) {
 		} ) ),
 	];
 }
-
-/**
- * GSAP easing presets offered in the "Feel" control.
- *
- * Verified against the installed GSAP core (`node_modules/gsap/src/gsap-core.js`,
- * v3.15.0) rather than invented: `Power0`-`Power4`, `Back`, `Elastic`, `Bounce`,
- * `Sine`, `Expo`, `Circ` are all registered eases (`_insertEase` calls
- * ~lines 1071-1083, exported ~line 3253). `none` (aliased to `Power0`/linear) is
- * GSAP's own "no easing" value, used elsewhere in this codebase as the scrub
- * default (`fx-scrub.js`, `fx-horizontal-panel.js`). Labels are plain English —
- * a non-technical client picks a FEEL, not a GSAP ease-family name.
- *
- * @type {Array<{label: string, value: string}>}
- */
-const FX_EASE_OPTIONS = [
-	{ label: __( 'Standard (default)', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Constant speed, no easing', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Gentle start', 'sgs-blocks' ), value: 'power1.out' },
-	{
-		label: __( 'Smooth start and finish', 'sgs-blocks' ),
-		value: 'power2.inOut',
-	},
-	{ label: __( 'Strong finish', 'sgs-blocks' ), value: 'power3.out' },
-	{ label: __( 'Overshoot and settle', 'sgs-blocks' ), value: 'back.out' },
-	{ label: __( 'Bounce', 'sgs-blocks' ), value: 'bounce.out' },
-	{
-		label: __( 'Elastic wobble', 'sgs-blocks' ),
-		value: 'elastic.out(1,0.5)',
-	},
-];
 
 /**
  * Documented ScrollTrigger `start` presets (gold-standard item 8 — the value

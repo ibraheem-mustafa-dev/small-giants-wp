@@ -17,6 +17,7 @@ import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/p
 import { fontFamilyCssValue } from '../../utils/typography-preview';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, linkUnderlinePreviewCss, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import { CSS_EASING_OPTIONS as EASING_OPTIONS } from '../../components/motion/easing-master-list';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -53,17 +54,6 @@ const SUB_TAG_OPTIONS = [
 // FONT_STYLE_OPTIONS in particular was ALREADY dead here before this pass (one
 // reference: its own declaration) — font style has come from TypographyControls
 // for some time.
-
-// Heading's own block.json default is 'ease' (NOT team-member/gallery's
-// 'ease-in-out') — the options list is copied from those siblings, the
-// default stays heading's own.
-const EASING_OPTIONS = [
-	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
-	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
-];
 
 // Max width also offers ch, so a heading can wrap at a character measure (e.g. 15ch).
 const MAX_WIDTH_UNITS = [

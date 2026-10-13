@@ -16,16 +16,11 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import DecorativeImagePanelLayout from '../../components/media/DecorativeImagePanelLayout';
 import { elementCustomProperties, requiresBox } from '../../components/media/canvasStyle';
 import { resolveTier, usePreviewTier } from '../../utils';
+import { PATH_DRAW_EASING_OPTIONS } from '../../components/motion/easing-master-list';
 
 const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
 	{ label: __( 'Hidden', 'sgs-blocks' ), value: 'hidden' },
-];
-
-const PATH_DRAW_EASING_OPTIONS = [
-	{ label: __( 'Ease out (recommended)', 'sgs-blocks' ), value: 'ease-out' },
-	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
-	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
 export default function Edit( { attributes, setAttributes } ) {

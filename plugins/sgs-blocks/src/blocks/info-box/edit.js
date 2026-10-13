@@ -27,6 +27,7 @@ import {
 	sgsBorderPreview,
 } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import { CSS_EASING_OPTIONS_IN_OUT_FIRST as EASING_OPTIONS } from '../../components/motion/easing-master-list';
 
 /**
  * FR-22-6 migration: all card content (icon/media, heading, subtitle,
@@ -169,14 +170,6 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
 	{ label: __( 'Border accent', 'sgs-blocks' ), value: 'border-accent' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
-];
-
-const EASING_OPTIONS = [
-	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
-	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
 const ICON_POSITION_OPTIONS = [

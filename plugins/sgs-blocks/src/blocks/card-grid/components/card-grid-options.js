@@ -1,6 +1,8 @@
 // Card grid inspector option lists and card style presets.
 import { __ } from '@wordpress/i18n';
 import { MEDIA_SIZING_RATIO_OPTIONS } from '../../../components';
+import { CSS_EASING_OPTIONS_IN_OUT_FIRST as EASING_OPTIONS } from '../../../components/motion/easing-master-list';
+export { EASING_OPTIONS };
 
 export const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -54,14 +56,6 @@ export const HOVER_OPTIONS = [
 	{ label: __( 'Zoom', 'sgs-blocks' ), value: 'zoom' },
 	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
 	{ label: __( 'Overlay Slide', 'sgs-blocks' ), value: 'overlay-slide' },
-];
-
-export const EASING_OPTIONS = [
-	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
-	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
 export const PRODUCT_COLLECTION_OPTIONS = [
