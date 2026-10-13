@@ -1580,5 +1580,14 @@
     "added_commit": null,
     "budget_ms": 500,
     "order": 177
+  },
+  {
+    "id": "check-link-source-adoption",
+    "cmd": "python scripts/check-link-source-adoption.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 178
   }
 ]
