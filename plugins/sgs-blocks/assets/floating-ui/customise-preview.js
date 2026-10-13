@@ -75,6 +75,22 @@
 		} );
 	} );
 
+	// ── Reading Progress: gradient ────────────────────────────────────────────
+	// The browser ignores a value that is not a valid gradient, and the server
+	// sanitiser decides what is saved.
+
+	api( 'sgs_floating_ui_reading_progress_gradient', function ( value ) {
+		value.bind( function ( gradient ) {
+			if ( wrapper ) {
+				if ( gradient ) {
+					wrapper.style.setProperty( '--rp-gradient', gradient );
+				} else {
+					wrapper.style.removeProperty( '--rp-gradient' );
+				}
+			}
+		} );
+	} );
+
 	// ── Reading Progress: height ──────────────────────────────────────────────
 
 	api( 'sgs_floating_ui_reading_progress_height', function ( value ) {

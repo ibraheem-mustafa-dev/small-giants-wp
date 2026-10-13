@@ -3,9 +3,11 @@
  * SGS Floating UI — Customiser controls (Replaces retired sgs/back-to-top + sgs/reading-progress blocks).
  *
  * Registers an "SGS Floating UI" section inside the WordPress Customiser
- * (Appearance → Customise → SGS Floating UI) with 7 controls:
+ * (Appearance → Customise → SGS Floating UI) with 8 controls:
  *   Back to Top: enabled, background colour, icon colour, position.
- *   Reading Progress: enabled, colour, height.
+ *   Reading Progress: enabled, colour, gradient, height. A non-empty gradient
+ *   (validated by `sgs_css_gradient_value()`, the sanitiser every block uses)
+ *   wins over the flat colour.
  *
  * All settings use `type => 'option'` so values write to `wp_options['sgs_floating_ui_*']`
  * rather than `theme_mod`. `postMessage` transport is used for live preview without
@@ -34,6 +36,7 @@ final class Sgs_Floating_UI_Customiser {
 	const OPT_BTT_POSITION = 'sgs_floating_ui_back_to_top_position';
 	const OPT_RP_ENABLED   = 'sgs_floating_ui_reading_progress_enabled';
 	const OPT_RP_COLOUR    = 'sgs_floating_ui_reading_progress_colour';
+	const OPT_RP_GRADIENT  = 'sgs_floating_ui_reading_progress_gradient';
 	const OPT_RP_HEIGHT    = 'sgs_floating_ui_reading_progress_height';
 
 	// ── Defaults ─────────────────────────────────────────────────────────────
@@ -51,6 +54,7 @@ final class Sgs_Floating_UI_Customiser {
 	public static function register(): void {
 		\add_action( 'customize_register', array( __CLASS__, 'register_controls' ) );
 		\add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_preview_script' ) );
+		\add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'enqueue_control_script' ) );
 	}
 
 	// ── Customiser registration ───────────────────────────────────────────────
@@ -61,6 +65,8 @@ final class Sgs_Floating_UI_Customiser {
 	 * @param \WP_Customize_Manager $wp_customize The Customiser manager instance.
 	 */
 	public static function register_controls( \WP_Customize_Manager $wp_customize ): void {
+		require_once __DIR__ . '/class-sgs-floating-ui-gradient-control.php';
+		self::load_gradient_sanitiser();
 
 		// -- Section ----------------------------------------------------------
 		$wp_customize->add_section(
@@ -209,6 +215,34 @@ final class Sgs_Floating_UI_Customiser {
 			)
 		);
 
+		// -- Reading Progress: gradient ---------------------------------------
+		// A text control with a live swatch (see Sgs_Floating_UI_Gradient_Control).
+		// The block editor's gradient picker needs the block-editor data stores,
+		// which the Customiser does not load, so it is not mounted here.
+		$wp_customize->add_setting(
+			self::OPT_RP_GRADIENT,
+			array(
+				'type'              => 'option',
+				'default'           => '',
+				'capability'        => 'edit_theme_options',
+				'sanitize_callback' => array( __CLASS__, 'sanitise_gradient' ),
+				'validate_callback' => array( __CLASS__, 'validate_gradient' ),
+				'transport'         => 'postMessage',
+			)
+		);
+		$wp_customize->add_control(
+			new Sgs_Floating_UI_Gradient_Control(
+				$wp_customize,
+				self::OPT_RP_GRADIENT,
+				array(
+					'label'       => \__( 'Reading progress — bar gradient', 'sgs-blocks' ),
+					'description' => \__( 'Optional. A CSS gradient such as linear-gradient(90deg, #EBDD78 0%, #0A7EA8 100%). When set it replaces the bar colour; leave empty to use the colour.', 'sgs-blocks' ),
+					'section'     => 'sgs_floating_ui',
+					'priority'    => 65,
+				)
+			)
+		);
+
 		// -- Reading Progress: height -----------------------------------------
 		$wp_customize->add_setting(
 			self::OPT_RP_HEIGHT,
@@ -247,6 +281,19 @@ final class Sgs_Floating_UI_Customiser {
 			'sgs-floating-ui-customise-preview',
 			\plugins_url( 'assets/floating-ui/customise-preview.js', \dirname( __DIR__ ) . '/sgs-blocks.php' ),
 			array( 'customize-preview' ),
+			SGS_BLOCKS_VERSION,
+			true
+		);
+	}
+
+	/**
+	 * Enqueue the gradient control's swatch script inside the Customiser panel only.
+	 */
+	public static function enqueue_control_script(): void {
+		\wp_enqueue_script(
+			'sgs-floating-ui-customise-control',
+			\plugins_url( 'assets/floating-ui/customise-control.js', \dirname( __DIR__ ) . '/sgs-blocks.php' ),
+			array( 'customize-controls' ),
 			SGS_BLOCKS_VERSION,
 			true
 		);
@@ -294,5 +341,41 @@ final class Sgs_Floating_UI_Customiser {
 	 */
 	public static function sanitise_height( $value ): int {
 		return max( 2, min( 8, \absint( $value ) ) );
+	}
+
+	/**
+	 * Load the shared gradient sanitiser (`sgs_css_gradient_value()`).
+	 */
+	public static function load_gradient_sanitiser(): void {
+		if ( ! \function_exists( 'sgs_css_gradient_value' ) ) {
+			require_once __DIR__ . '/helpers-tokens.php';
+		}
+	}
+
+	/**
+	 * Sanitise the reading-progress gradient with the same sanitiser the blocks
+	 * use for every `*Gradient` attribute. Anything it rejects becomes ''.
+	 *
+	 * @param mixed $value Raw gradient string.
+	 * @return string A safe gradient string, or ''.
+	 */
+	public static function sanitise_gradient( $value ): string {
+		self::load_gradient_sanitiser();
+		return \sgs_css_gradient_value( \is_string( $value ) ? $value : '' );
+	}
+
+	/**
+	 * Customiser validation: a non-empty value the sanitiser rejects is reported
+	 * to the operator instead of being silently emptied.
+	 *
+	 * @param \WP_Error $validity Validity object.
+	 * @param mixed     $value    Raw gradient string.
+	 * @return \WP_Error
+	 */
+	public static function validate_gradient( $validity, $value ) {
+		if ( \is_string( $value ) && '' !== \trim( $value ) && '' === self::sanitise_gradient( $value ) ) {
+			$validity->add( 'invalid_gradient', \__( 'Not a valid CSS gradient. Use linear-gradient(...), radial-gradient(...) or conic-gradient(...) with colours only, no URLs.', 'sgs-blocks' ) );
+		}
+		return $validity;
 	}
 }
