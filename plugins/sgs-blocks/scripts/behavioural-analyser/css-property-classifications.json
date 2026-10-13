@@ -2272,13 +2272,6 @@
     },
     {
       "slug": "sgs/button",
-      "attr": "liftHover",
-      "fields": {
-        "css_property": "translate"
-      }
-    },
-    {
-      "slug": "sgs/button",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
@@ -5589,6 +5582,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -9300,6 +9300,55 @@
       }
     },
     {
+      "slug": "sgs/gallery",
+      "attr": "tileColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "tileColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "GRID_AREA",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "tileColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "GRID_AREA",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "tileMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "tilePadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
+      }
+    },
+    {
       "slug": "sgs/google-rating-badge",
       "attr": "accentStripeColourGradient",
       "fields": {
@@ -11734,6 +11783,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -14355,6 +14411,17 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerLinkHoverBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinks",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerLinkPaddingY",
       "fields": {
         "css_property": "padding-block",
@@ -14751,6 +14818,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -15413,6 +15487,42 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "closeBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeBgHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "close",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeBgHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "close",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "closeBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -15649,6 +15759,22 @@
         "role": "color",
         "css_element": "close",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "caret-box"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "caret-box"
       }
     },
     {
@@ -15901,6 +16027,30 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "ornamentTextFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "ornament"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "ornamentTextFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "ornament"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "ornamentTextLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "ornament"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "sublinkMarkerColour",
       "fields": {
         "css_property": "fill",
@@ -15948,13 +16098,6 @@
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer-menu",
-      "attr": "submenuCaretSize",
-      "fields": {
-        "css_property": "height,width"
       }
     },
     {
@@ -16669,6 +16812,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -21574,6 +21724,14 @@
     },
     {
       "slug": "sgs/separator",
+      "attr": "lineStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -21593,6 +21751,14 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "thickness",
+      "fields": {
+        "css_property": "border-width",
         "css_element": "wrapper"
       }
     },
@@ -21646,6 +21812,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -22117,6 +22290,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -25306,6 +25486,13 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-image",
@@ -27630,6 +27817,25 @@
     },
     {
       "slug": "sgs/button",
+      "attr": "iconBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "iconBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "icon",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/button",
       "attr": "iconColourGradient",
       "fields": {
         "css_property": "stroke",
@@ -28535,6 +28741,15 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "pinEdge",
+      "fields": {
+        "css_property": "position",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "scrollSideways",
       "fields": {
         "css_property": "overflow",
@@ -28999,6 +29214,23 @@
       "attr": "submitBackgroundHoverGradient",
       "fields": {
         "css_property": "background-image",
+        "css_element": "submit-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
         "css_element": "submit-button",
         "css_state": "hover"
       }
@@ -29470,6 +29702,61 @@
         "css_property": "anim:easing",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "tileBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "tileBorderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "tileBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "tileBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "tileBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "tileColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
       }
     },
     {
@@ -31110,6 +31397,25 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerLinkBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinks"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinks"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerLinkDescColour",
       "fields": {
         "css_property": "color",
@@ -31153,6 +31459,16 @@
         "css_property": "border-color-gradient",
         "css_layer": "CONTENT",
         "css_element": "drawerLinks"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkHoverBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinks",
+        "css_state": "hover"
       }
     },
     {
@@ -31218,6 +31534,51 @@
         "css_property": "font-size",
         "css_layer": "CONTENT",
         "css_element": "drawerLinkNumber"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinks"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerShellPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "GRID",
+        "css_element": "drawer"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerShellRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "GRID",
+        "css_element": "drawer"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerShellShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "GRID",
+        "css_element": "drawer"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerShellShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "GRID",
+        "css_element": "drawer"
       }
     },
     {
@@ -32368,6 +32729,55 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "chromeLogoBoxBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "chromeLogo"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeLogoBoxBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "chromeLogo"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeLogoBoxPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "chromeLogo"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeLogoBoxRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "chromeLogo"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeLogoBoxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "chromeLogo"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeLogoBoxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "chromeLogo"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "chromeLogoShow",
       "fields": {
         "css_element": "chromeLogo"
@@ -32461,6 +32871,13 @@
       "attr": "chromeSlotShow",
       "fields": {
         "css_element": "chromeSlot"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeSticky",
+      "fields": {
+        "css_element": "chrome"
       }
     },
     {
@@ -32608,6 +33025,66 @@
         "css_property": "color-gradient",
         "css_element": "close",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "caret-box"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "caret-box"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxBgOpen",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "caret-box-open"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxBgOpenGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "caret-box-open"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "caret-box"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxBorderColourOpen",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "caret-box-open"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "caret-box"
       }
     },
     {
@@ -35005,22 +35482,6 @@
         "css_property": "background-image",
         "css_element": "content",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/separator",
-      "attr": "lineStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/separator",
-      "attr": "thickness",
-      "fields": {
-        "css_property": "border-width",
-        "css_element": "wrapper"
       }
     },
     {

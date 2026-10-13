@@ -62,7 +62,7 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_shell_css' ) ) {
 			$decls[] = 'border-radius:' . $radius;
 		}
 		$decls  = array_merge( $decls, sgs_box_object_longhand_list( $attributes['drawerShellPadding'] ?? null, 'padding' ) );
-		$shadow = sgs_shadow_decls( $attributes, sgs_shadow_attr_map( 'drawerShellShadow' ), 'sgs/mega-panel' );
+		$shadow = sgs_shadow_decls( $attributes, array( 'base' => 'drawerShellShadow', 'colour' => 'drawerShellShadowColour' ), 'sgs/mega-panel' );
 		$decls  = array_merge( $decls, $shadow['normal'] );
 		if ( $decls ) {
 			$css .= $root_sel . '{' . implode( ';', $decls ) . ';}';

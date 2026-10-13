@@ -64,7 +64,7 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_extras_css' ) ) {
 			if ( null !== $padding && '' !== $padding ) {
 				$decls[] = rtrim( $padding, ';' );
 			}
-			$shadow = sgs_shadow_decls( $attributes, sgs_shadow_attr_map( 'chromeLogoBoxShadow' ), 'sgs/nav-drawer' );
+			$shadow = sgs_shadow_decls( $attributes, array( 'base' => 'chromeLogoBoxShadow', 'colour' => 'chromeLogoBoxShadowColour' ), 'sgs/nav-drawer' );
 			$decls  = array_merge( $decls, $shadow['normal'] );
 			if ( $decls ) {
 				$css .= $logo . '{' . implode( ';', $decls ) . ';}';

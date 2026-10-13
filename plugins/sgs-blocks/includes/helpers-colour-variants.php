@@ -670,6 +670,8 @@ function sgs_shadow_attr_map( string $base, bool $with_hover_shape = false, bool
  *                          `submitSgsHoverShadow` (sgs_shadow_lift_attr_names()); with it, a
  *                          chosen hover-shadow preset is also drawn here, since no other path
  *                          reads a prefixed attribute. Omitted = the block-root names.
+ *                          An optional 'hover_preset' names the hover-shadow pick literally
+ *                          (e.g. 'submitSgsHoverShadow'); it wins over the prefix-built name.
  * @param string $block_name Registered block name (e.g. 'sgs/button'), for the
  *                          `supports.sgs.shadowLift` gate on the automatic lift. '' skips
  *                          that gate (the attribute-level switch still applies).
@@ -719,7 +721,8 @@ function sgs_shadow_decls( array $attributes, array $map, string $block_name = '
 		// A hover-shadow preset picked for a prefixed shadow replaces the automatic lift.
 		$names          = sgs_shadow_lift_attr_names( $lift_prefix );
 		// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback.
-		$out['hover'][] = 'box-shadow:var(--wp--preset--shadow--' . strtolower( (string) $attributes[ $names['hover'] ] ) . ')';
+		$preset_key     = isset( $map['hover_preset'] ) ? (string) $map['hover_preset'] : $names['hover'];
+		$out['hover'][] = 'box-shadow:var(--wp--preset--shadow--' . strtolower( (string) $attributes[ $preset_key ] ) . ')';
 	} elseif ( '' !== $base_shape && sgs_shadow_lift_enabled( $attributes, $block_name, $lift_prefix ) ) {
 		// Automatic lift (design H4) — only when NOTHING explicit is wired at all; an explicit
 		// hover shape or colour above always wins and this branch is never reached for it.

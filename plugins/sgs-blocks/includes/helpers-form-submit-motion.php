@@ -33,6 +33,7 @@ if ( ! function_exists( 'sgs_form_submit_shadow_map' ) ) {
 			'hover'        => 'submitShadowHover',
 			'hover_colour' => 'submitShadowColourHover',
 			'lift_prefix'  => 'submit',
+			'hover_preset' => 'submitSgsHoverShadow',
 		);
 	}
 }
