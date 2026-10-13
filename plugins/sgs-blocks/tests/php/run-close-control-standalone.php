@@ -464,7 +464,7 @@ if ( is_callable( $sgs_nd_geometry_for_anchor ) ) {
 	ok( false !== strpos( $fs_modal, 'inset:0' ) && false !== strpos( $fs_modal, $z_under ) && false === strpos( $fs_modal, 'opener-row-bottom' ), 'NEGATIVE CONTROL: modal full-screen keeps the full-viewport geometry (the checks above can tell the two apart)' );
 	ok( $sgs_nd_geometry_for_anchor( 'trigger', '', 'non-modal' ) === $sgs_nd_geometry_for_anchor( 'trigger', '', 'modal' ) && false !== strpos( $sgs_nd_geometry_for_anchor( 'trigger', '', 'modal' ), 'var(--sgs-drawer-trigger-top' ), 'modality does not change the trigger panel' );
 }
-ok( false !== strpos( $current_source, "|| 'non-modal' === \$modality ) {" ), 'a non-modal drawer emits geometry even with no anchor attribute set (its default differs from style.css)' );
+ok( false !== strpos( $current_source, '$sgs_nd_geom_desktop = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_desktop' ) && false === strpos( $current_source, "|| 'non-modal' === \$modality ) {" ), 'every drawer, non-modal included, emits its geometry unconditionally, even with no anchor attribute set (its default differs from style.css)' );
 $store_js = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/shared/nav-interactivity/store.js' );
 ok( false !== strpos( $store_js, "trigger.closest( '.sgs-site-header-row' ) || trigger" ) && false !== strpos( $store_js, "'--sgs-drawer-opener-row-bottom'," ), 'store.js measures the own header row of the burger (falling back to the burger) and writes --sgs-drawer-opener-row-bottom' );
 ok( false === strpos( $drawer_css, 'sgs-nd-header-clear' ) && false === strpos( $current_source, 'sgs-nd-header-clear' ), 'the superseded header-clearance padding is gone from style.css and render.php' );

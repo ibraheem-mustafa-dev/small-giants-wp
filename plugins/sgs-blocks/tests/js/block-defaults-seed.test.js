@@ -82,4 +82,23 @@ describe( 'site-wide block defaults', () => {
 		const settings = settingsOf( BUTTON );
 		expect( applyBlockDefaults( settings, 'sgs/heading' ) ).toBe( settings );
 	} );
+
+	// QC council 2026-10-13: a variation that also switches an existing block (block or transform scope) is never seeded,
+	// so switching phone to email keeps the block's own settings; only an inserter-only copy carries the defaults.
+	it( 'a variation shared with block switching keeps its own attributes there; only the inserter copy is seeded', () => {
+		window.sgsBlockDefaults[ 'sgs/business-info' ] = { textColour: 'accent' };
+		const settings = { title: 'Business info', attributes: {}, variations: [ { name: 'phone', scope: [ 'inserter', 'transform' ], attributes: { displayType: 'phone' } } ] };
+		const out = applyBlockDefaults( settings, 'sgs/business-info' ).variations.filter( ( v ) => 'phone' === v.name );
+		const switching = out.find( ( v ) => v.scope.includes( 'transform' ) );
+		const inserting = out.find( ( v ) => v.scope.includes( 'inserter' ) );
+		expect( switching.attributes ).toEqual( { displayType: 'phone' } );
+		expect( switching.scope ).not.toContain( 'inserter' );
+		expect( inserting.attributes ).toEqual( { textColour: 'accent', displayType: 'phone' } );
+	} );
+
+	it( 'per-instance identity (an anchor id, a form id) is never seeded into new blocks', () => {
+		window.sgsBlockDefaults[ 'sgs/form' ] = { anchor: 'contact', formId: 'form-1', submitLiftHover: 4 };
+		const seeded = applyBlockDefaults( { title: 'Form', attributes: {}, variations: [] }, 'sgs/form' ).variations.find( ( v ) => SITE_DEFAULT_VARIATION === v.name );
+		expect( seeded.attributes ).toEqual( { submitLiftHover: 4 } );
+	} );
 } );

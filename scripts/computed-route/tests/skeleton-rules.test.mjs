@@ -274,6 +274,66 @@ test( 'alignWrapper: a wrapper that only aligns or pads its content goes; one th
 	assert.notEqual( run( tree, { facts: facts( 'alignWrapper' ) } ).proposal.rows[ 1 ].action, 'unwrap' );
 } );
 
+// ---------- what the rules must NOT do (QC council, 2026-10-13) ----------
+test( 'a link holding two logo images and no words is never a pill button: the home link goes and both logos stay', () => {
+	const tree = section( [ E( 'a', { attrs: { href: '/', 'aria-label': 'Home' } }, [ E( 'img', { attrs: { srcBasename: 'logo-mark.svg', alt: 'Acme' } } ), E( 'img', { attrs: { srcBasename: 'logo-wordmark.svg', alt: 'Acme' } } ) ] ) ] );
+	const r = run( tree );
+	assert.deepEqual( settled( byTag( r, 'a' ) ), { block: null, action: 'unwrap', rule: 'homeLink' } );
+	assert.equal( r.proposal.rows.filter( ( x ) => 'img' === x.tag && 'absorbed' !== x.action ).length, 2, 'both logos are kept' );
+	assert.notEqual( byTag( run( section( [ E( 'a', { attrs: { href: '/shop' } }, [ E( 'img' ), E( 'img' ) ] ) ] ) ), 'a' ).block, 'sgs/button', 'no words, no pill' );
+} );
+
+test( 'a control the visitor operates is never a label, a toggle or slider arrow is never a pill, and a bare number is never a label or title', () => {
+	const kicker = 'text-transform:uppercase;letter-spacing:.14em';
+	const r = run( section( [ E( 'button', { words: 'Continue', style: kicker } ), E( 'span', { words: '01', style: kicker } ), E( 'button', { attrs: { 'aria-expanded': 'false' } }, [ E( 'span', { words: 'Delivery times' } ), E( 'span', {}, [ svg() ] ) ] ) ] ) );
+	assert.notEqual( byWords( r, 'Continue' ).block, 'sgs/label' );
+	assert.notEqual( byWords( r, '01' ).block, 'sgs/label' );
+	assert.notEqual( row( r, ( x ) => 'button' === x.tag && ! x.words ).rule, 'pillButton', 'a disclosure toggle is not a pill' );
+} );
+
+test( 'cardAction: a card link ending in a call to action is a plain card and the action holds the link (Bean, 2026-10-13); MUST FAIL without the rule', () => {
+	const card = section( [ E( 'a', { attrs: { href: '/food-service' } }, [ E( 'h3', { words: 'Food Service' } ), E( 'p', { words: 'Kitchens that never stop' } ), E( 'div', { words: 'Explore Food Service' }, [ svg() ] ) ] ) ] );
+	const r = run( card );
+	const link = byTag( r, 'a' );
+	assert.deepEqual( [ link.block, link.attributes.sgsBlockLink ], [ 'sgs/container', undefined ], 'the card itself is not linked' );
+	const action = byWords( r, 'Explore Food Service' );
+	assert.deepEqual( [ action.block, action.rule, action.attributes.url ], [ 'sgs/button', 'cardAction', '/food-service' ] );
+	const off = run( card, { facts: facts( 'cardAction' ) } );
+	assert.notEqual( byWords( off, 'Explore Food Service' ).block, 'sgs/button' );
+	assert.equal( byTag( off, 'a' ).attributes.sgsBlockLink, '/food-service', 'without the rule the whole card is the link again' );
+} );
+
+test( 'openStatus: a second open-status line in a cousin position joins the first display and takes no text attribute', () => {
+	const tree = section( [ E( 'div', {}, [ E( 'div', {}, [ E( 'span', { words: 'Open now' } ) ] ), E( 'div', {}, [ E( 'span', { words: 'Closes at 5pm today' } ) ] ) ] ) ] );
+	const r = run( tree );
+	const displays = r.proposal.rows.filter( ( x ) => 'sgs/business-info' === x.block && 'open-status' === x.attributes?.displayType );
+	assert.equal( displays.length, 1, 'one open-status display, not two' );
+	assert.deepEqual( settled( byWords( r, 'Closes at 5pm today' ) ), { block: null, action: 'absorbed', rule: 'openStatus' } );
+	assert.equal( byWords( r, 'Closes at 5pm today' ).into, displays[ 0 ].key );
+	assert.deepEqual( Object.keys( displays[ 0 ].attributes ), [ 'displayType' ], 'no generic text attribute (copyrightPrefix) on a rule-set display' );
+} );
+
+test( 'readingProgress hands the bar over as a Floating UI site setting; without the rule no such handover exists', () => {
+	const tree = section( [ E( 'div', { style: 'position:fixed;left:0;top:0;height:3px;width:100%', attrs: { 'aria-hidden': 'true' } } ), E( 'p', { words: 'Body' } ) ] );
+	assert.equal( byTag( run( tree ), 'div' ).handover?.kind, 'floating-ui' );
+	assert.notEqual( byTag( run( tree, { facts: facts( 'readingProgress' ) } ), 'div' ).handover?.kind, 'floating-ui' );
+} );
+
+test( 'an emoji alone is an icon whether or not its characters are spaced', () => {
+	const r = run( section( [ E( 'span', { words: '⭐ ⭐ ⭐' } ), E( 'span', { words: '⭐⭐⭐' } ) ] ) );
+	assert.deepEqual( [ byWords( r, '⭐ ⭐ ⭐' ).block, byWords( r, '⭐⭐⭐' ).block ], [ 'sgs/icon', 'sgs/icon' ] );
+} );
+
+test( 'a client decision on an element a block absorbs is flagged stale, never silently dropped', () => {
+	const nav = E( 'header', {}, [ E( 'nav', { display: 'flex' }, [ E( 'button', { words: 'About' } ), E( 'button', { words: 'Sectors' } ) ] ) ] );
+	const tree = inventory( nav );
+	const key = tree.elements.find( ( x ) => 'About' === x.words ).key;
+	const r = proposeSkeleton( { inventory: tree, facts: facts(), surface: 'fixture', surfaceKind: 'header', clientDecisions: { surfaces: { fixture: { [ key ]: { block: 'sgs/button', signature: 'button|About' } } } }, db } );
+	const about = byWords( r, 'About' );
+	assert.equal( about.action, 'absorbed' );
+	assert.match( about.stale || '', /client decision .* no longer applies/ );
+} );
+
 test( 'drawsChildren: a leaf, an array-item block and a named block draw their children; MUST FAIL with the name removed', () => {
 	const m = inventoryModel( inventory( E( 'div' ) ) );
 	const hooks = { siteInfoKinds: () => new Map(), isColumnLabel: () => false, topBlock: () => null, blockOfKey: () => null };

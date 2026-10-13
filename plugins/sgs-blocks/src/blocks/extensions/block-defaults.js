@@ -18,8 +18,12 @@ import { addFilter } from '@wordpress/hooks';
 /** Name of the inserter variation that carries the site defaults. */
 export const SITE_DEFAULT_VARIATION = 'sgs-site-default';
 
-const insertable = ( variation ) =>
-	! Array.isArray( variation.scope ) || variation.scope.includes( 'inserter' );
+/** Attributes never seeded: WP internals and per-instance identity (PHP twin: Block_Defaults::NOT_DEFAULTS). */
+export const NOT_DEFAULTS = [ 'lock', 'className', 'style', 'metadata', 'anchor', 'formId' ];
+
+// A variation's scopes; WordPress treats an undeclared scope as [ 'block', 'inserter' ].
+const scopesOf = ( variation ) => ( Array.isArray( variation.scope ) ? variation.scope : [ 'block', 'inserter' ] );
+const insertable = ( variation ) => scopesOf( variation ).includes( 'inserter' );
 
 /**
  * Seed a block's inserter entries with its saved site defaults.
@@ -39,16 +43,21 @@ export function applyBlockDefaults( settings, name ) {
 		return settings;
 	}
 	// Keys the block does not declare when it is inserted are dropped by createBlock.
-	const initial = { ...saved };
+	const initial = Object.fromEntries( Object.entries( saved ).filter( ( [ key ] ) => ! NOT_DEFAULTS.includes( key ) ) );
 	if ( ! Object.keys( initial ).length ) {
 		return settings;
 	}
 
-	const variations = ( settings.variations || [] ).map( ( variation ) =>
-		insertable( variation )
-			? { ...variation, attributes: { ...initial, ...( variation.attributes || {} ) } }
-			: variation
-	);
+	// Only the inserter is seeded. A variation that also switches an existing block (its `block` or `transform` scope)
+	// is split: that copy keeps its own attributes, so switching never overwrites a block's settings with the defaults.
+	const variations = ( settings.variations || [] ).flatMap( ( variation ) => {
+		if ( ! insertable( variation ) ) {
+			return [ variation ];
+		}
+		const seeded = { ...variation, scope: [ 'inserter' ], attributes: { ...initial, ...( variation.attributes || {} ) } };
+		const others = scopesOf( variation ).filter( ( s ) => 'inserter' !== s );
+		return others.length ? [ { ...variation, scope: others }, seeded ] : [ seeded ];
+	} );
 	if ( ! variations.some( ( variation ) => variation.isDefault && insertable( variation ) ) ) {
 		variations.unshift( {
 			name: SITE_DEFAULT_VARIATION,

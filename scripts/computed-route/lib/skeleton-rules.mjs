@@ -73,9 +73,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 	const hasSvg = ( e ) => m.kids( e ).some( ( k ) => 'svg' === k.tag );
 	const bare = ( e ) => ! m.words( e ) && ! m.blockKids( e ).length;
 	const iconOnly = ( e ) => bare( e ) && hasSvg( e );
-	const emojiOnly = ( e ) => ! m.blockKids( e ).length && EMOJI.test( m.words( e ).replace( /s+/g, '' ) );
+	const emojiOnly = ( e ) => ! m.blockKids( e ).length && EMOJI.test( m.words( e ).replace( /\s+/g, '' ) );
 	const desc = ( e ) => m.blockKids( e ).flatMap( ( k ) => [ k, ...desc( k ) ] );
 	const handlerOf = ( e ) => /sc-camel-on-click="\{\{\s*([^}\s]+)\s*\}\}"/.exec( e.snippet || '' )?.[ 1 ] || '';
+	// A control the visitor operates: a button, anything with a click handler, a pressed or expanded state. It is never
+	// static text (a label, a heading, a card title).
+	const interactive = ( e ) => 'button' === e.tag || !! handlerOf( e ) || null != e.attrs?.[ 'aria-pressed' ] || null != e.attrs?.[ 'aria-expanded' ];
+	// A disclosure or slider control (it opens, closes or steps something): never a pill button.
+	const disclosure = ( e ) => null != e.attrs?.[ 'aria-expanded' ] || null != e.attrs?.[ 'aria-pressed' ] || /toggle|prev|next|open|close|expand|collapse/i.test( handlerOf( e ) );
+	// Words that are only a number (a count, an index "01"): never a label or a title.
+	const numberOnly = ( e ) => /^\d+$/.test( m.words( e ).trim() );
+	const textLeaves = ( e ) => desc( e ).filter( ( k ) => m.words( k ) && ! m.blockKids( k ).length );
+	const logoish = ( k ) => k.tag.endsWith( '-logo' ) || facts.logoBlocks.includes( hooks.topBlock( k ) );
 	// An element the draft fills from one script value (`{{ arrowIcon }}`) that renders no words: the value is a glyph,
 	// injected unstamped, so the inventory holds no child for it.
 	const bindingGlyph = ( e ) => bare( e ) && /^<[^>]+>\s*\{\{\s*[\w.$]+\s*\}\}\s*<\/[a-z0-9-]+>$/i.test( e.snippet || '' ) && Object.values( e.box || {} ).some( ( b ) => b?.w > 0 );
@@ -106,11 +115,28 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		const card = cardOf( e );
 		return !! card && desc( card ).find( ( k ) => m.words( k ) && ! m.blockKids( k ).length ) === e;
 	};
-	const realHref = ( e ) => ( e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
-	const sibsBefore = ( e ) => {
-		const list = m.blockKids( m.byKey[ e.parentKey ] || { key: null } );
-		return list.slice( 0, list.indexOf( e ) );
+	// The call to action that ends a card link: its last piece of text, short, after the title, either with a glyph beside
+	// it or below at least two other pieces of text. Returns that element, or null.
+	const cardAction = ( card ) => {
+		const texts = textLeaves( card );
+		const last = texts.at( -1 );
+		if ( ! last || texts.length < 2 || m.words( last ).split( ' ' ).length > ( R.cardAction?.maxWords ?? 4 ) || numberOnly( last ) ) {
+			return null;
+		}
+		const holder = m.byKey[ last.parentKey ];
+		const glyph = [ ...m.kids( last ), ...( holder && holder !== card ? m.kids( holder ) : [] ) ].some( ( k ) => 'svg' === k.tag || iconOnly( k ) || bindingGlyph( k ) );
+		return glyph || texts.length >= 3 ? last : null;
 	};
+	// The card link an element is the call to action of, or null.
+	const actionOf = ( e ) => {
+		for ( let p = m.byKey[ e.parentKey ], i = 0; p && i < 3; p = m.byKey[ p.parentKey ], i++ ) {
+			if ( 'a' === p.tag ) {
+				return cardAction( p ) === e ? p : null;
+			}
+		}
+		return null;
+	};
+	const realHref = ( e ) => ( e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
 
 	// The link source a Site Info kind becomes on a link (tel: is phone, a maps host is directions), or null.
 	const linkKindOf = ( e ) => {
@@ -145,7 +171,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		},
 		// A full-width bar a few pixels tall, fixed to the viewport, drawing only a fill: the Floating UI reading progress
 		// setting.
-		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove' } ) : null ),
+		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove', handover: { owner: 'site-setting', kind: 'floating-ui', detail: R.readingProgress?.handover || 'reading progress bar' } } ) : null ),
 		// A layer that holds nothing: a ring is a decorative image; a fill, gradient or glow folds into the background of
 		// the block it sits in.
 		( { e, st } ) => {
@@ -163,7 +189,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		// A group of links that each hold only an image is a logo wall: a gallery whose items are the links.
 		( { e, kidsB } ) => ( ! m.words( e ) && kidsB.length >= ( R.logoGrid?.minItems ?? 3 ) && kidsB.every( imageLink ) ? v( 'logoGrid', { block: R.logoGrid?.block, absorb: true } ) : null ),
 		// The link around a logo goes: the logo block links home itself.
-		( { e, kidsB } ) => ( 'a' === e.tag && specHit( R.homeLink, e.attrs?.href || '' ) && 1 === kidsB.length && ( kidsB[ 0 ].tag.endsWith( '-logo' ) || facts.logoBlocks.includes( hooks.topBlock( kidsB[ 0 ] ) ) ) ? v( 'homeLink', { action: 'unwrap' } ) : null ),
+		// Its children are one or more logos (a mark and a wordmark side by side).
+		( { e, kidsB } ) => ( 'a' === e.tag && specHit( R.homeLink, e.attrs?.href || '' ) && kidsB.length && kidsB.every( logoish ) ? v( 'homeLink', { action: 'unwrap' } ) : null ),
 		// A centring width wrapper inside a block that sets its own width (a header or footer, their rows, a section).
 		// Directly under a section root it goes only when it lays nothing out itself: a centred grid or flex there is the
 		// row the root accepts.
@@ -187,8 +214,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 			if ( ! specHit( R.openStatus, text ) || desc( e ).length > 2 ) {
 				return null;
 			}
-			const prev = sibsBefore( e ).reverse().find( ( x ) => ! bare( x ) );
-			return prev && specHit( R.openStatus, all( prev ) ) ? v( 'openStatus', { action: 'absorbed', into: prev.key } ) : v( 'openStatus', { block: R.openStatus?.block, attributes: { displayType: 'open-status' }, absorb: true } );
+			// An earlier open-status line within the same block (up to two levels up, as a sibling or a cousin) holds it.
+			const scope = m.byKey[ m.byKey[ e.parentKey ]?.parentKey ] || m.byKey[ e.parentKey ];
+			const order = m.els.indexOf( e );
+			const first = scope ? desc( scope ).find( ( x ) => m.els.indexOf( x ) < order && specHit( R.openStatus, all( x ) ) && desc( x ).length <= 2 ) : null;
+			return first ? v( 'openStatus', { action: 'absorbed', into: first.key } ) : v( 'openStatus', { block: R.openStatus?.block, attributes: { displayType: 'open-status' }, absorb: true } );
 		},
 		// An hours row: a few pieces of text (a day, its times) and nothing nested, reading as a day and a clock time.
 		( { text, kidsB } ) => ( kidsB.length && kidsB.length <= ( R.hoursRows?.maxParts ?? 3 ) && kidsB.every( ( k ) => ! m.blockKids( k ).length ) && specHit( facts.decisions.siteInfoPatterns?.hours, text ) && text.length <= ( R.hoursRows?.maxChars ?? 80 ) ?v( 'hoursRows', { block: R.hoursRows?.block, attributes: { displayType: 'hours', hoursLayout: 'rows' }, absorb: true } ) : null ),
@@ -199,9 +229,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 				return null;
 			}
 			const inner = desc( e );
+			const texts = textLeaves( e );
 			const lk = 'a' === e.tag ? linkKindOf( e ) : null;
-			if ( inner.filter( ( k ) => m.words( k ) && ! m.blockKids( k ).length ).length >= 2 || inner.some( ( k ) => HEADING.test( k.tag ) ) ) {
-				return 'a' === e.tag ? v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: linkAttrs( e, lk ) } ) : null;
+			if ( texts.length >= 2 || inner.some( ( k ) => HEADING.test( k.tag ) ) ) {
+				if ( 'a' !== e.tag ) {
+					return null;
+				}
+				// A card that ends in a short call to action is a plain card: the action is the button that holds the link.
+				return R.cardAction && cardAction( e ) ? v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: {} } ) : v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: linkAttrs( e, lk ) } );
+			}
+			// One action with one label (and a glyph): a pill. A toggle or a slider arrow is not; nor is a link with no words.
+			if ( 1 !== texts.length || disclosure( e ) ) {
+				return null;
 			}
 			return v( 'pillButton', { block: R.pillButton?.block, absorb: true, attributes: { label: text, ...( lk ? { linkSource: lk.source } : {} ), ...( lk && wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) } } );
 		},
@@ -213,11 +252,24 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		},
 		( { e } ) => ( 'nav' === e.tag && R.navigation?.bySurface?.[ surface.kind ] ? v( 'navigation', { block: R.navigation.bySurface[ surface.kind ], absorb: true } ) : null ),
 		( { e } ) => ( ! m.isIconLink( e ) && ( iconOnly( e ) || emojiOnly( e ) || bindingGlyph( e ) ) ? v( 'solitaryIcon', { block: R.solitaryIcon?.block } ) : null ),
+		// The call to action that ends a card link is the card's button, holding the card's link.
+		( { e } ) => {
+			const card = actionOf( e );
+			if ( ! card ) {
+				return null;
+			}
+			const lk = linkKindOf( card );
+			let link = realHref( card ) ? { url: realHref( card ) } : {};
+			if ( lk ) {
+				link = { linkSource: lk.source };
+			}
+			return v( 'cardAction', { block: R.cardAction?.block, attributes: { label: m.words( e ), ...link } } );
+		},
 		// A short run of words: the first in a header or footer row's column heads it; set in capitals, wide tracking or a
-		// pill it is a kicker.
+		// pill it is a kicker. A control the visitor operates and a bare number are neither.
 		( { e, st, kidsB } ) => {
 			// Its only children may be bare decorations (a marker dot), which the label, a leaf, absorbs.
-			if ( kidsB.some( ( k ) => ! bare( k ) ) || ! m.words( e ) || HEADING.test( e.tag ) || 'a' === e.tag || m.words( e ).split( ' ' ).length > ( R.label?.maxWords ?? 4 ) ) {
+			if ( kidsB.some( ( k ) => ! bare( k ) ) || ! m.words( e ) || HEADING.test( e.tag ) || 'a' === e.tag || interactive( e ) || numberOnly( e ) || m.words( e ).split( ' ' ).length > ( R.label?.maxWords ?? 4 ) ) {
 				return null;
 			}
 			const heading = headsRowColumn( e ) && v( 'columnHeading', { block: R.columnHeading?.block } );
