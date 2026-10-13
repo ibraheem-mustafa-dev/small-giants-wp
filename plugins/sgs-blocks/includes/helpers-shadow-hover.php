@@ -155,6 +155,42 @@ function sgs_shadow_hover_value( ?string $shape, ?string $colour ): string {
 }
 
 /**
+ * The two attribute names the lift-on-hover control reads and writes: the switch and the
+ * universal hover-shadow pick. An empty prefix gives the block-root names; a prefix names a
+ * second shadow on the same block (sgs/form's submit button passes `submit`), so the names
+ * become `submitShadowLiftOnHover` and `submitSgsHoverShadow`. JS twin: the same function in
+ * src/components/ShadowLiftControls.js.
+ *
+ * @param string $prefix Lower-camel attribute prefix, or '' for the block root.
+ * @return array{lift:string,hover:string} The switch attribute and the hover-shadow attribute.
+ */
+function sgs_shadow_lift_attr_names( string $prefix = '' ): array {
+	if ( '' === $prefix ) {
+		return array(
+			'lift'  => 'shadowLiftOnHover',
+			'hover' => 'sgsHoverShadow',
+		);
+	}
+	return array(
+		'lift'  => $prefix . 'ShadowLiftOnHover',
+		'hover' => $prefix . 'SgsHoverShadow',
+	);
+}
+
+/**
+ * Has the client picked a hover-shadow preset for this shadow (the Hover shadow select)?
+ *
+ * @param array  $attributes Block attributes (verbatim).
+ * @param string $prefix     Attribute prefix (see sgs_shadow_lift_attr_names()).
+ * @return bool True when the attribute holds a well-formed preset slug.
+ */
+function sgs_shadow_hover_preset_is_set( array $attributes, string $prefix = '' ): bool {
+	$names = sgs_shadow_lift_attr_names( $prefix );
+	return isset( $attributes[ $names['hover'] ] ) && is_string( $attributes[ $names['hover'] ] )
+		&& sgs_shadow_hover_is_slug( $attributes[ $names['hover'] ] );
+}
+
+/**
  * Is the automatic lift-on-hover allowed for this block instance? (Design H4/H5.)
  *
  * Two independent gates, either of which turns the lift off:
@@ -168,10 +204,13 @@ function sgs_shadow_hover_value( ?string $shape, ?string $colour ): string {
  *
  * @param array  $attributes Block attributes (verbatim).
  * @param string $block_name Registered block name, e.g. 'sgs/hero'. '' skips gate 2.
+ * @param string $prefix     Attribute prefix for a second shadow on the block (see
+ *                           sgs_shadow_lift_attr_names()); '' reads the block-root names.
  * @return bool True when the automatic lift may draw.
  */
-function sgs_shadow_lift_enabled( array $attributes, string $block_name = '' ): bool {
-	if ( isset( $attributes['shadowLiftOnHover'] ) && false === $attributes['shadowLiftOnHover'] ) {
+function sgs_shadow_lift_enabled( array $attributes, string $block_name = '', string $prefix = '' ): bool {
+	$names = sgs_shadow_lift_attr_names( $prefix );
+	if ( isset( $attributes[ $names['lift'] ] ) && false === $attributes[ $names['lift'] ] ) {
 		return false;
 	}
 
@@ -184,8 +223,7 @@ function sgs_shadow_lift_enabled( array $attributes, string $block_name = '' ): 
 	// the two may ever draw. `sgs_shadow_hover_is_slug()` mirrors the shape check the class-
 	// injection path (includes/hover-effects.php::is_hover_shadow_slug()) already applies to
 	// this same attribute, so an invalid/empty value never suppresses the lift.
-	if ( isset( $attributes['sgsHoverShadow'] ) && is_string( $attributes['sgsHoverShadow'] )
-		&& sgs_shadow_hover_is_slug( $attributes['sgsHoverShadow'] ) ) {
+	if ( sgs_shadow_hover_preset_is_set( $attributes, $prefix ) ) {
 		return false;
 	}
 

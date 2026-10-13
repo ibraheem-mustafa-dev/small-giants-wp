@@ -105,13 +105,15 @@
 					],
 					"attrMap": {
 						"css:color": "iconColour",
-						"css:stroke": "iconColourGradient"
+						"css:stroke": "iconColourGradient",
+						"css:background-color": "iconBackground"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "iconColourHover",
-								"css:stroke": "iconColourHoverGradient"
+								"css:stroke": "iconColourHoverGradient",
+								"css:background-color": "iconBackgroundHover"
 							}
 						}
 					},
@@ -165,6 +167,12 @@
 				"account"
 			],
 			"description": "Where the button's link comes from. 'url' (default) uses the typed URL/internal-link fields below. 'phone'/'email'/'whatsapp' read the value live from Appearance > SGS Site Info (Sgs_Site_Info::get()) and fall back to the typed URL when that Site Info field is empty. 'top' scrolls to the top of the page (view.js manages focus). 'account' links to the WooCommerce My Account page, or the login screen when WooCommerce is inactive."
+		},
+		"labelFromSiteInfo": {
+			"type": "boolean",
+			"default": false,
+			"role": "content",
+			"description": "When linkSource is phone, email or whatsapp, print the live Site Info value (the formatted phone number, the email address or the WhatsApp number) as the label. The typed label shows while that Site Info field is empty. Off = the typed label."
 		},
 		"linkId": {
 			"type": "string",
@@ -459,6 +467,21 @@
 			"type": "string",
 			"default": "",
 			"description": "Hover-state sibling of iconColourGradient. Non-empty wins over iconColourHover on :hover/:focus-visible."
+		},
+		"iconBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of a circle behind the icon (a palette slug or colour). Empty = no circle."
+		},
+		"iconBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of the circle behind the icon on hover and keyboard focus. Empty = the circle keeps its resting fill."
+		},
+		"iconShapeSize": {
+			"type": "object",
+			"default": {},
+			"description": "Diameter in px of the circle behind the icon, per device ({desktop,tablet,mobile}). Empty = 1.8 times the icon size. Used only while iconBackground or iconBackgroundHover is set."
 		},
 		"iconTitle": {
 			"type": "string",

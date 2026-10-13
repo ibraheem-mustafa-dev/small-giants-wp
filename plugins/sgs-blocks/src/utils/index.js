@@ -23,6 +23,7 @@ export * from './generateItemKey';
 export * from './patch-tier';
 export * from './typography-preview';
 export * from './shadow-hover';
+export * from './hover-lift';
 export * from './separators';
 export * from './separators-line';
 export * from './usePreviewTier';

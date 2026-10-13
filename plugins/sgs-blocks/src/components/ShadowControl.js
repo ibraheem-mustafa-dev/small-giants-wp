@@ -28,7 +28,7 @@
 import { __ } from '@wordpress/i18n';
 import { useSettings } from '@wordpress/block-editor';
 import { BaseControl, TabPanel } from '@wordpress/components';
-import ShadowLiftControls from './ShadowLiftControls';
+import ShadowLiftControls, { shadowLiftAttrKeys } from './ShadowLiftControls';
 import ShadowStateBuilder from './shadow-control/ShadowStateBuilder';
 import { makeResolveHex, presetPreviewCss } from './shadow-control/preview';
 import { flattenSettingList } from './shadow-control/useShadowPresets';
@@ -133,6 +133,7 @@ const warnMissing = ( what ) => () => {
  * @param {Object}   [props.attributes]           Block attributes (install-in-one-call form).
  * @param {Function} [props.setAttributes]        Block setAttributes.
  * @param {Object}   [props.attrNames]            Map from `shadowAttrKeys()`.
+ * @param {string}   [props.liftPrefix]           Attribute prefix for the lift switch and hover-shadow pick ('' = the block root; see ShadowLiftControls).
  */
 export default function ShadowControl( {
 	label,
@@ -147,6 +148,7 @@ export default function ShadowControl( {
 	attributes,
 	setAttributes,
 	attrNames,
+	liftPrefix = '',
 } ) {
 	// Explicit props win over the map, and a pair is written in ONE call only when the map
 	// (not the caller) supplies both halves.
@@ -176,7 +178,7 @@ export default function ShadowControl( {
 	// attribute (fanned out by scripts/fanout-shadow-lift-attr.py). `attributes` always
 	// carries a declared attribute's default, so an undeclared attribute reads as
 	// `undefined` here, not `true` — that's the presence check, not the value.
-	const declaresLift = Boolean( attributes ) && Object.prototype.hasOwnProperty.call( attributes, 'shadowLiftOnHover' );
+	const declaresLift = Boolean( attributes ) && Object.prototype.hasOwnProperty.call( attributes, shadowLiftAttrKeys( liftPrefix ).lift );
 
 	const applyNormal = ( shape, colourText ) => {
 		if ( ! explicitBase && attrNames?.base && attrNames?.colour && setAttributes ) {
@@ -222,7 +224,7 @@ export default function ShadowControl( {
 	// live in the shared ShadowLiftControls, also mounted by blocks that use WordPress's own
 	// shadow panel. See that file for the precedence rule.
 	const liftToggle = declaresLift ? (
-		<ShadowLiftControls attributes={ attributes } setAttributes={ setAttributes } liftLabel={ liftLabel } />
+		<ShadowLiftControls attributes={ attributes } setAttributes={ setAttributes } liftLabel={ liftLabel } attrPrefix={ liftPrefix } />
 	) : null;
 
 	// Show the Hover tab when the block has an EXPLICIT hover pair to edit, OR declares the

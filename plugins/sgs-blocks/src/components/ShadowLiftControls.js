@@ -12,12 +12,28 @@
  * WordPress's own `supports.shadow` panel (process-steps, timeline), which have no
  * ShadowControl to host it. Renders nothing unless the block declares the attribute.
  *
+ * A block with a second shadow (sgs/form's submit button) passes `attrPrefix` ('submit'), and the
+ * two attributes become `submitShadowLiftOnHover` and `submitSgsHoverShadow`; an empty prefix
+ * keeps the block-root names. PHP twin: includes/helpers-shadow-hover.php::sgs_shadow_lift_attr_names.
+ *
  * @package SGS\Blocks
  */
 
 import { __ } from '@wordpress/i18n';
 import { SelectControl, ToggleControl } from '@wordpress/components';
 import { useSettings } from '@wordpress/block-editor';
+
+/**
+ * The lift switch and hover-shadow attribute names for a prefix.
+ *
+ * @param {string} [prefix] Lower-camel attribute prefix; '' for the block root.
+ * @return {{lift: string, hover: string}} The two attribute names.
+ */
+export function shadowLiftAttrKeys( prefix = '' ) {
+	return prefix
+		? { lift: `${ prefix }ShadowLiftOnHover`, hover: `${ prefix }SgsHoverShadow` }
+		: { lift: 'shadowLiftOnHover', hover: 'sgsHoverShadow' };
+}
 
 /** Flatten a theme/default/custom origin object (or a plain list) into one list. */
 const flatten = ( setting ) => {
@@ -35,17 +51,19 @@ const flatten = ( setting ) => {
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Attribute setter.
  * @param {string}   [props.liftLabel]   What the automatic lift lifts to, when known.
+ * @param {string}   [props.attrPrefix]  Attribute prefix for a second shadow on the block ('' = the block root).
  * @return {JSX.Element|null} The two controls, or null when the block has no lift.
  */
-export default function ShadowLiftControls( { attributes, setAttributes, liftLabel = '' } ) {
+export default function ShadowLiftControls( { attributes, setAttributes, liftLabel = '', attrPrefix = '' } ) {
+	const names = shadowLiftAttrKeys( attrPrefix );
 	const [ presetSetting ] = useSettings( 'shadow.presets' );
 	const declaresLift =
-		Boolean( attributes ) && Object.prototype.hasOwnProperty.call( attributes, 'shadowLiftOnHover' );
+		Boolean( attributes ) && Object.prototype.hasOwnProperty.call( attributes, names.lift );
 	if ( ! declaresLift ) {
 		return null;
 	}
-	const liftOnHover = false !== attributes.shadowLiftOnHover;
-	const hoverShadow = String( attributes.sgsHoverShadow ?? '' );
+	const liftOnHover = false !== attributes[ names.lift ];
+	const hoverShadow = String( attributes[ names.hover ] ?? '' );
 	const options = [
 		{ label: __( 'Automatic (matching lift)', 'sgs-blocks' ), value: '' },
 		...flatten( presetSetting ).map( ( preset ) => ( { label: preset.name, value: preset.slug } ) ),
@@ -66,7 +84,7 @@ export default function ShadowLiftControls( { attributes, setAttributes, liftLab
 				__nextHasNoMarginBottom
 				label={ __( 'Lift on hover', 'sgs-blocks' ) }
 				checked={ liftOnHover }
-				onChange={ ( next ) => setAttributes( { shadowLiftOnHover: next } ) }
+				onChange={ ( next ) => setAttributes( { [ names.lift ]: next } ) }
 				help={ help }
 			/>
 			<SelectControl
@@ -74,7 +92,7 @@ export default function ShadowLiftControls( { attributes, setAttributes, liftLab
 				help={ __( 'Pick a specific shadow to draw on hover instead of the automatic lift above.', 'sgs-blocks' ) }
 				value={ hoverShadow }
 				options={ options }
-				onChange={ ( next ) => setAttributes( { sgsHoverShadow: next ?? '' } ) }
+				onChange={ ( next ) => setAttributes( { [ names.hover ]: next ?? '' } ) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>

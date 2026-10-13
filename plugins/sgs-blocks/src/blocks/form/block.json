@@ -122,6 +122,7 @@
 					"attrMap": {
 						"css:background-image": "submitBackgroundGradient",
 						"css:padding": "submitPadding",
+						"css:box-shadow": "submitShadow",
 						"css:min-height": "submitMinHeight",
 						"css:font-size": "submitFontSize",
 						"css:font-weight": "submitFontWeight",
@@ -139,6 +140,7 @@
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:box-shadow": "submitShadowHover",
 								"css:background-color": "submitBackgroundHover",
 								"css:background-image": "submitBackgroundHoverGradient",
 								"css:color": "submitColourHover",
@@ -687,6 +689,38 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the submit button's :hover/:focus-visible background. Non-empty wins over submitBackgroundHover; falls back to submitBackgroundGradient, then submitBackground, then none."
+		},
+		"submitLiftHover": {
+			"type": "number",
+			"default": 0,
+			"description": "Raises the submit button by this many px on hover and keyboard focus (0-24; 0 = off)."
+		},
+		"submitShadow": {
+			"type": "string",
+			"default": "",
+			"description": "The submit button's resting shadow shape (a preset slug or layers). Empty = none."
+		},
+		"submitShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"submitShadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "The submit button's hover shadow shape. Empty = the automatic lift of the resting shadow (submitShadowLiftOnHover)."
+		},
+		"submitShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"submitShadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"submitSgsHoverShadow": {
+			"type": "string",
+			"default": "",
+			"description": "A preset shadow to draw on the submit button on hover instead of the automatic lift. Empty = automatic."
 		},
 		"submitFontWeight": {
 			"type": "string",
