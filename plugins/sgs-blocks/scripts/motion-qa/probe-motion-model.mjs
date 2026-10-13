@@ -64,9 +64,9 @@ async function findMarkers( browser, urls ) {
 async function main() {
 	const args = parseArgs( process.argv );
 	if ( args.selfTest || args.validateFixtures ) {
-		const fixtures = validateFixtures();
+		const fixtures = await validateFixtures();
 		for ( const r of fixtures.rows ) console.log( JSON.stringify( r ) );
-		const failures = args.selfTest ? selfTest() : [];
+		const failures = args.selfTest ? await selfTest() : [];
 		if ( ! fixtures.ok ) failures.push( 'a fixture sgsMotion value is invalid' );
 		console.log( JSON.stringify( { selfTest: args.selfTest, fixtureValues: fixtures.rows.length, failures } ) );
 		process.exit( failures.length ? 1 : 0 );

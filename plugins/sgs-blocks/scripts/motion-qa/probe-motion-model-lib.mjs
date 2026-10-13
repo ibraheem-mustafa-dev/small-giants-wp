@@ -10,7 +10,8 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkMotion } from '../../../../scripts/computed-route/lib/motion-schema.mjs';
+/** The schema checker, loaded only by the offline modes: it imports ajv from scripts/computed-route/node_modules, which build-deploy.py's worktree does not have. */
+const loadCheckMotion = async () => ( await import( '../../../../scripts/computed-route/lib/motion-schema.mjs' ) ).checkMotion;
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '../../../..' );
@@ -80,7 +81,8 @@ export function storedDelays( blocks ) {
 }
 
 /** Validate every fixture's sgsMotion value against the schema and the refusals. Returns { rows, ok }. */
-export function validateFixtures() {
+export async function validateFixtures() {
+	const checkMotion = await loadCheckMotion();
 	const rows = [];
 	for ( const file of fs.readdirSync( FIXTURE_DIR ).filter( ( f ) => f.endsWith( '.json' ) ) ) {
 		const tree = JSON.parse( fs.readFileSync( path.join( FIXTURE_DIR, file ), 'utf8' ) );
@@ -169,7 +171,7 @@ export function viewProgress( top, height, viewport ) {
 export const styleWritesTransform = ( style ) => /(^|;|\s)(transform|translate|rotate|scale|opacity)\s*:/i.test( style || '' );
 
 /** The offline self-test: every judge must accept a good measurement and reject a planted bad one. Returns failures. */
-export function selfTest() {
+export async function selfTest() {
 	const failures = [];
 	const expectTrue = ( name, v ) => { if ( v !== true ) failures.push( `${ name }: expected true` ); };
 	const expectFalse = ( name, v ) => { if ( v !== false ) failures.push( `${ name }: expected false` ); };
@@ -186,7 +188,7 @@ export function selfTest() {
 	expectFalse( 'view progress differs', near( viewProgress( 700, 200, 800 ), 0.5, 0.01 ) );
 	expectTrue( 'style transform detected', styleWritesTransform( 'color:red; transform: rotate(2deg)' ) );
 	expectFalse( 'style without transform', styleWritesTransform( 'color:red; --sgs-mag-x: 4px' ) );
-	const fixtures = validateFixtures();
+	const fixtures = await validateFixtures();
 	if ( ! fixtures.ok ) failures.push( `fixtures: ${ JSON.stringify( fixtures.rows.filter( ( r ) => ! r.valid ) ) }` );
 	const hoverEntrance = JSON.parse( fs.readFileSync( path.join( FIXTURE_DIR, 'hover-entrance.json' ), 'utf8' ) );
 	const delays = storedDelays( hoverEntrance );
@@ -194,7 +196,7 @@ export function selfTest() {
 	const stripped = JSON.parse( JSON.stringify( hoverEntrance ), ( k, v ) => ( k === 'delay' ? undefined : v ) );
 	const strippedDelays = storedDelays( stripped );
 	if ( strippedDelays.entrance !== 0 || strippedDelays.hover !== 0 ) failures.push( 'storedDelays counted a delay in a tree with none' );
-	const planted = checkMotion( { v: 1, elements: { root: { hover: { state: { values: { translateY: -6, nonsense: 1 } } } } } } );
+	const planted = ( await loadCheckMotion() )( { v: 1, elements: { root: { hover: { state: { values: { translateY: -6, nonsense: 1 } } } } } } );
 	if ( planted.valid ) failures.push( 'schema accepted a planted unknown key' );
 	return failures;
 }
