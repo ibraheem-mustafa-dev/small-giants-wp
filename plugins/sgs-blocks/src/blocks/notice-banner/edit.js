@@ -18,6 +18,7 @@ import { colourVar, resolveShadowPreviewComposed, usePreviewTier, textPaintPrevi
 import { buildWrapperStyle } from './preview-style';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import MotionPausePreview from '../../components/MotionPausePreview';
 
 // U-15 (`.claude/reports/2026-09-26-u15-notice-message-design.md` §3.2).
 const MESSAGE_MODE_OPTIONS = [
@@ -159,6 +160,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		messageTransition,
 		showMessageArrows,
 		pauseOnHover,
+		pauseButton,
 	} = attributes;
 
 	const isAnnouncement = 'announcement' === displayMode;
@@ -662,10 +664,20 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 											__nextHasNoMarginBottom
 										/>
 										<ToggleControl
-											label={ __( 'Pause on hover or focus', 'sgs-blocks' ) }
+											label={ __( 'Pause on hover', 'sgs-blocks' ) }
+											help={ __( 'Keyboard focus inside the banner always pauses it.', 'sgs-blocks' ) }
 											checked={ pauseOnHover !== false }
 											onChange={ ( val ) =>
 												setAttributes( { pauseOnHover: val } )
+											}
+											__nextHasNoMarginBottom
+										/>
+										<ToggleControl
+											label={ __( 'Show pause button', 'sgs-blocks' ) }
+											help={ __( 'Adds a pause/play button. Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients.', 'sgs-blocks' ) }
+											checked={ !! pauseButton }
+											onChange={ ( val ) =>
+												setAttributes( { pauseButton: val } )
 											}
 											__nextHasNoMarginBottom
 										/>
@@ -824,6 +836,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					</span>
 				) }
 				<div { ...innerBlocksProps } />
+				{ canRotate && 'rotate' === messageMode && pauseButton && (
+					<MotionPausePreview block="sgs-notice-banner" />
+				) }
 				{ canRotate && 'rotate' === messageMode && showMessageArrows && (
 					<>
 						<button

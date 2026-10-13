@@ -1,11 +1,12 @@
 <?php
 /**
- * Tests: every auto-moving block prints the shared pause / play button (WCAG 2.2.2) when its
- * automatic motion is on, by default (no attribute needed), and prints none when it is off.
+ * Tests: every auto-moving block prints the shared pause / play button (WCAG 2.2.2) when its motion
+ * is on AND its pause-button option is on, and prints none by default (the option is off by default
+ * on every block) or when the motion is off.
  *
  * Renders run the REAL render.php through the QA harness in a child process. The harness applies
  * no block.json defaults, so an absent attribute here is exactly an existing block saved before
- * the control existed: it must gain the button without a resave.
+ * the option existed: it must not gain the button.
  *
  * Negative control: set SGS_TEST_RENDER_FILE to the absolute path of another render.php (for
  * example a copy of the pre-change file saved beside the real one, so its relative requires
@@ -26,9 +27,10 @@ final class MotionPauseRenderTest extends TestCase {
 	 * @param string                           $slug  Block slug.
 	 * @param array<string, mixed>             $attrs Block attributes.
 	 * @param array<int, array<string, mixed>> $inner Inner blocks: {name, attributes, html}.
+	 * @param string                           $prepend Optional auto_prepend_file (test stubs).
 	 * @return string
 	 */
-	private function html( string $slug, array $attrs, array $inner = array() ): string {
+	private function html( string $slug, array $attrs, array $inner = array(), string $prepend = '' ): string {
 		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$file    = tempnam( sys_get_temp_dir(), 'sgsmp' );
 		$inner_f = tempnam( sys_get_temp_dir(), 'sgsmi' );
@@ -38,6 +40,7 @@ final class MotionPauseRenderTest extends TestCase {
 
 		try {
 			$cmd = escapeshellarg( PHP_BINARY )
+				. ( '' !== $prepend ? ' -d auto_prepend_file=' . escapeshellarg( $prepend ) : '' )
 				. ' ' . escapeshellarg( $harness )
 				. ' --slug ' . escapeshellarg( $slug )
 				. ( '' !== $override ? ' --render-file ' . escapeshellarg( $override ) : '' )
@@ -97,12 +100,13 @@ final class MotionPauseRenderTest extends TestCase {
 		);
 	}
 
-	public function test_trust_bar_prints_the_button_by_default_when_auto_scroll_is_on(): void {
+	public function test_trust_bar_prints_the_button_when_its_option_is_on(): void {
 		$html = $this->html(
 			'sgs/trust-bar',
 			array(
-				'autoScroll' => true,
-				'items'      => $this->trust_items(),
+				'autoScroll'            => true,
+				'autoScrollPauseButton' => true,
+				'items'                 => $this->trust_items(),
 			)
 		);
 		$this->assert_button( $html, 'sgs-trust-bar', 'Pause scrolling' );
@@ -123,12 +127,13 @@ final class MotionPauseRenderTest extends TestCase {
 		);
 	}
 
-	public function test_brand_strip_prints_the_button_when_scrolling(): void {
+	public function test_brand_strip_prints_the_button_when_its_option_is_on(): void {
 		$html = $this->html(
 			'sgs/brand-strip',
 			array(
-				'scrolling' => true,
-				'logos'     => $this->brand_logos(),
+				'scrolling'   => true,
+				'pauseButton' => true,
+				'logos'       => $this->brand_logos(),
 			)
 		);
 		$this->assert_button( $html, 'sgs-brand-strip', 'Pause scrolling' );
@@ -156,15 +161,34 @@ final class MotionPauseRenderTest extends TestCase {
 		return $out;
 	}
 
-	public function test_testimonial_slider_prints_the_button_when_autoplay_is_on(): void {
-		$html = $this->html( 'sgs/testimonial-slider', array( 'autoplay' => true ), $this->testimonials( 3 ) );
+	public function test_testimonial_slider_prints_the_button_when_its_option_is_on(): void {
+		$html = $this->html(
+			'sgs/testimonial-slider',
+			array(
+				'autoplay'    => true,
+				'pauseButton' => true,
+			),
+			$this->testimonials( 3 )
+		);
 		$this->assert_button( $html, 'sgs-testimonial-slider', 'Pause testimonials' );
 		$this->assertMatchesRegularExpression( '#sgs-testimonial-slider__controls">.*data-sgs-motion-pause#s', $html, 'in the controls bar' );
 	}
 
 	public function test_testimonial_slider_prints_no_button_without_autoplay_or_with_one_slide(): void {
 		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/testimonial-slider', array( 'autoplay' => false ), $this->testimonials( 3 ) ) ) );
-		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/testimonial-slider', array( 'autoplay' => true ), $this->testimonials( 1 ) ) ) );
+		$this->assertSame(
+			'',
+			$this->pause_button(
+				$this->html(
+					'sgs/testimonial-slider',
+					array(
+						'autoplay'    => true,
+						'pauseButton' => true,
+					),
+					$this->testimonials( 1 )
+				)
+			)
+		);
 	}
 
 	/** @return array<int, array<string, string>> */
@@ -181,13 +205,14 @@ final class MotionPauseRenderTest extends TestCase {
 		);
 	}
 
-	public function test_gallery_carousel_prints_the_button_when_autoplay_is_on(): void {
+	public function test_gallery_carousel_prints_the_button_when_its_option_is_on(): void {
 		$html = $this->html(
 			'sgs/gallery',
 			array(
-				'layout'           => 'carousel',
-				'carouselAutoplay' => true,
-				'mediaItems'       => $this->gallery_items(),
+				'layout'              => 'carousel',
+				'carouselAutoplay'    => true,
+				'carouselPauseButton' => true,
+				'mediaItems'          => $this->gallery_items(),
 			)
 		);
 		$this->assert_button( $html, 'sgs-gallery', 'Pause slideshow' );
@@ -202,21 +227,23 @@ final class MotionPauseRenderTest extends TestCase {
 				$this->html(
 					'sgs/gallery',
 					array(
-						'layout'           => 'grid',
-						'carouselAutoplay' => true,
-						'mediaItems'       => $items,
+						'layout'              => 'grid',
+						'carouselAutoplay'    => true,
+						'carouselPauseButton' => true,
+						'mediaItems'          => $items,
 					)
 				)
 			)
 		);
 	}
 
-	public function test_post_grid_carousel_prints_the_button_when_autoplay_is_on(): void {
+	public function test_post_grid_carousel_prints_the_button_when_its_option_is_on(): void {
 		$html = $this->html(
 			'sgs/post-grid',
 			array(
-				'layout'           => 'carousel',
-				'carouselAutoplay' => true,
+				'layout'              => 'carousel',
+				'carouselAutoplay'    => true,
+				'carouselPauseButton' => true,
 			)
 		);
 		$this->assert_button( $html, 'sgs-post-grid', 'Pause carousel' );
@@ -230,21 +257,23 @@ final class MotionPauseRenderTest extends TestCase {
 				$this->html(
 					'sgs/post-grid',
 					array(
-						'layout'           => 'grid',
-						'carouselAutoplay' => true,
+						'layout'              => 'grid',
+						'carouselAutoplay'    => true,
+						'carouselPauseButton' => true,
 					)
 				)
 			)
 		);
 	}
 
-	public function test_trustpilot_carousel_prints_the_button_when_autoplay_is_on(): void {
+	public function test_trustpilot_carousel_prints_the_button_when_its_option_is_on(): void {
 		$html = $this->html(
 			'sgs/trustpilot-reviews',
 			array(
-				'variant'    => 'carousel',
-				'autoplay'   => true,
-				'dataSource' => 'placeholder',
+				'variant'     => 'carousel',
+				'autoplay'    => true,
+				'pauseButton' => true,
+				'dataSource'  => 'placeholder',
 			)
 		);
 		$this->assert_button( $html, 'sgs-trustpilot-reviews', 'Pause reviews' );
@@ -269,13 +298,88 @@ final class MotionPauseRenderTest extends TestCase {
 				$this->html(
 					'sgs/trustpilot-reviews',
 					array(
-						'variant'    => 'grid',
-						'autoplay'   => true,
-						'dataSource' => 'placeholder',
+						'variant'     => 'grid',
+						'autoplay'    => true,
+						'pauseButton' => true,
+						'dataSource'  => 'placeholder',
 					)
 				)
 			)
 		);
+	}
+
+	/**
+	 * Render sgs/google-reviews with three written reviews (stubs: tests/php/stubs/google-reviews-render-prepend.php).
+	 *
+	 * @param array<string, mixed> $attrs Extra attributes.
+	 * @return string
+	 */
+	private function google_reviews( array $attrs ): string {
+		$reviews = array();
+		foreach ( array( 'Ann', 'Bea', 'Cal' ) as $author ) {
+			$reviews[] = array(
+				'author' => $author,
+				'rating' => 5,
+				'text'   => 'Good.',
+			);
+		}
+		$base = array(
+			'dataSource' => 'inline',
+			'reviews'    => $reviews,
+			'variant'    => 'slider',
+		);
+		putenv( 'SGS_GR_TEST_MODE=live' );
+		try {
+			return $this->html( 'sgs/google-reviews', array_merge( $base, $attrs ), array(), __DIR__ . '/stubs/google-reviews-render-prepend.php' );
+		} finally {
+			putenv( 'SGS_GR_TEST_MODE' );
+		}
+	}
+
+	public function test_google_reviews_slider_prints_the_button_when_its_option_is_on(): void {
+		$html = $this->google_reviews(
+			array(
+				'autoplay'    => true,
+				'pauseButton' => true,
+			)
+		);
+		$this->assert_button( $html, 'sgs-google-reviews', 'Pause reviews' );
+		$this->assertMatchesRegularExpression( '#class="sgs-google-reviews__lead sgs-slider-nav__lead"><button[^>]*data-sgs-motion-pause#', $html, 'in the navigation\'s leading slot' );
+	}
+
+	public function test_google_reviews_prints_no_button_without_autoplay_or_outside_the_slider(): void {
+		$this->assertSame( '', $this->pause_button( $this->google_reviews( array() ) ) );
+		$this->assertSame(
+			'',
+			$this->pause_button(
+				$this->google_reviews(
+					array(
+						'autoplay'    => true,
+						'pauseButton' => true,
+						'variant'     => 'grid',
+					)
+				)
+			)
+		);
+	}
+
+	/**
+	 * Motion on, the option untouched: a block saved before the option existed gains no button.
+	 * The pause option is off by default on every block.
+	 */
+	public function test_no_block_prints_the_button_by_default_when_its_motion_is_on(): void {
+		$cases = array(
+			'trust-bar'          => $this->html( 'sgs/trust-bar', array( 'autoScroll' => true, 'items' => $this->trust_items() ) ),
+			'brand-strip'        => $this->html( 'sgs/brand-strip', array( 'scrolling' => true, 'logos' => $this->brand_logos() ) ),
+			'testimonial-slider' => $this->html( 'sgs/testimonial-slider', array( 'autoplay' => true ), $this->testimonials( 3 ) ),
+			'gallery'            => $this->html( 'sgs/gallery', array( 'layout' => 'carousel', 'carouselAutoplay' => true, 'mediaItems' => $this->gallery_items() ) ),
+			'post-grid'          => $this->html( 'sgs/post-grid', array( 'layout' => 'carousel', 'carouselAutoplay' => true ) ),
+			'trustpilot-reviews' => $this->html( 'sgs/trustpilot-reviews', array( 'variant' => 'carousel', 'autoplay' => true, 'dataSource' => 'placeholder' ) ),
+			'google-reviews'     => $this->google_reviews( array( 'autoplay' => true ) ),
+		);
+		foreach ( $cases as $block => $html ) {
+			$this->assertSame( '', $this->pause_button( $html ), $block );
+		}
 	}
 
 	public function test_trust_bar_prints_no_button_when_nothing_scrolls_or_it_is_switched_off(): void {

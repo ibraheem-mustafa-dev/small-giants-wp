@@ -107,9 +107,10 @@ if ( 'carousel' === $layout ) {
 	if ( $carousel_show_dots ) {
 		echo '<div class="sgs-post-grid__carousel-dots" role="tablist" aria-label="' . esc_attr__( 'Carousel navigation', 'sgs-blocks' ) . '"></div>';
 	}
-	// Pause / play button (WCAG 2.2.2), the shared control: rendered hidden, view-carousel.js
-	// shows it once autoplay runs (never under reduced motion).
-	if ( $carousel_autoplay ) {
+	// Pause / play button (WCAG 2.2.2), the shared control, an option (carouselPauseButton, off
+	// by default): rendered hidden, view-carousel.js shows it once autoplay runs (never under
+	// reduced motion).
+	if ( $carousel_autoplay && ! empty( $attributes['carouselPauseButton'] ) ) {
 		echo sgs_motion_pause_button( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes its own output.
 			array(
 				'block'     => 'sgs-post-grid',

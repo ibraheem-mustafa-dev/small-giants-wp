@@ -191,8 +191,8 @@ export function TrustBarMarqueeControls( { attributes, setAttributes } ) {
 			/>
 			<ToggleControl
 				label={ __( 'Show pause button', 'sgs-blocks' ) }
-				help={ __( 'Needed for accessibility (WCAG 2.2.2): visitors must be able to stop moving content, and pausing only while hovered or focused does not count. Switching it off makes the strip fail that check. It only appears while the row is actually scrolling.', 'sgs-blocks' ) }
-				checked={ attributes.autoScrollPauseButton ?? true }
+				help={ __( 'Adds a pause/play button. Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients.', 'sgs-blocks' ) }
+				checked={ attributes.autoScrollPauseButton ?? false }
 				onChange={ ( val ) => setAttributes( { autoScrollPauseButton: val } ) }
 				__nextHasNoMarginBottom
 			/>

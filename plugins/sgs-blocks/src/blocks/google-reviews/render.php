@@ -18,6 +18,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once __DIR__ . '/google-reviews-stars.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-slider-nav.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
 
 // CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
 // declarations inside this block's scoped <style> tag. Mirrors sgs/hero's

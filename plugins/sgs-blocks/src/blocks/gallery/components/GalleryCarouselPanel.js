@@ -11,6 +11,7 @@ export default function GalleryCarouselPanel( { attributes, setAttributes, set }
 	const {
 		layout,
 		carouselAutoplay,
+		carouselPauseButton,
 		carouselSpeed,
 		carouselShowDots,
 		carouselShowArrows,
@@ -30,6 +31,7 @@ export default function GalleryCarouselPanel( { attributes, setAttributes, set }
 								carouselShowArrows: true,
 								carouselShowDots: true,
 								carouselAutoplay: false,
+								carouselPauseButton: false,
 								carouselSpeed: 5000,
 								dragToScroll: false,
 								dragMomentum: true,
@@ -93,6 +95,21 @@ export default function GalleryCarouselPanel( { attributes, setAttributes, set }
 									step={ 500 }
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+						) }
+						{ carouselAutoplay && (
+							<ToolsPanelItem
+								label={ __( 'Show pause button', 'sgs-blocks' ) }
+								hasValue={ () => !! carouselPauseButton }
+								onDeselect={ () => setAttributes( { carouselPauseButton: false } ) }
+							>
+								<ToggleControl
+									label={ __( 'Show pause button', 'sgs-blocks' ) }
+									help={ __( 'Adds a pause/play button. Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients.', 'sgs-blocks' ) }
+									checked={ !! carouselPauseButton }
+									onChange={ set( 'carouselPauseButton' ) }
+									__nextHasNoMarginBottom
 								/>
 							</ToolsPanelItem>
 						) }

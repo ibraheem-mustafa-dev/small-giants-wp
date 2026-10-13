@@ -843,9 +843,9 @@ if ( $scoped_css ) :
 	<?php
 endif;
 
-// Pause / play button (WCAG 2.2.2), the shared control: rendered hidden, view.js shows it once
-// the marquee runs. A static strip has nothing to pause and prints none.
-$sgs_bs_pause_html = $scrolling
+// Pause / play button (WCAG 2.2.2), the shared control, an option (pauseButton, off by default):
+// rendered hidden, view.js shows it once the marquee runs. A static strip prints none.
+$sgs_bs_pause_html = ( $scrolling && ! empty( $attributes['pauseButton'] ) )
 	? sgs_motion_pause_button(
 		array(
 			'block'     => 'sgs-brand-strip',

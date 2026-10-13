@@ -2,28 +2,18 @@
   "blocks": [
     {
       "block": "brand-strip",
-      "verdict": "PENDING",
+      "verdict": "COMPLIANT",
       "signals": [
         "css-loop"
       ],
-      "render_call": false,
-      "view_call": false,
+      "option": "pauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
       "handrolled_render": false,
       "handrolled_view": false,
-      "findings": [
-        {
-          "kind": "missing-render",
-          "signals": [
-            "css-loop"
-          ]
-        },
-        {
-          "kind": "missing-runtime",
-          "signals": [
-            "css-loop"
-          ]
-        }
-      ],
+      "findings": [],
       "exempt": []
     },
     {
@@ -32,6 +22,9 @@
       "signals": [
         "css-loop"
       ],
+      "option": null,
+      "option_default": null,
+      "option_control": false,
       "render_call": false,
       "view_call": false,
       "handrolled_render": false,
@@ -47,54 +40,34 @@
     },
     {
       "block": "gallery",
-      "verdict": "PENDING",
+      "verdict": "COMPLIANT",
       "signals": [
         "js-timer"
       ],
-      "render_call": false,
-      "view_call": false,
+      "option": "carouselPauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
       "handrolled_render": false,
       "handrolled_view": false,
-      "findings": [
-        {
-          "kind": "missing-render",
-          "signals": [
-            "js-timer"
-          ]
-        },
-        {
-          "kind": "missing-runtime",
-          "signals": [
-            "js-timer"
-          ]
-        }
-      ],
+      "findings": [],
       "exempt": []
     },
     {
       "block": "google-reviews",
-      "verdict": "PENDING",
+      "verdict": "COMPLIANT",
       "signals": [
         "js-timer"
       ],
-      "render_call": false,
-      "view_call": false,
+      "option": "pauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
       "handrolled_render": false,
       "handrolled_view": false,
-      "findings": [
-        {
-          "kind": "missing-render",
-          "signals": [
-            "js-timer"
-          ]
-        },
-        {
-          "kind": "missing-runtime",
-          "signals": [
-            "js-timer"
-          ]
-        }
-      ],
+      "findings": [],
       "exempt": []
     },
     {
@@ -104,6 +77,9 @@
         "css-loop",
         "video-autoplay"
       ],
+      "option": null,
+      "option_default": null,
+      "option_control": false,
       "render_call": false,
       "view_call": false,
       "handrolled_render": false,
@@ -129,6 +105,9 @@
         "css-loop",
         "video-autoplay"
       ],
+      "option": null,
+      "option_default": null,
+      "option_control": false,
       "render_call": false,
       "view_call": false,
       "handrolled_render": false,
@@ -153,6 +132,9 @@
       "signals": [
         "css-loop"
       ],
+      "option": null,
+      "option_default": null,
+      "option_control": false,
       "render_call": false,
       "view_call": false,
       "handrolled_render": false,
@@ -168,61 +150,35 @@
     },
     {
       "block": "notice-banner",
-      "verdict": "PENDING",
+      "verdict": "COMPLIANT",
       "signals": [
         "js-timer"
       ],
-      "render_call": false,
-      "view_call": false,
-      "handrolled_render": true,
+      "option": "pauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
+      "handrolled_render": false,
       "handrolled_view": false,
-      "findings": [
-        {
-          "kind": "missing-render",
-          "signals": [
-            "js-timer"
-          ]
-        },
-        {
-          "kind": "missing-runtime",
-          "signals": [
-            "js-timer"
-          ]
-        },
-        {
-          "kind": "hand-rolled",
-          "signals": [
-            "render"
-          ]
-        }
-      ],
+      "findings": [],
       "exempt": []
     },
     {
       "block": "post-grid",
-      "verdict": "PENDING",
+      "verdict": "COMPLIANT",
       "signals": [
         "css-loop",
         "js-timer"
       ],
-      "render_call": false,
-      "view_call": false,
+      "option": "carouselPauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
       "handrolled_render": false,
       "handrolled_view": false,
-      "findings": [
-        {
-          "kind": "missing-render",
-          "signals": [
-            "js-timer"
-          ]
-        },
-        {
-          "kind": "missing-runtime",
-          "signals": [
-            "js-timer"
-          ]
-        }
-      ],
+      "findings": [],
       "exempt": [
         {
           "signal": "css-loop",
@@ -237,6 +193,9 @@
       "signals": [
         "css-loop"
       ],
+      "option": null,
+      "option_default": null,
+      "option_control": false,
       "render_call": false,
       "view_call": false,
       "handrolled_render": false,
@@ -252,101 +211,59 @@
     },
     {
       "block": "testimonial-slider",
-      "verdict": "PENDING",
+      "verdict": "COMPLIANT",
       "signals": [
         "js-timer"
       ],
-      "render_call": false,
-      "view_call": false,
+      "option": "pauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
       "handrolled_render": false,
-      "handrolled_view": true,
-      "findings": [
-        {
-          "kind": "missing-render",
-          "signals": [
-            "js-timer"
-          ]
-        },
-        {
-          "kind": "missing-runtime",
-          "signals": [
-            "js-timer"
-          ]
-        },
-        {
-          "kind": "hand-rolled",
-          "signals": [
-            "view"
-          ]
-        }
-      ],
+      "handrolled_view": false,
+      "findings": [],
       "exempt": []
     },
     {
       "block": "trust-bar",
-      "verdict": "PENDING",
+      "verdict": "COMPLIANT",
       "signals": [
         "css-loop"
       ],
-      "render_call": false,
-      "view_call": false,
-      "handrolled_render": true,
+      "option": "autoScrollPauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
+      "handrolled_render": false,
       "handrolled_view": false,
-      "findings": [
-        {
-          "kind": "missing-render",
-          "signals": [
-            "css-loop"
-          ]
-        },
-        {
-          "kind": "missing-runtime",
-          "signals": [
-            "css-loop"
-          ]
-        },
-        {
-          "kind": "hand-rolled",
-          "signals": [
-            "render"
-          ]
-        }
-      ],
+      "findings": [],
       "exempt": []
     },
     {
       "block": "trustpilot-reviews",
-      "verdict": "PENDING",
+      "verdict": "COMPLIANT",
       "signals": [
         "js-timer"
       ],
-      "render_call": false,
-      "view_call": false,
+      "option": "pauseButton",
+      "option_default": false,
+      "option_control": true,
+      "render_call": true,
+      "view_call": true,
       "handrolled_render": false,
       "handrolled_view": false,
-      "findings": [
-        {
-          "kind": "missing-render",
-          "signals": [
-            "js-timer"
-          ]
-        },
-        {
-          "kind": "missing-runtime",
-          "signals": [
-            "js-timer"
-          ]
-        }
-      ],
+      "findings": [],
       "exempt": []
     }
   ],
   "stale_exemptions": [],
   "stale_pending": [],
   "counts": {
-    "COMPLIANT": 0,
+    "COMPLIANT": 8,
     "FLAGGED": 0,
-    "PENDING": 8,
+    "PENDING": 0,
     "EXEMPT": 5
   }
 }

@@ -638,10 +638,11 @@ endif;
 	<?php
 endif;
 
-// Pause / play button (WCAG 2.2.2), the shared control: printed whenever a carousel with two or
-// more reviews autoplays; rendered hidden, view.js shows it once autoplay runs (never under
-// reduced motion). Below the cards, so it stays reachable on mobile where the arrows hide.
-if ( $is_carousel && $autoplay && count( $reviews ) > 1 ) {
+// Pause / play button (WCAG 2.2.2), the shared control, an option (pauseButton, off by default):
+// printed when a carousel with two or more reviews autoplays; rendered hidden, view.js shows it
+// once autoplay runs (never under reduced motion). Below the cards, so it stays reachable on
+// mobile where the arrows hide.
+if ( $is_carousel && $autoplay && ! empty( $attributes['pauseButton'] ) && count( $reviews ) > 1 ) {
 	echo sgs_motion_pause_button( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes its own output.
 		array(
 			'block'     => 'sgs-trustpilot-reviews',

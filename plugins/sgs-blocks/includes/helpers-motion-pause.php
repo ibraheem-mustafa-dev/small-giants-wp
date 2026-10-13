@@ -116,5 +116,7 @@ if ( ! function_exists( 'sgs_motion_pause_editor_assets' ) ) {
 			sgs_motion_pause_enqueue_style();
 		}
 	}
-	add_action( 'enqueue_block_assets', 'sgs_motion_pause_editor_assets' );
+	if ( function_exists( 'add_action' ) ) {
+		add_action( 'enqueue_block_assets', 'sgs_motion_pause_editor_assets' );
+	}
 }

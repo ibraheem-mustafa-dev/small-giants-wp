@@ -21,8 +21,14 @@
  * keeps the element hidden reactively.
  *
  * MEMORY GOTCHA (wp-interactivity-data-wp-on-rejects-colon-event-names):
- * close/pause/arrow buttons are all in the SSR markup so data-wp-on--click
+ * close/arrow buttons are all in the SSR markup so data-wp-on--click
  * binds normally. No custom event names with colons used here.
+ *
+ * Rotation pausing goes through the shared runtime (src/shared/motion-pause),
+ * not a directive: keyboard focus inside the banner always pauses it, hover or
+ * a finger press pause it while pauseOnHover is on, an arrow is a held pause,
+ * and the optional server-rendered pause / play button (pauseButton, off by
+ * default; WCAG 2.2.2 needs it) holds a pause until pressed again.
  *
  * U-15 message rotation is deliberately plain DOM manipulation (classList),
  * not a per-item data-wp-context — each sgs/notice-message child is its own
@@ -36,6 +42,7 @@
  */
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
+import { initMotionPause } from '../../shared/motion-pause/index.js';
 
 const PERMANENT_EXPIRY_MS = 365 * 24 * 60 * 60 * 1000; // 365 days.
 
@@ -63,7 +70,7 @@ function findRoot( el ) {
  */
 function applyPausedState( state ) {
 	const ctx = state.ctx;
-	const paused = !! ( ctx.pausedByButton || ctx.pausedByHover );
+	const paused = !! ( state.pauser && state.pauser.isPaused() );
 	ctx.isPaused = paused;
 	if ( state.messagesEl ) {
 		// WAI carousel pattern: silent while auto-advancing, announced once
@@ -139,29 +146,14 @@ store( 'sgs/notice-banner', {
 			}
 		},
 
-		/**
-		 * U-15: toggle the rotate-mode pause button. Leaving the button
-		 * pressed keeps the banner paused even after the pointer/focus
-		 * leaves (design §3.3: "leaving resumes it unless the button is
-		 * pressed").
-		 */
-		togglePause() {
-			const ctx = getContext();
-			ctx.pausedByButton = ! ctx.pausedByButton;
-			const root = findRoot( getElement()?.ref );
-			const state = root && messageState.get( root );
-			if ( state ) {
-				applyPausedState( state );
-			}
-		},
-
 		/** U-15: previous-message arrow — also pauses auto-rotation. */
 		prevMessage() {
-			const ctx = getContext();
-			ctx.pausedByButton = true;
 			const root = findRoot( getElement()?.ref );
 			const state = root && messageState.get( root );
 			if ( state ) {
+				if ( state.pauser ) {
+					state.pauser.pause();
+				}
 				stepMessage( state, -1 );
 				applyPausedState( state );
 			}
@@ -169,11 +161,12 @@ store( 'sgs/notice-banner', {
 
 		/** U-15: next-message arrow — also pauses auto-rotation. */
 		nextMessage() {
-			const ctx = getContext();
-			ctx.pausedByButton = true;
 			const root = findRoot( getElement()?.ref );
 			const state = root && messageState.get( root );
 			if ( state ) {
+				if ( state.pauser ) {
+					state.pauser.pause();
+				}
 				stepMessage( state, 1 );
 				applyPausedState( state );
 			}
@@ -278,20 +271,12 @@ store( 'sgs/notice-banner', {
 				// a documented no-op kept for clarity/observability).
 			} );
 
-			if ( ctx.pauseOnHover ) {
-				const setHoverPaused = ( paused ) => {
-					ctx.pausedByHover = paused;
-					applyPausedState( state );
-				};
-				root.addEventListener( 'pointerenter', () => setHoverPaused( true ) );
-				root.addEventListener( 'pointerleave', () => setHoverPaused( false ) );
-				root.addEventListener( 'focusin', () => setHoverPaused( true ) );
-				root.addEventListener( 'focusout', ( event ) => {
-					if ( ! root.contains( event.relatedTarget ) ) {
-						setHoverPaused( false );
-					}
-				} );
-			}
+			state.pauser = initMotionPause( root, {
+				hover: !! ctx.pauseOnHover,
+				touch: ctx.pauseOnHover ? 'press' : 'none',
+				onChange: () => applyPausedState( state ),
+			} );
+			state.pauser.setRunning( true );
 		},
 	},
 } );

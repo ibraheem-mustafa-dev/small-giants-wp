@@ -67,6 +67,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/notice-banner-icon-badge.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
 require_once __DIR__ . '/helpers.php';
 
 // FR-22-6: $text is no longer rendered here — the text content slot is now
@@ -432,6 +433,7 @@ if ( $sgs_nb_enhanced ) {
 	$sgs_nb_transition         = sgs_notice_banner_resolve_transition( $attributes['messageTransition'] ?? 'fade' );
 	$sgs_nb_show_arrows        = 'rotate' === $sgs_nb_message_mode && ! empty( $attributes['showMessageArrows'] );
 	$sgs_nb_pause_on_hover     = ! isset( $attributes['pauseOnHover'] ) || ! empty( $attributes['pauseOnHover'] );
+	$sgs_nb_pause_button       = ! empty( $attributes['pauseButton'] );
 	$sgs_nb_arrow_colour       = (string) ( $attributes['arrowColour'] ?? '' );
 	$sgs_nb_arrow_colour_hover = (string) ( $attributes['arrowColourHover'] ?? '' );
 
@@ -490,9 +492,17 @@ if ( $sgs_nb_enhanced ) {
 	$sgs_inner_html .= '<div class="sgs-notice-banner__messages" aria-live="off">' . $content . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output (sgs/notice-message children).
 
 	if ( 'rotate' === $sgs_nb_message_mode ) {
-		// WCAG 2.2.2: moving content that starts automatically and runs past
-		// 5s needs a visible pause control. Always renders in rotate mode.
-		$sgs_inner_html .= '<button class="sgs-notice-banner__pause" type="button" aria-pressed="false" aria-label="' . esc_attr__( 'Pause announcements', 'sgs-blocks' ) . '" data-wp-on--click="actions.togglePause" data-wp-bind--aria-pressed="context.pausedByButton"><span class="sgs-notice-banner__pause-icon" aria-hidden="true"></span></button>';
+		// Pause / play button (WCAG 2.2.2), the shared control, an option (pauseButton, off by
+		// default). Rendered hidden; view.js shows it once rotation runs.
+		if ( $sgs_nb_pause_button ) {
+			$sgs_inner_html .= sgs_motion_pause_button(
+				array(
+					'block'     => 'sgs-notice-banner',
+					'label'     => __( 'Pause announcements', 'sgs-blocks' ),
+					'placement' => 'inline',
+				)
+			);
+		}
 
 		if ( $sgs_nb_show_arrows ) {
 			$sgs_inner_html .= '<button class="sgs-notice-banner__arrows sgs-notice-banner__prev" type="button" aria-label="' . esc_attr__( 'Previous announcement', 'sgs-blocks' ) . '" data-wp-on--click="actions.prevMessage"><span aria-hidden="true">&lsaquo;</span></button>';
@@ -590,8 +600,6 @@ if ( $sgs_nb_enhanced ) {
 		'pauseOnHover'      => $sgs_nb_pause_on_hover,
 		'messageCount'      => $sgs_nb_message_count,
 		'activeIndex'       => 0,
-		'pausedByButton'    => false,
-		'pausedByHover'     => false,
 		'isEnhanced'        => false,
 	);
 

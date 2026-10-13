@@ -13,9 +13,10 @@
  *
  * Animation runs on the GPU compositor thread (CSS transform), not JS.
  *
- * Pausing (WCAG 2.2.2) goes through the shared runtime (src/shared/motion-pause): the pause /
- * play button holds a pause until pressed again, keyboard focus inside the strip always pauses
- * it, and hover or a touch tap pause it unless the "Pause on hover" control is off.
+ * Pausing goes through the shared runtime (src/shared/motion-pause): keyboard focus inside the
+ * strip always pauses it; hover or a touch tap pause it unless the "Pause on hover" control is
+ * off; and the optional pause / play button ("Show pause button", off by default; WCAG 2.2.2
+ * needs it) holds a pause until pressed again. Hover and focus pauses alone do not meet 2.2.2.
  *
  * Loaded as a viewScriptModule (ES module, frontend only).
  */
@@ -152,7 +153,7 @@ strips.forEach( ( strip ) => {
 		pauser.setRunning( true );
 	}
 
-	// Pause: the button (persistent), keyboard focus (always), and hover or a touch tap unless
+	// Pause: the optional button (persistent), keyboard focus (always), and hover or a touch tap unless
 	// the "Pause on hover" control is off (the root then carries `.sgs-brand-strip--no-pause`,
 	// see render.php). A touch device has no hover, so a tap toggles the pause instead. The
 	// paused state is a CLASS, not an inline style property (no-inline migration contract §A:

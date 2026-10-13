@@ -108,6 +108,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		cardStyle,
 		autoplay,
 		autoplaySpeed,
+		pauseButton,
 		showDots,
 		showArrows,
 		dragToScroll,
@@ -520,6 +521,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								showDots: false,
 								autoplay: false,
 								autoplaySpeed: 5000,
+								pauseButton: false,
 								dragToScroll: false,
 								dragMomentum: true,
 								loopCarousel: false,
@@ -576,6 +578,21 @@ export default function Edit( { attributes, setAttributes } ) {
 									max={ 15000 }
 									step={ 500 }
 									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+						) }
+						{ autoplay && (
+							<ToolsPanelItem
+								label={ __( 'Show pause button', 'sgs-blocks' ) }
+								hasValue={ () => !! pauseButton }
+								onDeselect={ () => setAttributes( { pauseButton: false } ) }
+							>
+								<ToggleControl
+									label={ __( 'Show pause button', 'sgs-blocks' ) }
+									help={ __( 'Adds a pause/play button. Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients.', 'sgs-blocks' ) }
+									checked={ !! pauseButton }
+									onChange={ ( value ) => setAttributes( { pauseButton: value } ) }
+									__nextHasNoMarginBottom
 								/>
 							</ToolsPanelItem>
 						) }

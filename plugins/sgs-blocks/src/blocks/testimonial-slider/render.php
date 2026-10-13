@@ -378,11 +378,12 @@ if ( $show_dots && $total_testimonials > 0 ) {
 	$dots_html .= '</div>';
 }
 
-// ── Pause / play button (WCAG 2.2.2) — the shared control, printed whenever
-// autoplay is on and there is more than one slide to move to. Rendered hidden;
-// view.js shows it once autoplay runs (never under reduced motion).
+// ── Pause / play button (WCAG 2.2.2) — the shared control, an option
+// (pauseButton, off by default), printed when autoplay is on and there is more
+// than one slide to move to. Rendered hidden; view.js shows it once autoplay
+// runs (never under reduced motion).
 $pause_html = '';
-if ( $autoplay && $total_testimonials > 1 ) {
+if ( $autoplay && ! empty( $attributes['pauseButton'] ) && $total_testimonials > 1 ) {
 	$pause_html = sgs_motion_pause_button(
 		array(
 			'block'     => 'sgs-testimonial-slider',

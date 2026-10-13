@@ -14,8 +14,8 @@
  *  5. If no overflow: do nothing (badges display statically).
  *  6. Pause through the shared runtime (src/shared/motion-pause): while the pointer is over
  *     the bar (mouse hover, or a finger pressed on it) if data-auto-scroll-pause="true",
- *     ALWAYS while keyboard focus is inside the bar, and persistently from the pause / play
- *     button (WCAG 2.2.2). Clones are inert, so focus never enters them.
+ *     ALWAYS while keyboard focus is inside the bar, and persistently from the optional pause /
+ *     play button (WCAG 2.2.2 needs the button). Clones are inert, so focus never enters them.
  *
  * Marquee below a breakpoint (data-auto-scroll-below="768" | "1024"): steps 3-4 only run
  * while the viewport is narrower than that width, and re-run if the window is resized into
@@ -33,7 +33,7 @@
  * Marquee and drop coexist: while the marquee runs every badge is in the scrolling track
  * (restoreDropped() runs before cloning, so no clone inherits a hidden badge). Leaving the
  * range removes the clones and the row class, and overflow-drop.js then drops what does not
- * fit. The pause / play button (on by default; autoScrollPauseButton) is un-hidden only
+ * fit. The optional pause / play button (autoScrollPauseButton, off by default) is un-hidden only
  * while the scroll runs; a user pause persists over hover-out and focus-out.
  *
  * Loaded as a viewScriptModule (ES module, frontend only — never runs in editor).

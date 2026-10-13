@@ -10,8 +10,14 @@ the mechanism is ONE shared implementation:
   runtime  src/shared/motion-pause/index.js::initMotionPause()             (button + hover,
                                                                              touch and focus pause)
 
-A block that runs automatic motion must call both. A block that draws its own pause button
-(a second design, a second set of semantics) is flagged even when it also calls the helper.
+The visible button is an OPTION, off by default on every block (Bean, 2026-10-13): sites that
+must meet 2.2.2 (public-sector clients) switch it on. Keyboard-focus pause is always on. So a
+block that runs automatic motion must: call initMotionPause() in its view (focus, hover and
+touch pause), call sgs_motion_pause_button() in its render (gated by the option), declare the
+option as a boolean block.json attribute named `pauseButton` or `<prefix>PauseButton` with
+default false, and give it an inspector control (the attribute is named in its edit source). A
+block that draws its own pause button (a second design, a second set of semantics) is flagged
+even when it also calls the helper.
 
 MOTION SIGNALS (comment-stripped source, per block folder under src/blocks/):
   js-timer        `setInterval(` in the block's view module (view_files: view.js and the
@@ -25,9 +31,12 @@ FINDINGS:
   missing-render    a motion signal, and the render source never calls sgs_motion_pause_button()
   missing-runtime   a motion signal, and the view module never calls initMotionPause()
   half-wired        the helper is called by only one of render and view (no motion signal needed)
+  missing-option    no boolean `pauseButton` / `<prefix>PauseButton` attribute in block.json
+  option-default-on the option attribute defaults to true (it is off by default on every block)
+  missing-control   the option attribute is never named in the block's edit source (no control)
   hand-rolled       the block draws its own pause button (a `__pause` class literal in its render
-                    source outside the helper, or a button created in its view module next to the
-                    word "pause")
+                    source outside the helper, or a button its view module creates and whose class
+                    or aria-label names a pause)
   stale-exemption   an EXEMPT entry whose signal is no longer in the block (the ratchet only tightens)
 
 EXEMPT (each with its reason; a new entry needs a reason a reviewer can check):
@@ -65,7 +74,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 PLUGIN = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PLUGIN / "scripts" / "lib"))
-from block_source_files import render_source, view_source  # noqa: E402
+from block_source_files import edit_source, render_source, view_source  # noqa: E402
 
 BLOCKS = PLUGIN / "src" / "blocks"
 
@@ -85,13 +94,11 @@ SIGNALS = (
     ("css-loop", "style", re.compile(r"\banimation(?:-iteration-count)?\s*:[^;{}]*\binfinite\b")),
     ("video-autoplay", "render", re.compile(r"<video\b[^>]*\bautoplay\b|<video\b[\s\S]*['\"] autoplay['\"]|['\"] autoplay['\"][\s\S]*<video\b")),
 )
-# Blocks that have not adopted the shared control yet. The list only shrinks: a block leaves it in
-# the commit that adopts the control, and a listed block that no longer needs it fails --check.
-PENDING: frozenset[str] = frozenset({
-    "google-reviews",
-    "notice-banner",
-})
+# Blocks that have not adopted the shared control yet (empty: every auto-moving block has). The
+# list only shrinks; a listed block that no longer needs it fails --check.
+PENDING: frozenset[str] = frozenset()
 
+OPTION_NAME = re.compile(r"^(?:pauseButton|[a-z][A-Za-z0-9]*PauseButton)$")
 RENDER_CALL = re.compile(r"\bsgs_motion_pause_button\s*\(")
 VIEW_CALL = re.compile(r"\binitMotionPause\s*\(")
 RENDER_HANDROLLED = re.compile(r"class=\\?[\"'][^\"']*__pause\b")
@@ -121,8 +128,23 @@ def scan_block(block_dir: Path) -> dict:
     style = _strip_comments(style_path.read_text(encoding="utf-8", errors="replace")) if style_path.is_file() else ""
     texts = {"render": render, "view": view, "style": style}
     signals = sorted({sid for sid, where, rx in SIGNALS if rx.search(texts[where])})
+    option, option_default = None, None
+    meta_path = block_dir / "block.json"
+    if meta_path.is_file():
+        try:
+            attrs = json.loads(meta_path.read_text(encoding="utf-8")).get("attributes", {})
+        except ValueError:
+            attrs = {}
+        for name, spec in attrs.items():
+            if OPTION_NAME.match(name) and isinstance(spec, dict) and spec.get("type") == "boolean":
+                option, option_default = name, spec.get("default", False)
+                break
+    edit = edit_source(block_dir)
     return {
         "signals": signals,
+        "option": option,
+        "option_default": option_default,
+        "option_control": bool(option and re.search(r"(?<![A-Za-z0-9_])" + re.escape(option) + r"(?![A-Za-z0-9_])", edit)),
         "render_call": bool(RENDER_CALL.search(render)),
         "view_call": bool(VIEW_CALL.search(view)),
         "handrolled_render": bool(RENDER_HANDROLLED.search(render)),
@@ -147,6 +169,14 @@ def classify(tail: str, scan: dict, exempt: dict) -> tuple[list[dict], list[dict
         findings.append({"kind": "missing-runtime", "signals": owed})
     if not owed and scan["render_call"] != scan["view_call"]:
         findings.append({"kind": "half-wired", "signals": []})
+    if owed or scan["render_call"]:
+        if not scan.get("option"):
+            findings.append({"kind": "missing-option", "signals": owed})
+        else:
+            if scan.get("option_default") is not False:
+                findings.append({"kind": "option-default-on", "signals": [scan["option"]]})
+            if not scan.get("option_control"):
+                findings.append({"kind": "missing-control", "signals": [scan["option"]]})
     # A pause button is only a second motion-pause design on a block that runs automatic motion
     # or uses the shared one; an audio player's own play/pause is not one.
     wired = scan["render_call"] or scan["view_call"]
@@ -222,6 +252,12 @@ def self_test() -> int:
         blocks = tmp / "blocks"
         good_render = "<?php echo sgs_motion_pause_button( array( 'block' => 'sgs-x' ) );"
         good_view = "import { initMotionPause } from '../../shared/motion-pause';\ninitMotionPause( root, {} );\nsetInterval( tick, 5000 );"
+
+        def option(name: str, default: bool = False, control: bool = True) -> None:
+            """The pause option: a block.json attribute and (optionally) the edit control naming it."""
+            _write(blocks, f"{name}/block.json", json.dumps({"attributes": {"pauseButton": {"type": "boolean", "default": default}}}))
+            _write(blocks, f"{name}/edit.js", "<ToggleControl checked={ pauseButton } />" if control else "export default () => null;")
+
         # Positive: autoplay timer with neither half.
         _write(blocks, "timer-bare/render.php", "<?php echo '<div></div>';")
         _write(blocks, "timer-bare/view.js", "setInterval( () => next(), 5000 );")
@@ -252,12 +288,24 @@ def self_test() -> int:
         # Exemption applied, plus one stale exemption.
         _write(blocks, "shimmer/style.css", ".s { animation: shimmer 1.5s infinite; }")
         exempt = {("shimmer", "css-loop"): ("loading", "fixture"), ("gone", "css-loop"): ("deferred", "fixture")}
+        for wired_block in ("handrolled", "timer-good", "handrolled-view", "dots"):
+            option(wired_block)
+        # Positive: the option defaults to on.
+        _write(blocks, "default-on/render.php", good_render)
+        _write(blocks, "default-on/view.js", good_view)
+        option("default-on", default=True)
+        # Positive: the option has no inspector control.
+        _write(blocks, "no-control/render.php", good_render)
+        _write(blocks, "no-control/view.js", good_view)
+        option("no-control", control=False)
 
         result = survey(blocks, exempt)
         by = {r["block"]: r for r in result["blocks"]}
         checks = [
-            ("timer-bare flags both halves", {f["kind"] for f in by["timer-bare"]["findings"]} == {"missing-render", "missing-runtime"}),
-            ("marquee-half flags the runtime only", [f["kind"] for f in by["marquee-half"]["findings"]] == ["missing-runtime"]),
+            ("timer-bare flags both halves and the option", {f["kind"] for f in by["timer-bare"]["findings"]} == {"missing-render", "missing-runtime", "missing-option"}),
+            ("marquee-half flags the runtime and the option", {f["kind"] for f in by["marquee-half"]["findings"]} == {"missing-runtime", "missing-option"}),
+            ("an option on by default is flagged", [f["kind"] for f in by["default-on"]["findings"]] == ["option-default-on"]),
+            ("an option with no control is flagged", [f["kind"] for f in by["no-control"]["findings"]] == ["missing-control"]),
             ("handrolled flags its own button", [f["kind"] for f in by["handrolled"]["findings"]] == ["hand-rolled"]),
             ("half flags half-wired", [f["kind"] for f in by["half"]["findings"]] == ["half-wired"]),
             ("a view-built pause button is hand-rolled", [f["kind"] for f in by["handrolled-view"]["findings"]] == ["hand-rolled"]),
@@ -268,7 +316,7 @@ def self_test() -> int:
             ("a '/*' in a string does not hide a timer", by.get("glob", {}).get("signals") == ["js-timer"]),
             ("shimmer exemption applied", by["shimmer"]["verdict"] == "EXEMPT"),
             ("stale exemption reported", [s["block"] for s in result["stale_exemptions"]] == ["gone"]),
-            ("failures counted", failures(result) == 7),
+            ("failures counted", failures(result) == 9),
         ]
         # The adoption ratchet: a pending block does not fail; a pending block that is already
         # compliant (or gone) does.

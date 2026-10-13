@@ -71,6 +71,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		autoplay,
 		autoplaySpeed,
+		pauseButton,
 		showDots,
 		showArrows,
 		slidesVisible,
@@ -192,6 +193,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								showDots: true,
 								autoplay: true,
 								autoplaySpeed: 5000,
+								pauseButton: false,
 								dragToScroll: false,
 							} )
 						}
@@ -360,12 +362,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ToolsPanelItem
 							label={ __( 'Autoplay', 'sgs-blocks' ) }
 							hasValue={ () =>
-								autoplay !== true || autoplaySpeed !== 5000
+								autoplay !== true ||
+								autoplaySpeed !== 5000 ||
+								!! pauseButton
 							}
 							onDeselect={ () =>
 								setAttributes( {
 									autoplay: true,
 									autoplaySpeed: 5000,
+									pauseButton: false,
 								} )
 							}
 							isShownByDefault
@@ -393,6 +398,20 @@ export default function Edit( { attributes, setAttributes } ) {
 									step={ 500 }
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
+								/>
+							) }
+							{ autoplay && (
+								<ToggleControl
+									label={ __( 'Show pause button', 'sgs-blocks' ) }
+									help={ __(
+										'Adds a pause/play button. Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients.',
+										'sgs-blocks'
+									) }
+									checked={ !! pauseButton }
+									onChange={ ( val ) =>
+										setAttributes( { pauseButton: val } )
+									}
+									__nextHasNoMarginBottom
 								/>
 							) }
 						</ToolsPanelItem>
