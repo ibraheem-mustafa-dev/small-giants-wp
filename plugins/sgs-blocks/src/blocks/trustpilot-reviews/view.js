@@ -5,8 +5,15 @@
  * clicking prev on the first wraps to the last. Autoplay loops the same way.
  * Vanilla JS (no framework dep) -- the carousel is structural, not reactive.
  *
+ * Autoplay pausing (WCAG 2.2.2) goes through the shared runtime
+ * (src/shared/motion-pause): the server-rendered pause / play button holds a
+ * pause until pressed again; hover, a finger press and keyboard focus pause it
+ * while they last, each independently.
+ *
  * @package SGS\Blocks
  */
+
+import { initMotionPause } from '../../shared/motion-pause/index.js';
 
 const SCROLL_EPSILON = 4; // px tolerance when comparing scroll positions
 
@@ -144,13 +151,21 @@ const initCarousel = ( root ) => {
 	const reduceMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
 	if ( autoplay && ! reduceMotion ) {
-		let timer = setInterval( () => scrollByCard( 1 ), speed );
-		// Pause on hover/focus.
-		root.addEventListener( 'mouseenter', () => clearInterval( timer ) );
-		root.addEventListener( 'focusin', () => clearInterval( timer ) );
-		root.addEventListener( 'mouseleave', () => {
+		let timer = null;
+		const stop = () => {
+			clearInterval( timer );
+			timer = null;
+		};
+		// Restarts from the card in view after a pause.
+		const play = () => {
+			stop();
 			timer = setInterval( () => scrollByCard( 1 ), speed );
+		};
+		const pauser = initMotionPause( root, {
+			onChange: ( paused ) => ( paused ? stop() : play() ),
 		} );
+		pauser.setRunning( true );
+		play();
 	}
 };
 

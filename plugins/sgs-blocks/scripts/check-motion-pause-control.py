@@ -90,7 +90,6 @@ SIGNALS = (
 PENDING: frozenset[str] = frozenset({
     "google-reviews",
     "notice-banner",
-    "trustpilot-reviews",
 })
 
 RENDER_CALL = re.compile(r"\bsgs_motion_pause_button\s*\(")

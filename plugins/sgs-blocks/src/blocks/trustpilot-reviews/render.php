@@ -26,6 +26,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once __DIR__ . '/woocommerce-reviews.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
 
 // CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
 // declarations inside this block's scoped <style> tag. Mirrors sgs/hero.
@@ -636,6 +637,19 @@ endif;
 	</div>
 	<?php
 endif;
+
+// Pause / play button (WCAG 2.2.2), the shared control: printed whenever a carousel with two or
+// more reviews autoplays; rendered hidden, view.js shows it once autoplay runs (never under
+// reduced motion). Below the cards, so it stays reachable on mobile where the arrows hide.
+if ( $is_carousel && $autoplay && count( $reviews ) > 1 ) {
+	echo sgs_motion_pause_button( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes its own output.
+		array(
+			'block'     => 'sgs-trustpilot-reviews',
+			'label'     => __( 'Pause reviews', 'sgs-blocks' ),
+			'placement' => 'inline',
+		)
+	);
+}
 
 $inner_html = ob_get_clean();
 

@@ -238,6 +238,46 @@ final class MotionPauseRenderTest extends TestCase {
 		);
 	}
 
+	public function test_trustpilot_carousel_prints_the_button_when_autoplay_is_on(): void {
+		$html = $this->html(
+			'sgs/trustpilot-reviews',
+			array(
+				'variant'    => 'carousel',
+				'autoplay'   => true,
+				'dataSource' => 'placeholder',
+			)
+		);
+		$this->assert_button( $html, 'sgs-trustpilot-reviews', 'Pause reviews' );
+	}
+
+	public function test_trustpilot_prints_no_button_without_autoplay_or_outside_a_carousel(): void {
+		$this->assertSame(
+			'',
+			$this->pause_button(
+				$this->html(
+					'sgs/trustpilot-reviews',
+					array(
+						'variant'    => 'carousel',
+						'dataSource' => 'placeholder',
+					)
+				)
+			)
+		);
+		$this->assertSame(
+			'',
+			$this->pause_button(
+				$this->html(
+					'sgs/trustpilot-reviews',
+					array(
+						'variant'    => 'grid',
+						'autoplay'   => true,
+						'dataSource' => 'placeholder',
+					)
+				)
+			)
+		);
+	}
+
 	public function test_trust_bar_prints_no_button_when_nothing_scrolls_or_it_is_switched_off(): void {
 		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/trust-bar', array( 'items' => $this->trust_items() ) ) ) );
 		$this->assertSame(

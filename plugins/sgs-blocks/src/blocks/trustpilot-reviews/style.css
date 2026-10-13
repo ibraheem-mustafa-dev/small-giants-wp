@@ -427,6 +427,28 @@
 	outline-offset: 2px;
 }
 
+/* Pause / play button (WCAG 2.2.2): the shared control, centred under the cards (and the
+   dots) in the arrows' look. :not([hidden]) leaves the shared sheet's hidden state alone. */
+.sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:not([hidden]) {
+	display: flex;
+	margin: 0.75rem auto 0;
+}
+
+.sgs-trustpilot-reviews__pause {
+	border: 1px solid var(--sgs-tp-card-border);
+	border-radius: 50%;
+	background: var(--sgs-tp-card-bg);
+	color: inherit;
+	transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.sgs-trustpilot-reviews__pause:hover,
+.sgs-trustpilot-reviews__pause:focus-visible {
+	background: var(--sgs-tp-green);
+	color: #fff;
+	border-color: var(--sgs-tp-green);
+}
+
 /* ── Mini variant: compact aggregate-only bar ───────────────────────────── */
 
 .sgs-trustpilot-reviews--mini .sgs-trustpilot-reviews__track,
@@ -444,6 +466,7 @@
 @media (prefers-reduced-motion: reduce) {
 	.sgs-trustpilot-reviews__track,
 	.sgs-trustpilot-reviews__arrow,
+	.sgs-trustpilot-reviews__pause,
 	.sgs-trustpilot-reviews__dot,
 	.sgs-trustpilot-reviews__header,
 	.sgs-trustpilot-reviews__card {
