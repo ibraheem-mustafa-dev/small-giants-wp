@@ -15,7 +15,8 @@
  *  - socials     : row of social media icon links
  *  - copyright   : "Copyright © [year] [name]" line
  *  - description : business tagline
- *  - map         : Google Maps iframe embed via address search
+ *  - map         : Google Maps iframe embed, searched by the address or by the business listing (mapSource)
+ *  - open-status : Open now / Closed pill and next-change line, worked out by view.js in the browser
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — dynamic block).
@@ -44,6 +45,8 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-business-info-map.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-business-info-open-status.php';
 
 use SGS\Blocks\Sgs_Site_Info;
 use SGS\Blocks\Sgs_Site_Info_Binding;
@@ -438,10 +441,18 @@ switch ( $display_type ) {
 	// ── Map Embed ─────────────────────────────────────────────────────────────
 	case 'map':
 		$address_raw = (string) Sgs_Site_Info::get( 'address', '' );
-		if ( '' !== $address_raw ) {
-			// Strip <br> back to commas for the maps search query.
-			$query   = trim( preg_replace( '/\s*<br\s*\/?>\s*/i', ', ', $address_raw ) );
-			$map_url = 'https://maps.google.com/maps?q=' . rawurlencode( $query ) . '&z=15&hl=en&t=m&output=embed&iwloc=near';
+		$map_source  = 'business' === ( $attributes['mapSource'] ?? 'address' ) ? 'business' : 'address';
+		// The business source searches for the business name plus its address, so the map shows the
+		// business's own listing card: the Site Info business name, else the WordPress site title.
+		$map_name = '';
+		if ( 'business' === $map_source ) {
+			$map_name = trim( (string) Sgs_Site_Info::get( 'business_name', '' ) );
+			if ( '' === $map_name ) {
+				$map_name = trim( (string) get_bloginfo( 'name' ) );
+			}
+		}
+		$map_url = ( '' !== $address_raw || '' !== $map_name ) ? sgs_business_info_map_url( $map_source, $address_raw, $map_name ) : '';
+		if ( '' !== $map_url ) {
 			// NO-INLINE: `border:0` lives in the .sgs-business-map iframe rule in
 			// style.css (frontend-only concern, not user-configurable) — the
 			// iframe carries no `style` attribute.
@@ -452,6 +463,14 @@ switch ( $display_type ) {
 			);
 		} else {
 			$html = $sgs_is_editor_render ? '<div class="sgs-business-info sgs-business-map">' . $placeholder . '</div>' : '';
+		}
+		break;
+
+	// ── Open status (Open now / Closed, worked out in the visitor's browser) ──
+	case 'open-status':
+		$html = sgs_business_info_open_status_html( $attributes, $sgs_is_editor_render );
+		if ( '' === $html && $sgs_is_editor_render ) {
+			$html = '<div class="sgs-business-info sgs-open-status">' . $placeholder . '</div>';
 		}
 		break;
 }
@@ -504,6 +523,14 @@ if ( ( '' !== $text_before || '' !== $text_after ) && 0 === strpos( $html, '<p c
 $root_sel = '.' . $uid;
 
 $scoped_css = array();
+
+// Open-status pill and dot colours: custom properties on the block root; an unset colour emits nothing.
+if ( 'open-status' === $display_type ) {
+	$sgs_bi_os_css = sgs_business_info_open_status_css( $attributes, $root_sel );
+	if ( '' !== $sgs_bi_os_css ) {
+		$scoped_css[] = $sgs_bi_os_css;
+	}
+}
 
 // Lines between the opening-hours rows: the shared Separators setting, drawn by the
 // rows themselves (includes/helpers-separators-line-css.php). The one-line condensed
