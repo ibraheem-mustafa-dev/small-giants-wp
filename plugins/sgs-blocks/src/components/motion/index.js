@@ -26,6 +26,9 @@ export { default as ColourReferenceAtom } from './ColourReferenceAtom';
 export { default as ChoiceAtom } from './ChoiceAtom';
 export { default as AssetAtom } from './AssetAtom';
 export { default as PropertyRowAtom } from './PropertyRowAtom';
+export { default as BooleanAtom } from './BooleanAtom';
+export { default as PartReferenceAtom } from './PartReferenceAtom';
+export { ATOM_FOR_FIELD_TYPE, EMBEDDED_FIELD_TYPES } from './atom-registry';
 export {
 	default as PerDeviceAtom,
 	splitTiers,
