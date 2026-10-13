@@ -216,7 +216,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		// A short run of words: the first in a header or footer row's column heads it; set in capitals, wide tracking or a
 		// pill it is a kicker.
 		( { e, st, kidsB } ) => {
-			if ( kidsB.length || ! m.words( e ) || HEADING.test( e.tag ) || 'a' === e.tag || m.words( e ).split( ' ' ).length > ( R.label?.maxWords ?? 4 ) ) {
+			// Its only children may be bare decorations (a marker dot), which the label, a leaf, absorbs.
+			if ( kidsB.some( ( k ) => ! bare( k ) ) || ! m.words( e ) || HEADING.test( e.tag ) || 'a' === e.tag || m.words( e ).split( ' ' ).length > ( R.label?.maxWords ?? 4 ) ) {
 				return null;
 			}
 			const heading = headsRowColumn( e ) && v( 'columnHeading', { block: R.columnHeading?.block } );
@@ -242,6 +243,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		}
 		return out;
 	};
+	// A block the database files as a section (`block_composition.container_kind`, as the hero and the trust bar) is only
+	// ever a page's own section: an element directly under a page surface's root. Badges inside a section are labels.
+	const pageSection = ( e, block ) => 'section' !== facts.composition[ block ]?.container_kind || ( 'page' === surface.kind && 1 === e.depth );
 	const isMedia = ( k ) => 'img' === k.tag || ( k.tag.includes( '-' ) && !! specHit( R.mediaElement, k.tag ) );
 	// The element's own animation loops a translate for ever (the inventory's motion record): a marquee track.
 	const loops = ( e ) => motion.has( String( e.key ).replace( /#\d+$/, '' ) );
@@ -255,6 +259,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 				return null;
 			}
 			const logos = desc( e ).some( isMedia );
+			if ( ! logos && ! pageSection( e, R.marquee?.itemBlock ) ) {
+				return null;
+			}
 			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: { [ R.marquee?.logoScrollAttr ]: true }, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: { [ R.marquee?.itemScrollAttr ]: true }, absorb: true } );
 		},
 		// A row of short non-interactive labels, each with at most a glyph, is a trust bar (its badges are its items).
@@ -269,7 +276,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 			const stem = ( w ) => ( w.length <= 4 ? w : w.slice( 0, 5 ) );
 			const vocab = ( T ? facts.capsOf( T.block ) : [] ).filter( ( c ) => ! c.includes( '-' ) && ! ( T.ignoreCapabilities || [] ).includes( c ) ).map( stem );
 			const trusted = ( k ) => all( k ).toLowerCase().split( /[^a-z]+/ ).some( ( w ) => w.length >= 3 && vocab.includes( w.length <= 4 ? w : stem( w ) ) );
-			if ( ! T || m.words( e ) || [ 'a', 'button' ].includes( e.tag ) || kidsB.length < ( T.minItems ?? 2 ) || ! kidsB.every( badge ) || m.stacked( kidsB ) || detail( e ) || ! kidsB.some( trusted ) ) {
+			if ( ! T || ! pageSection( e, T.block ) || m.words( e ) || [ 'a', 'button' ].includes( e.tag ) || kidsB.length < ( T.minItems ?? 2 ) || ! kidsB.every( badge ) || m.stacked( kidsB ) || detail( e ) || ! kidsB.some( trusted ) ) {
 				return null;
 			}
 			return v( 'trustBar', { block: T.block, absorb: true, attributes: { items: kidsB.map( ( k ) => ( { label: all( k ) } ) ) } } );
@@ -291,9 +298,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 			if ( isMedia( e ) ) {
 				return v( 'heroInner', { action: 'absorbed', into: hero.key } );
 			}
-			// A wrapper holding only links or buttons is the hero's button group (the scoring makes it the multi-button).
-			const buttons = kidsB.length > 1 && kidsB.every( ( k ) => [ 'a', 'button' ].includes( k.tag ) );
-			return ! m.words( e ) && kidsB.length && ! buttons ? v( 'heroInner', { action: 'unwrap' } ) : null;
+			// A wrapper laying two or more items side by side is a row (a button group, a row of labels), not a layout
+			// wrapper: it stays, and the scoring proposes it (the multi-button for buttons, a container for labels).
+			// The row that holds the hero's image is the hero's own split (content beside media), which the hero lays out.
+			const row = kidsB.length > 1 && ! m.stacked( kidsB ) && ! desc( e ).some( isMedia );
+			return ! m.words( e ) && kidsB.length && ! row ? v( 'heroInner', { action: 'unwrap' } ) : null;
 		},
 	];
 

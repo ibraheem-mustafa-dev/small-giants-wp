@@ -239,7 +239,7 @@ test( 'trustBar: a row of short labels naming a trust-bar capability is a trust 
 
 test( 'hero and heroInner: a page\'s first section holding its h1 is the split hero; its wrappers go, its image is its media, its buttons stay a group; MUST FAIL without each', () => {
 	const page = E( 'main', {}, [ E( 'section', {}, [ E( 'div', { display: 'grid' }, [
-		E( 'div', {}, [ E( 'h1', { words: 'Fresh food, delivered' } ), E( 'p', { words: 'Family run since 1962.' } ), E( 'div', { display: 'flex' }, [ E( 'a', { words: 'Apply', attrs: { href: '/apply' } } ), E( 'a', { words: 'Catalogue', attrs: { href: '/catalogue' } } ) ] ) ] ),
+		E( 'div', {}, [ E( 'h1', { words: 'Fresh food, delivered', y: 0 } ), E( 'p', { words: 'Family run since 1962.', y: 40 } ), E( 'div', { display: 'flex', y: 80 }, [ E( 'a', { words: 'Apply', attrs: { href: '/apply' }, box: { x: 0, y: 80, w: 100, h: 20 } } ), E( 'a', { words: 'Catalogue', attrs: { href: '/catalogue' }, box: { x: 120, y: 80, w: 100, h: 20 } } ) ] ), E( 'div', { display: 'flex', y: 120 }, [ E( 'span', { words: 'BRC certified', style: 'text-transform:uppercase', box: { x: 0, y: 120, w: 100, h: 20 } } ), E( 'span', { words: 'Halal certified', style: 'text-transform:uppercase', box: { x: 120, y: 120, w: 100, h: 20 } } ) ] ) ] ),
 		E( 'div', {}, [ E( 'image-slot' ) ] ),
 	] ) ] ), E( 'section', {}, [ E( 'h2', { words: 'More' } ) ] ) ] );
 	const r = run( page );
@@ -248,7 +248,8 @@ test( 'hero and heroInner: a page\'s first section holding its h1 is the split h
 	assert.deepEqual( settled( byTag( r, 'image-slot' ) ), { block: null, action: 'absorbed', rule: 'heroInner' } );
 	assert.ok( r.proposal.rows.filter( ( x ) => 'div' === x.tag && 'unwrap' === x.action ).length >= 2, 'the layout wrappers go' );
 	const heroNode = r.skeleton[ 0 ].innerBlocks[ 0 ];
-	assert.deepEqual( heroNode.innerBlocks.map( ( n ) => n.name ), [ 'sgs/heading', 'sgs/text', 'sgs/multi-button' ], 'heading, text and the button group sit directly in the hero' );
+	assert.deepEqual( heroNode.innerBlocks.map( ( n ) => n.name ), [ 'sgs/heading', 'sgs/text', 'sgs/multi-button', 'sgs/container' ], 'heading, text, the button group and the badge row sit directly in the hero' );
+	assert.deepEqual( heroNode.innerBlocks[ 3 ].innerBlocks.map( ( n ) => n.name ), [ 'sgs/label', 'sgs/label' ], 'badges inside a section are labels side by side, never a trust bar (a section block)' );
 	assert.equal( r.proposal.rows.filter( ( x ) => 'hero' === x.rule ).length, 1, 'only the first section holding the h1' );
 	assert.notEqual( byTag( run( page, { facts: facts( 'hero' ) } ), 'section' ).block, 'sgs/hero' );
 	assert.notEqual( byTag( run( page, { facts: facts( 'heroInner' ) } ), 'image-slot' ).rule, 'heroInner' );

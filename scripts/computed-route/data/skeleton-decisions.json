@@ -312,7 +312,7 @@
 			"block": "sgs/trust-bar",
 			"minItems": 2,
 			"maxWords": 4,
-			"reason": "a row of short non-interactive labels side by side, each with at most a glyph, at least one naming a capability the framework database records for sgs/trust-bar (accreditation, certification, halal and the like), is sgs/trust-bar; the labels are its items. The ignored capabilities (collection, features, icons) describe the block, not what its badges say",
+			"reason": "a trust bar is a section block (block_composition.container_kind section): a page's own section that is a row of short non-interactive labels side by side, each with at most a glyph, at least one naming a capability the framework database records for sgs/trust-bar (accreditation, certification, halal), is sgs/trust-bar with the labels as its items; the same badges inside a section are sgs/label blocks in a row (Bean, 2026-10-13). The ignored capabilities (collection, features, icons) describe the block, not what its badges say",
 			"ignoreCapabilities": [
 				"collection",
 				"features",
@@ -324,7 +324,7 @@
 			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)"
 		},
 		"heroInner": {
-			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go: the hero lays out its content"
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays"
 		}
 	}
 }
