@@ -18,7 +18,9 @@ defined( 'ABSPATH' ) || exit;
  *
  * Flow: editor user clicks "Save as Default" → REST POST → update_option.
  * On next editor load: get_option → inject via wp_add_inline_script →
- * JS reads window.sgsBlockDefaults → blocks.registerBlockType filter seeds defaults.
+ * JS reads window.sgsBlockDefaults → the blocks.registerBlockType filter makes
+ * them the initial attributes of newly inserted blocks (the attribute schema,
+ * and so every existing block, keeps block.json's defaults).
  */
 class Block_Defaults {
 
@@ -99,7 +101,7 @@ class Block_Defaults {
 	 */
 	public static function get_all_defaults( \WP_REST_Request $request ): \WP_REST_Response {
 		unset( $request ); // No params needed for this read-all endpoint.
-		return new \WP_REST_Response( self::get_stored_defaults(), 200 );
+		return new \WP_REST_Response( self::shaped_for_json( self::get_stored_defaults() ), 200 );
 	}
 
 	/**
@@ -170,7 +172,7 @@ class Block_Defaults {
 			return;
 		}
 
-		$json = wp_json_encode( $defaults, JSON_HEX_TAG | JSON_HEX_AMP );
+		$json = wp_json_encode( self::shaped_for_json( $defaults ), JSON_HEX_TAG | JSON_HEX_AMP );
 		wp_add_inline_script(
 			'sgs-block-extensions',
 			'window.sgsBlockDefaults = ' . $json . ';',
@@ -245,7 +247,7 @@ class Block_Defaults {
 							<?php foreach ( $defaults as $block_name => $attrs ) : ?>
 								<tr>
 									<td><code><?php echo esc_html( $block_name ); ?></code></td>
-									<td><?php echo esc_html( count( $attrs ) ); ?> <?php esc_html_e( 'attribute(s)', 'sgs-blocks' ); ?></td>
+									<td><?php echo esc_html( (string) count( $attrs ) ); ?> <?php esc_html_e( 'attribute(s)', 'sgs-blocks' ); ?></td>
 									<td>
 										<button
 											type="submit"
@@ -280,6 +282,78 @@ class Block_Defaults {
 	}
 
 	// ── Helpers ───────────────────────────────────────────────────────────────
+
+	/**
+	 * Give every saved value the JSON shape its attribute schema declares.
+	 *
+	 * The option is stored as PHP arrays, and PHP decodes a JSON `{}` to an
+	 * empty array, so an empty object attribute (iconSize `{}`, padding
+	 * `{"desktop":{}}`) would reach the editor as `[]`: a value the block's
+	 * own code reads as an object, with a different meaning. Each block's
+	 * registered attribute schema says which values are objects.
+	 *
+	 * @param array<string, array<string, mixed>> $defaults Saved defaults keyed by block name.
+	 * @return array<string, array<string, mixed>> The same values, object attributes as objects.
+	 */
+	private static function shaped_for_json( array $defaults ): array {
+		$registry = \WP_Block_Type_Registry::get_instance();
+		foreach ( $defaults as $block_name => $attrs ) {
+			$type = $registry->get_registered( $block_name );
+			if ( ! $type || ! is_array( $type->attributes ) ) {
+				continue;
+			}
+			$defaults[ $block_name ] = self::shape_attributes( $attrs, $type->attributes );
+		}
+		return $defaults;
+	}
+
+	/**
+	 * Shape one block's saved attributes against its attribute schema.
+	 *
+	 * Inside an object-typed attribute every empty array becomes an empty
+	 * object, unless the schema default at that path is a non-empty list;
+	 * attributes of any other type, and attributes the schema does not
+	 * declare, pass through unchanged.
+	 *
+	 * @param array<string, mixed>                $attrs  Saved attribute values.
+	 * @param array<string, array<string, mixed>> $schema Attribute schema (`WP_Block_Type::$attributes`).
+	 * @return array<string, mixed>
+	 */
+	public static function shape_attributes( array $attrs, array $schema ): array {
+		foreach ( $attrs as $name => $value ) {
+			$def  = $schema[ $name ] ?? null;
+			$type = is_array( $def ) ? ( $def['type'] ?? null ) : null;
+			if ( 'object' === $type || ( is_array( $type ) && in_array( 'object', $type, true ) ) ) {
+				$attrs[ $name ] = self::as_object( $value, $def['default'] ?? null );
+			}
+		}
+		return $attrs;
+	}
+
+	/**
+	 * Convert an array value of an object attribute to its JSON shape.
+	 *
+	 * @param mixed $value   The saved value.
+	 * @param mixed $schema_default The schema default at the same path, if any.
+	 * @return mixed
+	 */
+	private static function as_object( $value, $schema_default ) {
+		if ( ! is_array( $value ) ) {
+			return $value;
+		}
+		if ( array() === $value ) {
+			$list_default = is_array( $schema_default ) && array() !== $schema_default && array_is_list( $schema_default );
+			return $list_default ? array() : new \stdClass();
+		}
+		if ( array_is_list( $value ) ) {
+			return $value;
+		}
+		$out = new \stdClass();
+		foreach ( $value as $key => $child ) {
+			$out->$key = self::as_object( $child, is_array( $schema_default ) ? ( $schema_default[ $key ] ?? null ) : null );
+		}
+		return $out;
+	}
 
 	/**
 	 * Read saved defaults from wp_options.

@@ -4,36 +4,61 @@
  * Two features:
  * 1. "Save as Default" button in the inspector Advanced panel — stores current
  *    attribute values to wp_options via REST API (admin only).
- * 2. Auto-seed new block instances — merges saved defaults into each block's
- *    attribute definitions when it registers, so new insertions use saved values.
- *    Defaults are output by PHP as window.sgsBlockDefaults on editor load.
+ * 2. New instances start from the saved values — they become the initial
+ *    attributes of every block inserted from the inserter (Spec 02 "Block
+ *    Defaults System": new insertions inherit, existing instances are
+ *    unaffected). The attribute schema keeps block.json's defaults, so a block
+ *    that never set a value previews exactly what render.php paints, and an
+ *    inserted block stores the saved values in its own markup, where the front
+ *    end reads them. Defaults are output by PHP as window.sgsBlockDefaults on
+ *    editor load.
  */
 import { addFilter } from '@wordpress/hooks';
 
-// ── Feature 2: seed new instances with saved defaults ────────────────────────
+/** Name of the inserter variation that carries the site defaults. */
+export const SITE_DEFAULT_VARIATION = 'sgs-site-default';
+
+const insertable = ( variation ) =>
+	! Array.isArray( variation.scope ) || variation.scope.includes( 'inserter' );
+
 /**
- * Merge any saved defaults into a block's attribute definitions.
- * When a new block is inserted, WordPress uses the `default` value from the
- * attribute schema — so updating those defaults here is all we need.
+ * Seed a block's inserter entries with its saved site defaults.
+ *
+ * Every inserter-scoped variation starts from the saved values, its own
+ * attributes winning; a block with no default inserter variation gains one
+ * (`isDefault`, so it replaces the block's own inserter entry with the same
+ * title and icon). The attribute schema is not touched.
  *
  * @param {Object} settings Block settings.
  * @param {string} name     Block name (e.g. "sgs/hero").
- * @return {Object} Settings with merged defaults.
+ * @return {Object} Settings with seeded inserter variations.
  */
-function applyBlockDefaults( settings, name ) {
+export function applyBlockDefaults( settings, name ) {
 	const saved = window.sgsBlockDefaults?.[ name ];
-	if ( ! saved || typeof saved !== 'object' ) {
+	if ( ! saved || typeof saved !== 'object' || Array.isArray( saved ) ) {
+		return settings;
+	}
+	// Keys the block does not declare when it is inserted are dropped by createBlock.
+	const initial = { ...saved };
+	if ( ! Object.keys( initial ).length ) {
 		return settings;
 	}
 
-	const merged = { ...( settings.attributes || {} ) };
-	Object.entries( saved ).forEach( ( [ key, value ] ) => {
-		if ( merged[ key ] !== undefined ) {
-			merged[ key ] = { ...merged[ key ], default: value };
-		}
-	} );
+	const variations = ( settings.variations || [] ).map( ( variation ) =>
+		insertable( variation )
+			? { ...variation, attributes: { ...initial, ...( variation.attributes || {} ) } }
+			: variation
+	);
+	if ( ! variations.some( ( variation ) => variation.isDefault && insertable( variation ) ) ) {
+		variations.unshift( {
+			name: SITE_DEFAULT_VARIATION,
+			isDefault: true,
+			scope: [ 'inserter' ],
+			attributes: initial,
+		} );
+	}
 
-	return { ...settings, attributes: merged };
+	return { ...settings, variations };
 }
 
 addFilter(
