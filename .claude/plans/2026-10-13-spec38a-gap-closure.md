@@ -26,7 +26,7 @@ Follow `.claude/skills/migration-method/SKILL.md` and `.claude/rules/migration-s
 
 ## Task 2: shared atoms for boolean and part-reference fields
 
-Status: not done; resumes in S3.
+Status: done (2026-10-13, `fbf77ac8d`; review Minors `a7301d0d0`, `d0d59072a`). `field-types.js` holds no atom map (the atoms import it), so `src/components/motion/atom-registry.js::ATOM_FOR_FIELD_TYPE` maps every field type to its atom; `tokenReference` is embedded in duration, distance and easing.
 
 Problem: 18 schema fields are field type `boolean` (tilt glare, parallax background, the stagger helper's apply and restart-each-row, others) and one is `partReference` (magnet `movingPart`), and the atom kit in `plugins/sgs-blocks/src/components/motion/` has no atom for either; `check-motion-atoms.py` forbids a raw WP control in a panel, so the M3 panels cannot draw these fields.
 
