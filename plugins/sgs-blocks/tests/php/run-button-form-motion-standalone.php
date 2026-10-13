@@ -45,6 +45,18 @@ if ( ! function_exists( 'wp_get_global_settings' ) ) {
 	}
 }
 
+// Marks an obscured address, so the label helper can be checked in this process (the block renders
+// above run in the harness's own process with its own stubs).
+if ( ! function_exists( 'esc_html' ) ) {
+	function esc_html( $text ) {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+if ( ! function_exists( 'antispambot' ) ) {
+	function antispambot( $email_address, $hex_encoding = 0 ) {
+		return 'OBSCURED:' . (string) $email_address;
+	}
+}
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-hover-lift.php';
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-shadow-hover.php';
 
@@ -224,6 +236,10 @@ foreach ( array(
 	$on = render_block_child( 'sgs/button', $typed + array( 'linkSource' => $source, 'labelFromSiteInfo' => true ), $info );
 	ok( $expected === label_of( $on['html'] ), "4. $source: the label prints the Site Info value ($expected)" );
 }
+$email_on = render_block_child( 'sgs/button', $typed + array( 'linkSource' => 'email', 'labelFromSiteInfo' => true ), $info );
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-button-site-info-label.php';
+ok( 'OBSCURED:hello@example.test' === sgs_button_site_info_label_html( 'hello@example.test', 'email' ), '4. an email label from Site Info is obscured (antispambot), never printed plain' );
+ok( '020 7946 0958' === sgs_button_site_info_label_html( '020 7946 0958', 'phone' ), '4. a phone label from Site Info is only HTML-escaped' );
 $off = render_block_child( 'sgs/button', $typed + array( 'linkSource' => 'phone', 'labelFromSiteInfo' => false ), $info );
 ok( 'Call us' === label_of( $off['html'] ), '4. NEGATIVE CONTROL: switch off keeps the typed label' );
 $unset = render_block_child( 'sgs/button', $typed + array( 'linkSource' => 'phone' ), $info );

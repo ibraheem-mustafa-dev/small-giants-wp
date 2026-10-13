@@ -58,6 +58,7 @@ Registered as a Customiser section with `type => 'option'` (not theme_mod) so th
 | `sgs_floating_ui_back_to_top_position` | Radio (left / right) | `right` | Horizontal position |
 | `sgs_floating_ui_reading_progress_enabled` | Checkbox | `false` | Show/hide the reading progress bar |
 | `sgs_floating_ui_reading_progress_colour` | Colour picker | `#0F7E80` | Bar fill colour |
+| `sgs_floating_ui_reading_progress_gradient` | Gradient text field with a live swatch | `""` | A CSS gradient, validated by `sgs_css_gradient_value`, that paints the bar instead of the fill colour when set and spans the viewport width (the Customiser cannot host the block editor's gradient picker) |
 | `sgs_floating_ui_reading_progress_height` | Range (2-8 px) | `4` | Bar height in pixels |
 
 ### 2.2 Data layer

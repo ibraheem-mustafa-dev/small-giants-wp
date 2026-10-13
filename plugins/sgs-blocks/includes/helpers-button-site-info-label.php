@@ -58,3 +58,18 @@ if ( ! function_exists( 'sgs_button_site_info_label' ) ) {
 		return trim( wp_strip_all_tags( $value ) );
 	}
 }
+
+if ( ! function_exists( 'sgs_button_site_info_label_html' ) ) {
+	/**
+	 * The label HTML for a Site Info value: an email address is obscured the same way as its
+	 * mailto: link (antispambot() returns only character entities for an address is_email()
+	 * accepted), so harvesters cannot read it; any other value is HTML-escaped.
+	 *
+	 * @param string $label  The plain Site Info value (sgs_button_site_info_label()).
+	 * @param string $source The button's link source.
+	 * @return string Safe label HTML.
+	 */
+	function sgs_button_site_info_label_html( string $label, string $source ): string {
+		return 'email' === $source ? antispambot( $label ) : esc_html( $label );
+	}
+}

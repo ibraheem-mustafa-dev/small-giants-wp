@@ -192,7 +192,16 @@ if ( ! function_exists( 'sgs_gallery_linked_item_html' ) ) {
 	 * @return string Markup; every dynamic part is escaped before it arrives or here.
 	 */
 	function sgs_gallery_linked_item_html( array $link, string $item_key, string $media_html, string $img_alt, string $overlay, string $caption ): string {
-		$name = '' !== $link['label'] ? $link['label'] : wp_strip_all_tags( html_entity_decode( $img_alt, ENT_QUOTES ) );
+		// The link's accessible name: its label, else the image's alt text, else the caption, else the
+		// destination's host, so a decorative (hidden) image never leaves the link unnamed.
+		$alt_name = wp_strip_all_tags( html_entity_decode( $img_alt, ENT_QUOTES ) );
+		$name     = '' !== $link['label'] ? $link['label'] : $alt_name;
+		if ( '' === $name ) {
+			$name = trim( wp_strip_all_tags( html_entity_decode( $caption, ENT_QUOTES ) ) );
+		}
+		if ( '' === $name ) {
+			$name = (string) wp_parse_url( html_entity_decode( $link['url'], ENT_QUOTES ), PHP_URL_HOST );
+		}
 		if ( $link['new_tab'] && '' !== $name ) {
 			/* translators: %s: the link's accessible name */
 			$name = sprintf( __( '%s (opens in a new tab)', 'sgs-blocks' ), $name );
@@ -201,7 +210,7 @@ if ( ! function_exists( 'sgs_gallery_linked_item_html' ) ) {
 		if ( $link['new_tab'] ) {
 			$attrs .= ' target="_blank" rel="noopener noreferrer"';
 		}
-		if ( '' !== $name && ( '' !== $link['label'] || $link['new_tab'] ) ) {
+		if ( '' !== $name && ( '' !== $link['label'] || $link['new_tab'] || '' === $alt_name ) ) {
 			$attrs .= ' aria-label="' . esc_attr( $name ) . '"';
 		}
 

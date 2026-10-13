@@ -57,7 +57,7 @@ if ( ! function_exists( 'sgs_form_submit_motion_css' ) ) {
 		// The stylesheet's own transition covers colour and opacity only; add the two properties
 		// this motion paints, and drop it all for visitors who ask for reduced motion.
 		$css  = $selector . '{transition:background-color .2s,opacity .2s,translate .2s,box-shadow .2s;}';
-		$css .= '@media (prefers-reduced-motion:reduce){' . $selector . '{transition:none;}}';
+		$css .= '@media (prefers-reduced-motion:reduce){' . $selector . '{transition:none;translate:none;}}';
 		if ( $shadow['normal'] ) {
 			$css .= $selector . '{' . implode( ';', $shadow['normal'] ) . ';}';
 		}

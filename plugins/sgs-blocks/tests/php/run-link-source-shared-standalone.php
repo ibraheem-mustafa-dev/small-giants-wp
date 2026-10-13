@@ -184,6 +184,10 @@ namespace {
 
 	// --- Site Info sources, filled ---------------------------------------------------------------
 	ok( 'tel:01217298233' === href( 'phone', $typed ), 'phone: tel: link from Site Info' );
+	$sgs_saved_phone                            = \SGS\Blocks\Sgs_Site_Info::$store['phone'] ?? null;
+	\SGS\Blocks\Sgs_Site_Info::$store['phone'] = 'Call us';
+	ok( $typed === href( 'phone', $typed ), 'phone: a Site Info value with no digits falls back to the typed URL, never a bare tel:' );
+	\SGS\Blocks\Sgs_Site_Info::$store['phone'] = $sgs_saved_phone;
 	ok( 'mailto:[obscured]hello@example.test' === href( 'email', $typed ), 'email: antispambot mailto: link from Site Info' );
 	ok( 'https://wa.me/441217298233' === href( 'whatsapp', $typed ), 'whatsapp: the stored wa.me link' );
 	ok( 'https://maps.google.com/?cid=123456' === href( 'directions', $typed ), 'directions: the Site Info Maps link' );

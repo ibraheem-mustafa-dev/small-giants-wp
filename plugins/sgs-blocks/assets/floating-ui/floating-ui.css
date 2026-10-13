@@ -26,6 +26,9 @@
 	height: var(--rp-height, 4px);
 	background-color: var(--rp-colour, #0f7e80);
 	background-image: var(--rp-gradient, none);
+	/* The gradient spans the viewport, so the growing bar reveals it rather than squashing it. */
+	background-size: 100vw 100%;
+	background-repeat: no-repeat;
 	z-index: 9999;
 	transition: width 0.1s linear;
 	pointer-events: none;

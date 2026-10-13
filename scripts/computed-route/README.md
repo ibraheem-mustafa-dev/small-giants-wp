@@ -1034,6 +1034,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/intake-pool.mjs`
 - `poolSize(env?)` → `INTAKE_POOL` as a positive integer (default 4; anything else throws).
+- `INTAKE_PARALLEL_WIDTHS=1` runs test 2's three widths side by side (off by default; `lib/intake-defects.mjs::unreachedDefects`): on Indus it reached six mega-menu constructs at 768 that the one-at-a-time run does not, cause unproven (Spec 48 FR-48-28).
 - `mapPool(items, n, fn)` → `fn(item, index)` for every item, at most `n` of the call and the pool's slots in all at once, results in input order (a plain loop when the pool or `n` is 1 or inside a slot); `withSlot(fn)` → `fn()` run in one slot.
 
 ### `lib/intake-process.mjs`

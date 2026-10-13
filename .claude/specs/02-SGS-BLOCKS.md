@@ -621,6 +621,8 @@ Output as `<script type="application/ld+json">` in render.php — enables Google
 **Owning spec for the FULL requirement set (FRs, per-breakpoint override data model, never-overflow Cluster+clamp layout, sticky/transparent-scroll behaviour): [`37-HEADER-FOOTER-BUILDER.md`](37-HEADER-FOOTER-BUILDER.md); global-defaults/Site-Info binding and the drawer a11y contract are owned by **Spec 36**.** This section is the block-roster summary only — do not duplicate Spec 37's (or Spec 36's) FRs here.
 
 ### `sgs/business-info` `displayType="attribution"` — the Website Credit element
+`displayType` `open-status` shows an open or closed pill (a coloured dot plus a line such as "Closes at 5pm today") computed in the visitor's browser in the business time zone from the Site Info hours, with the hours as plain text when scripts do not run; the map display's `mapSource` (`address`, the default, or the business listing by name plus address) picks what the embed searches.
+
 
 **Plain English:** the "Website by Small Giants Studio" link in the footer's bottom strip, as a proper element an operator can move around that row — but cannot retarget, reword or delete.
 
@@ -1017,7 +1019,7 @@ SGS-BEM: `.sgs-icon` root + `__link` / `__svg` / `__emoji` / `__dashicon` + `--s
 
 **Shape backgrounds, clickable mode and hover effects:** shape backgrounds (circle / square / rounded-square variants with background colour and padding attrs), clickable mode (wraps the icon in `<a>` with `linkUrl` / `linkTarget` / `linkRel`), and hover effects (lift / scale / colour-shift via the universal hover extension).
 
-**Site Info link:** an icon whose `linkUrl` is bound to a Site Info key (`metadata.bindings.linkUrl`, source `sgs/site-info`) shows the Site Info link first and its own typed `linkUrl` as the fallback; it renders nothing for a visitor only when neither gives a link, and `linkSource: "custom"` makes the typed link win. The root carries `data-sgs-site-info-key` (`icon/render.php`, `includes/helpers-icon.php::sgs_icon_resolve_bound_link`). The clone route's rule is Spec 48 FR-47-9.
+**Site Info link:** an icon whose `linkUrl` is bound to a Site Info key (`metadata.bindings.linkUrl`, source `sgs/site-info`) shows the Site Info link first and its own typed `linkUrl` as the fallback; it renders nothing for a visitor only when neither gives a link, and `linkSource: "custom"` makes the typed link win. The root carries `data-sgs-site-info-key` (`icon/render.php`, `includes/helpers-icon.php::sgs_icon_resolve_bound_link`). The clone route's rule is Spec 48 FR-47-9. That binding stays the icon's own route; the shared link source on every other link field (`<urlAttr>Source`: a page, a Site Info link or back to top, `includes/helpers-link-source.php::sgs_resolve_link_source`, Spec 35) is offered on an unbound icon as `linkUrlSource`.
 
 **Draft-style hover, motion, shadow and brand ground (`sgs/icon`, with row defaults on `sgs/social-icons`):** every value reads own, then the wrapping row's, then the default, as `--sgs-icon-*` / `--sgs-si-*` custom properties (`includes/helpers-icon-motion.php`; editor twin `src/blocks/icon/icon-motion.js`, parity-tested by `tests/js/icon-motion-parity.test.js`).
 

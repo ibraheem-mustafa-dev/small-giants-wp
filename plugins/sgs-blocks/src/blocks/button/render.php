@@ -914,7 +914,7 @@ if ( $icon_html && 'none' !== $label_collapse ) {
 // bare) so the labelCollapse feature can visually clip it while keeping the
 // text in the accessibility tree.
 $label_html = '<span class="sgs-button__label">' . wp_kses(
-	$sgs_label_is_site_info ? esc_html( $label ) : $label,
+	$sgs_label_is_site_info ? sgs_button_site_info_label_html( $label, $link_source ) : $label,
 	array(
 		'br'     => array(),
 		'strong' => array(),
@@ -1121,7 +1121,7 @@ if ( $scoped_css_parts ) {
 	// zero elements. Class level is also required by Spec 32 §6.1(b)/D303, so the
 	// client's sgsCustomCss residual can win.
 	$raw_css = implode( '', $scoped_css_parts )
-		. "@media(prefers-reduced-motion:reduce){.{$uid}.sgs-button{transition:none !important;transform:none !important;}}";
+		. "@media(prefers-reduced-motion:reduce){.{$uid}.sgs-button{transition:none !important;transform:none !important;translate:none !important;}}";
 	// wp_strip_all_tags (not esc_html) matches the proven SGS_Container_Wrapper
 	// pattern: it blocks a </style> breakout while leaving CSS combinators like
 	// `>` intact (esc_html would turn `>` into &gt; and break any descendant rule).

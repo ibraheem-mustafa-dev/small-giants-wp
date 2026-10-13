@@ -136,7 +136,8 @@ if ( ! function_exists( 'sgs_resolve_link_source' ) ) {
 				// (strip everything except digits and a leading +) so the same
 				// number produces the same tel: href on both blocks.
 				$sgs_site_info_phone = (string) \SGS\Blocks\Sgs_Site_Info::get( 'phone', '' );
-				$sgs_site_info_href  = '' !== $sgs_site_info_phone ? 'tel:' . preg_replace( '/[^0-9+]/', '', $sgs_site_info_phone ) : '';
+				$sgs_site_info_digits = preg_replace( '/[^0-9+]/', '', $sgs_site_info_phone );
+				$sgs_site_info_href   = '' !== trim( (string) $sgs_site_info_digits, '+' ) ? 'tel:' . $sgs_site_info_digits : '';
 				return array(
 					'url'   => '' !== trim( $sgs_site_info_href ) ? $sgs_site_info_href : $typed_url,
 					'attrs' => array(),
