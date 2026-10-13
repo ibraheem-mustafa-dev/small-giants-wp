@@ -1,14 +1,15 @@
 /**
- * Nav drawer top-row logo box controls (Spec 36 FR-36-6): a fill, corner
- * radius, padding and shadow around the top-row logo (`chromeLogoBox*`),
+ * Nav drawer top-row logo box controls (Spec 36 FR-36-6): corner radius,
+ * padding and shadow around the top-row logo (`chromeLogoBox*`),
  * mounted under the logo controls in the "Top row" panel. Render side:
- * `includes/nav-drawer-chrome-extras-css.php`.
+ * `includes/nav-drawer-chrome-extras-css.php`. The box's fill is a row in the
+ * drawer's Styles-tab colour panel (`chrome-colour-rows.js`).
  *
  * @package SGS\Blocks
  */
 
 import { __ } from '@wordpress/i18n';
-import { SgsColourPanel, fillRow, SgsBoxControl, SgsLengthControl, ShadowControl } from '../../components';
+import { SgsBoxControl, SgsLengthControl, ShadowControl } from '../../components';
 
 /**
  * @param {Object}   props               Props.
@@ -21,17 +22,6 @@ export default function ChromeLogoBoxControls( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			<SgsColourPanel
-				rows={ [
-					fillRow( {
-						key: 'chromeLogoBoxBg',
-						label: __( 'Logo box background', 'sgs-blocks' ),
-						attrs: { base: 'chromeLogoBoxBg', gradient: 'chromeLogoBoxBgGradient' },
-						attributes,
-						setAttributes,
-					} ),
-				] }
-			/>
 			<SgsLengthControl
 				label={ __( 'Logo box corner radius', 'sgs-blocks' ) }
 				help={ __( 'Rounds the box around the logo. Empty: square corners.', 'sgs-blocks' ) }

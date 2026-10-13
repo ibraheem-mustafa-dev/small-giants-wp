@@ -3,7 +3,8 @@
  * border (closeBorderWidth / closeBorderStyle / closeBorderColour through the
  * shared SgsBorderControl) and the glyph size per device (closeIconSize). The
  * rest of the close family (style, placement, size, radius, label, icon,
- * colour) stays where it was in edit.js. Render side:
+ * colour) stays where it was in edit.js; the button's background is a row in
+ * the drawer's Styles-tab colour panel (`chrome-colour-rows.js`). Render side:
  * `includes/nav-drawer-chrome-css.php`.
  *
  * @package SGS\Blocks
@@ -11,7 +12,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { RangeControl } from '@wordpress/components';
-import { SgsBorderControl, ResponsiveBoxControl, ResponsiveLengthControl, SgsColourPanel, fillRow } from '../../components';
+import { SgsBorderControl, ResponsiveBoxControl, ResponsiveLengthControl } from '../../components';
 
 /**
  * @param {Object}   props               Props.
@@ -24,22 +25,6 @@ export default function CloseBoxControls( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			<SgsColourPanel
-				rows={ [
-					fillRow( {
-						key: 'closeBg',
-						label: __( 'Close button background', 'sgs-blocks' ),
-						attrs: {
-							base: 'closeBg',
-							hover: 'closeBgHover',
-							gradient: 'closeBgGradient',
-							hoverGradient: 'closeBgHoverGradient',
-						},
-						attributes,
-						setAttributes,
-					} ),
-				] }
-			/>
 			<SgsBorderControl
 				label={ __( 'Close button border', 'sgs-blocks' ) }
 				widthValues={ closeBorderWidth ?? {} }

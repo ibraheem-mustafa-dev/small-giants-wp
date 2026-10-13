@@ -1568,10 +1568,12 @@ export default function TypographyControls( props ) {
 	const { targets, ...singleProps } = props;
 
 	if ( ! Array.isArray( targets ) || targets.length <= 1 ) {
+		// A target's `key` identifies it in the switcher; React refuses it inside a props spread.
+		const { key: _targetKey, ...target } = 1 === targets?.length ? targets[ 0 ] : {};
 		return (
 			<TypographyControlsFields
 				{ ...singleProps }
-				{ ...( 1 === targets?.length ? targets[ 0 ] : {} ) }
+				{ ...target }
 			/>
 		);
 	}

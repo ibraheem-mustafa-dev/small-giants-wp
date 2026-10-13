@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/same-tab-nesting",
+	"title": "Fixture: SgsColourPanel inside a color-group fill, both on the Styles tab (must NOT flag)",
+	"category": "sgs",
+	"attributes": {
+		"tint": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}

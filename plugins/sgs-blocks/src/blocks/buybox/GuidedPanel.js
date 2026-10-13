@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
-import { SgsColourPanel, fillRow } from '../../components';
+import { fillRow } from '../../components';
 
 /**
  * "Guided layout" panel for sgs/buybox (Spec 43 FR-43-23, FR-43-25 peripherals).
@@ -12,6 +12,9 @@ import { SgsColourPanel, fillRow } from '../../components';
  * with one import + one JSX line (see the buybox report). The Back/Next
  * wording, meter style and meter colour are guided-buybox peripherals
  * (FR-43-25): they style the product's own attributes, never a saved flow.
+ * The meter colour is a row in the block's Styles-tab colour panel
+ * (`guidedColourRows`, added to edit.js's SgsColourPanel): a colour panel
+ * nested in this Settings-tab fill never renders.
  */
 export default function GuidedPanel( { attributes, setAttributes } ) {
 	const {
@@ -21,7 +24,6 @@ export default function GuidedPanel( { attributes, setAttributes } ) {
 		guidedNextLabel,
 		guidedBackLabel,
 		guidedMeterStyle,
-		guidedMeterColour,
 	} = attributes;
 	const isGuided = 'guided' === ( buyboxLayout || 'standard' );
 
@@ -98,19 +100,30 @@ export default function GuidedPanel( { attributes, setAttributes } ) {
 					</>
 				) }
 			</PanelBody>
-			{ isGuided && (
-				<SgsColourPanel
-					rows={ [
-						fillRow( {
-							key: 'guidedMeter',
-							label: __( 'Meter colour', 'sgs-blocks' ),
-							attrs: { base: 'guidedMeterColour' },
-							attributes,
-							setAttributes,
-						} ),
-					] }
-				/>
-			) }
 		</InspectorControls>
 	);
+}
+
+/**
+ * The guided layout's colour rows for the block's one SgsColourPanel; empty
+ * unless the layout is guided.
+ *
+ * @param {Object}   props               Props.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Setter.
+ * @return {Array} Colour rows.
+ */
+export function guidedColourRows( { attributes, setAttributes } ) {
+	if ( 'guided' !== ( attributes.buyboxLayout || 'standard' ) ) {
+		return [];
+	}
+	return [
+		fillRow( {
+			key: 'guidedMeter',
+			label: __( 'Meter colour', 'sgs-blocks' ),
+			attrs: { base: 'guidedMeterColour' },
+			attributes,
+			setAttributes,
+		} ),
+	];
 }

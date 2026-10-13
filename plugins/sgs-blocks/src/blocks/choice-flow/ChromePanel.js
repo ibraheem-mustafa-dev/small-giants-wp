@@ -1,8 +1,9 @@
 /**
  * sgs/choice-flow — root chrome inspector panel (Spec 43 Phase 3/4 §5).
  *
- * Design items: the progress colours (bar fill, numbered steps, step-count badge), an
- * optional header (logo, "Step N of M" eyebrow, Close), and a sticky footer.
+ * Design items: an optional header (logo, "Step N of M" eyebrow, Close) and a
+ * sticky footer. The progress colours are rows in the block's Styles-tab
+ * colour panel (`colour-rows.js`).
  * Kept as its OWN component (never inlined into edit.js) — edit.js is at its
  * size cap and the build contract forbids adding logic to it; the main
  * thread wires this in with one import + one render line.
@@ -13,10 +14,7 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { PanelBody, ToggleControl, TextControl, Button } from '@wordpress/components';
-import { SgsColourPanel } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import fillRow from '../../components/colour-variants/fillRow';
-import textRow from '../../components/colour-variants/textRow';
 
 /**
  * @param {Object}   o
@@ -25,45 +23,10 @@ import textRow from '../../components/colour-variants/textRow';
  * @return {JSX.Element} The panel, mounted inside its own InspectorControls.
  */
 export default function ChromePanel( { attributes, setAttributes } ) {
-	const { progressColour, showHeader, headerLogo, closeLabel, closeStyle, stickyFooter } = attributes;
+	const { showHeader, headerLogo, closeLabel, closeStyle, stickyFooter } = attributes;
 
 	return (
 		<InspectorControls>
-			<PanelBody title={ __( 'Progress colours', 'sgs-blocks' ) } initialOpen={ false }>
-				<SgsColourPanel
-					rows={ [
-						fillRow( {
-							key: 'progress-fill',
-							label: __( 'Fill', 'sgs-blocks' ),
-							attrs: { base: 'progressColour', gradient: 'progressColourGradient' },
-							attributes,
-							setAttributes,
-						} ),
-						textRow( {
-							key: 'stepper',
-							label: __( 'Numbered steps (not yet reached)', 'sgs-blocks' ),
-							attrs: { base: 'stepperColour' },
-							attributes,
-							setAttributes,
-						} ),
-						textRow( {
-							key: 'stepper-active',
-							label: __( 'Numbered steps (current and done)', 'sgs-blocks' ),
-							attrs: { base: 'stepperActiveColour' },
-							attributes,
-							setAttributes,
-						} ),
-						textRow( {
-							key: 'progress-badge',
-							label: __( 'Step-count badge text', 'sgs-blocks' ),
-							attrs: { base: 'progressBadgeColour' },
-							attributes,
-							setAttributes,
-						} ),
-					] }
-				/>
-			</PanelBody>
-
 			<PanelBody title={ __( 'Header', 'sgs-blocks' ) } initialOpen={ false }>
 				<ToggleControl
 					label={ __( 'Show header', 'sgs-blocks' ) }

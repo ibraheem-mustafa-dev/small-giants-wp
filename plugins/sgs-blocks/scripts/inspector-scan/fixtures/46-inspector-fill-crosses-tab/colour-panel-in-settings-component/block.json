@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/colour-panel-in-settings-component",
+	"title": "Fixture: SgsColourPanel inside a component mounted in a Settings fill (MUST flag)",
+	"category": "sgs",
+	"attributes": {
+		"tint": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}

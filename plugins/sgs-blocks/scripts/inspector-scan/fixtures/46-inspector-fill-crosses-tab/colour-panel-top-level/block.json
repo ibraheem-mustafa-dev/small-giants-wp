@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/colour-panel-top-level",
+	"title": "Fixture: SgsColourPanel mounted at the top of edit (must NOT flag)",
+	"category": "sgs",
+	"attributes": {
+		"tint": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}

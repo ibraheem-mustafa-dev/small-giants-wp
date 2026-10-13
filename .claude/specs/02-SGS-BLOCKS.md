@@ -904,9 +904,9 @@ Lets users save the currently-configured attributes of any SGS block as the defa
 1. User configures a block, opens Advanced panel, clicks "Save as Default"
 2. JS POSTs `{block, attributes}` to `/sgs-blocks/v1/defaults` (block name in body — WP REST routes can't have forward slashes in route parameters)
 3. PHP sanitises (strips internal WP attrs `lock`/`className`/`style`/`metadata`, deep-sanitises rest), stores in `wp_options['sgs_block_defaults']` (single JSON keyed by block name)
-4. On next editor load: `Block_Defaults::inject_defaults_script()` outputs `window.sgsBlockDefaults` before the extensions bundle via `wp_add_inline_script`
-5. JS extension's `blocks.registerBlockType` filter reads `window.sgsBlockDefaults[name]` and merges into each block's attribute defaults — synchronous, no extra REST roundtrip
-6. New block insertions inherit saved defaults automatically; existing instances unaffected
+4. On next editor load: `Block_Defaults::inject_defaults_script()` outputs `window.sgsBlockDefaults` before the extensions bundle via `wp_add_inline_script`, each value in the JSON shape its attribute schema declares (`Block_Defaults::shape_attributes`: the option holds PHP arrays, so an empty object attribute such as `iconSize` `{}` would otherwise reach the editor as `[]`); the GET route returns the same shape
+5. JS extension's `blocks.registerBlockType` filter (`block-defaults.js::applyBlockDefaults`) reads `window.sgsBlockDefaults[name]` and makes the saved values the initial attributes of the block's inserter entries: every inserter-scoped variation starts from them (its own attributes win), and a block with no default inserter variation gains one (`sgs-site-default`, `isDefault`, so it replaces the block's inserter entry with the same title and icon). The attribute schema keeps block.json's defaults
+6. New block insertions inherit saved defaults: the values are stored in the inserted block's own markup, so the editor and the front end render them alike. Existing instances are unaffected on both surfaces: a block that never set a value previews and renders block.json's default
 
 **Admin page:** `Settings → SGS Block Defaults` lists all saved defaults with per-block "Reset" buttons + global "Reset all".
 
