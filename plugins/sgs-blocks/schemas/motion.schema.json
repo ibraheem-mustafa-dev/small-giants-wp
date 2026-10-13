@@ -7150,7 +7150,8 @@
 					"$ref": "#/$defs/choice",
 					"enum": [
 						"self",
-						"root"
+						"root",
+						"group"
 					]
 				},
 				"trigger": {
@@ -7205,7 +7206,8 @@
 					"$ref": "#/$defs/choice",
 					"enum": [
 						"self",
-						"root"
+						"root",
+						"group"
 					]
 				},
 				"trigger": {

@@ -40,43 +40,8 @@ const CORE_ANIMATION_BLOCKS = array(
 	'core/image',
 );
 
-/**
- * Whether this block carries an fx effect that owns transform/opacity across a
- * scroll range (Spec 38 §4.3).
- *
- * Reads BOTH signals, because either alone has a blind spot: the parsed
- * attribute is absent on a block whose fx arrived pre-baked in stored markup
- * (a converter clone or pattern), and the markup scan is absent on a dynamic
- * block being evaluated before its data attributes are injected.
- *
- * The `owns_scroll_transform` flag comes from the generated registry map — NOT
- * a hardcoded list here. A load-triggered effect (DrawSVG, ScrambleText) does
- * not own the scroll range and must never suppress an entrance animation.
- *
- * @param string $block_content Rendered block HTML.
- * @param array  $attrs         Parsed block attributes.
- * @return bool True when the entrance animation must be suppressed.
- */
-function sgs_fx_owns_scroll_transform( string $block_content, array $attrs ): bool {
-	$effect = $attrs['fx'] ?? '';
-
-	if ( ( ! \is_string( $effect ) || '' === $effect )
-		&& \preg_match( '/data-sgs-fx="([a-z0-9-]+)"/i', $block_content, $m ) ) {
-		$effect = $m[1];
-	}
-
-	if ( ! \is_string( $effect ) || '' === $effect ) {
-		return false;
-	}
-
-	if ( ! \class_exists( __NAMESPACE__ . '\\SGS_Motion_Registry' ) ) {
-		return false;
-	}
-
-	$effects = SGS_Motion_Registry::effects();
-
-	return ! empty( $effects[ $effect ]['owns_scroll_transform'] );
-}
+// sgs_fx_owns_scroll_transform() lives in includes/motion/scroll-ownership.php (loaded by includes/motion-loader.php,
+// which sgs-blocks.php requires before this file).
 
 /**
  * Remove any `data-sgs-animation*` attributes already present in stored markup.
@@ -199,6 +164,12 @@ function inject_animation_attributes( string $block_content, array $block ): str
 	 * load-triggered effect (DrawSVG, ScrambleText) does NOT own the scroll
 	 * range and must not suppress anything.
 	 */
+	// One model per block (Spec 38A plan, overlap rule): a block holding the new motion attribute is rendered by
+	// includes/motion/class-sgs-motion-renderer.php only, so its old entrance attributes are ignored and stripped.
+	if ( ! empty( $attrs['sgsMotion'] ) ) {
+		return sgs_strip_animation_attributes( $block_content );
+	}
+
 	if ( sgs_fx_owns_scroll_transform( $block_content, $attrs ) ) {
 		return sgs_strip_animation_attributes( $block_content );
 	}

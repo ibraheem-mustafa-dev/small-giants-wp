@@ -154,6 +154,7 @@
     "have_posts",
     "home_url",
     "human_time_diff",
+    "in_the_loop",
     "is_404",
     "is_account_page",
     "is_admin",

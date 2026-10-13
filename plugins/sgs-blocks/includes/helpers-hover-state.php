@@ -128,6 +128,16 @@ if ( ! function_exists( 'sgs_hover_state_rules' ) ) {
 			)
 		);
 
+		// Group hovered (Spec 38A §6.2 `source: group`): while a block whose motion hover uses the group source renders,
+		// the motion renderer sets this flag, and the nearest `[data-sgs-hover-group]` ancestor's hover and
+		// focus-within drive the same declarations.
+		if ( ! empty( $GLOBALS['sgs_hover_group_active'] ) ) {
+			foreach ( $parts as $part ) {
+				$hover_selector .= ',[data-sgs-hover-group]:hover ' . $part . $suffix;
+				$focus_selector .= ',[data-sgs-hover-group]:focus-within ' . $part . $suffix;
+			}
+		}
+
 		return sgs_hover_guarded_rule( $hover_selector, $decls )
 			. $focus_selector . '{' . $decls . '}';
 	}
