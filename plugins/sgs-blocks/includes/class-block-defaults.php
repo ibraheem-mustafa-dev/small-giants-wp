@@ -26,6 +26,9 @@ class Block_Defaults {
 
 	const OPTION_KEY = 'sgs_block_defaults';
 
+	/** Attributes never stored as a site default: WP internals and per-instance identity. JS twin: block-defaults.js NOT_DEFAULTS. */
+	const NOT_DEFAULTS = array( 'lock', 'className', 'style', 'metadata', 'anchor', 'formId' );
+
 	/**
 	 * Register all hooks.
 	 */
@@ -115,8 +118,9 @@ class Block_Defaults {
 		$attributes = $request->get_param( 'attributes' );
 		$defaults   = self::get_stored_defaults();
 
-		// Strip internal WP attributes that should never be persisted as defaults.
-		foreach ( array( 'lock', 'className', 'style', 'metadata' ) as $key ) {
+		// Strip internal WP attributes, and the values that identify one block instance (an anchor id, a form's id), which
+		// must never be copied into every new block.
+		foreach ( self::NOT_DEFAULTS as $key ) {
 			unset( $attributes[ $key ] );
 		}
 
