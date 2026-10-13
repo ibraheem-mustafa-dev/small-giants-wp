@@ -40,50 +40,51 @@ export async function settleAnimations( page, { floor = 300, cap = 6000, step = 
 
 // In-page: the entrances still holding their un-played start pose. An armed entrance is a finite document-timeline
 // animation that is paused (created by animation-observer.js and played once its element nears the viewport), so
-// unfinishedAnimations never counts it and an element read now sits at its start frame. Returns one descriptor per
-// armed element: { index, tag, id, cls, animation, top } with `top` the page-relative offset.
-export function armedEntrances() {
-	const out = [];
-	const seen = new Set();
-	const push = ( el, animation ) => {
-		seen.add( el );
-		out.push( {
-			index: out.length,
-			tag: el.localName,
-			id: el.id || '',
-			cls: String( el.getAttribute( 'class' ) || '' ),
-			animation,
-			top: Math.round( el.getBoundingClientRect().top + window.scrollY ),
-		} );
+// unfinishedAnimations never counts it and an element read now sits at its start frame. This is the one list builder:
+// with no argument it returns one descriptor per armed element, { index, tag, id, cls, animation, top } with `top` the
+// page-relative offset; given a number it scrolls the element at that index of the same list to the middle of the
+// viewport and returns true (false when the list has no such element).
+export function armedEntrances( scrollIndex = null ) {
+	const elements = [];
+	const animations = [];
+	const add = ( el, animation ) => {
+		elements.push( el );
+		animations.push( animation );
 	};
 	for ( const a of document.getAnimations() ) {
 		const el = a.effect?.target;
-		if ( 'paused' !== a.playState || a.timeline !== document.timeline || ! el || seen.has( el ) || ! Number.isFinite( a.effect.getComputedTiming().endTime ) ) {
+		if ( 'paused' !== a.playState || a.timeline !== document.timeline || ! el || elements.includes( el ) || ! Number.isFinite( a.effect.getComputedTiming().endTime ) ) {
 			continue;
 		}
-		push( el, el.getAttribute( 'data-sgs-animation' ) || '' );
+		add( el, el.getAttribute( 'data-sgs-animation' ) || '' );
 	}
 	// A CSS scroll reveal (Spec 38A) is armed until the reveal module sets data-sgs-in; a load entrance never waits for it.
 	for ( const el of document.querySelectorAll( '[data-sgs-me~="scroll"]:not([data-sgs-in])' ) ) {
-		if ( ! seen.has( el ) ) {
-			push( el, el.getAttribute( 'data-sgs-me' ) || '' );
+		if ( ! elements.includes( el ) ) {
+			add( el, el.getAttribute( 'data-sgs-me' ) || '' );
 		}
 	}
-	return out;
+	if ( null !== scrollIndex ) {
+		const el = elements[ scrollIndex ];
+		if ( ! el ) {
+			return false;
+		}
+		const r = el.getBoundingClientRect();
+		window.scrollTo( { top: Math.max( 0, r.top + window.scrollY - window.innerHeight / 2 + r.height / 2 ), behavior: 'instant' } );
+		return true;
+	}
+	return elements.map( ( el, index ) => ( {
+		index,
+		tag: el.localName,
+		id: el.id || '',
+		cls: String( el.getAttribute( 'class' ) || '' ),
+		animation: animations[ index ],
+		top: Math.round( el.getBoundingClientRect().top + window.scrollY ),
+	} ) );
 }
 
-// In-page: scrolls the `index`th armed element to the middle of the viewport. Returns false when it is gone.
-export function scrollArmedIntoView( index ) {
-	const armed = new Set( document.getAnimations().filter( ( a ) => 'paused' === a.playState && a.timeline === document.timeline ).map( ( a ) => a.effect?.target ).filter( Boolean ) );
-	document.querySelectorAll( '[data-sgs-me~="scroll"]:not([data-sgs-in])' ).forEach( ( e ) => armed.add( e ) );
-	const el = [ ...armed ][ index ];
-	if ( ! el ) {
-		return false;
-	}
-	const r = el.getBoundingClientRect();
-	window.scrollTo( { top: Math.max( 0, r.top + window.scrollY - window.innerHeight / 2 + r.height / 2 ), behavior: 'instant' } );
-	return true;
-}
+// Scrolls the `index`th armed element (as armedEntrances lists them) to the middle of the viewport. Returns false when it is gone.
+export const scrollArmedIntoView = ( page, index ) => page.evaluate( armedEntrances, index );
 
 // Scrolls every armed entrance into view so its trigger fires, lets the animations settle, then puts the scroll back.
 // Returns { armed, played, unfired } where `unfired` lists the descriptors of entrances still paused after their own
@@ -101,7 +102,7 @@ export async function triggerArmed( page, { floor = 250, cap = 6000 } = {} ) {
 		if ( ! target ) {
 			continue;
 		}
-		await page.evaluate( scrollArmedIntoView, target.index );
+		await scrollArmedIntoView( page, target.index );
 		await settleAnimations( page, { floor, cap } );
 		if ( ( await page.evaluate( armedEntrances ) ).some( ( s ) => keyOf( s ) === keyOf( d ) ) ) {
 			unfired.push( d );

@@ -11,6 +11,15 @@ contributions the stylesheet multiplies or adds.
 A WRITE (comments are stripped first):
   el.style.transform = ...            el.style['opacity'] = ...         el.style.setProperty('filter', ...)
   Object.assign(el.style, ...)        el.style.cssText = ...            el.setAttribute('style', ...)
+  el.style = '...'                    el.style[`opacity`] = ...         el.style['-webkit-transform'] = ...
+  el.style.webkitTransform = ...      el?.style?.setProperty('opacity') el?.style.opacity = ...
+  el.attributeStyleMap.set('transform', ...)
+  const s = el.style; s.opacity = ...      (an alias is a local bound to `<expr>.style` in the same file)
+  const { style } = el; style.opacity = ... (destructuring; `style: s` renames the alias)
+  el.style[p] = ...                         where `p = 'opacity'` assigns a channel-name literal in the same file
+  el.animate({ opacity: 0 }, ...) / el.animate([{ transform: 'x' }], ...): a WAAPI frame LITERAL whose channel key holds
+  anything other than a `var(`/`calc(` string. Only an object or array literal passed straight to animate( is judged;
+  frames built in a variable (as motion-keyframes.js builds them from formula constants) are not resolved.
 ALLOWED: `style.setProperty('--x', ...)`, `style.removeProperty('--x')`, and reads. A `setProperty` whose first
 argument is not a string literal is not judged (it cannot be resolved without running the script).
 
@@ -18,9 +27,9 @@ EXCEPTIONS live in plugins/sgs-blocks/scripts/data/motion-gate-allowlist.json (g
 the file path relative to plugins/sgs-blocks, for example "assets/js/example.js"). An entry that matches no hit is an
 error, and so is one whose delete_in_unit has landed.
 
---self-test plants, in a temporary tree, `el.style.transform = 'x'`, `el.style.setProperty('opacity','0')`,
-`Object.assign(el.style, ...)` and `el.style.cssText = ...` (all caught), a `setProperty('--sgs-tilt-x', ...)` write
-(passes) and a Tier G file with a transform write (exempt). It exits 0 only when every plant behaves.
+--self-test plants, in a temporary tree, every write form above (all caught), the allowed forms (`setProperty('--x')`,
+`removeProperty('--x')`, a read, a comment, a formula-valued animate() frame) and a Tier G file with a transform write
+(exempt). It exits 0 only when every plant behaves.
 
 Run from the repo root:  python plugins/sgs-blocks/scripts/check-motion-style-writes.py --check
 """
@@ -48,6 +57,10 @@ SLOT_COMPOSITIONS = ("slot", "layers")
 TIER_G_IMPORT = re.compile(r"""(?:from\s*|import\s*\(?\s*|require\s*\(\s*)['"](?:gsap(?:/[^'"]*)?|@sgs/gsap[^'"]*)['"]""")
 BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
 LINE_COMMENT = re.compile(r"(?m)(^|[\s;{}(),])//[^\n]*")
+ALIAS_DECL = re.compile(r"""(?<![\w.$])(?:(?:const|let|var)\s+)?([A-Za-z_$][\w$]*)\s*=\s*[^;=\n]*?\.style\s*(?=[;\n,)]|$)""")
+DESTRUCTURE_DECL = re.compile(r"(?:const|let|var)\s*\{([^}]*)\}\s*=")
+ANIMATE_CALL = re.compile(r"(?<![\w$])animate\s*\(\s*(?=[\[{])")
+QUOTE = r"""['"`]"""
 
 
 def camel(prop: str) -> str:
@@ -72,20 +85,97 @@ def strip_comments(source: str) -> str:
     return LINE_COMMENT.sub(lambda m: m.group(1) + " " * (len(m.group(0)) - len(m.group(1))), source)
 
 
-def build_patterns(props: list[str]) -> list[tuple[str, re.Pattern]]:
+def name_alternations(props: list[str]) -> tuple[str, str]:
+    """(camelCase incl. webkit-prefixed, kebab-case) regex alternations for the channel properties."""
     camels = {camel(p) for p in props}
     camels |= {"webkit" + c[:1].upper() + c[1:] for c in camels}
     names = "|".join(re.escape(n) for n in sorted(camels, key=len, reverse=True))
     kebab = "|".join(re.escape(p) for p in sorted(props, key=len, reverse=True))
+    return names, kebab
+
+
+def aliases_of(clean: str) -> list[str]:
+    """Locals bound to `<expr>.style`, or destructured as `style` / `style: name`."""
+    found = {m.group(1) for m in ALIAS_DECL.finditer(clean)}
+    for m in DESTRUCTURE_DECL.finditer(clean):
+        for part in m.group(1).split(","):
+            bits = [b.strip() for b in part.split(":")]
+            if bits[0] == "style":
+                found.add(bits[-1].split("=")[0].strip() or "style")
+    return sorted(found)
+
+
+def key_variables(clean: str, names: str, kebab: str) -> list[str]:
+    """Locals assigned a channel-name string literal, for `el.style[p] = ...` with a variable key."""
+    pattern = re.compile(rf"""(?<![\w.$])([A-Za-z_$][\w$]*)\s*=\s*{QUOTE}(?:-webkit-)?(?:{names}|{kebab}){QUOTE}""")
+    return sorted({m.group(1) for m in pattern.finditer(clean)})
+
+
+def build_patterns(props: list[str], aliases: list[str] | None = None,
+                   key_vars: list[str] | None = None) -> list[tuple[str, re.Pattern]]:
+    names, kebab = name_alternations(props)
     assign = r"\s*(?:[-+*/|&]?=)(?!=)"
-    return [
-        ("direct assignment", re.compile(rf"\.style\.(?:{names}){assign}")),
-        ("bracket assignment", re.compile(rf"""\.style\[\s*['"](?:{names}|{kebab})['"]\s*\]{assign}""")),
-        ("setProperty", re.compile(rf"""\.style\.setProperty\(\s*['"](?:-webkit-)?(?:{kebab})['"]""")),
-        ("Object.assign onto style", re.compile(r"Object\.assign\(\s*[\w.$\[\]]*\.style\s*,")),
-        ("cssText", re.compile(r"\.style\.cssText\s*\+?=(?!=)")),
-        ("style attribute", re.compile(r"""\.setAttribute\(\s*['"]style['"]""")),
+    alias_alt = "|".join(re.escape(a) for a in (aliases or []))
+    # the object whose style is written: `<expr>.style`, `<expr>?.style`, or an alias local
+    target = r"(?:\??\.style" + (rf"|(?<![\w.$])(?:{alias_alt})" if alias_alt else "") + r")"
+    patterns = [
+        ("direct assignment", re.compile(rf"{target}\s*\??\.(?:{names}){assign}")),
+        ("bracket assignment", re.compile(rf"{target}\s*\??\.?\[\s*{QUOTE}(?:-webkit-)?(?:{names}|{kebab}){QUOTE}\s*\]{assign}")),
+        ("setProperty", re.compile(rf"{target}\s*\??\.setProperty\s*\??\.?\(\s*{QUOTE}(?:-webkit-)?(?:{kebab}){QUOTE}")),
+        ("Object.assign onto style", re.compile(rf"Object\.assign\(\s*(?:[\w.$\[\]?]*\.style|{alias_alt or '(?!)'})\s*,")),
+        ("cssText", re.compile(rf"{target}\s*\??\.cssText\s*\+?=(?!=)")),
+        ("whole style string", re.compile(r"\.style\s*=(?!=)")),
+        ("style attribute", re.compile(rf"\??\.setAttribute\s*\??\.?\(\s*{QUOTE}style{QUOTE}")),
+        ("attributeStyleMap", re.compile(rf"attributeStyleMap\s*\??\.(?:set|append)\s*\??\.?\(\s*{QUOTE}(?:-webkit-)?(?:{kebab}){QUOTE}")),
     ]
+    if key_vars:
+        var_alt = "|".join(re.escape(v) for v in key_vars)
+        patterns.append(("bracket assignment (variable key)",
+                         re.compile(rf"{target}\s*\??\.?\[\s*(?:{var_alt})\s*\]{assign}")))
+    return patterns
+
+
+def matching_close(text: str, start: int) -> int:
+    """Index of the bracket closing the one at `start`, string-aware; -1 when unbalanced."""
+    pairs = {"[": "]", "{": "}", "(": ")"}
+    stack: list[str] = []
+    quote = ""
+    i = start
+    while i < len(text):
+        ch = text[i]
+        if quote:
+            if ch == "\\":
+                i += 1
+            elif ch == quote:
+                quote = ""
+        elif ch in "'\"`":
+            quote = ch
+        elif ch in pairs:
+            stack.append(pairs[ch])
+        elif stack and ch == stack[-1]:
+            stack.pop()
+            if not stack:
+                return i
+        i += 1
+    return -1
+
+
+def waapi_hits(clean: str, props: list[str]) -> list[int]:
+    """Offsets of channel keys in an animate() frame literal whose value is not a var(/calc( formula string."""
+    keys = "|".join(re.escape(n) for n in sorted({*props, *(camel(p) for p in props)}, key=len, reverse=True))
+    key_re = re.compile(rf"""(?<![\w$.])(?:{QUOTE}(?:{keys}){QUOTE}|(?:{keys}))\s*:\s*""")
+    offsets: list[int] = []
+    for call in ANIMATE_CALL.finditer(clean):
+        start = call.end()
+        end = matching_close(clean, start)
+        if end < 0:
+            continue
+        literal = clean[start:end + 1]
+        for key in key_re.finditer(literal):
+            value = literal[key.end():key.end() + 400]
+            if not re.match(rf"""{QUOTE}[^'"`]*\b(?:var|calc)\(""", value):
+                offsets.append(start + key.start())
+    return offsets
 
 
 def is_tier_g(source: str) -> bool:
@@ -94,7 +184,7 @@ def is_tier_g(source: str) -> bool:
 
 def find_hits(plugin: Path, props: list[str]) -> list[tuple[str, int, str, str]]:
     """(relative path, line, kind, source line) for every write in a non-Tier-G file."""
-    patterns = build_patterns(props)
+    names, kebab = name_alternations(props)
     hits: set[tuple[str, int, str, str]] = set()
     for rel_dir in SCAN_DIRS:
         for path in sorted((plugin / rel_dir).rglob("*.js")):
@@ -104,10 +194,14 @@ def find_hits(plugin: Path, props: list[str]) -> list[tuple[str, int, str, str]]
             rel = path.relative_to(plugin).as_posix()
             clean = strip_comments(source)
             lines = source.splitlines()
+            patterns = build_patterns(props, aliases_of(clean), key_variables(clean, names, kebab))
             for kind, pattern in patterns:
                 for match in pattern.finditer(clean):
                     line = clean.count("\n", 0, match.start()) + 1
                     hits.add((rel, line, kind, lines[line - 1].strip()))
+            for offset in waapi_hits(clean, props):
+                line = clean.count("\n", 0, offset) + 1
+                hits.add((rel, line, "animate() frame channel", lines[line - 1].strip()))
     return sorted(hits)
 
 
@@ -140,14 +234,39 @@ def run_check(plugin: Path, schema: Path) -> int:
     return 1 if errors else 0
 
 
+def plant(label: str, body: str, caught: bool) -> tuple[str, str, str, bool]:
+    return (label, "assets/js/planted.js", body, caught)
+
+
 PLANTS = [
     ("el.style.transform = 'x'", "assets/js/planted-a.js", "el.style.transform = 'x';\n", True),
     ("el.style.setProperty('opacity','0')", "assets/js/planted-b.js", "el.style.setProperty('opacity', '0');\n", True),
     ("Object.assign(el.style, ...)", "src/shared/effects/planted-c.js", "Object.assign( el.style, { filter: 'none' } );\n", True),
     ("el.style.cssText = ...", "src/shared/effects/planted-d.js", "el.style.cssText = 'opacity:0';\n", True),
     ("el.style['translate'] = ...", "assets/js/planted-e.js", "el.style['translate'] = '1px';\n", True),
+    plant("alias: const s = el.style; s.transform =", "const s = el.style;\ns.transform = 'x';\n", True),
+    plant("destructuring: const { style } = el; style.opacity =", "const { style } = el;\nstyle.opacity = '0';\n", True),
+    plant("renamed destructuring: const { style: st } = el", "const { style: st } = el;\nst.opacity = '0';\n", True),
+    plant("template key: el.style[`opacity`] =", "el.style[`opacity`] = '0';\n", True),
+    plant("variable key: p = 'opacity'; el.style[p] =", "const p = 'opacity';\nel.style[p] = '0';\n", True),
+    plant("template setProperty(`transform`)", "el.style.setProperty(`transform`, 'none');\n", True),
+    plant("setAttribute('style', ...)", "el.setAttribute('style', 'opacity:0');\n", True),
+    plant("setAttribute(`style`, ...)", "el.setAttribute(`style`, 'opacity:0');\n", True),
+    plant("optional chain: el?.style?.setProperty('opacity')", "el?.style?.setProperty('opacity', '0');\n", True),
+    plant("optional chain: el?.style.opacity =", "el?.style.opacity = '0';\n", True),
+    plant("vendor bracket: el.style['-webkit-transform'] =", "el.style['-webkit-transform'] = 'none';\n", True),
+    plant("vendor camel: el.style.webkitTransform =", "el.style.webkitTransform = 'none';\n", True),
+    plant("whole string: el.style = '...'", "el.style = 'opacity:0';\n", True),
+    plant("style.cssText via destructured alias", "const { style } = el;\nstyle.cssText = 'opacity:0';\n", True),
+    plant("attributeStyleMap.set('transform')", "el.attributeStyleMap.set('transform', 'none');\n", True),
+    plant("WAAPI literal frame with a raw opacity", "el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1 });\n", True),
+    plant("WAAPI literal frame with a raw transform", "el.animate({ 'transform': 'translateX(4px)' }, 200);\n", True),
+    plant("WAAPI formula frame", "el.animate([{ opacity: 'var(--a)' }, { transform: 'calc(1px * var(--b))' }], 1);\n", False),
+    plant("WAAPI frame without a channel key", "el.animate([{ offset: 0 }, { offset: 1 }], 1);\n", False),
     ("setProperty('--sgs-tilt-x', ...)", "assets/js/planted-f.js",
      "el.style.setProperty('--sgs-tilt-x', '1deg');\nel.style.removeProperty('--sgs-tilt-x');\n", False),
+    plant("custom properties through an alias", "const s = el.style;\ns.setProperty('--x', '1');\ns.removeProperty('--x');\n", False),
+    plant("reads", "const o = el.style.opacity;\nconst t = el.style['transform'];\nif (el.style.opacity === '0') {}\n", False),
     ("a write inside a comment", "assets/js/planted-g.js", "// el.style.transform = 'x';\n/* el.style.opacity = 0 */\n", False),
     ("Tier G file with a write", "src/shared/effects/gsap/planted-h.js",
      "import { gsap } from 'gsap';\nel.style.transform = 'x';\n", False),

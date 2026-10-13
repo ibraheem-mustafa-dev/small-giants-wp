@@ -203,6 +203,7 @@
 											"translateY": -6,
 											"scale": 1.04,
 											"duration": "token:duration.fast",
+											"delay": 100,
 											"easing": "ease-out"
 										}
 									}
@@ -305,6 +306,7 @@
 										"translateY": "token:distance.sm"
 									},
 									"duration": 400,
+									"delay": 200,
 									"easing": "ease-out"
 								}
 							}

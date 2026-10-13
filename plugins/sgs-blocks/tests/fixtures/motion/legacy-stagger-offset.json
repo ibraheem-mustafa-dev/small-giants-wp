@@ -6,6 +6,348 @@
 		"children": "parent carries the step for the animated blocks inside it; index is the position in page order"
 	},
 	"stored_sources": "eye-care-test (read-only query, 2026-10-13): own step 70 with max 7 on wp_template 438; children step 70 with max 7 on page 208. Canary fixtures hold no stagger values.",
+	"default_cap_rule": "with no max attribute the position is capped at 7, so delay_ms = min( index, 7 ) * step",
+	"step_clamp_rule": "the step attribute must be whole digits and is clamped to 0..1000; any other text means no stagger applies (delay_ms null)",
+	"max_clamp_rule": "the max attribute is clamped to 1..50",
+	"dom_rule": "each dom row holds a small page as html; the element marked data-case-target is the one whose stagger delay is read; delay_ms is null when no stagger applies",
+	"default_cap_rows": [
+		{
+			"origin": "default-cap",
+			"mode": "own",
+			"index": 0,
+			"step": 40,
+			"delay_ms": 0
+		},
+		{
+			"origin": "default-cap",
+			"mode": "own",
+			"index": 3,
+			"step": 40,
+			"delay_ms": 120
+		},
+		{
+			"origin": "default-cap",
+			"mode": "own",
+			"index": 7,
+			"step": 40,
+			"delay_ms": 280
+		},
+		{
+			"origin": "default-cap",
+			"mode": "own",
+			"index": 8,
+			"step": 40,
+			"delay_ms": 280
+		},
+		{
+			"origin": "default-cap",
+			"mode": "own",
+			"index": 12,
+			"step": 40,
+			"delay_ms": 280
+		},
+		{
+			"origin": "default-cap",
+			"mode": "children",
+			"index": 0,
+			"step": 40,
+			"delay_ms": 0
+		},
+		{
+			"origin": "default-cap",
+			"mode": "children",
+			"index": 3,
+			"step": 40,
+			"delay_ms": 120
+		},
+		{
+			"origin": "default-cap",
+			"mode": "children",
+			"index": 7,
+			"step": 40,
+			"delay_ms": 280
+		},
+		{
+			"origin": "default-cap",
+			"mode": "children",
+			"index": 8,
+			"step": 40,
+			"delay_ms": 280
+		},
+		{
+			"origin": "default-cap",
+			"mode": "children",
+			"index": 12,
+			"step": 40,
+			"delay_ms": 280
+		}
+	],
+	"step_clamp_rows": [
+		{
+			"origin": "step-clamp",
+			"mode": "own",
+			"index": 1,
+			"raw_step": "0",
+			"max": 3,
+			"delay_ms": 0
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "own",
+			"index": 1,
+			"raw_step": "1000",
+			"max": 3,
+			"delay_ms": 1000
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "own",
+			"index": 1,
+			"raw_step": "1001",
+			"max": 3,
+			"delay_ms": 1000
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "own",
+			"index": 1,
+			"raw_step": "5000",
+			"max": 3,
+			"delay_ms": 1000
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "own",
+			"index": 1,
+			"raw_step": "-5",
+			"max": 3,
+			"delay_ms": null
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "own",
+			"index": 1,
+			"raw_step": "12.5",
+			"max": 3,
+			"delay_ms": null
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "own",
+			"index": 1,
+			"raw_step": "abc",
+			"max": 3,
+			"delay_ms": null
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "own",
+			"index": 1,
+			"raw_step": "",
+			"max": 3,
+			"delay_ms": null
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "children",
+			"index": 1,
+			"raw_step": "0",
+			"max": 3,
+			"delay_ms": 0
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "children",
+			"index": 1,
+			"raw_step": "1000",
+			"max": 3,
+			"delay_ms": 1000
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "children",
+			"index": 1,
+			"raw_step": "1001",
+			"max": 3,
+			"delay_ms": 1000
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "children",
+			"index": 1,
+			"raw_step": "5000",
+			"max": 3,
+			"delay_ms": 1000
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "children",
+			"index": 1,
+			"raw_step": "-5",
+			"max": 3,
+			"delay_ms": null
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "children",
+			"index": 1,
+			"raw_step": "12.5",
+			"max": 3,
+			"delay_ms": null
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "children",
+			"index": 1,
+			"raw_step": "abc",
+			"max": 3,
+			"delay_ms": null
+		},
+		{
+			"origin": "step-clamp",
+			"mode": "children",
+			"index": 1,
+			"raw_step": "",
+			"max": 3,
+			"delay_ms": null
+		}
+	],
+	"max_clamp_rows": [
+		{
+			"origin": "max-clamp",
+			"mode": "children",
+			"index": 59,
+			"step": 10,
+			"raw_max": "0",
+			"delay_ms": 10
+		},
+		{
+			"origin": "max-clamp",
+			"mode": "children",
+			"index": 59,
+			"step": 10,
+			"raw_max": "1",
+			"delay_ms": 10
+		},
+		{
+			"origin": "max-clamp",
+			"mode": "children",
+			"index": 59,
+			"step": 10,
+			"raw_max": "2",
+			"delay_ms": 20
+		},
+		{
+			"origin": "max-clamp",
+			"mode": "children",
+			"index": 59,
+			"step": 10,
+			"raw_max": "50",
+			"delay_ms": 500
+		},
+		{
+			"origin": "max-clamp",
+			"mode": "children",
+			"index": 59,
+			"step": 10,
+			"raw_max": "51",
+			"delay_ms": 500
+		},
+		{
+			"origin": "max-clamp",
+			"mode": "children",
+			"index": 59,
+			"step": 10,
+			"raw_max": "99",
+			"delay_ms": 500
+		}
+	],
+	"dom_rows": [
+		{
+			"origin": "dom",
+			"case": "repeat-index-siblings",
+			"description": "Three blocks with their own step sit side by side; the target is the second.",
+			"html": "<div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" ></div><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" data-case-target></div><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" ></div>",
+			"delay_ms": 10
+		},
+		{
+			"origin": "dom",
+			"case": "repeat-index-one-wrapper",
+			"description": "Each block with its own step sits in its own list item; the target is in the third item.",
+			"html": "<ul><li><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" ></div></li><li><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" ></div></li><li><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" data-case-target></div></li></ul>",
+			"delay_ms": 20
+		},
+		{
+			"origin": "dom",
+			"case": "repeat-index-three-wrappers",
+			"description": "Each block sits three wrappers below the repeating level; the target is in the second repeat.",
+			"html": "<div><div><div><div><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" ></div></div></div></div><div><div><div><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" data-case-target></div></div></div></div></div>",
+			"delay_ms": 10
+		},
+		{
+			"origin": "dom",
+			"case": "repeat-index-four-wrappers",
+			"description": "Each block sits four wrappers below the repeating level, one past the reach; the position falls back to zero.",
+			"html": "<div><div><div><div><div><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" ></div></div></div></div></div><div><div><div><div><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" data-case-target></div></div></div></div></div></div>",
+			"delay_ms": 0
+		},
+		{
+			"origin": "dom",
+			"case": "repeat-index-lone-block",
+			"description": "A lone block with its own step has no matching sibling at any level; the position is zero.",
+			"html": "<div><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" data-case-target></div></div>",
+			"delay_ms": 0
+		},
+		{
+			"origin": "dom",
+			"case": "repeat-index-ignores-plain-siblings",
+			"description": "Siblings without a step do not count as peers; the target is the second of two blocks with a step, so its position is one.",
+			"html": "<div><p></p><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" ></div><p></p><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" data-case-target></div></div>",
+			"delay_ms": 10
+		},
+		{
+			"origin": "dom",
+			"case": "group-owner-nested-block-owns-its-children",
+			"description": "A block inside another animated block belongs to that block, not to the staggering parent above it, and has no stagger of its own.",
+			"html": "<section data-sgs-animation-stagger-children=\"50\"><div data-sgs-animation=\"fade\"></div><div data-sgs-animation=\"fade\"><div data-sgs-animation=\"fade\" data-case-target></div></div></section>",
+			"delay_ms": null
+		},
+		{
+			"origin": "dom",
+			"case": "group-of-excludes-nested-members",
+			"description": "The staggering parent counts the animated blocks that belong to it only: the block after a nested group is third, not fifth.",
+			"html": "<section data-sgs-animation-stagger-children=\"50\"><div data-sgs-animation=\"fade\"></div><div data-sgs-animation=\"fade\"><div data-sgs-animation=\"fade\"></div><div data-sgs-animation=\"fade\"></div></div><div data-sgs-animation=\"fade\" data-case-target></div></section>",
+			"delay_ms": 100
+		},
+		{
+			"origin": "dom",
+			"case": "group-of-page-order-through-wrappers",
+			"description": "The group is in page order through plain wrappers; the target is the fourth animated block.",
+			"html": "<section data-sgs-animation-stagger-children=\"20\"><div data-sgs-animation=\"fade\"></div><div><div data-sgs-animation=\"fade\"></div></div><div data-sgs-animation=\"fade\"></div><div><p><span data-sgs-animation=\"fade\" data-case-target></span></p></div></section>",
+			"delay_ms": 60
+		},
+		{
+			"origin": "dom",
+			"case": "group-owner-nearest-parent",
+			"description": "Two staggering parents nest; the block belongs to the nearest one.",
+			"html": "<section data-sgs-animation-stagger-children=\"100\"><div data-sgs-animation-stagger-children=\"10\"><div data-sgs-animation=\"fade\"></div><div data-sgs-animation=\"fade\" data-case-target></div></div></section>",
+			"delay_ms": 10
+		},
+		{
+			"origin": "dom",
+			"case": "group-owner-own-step-wins",
+			"description": "A block with its own step ignores its parent step and uses the own-step position.",
+			"html": "<section data-sgs-animation-stagger-children=\"100\"><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" ></div><div data-sgs-animation=\"fade\" data-sgs-animation-stagger=\"10\" data-case-target></div></section>",
+			"delay_ms": 10
+		},
+		{
+			"origin": "dom",
+			"case": "no-stagger-anywhere",
+			"description": "No step on the block or any parent: no stagger applies.",
+			"html": "<section><div data-sgs-animation=\"fade\" data-case-target></div></section>",
+			"delay_ms": null
+		}
+	],
 	"rows": [
 		{
 			"origin": "grid",
