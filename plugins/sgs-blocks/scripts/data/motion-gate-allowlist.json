@@ -76,5 +76,35 @@
     "pattern": "distance.xl",
     "reason": "first reader is the shared motion stylesheet",
     "delete_in_unit": "M2.2"
+  },
+  {
+    "gate": "motion-paint-slots",
+    "pattern": "recorded:ripple",
+    "reason": "ripple has no fx_effects row until the M1.11 reseed seeds the slot claims. M3.1 seeds the nine effect slugs that have no fx_effects row (Spec 38A section 6.2 Layers bullet).",
+    "delete_in_unit": "M3.1"
+  },
+  {
+    "gate": "motion-paint-slots",
+    "pattern": "recorded:sheen",
+    "reason": "sheen has no fx_effects row until the M1.11 reseed seeds the slot claims. M3.1 seeds the nine effect slugs that have no fx_effects row (Spec 38A section 6.2 Layers bullet).",
+    "delete_in_unit": "M3.1"
+  },
+  {
+    "gate": "motion-paint-slots",
+    "pattern": "recorded:tilt",
+    "reason": "tilt has no fx_effects row until the M1.11 reseed seeds the slot claims. M3.1 seeds the nine effect slugs that have no fx_effects row (Spec 38A section 6.2 Layers bullet).",
+    "delete_in_unit": "M3.1"
+  },
+  {
+    "gate": "motion-paint-slots",
+    "pattern": "owners:::before",
+    "reason": "x-sgs-channels ::before omits wave-gradient, which claims it; schema owner list to be completed before M1 closes. M3.1 (the schema owner in wave 11) adds wave-gradient to the ::before and ::after channel owner lists with its owned properties, per Spec 38A v1.6 FR-38A-49.",
+    "delete_in_unit": "M3.1"
+  },
+  {
+    "gate": "motion-paint-slots",
+    "pattern": "owners:::after",
+    "reason": "x-sgs-channels ::after omits wave-gradient, which claims it; schema owner list to be completed before M1 closes. M3.1 (the schema owner in wave 11) adds wave-gradient to the ::before and ::after channel owner lists with its owned properties, per Spec 38A v1.6 FR-38A-49.",
+    "delete_in_unit": "M3.1"
   }
 ]
