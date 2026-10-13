@@ -23,9 +23,12 @@ import {
 import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, MotionEasingControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
-import { usePreviewTier } from '../../utils';
+import { usePreviewTier, hoverLiftPreviewRule } from '../../utils';
 import { buttonPreviewStyle, labelCollapsedAt, LABEL_CLIP_STYLE } from './preview-style';
 import { parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
+import { SiteInfoLabelToggle, IconShapeSizeItem } from './ButtonExtraControls';
+import { iconCirclePreviewStyle } from './icon-circle-preview';
+import { siteInfoLabelText } from './site-info-label';
 import { LINK_SOURCE_OPTIONS, FIXED_DESTINATION_LINK_SOURCES, LINK_SOURCE_HELP } from '../../shared/link-source-options';
 
 const ICON_POSITION_OPTIONS = [
@@ -195,6 +198,10 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 	// A Site Info link source renders an <a> from the live Site Info value, so
 	// the no-URL submit-button option does not apply to it.
 	const usesSiteInfoLink = !! linkSource && 'url' !== linkSource;
+	// The Site Info value the front end prints as the label (empty = the typed label shows).
+	const siteInfoLabel = attributes.labelFromSiteInfo
+		? siteInfoLabelText( linkSource, window.sgsBlocksData?.siteInfo )
+		: '';
 	// 'top'/'account' resolve their own destination and never read the typed
 	// URL — the URL field is hidden entirely for these (U-12 §F), rather than
 	// kept visible as a fallback the way the Site Info sources are.
@@ -289,13 +296,14 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 	// otherwise fall back to flat colour via currentColor (D938).
 	const iconGradient = iconColourGradient ? parseSvgGradient( iconColourGradient ) : null;
 	const iconGradientId = clientId ? `${ clientId }-icon-gradient` : null;
+	const iconCircleStyle = iconCirclePreviewStyle( attributes, palette, previewTier );
 	const iconPlaceholder = (
 		<span
 			className="sgs-button__icon"
-			style={ { display: 'inline-flex', alignItems: 'center', width: 'var(--sgs-btn-icon-size, 1em)', height: 'var(--sgs-btn-icon-size, 1em)', color: iconColour || 'currentColor' } }
+			style={ { display: 'inline-flex', alignItems: 'center', width: 'var(--sgs-btn-icon-size, 1em)', height: 'var(--sgs-btn-icon-size, 1em)', color: iconColour || 'currentColor', ...iconCircleStyle } }
 			aria-hidden="true"
 		>
-			<svg viewBox="0 0 24 24" fill="none" stroke={ iconGradient && iconGradientId ? `url(#${ iconGradientId })` : 'currentColor' } strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="100%" height="100%">
+			<svg viewBox="0 0 24 24" fill="none" stroke={ iconGradient && iconGradientId ? `url(#${ iconGradientId })` : 'currentColor' } strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="100%" height="100%" style={ iconCircleStyle.borderRadius ? { width: 'var(--sgs-btn-icon-size, 1em)', height: 'var(--sgs-btn-icon-size, 1em)' } : undefined }>
 				{ iconGradient && iconGradientId && (
 					<defs>
 						<SvgGradientDefs id={ iconGradientId } gradient={ iconGradient } />
@@ -391,6 +399,24 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 							},
 						],
 					},
+					{
+						key: 'icon-circle',
+						label: __( 'Icon circle fill', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes.iconBackground,
+								onChange: ( val ) => setAttributes( { iconBackground: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.iconBackgroundHover,
+								onChange: ( val ) => setAttributes( { iconBackgroundHover: val ?? '' } ),
+							},
+						],
+					},
 				] }
 			/>
 			{ /* ── Settings tab (default InspectorControls group) ──────────── */ }
@@ -413,6 +439,7 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<SiteInfoLabelToggle attributes={ attributes } setAttributes={ setAttributes } />
 					{ /* Text is now edited on-canvas via RichText below, matching
 					   core/button — no sidebar duplicate. Link is the D609
 					   row-opens-popover shape: this compact row and the toolbar
@@ -568,6 +595,7 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 									setAttributes( {
 										iconSize: {},
 										iconGap: {},
+										iconShapeSize: {},
 									} )
 								}
 							>
@@ -599,6 +627,7 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 										) }
 									</ResponsiveOverride>
 								</ToolsPanelItem>
+								<IconShapeSizeItem attributes={ attributes } setAttributes={ setAttributes } />
 								{ /* iconGap is a TIER OBJECT — block.json attributes.iconGap +
 								   render.php (gap on the button root / face wrapper). */ }
 								<ToolsPanelItem
@@ -1048,13 +1077,21 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 			{ /* Editor preview — the button element IS the block root (D288, no wrapper div).
 			   The label is now RichText on-canvas (matching core/button) instead of a
 			   sidebar TextControl. */ }
-			{ liftHover > 0 && <style>{ `.${ liftScope }:hover{translate:0 -${ Math.min( 24, liftHover ) }px}` }</style> }
+			{ liftHover > 0 && <style>{ hoverLiftPreviewRule( `.${ liftScope }`, liftHover ) }</style> }
 			<span { ...blockProps }>
 				{ backgroundLayerStyle && (
 					<span aria-hidden="true" style={ backgroundLayerStyle } />
 				) }
 				{ hasIcon && iconPosition === 'before' && iconPlaceholder }
-				{ iconPosition !== 'only' && (
+				{ iconPosition !== 'only' && siteInfoLabel && (
+					<span
+						className="sgs-button__label"
+						style={ ! isSelected && labelCollapsedAt( labelCollapse, hasIcon, previewTier ) ? LABEL_CLIP_STYLE : undefined }
+					>
+						{ siteInfoLabel }
+					</span>
+				) }
+				{ iconPosition !== 'only' && ! siteInfoLabel && (
 					<RichText
 						tagName="span"
 						className="sgs-button__label"

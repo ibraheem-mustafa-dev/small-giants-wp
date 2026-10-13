@@ -36,6 +36,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-form-submit-motion.php';
 
 // CSS-keyword sanitiser — letters + hyphen only (border-style — the only
 // free-text keyword sgs/form's declared supports concatenate into scoped CSS;
@@ -366,6 +367,16 @@ if ( ! empty( $submit_box_decls ) ) {
 		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
 	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $submit_box_decls ) . '}';
+}
+
+// Submit button resting shadow, hover shadow and hover lift (sgs_form_submit_motion_css): unset
+// prints nothing.
+$sgs_form_submit_motion = sgs_form_submit_motion_css( '.' . $sgs_form_uid . ' .sgs-form__button--submit', $attributes, $block->name ?? '' );
+if ( '' !== $sgs_form_submit_motion ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= $sgs_form_submit_motion;
 }
 
 // ---------------------------------------------------------------------------

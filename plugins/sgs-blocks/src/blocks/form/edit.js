@@ -34,6 +34,8 @@ import {
 import FormEmbedEdit from './FormEmbedEdit';
 import { FORM_CPT } from './SavedFormPicker';
 import EmailSettingsPanel from './EmailSettingsPanel';
+import SubmitMotionControls from './SubmitMotionControls';
+import { submitShadowPreviewStyle, submitLiftPreviewRule } from './submit-motion-preview';
 
 const SUBMIT_ALIGN_OPTIONS = [
 	{ label: __( 'Right (default)', 'sgs-blocks' ), value: '' },
@@ -172,6 +174,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 				? [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => submitPadding[ side ] || '0' ).join( ' ' )
 				: undefined,
 		minHeight: submitMinHeight ? `${ submitMinHeight }px` : undefined,
+		...submitShadowPreviewStyle( attributes, palette ),
 	};
 	const progressBarStyle = backgroundPaintPreview( progressBarColour, progressBarColourGradient, palette );
 
@@ -353,6 +356,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		.join( '' );
 
 	const formHoverPreviewCss = [
+		submitLiftPreviewRule( `.${ formPreviewScope } .sgs-form__button--submit`, attributes ),
 		submitBgHoverDecl &&
 			`.${ formPreviewScope } .sgs-form__button--submit:hover,.${ formPreviewScope } .sgs-form__button--submit:focus-visible{${ submitBgHoverDecl }}`,
 		progressBarHoverDecl &&
@@ -853,6 +857,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<SubmitMotionControls attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 
 			</InspectorControls>

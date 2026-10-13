@@ -37,6 +37,9 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-source.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-hover-lift.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-site-info-label.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-circle.php';
 
 // ---------------------------------------------------------------------------
 // 1. Extract and sanitise attributes.
@@ -95,6 +98,19 @@ if ( in_array( $link_source, array( 'phone', 'email', 'whatsapp', 'top', 'accoun
 	$effective_url     = $sgs_resolved_link['url'];
 	foreach ( $sgs_resolved_link['attrs'] as $sgs_link_attr_key => $sgs_link_attr_val ) {
 		$sgs_link_source_wrapper_extra[ sanitize_key( $sgs_link_attr_key ) ] = sanitize_text_field( (string) $sgs_link_attr_val );
+	}
+}
+
+// Optional: print the Site Info value (the phone number, email address or WhatsApp number the
+// link above points at) as the label. The typed label stands while the Site Info field is empty.
+// The value is plain text: it is HTML-escaped where the label prints (and escaped for the
+// aria-label attribute by esc_attr() above).
+$sgs_label_is_site_info = false;
+if ( ! empty( $attributes['labelFromSiteInfo'] ) ) {
+	$sgs_site_info_label = sgs_button_site_info_label( $link_source );
+	if ( '' !== $sgs_site_info_label ) {
+		$label                  = $sgs_site_info_label;
+		$sgs_label_is_site_info = true;
 	}
 }
 
@@ -327,7 +343,7 @@ $hover_opacity = isset( $attributes['opacityHover'] ) ? (float) $attributes['opa
 $hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
 // Hover lift (px, 0 = off): `translate: 0 -N px` on the button root, an
 // independent property from the scale's `transform`.
-$hover_lift          = isset( $attributes['liftHover'] ) ? min( 24, max( 0, (int) $attributes['liftHover'] ) ) : 0;
+$hover_lift          = isset( $attributes['liftHover'] ) ? sgs_hover_lift_px( $attributes['liftHover'] ) : 0;
 $transition_duration = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 0;
 // Shared motion easing names (and a validated custom curve), as every other SGS motion control.
 $transition_easing   = sgs_motion_easing_css( (string) ( $attributes['transitionEasing'] ?? 'ease' ), (string) ( $attributes['transitionEasingCustom'] ?? '' ), 'ease' );
@@ -457,11 +473,11 @@ if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 // `transform`), otherwise the two would stack; a whole-button scale already
 // overrides that transform on its own rule.
 if ( $hover_lift > 0 ) {
-	$lift_decls = "translate:0 -{$hover_lift}px";
-	if ( abs( $hover_scale - 1.0 ) <= 0.001 || 'face' === $hover_scale_target ) {
-		$lift_decls .= ';transform:none';
-	}
-	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", $lift_decls );
+	$scoped_css_parts[] = sgs_hover_lift_rule(
+		".{$uid}.sgs-button",
+		$hover_lift,
+		abs( $hover_scale - 1.0 ) <= 0.001 || 'face' === $hover_scale_target
+	);
 }
 
 // Content alignment + label-to-icon gap, per device. Both are flex properties
@@ -779,6 +795,8 @@ if ( $icon ) {
 		if ( $icon_colour ) {
 			$scoped_css_parts[] = ".{$uid}.sgs-button .sgs-button__icon{color:" . sgs_colour_value( $icon_colour ) . ';}';
 		}
+		// The optional filled circle behind the icon (iconBackground, iconBackgroundHover, iconShapeSize).
+		$scoped_css_parts = array_merge( $scoped_css_parts, sgs_button_icon_circle_css( $uid, $attributes ) );
 		if ( $sgs_button_stroke_grad['css'] ) {
 			$scoped_css_parts = array_merge( $scoped_css_parts, $sgs_button_stroke_grad['css'] );
 		}
@@ -895,7 +913,7 @@ if ( $icon_html && 'none' !== $label_collapse ) {
 // bare) so the labelCollapse feature can visually clip it while keeping the
 // text in the accessibility tree.
 $label_html = '<span class="sgs-button__label">' . wp_kses(
-	$label,
+	$sgs_label_is_site_info ? esc_html( $label ) : $label,
 	array(
 		'br'     => array(),
 		'strong' => array(),
