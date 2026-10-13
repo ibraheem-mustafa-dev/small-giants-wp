@@ -1,6 +1,6 @@
 # Spec 38A gap closure (session S2)
 
-Governing spec: `.claude/specs/38A-SGS-MOTION-MODEL.md` (v1.6). Build plan: `.claude/plans/2026-10-12-spec38a-motion-build.md`. Bean asked (2026-10-13) for the gaps found in S2 to be closed now through subagent-driven development, not deferred. The universal rotate redesign (Bean: tilt should be a modular rotate) is a blueprint for Bean's approval first, not a task here.
+Governing spec: `.claude/specs/38A-SGS-MOTION-MODEL.md` (v1.7). Build plan: `.claude/plans/2026-10-12-spec38a-motion-build.md`. Bean asked (2026-10-13) for the gaps found in S2 to be closed now through subagent-driven development, not deferred. The universal rotate redesign (Bean: tilt should be a modular rotate) is a blueprint for Bean's approval first, not a task here.
 
 ## Global constraints
 
@@ -13,6 +13,8 @@ Governing spec: `.claude/specs/38A-SGS-MOTION-MODEL.md` (v1.6). Build plan: `.cl
 
 ## Task 1: M2.1b part selectors (migration-method)
 
+Status: done (2026-10-13, `4e9eca9fe`; review fixes `18f8544a3`, `c868185a6`). `motion-units-landed.json` lists `M2.1b`.
+
 Problem: `includes/motion/class-sgs-motion-targets.php` resolves a part target to its `supports.sgs.elements.<part>.selector` when declared, otherwise to `.sgs-<slug>__<part>` (slug without `sgs/`). A rough grep found about 231 of 405 declared parts on the 74 motion blocks (`supports.sgs.motion` true) with neither, so a motion layer on them matches nothing.
 
 Follow `.claude/skills/migration-method/SKILL.md` and `.claude/rules/migration-scripts.md`: settle the target shape, then build the detector before the fourth edit.
@@ -24,6 +26,8 @@ Follow `.claude/skills/migration-method/SKILL.md` and `.claude/rules/migration-s
 
 ## Task 2: shared atoms for boolean and part-reference fields
 
+Status: not done; resumes in S3.
+
 Problem: 18 schema fields are field type `boolean` (tilt glare, parallax background, the stagger helper's apply and restart-each-row, others) and one is `partReference` (magnet `movingPart`), and the atom kit in `plugins/sgs-blocks/src/components/motion/` has no atom for either; `check-motion-atoms.py` forbids a raw WP control in a panel, so the M3 panels cannot draw these fields.
 
 1. `BooleanAtom.js` (an on/off switch built through `AtomFrame.js` and the field-type helper in `field-types.js`, with the Customised tag and Reset like the value atoms, per-device through `PerDeviceAtom.js` when the field is per-device) and `PartReferenceAtom.js` (lists the block's declared parts plus root, reusing `TargetPicker.js`'s part listing; stores the part key). Register both where `field-types.js` maps a field type to its atom, export from `index.js`.
@@ -33,12 +37,16 @@ Problem: 18 schema fields are field type `boolean` (tilt glare, parallax backgro
 
 ## Task 3: sheen timing and the paint-slot owner lists
 
+Status: not done; resumes in S3.
+
 1. Sheen bug: `includes/motion/class-sgs-motion-emitter.php::effect_transition` only reads fields whose keys end in `Duration` or `Easing`, so sheen's `duration` and `easing` are ignored and a 750ms sheen emits the medium token. Make it take the effect's field of type `duration` (and `easing`) whatever its key: an exact key `duration`/`easing` first, then a key ending in `Duration`/`Easing`. Add a `MotionRendererTest` case: a sheen with duration 750 and a cubic-bezier easing emits `--sgs-sheen-x 750ms cubic-bezier(...)` (red before).
 2. Paint-slot owner lists: in `plugins/sgs-blocks/schemas/motion.schema.json`, add `wave-gradient` as an owner of the `::before` and `::after` channels in `x-sgs-channels`, with the custom properties its stylesheet actually uses for those pseudo-elements (read `plugins/sgs-blocks/assets/css/fx-wave-gradient*.css` or the effect's stylesheet named in `fx_effects`; each with a valid `@property` syntax and identity initial value), and make sure `x-sgs-writes` for wave-gradient names both slots. Keep the JSON byte format (tabs, CRLF as the file has; round-trip with `json.dumps(indent='\t', ensure_ascii=False)` and the file's line endings). Regenerate `src/components/motion/generated-motion-defs.json` with `python plugins/sgs-blocks/scripts/generate-motion-editor-defs.py`. Update spec §10's channel table rows for `::before` and `::after` so `check-motion-schema.py --check` passes. Then delete the two `motion-paint-slots` allow-list entries whose pattern names the `::before`/`::after` owners; `check-motion-paint-slots.py --check` must pass without them. If wave-gradient's properties need a reader in `assets/css/motion.css` for `check-motion-token-consumers.py` or the CSS contract test, add the `@property` registration there.
 3. The three remaining `motion-paint-slots` entries (no `fx_effects` row for ripple, sheen, tilt) stay for M3.1, which seeds the nine missing effect rows through `seed-motion-fx-registry.py` and a reseed.
 4. Done when: the sheen test is red before and green after; `check-motion-paint-slots.py --check` passes with two fewer allow-list entries; `check-motion-schema.py --check` and `--self-test`, `check-motion-token-consumers.py --check`, `npx jest tests/js/motion-css-contract.test.js`, and PHPUnit `--filter Motion` pass.
 
 ## Task 1b: resolve every allow-listed part (no deferral)
+
+Status: done (2026-10-13, `cb172c818`, `258260d5e`, `971d56f7f`; review fixes `18f8544a3`, `c868185a6`). The `motion-part-selectors` allow-list is empty: 109 declared selector, 169 BEM class, 127 excluded with `"motion": false`, 0 unresolved.
 
 Task 1 (commit 4e9eca9fe) built `plugins/sgs-blocks/scripts/check-motion-part-selectors.py`, made the renderer read a declared `selector` (`includes/motion/class-sgs-motion-targets.php::declared_selector`), fixed 12 parts, and allow-listed 234 (`gate: motion-part-selectors`, 57 with name-matched candidate classes, 177 with none). Bean ruled (2026-10-13) that the sweep is finished now, not deferred to M3.1. Every allow-listed part ends in exactly one of three states, decided by reading the block's real render output (run `--survey`, then read the render source through `scripts/lib/block_source_files.py`):
 
@@ -49,6 +57,8 @@ Task 1 (commit 4e9eca9fe) built `plugins/sgs-blocks/scripts/check-motion-part-se
 Done when: the `motion-part-selectors` allow-list has zero entries (any part that genuinely cannot be decided is reported with its render lines for the main thread, not allow-listed); `check-motion-part-selectors.py --check` and `--self-test` exit 0; `run-motion-gates.py`, PHPUnit `--filter Motion`, `npx jest tests/js/motion`, `audit-inline-styling.js --check` and `python scripts/check-no-client-names.py --check` pass; each block whose render changed has its standalone or PHPUnit test run and reported. Skip any dirty file and report it. Commit in batches of at most 20 blocks per commit, explicit pathspecs.
 
 ## Task 4: ship the motion schema extract once, not in every block bundle
+
+Status: done (2026-10-13, `790a300b7`; deploy link fix `e69eddc7b`; tarball excludes `cbf532bf3`). `build/` dropped from 38.98 MB to 30.97 MB, the handle `sgs-motion-defs` serves 200 on sandybrown and the homepage loads it 0 times.
 
 Problem (measured 2026-10-13 on `plugins/sgs-blocks/build/`): 95 of 97 `build/blocks/*/index.js` editor bundles each inline `JSON.parse` of `src/components/motion/generated-motion-defs.json` (91,912 bytes each, 8,731,640 bytes total of a 37.8 MB build). The path is the `src/components/index.js` barrel exporting `MotionEasingControl` and `AnimationControl`, which import the motion atoms, whose `field-types.js`, `TriggerPicker.js` and `StaggerHelper.js` import the JSON. `build-deploy.py` now aborts every deploy at its tarball guard (51 MB over the 45 MB ceiling). `TARBALL_MAX_MB` is not raised.
 
