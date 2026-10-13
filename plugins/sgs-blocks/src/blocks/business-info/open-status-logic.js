@@ -56,6 +56,12 @@ export function parseDay( text ) {
 	if ( ALL_DAY_RE.test( source ) && ! CLOSED_RE.test( source ) ) {
 		return [ { start: 0, end: MINUTES_PER_DAY } ];
 	}
+	// "Closed" before any time range means the day is closed ("Closed", "Closed today (was 9-5)");
+	// a range before it keeps the day's ranges ("9-12, 1-5 (closed for lunch)").
+	const closedAt = source.search( CLOSED_RE );
+	if ( closedAt >= 0 && ! new RegExp( RANGE_RE.source, 'i' ).test( source.slice( 0, closedAt ) ) ) {
+		return [];
+	}
 	const sessions = [];
 	for ( const match of source.matchAll( RANGE_RE ) ) {
 		const startMer = meridiemOf( match[ 3 ] );
@@ -79,6 +85,10 @@ export function parseDay( text ) {
 			}
 		}
 		let end = toMinutes( match[ 4 ], match[ 5 ], eMer );
+		if ( ! sMer && ! eMer && end <= start && Number( match[ 4 ] ) >= 1 && Number( match[ 4 ] ) <= 8 && Number( match[ 1 ] ) >= 5 && Number( match[ 1 ] ) <= 12 ) {
+			// "9-5", "9:00-5:00": UK opening hours written without am/pm close in the afternoon.
+			end = toMinutes( match[ 4 ], match[ 5 ], 'pm' );
+		}
 		if ( end <= start ) {
 			end += MINUTES_PER_DAY;
 		}

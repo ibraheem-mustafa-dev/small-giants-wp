@@ -155,3 +155,19 @@ describe( 'formatTime', () => {
 		expect( formatTime( 13 * 60 + 5 ) ).toBe( '1:05pm' );
 	} );
 } );
+
+describe( 'parseDay: hours typed without am/pm and closed days (session close council 2026-10-13)', () => {
+	test( 'a bare "9-5" closes in the afternoon, never past midnight', () => {
+		expect( parseDay( '9-5' ) ).toEqual( [ { start: 540, end: 1020 } ] );
+		expect( parseDay( '9:00-5:00' ) ).toEqual( [ { start: 540, end: 1020 } ] );
+		expect( parseDay( '10-6' ) ).toEqual( [ { start: 600, end: 1080 } ] );
+	} );
+	test( 'a genuine late-night range still runs past midnight', () => {
+		expect( parseDay( '22-2' ) ).toEqual( [ { start: 1320, end: 1560 } ] );
+	} );
+	test( '"closed" before any range closes the day; a range before it keeps the ranges', () => {
+		expect( parseDay( 'Closed' ) ).toEqual( [] );
+		expect( parseDay( 'Closed today (was 9-5)' ) ).toEqual( [] );
+		expect( parseDay( '9-12, 1-5 (closed for lunch)' ).length ).toBe( 2 );
+	} );
+} );

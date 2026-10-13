@@ -122,6 +122,24 @@ final class GalleryLinkedTileTest extends TestCase {
 		$this->assertStringNotContainsString( 'a.png&quot;', $html );
 	}
 
+	public function test_a_linked_item_with_no_label_or_alt_text_is_still_named(): void {
+		$out  = $this->render_block(
+			'sgs/gallery',
+			$this->attrs(
+				array(
+					0 => array(
+						'alt'        => '',
+						'decorative' => true,
+						'linkUrl'    => 'https://brand.example/range/',
+					),
+				)
+			)
+		);
+		$html = $out['html'];
+		// A hidden (decorative) image leaves the link no visible name, so the link names itself.
+		$this->assertMatchesRegularExpression( '#<a class="sgs-gallery__item-link" href="https://brand.example/range/" aria-label="brand.example">#', $html );
+	}
+
 	public function test_a_link_with_an_unsafe_scheme_is_refused(): void {
 		$out = $this->render_block(
 			'sgs/gallery',
