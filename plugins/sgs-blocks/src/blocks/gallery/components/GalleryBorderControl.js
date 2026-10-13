@@ -1,12 +1,31 @@
 /**
  * Gallery border and radius control: the grid wrapper's (no prefix) or each item tile's (prefix 'tile').
+ * The attribute names are written out per target (never built from the prefix) so the inspector scan and
+ * the wiring checks can see which control writes which attribute.
  */
 import { __ } from '@wordpress/i18n';
 import { SgsBorderControl } from '../../../components';
 
+// Attribute names per target, as render.php (grid) and render-tile.php (tile) read them.
+const NAMES = {
+	'': {
+		BorderWidth: 'borderWidth',
+		BorderStyle: 'borderStyle',
+		BorderColour: 'borderColour',
+		BorderColourGradient: 'borderColourGradient',
+		BorderRadius: 'borderRadius',
+	},
+	tile: {
+		BorderWidth: 'tileBorderWidth',
+		BorderStyle: 'tileBorderStyle',
+		BorderColour: 'tileBorderColour',
+		BorderColourGradient: 'tileBorderColourGradient',
+		BorderRadius: 'tileBorderRadius',
+	},
+};
+
 export default function GalleryBorderControl( { attributes, setAttributes, prefix = '' } ) {
-	// Attribute names follow render-tile.php / render.php: borderWidth, or tileBorderWidth for the tile.
-	const key = ( part ) => ( prefix ? prefix + part : part.charAt( 0 ).toLowerCase() + part.slice( 1 ) );
+	const key = ( part ) => NAMES[ prefix ][ part ];
 	const radius = attributes[ key( 'BorderRadius' ) ];
 
 	return (
