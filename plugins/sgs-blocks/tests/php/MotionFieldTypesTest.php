@@ -83,7 +83,7 @@ final class MotionFieldTypesTest extends TestCase {
 	}
 
 	public function test_a_unit_string_past_the_field_range_is_refused(): void {
-		$max_angle = Sgs_Motion_Field_Types::defs()['TiltValues']['properties']['maxAngle'];
+		$max_angle = Sgs_Motion_Field_Types::defs()['HoverStateValues']['properties']['maxAngle'];
 		$this->assertNull( Sgs_Motion_Field_Types::sanitise( 'angle', '90deg', $max_angle ) );
 		$this->assertSame( '30deg', Sgs_Motion_Field_Types::sanitise( 'angle', '30deg', $max_angle ) );
 	}

@@ -1,0 +1,38 @@
+{
+	"description": "\u00a710 transform: an entrance that flips in on X with a motion path on the same element (the Tier G rule widened to entrance X and Y).",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Entrance and Motion path both drive this element's transform. Move one of them to a different part."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"entrance": {
+					"base": {
+						"trigger": "scroll",
+						"values": {
+							"from": {
+								"rotateX": 90
+							},
+							"to": {
+								"rotateX": 0
+							}
+						}
+					}
+				},
+				"effects": [
+					{
+						"id": "e1",
+						"effect": "motion-path",
+						"trigger": "scroll",
+						"values": {}
+					}
+				]
+			}
+		}
+	}
+}

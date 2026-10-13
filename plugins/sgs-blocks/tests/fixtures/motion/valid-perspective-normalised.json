@@ -1,0 +1,58 @@
+{
+	"description": "\u00a710 transform: the same perspective written as 800 on the hover state and \"800px\" on the entrance is one perspective, and a stored 0deg X angle owns nothing, so a flip on a part with it is not refused.",
+	"expect": {
+		"valid": true,
+		"errors": [],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"state": {
+						"values": {
+							"restRotateX": 10,
+							"perspective": 800
+						}
+					}
+				},
+				"entrance": {
+					"base": {
+						"trigger": "scroll",
+						"values": {
+							"from": {
+								"rotateY": 90
+							},
+							"to": {
+								"rotateY": 0
+							},
+							"perspective": "800px"
+						}
+					}
+				}
+			},
+			"media": {
+				"hover": {
+					"state": {
+						"values": {
+							"scale": 1.04,
+							"rotateX": 0,
+							"restRotateY": "0deg"
+						}
+					}
+				},
+				"effects": [
+					{
+						"id": "e1",
+						"effect": "flip",
+						"trigger": "scroll",
+						"values": {
+							"duration": 500
+						}
+					}
+				]
+			}
+		}
+	}
+}

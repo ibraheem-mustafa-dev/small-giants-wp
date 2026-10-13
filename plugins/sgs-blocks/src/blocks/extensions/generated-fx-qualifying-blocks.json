@@ -3,6 +3,7 @@
 		"ambient-float",
 		"carousel-loop",
 		"draggable",
+		"glare",
 		"lottie",
 		"magnet",
 		"marquee",
@@ -13,13 +14,13 @@
 		"ripple",
 		"scroll-progress",
 		"scrub",
-		"sheen",
-		"tilt"
+		"sheen"
 	],
 	"sgs/before-after": [
 		"ambient-float",
 		"carousel-loop",
 		"draggable",
+		"glare",
 		"lottie",
 		"magnet",
 		"marquee",
@@ -31,11 +32,11 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment",
-		"tilt"
+		"surface-treatment"
 	],
 	"sgs/button": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -47,12 +48,12 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"split-reveal",
-		"tilt"
+		"split-reveal"
 	],
 	"sgs/buybox": [
 		"ambient-float",
 		"carousel-loop",
+		"glare",
 		"lottie",
 		"magnet",
 		"marquee",
@@ -64,11 +65,11 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment",
-		"tilt"
+		"surface-treatment"
 	],
 	"sgs/choice-flow-result": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -80,11 +81,11 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"split-reveal",
-		"tilt"
+		"split-reveal"
 	],
 	"sgs/collapsible-text": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -96,14 +97,14 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"split-reveal",
-		"tilt"
+		"split-reveal"
 	],
 	"sgs/container": [
 		"ambient-float",
 		"cursor-field",
 		"draw",
 		"generative-background",
+		"glare",
 		"grid-dots",
 		"horizontal-panel",
 		"ken-burns",
@@ -119,11 +120,11 @@
 		"scrub",
 		"sheen",
 		"svg-loop",
-		"tilt",
 		"wave-gradient"
 	],
 	"sgs/counter": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -135,11 +136,11 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"split-reveal",
-		"tilt"
+		"split-reveal"
 	],
 	"sgs/decorative-image": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -150,12 +151,12 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment",
-		"tilt"
+		"surface-treatment"
 	],
 	"sgs/gallery": [
 		"ambient-float",
 		"carousel-loop",
+		"glare",
 		"lottie",
 		"magnet",
 		"marquee",
@@ -167,12 +168,12 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment",
-		"tilt"
+		"surface-treatment"
 	],
 	"sgs/google-reviews": [
 		"ambient-float",
 		"carousel-loop",
+		"glare",
 		"lottie",
 		"magnet",
 		"marquee",
@@ -184,11 +185,11 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment",
-		"tilt"
+		"surface-treatment"
 	],
 	"sgs/heading": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -200,14 +201,14 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"split-reveal",
-		"tilt"
+		"split-reveal"
 	],
 	"sgs/hero": [
 		"ambient-float",
 		"cursor-field",
 		"draw",
 		"generative-background",
+		"glare",
 		"grid-dots",
 		"horizontal-panel",
 		"ken-burns",
@@ -224,12 +225,12 @@
 		"sheen",
 		"surface-treatment",
 		"svg-loop",
-		"tilt",
 		"wave-gradient"
 	],
 	"sgs/icon": [
 		"ambient-float",
 		"draw",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -240,11 +241,11 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"svg-loop",
-		"tilt"
+		"svg-loop"
 	],
 	"sgs/image-sequence": [
 		"ambient-float",
+		"glare",
 		"image-sequence",
 		"lottie",
 		"magnet",
@@ -256,13 +257,13 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment",
-		"tilt"
+		"surface-treatment"
 	],
 	"sgs/info-box": [
 		"ambient-float",
 		"cursor-field",
 		"generative-background",
+		"glare",
 		"grid-dots",
 		"ken-burns",
 		"lottie",
@@ -277,11 +278,11 @@
 		"scrub",
 		"sheen",
 		"split-reveal",
-		"tilt",
 		"wave-gradient"
 	],
 	"sgs/label": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -293,14 +294,14 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"split-reveal",
-		"tilt"
+		"split-reveal"
 	],
 	"sgs/multi-button": [
 		"ambient-float",
 		"cursor-field",
 		"draw",
 		"generative-background",
+		"glare",
 		"grid-dots",
 		"ken-burns",
 		"lottie",
@@ -314,7 +315,6 @@
 		"scrub",
 		"sheen",
 		"svg-loop",
-		"tilt",
 		"wave-gradient"
 	],
 	"sgs/physics-canvas": [
@@ -322,6 +322,7 @@
 		"cursor-field",
 		"draw",
 		"generative-background",
+		"glare",
 		"grid-dots",
 		"horizontal-panel",
 		"ken-burns",
@@ -337,12 +338,12 @@
 		"scrub",
 		"sheen",
 		"svg-loop",
-		"tilt",
 		"wave-gradient"
 	],
 	"sgs/post-grid": [
 		"ambient-float",
 		"carousel-loop",
+		"glare",
 		"lottie",
 		"magnet",
 		"marquee",
@@ -354,11 +355,11 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment",
-		"tilt"
+		"surface-treatment"
 	],
 	"sgs/pricing-table": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -370,11 +371,11 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"split-reveal",
-		"tilt"
+		"split-reveal"
 	],
 	"sgs/product-card": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -387,13 +388,13 @@
 		"scrub",
 		"sheen",
 		"split-reveal",
-		"surface-treatment",
-		"tilt"
+		"surface-treatment"
 	],
 	"sgs/product-faq": [
 		"ambient-float",
 		"cursor-field",
 		"generative-background",
+		"glare",
 		"grid-dots",
 		"ken-burns",
 		"lottie",
@@ -408,11 +409,11 @@
 		"scrub",
 		"sheen",
 		"split-reveal",
-		"tilt",
 		"wave-gradient"
 	],
 	"sgs/quote": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -424,11 +425,11 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"split-reveal",
-		"tilt"
+		"split-reveal"
 	],
 	"sgs/responsive-logo": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -440,12 +441,12 @@
 		"scrub",
 		"sheen",
 		"surface-treatment",
-		"svg-loop",
-		"tilt"
+		"svg-loop"
 	],
 	"sgs/separator": [
 		"ambient-float",
 		"draw",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -456,11 +457,11 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"svg-loop",
-		"tilt"
+		"svg-loop"
 	],
 	"sgs/team-member": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -473,13 +474,13 @@
 		"scrub",
 		"sheen",
 		"split-reveal",
-		"surface-treatment",
-		"tilt"
+		"surface-treatment"
 	],
 	"sgs/testimonial": [
 		"ambient-float",
 		"cursor-field",
 		"generative-background",
+		"glare",
 		"grid-dots",
 		"ken-burns",
 		"lottie",
@@ -495,11 +496,11 @@
 		"sheen",
 		"split-reveal",
 		"surface-treatment",
-		"tilt",
 		"wave-gradient"
 	],
 	"sgs/text": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -511,13 +512,13 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"split-reveal",
-		"tilt"
+		"split-reveal"
 	],
 	"sgs/timeline": [
 		"ambient-float",
 		"carousel-loop",
 		"draggable",
+		"glare",
 		"lottie",
 		"magnet",
 		"marquee",
@@ -530,14 +531,14 @@
 		"scroll-progress",
 		"sheen",
 		"split-reveal",
-		"surface-treatment",
-		"tilt"
+		"surface-treatment"
 	],
 	"sgs/trust-bar": [
 		"ambient-float",
 		"cursor-field",
 		"draw",
 		"generative-background",
+		"glare",
 		"grid-dots",
 		"horizontal-panel",
 		"ken-burns",
@@ -556,12 +557,12 @@
 		"split-reveal",
 		"surface-treatment",
 		"svg-loop",
-		"tilt",
 		"wave-gradient"
 	],
 	"sgs/trustpilot-reviews": [
 		"ambient-float",
 		"carousel-loop",
+		"glare",
 		"lottie",
 		"magnet",
 		"marquee",
@@ -573,11 +574,11 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"surface-treatment",
-		"tilt"
+		"surface-treatment"
 	],
 	"sgs/whatsapp-cta": [
 		"ambient-float",
+		"glare",
 		"lottie",
 		"magnet",
 		"morph",
@@ -589,13 +590,13 @@
 		"scroll-progress",
 		"scrub",
 		"sheen",
-		"split-reveal",
-		"tilt"
+		"split-reveal"
 	],
 	"sgs/wishlist-panel": [
 		"ambient-float",
 		"carousel-loop",
 		"draggable",
+		"glare",
 		"lottie",
 		"magnet",
 		"marquee",
@@ -606,7 +607,6 @@
 		"ripple",
 		"scroll-progress",
 		"scrub",
-		"sheen",
-		"tilt"
+		"sheen"
 	]
 }

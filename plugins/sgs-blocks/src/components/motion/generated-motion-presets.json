@@ -118,6 +118,24 @@
 		{
 			"devices": {},
 			"effect": null,
+			"family": "follow-pointer",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Follow pointer",
+			"panel": "hover",
+			"slug": "hover-follow-pointer",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"followPointer": true,
+				"maxAngle": 8,
+				"resetDuration": 600,
+				"resetEasing": "token:easing.spring"
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
 			"family": "entrance-fade-up",
 			"intensity": null,
 			"kind": "preset",
@@ -1244,13 +1262,13 @@
 		},
 		{
 			"devices": {},
-			"effect": "tilt",
-			"family": "tilt",
+			"effect": null,
+			"family": "follow-pointer",
 			"intensity": "subtle",
 			"kind": "intensity",
-			"label": "Tilt: Subtle",
+			"label": "Follow pointer: Subtle",
 			"panel": "hover",
-			"slug": "tilt-subtle",
+			"slug": "follow-pointer-subtle",
 			"target": "part",
 			"trigger": "hover",
 			"values": {
@@ -1259,13 +1277,13 @@
 		},
 		{
 			"devices": {},
-			"effect": "tilt",
-			"family": "tilt",
+			"effect": null,
+			"family": "follow-pointer",
 			"intensity": "standard",
 			"kind": "intensity",
-			"label": "Tilt: Standard",
+			"label": "Follow pointer: Standard",
 			"panel": "hover",
-			"slug": "tilt-standard",
+			"slug": "follow-pointer-standard",
 			"target": "part",
 			"trigger": "hover",
 			"values": {
@@ -1274,13 +1292,13 @@
 		},
 		{
 			"devices": {},
-			"effect": "tilt",
-			"family": "tilt",
+			"effect": null,
+			"family": "follow-pointer",
 			"intensity": "bold",
 			"kind": "intensity",
-			"label": "Tilt: Bold",
+			"label": "Follow pointer: Bold",
 			"panel": "hover",
-			"slug": "tilt-bold",
+			"slug": "follow-pointer-bold",
 			"target": "part",
 			"trigger": "hover",
 			"values": {

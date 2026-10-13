@@ -141,10 +141,11 @@ test( 'x-sgs-range: unit strings convert to the base unit; tokens and calc are e
 	assert.equal( rangeProblem( ms, '4s' ), 'must be from 0 to 3000ms (got 4s)' );
 	assert.equal( rangeProblem( ms, 'token:duration.slow' ), null );
 	const px = { min: 0, max: 200, unit: 'px' };
-	assert.equal( rangeProblem( px, '-token:distance.sm' ), null );
+	assert.equal( rangeProblem( px, '-token:distance.sm' ), 'must be from 0 to 200px (got -token:distance.sm, a negated token)', 'a range from zero up refuses a negated token' );
+	assert.equal( rangeProblem( { min: -200, max: 200, unit: 'px' }, '-token:distance.sm' ), null, 'a range that allows negatives takes it' );
 	assert.equal( rangeProblem( px, 'calc(1px + 2px)' ), null );
 	assert.equal( rangeProblem( px, '10vh' ), 'unit "vh" has no fixed size, so this ranged field takes px' );
 	assert.equal( rangeProblem( px, '10deg' ), 'unit "deg" does not convert to px' );
-	const ranged = schema.$defs.TiltValues.properties.maxAngle[ 'x-sgs-range' ];
+	const ranged = schema.$defs.HoverStateValues.properties.maxAngle[ 'x-sgs-range' ];
 	assert.deepEqual( ranged, { min: 0, max: 45, unit: 'deg' } );
 } );

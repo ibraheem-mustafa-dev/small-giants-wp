@@ -1,5 +1,5 @@
 /**
- * BooleanAtom: an on/off switch for a `boolean` field (tilt glare, parallax background, the stagger helper's apply
+ * BooleanAtom: an on/off switch for a `boolean` field (Follow pointer, parallax background, the stagger helper's apply
  * and restart-each-row). An unset field reads as off; switching writes `true` or `false`, and Reset restores the
  * preset's value. A per-device field is wrapped in `PerDeviceAtom` by its panel, like every other value atom.
  *

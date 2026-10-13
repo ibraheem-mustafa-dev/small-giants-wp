@@ -78,6 +78,12 @@ function sgs_get_motion_fx_effects() {
 				'pins'                  => false,
 				'triggers'              => array( 'load' ),
 			),
+			'glare' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'hover' ),
+			),
 			'grid-dots' => array(
 				'plugin_set'            => array(),
 				'owns_scroll_transform' => false,
@@ -209,12 +215,6 @@ function sgs_get_motion_fx_effects() {
 				'owns_scroll_transform' => false,
 				'pins'                  => false,
 				'triggers'              => array( 'load', 'visible' ),
-			),
-			'tilt' => array(
-				'plugin_set'            => array(),
-				'owns_scroll_transform' => false,
-				'pins'                  => false,
-				'triggers'              => array( 'hover' ),
 			),
 			'wave-gradient' => array(
 				'plugin_set'            => array(),

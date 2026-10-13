@@ -1,10 +1,10 @@
 {
-	"description": "\u00a710 transform: tilt with a scrub that moves y on the same element.",
+	"description": "\u00a710 transform: a resting X angle on the hover state with a scrub that moves y on the same element.",
 	"expect": {
 		"valid": false,
 		"errors": [],
 		"refusals": [
-			"Tilt and Scrub both drive this element's transform. Move one of them to a different part."
+			"Hover state and Scrub both drive this element's transform. Move one of them to a different part."
 		]
 	},
 	"motion": {
@@ -12,15 +12,11 @@
 		"elements": {
 			"root": {
 				"hover": {
-					"effects": [
-						{
-							"id": "h1",
-							"effect": "tilt",
-							"values": {
-								"maxAngle": 8
-							}
+					"state": {
+						"values": {
+							"restRotateX": 10
 						}
-					]
+					}
 				},
 				"effects": [
 					{

@@ -141,6 +141,29 @@
 			"load"
 		]
 	},
+	"glare": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [
+				"injected"
+			],
+			"properties": [],
+			"slots": [
+				{
+					"label": "Glare",
+					"slot": "injected"
+				}
+			]
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"hover"
+		],
+		"pins": false,
+		"triggers": [
+			"hover"
+		]
+	},
 	"grid-dots": {
 		"in_picker": true,
 		"owned_properties": {
@@ -563,35 +586,6 @@
 		"triggers": [
 			"load",
 			"visible"
-		]
-	},
-	"tilt": {
-		"in_picker": false,
-		"owned_properties": {
-			"channels": [
-				"transform",
-				"injected"
-			],
-			"properties": [
-				"--sgs-tilt-persp",
-				"--sgs-tilt-x",
-				"--sgs-tilt-y"
-			],
-			"slots": [
-				{
-					"label": "Tilt glare",
-					"slot": "injected",
-					"when": "glare"
-				}
-			]
-		},
-		"owns_scroll_transform": false,
-		"panels": [
-			"hover"
-		],
-		"pins": false,
-		"triggers": [
-			"hover"
 		]
 	},
 	"wave-gradient": {

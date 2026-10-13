@@ -1,5 +1,5 @@
 {
-	"description": "A root with all three panels: a lift hover state with tilt, magnet and sheen stacked as hover effects, a scroll entrance, and a pointerdown ripple; a media part with parallax and Ken Burns.",
+	"description": "A root with all three panels: a lift hover state that also rests at a 4deg X angle, turns 6deg on Y and follows the pointer, with glare, magnet and sheen stacked as hover effects, a scroll entrance that flips in on X, and a pointerdown ripple; a media part with parallax and Ken Burns.",
 	"expect": {
 		"valid": true,
 		"errors": [],
@@ -19,9 +19,21 @@
 							"translateY": "-token:distance.sm",
 							"scale": 1.04,
 							"duration": "token:duration.fast",
-							"easing": "token:easing.ease-out"
+							"easing": "token:easing.ease-out",
+							"restRotateX": 4,
+							"rotateY": 6,
+							"perspective": 1000,
+							"perspectiveOn": "self",
+							"followPointer": true,
+							"maxAngle": 8,
+							"axisLock": "none",
+							"resetDuration": 600,
+							"resetEasing": "token:easing.spring-gentle"
 						},
 						"devices": {
+							"tablet": {
+								"maxAngle": 6
+							},
 							"mobile": {
 								"translateY": "-2px"
 							}
@@ -33,25 +45,17 @@
 					"effects": [
 						{
 							"id": "l1",
-							"effect": "tilt",
-							"preset": "tilt-standard",
+							"effect": "glare",
 							"intensity": "standard",
 							"trigger": "hover",
 							"values": {
-								"maxAngle": 8,
-								"perspective": 1000,
-								"perspectiveOn": "parent",
-								"axisLock": "none",
-								"glare": true,
 								"glareColour": "base",
 								"glareOpacity": 0.4,
-								"glareSize": 55,
-								"resetDuration": 600,
-								"resetEasing": "token:easing.spring-gentle"
+								"glareSize": 55
 							},
 							"devices": {
 								"tablet": {
-									"maxAngle": 6
+									"glareOpacity": 0.3
 								}
 							}
 						},
@@ -95,16 +99,19 @@
 						"values": {
 							"from": {
 								"opacity": 0,
-								"translateY": "token:entrance.distance"
+								"translateY": "token:entrance.distance",
+								"rotateX": -12
 							},
 							"to": {
 								"opacity": 1,
-								"translateY": 0
+								"translateY": 0,
+								"rotateX": 0
 							},
 							"duration": "token:entrance.duration",
 							"delay": 0,
 							"easing": "token:entrance.easing",
-							"start": 6
+							"start": 6,
+							"perspective": 1000
 						},
 						"devices": {
 							"tablet": {

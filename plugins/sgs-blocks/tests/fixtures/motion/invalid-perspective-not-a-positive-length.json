@@ -1,0 +1,46 @@
+{
+	"description": "The one perspective takes only a positive length: a percentage, a negative length and a negated token are refused.",
+	"expect": {
+		"valid": false,
+		"errors": [
+			"/elements/root/entrance/base/values/perspective: must be from 100 to 5000px (got -token:distance.md, a negated token)",
+			"/elements/root/hover/state/devices/tablet/perspective: must be from 100 to 5000px (got -400px)",
+			"/elements/root/hover/state/values/perspective: unit \"%\" has no fixed size, so this ranged field takes px"
+		],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"state": {
+						"values": {
+							"restRotateX": 10,
+							"perspective": "50%"
+						},
+						"devices": {
+							"tablet": {
+								"perspective": "-400px"
+							}
+						}
+					}
+				},
+				"entrance": {
+					"base": {
+						"trigger": "scroll",
+						"values": {
+							"from": {
+								"rotateX": 90
+							},
+							"to": {
+								"rotateX": 0
+							},
+							"perspective": "-token:distance.md"
+						}
+					}
+				}
+			}
+		}
+	}
+}

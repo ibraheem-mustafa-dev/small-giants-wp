@@ -367,7 +367,7 @@ final class MotionRendererTest extends TestCase {
 				'root' => array(
 					'hover' => array(
 						'effects' => array(
-							array( 'id' => 'h1', 'effect' => 'tilt', 'values' => array( 'maxAngle' => 8, 'glare' => true ) ),
+							array( 'id' => 'h1', 'effect' => 'glare', 'values' => array( 'glareOpacity' => 0.4 ) ),
 							array( 'id' => 'h2', 'effect' => 'sheen', 'values' => array( 'opacity' => 0.4 ) ),
 						),
 					),
@@ -376,12 +376,66 @@ final class MotionRendererTest extends TestCase {
 		);
 		$out    = $this->render( $motion );
 		$this->assertStringEndsWith(
-			'<span class="sgs-motion-layer" data-sgs-layer="tilt-glare" aria-hidden="true"></span><span class="sgs-motion-layer" data-sgs-layer="sheen" aria-hidden="true"></span></div>',
+			'<span class="sgs-motion-layer" data-sgs-layer="glare" aria-hidden="true"></span><span class="sgs-motion-layer" data-sgs-layer="sheen" aria-hidden="true"></span></div>',
 			$out
 		);
-		$this->assertStringContainsString( 'data-sgs-mc="transform injected"', $out );
+		$this->assertStringContainsString( 'data-sgs-mc="injected"', $out, 'glare paints a layer and drives no transform' );
 		$this->assertStringNotContainsString( 'data-sgs-ml-mark', $out );
-		$this->assertStringContainsString( '--sgs-tilt-x', $this->css(), 'tilt keeps its own return timing' );
+	}
+
+	public function test_x_and_y_owners_compose_the_transform_channel_under_one_perspective(): void {
+		$motion = array(
+			'v'        => 1,
+			'elements' => array(
+				'root' => array(
+					'hover'    => array(
+						'state' => array(
+							'values'  => array(
+								'restRotate'    => -1,
+								'restRotateX'   => 10,
+								'rotateX'       => 4,
+								'rotateY'       => 5,
+								'perspective'   => 800,
+								'followPointer' => true,
+								'maxAngle'      => 8,
+								'resetDuration' => 600,
+								'resetEasing'   => 'token:easing.spring',
+							),
+							'devices' => array( 'mobile' => array( 'restRotateX' => 6, 'perspective' => 500 ) ),
+						),
+					),
+					'entrance' => array(
+						'base' => array(
+							'trigger' => 'scroll',
+							'values'  => array(
+								'from' => array( 'opacity' => 0, 'rotateX' => 90 ),
+								'to'   => array( 'rotateY' => 0 ),
+							),
+						),
+					),
+				),
+			),
+		);
+		$out    = $this->render( $motion );
+		$css    = $this->css();
+		$this->assertStringContainsString( 'data-sgs-mc="rotate transform"', $out, 'Z on the rotate channel, X and Y on the transform channel' );
+		$this->assertStringContainsString( 'data-sgs-me="scroll transform opacity"', $out, 'the entrance animates the transform channel for its X angle' );
+		$this->assertStringContainsString( '--sgs-rot-rest:-1deg;', $css );
+		$this->assertStringContainsString( '--sgs-rx-rest:10deg;--sgs-mh-to-rx:-6deg;', $css, 'the hover X is stored minus the rest X' );
+		$this->assertStringContainsString( '--sgs-mh-to-ry:5deg;', $css, 'no rest Y, so the hover Y is stored as is' );
+		$this->assertStringContainsString( '--sgs-persp-self:800px;', $css, 'the one perspective is written directly' );
+		$this->assertStringContainsString( '{--sgs-persp-self:500px;--sgs-rx-rest:6deg;--sgs-mh-to-rx:-2deg;}}', $css, 'the mobile rest X and perspective' );
+		$this->assertStringContainsString( '--sgs-me-from-rx:90deg;', $css );
+		$this->assertStringContainsString( '--sgs-me-to-ry:0deg;', $css );
+		$this->assertStringContainsString( '--sgs-mh-rx ', $css, 'the hover X transitions on the hover timing' );
+		$this->assertStringContainsString( '--sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0)))', $css, 'Follow pointer settles on its own timing, and only while disengaged (on leave)' );
+		$this->assertStringNotContainsString( '--sgs-tilt-x 600ms', $css, 'no plain settle duration that would lag the pointer while hovered' );
+		$this->assertStringNotContainsString( '--sgs-mh-to-rest', $css, 'rest values never become to-values' );
+		$this->assertStringNotContainsString( '--sgs-mh-to-perspective', $css );
+		$this->assertStringNotContainsString( ' style=', $out );
+
+		$flat = $this->render( self::media_hover( array( 'scale' => 1.04 ) ) );
+		$this->assertStringNotContainsString( 'transform', $flat, 'negative control: no X or Y owner, no transform channel' );
 	}
 
 	public function test_sheen_return_transition_uses_its_own_duration_and_easing(): void {
@@ -423,5 +477,54 @@ final class MotionRendererTest extends TestCase {
 		$this->assertStringNotContainsString( 'data-sgs-animation', $both );
 		$old = \SGS\Blocks\inject_animation_attributes( '<div class="a">x</div>', array( 'blockName' => 'sgs/info-box', 'attrs' => array( 'sgsAnimation' => 'fade-up' ) ) );
 		$this->assertStringContainsString( 'data-sgs-animation="fade-up"', $old, 'negative control: the old model alone still renders' );
+	}
+
+	public function test_an_x_or_y_owner_without_a_perspective_gets_the_default(): void {
+		$this->render( self::media_hover( array( 'rotateY' => 5 ) ) );
+		$this->assertStringContainsString( '--sgs-persp-self:800px;', $this->css(), 'a hover Y angle with no perspective gets 800px, never none' );
+
+		$GLOBALS['sgs_collected_css'] = array();
+		$entrance = array(
+			'v'        => 1,
+			'elements' => array( 'root' => array( 'entrance' => array( 'base' => array( 'trigger' => 'load', 'values' => array( 'from' => array( 'rotateX' => 90 ), 'to' => array( 'rotateX' => 0 ) ) ) ) ) ),
+		);
+		$out      = $this->render( $entrance );
+		$this->assertStringContainsString( 'data-sgs-me="load transform"', $out );
+		$this->assertStringContainsString( '--sgs-persp-self:800px;', $this->css(), 'an entrance flip gets the default too' );
+
+		$GLOBALS['sgs_collected_css'] = array();
+		$this->render( self::media_hover( array( 'rotateY' => 5, 'perspective' => 1200 ) ) );
+		$this->assertStringContainsString( '--sgs-persp-self:1200px;', $this->css() );
+		$this->assertStringNotContainsString( '800px', $this->css(), 'a set perspective is not overwritten' );
+
+		$GLOBALS['sgs_collected_css'] = array();
+		$this->render( self::media_hover( array( 'scale' => 1.04 ) ) );
+		$this->assertStringNotContainsString( '--sgs-persp-self', $this->css(), 'negative control: no X or Y owner, no perspective' );
+	}
+
+	public function test_a_perspective_alone_adds_no_transform_channel(): void {
+		$out = $this->render( self::media_hover( array( 'scale' => 1.04, 'perspective' => 900 ) ) );
+		$this->assertStringContainsString( '--sgs-persp-self:900px;', $this->css(), 'the perspective is still written' );
+		$this->assertStringContainsString( 'data-sgs-mc="scale"', $out, 'but it declares no transform channel' );
+
+		$control = $this->render( self::media_hover( array( 'scale' => 1.04, 'perspective' => 900, 'restRotateX' => 4 ) ) );
+		$this->assertStringContainsString( 'data-sgs-mc="scale transform"', $control, 'negative control: an X angle does' );
+	}
+
+	public function test_follow_pointer_presets_switch_follow_pointer_on(): void {
+		$presets = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/scripts/data/motion-presets.json' ), true )['presets'];
+		$family  = array_values( array_filter( $presets, static fn ( array $p ): bool => 'follow-pointer' === $p['family'] ) );
+		$base    = array_values( array_filter( $family, static fn ( array $p ): bool => 'preset' === $p['kind'] ) );
+		$rows    = array_values( array_filter( $family, static fn ( array $p ): bool => 'intensity' === $p['kind'] ) );
+		$this->assertCount( 1, $base, 'one Follow pointer preset turns it on' );
+		$this->assertCount( 3, $rows, 'Subtle, Standard and Bold restamp its angle' );
+		$this->assertTrue( \SGS\Blocks\Motion\Sgs_Motion_Rotation::follows( $base[0]['values'] ) );
+		foreach ( $rows as $row ) {
+			$values = array_merge( $base[0]['values'], $row['values'] );
+			$this->assertTrue( \SGS\Blocks\Motion\Sgs_Motion_Rotation::follows( $values ), $row['slug'] . ' applied over the preset keeps Follow pointer on' );
+			$out = $this->render( self::media_hover( $values ) );
+			$this->assertStringContainsString( 'data-sgs-mc="transform"', $out, $row['slug'] . ' renders the transform channel' );
+			$this->assertFalse( \SGS\Blocks\Motion\Sgs_Motion_Rotation::follows( $row['values'] ), 'negative control: an intensity row alone only restamps the angle' );
+		}
 	}
 }

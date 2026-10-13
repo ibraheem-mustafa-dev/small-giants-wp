@@ -203,13 +203,13 @@ const SETS = [
 	],
 	[
 		'angle',
-		field( 'TiltValues', 'maxAngle' ),
+		field( 'HoverStateValues', 'maxAngle' ),
 		[ 0, 45, '30deg' ],
 		[ 46, -1 ],
 	],
 	[
 		'choice',
-		field( 'TiltValues', 'axisLock' ),
+		field( 'HoverStateValues', 'axisLock' ),
 		[ 'none', 'x', 'y' ],
 		[ 'z', 'self' ],
 	],
@@ -235,13 +235,13 @@ const SETS = [
 	// boundaries: deg, turn and px strings, a relative unit on a ranged field, and the angle type's own range.
 	[
 		'angle',
-		field( 'TiltValues', 'maxAngle' ),
+		field( 'HoverStateValues', 'maxAngle' ),
 		[ '45deg', '0.125turn' ],
 		[ '90deg', '0.9turn', '46deg' ],
 	],
 	[
 		'distance',
-		field( 'TiltValues', 'perspective' ),
+		field( 'HoverStateValues', 'perspective' ),
 		[ '100px', '5000px' ],
 		[ '1px', '5001px', '10em' ],
 	],
@@ -276,12 +276,13 @@ const SETS = [
 	[
 		'distance',
 		RANGED_DISTANCE,
-		[ '200px', '0px', '-token:distance.sm', 'token:distance.xl' ],
-		[ '-5px', '300px', -5, '10rem', '50%', '2vh' ],
+		[ '200px', '0px', 'token:distance.xl' ],
+		// A negated token is negative, so a range from zero up refuses it.
+		[ '-5px', '300px', -5, '10rem', '50%', '2vh', '-token:distance.sm' ],
 	],
 	// Field nodes that cannot be read are refused on both sides.
 	[ 'duration', { $ref: '#/$defs/duration', format: 'x' }, [], [ 250 ] ],
-	[ 'duration', field( 'TiltValues', 'maxAngle' ), [], [ 10 ] ],
+	[ 'duration', field( 'HoverStateValues', 'maxAngle' ), [], [ 10 ] ],
 	[ 'nope', null, [], [ 1 ] ],
 ];
 
@@ -313,9 +314,9 @@ const tokenCases = [
 const rangeCases = [
 	[ 'duration', null ],
 	[ 'distance', field( 'HoverStateValues', 'blur' ) ],
-	[ 'angle', field( 'TiltValues', 'maxAngle' ) ],
+	[ 'angle', field( 'HoverStateValues', 'maxAngle' ) ],
 	[ 'angle', RANGED_ANGLE ],
-	[ 'choice', field( 'TiltValues', 'axisLock' ) ],
+	[ 'choice', field( 'HoverStateValues', 'axisLock' ) ],
 	[ 'easing', null ],
 	[ 'opacity', null ],
 ].map( ( [ type, node ] ) => ( { kind: 'range', type, field: node } ) );
@@ -475,11 +476,11 @@ describe( 'motion field-type parity', () => {
 		expect( unreadable ).toEqual( [] );
 	} );
 
-	it( "a unit string past a field's x-sgs-range is refused (TiltValues.maxAngle, 0 to 45 degrees)", () => {
+	it( "a unit string past a field's x-sgs-range is refused (HoverStateValues.maxAngle, 0 to 45 degrees)", () => {
 		expect(
 			FIELD_TYPES.angle.validate(
 				'90deg',
-				field( 'TiltValues', 'maxAngle' )
+				field( 'HoverStateValues', 'maxAngle' )
 			).ok
 		).toBe( false );
 	} );

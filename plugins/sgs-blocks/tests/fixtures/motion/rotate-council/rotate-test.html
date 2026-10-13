@@ -1,0 +1,27 @@
+<!doctype html><meta charset=utf-8><title>rotate test</title>
+<style>
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@property --b{syntax:'<angle>';inherits:false;initial-value:0deg}
+@property --c{syntax:'<angle>';inherits:false;initial-value:0deg}
+@property --ry{syntax:'<angle>';inherits:false;initial-value:0deg}
+body{margin:0;background:#fff}
+.box{position:absolute;left:200px;top:100px;width:200px;height:100px;background:#c33}
+#ind{translate:20px 10px;rotate:-1deg;scale:1.1;transform:perspective(800px) rotateX(10deg) rotateY(5deg)}
+#ref{transform:translate(20px,10px) rotate(-1deg) scale(1.1) perspective(800px) rotateX(10deg) rotateY(5deg)}
+#tiltonly{transform:perspective(800px) rotateX(10deg) rotateY(5deg)}
+#zonly{translate:20px 10px;rotate:-1deg;scale:1.1}
+#swapped{transform:perspective(800px) rotateX(10deg) rotateY(5deg) rotate(-1deg) translate(20px,10px) scale(1.1)}
+#sum{transform:perspective(800px) rotateX(calc(var(--a) + var(--b) + var(--c))) rotateY(var(--ry));transition:--a 1000ms linear,--b 2000ms linear,--ry 1000ms linear}
+#sum.go{--a:20deg;--b:30deg;--ry:10deg}
+#sum.held{--c:5deg}
+#unreg{--u:0deg;transform:rotateX(calc(var(--u)));transition:--u 1000ms linear}
+#unreg.go{--u:40deg}
+.par{position:absolute;left:600px;top:0;width:400px;height:300px}
+.par .ch{position:absolute;left:250px;top:150px;width:100px;height:80px;background:#36c}
+#pp{perspective:800px}#pp .ch{transform:rotateX(10deg) rotateY(5deg)}
+#ps{} #ps .ch{transform:perspective(800px) rotateX(10deg) rotateY(5deg)}
+#pb{perspective:800px} #pb .ch{transform:perspective(800px) rotateX(10deg) rotateY(5deg)}
+#p0{} #p0 .ch{transform:rotateX(10deg) rotateY(5deg)}
+</style>
+<div class=box id=ind></div><div class=box id=ref></div><div class=box id=tiltonly></div><div class=box id=zonly></div><div class=box id=swapped></div><div class=box id=sum></div><div class=box id=unreg></div>
+<div class=par id=pp><div class=ch></div></div><div class=par id=ps><div class=ch></div></div><div class=par id=pb><div class=ch></div></div><div class=par id=p0><div class=ch></div></div>

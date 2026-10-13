@@ -15,9 +15,9 @@
 					"effects": [
 						{
 							"id": "a1",
-							"effect": "tilt",
+							"effect": "glare",
 							"values": {
-								"maxAngle": 8
+								"glareOpacity": 0.4
 							}
 						}
 					]

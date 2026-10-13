@@ -1,0 +1,27 @@
+{
+	"description": "\u00a710 transform: perspective on the parent is refused (Playwright WebKit ignored a parent perspective; real Safari is unchecked).",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Perspective on the parent is not available here; the card uses its own perspective."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"state": {
+						"values": {
+							"followPointer": true,
+							"maxAngle": 8,
+							"perspective": 1100,
+							"perspectiveOn": "parent"
+						}
+					}
+				}
+			}
+		}
+	}
+}

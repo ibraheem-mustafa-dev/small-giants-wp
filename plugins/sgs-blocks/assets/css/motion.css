@@ -5,11 +5,13 @@
  * (includes/motion/), never a `style` attribute. The contract with the renderer:
  *
  *   data-sgs-mh="self|root|group"    the target holds a hover state; the value is its source (§6.2)
- *   --sgs-mh-to-<tx|ty|rot|s|op|blur|gray|bright|indent>
- *                                     the hover state's to-values (plain, unregistered; per device). The rotate
- *                                     to-value is the hover angle minus the rest angle (§10)
+ *   --sgs-mh-to-<tx|ty|rot|rx|ry|s|op|blur|gray|bright|indent>
+ *                                     the hover state's to-values (plain, unregistered; per device). Each rotate
+ *                                     to-value (Z, X, Y) is the hover angle minus its rest angle (§10)
  *   --sgs-pad-start-rest              the resting inline-start padding an indent hover adds to (default 0px)
- *   --sgs-rot-rest                    the rest rotate, a resting styling value (FR-38A-42)
+ *   --sgs-rot-rest, --sgs-rx-rest, --sgs-ry-rest
+ *                                     the rest Z, X and Y angles, resting styling values (FR-38A-42)
+ *   --sgs-persp-self                  the element's one perspective (a length, or none), read by the transform channel
  *   data-sgs-mroot                    a block root whose targets use source root
  *   data-sgs-hover-group              the hover-group block (source group reads the nearest one)
  *   data-sgs-mc="<channels>"          the persistent channels of the element's non-entrance owners, as the schema's
@@ -26,8 +28,9 @@
  */
 
 /* ── Owner custom properties (§10): typed, identity initial value, so each owner animates on its own timing.
-   Channel owners never inherit (a nested target must not pick up its parent's lift); paint-slot and layer
-   properties, and the tilt angles a glare layer reads, inherit so the pseudo-elements and layers see them. ── */
+   Channel owners never inherit (a nested target must not pick up its parent's lift or pointer angles); paint-slot
+   and layer properties inherit so the pseudo-elements and layers see them, and the glare layer takes Follow
+   pointer's angles from its element explicitly (below). The one perspective is `<length> | none` with initial none, which perspective() reads as no perspective. ── */
 @property --sgs-me-tx { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-me-ty { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-mh-tx { syntax: '<length>'; inherits: false; initial-value: 0px; }
@@ -47,9 +50,15 @@
 @property --sgs-mh-s { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-focus-s { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-kb-s { syntax: '<number>'; inherits: false; initial-value: 1; }
-@property --sgs-tilt-persp { syntax: '<length>'; inherits: false; initial-value: 800px; }
-@property --sgs-tilt-x { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-@property --sgs-tilt-y { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
+@property --sgs-me-rx { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --sgs-me-ry { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --sgs-rx-rest { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --sgs-ry-rest { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --sgs-mh-rx { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --sgs-mh-ry { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --sgs-persp-self { syntax: '<length> | none'; inherits: false; initial-value: none; }
+@property --sgs-tilt-x { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --sgs-tilt-y { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @property --sgs-me-op { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-mh-op { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-focus-op { syntax: '<number>'; inherits: false; initial-value: 1; }
@@ -88,7 +97,7 @@
 	filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
 }
 [data-sgs-mc~="transform"] {
-	transform: perspective(var(--sgs-tilt-persp)) rotateX(var(--sgs-tilt-x)) rotateY(var(--sgs-tilt-y));
+	transform: perspective(var(--sgs-persp-self)) rotateX(calc(var(--sgs-rx-rest) + var(--sgs-me-rx) + var(--sgs-mh-rx) + var(--sgs-tilt-x))) rotateY(calc(var(--sgs-ry-rest) + var(--sgs-me-ry) + var(--sgs-mh-ry) + var(--sgs-tilt-y)));
 }
 [data-sgs-mc~="padding-inline-start"] {
 	padding-inline-start: calc(var(--sgs-pad-start-rest, 0px) + var(--sgs-mh-indent));
@@ -121,6 +130,8 @@
 	--sgs-mh-tx: calc(var(--sgs-mh-to-tx, 0px) * var(--sgs-mh-on));
 	--sgs-mh-ty: calc(var(--sgs-mh-to-ty, 0px) * var(--sgs-mh-on));
 	--sgs-mh-rot: calc(var(--sgs-mh-to-rot, 0deg) * var(--sgs-mh-on));
+	--sgs-mh-rx: calc(var(--sgs-mh-to-rx, 0deg) * var(--sgs-mh-on));
+	--sgs-mh-ry: calc(var(--sgs-mh-to-ry, 0deg) * var(--sgs-mh-on));
 	--sgs-mh-s: calc(1 + (var(--sgs-mh-to-s, 1) - 1) * var(--sgs-mh-on));
 	--sgs-mh-op: calc(1 + (var(--sgs-mh-to-op, 1) - 1) * var(--sgs-mh-on));
 	--sgs-mh-blur: calc(var(--sgs-mh-to-blur, 0px) * var(--sgs-mh-on));
@@ -152,6 +163,18 @@
 	to {
 		--sgs-me-rot: var(--sgs-me-to-rot, 0deg);
 		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+	}
+}
+@keyframes sgs-me-transform {
+	from {
+		--sgs-me-rx: var(--sgs-me-from-rx, 0deg);
+		--sgs-me-ry: var(--sgs-me-from-ry, 0deg);
+		transform: perspective(var(--sgs-persp-self)) rotateX(calc(var(--sgs-rx-rest) + var(--sgs-me-rx) + var(--sgs-mh-rx) + var(--sgs-tilt-x))) rotateY(calc(var(--sgs-ry-rest) + var(--sgs-me-ry) + var(--sgs-mh-ry) + var(--sgs-tilt-y)));
+	}
+	to {
+		--sgs-me-rx: var(--sgs-me-to-rx, 0deg);
+		--sgs-me-ry: var(--sgs-me-to-ry, 0deg);
+		transform: perspective(var(--sgs-persp-self)) rotateX(calc(var(--sgs-rx-rest) + var(--sgs-me-rx) + var(--sgs-mh-rx) + var(--sgs-tilt-x))) rotateY(calc(var(--sgs-ry-rest) + var(--sgs-me-ry) + var(--sgs-mh-ry) + var(--sgs-tilt-y)));
 	}
 }
 @keyframes sgs-me-scale {
@@ -199,6 +222,7 @@
 	[data-sgs-me] {
 		--sgs-me-a-translate: none;
 		--sgs-me-a-rotate: none;
+		--sgs-me-a-transform: none;
 		--sgs-me-a-scale: none;
 		--sgs-me-a-opacity: none;
 		--sgs-me-a-filter: none;
@@ -214,6 +238,7 @@
 	}
 	[data-sgs-me~="translate"] { --sgs-me-a-translate: sgs-me-translate; }
 	[data-sgs-me~="rotate"] { --sgs-me-a-rotate: sgs-me-rotate; }
+	[data-sgs-me~="transform"] { --sgs-me-a-transform: sgs-me-transform; }
 	[data-sgs-me~="scale"] { --sgs-me-a-scale: sgs-me-scale; }
 	[data-sgs-me~="opacity"] { --sgs-me-a-opacity: sgs-me-opacity; }
 	[data-sgs-me~="filter"] { --sgs-me-a-filter: sgs-me-filter; }
@@ -221,7 +246,7 @@
 
 	/* A multi-keyframe entrance is played by the WAAPI module (motion-keyframes.js), never by these two-state rules. */
 	[data-sgs-me]:not([data-sgs-me-keyframes]):is([data-sgs-me~="load"], [data-sgs-in]) {
-		animation-name: var(--sgs-me-a-translate), var(--sgs-me-a-rotate), var(--sgs-me-a-scale), var(--sgs-me-a-opacity), var(--sgs-me-a-filter), var(--sgs-me-a-clip-path);
+		animation-name: var(--sgs-me-a-translate), var(--sgs-me-a-rotate), var(--sgs-me-a-transform), var(--sgs-me-a-scale), var(--sgs-me-a-opacity), var(--sgs-me-a-filter), var(--sgs-me-a-clip-path);
 	}
 
 	/* The hidden start state: only under the reveal module's class, only before the element is in view. */
@@ -233,6 +258,11 @@
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="rotate"] {
 		--sgs-me-rot: var(--sgs-me-from-rot, 0deg);
 		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+	}
+	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="transform"] {
+		--sgs-me-rx: var(--sgs-me-from-rx, 0deg);
+		--sgs-me-ry: var(--sgs-me-from-ry, 0deg);
+		transform: perspective(var(--sgs-persp-self)) rotateX(calc(var(--sgs-rx-rest) + var(--sgs-me-rx) + var(--sgs-mh-rx) + var(--sgs-tilt-x))) rotateY(calc(var(--sgs-ry-rest) + var(--sgs-me-ry) + var(--sgs-mh-ry) + var(--sgs-tilt-y)));
 	}
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="scale"] {
 		--sgs-me-s: var(--sgs-me-from-s, 1);
@@ -273,16 +303,25 @@
 	overflow: hidden;
 	pointer-events: none;
 }
+/* The glare layer reads its own element's Follow pointer angles through two plain (unregistered, inheriting) copies
+   taken on the element: an explicit `inherit` of the registered, non-inheriting angles reads 0deg in WebKit 26. The
+   angles themselves never inherit, so a nested element never picks up its parent's pointer tilt. */
+[data-sgs-mc~="injected"] {
+	--sgs-glare-x: var(--sgs-tilt-x);
+	--sgs-glare-y: var(--sgs-tilt-y);
+}
 
 /* ── Reduced motion (§12, FR-38A-27): nothing moves, every delay is zero, and colour, shadow, opacity and filter
    changes become instant state flips. Entrances show their final state, because the entrance rules above apply
-   only under no-preference. The rest rotate is a styling value and stays. ── */
+   only under no-preference. The rest Z, X and Y angles are styling values and stay. ── */
 @media (prefers-reduced-motion: reduce) {
 	[data-sgs-mh] {
 		--sgs-mh-indent: 0px;
 		--sgs-mh-tx: 0px;
 		--sgs-mh-ty: 0px;
 		--sgs-mh-rot: 0deg;
+		--sgs-mh-rx: 0deg;
+		--sgs-mh-ry: 0deg;
 		--sgs-mh-s: 1;
 	}
 	:is([data-sgs-mh], [data-sgs-me], [data-sgs-mc]) {

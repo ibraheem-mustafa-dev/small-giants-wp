@@ -7,12 +7,15 @@
  * values, through the shared collector, as plain custom properties on the target's scoped selector:
  *
  * - Hover state: the hover to-values as `--sgs-mh-to-<suffix>` (the suffix of the field's owner property, so
- *   `--sgs-mh-ty` gives `--sgs-mh-to-ty`), with `--sgs-mh-to-rot` stored as the hover angle minus the rest angle;
- *   the resting angle is written directly as `--sgs-rot-rest`. The owner properties themselves (`--sgs-mh-*`) are
- *   switched on by the stylesheet under `:hover` and `:focus-visible` (or the root's or hover group's `:hover` and
- *   `:focus-within`), never here.
- * - Entrance: `--sgs-me-from-<suffix>`, `--sgs-me-to-<suffix>`, `--sgs-me-dur`, `--sgs-me-delay`, `--sgs-me-ease`
- *   and `--sgs-me-start`; multi-keyframe entrances also get `data-sgs-me-keyframes` (JSON) for the WAAPI module.
+ *   `--sgs-mh-ty` gives `--sgs-mh-to-ty`); the resting fields (state `rest`: the rest Z, X and Y angles and the one
+ *   perspective `--sgs-persp-self`) are written directly to their own property, and each hover angle is stored as
+ *   the hover angle minus its rest angle (`Sgs_Motion_Rotation`). Only an X or Y angle or Follow pointer adds the
+ *   `transform` channel (a perspective alone does not), and an element with one and no perspective gets the schema's
+ *   default perspective. Follow pointer settles on its own transition, which runs only while the hover state is
+ *   disengaged, so the element tracks the pointer at once and springs back on leave. The owner properties themselves (`--sgs-mh-*`) are switched on by the stylesheet
+ *   under `:hover` and `:focus-visible` (or the root's or hover group's `:hover` and `:focus-within`), never here.
+ * - Entrance: `--sgs-me-from-<suffix>`, `--sgs-me-to-<suffix>`, `--sgs-me-dur`, `--sgs-me-delay`, `--sgs-me-ease`,
+ *   `--sgs-me-start` and the one perspective `--sgs-persp-self` when the entrance sets it; multi-keyframe entrances also get `data-sgs-me-keyframes` (JSON) for the WAAPI module.
  * - `transition`: only the owners present on the element, each with its own duration, easing and delay (the hover
  *   state's list also carries `color`, `background-color`, `border-color` and `box-shadow`), never `all`.
  *
@@ -71,6 +74,7 @@ final class Sgs_Motion_Emitter {
 		if ( is_array( $base ) && empty( $context['suppress_entrance'] ) ) {
 			$entrance = self::entrance( $base, $decls, $attrs, $context );
 		}
+		Sgs_Motion_Rotation::default_perspective( $decls, isset( $channels['transform'] ) || in_array( 'transform', explode( ' ', $attrs['data-sgs-me'] ?? '' ), true ) );
 		if ( array() !== $channels ) {
 			$attrs['data-sgs-mc'] = implode( ' ', self::ordered_channels( $channels ) );
 		}
@@ -90,7 +94,7 @@ final class Sgs_Motion_Emitter {
 	 * The fields of one values def: key => node, field type and CSS property.
 	 *
 	 * @param string $def A `$defs` name.
-	 * @return array<string,array{node:array<string,mixed>,type:string,css:?string,perDevice:bool}>
+	 * @return array<string,array{node:array<string,mixed>,type:string,css:?string,state:?string,perDevice:bool}>
 	 */
 	public static function fields( string $def ): array {
 		static $cache = array();
@@ -103,6 +107,7 @@ final class Sgs_Motion_Emitter {
 						'node'      => $node,
 						'type'      => (string) $meta['fieldType'],
 						'css'       => isset( $meta['cssProperty'] ) ? (string) $meta['cssProperty'] : null,
+						'state'     => isset( $meta['state'] ) ? (string) $meta['state'] : null,
 						'perDevice' => ! empty( $meta['perDevice'] ),
 					);
 				}
@@ -112,7 +117,7 @@ final class Sgs_Motion_Emitter {
 	}
 
 	/**
-	 * Owner custom property => channel, read from `x-sgs-channels`.
+	 * Owner (and shared) custom property => channel, read from `x-sgs-channels`.
 	 *
 	 * @return array<string,string>
 	 */
@@ -125,6 +130,9 @@ final class Sgs_Motion_Emitter {
 					foreach ( $owner['properties'] ?? array() as $prop ) {
 						$map[ (string) $prop['name'] ] = (string) $row['channel'];
 					}
+				}
+				foreach ( $row['shared'] ?? array() as $prop ) {
+					$map[ (string) $prop['name'] ] = (string) $row['channel'];
 				}
 			}
 		}
@@ -174,7 +182,7 @@ final class Sgs_Motion_Emitter {
 	}
 
 	/**
-	 * The hover state's to-values, rest angle, channels and transition list.
+	 * The hover state's to-values, resting values, channels and transition list.
 	 *
 	 * @param array<string,mixed>                $state    Hover state layer.
 	 * @param array<string,array<string,string>> $decls    Per-tier declarations (by reference).
@@ -193,15 +201,17 @@ final class Sgs_Motion_Emitter {
 			'transition-delay'           => '0ms',
 			'transition-timing-function' => self::token_or( 'token:easing.ease-out', 'ease-out' ),
 		);
-		$angles      = array(
-			'rotate'     => null,
-			'restRotate' => null,
-		);
+		$follows     = Sgs_Motion_Rotation::follows( $tiers['desktop'] );
+		$follow      = Sgs_Motion_Rotation::follow_defaults();
+		$angles      = Sgs_Motion_Rotation::empty_angles();
 		$raw         = $angles;
 		$owner_count = 0;
 		foreach ( self::TIERS as $tier ) {
 			$timing_changed = 'desktop' === $tier;
-			$angle_changed  = false;
+			$angle_changed  = array();
+			if ( $follows && Sgs_Motion_Rotation::follow_timing( $tiers[ $tier ], $follow ) ) {
+				$timing_changed = true;
+			}
 			foreach ( $tiers[ $tier ] as $key => $value ) {
 				$prop = $fields[ $key ]['css'] ?? null;
 				$css  = self::value_css( $def, (string) $key, $value );
@@ -211,10 +221,12 @@ final class Sgs_Motion_Emitter {
 				if ( isset( $timing[ $prop ] ) ) {
 					$timing[ $prop ] = $css;
 					$timing_changed  = true;
-				} elseif ( array_key_exists( (string) $key, $angles ) ) {
-					$angles[ $key ] = $css;
-					$raw[ $key ]    = $value;
-					$angle_changed  = true;
+				} elseif ( Sgs_Motion_Rotation::is_angle( (string) $key ) ) {
+					$angles[ $key ]        = $css;
+					$raw[ $key ]           = $value;
+					$angle_changed[ $key ] = true;
+				} elseif ( 'rest' === $fields[ $key ]['state'] ) {
+					$decls[ $tier ][ $prop ] = $css;
 				} elseif ( 0 === strpos( $prop, self::MH_PREFIX ) ) {
 					$decls[ $tier ][ self::MH_PREFIX . 'to-' . substr( $prop, strlen( self::MH_PREFIX ) ) ] = $css;
 					$owners[ $prop ] = true;
@@ -223,14 +235,17 @@ final class Sgs_Motion_Emitter {
 					$owners[ $prop ]                                  = true;
 				}
 			}
-			if ( $angle_changed ) {
-				self::hover_angles( $angles, $raw, $tier, $decls, $owners, $fields );
+			if ( array() !== $angle_changed ) {
+				Sgs_Motion_Rotation::hover_angles( $angles, $raw, $angle_changed, $tier, $decls, $owners );
 			}
 			// A tier repeats the whole list when its timing or its owner set differs from the wider tier's.
 			if ( $timing_changed || count( $owners ) !== $owner_count ) {
 				$trans[ $tier ] = array();
 				foreach ( array_merge( array_keys( $owners ), self::HOVER_PAINT ) as $prop ) {
 					$trans[ $tier ][] = $prop . ' ' . $timing['transition-duration'] . ' ' . $timing['transition-timing-function'] . ' ' . $timing['transition-delay'];
+				}
+				if ( $follows ) {
+					$trans[ $tier ] = array_merge( $trans[ $tier ], Sgs_Motion_Rotation::follow_entries( $follow ) );
 				}
 			}
 			$owner_count = count( $owners );
@@ -240,41 +255,10 @@ final class Sgs_Motion_Emitter {
 				$channels[ $map[ $prop ] ] = true;
 			}
 		}
-		if ( null !== $angles['restRotate'] || null !== $angles['rotate'] ) {
-			$channels['rotate'] = true;
+		Sgs_Motion_Rotation::angle_channels( $angles, $channels );
+		if ( $follows ) {
+			Sgs_Motion_Rotation::follow_channels( $channels );
 		}
-	}
-
-	/**
-	 * Write `--sgs-rot-rest` and `--sgs-mh-to-rot` (the hover angle minus the rest angle) for one tier.
-	 *
-	 * @param array<string,?string>              $angles Effective CSS angles so far.
-	 * @param array<string,mixed>                $raw    Effective stored angles so far.
-	 * @param string                             $tier   Tier.
-	 * @param array<string,array<string,string>> $decls  Per-tier declarations (by reference).
-	 * @param array<string,bool>                 $owners Owner properties present (by reference).
-	 * @param array<string,array<string,mixed>>  $fields Hover state fields.
-	 * @return void
-	 */
-	private static function hover_angles( array $angles, array $raw, string $tier, array &$decls, array &$owners, array $fields ): void {
-		$rest_prop = (string) $fields['restRotate']['css'];
-		$rot_prop  = (string) $fields['rotate']['css'];
-		if ( null !== $angles['restRotate'] ) {
-			$decls[ $tier ][ $rest_prop ] = $angles['restRotate'];
-		}
-		if ( null === $angles['rotate'] ) {
-			return;
-		}
-		$to = $angles['rotate'];
-		if ( null !== $angles['restRotate'] ) {
-			$diff = null;
-			if ( ( is_int( $raw['rotate'] ) || is_float( $raw['rotate'] ) ) && ( is_int( $raw['restRotate'] ) || is_float( $raw['restRotate'] ) ) ) {
-				$diff = self::value_css( 'HoverStateValues', 'rotate', $raw['rotate'] - $raw['restRotate'] );
-			}
-			$to = $diff ?? 'calc(' . $angles['rotate'] . ' - ' . $angles['restRotate'] . ')';
-		}
-		$decls[ $tier ][ self::MH_PREFIX . 'to-' . substr( $rot_prop, strlen( self::MH_PREFIX ) ) ] = $to;
-		$owners[ $rot_prop ] = true;
 	}
 
 	/**
@@ -407,8 +391,13 @@ final class Sgs_Motion_Emitter {
 					$decls[ $tier ][ self::ME_PREFIX . $suffix ] = $css;
 				}
 			}
+			$persp = self::fields( 'EntranceValues' )['perspective']['css'] ?? null;
+			$css   = null !== $persp && array_key_exists( 'perspective', $tiers[ $tier ] ) ? self::value_css( 'EntranceValues', 'perspective', $tiers[ $tier ]['perspective'] ) : null;
+			if ( null !== $css ) {
+				$decls[ $tier ][ $persp ] = $css;
+			}
 		}
-		$keyframes = self::keyframes( $tiers['desktop']['keyframes'] ?? null, $used, $keep_op, $decls['desktop'] );
+		$keyframes = Sgs_Motion_Keyframes::json( $tiers['desktop']['keyframes'] ?? null, $used, $keep_op, $decls['desktop'] );
 		if ( $keep_op ) {
 			$op_from = self::ME_PREFIX . 'from-op';
 			foreach ( array( 'tablet', 'mobile' ) as $tier ) {
@@ -429,69 +418,6 @@ final class Sgs_Motion_Emitter {
 		}
 		$attrs['data-sgs-me'] = trim( $trigger . ' ' . implode( ' ', self::ordered_channels( $channels ) ) );
 		return true;
-	}
-
-	/**
-	 * The desktop keyframes as JSON for the WAAPI module: offset 0 to 1 and each owner property's CSS. The first frame
-	 * is also the hidden start state: each of its owner properties with no stored desktop from-value is written to
-	 * `--sgs-me-from-<suffix>`, so the stylesheet hides the element before the animation plays.
-	 *
-	 * @param mixed                $list    Stored keyframe list.
-	 * @param array<string,bool>   $used    Owner properties touched (by reference through the caller's array).
-	 * @param bool                 $keep_op Whether the LCP rule holds opacity at 1.
-	 * @param array<string,string> $desktop Desktop declarations (by reference).
-	 * @return string|null
-	 */
-	private static function keyframes( $list, array &$used, bool $keep_op, array &$desktop ): ?string {
-		if ( ! is_array( $list ) || array() === $list ) {
-			return null;
-		}
-		$out = array();
-		foreach ( self::sorted_frames( $list ) as $index => $frame ) {
-			$row = array();
-			foreach ( is_array( $frame ) ? $frame : array() as $key => $value ) {
-				if ( 'offset' === $key ) {
-					$css = self::value_css( 'EntranceKeyframe', 'offset', $value );
-					if ( null !== $css && ( is_int( $value ) || is_float( $value ) ) ) {
-						$row['offset'] = $value / 100;
-					}
-					continue;
-				}
-				$prop = self::fields( 'EntranceKeyframe' )[ $key ]['css'] ?? null;
-				$css  = self::value_css( 'EntranceKeyframe', (string) $key, $value );
-				if ( null !== $prop && null !== $css ) {
-					$row[ $prop ]  = $keep_op && self::ME_PREFIX . 'op' === $prop ? '1' : $css;
-					$used[ $prop ] = true;
-					$from          = self::ME_PREFIX . 'from-' . substr( $prop, strlen( self::ME_PREFIX ) );
-					if ( 0 === $index && ! isset( $desktop[ $from ] ) ) {
-						$desktop[ $from ] = $css;
-					}
-				}
-			}
-			if ( 0 === $index && isset( $row['offset'] ) && $row['offset'] > 0 ) {
-				$row['offset'] = 0;
-			}
-			$out[] = $row;
-		}
-		return (string) wp_json_encode( $out );
-	}
-
-	/**
-	 * Stored frames in offset order; a frame without a numeric offset keeps its list position (it sorts with the frame before it).
-	 *
-	 * @param array<int|string,mixed> $list Stored frames.
-	 * @return array<int,mixed>
-	 */
-	private static function sorted_frames( array $list ): array {
-		$keyed = array();
-		$last  = 0;
-		foreach ( array_values( $list ) as $frame ) {
-			$offset = is_array( $frame ) ? ( $frame['offset'] ?? null ) : null;
-			$last   = is_int( $offset ) || is_float( $offset ) ? $offset : $last;
-			$keyed[] = array( $last, $frame );
-		}
-		usort( $keyed, static fn ( array $a, array $b ): int => $a[0] <=> $b[0] );
-		return array_column( $keyed, 1 );
 	}
 
 	/**

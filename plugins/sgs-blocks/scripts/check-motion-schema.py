@@ -17,8 +17,9 @@ WHAT --check ASSERTS
   device-twins     each Tablet / Mobile override node lists exactly its source node's per-device fields
   refusals         every pair, limit and notice has its text, every <placeholder> in a text is mapped, and every
                    effect a matcher names exists
-  channels         every §10 channel owner property has a --sgs- name, an @property syntax and an initial
-                   (identity) value, and the owner's x-sgs-writes entry lists that channel
+  channels         every §10 channel owner property (and each channel's `shared` property, such as the transform
+                   channel's one perspective) has a --sgs- name, an @property syntax and an initial value, each is
+                   registered once, and the owner's x-sgs-writes entry lists that channel
   tokens           every token in the Spec 38A §7 table has a band, and the tokenReference enum equals the token list
   effects          every x-sgs-effects entry names real panels, values and device nodes, and labels its slots
   field-range      a field that narrows duration, distance or angle carries x-sgs-range {min, max, unit} equal to
@@ -61,7 +62,7 @@ PER_DEVICE_REQUIRED = {"duration", "distance", "angle"}
 ENTRY_KEYS = {"$ref", "description", "title", "default", "examples", "$comment", "enum", "const",
               "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "multipleOf"}
 FIELD_META_KEYS = {"fieldType", "cssProperty", "state", "perDevice"}
-SYNTAXES = {"<length>", "<number>", "<angle>", "<percentage>", "<length-percentage>"}
+SYNTAXES = {"<length>", "<number>", "<angle>", "<percentage>", "<length-percentage>", "<length> | none"}
 PLACEHOLDER = re.compile(r"<[A-Za-z]+>")
 # The unit-bearing field types: a field narrowing one carries x-sgs-range {min, max, unit} in this base unit.
 RANGE_BASE = {"duration": "ms", "distance": "px", "angle": "deg"}
@@ -284,6 +285,20 @@ def check_channels(schema: dict) -> list[str]:
                 seen[pname] = f"{name}/{oid}"
             if name not in (writes.get(oid) or {}).get("channels", []):
                 errors.append(f"channels: x-sgs-writes[{oid!r}] does not list the {name} channel it owns")
+        for p in ch.get("shared") or []:
+            pname = p.get("name") or ""
+            if not pname.startswith("--sgs-"):
+                errors.append(f"channels: {name} shared property {pname!r} is not an --sgs- custom property")
+            if p.get("syntax") not in SYNTAXES:
+                errors.append(f"channels: {name} shared property {pname} has no valid @property syntax")
+            if not isinstance(p.get("initial"), str) or not p["initial"].strip():
+                errors.append(f"channels: {name} shared property {pname} has no initial value")
+            if pname in seen:
+                errors.append(f"channels: {pname} is registered by both {seen[pname]} and {name}/shared")
+            seen[pname] = f"{name}/shared"
+            for oid in p.get("declaredBy") or []:
+                if name not in (writes.get(oid) or {}).get("channels", []):
+                    errors.append(f"channels: x-sgs-writes[{oid!r}] does not list the {name} channel whose shared {pname} it declares")
     return errors
 
 
@@ -407,7 +422,7 @@ def _plant_hover_trigger(s: dict) -> None:
 
 
 def _plant_string_range(s: dict) -> None:
-    s["$defs"]["TiltValues"]["properties"]["maxAngle"]["x-sgs-range"]["max"] = 90
+    s["$defs"]["HoverStateValues"]["properties"]["maxAngle"]["x-sgs-range"]["max"] = 90
 
 
 def cmd_self_test() -> int:

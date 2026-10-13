@@ -2,9 +2,10 @@
 /**
  * Tests: the renderer's drops (Spec 38A FR-38A-2 renderer clause, FR-38A-23 render-time refusal drop, FR-38A-49).
  *
- * Plants an unknown key, an out-of-range duration, tilt beside a transform-tweening Tier G effect, a third injected
- * layer and a tilted child under a pin-scrub parent, and asserts each is dropped while the valid rest survives (each
- * case has a negative control that keeps the layer when the plant is removed).
+ * Plants an unknown key, an out-of-range duration, an X rotation owner beside a transform-tweening Tier G effect, a
+ * third injected layer, a Follow pointer child under a pin-scrub parent, two different perspectives and a parent
+ * perspective, and asserts each is dropped or cleared while the valid rest survives (each case has a negative control
+ * that keeps the layer or value when the plant is removed).
  *
  * Run with:
  *   vendor/bin/phpunit --filter MotionRefusalsTest
@@ -76,18 +77,18 @@ final class MotionRefusalsTest extends TestCase {
 		$this->assertArrayNotHasKey( 'state', $out['elements']['root']['hover'] ?? array() );
 	}
 
-	public function test_tilt_with_a_transform_scrub_drops_the_later_layer(): void {
-		$tilt  = array( 'id' => 'h1', 'effect' => 'tilt', 'values' => array( 'maxAngle' => 8 ) );
+	public function test_an_x_owner_with_a_transform_scrub_drops_the_later_layer(): void {
+		$state = array( 'values' => array( 'restRotateX' => 10 ) );
 		$scrub = array( 'id' => 'e1', 'effect' => 'scrub', 'trigger' => 'scroll', 'values' => array( 'rows' => array( array( 'property' => 'y', 'from' => 40, 'to' => 0 ) ) ) );
-		$root  = array( 'hover' => array( 'effects' => array( $tilt ) ), 'effects' => array( $scrub ) );
+		$root  = array( 'hover' => array( 'state' => $state ), 'effects' => array( $scrub ) );
 		$res   = Sgs_Motion_Layer_Drops::resolve( Sgs_Motion_Document::sanitise( self::doc( $root ) )['elements']['root'] );
 		$this->assertSame( 'effects[0]', $res['dropped'][0]['path'], 'the scrub comes later in paint order' );
-		$this->assertSame( "Tilt and Scrub both drive this element's transform. Move one of them to a different part.", $res['dropped'][0]['text'] );
+		$this->assertSame( "Hover state and Scrub both drive this element's transform. Move one of them to a different part.", $res['dropped'][0]['text'] );
 		$this->assertArrayNotHasKey( 'effects', $res['element'] );
-		$this->assertSame( 'tilt', $res['element']['hover']['effects'][0]['effect'] );
+		$this->assertSame( 10, $res['element']['hover']['state']['values']['restRotateX'] );
 
 		$out = $this->render( self::doc( $root ) );
-		$this->assertStringContainsString( 'data-sgs-mc="transform injected"', $out, 'tilt stays, the scrub (and its background-position channel) is gone' );
+		$this->assertStringContainsString( 'data-sgs-mc="transform"', $out, 'the X owner stays, the scrub (and its background-position channel) is gone' );
 		$this->assertSame( 'sgs_motion_layer_dropped', $GLOBALS['sgs_test_actions'][0][0] ?? null );
 
 		$opacity_only = $root;
@@ -100,7 +101,7 @@ final class MotionRefusalsTest extends TestCase {
 			'hover'   => array(
 				'effects' => array(
 					array( 'id' => 'h1', 'effect' => 'sheen', 'values' => array( 'opacity' => 0.4 ) ),
-					array( 'id' => 'h2', 'effect' => 'tilt', 'values' => array( 'glare' => true ) ),
+					array( 'id' => 'h2', 'effect' => 'glare', 'values' => array( 'glareOpacity' => 0.4 ) ),
 				),
 			),
 			'effects' => array( array( 'id' => 'e1', 'effect' => 'cursor-field', 'trigger' => 'hover', 'values' => array( 'ring' => true ) ) ),
@@ -109,8 +110,8 @@ final class MotionRefusalsTest extends TestCase {
 		$this->assertCount( 3, array_filter( Sgs_Motion_Layers::element_layers( $el ), static function ( $e ) { return array() !== Sgs_Motion_Layers::slot_claims( $e ); } ) );
 		$res = Sgs_Motion_Layer_Drops::resolve( $el );
 		$this->assertSame( 'effects[0]', $res['dropped'][0]['path'] );
-		$this->assertSame( 'This element already has two motion layers (Sheen, Tilt glare). Remove one to add Cursor field ring.', $res['dropped'][0]['text'] );
-		$this->assertSame( array( 'sheen', 'tilt-glare' ), Sgs_Motion_Layer_Drops::injected_layers( $res['element'] ) );
+		$this->assertSame( 'This element already has two motion layers (Sheen, Glare). Remove one to add Cursor field ring.', $res['dropped'][0]['text'] );
+		$this->assertSame( array( 'sheen', 'glare' ), Sgs_Motion_Layer_Drops::injected_layers( $res['element'] ) );
 
 		$out = $this->render( self::doc( $root ) );
 		$this->assertSame( 2, substr_count( $out, 'class="sgs-motion-layer"' ) );
@@ -120,7 +121,7 @@ final class MotionRefusalsTest extends TestCase {
 		$this->assertSame( array(), Sgs_Motion_Layer_Drops::resolve( Sgs_Motion_Document::sanitise( self::doc( $root ) )['elements']['root'] )['dropped'], 'negative control: two layers fit' );
 	}
 
-	public function test_a_tilted_child_under_a_pin_scrub_parent_loses_its_tilt(): void {
+	public function test_a_follow_pointer_child_under_a_pin_scrub_parent_loses_its_x_and_y_owner(): void {
 		$parent = array(
 			'blockName' => 'sgs/info-box',
 			'attrs'     => array(
@@ -132,8 +133,8 @@ final class MotionRefusalsTest extends TestCase {
 		$child  = self::doc(
 			array(
 				'hover' => array(
-					'state'   => array( 'values' => array( 'scale' => 1.04 ) ),
-					'effects' => array( array( 'id' => 'h1', 'effect' => 'tilt', 'values' => array( 'maxAngle' => 8 ) ) ),
+					'state'   => array( 'values' => array( 'scale' => 1.04, 'followPointer' => true, 'maxAngle' => 8 ) ),
+					'effects' => array( array( 'id' => 'h1', 'effect' => 'glare', 'values' => array( 'glareOpacity' => 0.4 ) ) ),
 				),
 			)
 		);
@@ -143,12 +144,63 @@ final class MotionRefusalsTest extends TestCase {
 		$child_out = sgs_test_render_motion_block( array( 'blockName' => 'sgs/info-box', 'attrs' => array( 'sgsMotion' => $child ) ), self::CARD, new stdClass() );
 		$renderer::close_frame( $renderer::render( self::CARD, $parent ), $parent );
 
-		$this->assertStringNotContainsString( 'transform', $child_out, 'the tilt is dropped' );
+		$this->assertStringContainsString( 'data-sgs-mc="scale injected"', $child_out, 'Follow pointer is cleared, the scale and the glare layer stay' );
 		$this->assertStringContainsString( 'data-sgs-mh="self"', $child_out, 'the hover state stays' );
-		$this->assertStringContainsString( "Tilt and Pin scrub both drive this element's transform.", json_encode( $GLOBALS['sgs_test_actions'] ) );
+		$this->assertStringContainsString( "Follow pointer and Pin scrub both drive this element's transform.", json_encode( $GLOBALS['sgs_test_actions'] ) );
 
 		Sgs_Motion_Renderer::reset();
 		$alone = sgs_test_render_motion_block( array( 'blockName' => 'sgs/info-box', 'attrs' => array( 'sgsMotion' => $child ) ), self::CARD, new stdClass() );
-		$this->assertStringContainsString( 'data-sgs-mc="scale transform injected"', $alone, 'negative control: no pin-scrub parent, tilt kept' );
+		$this->assertStringContainsString( 'data-sgs-mc="scale transform injected"', $alone, 'negative control: no pin-scrub parent, Follow pointer kept' );
+	}
+
+	public function test_a_second_different_perspective_is_cleared_and_the_first_wins(): void {
+		$root = array(
+			'hover'    => array( 'state' => array( 'values' => array( 'restRotateX' => 10, 'perspective' => 800 ) ) ),
+			'entrance' => array(
+				'base' => array(
+					'trigger' => 'load',
+					'values'  => array(
+						'from'        => array( 'rotateY' => 90 ),
+						'to'          => array( 'rotateY' => 0 ),
+						'perspective' => 1200,
+					),
+					'devices' => array( 'mobile' => array( 'perspective' => 600 ) ),
+				),
+			),
+		);
+		$res  = Sgs_Motion_Layer_Drops::resolve( Sgs_Motion_Document::sanitise( self::doc( $root ) )['elements']['root'] );
+		$this->assertSame( 'one-perspective', $res['dropped'][0]['id'] );
+		$this->assertSame( 'entrance.base.values.perspective', $res['dropped'][0]['path'] );
+		$this->assertSame( 'Hover state and Entrance set different perspectives on this element. Give them the same perspective, or clear one.', $res['dropped'][0]['text'] );
+		$this->assertArrayNotHasKey( 'perspective', $res['element']['entrance']['base']['values'], 'the later perspective is cleared' );
+		$this->assertArrayNotHasKey( 'perspective', $res['element']['entrance']['base']['devices']['mobile'] ?? array(), 'with its device overrides' );
+		$this->assertSame( 90, $res['element']['entrance']['base']['values']['from']['rotateY'], 'the entrance itself stays' );
+
+		$out = $this->render( self::doc( $root ) );
+		$css = implode( '', $GLOBALS['sgs_collected_css'] );
+		$this->assertStringContainsString( '--sgs-persp-self:800px;', $css );
+		$this->assertStringNotContainsString( '1200px', $css );
+		$this->assertStringContainsString( 'data-sgs-me="load transform"', $out );
+
+		$same = $root;
+		$same['entrance']['base']['values']['perspective'] = 800;
+		unset( $same['entrance']['base']['devices'] );
+		$this->assertSame( array(), Sgs_Motion_Layer_Drops::resolve( Sgs_Motion_Document::sanitise( self::doc( $same ) )['elements']['root'] )['dropped'], 'negative control: the same perspective twice is one perspective' );
+	}
+
+	public function test_a_parent_perspective_is_cleared_and_the_element_uses_its_own(): void {
+		$root = array( 'hover' => array( 'state' => array( 'values' => array( 'followPointer' => true, 'perspective' => 1100, 'perspectiveOn' => 'parent' ) ) ) );
+		$res  = Sgs_Motion_Layer_Drops::resolve( Sgs_Motion_Document::sanitise( self::doc( $root ) )['elements']['root'] );
+		$this->assertSame( 'perspective-parent', $res['dropped'][0]['id'] );
+		$this->assertSame( 'Perspective on the parent is not available here; the card uses its own perspective.', $res['dropped'][0]['text'] );
+		$this->assertArrayNotHasKey( 'perspectiveOn', $res['element']['hover']['state']['values'] );
+		$this->assertSame( 1100, $res['element']['hover']['state']['values']['perspective'] );
+
+		$this->render( self::doc( $root ) );
+		$this->assertStringContainsString( '--sgs-persp-self:1100px;', implode( '', $GLOBALS['sgs_collected_css'] ), 'the perspective sits on the element itself' );
+
+		$self = $root;
+		$self['hover']['state']['values']['perspectiveOn'] = 'self';
+		$this->assertSame( array(), Sgs_Motion_Layer_Drops::resolve( Sgs_Motion_Document::sanitise( self::doc( $self ) )['elements']['root'] )['dropped'], 'negative control: self is allowed' );
 	}
 }

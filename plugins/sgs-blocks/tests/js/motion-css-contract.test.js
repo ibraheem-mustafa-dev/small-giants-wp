@@ -39,8 +39,9 @@ function channels() {
 	return SCHEMA[ 'x-sgs-channels' ];
 }
 
+/** Every registered property a channel reads: its owners' properties and its shared ones (the one perspective). */
 function ownerProperties() {
-	return channels().flatMap( ( c ) => ( c.owners || [] ).flatMap( ( o ) => o.properties || [] ) );
+	return channels().flatMap( ( c ) => [ ...( c.owners || [] ).flatMap( ( o ) => o.properties || [] ), ...( c.shared || [] ) ] );
 }
 
 /** Channels with a formula, as { channel, property, value }. */
@@ -103,7 +104,8 @@ function contractErrors( css ) {
 	root.walkRules( ( rule ) => rules.push( rule ) );
 	const entranceChannels = SCHEMA[ 'x-sgs-writes' ].entrance.channels;
 	for ( const f of formulas() ) {
-		for ( const name of channels().find( ( c ) => c.channel === f.channel ).owners.flatMap( ( o ) => ( o.properties || [] ).map( ( p ) => p.name ) ) ) {
+		const channel = channels().find( ( c ) => c.channel === f.channel );
+		for ( const name of [ ...channel.owners.flatMap( ( o ) => ( o.properties || [] ).map( ( p ) => p.name ) ), ...( channel.shared || [] ).map( ( p ) => p.name ) ] ) {
 			if ( ! f.value.includes( `var(${ name })` ) ) {
 				errors.push( `schema formula for ${ f.channel } omits owner ${ name }` );
 			}
@@ -212,13 +214,14 @@ function tokensRead( css ) {
 /**
  * Every `--sgs-mh-to-*` the renderer can emit for a hover state, derived the way the emitter names them: an owner
  * property `--sgs-mh-<x>` gives `--sgs-mh-to-<x>`, any other non-timing field gives `--sgs-mh-to-<field key>`, and
- * the rest rotate (`--sgs-rot-rest`) and the timing fields emit no to-value of their own.
+ * the resting fields (state `rest`: the rest Z, X and Y angles and the perspective, written to their own property) and
+ * the timing fields emit no to-value of their own.
  */
 function emittedHoverToValues() {
 	const out = new Set();
 	for ( const [ key, field ] of Object.entries( SCHEMA.$defs.HoverStateValues.properties ) ) {
 		const prop = field[ 'x-sgs-field' ]?.cssProperty;
-		if ( ! prop || prop.startsWith( 'transition-' ) || '--sgs-rot-rest' === prop ) {
+		if ( ! prop || prop.startsWith( 'transition-' ) || 'rest' === field[ 'x-sgs-field' ].state ) {
 			continue;
 		}
 		out.add( prop.startsWith( '--sgs-mh-' ) ? `--sgs-mh-to-${ prop.slice( '--sgs-mh-'.length ) }` : `--sgs-mh-to-${ key }` );

@@ -40,7 +40,8 @@ export function annotationKeywords( schema ) {
 
 // `x-sgs-range` {min, max, unit}: a range in the type's base unit (ms, px or deg) that also binds the string forms a
 // sibling minimum/maximum cannot see. A number is read in the base unit; a string converts by its unit; token
-// references (`token:`, `-token:`) and `calc(` strings are not range-checked (tokens are held to their §7 bands).
+// references (`token:`, `-token:`) and `calc(` strings are not range-checked (tokens are held to their §7 bands),
+// except that a range starting at zero or above refuses a negated token, which is always negative.
 // Context-relative units (em, rem, %, vh, vw, svh, dvh) have no fixed size, so a ranged field refuses them.
 export const RANGE_UNITS = { ms: { ms: 1, s: 1000 }, px: { px: 1 }, deg: { deg: 1, turn: 360, rad: 180 / Math.PI } };
 export const RELATIVE_UNITS = new Set( [ 'em', 'rem', '%', 'vh', 'vw', 'svh', 'dvh' ] );
@@ -53,6 +54,10 @@ export function rangeProblem( range, value ) {
 		amount = value;
 		raw = `${ value }${ range.unit }`;
 	} else if ( typeof value === 'string' ) {
+		// A negated token is a negative length, so a range that starts at zero or above refuses it.
+		if ( value.startsWith( '-token:' ) && typeof range.min === 'number' && range.min >= 0 ) {
+			return `must be from ${ range.min } to ${ range.max }${ range.unit } (got ${ value }, a negated token)`;
+		}
 		if ( /^-?token:/.test( value ) || value.startsWith( 'calc(' ) ) {
 			return null;
 		}

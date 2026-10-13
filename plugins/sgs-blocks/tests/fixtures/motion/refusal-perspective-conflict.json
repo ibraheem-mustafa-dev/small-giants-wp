@@ -1,0 +1,39 @@
+{
+	"description": "\u00a710 transform: one perspective per element; the hover state and the entrance declare different perspectives.",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Hover state and Entrance set different perspectives on this element. Give them the same perspective, or clear one."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"root": {
+				"hover": {
+					"state": {
+						"values": {
+							"restRotateX": 10,
+							"perspective": 800
+						}
+					}
+				},
+				"entrance": {
+					"base": {
+						"trigger": "scroll",
+						"values": {
+							"from": {
+								"rotateY": 90
+							},
+							"to": {
+								"rotateY": 0
+							},
+							"perspective": 1200
+						}
+					}
+				}
+			}
+		}
+	}
+}

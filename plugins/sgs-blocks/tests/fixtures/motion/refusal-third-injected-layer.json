@@ -1,10 +1,10 @@
 {
-	"description": "\u00a710 injected layers: tilt glare and sheen fill both layers, so a cursor field ring is a third.",
+	"description": "\u00a710 injected layers: glare and sheen fill both layers, so a cursor field ring is a third.",
 	"expect": {
 		"valid": false,
 		"errors": [],
 		"refusals": [
-			"This element already has two motion layers (Tilt glare, Sheen). Remove one to add Cursor field ring."
+			"This element already has two motion layers (Glare, Sheen). Remove one to add Cursor field ring."
 		]
 	},
 	"motion": {
@@ -15,9 +15,9 @@
 					"effects": [
 						{
 							"id": "h1",
-							"effect": "tilt",
+							"effect": "glare",
 							"values": {
-								"glare": true
+								"glareOpacity": 0.4
 							}
 						},
 						{

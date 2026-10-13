@@ -5,11 +5,14 @@
  * The PHP twin of `scripts/computed-route/lib/motion-refusals.mjs`: reads the pairwise refusal table and the limits
  * from the schema's `x-sgs-refusals` and applies them to one element's layers, returning each refusal's exact text.
  * A pair fires when one layer matches side `a` and a different layer matches side `b`; a limit counts effect slugs per
- * list, layer ids per element or paint-slot claims per element. `tests/php/run-motion-refusal-parity.php` and
+ * list, layer ids per element or paint-slot claims per element, compares one value across two layers (`same-value`,
+ * the transform channel's one perspective) or refuses one value (`refused-value`, a parent perspective).
+ * `tests/php/run-motion-refusal-parity.php` and
  * `scripts/computed-route/tests/motion-refusal-parity.test.mjs` prove both give the same refusals for the shared
  * fixtures in `tests/fixtures/motion/`.
  *
- * The renderer's drops (the later of two refused layers, the cross-element pin-scrub rule) and the injected-layer list
+ * The limits (counts and value limits) are evaluated in `class-sgs-motion-limits.php`. The renderer's drops (the
+ * later of two refused layers, the cross-element pin-scrub rule) and the injected-layer list
  * are in `class-sgs-motion-layer-drops.php`.
  *
  * Every method takes an already-sanitised element (the output of `Sgs_Motion_Document::sanitise`).
@@ -107,7 +110,7 @@ final class Sgs_Motion_Layers {
 	 * @param mixed $v Value.
 	 * @return bool
 	 */
-	private static function is_on( $v ): bool {
+	public static function is_on( $v ): bool {
 		return null !== $v && false !== $v;
 	}
 
@@ -184,6 +187,66 @@ final class Sgs_Motion_Layers {
 	}
 
 	/**
+	 * Whether a value is a zero amount (0, 0.0, `0deg`, `-0turn`).
+	 *
+	 * @param mixed $v Value.
+	 * @return bool
+	 */
+	private static function is_zero( $v ): bool {
+		if ( is_int( $v ) || is_float( $v ) ) {
+			return 0.0 === (float) $v;
+		}
+		return is_string( $v ) && 1 === preg_match( '/^-?(?:0+(?:\.0*)?|\.0+)(?:deg|turn|rad|grad|px)?$/D', $v );
+	}
+
+	/**
+	 * The side's value paths this layer sets (in values or a device override); with `nonZero`, a zero amount does
+	 * not count as set.
+	 *
+	 * @param array<string,mixed> $entry A layer entry.
+	 * @param array<string,mixed> $m     A rule side with `values`.
+	 * @return array<int,string>
+	 */
+	public static function matched_values( array $entry, array $m ): array {
+		$sources  = self::value_sources( $entry['layer'] );
+		$non_zero = ! empty( $m['nonZero'] );
+		$out      = array();
+		foreach ( $m['values'] ?? array() as $path ) {
+			foreach ( $sources as $src ) {
+				foreach ( self::values_at( $src, (string) $path ) as $v ) {
+					if ( self::is_on( $v ) && ! ( $non_zero && self::is_zero( $v ) ) ) {
+						$out[] = (string) $path;
+						continue 3;
+					}
+				}
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * The label a refusal names a layer by for one rule side: when every value the layer matched maps to one
+	 * `valueLabels` label (Follow pointer on the hover state), that label; otherwise the layer's own label.
+	 *
+	 * @param array<string,mixed> $entry A layer entry.
+	 * @param array<string,mixed> $m     A rule side.
+	 * @return string
+	 */
+	public static function side_label( array $entry, array $m ): string {
+		if ( isset( $m['values'], $m['valueLabels'] ) && is_array( $m['valueLabels'] ) ) {
+			$labels = array();
+			foreach ( self::matched_values( $entry, $m ) as $path ) {
+				$labels[] = $m['valueLabels'][ $path ] ?? null;
+			}
+			$labels = array_unique( $labels, SORT_REGULAR );
+			if ( 1 === count( $labels ) && is_string( $labels[0] ) ) {
+				return $labels[0];
+			}
+		}
+		return self::layer_label( $entry );
+	}
+
+	/**
 	 * Whether a layer entry matches one side of a rule.
 	 *
 	 * @param array<string,mixed> $entry A layer entry.
@@ -207,19 +270,8 @@ final class Sgs_Motion_Layers {
 			return false;
 		}
 		$sources = self::value_sources( $entry['layer'] );
-		if ( isset( $m['values'] ) ) {
-			$hit = false;
-			foreach ( $m['values'] as $path ) {
-				foreach ( $sources as $src ) {
-					if ( array_filter( self::values_at( $src, (string) $path ), array( self::class, 'is_on' ) ) ) {
-						$hit = true;
-						break 2;
-					}
-				}
-			}
-			if ( ! $hit ) {
-				return false;
-			}
+		if ( isset( $m['values'] ) && array() === self::matched_values( $entry, $m ) ) {
+			return false;
 		}
 		if ( isset( $m['rows'] ) && ! self::has_row( $sources, $m['rows'] ) ) {
 			return false;
@@ -285,8 +337,8 @@ final class Sgs_Motion_Layers {
 					}
 					$seen[ $key ] = true;
 					$labels       = array(
-						'a' => self::layer_label( $a ),
-						'b' => self::layer_label( $b ),
+						'a' => self::side_label( $a, $rule['a'] ),
+						'b' => self::side_label( $b, $rule['b'] ),
 					);
 					$out[]        = array(
 						'id'     => (string) $rule['id'],
@@ -297,72 +349,7 @@ final class Sgs_Motion_Layers {
 			}
 		}
 		foreach ( $table['limits'] ?? array() as $limit ) {
-			$out = array_merge( $out, self::limit_refusals( $limit, $layers ) );
-		}
-		return $out;
-	}
-
-	/**
-	 * One limit's refusals.
-	 *
-	 * @param array<string,mixed>            $limit  A limit row.
-	 * @param array<int,array<string,mixed>> $layers The element's layers.
-	 * @return array<int,array{id:string,text:string,layers:array<int,string>}>
-	 */
-	private static function limit_refusals( array $limit, array $layers ): array {
-		$out  = array();
-		$id   = (string) $limit['id'];
-		$kind = $limit['kind'] ?? '';
-		if ( 'unique-effect' === $kind ) {
-			foreach ( $limit['lists'] as $list ) {
-				$seen = array();
-				foreach ( $layers as $entry ) {
-					if ( $entry['list'] !== $list || null === $entry['effect'] ) {
-						continue;
-					}
-					if ( isset( $seen[ $entry['effect'] ] ) ) {
-						$out[] = array(
-							'id'     => $id,
-							'text'   => self::fill( (string) $limit['text'], $limit['placeholders'] ?? array(), array( 'effect' => self::layer_label( $entry ) ) ),
-							'layers' => array( $seen[ $entry['effect'] ], $entry['path'] ),
-						);
-					} else {
-						$seen[ $entry['effect'] ] = $entry['path'];
-					}
-				}
-			}
-		} elseif ( 'unique-id' === $kind ) {
-			$seen = array();
-			foreach ( $layers as $entry ) {
-				$lid = $entry['layer']['id'] ?? null;
-				if ( ! in_array( $entry['list'], $limit['lists'], true ) || ! is_string( $lid ) ) {
-					continue;
-				}
-				if ( isset( $seen[ $lid ] ) ) {
-					$out[] = array(
-						'id'     => $id,
-						'text'   => self::fill( (string) $limit['text'], $limit['placeholders'] ?? array(), array( 'id' => $lid ) ),
-						'layers' => array( $seen[ $lid ], $entry['path'] ),
-					);
-				} else {
-					$seen[ $lid ] = $entry['path'];
-				}
-			}
-		} elseif ( 'slot-max' === $kind ) {
-			$claims = self::claims_for_slot( $layers, (string) $limit['slot'] );
-			$max    = (int) $limit['max'];
-			for ( $i = $max, $n = count( $claims ); $i < $n; $i++ ) {
-				$labels = array(
-					'first'  => $claims[0]['label'],
-					'second' => $claims[1]['label'],
-					'extra'  => $claims[ $i ]['label'],
-				);
-				$out[]  = array(
-					'id'     => $id,
-					'text'   => self::fill( (string) $limit['text'], $limit['placeholders'] ?? array(), $labels ),
-					'layers' => array( $claims[0]['path'], $claims[1]['path'], $claims[ $i ]['path'] ),
-				);
-			}
+			$out = array_merge( $out, Sgs_Motion_Limits::refusals( $limit, $layers ) );
 		}
 		return $out;
 	}

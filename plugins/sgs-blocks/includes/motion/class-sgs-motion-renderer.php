@@ -4,8 +4,9 @@
  *
  * For a block whose registered type declares `supports.sgs.motion`, it:
  * 1. drops every key and value the schema does not allow (`Sgs_Motion_Document::sanitise`);
- * 2. drops the later of two refused layers per element (`Sgs_Motion_Layer_Drops::resolve`), and a tilt on a block whose
- *    parent's pin-scrub animates its children's transform (the cross-element §10 rule);
+ * 2. drops the later of two refused layers per element, or clears a refused value such as a second perspective
+ *    (`Sgs_Motion_Layer_Drops::resolve`), and an X or Y rotation owner on a block whose parent's pin-scrub animates its
+ *    children's transform (the cross-element §10 rule);
  * 3. suppresses an element's entrance when one of its effects owns the scroll range (`sgs_effect_owns_scroll_transform`,
  *    and for the root also the legacy `fx` attribute through `sgs_fx_owns_scroll_transform`);
  * 4. resolves each target to its scoped selector (`Sgs_Motion_Targets`) and emits its per-device custom properties and
@@ -236,7 +237,8 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
-	 * Remove a child's tilt layers named by a cross-element refusal.
+	 * Remove what a cross-element refusal names on a child: the matched X and Y values of a hover state or entrance (the
+	 * rest of that layer stays), or a whole matched list layer.
 	 *
 	 * @param array<string,mixed>  $element The child root element.
 	 * @param array<string,string> $refusal The refusal.
@@ -246,7 +248,14 @@ final class Sgs_Motion_Renderer {
 		$pairs = array_column( Sgs_Motion_Field_Types::schema()['x-sgs-refusals']['pairs'] ?? array(), null, 'id' );
 		$side  = $pairs[ $refusal['id'] ]['a'] ?? array();
 		foreach ( array_reverse( Sgs_Motion_Layers::element_layers( $element ) ) as $entry ) {
-			if ( Sgs_Motion_Layers::matches( $entry, $side ) ) {
+			if ( ! Sgs_Motion_Layers::matches( $entry, $side ) ) {
+				continue;
+			}
+			if ( isset( $side['values'] ) && in_array( $entry['list'], Sgs_Motion_Layers::SINGLE, true ) ) {
+				foreach ( $side['values'] as $value_path ) {
+					$element = Sgs_Motion_Layer_Drops::remove_value( $element, $entry['path'], (string) $value_path );
+				}
+			} else {
 				$element = Sgs_Motion_Layer_Drops::remove_path( $element, $entry['path'] );
 			}
 		}

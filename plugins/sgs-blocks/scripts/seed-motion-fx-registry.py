@@ -1088,10 +1088,12 @@ FX_EFFECTS: list[dict] = [
         "creates_panel": 0,
     },
     {
-        # Spec 38A FR-38A-41 (Hover, Tier V, Part). Writes --sgs-tilt-x / --sgs-tilt-y from assets/js/tilt-3d.js; the .sgs-has-tilt-3d rule in extensions.css composes the transform.
-        "effect": "tilt",
-        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
-        # (schemas/motion.schema.json::x-sgs-effects.tilt), never a `data-sgs-fx` value, so it is not in
+        # Spec 38A FR-38A-41 (Hover, Tier V, Part). Glare: a radial highlight painted in an injected layer
+        # (span.sgs-motion-layer) that reads Follow pointer's --sgs-tilt-x / --sgs-tilt-y; Follow pointer itself is a
+        # field set on the hover state, not an effect row.
+        "effect": "glare",
+        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover panel
+        # (schemas/motion.schema.json::x-sgs-effects.glare), never a `data-sgs-fx` value, so it is not in
         # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
         "in_picker": 0,
         "pins": 0,
@@ -1102,7 +1104,7 @@ FX_EFFECTS: list[dict] = [
         # 0: its contribution composes by the section 10 channel table (sum per axis or product), so it never
         # needs an entrance suppressed.
         "owns_scroll_transform": 0,
-        # Suppress: untilted is the finished state, and tilt-3d.js removes its listeners when the preference is reduce.
+        # Suppress: no highlight is the finished state, and the pointer writer stops when the preference is reduce.
         "reduced_motion": "suppress",
         "editor_story": "end-state",
         "scope": "element",
@@ -1592,6 +1594,14 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
         )
         changed += 1
         print(f"  [set]  fx_effects.{effect}: corrected {existing} -> {target}")
+    # This seeder is the table's only writer, so a row FX_EFFECTS no longer declares (a renamed or removed effect)
+    # is deleted rather than left beside its successor.
+    declared = {row["effect"] for row in FX_EFFECTS}
+    for (stale,) in cur.execute("SELECT effect FROM fx_effects").fetchall():
+        if stale not in declared:
+            cur.execute("DELETE FROM fx_effects WHERE effect = ?", (stale,))
+            changed += 1
+            print(f"  [del]  fx_effects.{stale}: not declared in FX_EFFECTS")
     return changed
 
 

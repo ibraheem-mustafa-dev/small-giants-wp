@@ -492,18 +492,17 @@
 			"devices": "#/$defs/ParallaxDeviceSet",
 			"slots": []
 		},
-		"tilt": {
-			"label": "Tilt",
+		"glare": {
+			"label": "Glare",
 			"panels": [
 				"hover"
 			],
-			"values": "#/$defs/TiltValues",
-			"devices": "#/$defs/TiltDeviceSet",
+			"values": "#/$defs/GlareValues",
+			"devices": "#/$defs/GlareDeviceSet",
 			"slots": [
 				{
 					"slot": "injected",
-					"when": "glare",
-					"label": "Tilt glare"
+					"label": "Glare"
 				}
 			]
 		},
@@ -595,6 +594,7 @@
 			"channels": [
 				"translate",
 				"rotate",
+				"transform",
 				"scale",
 				"opacity",
 				"filter",
@@ -605,6 +605,7 @@
 			"channels": [
 				"translate",
 				"rotate",
+				"transform",
 				"scale",
 				"opacity",
 				"filter",
@@ -639,9 +640,13 @@
 				"opacity"
 			]
 		},
-		"tilt": {
+		"followPointer": {
 			"channels": [
-				"transform",
+				"transform"
+			]
+		},
+		"glare": {
+			"channels": [
 				"injected"
 			]
 		},
@@ -940,26 +945,82 @@
 		},
 		{
 			"channel": "transform",
-			"composition": "single-owner",
-			"formula": "transform: perspective(var(--sgs-tilt-persp)) rotateX(var(--sgs-tilt-x)) rotateY(var(--sgs-tilt-y))",
+			"composition": "sum-per-axis",
+			"formula": "transform: perspective(var(--sgs-persp-self)) rotateX(calc(var(--sgs-rx-rest) + var(--sgs-me-rx) + var(--sgs-mh-rx) + var(--sgs-tilt-x))) rotateY(calc(var(--sgs-ry-rest) + var(--sgs-me-ry) + var(--sgs-mh-ry) + var(--sgs-tilt-y)))",
+			"shared": [
+				{
+					"name": "--sgs-persp-self",
+					"syntax": "<length> | none",
+					"initial": "none",
+					"declaredBy": [
+						"hoverState",
+						"entrance"
+					],
+					"rule": "one perspective per element: the first layer in paint order that sets it wins (x-sgs-refusals limit one-perspective); an element with an X or Y owner and no perspective set gets the default",
+					"default": "800px"
+				}
+			],
 			"owners": [
 				{
-					"owner": "tilt",
+					"owner": "entrance",
 					"properties": [
 						{
-							"name": "--sgs-tilt-persp",
-							"syntax": "<length>",
-							"initial": "800px"
+							"name": "--sgs-me-rx",
+							"syntax": "<angle>",
+							"initial": "0deg",
+							"axis": "x"
 						},
+						{
+							"name": "--sgs-me-ry",
+							"syntax": "<angle>",
+							"initial": "0deg",
+							"axis": "y"
+						}
+					]
+				},
+				{
+					"owner": "hoverState",
+					"properties": [
+						{
+							"name": "--sgs-rx-rest",
+							"syntax": "<angle>",
+							"initial": "0deg",
+							"axis": "x"
+						},
+						{
+							"name": "--sgs-ry-rest",
+							"syntax": "<angle>",
+							"initial": "0deg",
+							"axis": "y"
+						},
+						{
+							"name": "--sgs-mh-rx",
+							"syntax": "<angle>",
+							"initial": "0deg",
+							"axis": "x"
+						},
+						{
+							"name": "--sgs-mh-ry",
+							"syntax": "<angle>",
+							"initial": "0deg",
+							"axis": "y"
+						}
+					]
+				},
+				{
+					"owner": "followPointer",
+					"properties": [
 						{
 							"name": "--sgs-tilt-x",
 							"syntax": "<angle>",
-							"initial": "0deg"
+							"initial": "0deg",
+							"axis": "x"
 						},
 						{
 							"name": "--sgs-tilt-y",
 							"syntax": "<angle>",
-							"initial": "0deg"
+							"initial": "0deg",
+							"axis": "y"
 						}
 					]
 				},
@@ -1197,11 +1258,11 @@
 					]
 				},
 				{
-					"owner": "tilt",
+					"owner": "glare",
 					"properties": [],
 					"reads": [
-						"--sgs-tilt-x",
-						"--sgs-tilt-y"
+						"--sgs-glare-x",
+						"--sgs-glare-y"
 					]
 				}
 			]
@@ -1214,11 +1275,24 @@
 				"source": "§10 transform",
 				"a": {
 					"layers": [
-						"hover.effects"
+						"hover.state",
+						"entrance.base"
 					],
-					"effects": [
-						"tilt"
-					]
+					"values": [
+						"rotateX",
+						"rotateY",
+						"restRotateX",
+						"restRotateY",
+						"followPointer",
+						"from.rotateX",
+						"from.rotateY",
+						"to.rotateX",
+						"to.rotateY"
+					],
+					"nonZero": true,
+					"valueLabels": {
+						"followPointer": "Follow pointer"
+					}
 				},
 				"b": {
 					"layers": [
@@ -1234,8 +1308,9 @@
 						"rotate"
 					]
 				},
-				"text": "Tilt and <effect> both drive this element's transform. Move one of them to a different part.",
+				"text": "<owner> and <effect> both drive this element's transform. Move one of them to a different part.",
 				"placeholders": {
+					"<owner>": "a",
 					"<effect>": "b"
 				}
 			},
@@ -1244,11 +1319,24 @@
 				"source": "§10 transform",
 				"a": {
 					"layers": [
-						"hover.effects"
+						"hover.state",
+						"entrance.base"
 					],
-					"effects": [
-						"tilt"
-					]
+					"values": [
+						"rotateX",
+						"rotateY",
+						"restRotateX",
+						"restRotateY",
+						"followPointer",
+						"from.rotateX",
+						"from.rotateY",
+						"to.rotateX",
+						"to.rotateY"
+					],
+					"nonZero": true,
+					"valueLabels": {
+						"followPointer": "Follow pointer"
+					}
 				},
 				"b": {
 					"layers": [
@@ -1260,11 +1348,12 @@
 						"draggable"
 					]
 				},
-				"text": "Tilt and <effect> both drive this element's transform. Move one of them to a different part.",
+				"text": "<owner> and <effect> both drive this element's transform. Move one of them to a different part.",
 				"placeholders": {
+					"<owner>": "a",
 					"<effect>": "b"
 				},
-				"crossElement": "The spec's pin-scrub child case (a tilted element among a pin-scrub block's animated children) spans two elements, so this same-element rule cannot see it; M2.1 evaluates it across the block tree."
+				"crossElement": "The spec's pin-scrub child case (an element with an X or Y owner among a pin-scrub block's animated children) spans two elements, so this same-element rule cannot see it; the renderer evaluates it across the block tree (Sgs_Motion_Layer_Drops::cross_element_refusal)."
 			},
 			{
 				"id": "opacity-hover-tier-g",
@@ -1531,6 +1620,33 @@
 				"placeholders": {
 					"<id>": "id"
 				}
+			},
+			{
+				"id": "one-perspective",
+				"source": "§10 transform",
+				"kind": "same-value",
+				"lists": [
+					"hover.state",
+					"entrance.base"
+				],
+				"value": "perspective",
+				"text": "<a> and <b> set different perspectives on this element. Give them the same perspective, or clear one.",
+				"placeholders": {
+					"<a>": "first",
+					"<b>": "second"
+				}
+			},
+			{
+				"id": "perspective-parent",
+				"source": "§10 transform",
+				"kind": "refused-value",
+				"lists": [
+					"hover.state"
+				],
+				"value": "perspectiveOn",
+				"equals": "parent",
+				"text": "Perspective on the parent is not available here; the card uses its own perspective.",
+				"placeholders": {}
 			}
 		],
 		"notices": [
@@ -1551,9 +1667,18 @@
 			"slot": "the layer claims this paint slot (x-sgs-effects slots, a `when` slot only while that value is on)",
 			"values": "any of these value paths is set and not false in values or a device override (a dot path; a list matches any item)",
 			"rows": "values.rows holds a row whose property is one of these",
-			"triggers": "the layer's trigger is one of these"
+			"triggers": "the layer's trigger is one of these",
+			"nonZero": "with values: a value that is zero (0, 0deg, 0turn) counts as unset, so a stored zero angle owns nothing",
+			"valueLabels": "with values: when every value that matched maps to one label here, the refusal names the layer by that label (Follow pointer) instead of its layer label"
 		},
-		"textSource": "every text is quoted from Spec 38A unless its entry sets textSource to schema (a rule the spec implies but does not word)"
+		"textSource": "every text is quoted from Spec 38A unless its entry sets textSource to schema (a rule the spec implies but does not word)",
+		"limitKinds": {
+			"unique-effect": "an effect slug appears twice in one list; the later layer is dropped",
+			"unique-id": "two layers on the element share an id; the later layer is dropped",
+			"slot-max": "more layers claim the slot than max; every layer past max is dropped",
+			"same-value": "two layers in lists set value differently on one device tier, comparing each tier's effective value (a Tablet or Mobile override, else the wider tier's) after normalising lengths (800, \"800px\" and 800.0 are equal); the renderer clears the later layer's value, so the first layer's wins",
+			"refused-value": "a layer in lists sets value to equals (in values or a device override); the renderer clears that value"
+		}
 	},
 	"$defs": {
 		"tokenReference": {
@@ -2047,6 +2172,140 @@
 						"perDevice": true
 					}
 				},
+				"rotateX": {
+					"$ref": "#/$defs/angle",
+					"description": "The hover X angle; the renderer stores it minus the rest X angle.",
+					"x-sgs-field": {
+						"fieldType": "angle",
+						"cssProperty": "--sgs-mh-rx",
+						"state": "hover",
+						"perDevice": true
+					}
+				},
+				"rotateY": {
+					"$ref": "#/$defs/angle",
+					"description": "The hover Y angle; the renderer stores it minus the rest Y angle.",
+					"x-sgs-field": {
+						"fieldType": "angle",
+						"cssProperty": "--sgs-mh-ry",
+						"state": "hover",
+						"perDevice": true
+					}
+				},
+				"restRotateX": {
+					"$ref": "#/$defs/angle",
+					"description": "The resting X angle, a styling value.",
+					"x-sgs-field": {
+						"fieldType": "angle",
+						"cssProperty": "--sgs-rx-rest",
+						"state": "rest",
+						"perDevice": true
+					}
+				},
+				"restRotateY": {
+					"$ref": "#/$defs/angle",
+					"description": "The resting Y angle, a styling value.",
+					"x-sgs-field": {
+						"fieldType": "angle",
+						"cssProperty": "--sgs-ry-rest",
+						"state": "rest",
+						"perDevice": true
+					}
+				},
+				"perspective": {
+					"$ref": "#/$defs/distance",
+					"description": "The element's one perspective (Spec 38A §10): the first layer in paint order that sets it wins, and a second layer setting a different value is refused.",
+					"minimum": 100,
+					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 100,
+						"max": 5000,
+						"unit": "px"
+					},
+					"x-sgs-field": {
+						"fieldType": "distance",
+						"cssProperty": "--sgs-persp-self",
+						"state": "rest",
+						"perDevice": true
+					}
+				},
+				"perspectiveOn": {
+					"$ref": "#/$defs/choice",
+					"description": "Where the perspective sits. Parent is refused until a real-Safari check (Spec 38A §10), so the element uses its own.",
+					"enum": [
+						"self",
+						"parent"
+					],
+					"x-sgs-field": {
+						"fieldType": "choice",
+						"cssProperty": null,
+						"state": "rest",
+						"perDevice": false
+					}
+				},
+				"followPointer": {
+					"$ref": "#/$defs/boolean",
+					"description": "Follow pointer (FR-38A-41): the pointer writer sets --sgs-tilt-x and --sgs-tilt-y within maxAngle.",
+					"x-sgs-field": {
+						"fieldType": "boolean",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false
+					}
+				},
+				"maxAngle": {
+					"$ref": "#/$defs/angle",
+					"description": "Follow pointer's largest X or Y angle.",
+					"minimum": 0,
+					"maximum": 45,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 45,
+						"unit": "deg"
+					},
+					"x-sgs-field": {
+						"fieldType": "angle",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": true,
+						"intensity": true
+					}
+				},
+				"axisLock": {
+					"$ref": "#/$defs/choice",
+					"description": "Follow pointer's axis lock.",
+					"enum": [
+						"none",
+						"x",
+						"y"
+					],
+					"x-sgs-field": {
+						"fieldType": "choice",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false
+					}
+				},
+				"resetDuration": {
+					"$ref": "#/$defs/duration",
+					"description": "How long Follow pointer's angles take to settle.",
+					"x-sgs-field": {
+						"fieldType": "duration",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": true
+					}
+				},
+				"resetEasing": {
+					"$ref": "#/$defs/easing",
+					"description": "Follow pointer's settle easing.",
+					"x-sgs-field": {
+						"fieldType": "easing",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false
+					}
+				},
 				"opacity": {
 					"$ref": "#/$defs/opacity",
 					"x-sgs-field": {
@@ -2157,6 +2416,48 @@
 					"$ref": "#/$defs/angle",
 					"description": "The resting angle, a styling value (FR-38A-42)."
 				},
+				"rotateX": {
+					"$ref": "#/$defs/angle",
+					"description": "The hover X angle; the renderer stores it minus the rest X angle."
+				},
+				"rotateY": {
+					"$ref": "#/$defs/angle",
+					"description": "The hover Y angle; the renderer stores it minus the rest Y angle."
+				},
+				"restRotateX": {
+					"$ref": "#/$defs/angle",
+					"description": "The resting X angle, a styling value."
+				},
+				"restRotateY": {
+					"$ref": "#/$defs/angle",
+					"description": "The resting Y angle, a styling value."
+				},
+				"perspective": {
+					"$ref": "#/$defs/distance",
+					"description": "The element's one perspective (Spec 38A §10): the first layer in paint order that sets it wins, and a second layer setting a different value is refused.",
+					"minimum": 100,
+					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 100,
+						"max": 5000,
+						"unit": "px"
+					}
+				},
+				"maxAngle": {
+					"$ref": "#/$defs/angle",
+					"description": "Follow pointer's largest X or Y angle.",
+					"minimum": 0,
+					"maximum": 45,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 45,
+						"unit": "deg"
+					}
+				},
+				"resetDuration": {
+					"$ref": "#/$defs/duration",
+					"description": "How long Follow pointer's angles take to settle."
+				},
 				"opacity": {
 					"$ref": "#/$defs/opacity"
 				},
@@ -2258,6 +2559,24 @@
 						"perDevice": true
 					}
 				},
+				"rotateX": {
+					"$ref": "#/$defs/angle",
+					"x-sgs-field": {
+						"fieldType": "angle",
+						"cssProperty": "--sgs-me-rx",
+						"state": "from",
+						"perDevice": true
+					}
+				},
+				"rotateY": {
+					"$ref": "#/$defs/angle",
+					"x-sgs-field": {
+						"fieldType": "angle",
+						"cssProperty": "--sgs-me-ry",
+						"state": "from",
+						"perDevice": true
+					}
+				},
 				"blur": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
@@ -2336,6 +2655,24 @@
 					"x-sgs-field": {
 						"fieldType": "angle",
 						"cssProperty": "--sgs-me-rot",
+						"state": "in-view",
+						"perDevice": true
+					}
+				},
+				"rotateX": {
+					"$ref": "#/$defs/angle",
+					"x-sgs-field": {
+						"fieldType": "angle",
+						"cssProperty": "--sgs-me-rx",
+						"state": "in-view",
+						"perDevice": true
+					}
+				},
+				"rotateY": {
+					"$ref": "#/$defs/angle",
+					"x-sgs-field": {
+						"fieldType": "angle",
+						"cssProperty": "--sgs-me-ry",
 						"state": "in-view",
 						"perDevice": true
 					}
@@ -2620,6 +2957,23 @@
 						"state": "from",
 						"perDevice": false
 					}
+				},
+				"perspective": {
+					"$ref": "#/$defs/distance",
+					"description": "The element's one perspective (Spec 38A §10): the first layer in paint order that sets it wins, and a second layer setting a different value is refused.",
+					"minimum": 100,
+					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 100,
+						"max": 5000,
+						"unit": "px"
+					},
+					"x-sgs-field": {
+						"fieldType": "distance",
+						"cssProperty": "--sgs-persp-self",
+						"state": "from",
+						"perDevice": true
+					}
 				}
 			},
 			"additionalProperties": false
@@ -2744,6 +3098,12 @@
 				"rotate": {
 					"$ref": "#/$defs/angle"
 				},
+				"rotateX": {
+					"$ref": "#/$defs/angle"
+				},
+				"rotateY": {
+					"$ref": "#/$defs/angle"
+				},
 				"blur": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
@@ -2783,6 +3143,12 @@
 					"maximum": 4
 				},
 				"rotate": {
+					"$ref": "#/$defs/angle"
+				},
+				"rotateX": {
+					"$ref": "#/$defs/angle"
+				},
+				"rotateY": {
 					"$ref": "#/$defs/angle"
 				},
 				"blur": {
@@ -2830,6 +3196,17 @@
 					"description": "The start line, as a percentage of the viewport height above its bottom edge.",
 					"minimum": 0,
 					"maximum": 100
+				},
+				"perspective": {
+					"$ref": "#/$defs/distance",
+					"description": "The element's one perspective (Spec 38A §10): the first layer in paint order that sets it wins, and a second layer setting a different value is refused.",
+					"minimum": 100,
+					"maximum": 5000,
+					"x-sgs-range": {
+						"min": 100,
+						"max": 5000,
+						"unit": "px"
+					}
 				},
 				"close": {
 					"$ref": "#/$defs/EntranceCloseDevice"
@@ -6060,81 +6437,13 @@
 			},
 			"additionalProperties": false
 		},
-		"TiltValues": {
+		"GlareValues": {
 			"type": "object",
 			"x-sgs-kind": "values",
 			"x-sgs-panel": "hover",
-			"x-sgs-effect": "tilt",
+			"x-sgs-effect": "glare",
+			"description": "Glare: a radial highlight in an injected layer that reads Follow pointer's --sgs-tilt-x and --sgs-tilt-y.",
 			"properties": {
-				"maxAngle": {
-					"$ref": "#/$defs/angle",
-					"minimum": 0,
-					"maximum": 45,
-					"x-sgs-range": {
-						"min": 0,
-						"max": 45,
-						"unit": "deg"
-					},
-					"x-sgs-field": {
-						"fieldType": "angle",
-						"cssProperty": null,
-						"state": "active",
-						"perDevice": true,
-						"intensity": true
-					}
-				},
-				"perspective": {
-					"$ref": "#/$defs/distance",
-					"minimum": 100,
-					"maximum": 5000,
-					"x-sgs-range": {
-						"min": 100,
-						"max": 5000,
-						"unit": "px"
-					},
-					"x-sgs-field": {
-						"fieldType": "distance",
-						"cssProperty": "--sgs-tilt-persp",
-						"state": "active",
-						"perDevice": true
-					}
-				},
-				"perspectiveOn": {
-					"$ref": "#/$defs/choice",
-					"enum": [
-						"self",
-						"parent"
-					],
-					"x-sgs-field": {
-						"fieldType": "choice",
-						"cssProperty": null,
-						"state": "active",
-						"perDevice": false
-					}
-				},
-				"axisLock": {
-					"$ref": "#/$defs/choice",
-					"enum": [
-						"none",
-						"x",
-						"y"
-					],
-					"x-sgs-field": {
-						"fieldType": "choice",
-						"cssProperty": null,
-						"state": "active",
-						"perDevice": false
-					}
-				},
-				"glare": {
-					"$ref": "#/$defs/boolean",
-					"x-sgs-field": {
-						"fieldType": "boolean",
-						"cssProperty": null,
-						"state": "active",
-						"perDevice": false
-					}
-				},
 				"glareColour": {
 					"$ref": "#/$defs/colourReference",
 					"x-sgs-field": {
@@ -6163,54 +6472,16 @@
 						"state": "active",
 						"perDevice": true
 					}
-				},
-				"resetDuration": {
-					"$ref": "#/$defs/duration",
-					"x-sgs-field": {
-						"fieldType": "duration",
-						"cssProperty": null,
-						"state": "active",
-						"perDevice": true
-					}
-				},
-				"resetEasing": {
-					"$ref": "#/$defs/easing",
-					"x-sgs-field": {
-						"fieldType": "easing",
-						"cssProperty": null,
-						"state": "active",
-						"perDevice": false
-					}
 				}
 			},
 			"additionalProperties": false
 		},
-		"TiltValuesDevice": {
+		"GlareValuesDevice": {
 			"type": "object",
 			"x-sgs-kind": "devices",
-			"x-sgs-overrides": "TiltValues",
-			"description": "Tablet or Mobile overrides of TiltValues: only its per-device fields, all optional.",
+			"x-sgs-overrides": "GlareValues",
+			"description": "Tablet or Mobile overrides of GlareValues: only its per-device fields, all optional.",
 			"properties": {
-				"maxAngle": {
-					"$ref": "#/$defs/angle",
-					"minimum": 0,
-					"maximum": 45,
-					"x-sgs-range": {
-						"min": 0,
-						"max": 45,
-						"unit": "deg"
-					}
-				},
-				"perspective": {
-					"$ref": "#/$defs/distance",
-					"minimum": 100,
-					"maximum": 5000,
-					"x-sgs-range": {
-						"min": 100,
-						"max": 5000,
-						"unit": "px"
-					}
-				},
 				"glareOpacity": {
 					"$ref": "#/$defs/opacity"
 				},
@@ -6218,23 +6489,20 @@
 					"$ref": "#/$defs/percentage",
 					"minimum": 0,
 					"maximum": 200
-				},
-				"resetDuration": {
-					"$ref": "#/$defs/duration"
 				}
 			},
 			"additionalProperties": false
 		},
-		"TiltDeviceSet": {
+		"GlareDeviceSet": {
 			"type": "object",
 			"x-sgs-kind": "node",
 			"description": "Per-device overrides: Tablet applies at 1023px and below, Mobile at 767px and below; a blank tier inherits the wider one.",
 			"properties": {
 				"tablet": {
-					"$ref": "#/$defs/TiltValuesDevice"
+					"$ref": "#/$defs/GlareValuesDevice"
 				},
 				"mobile": {
-					"$ref": "#/$defs/TiltValuesDevice"
+					"$ref": "#/$defs/GlareValuesDevice"
 				}
 			},
 			"additionalProperties": false
@@ -7214,7 +7482,7 @@
 				"effect": {
 					"$ref": "#/$defs/choice",
 					"enum": [
-						"tilt",
+						"glare",
 						"magnet",
 						"sheen"
 					]
@@ -7257,7 +7525,7 @@
 					"if": {
 						"properties": {
 							"effect": {
-								"const": "tilt"
+								"const": "glare"
 							}
 						},
 						"required": [
@@ -7267,10 +7535,10 @@
 					"then": {
 						"properties": {
 							"values": {
-								"$ref": "#/$defs/TiltValues"
+								"$ref": "#/$defs/GlareValues"
 							},
 							"devices": {
-								"$ref": "#/$defs/TiltDeviceSet"
+								"$ref": "#/$defs/GlareDeviceSet"
 							}
 						}
 					}

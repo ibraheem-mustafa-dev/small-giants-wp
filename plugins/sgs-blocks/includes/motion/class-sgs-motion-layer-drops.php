@@ -4,10 +4,12 @@
  *
  * The renderer drops the later of two refused layers (paint order: hover.state, hover.effects, entrance.base,
  * entrance.text, effects) until no refusal from `Sgs_Motion_Layers::element_refusals()` remains, then appends one
- * `span.sgs-motion-layer` per injected-slot claim (at most the limit's maximum, two). The cross-element case (a tilted
- * block among a pin-scrub block's animated children, §10 transform) spans two blocks, so it is evaluated over a parent
+ * `span.sgs-motion-layer` per injected-slot claim (at most the limit's maximum, two). A value limit (`same-value`,
+ * `refused-value`) clears only the refused value from the later layer, so a second perspective yields to the first
+ * and a parent perspective falls back to the element's own. The cross-element case (a block with an X or Y rotation
+ * owner among a pin-scrub block's animated children, §10 transform) spans two blocks, so it is evaluated over a parent
  * element and a child element (`cross_element_refusal`) with the transform rows and the text of the schema's
- * same-element tilt rules.
+ * same-element transform-axis rules.
  *
  * @package SGS\Blocks
  */
@@ -21,11 +23,14 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Sgs_Motion_Layer_Drops {
 
-	/** The pair rule whose transform rows a pin-scrub parent shares with a tilted child. */
-	const CROSS_ROWS_RULE = 'transform-tilt-tier-g-scrub';
+	/** The transform-axis pair rule whose scrub rows a pin-scrub parent shares with a child that has an X or Y owner. */
+	const TRANSFORM_AXIS_SCRUB_RULE = 'transform-tilt-tier-g-scrub';
 
-	/** The pair rule whose text the cross-element case returns. */
-	const CROSS_TEXT_RULE = 'transform-tilt-tier-g';
+	/** The transform-axis pair rule whose side `a` and text the cross-element case uses. */
+	const TRANSFORM_AXIS_TIER_G_RULE = 'transform-tilt-tier-g';
+
+	/** Limit kinds that clear one value from the later layer instead of dropping the layer. */
+	const VALUE_KINDS = array( 'same-value', 'refused-value' );
 
 	/**
 	 * Drop the later of each refused pair (and every layer past a limit) until the element has no refusal.
@@ -42,17 +47,78 @@ final class Sgs_Motion_Layer_Drops {
 			}
 			$first     = $refusals[0];
 			$later     = self::later_path( $first['layers'] );
+			$value     = self::value_limit( $first['id'] );
 			$dropped[] = array(
-				'path' => $later,
+				'path' => null === $value ? $later : $later . '.values.' . $value,
 				'id'   => $first['id'],
 				'text' => $first['text'],
 			);
-			$element   = self::remove_path( $element, $later );
+			$element   = null === $value ? self::remove_path( $element, $later ) : self::remove_value( $element, $later, $value );
 		}
 		return array(
 			'element' => $element,
 			'dropped' => $dropped,
 		);
+	}
+
+	/**
+	 * The value a refusal id clears when it is a value limit; null for a layer drop.
+	 *
+	 * @param string $id Refusal id.
+	 * @return string|null
+	 */
+	private static function value_limit( string $id ): ?string {
+		foreach ( Sgs_Motion_Layers::schema()['x-sgs-refusals']['limits'] ?? array() as $limit ) {
+			if ( ( $limit['id'] ?? '' ) === $id && in_array( $limit['kind'] ?? '', self::VALUE_KINDS, true ) ) {
+				return (string) $limit['value'];
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * The element with one value (a dot path such as `perspective` or `from.rotateX`) cleared from a single layer's
+	 * values and device overrides.
+	 *
+	 * @param array<string,mixed> $element    An element.
+	 * @param string              $path       A single-layer path (`hover.state`, `entrance.base`).
+	 * @param string              $value_path The value's dot path inside `values`.
+	 * @return array<string,mixed>
+	 */
+	public static function remove_value( array $element, string $path, string $value_path ): array {
+		$keys = explode( '.', $path );
+		if ( 2 !== count( $keys ) || ! isset( $element[ $keys[0] ][ $keys[1] ] ) || ! is_array( $element[ $keys[0] ][ $keys[1] ] ) ) {
+			return self::remove_path( $element, $path );
+		}
+		$layer = $element[ $keys[0] ][ $keys[1] ];
+		$parts = explode( '.', $value_path );
+		if ( isset( $layer['values'] ) && is_array( $layer['values'] ) ) {
+			$layer['values'] = self::unset_in( $layer['values'], $parts );
+		}
+		foreach ( array( 'tablet', 'mobile' ) as $device ) {
+			if ( isset( $layer['devices'][ $device ] ) && is_array( $layer['devices'][ $device ] ) ) {
+				$layer['devices'][ $device ] = self::unset_in( $layer['devices'][ $device ], $parts );
+			}
+		}
+		$element[ $keys[0] ][ $keys[1] ] = $layer;
+		return $element;
+	}
+
+	/**
+	 * An array without the value at a key path.
+	 *
+	 * @param array<string,mixed> $node  The array.
+	 * @param array<int,string>   $parts Key path.
+	 * @return array<string,mixed>
+	 */
+	private static function unset_in( array $node, array $parts ): array {
+		$key = array_shift( $parts );
+		if ( array() === $parts ) {
+			unset( $node[ $key ] );
+		} elseif ( isset( $node[ $key ] ) && is_array( $node[ $key ] ) ) {
+			$node[ $key ] = self::unset_in( $node[ $key ], $parts );
+		}
+		return $node;
 	}
 
 	/**
@@ -145,8 +211,8 @@ final class Sgs_Motion_Layer_Drops {
 	}
 
 	/**
-	 * The cross-element transform refusal: a child element with tilt under a parent element whose pin-scrub animates
-	 * the transform rows of its children.
+	 * The cross-element transform refusal: a child element with an X or Y rotation owner under a parent element whose
+	 * pin-scrub animates the transform rows of its children.
 	 *
 	 * @param array<string,mixed> $parent_element A sanitised parent element.
 	 * @param array<string,mixed> $child_element  A sanitised child-root element.
@@ -154,8 +220,8 @@ final class Sgs_Motion_Layer_Drops {
 	 */
 	public static function cross_element_refusal( array $parent_element, array $child_element ): ?array {
 		$pairs = array_column( Sgs_Motion_Layers::schema()['x-sgs-refusals']['pairs'] ?? array(), null, 'id' );
-		$rows  = $pairs[ self::CROSS_ROWS_RULE ]['b']['rows'] ?? array();
-		$rule  = $pairs[ self::CROSS_TEXT_RULE ] ?? null;
+		$rows  = $pairs[ self::TRANSFORM_AXIS_SCRUB_RULE ]['b']['rows'] ?? array();
+		$rule  = $pairs[ self::TRANSFORM_AXIS_TIER_G_RULE ] ?? null;
 		if ( ! is_array( $rule ) || array() === $rows ) {
 			return null;
 		}
@@ -171,9 +237,13 @@ final class Sgs_Motion_Layer_Drops {
 		}
 		foreach ( Sgs_Motion_Layers::element_layers( $child_element ) as $entry ) {
 			if ( Sgs_Motion_Layers::matches( $entry, $rule['a'] ) ) {
+				$labels = array(
+					'a' => Sgs_Motion_Layers::side_label( $entry, $rule['a'] ),
+					'b' => Sgs_Motion_Layers::layer_label( $pin ),
+				);
 				return array(
 					'id'   => (string) $rule['id'],
-					'text' => Sgs_Motion_Layers::fill( (string) $rule['text'], $rule['placeholders'] ?? array(), array( 'b' => Sgs_Motion_Layers::layer_label( $pin ) ) ),
+					'text' => Sgs_Motion_Layers::fill( (string) $rule['text'], $rule['placeholders'] ?? array(), $labels ),
 				);
 			}
 		}

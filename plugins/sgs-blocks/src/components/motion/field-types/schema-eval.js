@@ -84,6 +84,15 @@ function rangeFailure( range, value ) {
 	if ( ! isJsonObject( range ) ) {
 		return 'unsupported:' + RANGE_KEY;
 	}
+	// A negated token is a negative length, so a range that starts at zero or above refuses it.
+	if (
+		typeof value === 'string' &&
+		value.startsWith( '-token:' ) &&
+		isJsonNumber( range.min ) &&
+		range.min >= 0
+	) {
+		return RANGE_KEY;
+	}
 	const amount = toBaseUnit(
 		value,
 		typeof range.unit === 'string' ? range.unit : ''

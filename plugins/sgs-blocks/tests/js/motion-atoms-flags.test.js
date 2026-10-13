@@ -13,7 +13,7 @@ const h = React.createElement;
 const { registerBlockType } = require( '@wordpress/blocks' );
 const { BooleanAtom, PartReferenceAtom, PerDeviceAtom, ATOM_FOR_FIELD_TYPE } = require( '../../src/components/motion' );
 
-const GLARE = DEFS.TiltValues.properties.glare;
+const FOLLOW_POINTER = DEFS.HoverStateValues.properties.followPointer;
 const MOVING_PART = DEFS.MagnetValues.properties.movingPart;
 const ELEMENTS = {
 	title: { label: 'Title', order: 2 },
@@ -58,22 +58,22 @@ function mount( Atom, props, initial ) {
 
 describe( 'BooleanAtom', () => {
 	it( 'renders off for an unset field and writes true then false', () => {
-		const emitted = mount( BooleanAtom, { label: 'Glare', fieldNode: GLARE }, undefined );
-		expect( field( 'input', 'Glare' ).checked ).toBe( false );
-		click( field( 'input', 'Glare' ) );
-		expect( field( 'input', 'Glare' ).checked ).toBe( true );
-		click( field( 'input', 'Glare' ) );
+		const emitted = mount( BooleanAtom, { label: 'Follow pointer', fieldNode: FOLLOW_POINTER }, undefined );
+		expect( field( 'input', 'Follow pointer' ).checked ).toBe( false );
+		click( field( 'input', 'Follow pointer' ) );
+		expect( field( 'input', 'Follow pointer' ).checked ).toBe( true );
+		click( field( 'input', 'Follow pointer' ) );
 		expect( emitted ).toEqual( [ true, false ] );
-		allValid( 'boolean', emitted, GLARE );
+		allValid( 'boolean', emitted, FOLLOW_POINTER );
 	} );
 
 	it( 'shows the stored value', () => {
-		mount( BooleanAtom, { label: 'Glare', fieldNode: GLARE }, true );
-		expect( field( 'input', 'Glare' ).checked ).toBe( true );
+		mount( BooleanAtom, { label: 'Follow pointer', fieldNode: FOLLOW_POINTER }, true );
+		expect( field( 'input', 'Follow pointer' ).checked ).toBe( true );
 	} );
 
 	it( 'shows Customised when it differs from the preset, and Reset restores the preset', () => {
-		const emitted = mount( BooleanAtom, { label: 'Glare', presetValue: true }, false );
+		const emitted = mount( BooleanAtom, { label: 'Follow pointer', presetValue: true }, false );
 		expect( container.textContent ).toContain( 'Customised' );
 		click( [ ...container.querySelectorAll( 'button' ) ].find( ( b ) => b.textContent === 'Reset' ) );
 		expect( emitted ).toEqual( [ true ] );
@@ -85,20 +85,20 @@ describe( 'BooleanAtom', () => {
 		act( () =>
 			root.render(
 				h( PerDeviceAtom, {
-					label: 'Glare',
-					fieldKey: 'glare',
+					label: 'Follow pointer',
+					fieldKey: 'followPointer',
 					type: 'boolean',
-					fieldNode: GLARE,
-					values: { glare: false },
+					fieldNode: FOLLOW_POINTER,
+					values: { followPointer: false },
 					devices: undefined,
 					onChange: ( next ) => writes.push( next ),
 					children: ( { value, onChange } ) =>
-						h( BooleanAtom, { label: 'Glare value', value, onChange, fieldNode: GLARE } ),
+						h( BooleanAtom, { label: 'Follow pointer value', value, onChange, fieldNode: FOLLOW_POINTER } ),
 				} )
 			)
 		);
-		click( field( 'input', 'Glare value' ) );
-		expect( writes ).toEqual( [ { values: { glare: true }, devices: {} } ] );
+		click( field( 'input', 'Follow pointer value' ) );
+		expect( writes ).toEqual( [ { values: { followPointer: true }, devices: {} } ] );
 	} );
 } );
 

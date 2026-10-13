@@ -1,10 +1,10 @@
 {
-	"description": "\u00a710 transform: tilt with a flip on the same element.",
+	"description": "\u00a710 transform: Follow pointer (an X and Y owner on the hover state) with a flip on the same element.",
 	"expect": {
 		"valid": false,
 		"errors": [],
 		"refusals": [
-			"Tilt and Flip both drive this element's transform. Move one of them to a different part."
+			"Follow pointer and Flip both drive this element's transform. Move one of them to a different part."
 		]
 	},
 	"motion": {
@@ -12,15 +12,12 @@
 		"elements": {
 			"root": {
 				"hover": {
-					"effects": [
-						{
-							"id": "h1",
-							"effect": "tilt",
-							"values": {
-								"maxAngle": 8
-							}
+					"state": {
+						"values": {
+							"followPointer": true,
+							"maxAngle": 8
 						}
-					]
+					}
 				},
 				"effects": [
 					{

@@ -351,6 +351,10 @@ final class Sgs_Motion_Schema_Eval {
 		if ( ! self::is_object( $range ) ) {
 			return 'unsupported:' . self::RANGE_KEY;
 		}
+		// A negated token is a negative length, so a range that starts at zero or above refuses it.
+		if ( is_string( $value ) && 0 === strpos( $value, '-token:' ) && isset( $range['min'] ) && self::is_number( $range['min'] ) && $range['min'] >= 0 ) {
+			return self::RANGE_KEY;
+		}
 		$amount = self::to_base_unit( $value, isset( $range['unit'] ) && is_string( $range['unit'] ) ? $range['unit'] : '' );
 		if ( null === $amount ) {
 			return null;

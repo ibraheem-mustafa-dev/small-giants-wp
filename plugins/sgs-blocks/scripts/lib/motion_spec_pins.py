@@ -6,9 +6,10 @@ with its rule name so the checker's self-test can tell which rule caught a plant
 * ``spec-refusals``  every refusal, limit and notice text appears word for word in the spec, unless its entry sets
                      ``textSource: schema`` (listed as a note)
 * ``spec-bands``     every §7 token band equals the band its §7 table row states
-* ``spec-channels``  every §10 channel's owner custom properties equal the names its table row lists, each composed
-                     channel's owner properties start at the identity value (0px, 0deg, or 1 for a product; 0 for
-                     grayscale and 1 for brightness inside the filter list), and every syntax is one §10 names
+* ``spec-channels``  every §10 channel's owner and shared custom properties equal the names its table row lists,
+                     each composed channel's owner properties start at the identity value (0px, 0deg, or 1 for a
+                     product; 0 for grayscale and 1 for brightness inside the filter list), and every syntax is one §10
+                     names (a `<length> | none` syntax is checked by its `<length>` part)
 * ``spec-limits``    the injected-layer cap equals the §10 row's "at most N"
 * ``spec-triggers``  each layer's trigger enum equals the §6.2 shape's trigger list for that layer
 """
@@ -136,11 +137,15 @@ def check_channels(schema: dict, text: str) -> list[str]:
     for ch in schema.get("x-sgs-channels") or []:
         key = ch.get("channel")
         props = [p for o in ch.get("owners") or [] for p in o.get("properties") or []]
-        names = {p.get("name") for p in props} | {r for o in ch.get("owners") or [] for r in o.get("reads") or []}
+        shared = ch.get("shared") or []
+        names = {p.get("name") for p in props + shared} | {r for o in ch.get("owners") or [] for r in o.get("reads") or []}
         if key not in spec_rows:
             errors.append(f"spec-channels: channel {key} has no row in the §10 table")
         elif names != spec_rows[key]:
             errors.append(f"spec-channels: {key} owners write {sorted(names)}, §10 lists {sorted(spec_rows[key])}")
+        for p in shared:
+            if syntaxes and (p.get("syntax") or "").split(" | ")[0] not in syntaxes:
+                errors.append(f"spec-channels: {p.get('name')} syntax {p.get('syntax')} is not one §10 names {sorted(syntaxes)}")
         for p in props:
             if syntaxes and p.get("syntax") not in syntaxes:
                 errors.append(f"spec-channels: {p.get('name')} syntax {p.get('syntax')} is not one §10 names {sorted(syntaxes)}")
