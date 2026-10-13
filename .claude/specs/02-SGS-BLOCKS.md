@@ -888,6 +888,10 @@ All animations check `prefers-reduced-motion: reduce`:
 }
 ```
 
+### Auto-moving content: the shared pause control (WCAG 2.2.2)
+
+Content that moves on its own for more than five seconds beside other content (a marquee, an autoplaying carousel, rotating messages) gets ONE pause mechanism: `includes/helpers-motion-pause.php::sgs_motion_pause_button( block, label, placement )` prints a real `<button>` (one translated name, `aria-pressed` true while paused, 44px target, visible focus, `hidden` until the motion runs; look in `assets/css/motion-pause.css` at zero specificity so the block's own controls paint it), and `src/shared/motion-pause/index.js::initMotionPause( root, { onChange, hover, touch } )` makes the button a persistent toggle and pauses while the region is hovered, pressed or holds keyboard focus, each independently. Pausing only on hover or focus is not a pause mechanism (W3C Understanding 2.2.2). The button shows by default whenever the motion is on; under `prefers-reduced-motion` the motion does not start and the button stays hidden. Blocks: `sgs/trust-bar`, `sgs/brand-strip`, `sgs/testimonial-slider`, `sgs/gallery` (carousel autoplay). Gate: `plugins/sgs-blocks/scripts/check-motion-pause-control.py --check` (fast tier) fails a block whose view runs `setInterval`, whose stylesheet runs an infinite animation or whose render autoplays a `<video>` without both halves, and a hand-rolled pause button; exempt signals carry a reason in the script (loading shimmers; decorative ambient loops awaiting Bean's ruling under Spec 38A FR-38A-37).
+
 ### Visibility Extension
 
 All blocks can be conditionally shown or hidden per device tier through three independent booleans: `sgsHideOnMobile`, `sgsHideOnTablet`, `sgsHideOnDesktop` (`plugins/sgs-blocks/src/blocks/extensions/responsive-visibility.js`; the device-visibility CSS is `plugins/sgs-blocks/includes/device-visibility.php`).

@@ -167,6 +167,50 @@ final class MotionPauseRenderTest extends TestCase {
 		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/testimonial-slider', array( 'autoplay' => true ), $this->testimonials( 1 ) ) ) );
 	}
 
+	/** @return array<int, array<string, string>> */
+	private function gallery_items(): array {
+		return array(
+			array(
+				'url' => 'https://example.test/a.jpg',
+				'alt' => 'A',
+			),
+			array(
+				'url' => 'https://example.test/b.jpg',
+				'alt' => 'B',
+			),
+		);
+	}
+
+	public function test_gallery_carousel_prints_the_button_when_autoplay_is_on(): void {
+		$html = $this->html(
+			'sgs/gallery',
+			array(
+				'layout'           => 'carousel',
+				'carouselAutoplay' => true,
+				'mediaItems'       => $this->gallery_items(),
+			)
+		);
+		$this->assert_button( $html, 'sgs-gallery', 'Pause slideshow' );
+	}
+
+	public function test_gallery_prints_no_button_without_autoplay_or_outside_the_carousel(): void {
+		$items = $this->gallery_items();
+		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/gallery', array( 'layout' => 'carousel', 'mediaItems' => $items ) ) ) );
+		$this->assertSame(
+			'',
+			$this->pause_button(
+				$this->html(
+					'sgs/gallery',
+					array(
+						'layout'           => 'grid',
+						'carouselAutoplay' => true,
+						'mediaItems'       => $items,
+					)
+				)
+			)
+		);
+	}
+
 	public function test_trust_bar_prints_no_button_when_nothing_scrolls_or_it_is_switched_off(): void {
 		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/trust-bar', array( 'items' => $this->trust_items() ) ) ) );
 		$this->assertSame(

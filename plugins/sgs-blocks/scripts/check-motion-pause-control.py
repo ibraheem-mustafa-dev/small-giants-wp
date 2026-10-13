@@ -88,7 +88,6 @@ SIGNALS = (
 # Blocks that have not adopted the shared control yet. The list only shrinks: a block leaves it in
 # the commit that adopts the control, and a listed block that no longer needs it fails --check.
 PENDING: frozenset[str] = frozenset({
-    "gallery",
     "google-reviews",
     "notice-banner",
     "post-grid",
@@ -98,7 +97,12 @@ PENDING: frozenset[str] = frozenset({
 RENDER_CALL = re.compile(r"\bsgs_motion_pause_button\s*\(")
 VIEW_CALL = re.compile(r"\binitMotionPause\s*\(")
 RENDER_HANDROLLED = re.compile(r"class=\\?[\"'][^\"']*__pause\b")
-VIEW_BUTTON = re.compile(r"createElement\s*\(\s*['\"]button['\"]\s*\)")
+# A button the view module builds itself and names or classes as a pause control.
+VIEW_BUTTON = re.compile(
+    r"createElement\s*\(\s*['\"]button['\"]\s*\)[\s\S]{0,400}?"
+    r"(?:className\s*=|setAttribute\(\s*['\"]aria-label['\"])[^;\n]*pause",
+    re.I,
+)
 
 
 def _strip_comments(text: str) -> str:
@@ -124,7 +128,7 @@ def scan_block(block_dir: Path) -> dict:
         "render_call": bool(RENDER_CALL.search(render)),
         "view_call": bool(VIEW_CALL.search(view)),
         "handrolled_render": bool(RENDER_HANDROLLED.search(render)),
-        "handrolled_view": bool(VIEW_BUTTON.search(view) and re.search(r"pause", view, re.I)),
+        "handrolled_view": bool(VIEW_BUTTON.search(view)),
     }
 
 
@@ -237,6 +241,12 @@ def self_test() -> int:
         # Negative: a commented-out timer and a finite animation.
         _write(blocks, "quiet/view.js", "// setInterval( tick, 1000 );\n/* setInterval( x ) */")
         _write(blocks, "quiet/style.css", ".a { animation: fade 1s ease 2; }")
+        # Positive: a view module that builds its own pause button.
+        _write(blocks, "handrolled-view/render.php", good_render)
+        _write(blocks, "handrolled-view/view.js", good_view + "\nconst b = document.createElement( 'button' );\nb.className = 'sgs-z__pause-btn';")
+        # Negative: a view module that builds dot buttons and also uses the shared pause.
+        _write(blocks, "dots/render.php", good_render)
+        _write(blocks, "dots/view.js", good_view + "\nconst dot = document.createElement( 'button' );\ndot.className = 'sgs-z__dot';\nconst pauser = 1;")
         # Negative: a media player's own play/pause button, no automatic motion.
         _write(blocks, "player/view.js", "const b = document.createElement( 'button' ); b.ariaLabel = 'Pause track';")
         # Positive: a '/*' inside a string must not hide the timer after it.
@@ -252,13 +262,15 @@ def self_test() -> int:
             ("marquee-half flags the runtime only", [f["kind"] for f in by["marquee-half"]["findings"]] == ["missing-runtime"]),
             ("handrolled flags its own button", [f["kind"] for f in by["handrolled"]["findings"]] == ["hand-rolled"]),
             ("half flags half-wired", [f["kind"] for f in by["half"]["findings"]] == ["half-wired"]),
+            ("a view-built pause button is hand-rolled", [f["kind"] for f in by["handrolled-view"]["findings"]] == ["hand-rolled"]),
+            ("view-built dot buttons are not", by["dots"]["verdict"] == "COMPLIANT"),
             ("timer-good is compliant", by["timer-good"]["verdict"] == "COMPLIANT"),
             ("quiet has no signal (absent from survey)", "quiet" not in by),
             ("player is not flagged (absent from survey)", "player" not in by),
             ("a '/*' in a string does not hide a timer", by.get("glob", {}).get("signals") == ["js-timer"]),
             ("shimmer exemption applied", by["shimmer"]["verdict"] == "EXEMPT"),
             ("stale exemption reported", [s["block"] for s in result["stale_exemptions"]] == ["gone"]),
-            ("failures counted", failures(result) == 6),
+            ("failures counted", failures(result) == 7),
         ]
         # The adoption ratchet: a pending block does not fail; a pending block that is already
         # compliant (or gone) does.
