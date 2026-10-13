@@ -829,7 +829,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 21,
+        "paintDeclarations": 22,
         "replacedCoreSupports": [
           "anchor",
           "border",

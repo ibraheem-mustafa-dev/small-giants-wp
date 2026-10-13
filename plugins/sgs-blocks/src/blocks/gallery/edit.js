@@ -48,6 +48,7 @@ import {
 	wrapperBorderPreview,
 } from '../../utils';
 import { captionPreviewStyle } from './preview-style';
+import { isTileMode, tilePreviewStyle, tileColourRow } from './tile-preview';
 import useGalleryItems from './use-gallery-items';
 import ImagesPanel from './components/ImagesPanel';
 import LayoutSettingsPanel from './components/LayoutSettingsPanel';
@@ -56,6 +57,7 @@ import GalleryContentPanel from './components/GalleryContentPanel';
 import GalleryCarouselPanel from './components/GalleryCarouselPanel';
 import GalleryCanvas from './components/GalleryCanvas';
 import GalleryBorderControl from './components/GalleryBorderControl';
+import GalleryTilePanel from './components/GalleryTilePanel';
 
 // -------------------------------------------------------------------------
 // Main edit component
@@ -121,6 +123,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		removeImage,
 		toggleItemDecorative,
 		updateItemCrop,
+		updateItemLink,
 		onSelectImages,
 	} = useGalleryItems( { items, setAttributes } );
 
@@ -167,6 +170,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 	Object.assign( inlineStyles, wrapperBorderPreview( attributes, previewTier, colourPalette ) );
 	const captionStyle = captionPreviewStyle( attributes, colourPalette );
+	const tileStyle = tilePreviewStyle( attributes, previewTier, colourPalette );
 
 	// ── Editor-canvas mirror: padding / margin / maxWidth / contentWidth /
 	// grid layout (CHECK A editor-canvas desync fix, 2026-09-05). All 8 are
@@ -244,7 +248,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	const blockProps = useBlockProps( {
-		className: `sgs-gallery sgs-gallery--${ layout } sgs-gallery--hover-${ effectHover }`,
+		className: `sgs-gallery sgs-gallery--${ layout } sgs-gallery--hover-${ effectHover }${ isTileMode( attributes ) ? ' sgs-gallery--tile' : '' }`,
 		style: inlineStyles,
 	} );
 
@@ -288,6 +292,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					// only shown when the lightbox exists at all; its strength/blur
 					// siblings live in their own ToolsPanel further down (ScrimControls.js).
 					enableLightbox && scrimColourRow( { attributes, setAttributes } ),
+					tileColourRow( { attributes, setAttributes } ),
 					{
 						key: 'overlay',
 						label: __( 'Hover overlay colour', 'sgs-blocks' ),
@@ -341,6 +346,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ResponsiveBoxControls attributes={ attributes } setAttributes={ setAttributes } />
 					<GalleryBorderControl attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
+				<GalleryTilePanel attributes={ attributes } setAttributes={ setAttributes } />
 				{ /* Lines between the grid's items (the wrapper draws them for the grid layout). */ }
 				<SeparatorsPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
@@ -359,6 +365,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					handleDrop={ handleDrop }
 					toggleItemDecorative={ toggleItemDecorative }
 					updateItemCrop={ updateItemCrop }
+					updateItemLink={ updateItemLink }
 				/>
 
 				<LayoutSettingsPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
@@ -381,6 +388,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				bandStyle={ bandStyle }
 				items={ items }
 				captionStyle={ captionStyle }
+				tileStyle={ tileStyle }
+				tileFitContain={ attributes.tileFitContain }
 				gridStyle={ gridStyle }
 				separatorsCanvas={ separatorsCanvas }
 				onSelectImages={ onSelectImages }

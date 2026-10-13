@@ -20,6 +20,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
+require_once __DIR__ . '/render-tile.php';
 
 // CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
 // declarations inside this block's scoped <style> tag. Strips everything
@@ -167,7 +168,15 @@ $inline_styles = implode( ';', $inline_styles_parts ) . ';';
 // Each entry stores only the data the lightbox needs — no full markup.
 // -------------------------------------------------------------------------
 $context_images = [];
-foreach ( $images as $img ) {
+// Position of each item in the lightbox's image list. A linked item opens its
+// link, not the lightbox, so it has no position and is left out of the list; a
+// gallery with no links numbers its items by index, as before.
+$sgs_gallery_lightbox_pos = array();
+foreach ( $images as $context_index => $img ) {
+	if ( array() !== sgs_gallery_item_link( $img ) ) {
+		continue;
+	}
+	$sgs_gallery_lightbox_pos[ $context_index ] = count( $context_images );
 	$img_id   = absint( $img['id'] ?? 0 );
 	$img_type = isset( $img['type'] ) ? sanitize_key( $img['type'] ) : 'image';
 	$full_url = '';
@@ -401,6 +410,7 @@ $wrapper_classes = implode( ' ', array_filter( [
 	'sgs-gallery--' . $layout,
 	'sgs-gallery--hover-' . $hover_effect,
 	$enable_lightbox ? 'sgs-gallery--lightbox-enabled' : '',
+	sgs_gallery_tile_mode( $attributes ) ? 'sgs-gallery--tile' : '',
 	$hover_img_zoom  ? 'sgs-gallery--zoom'             : '',
 	$hover_shadow    ? 'sgs-has-hover'                 : '',
 	$hover_grayscale ? 'sgs-has-grayscale'             : '',
@@ -531,7 +541,20 @@ ob_start();
 					$full_url = esc_url( $img['fullUrl'] );
 				}
 
-				if ( $enable_lightbox ) :
+				$sgs_gallery_link = sgs_gallery_item_link( $img );
+
+				if ( array() !== $sgs_gallery_link ) :
+					// A linked item is an <a> to its own destination; it never opens the lightbox.
+					echo sgs_gallery_linked_item_html( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every part is escaped inside or before the call.
+						$sgs_gallery_link,
+						$gallery_item_key,
+						sgs_gallery_media_html( $img, (int) $index, $image_size, $sgs_gallery_img_class, $img_decorative, (string) $item_html ),
+						$img_alt,
+						( 'overlay-slide' === $hover_effect && ( $img_alt || $img_caption ) ) ? ( $img_caption ? $img_caption : $img_alt ) : '',
+						( $show_captions && $img_caption ) ? $img_caption : ''
+					);
+
+				elseif ( $enable_lightbox ) :
 					// Each item is a button — clicking opens the lightbox at this index.
 					?>
 					<figure
@@ -546,7 +569,7 @@ ob_start();
 								printf( esc_attr__( 'View %s in lightbox', 'sgs-blocks' ), $img_alt ?: esc_attr__( 'image', 'sgs-blocks' ) );
 							?>"
 							data-wp-on--click="actions.openLightbox"
-							data-wp-context="<?php echo esc_attr( wp_json_encode( array( 'currentIndex' => $index ) ) ); ?>"
+							data-wp-context="<?php echo esc_attr( wp_json_encode( array( 'currentIndex' => $sgs_gallery_lightbox_pos[ $index ] ?? $index ) ) ); ?>"
 						>
 							<div class="sgs-gallery__img-wrap">
 								<?php
@@ -768,6 +791,9 @@ ob_start();
 
 <?php
 $inner_html = ob_get_clean();
+
+// Item tile (fill, border, radius, height, padding, contain fit) — after the per-item crop rules above.
+$gallery_responsive_css .= sgs_gallery_tile_css( $attributes, $root_sel );
 
 // Output the gallery's own scoped <style> (color/border no-inline re-emit).
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving

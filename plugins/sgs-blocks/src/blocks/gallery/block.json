@@ -182,8 +182,26 @@
 					"clusters": [],
 					"prefix": "",
 					"attrMap": {
-						"css:aspect-ratio": "aspectRatio"
+						"css:aspect-ratio": "aspectRatio",
+						"css:background-color": "tileColour",
+						"css:background-image": "tileColourGradient",
+						"css:border-width": "tileBorderWidth",
+						"css:border-style": "tileBorderStyle",
+						"css:border-color": "tileBorderColour",
+						"css:border-color-gradient": "tileBorderColourGradient",
+						"css:border-radius": "tileBorderRadius",
+						"css:min-height": "tileMinHeight",
+						"css:padding": "tilePadding"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "tileColourHover",
+								"css:background-image": "tileColourHoverGradient"
+							}
+						}
+					},
+					"_note_tile": "Logo-tile styling (fill, border, radius, height, padding) is block-wide on the same figure and paints through render-tile.php::sgs_gallery_tile_css. tileFitContain is a boolean on the image inside the tile and is not a CSS property of the figure, so it stays unmapped. Per-item links (mediaItems[].linkUrl) turn the figure's button into an <a> and are item data, not element styling.",
 					"_note": "The per-image grid cell (.sgs-gallery__item, render.php ~line 455/506) - distinct from the image element (the <img> itself) and img-wrap below. aspectRatio is claimed via explicit attrMap rather than declaring 'layout' in clusters: a first draft used clusters:[\"layout\"], which reached the SAME bare (no-prefix) cluster members as the 'grid' element (also bare-prefix) and produced a CONTESTED finding on aspectRatio itself, plus risked colliding on other bare layout members this block happens to declare. clusters:[] + explicit attrMap avoids the collision entirely while still claiming aspectRatio cleanly (placement-reach's attrMap/member-owner path is independent of the clusters list). shadowHover is a HOVER-ONLY box-shadow with no resting-state twin (no base 'shadow' attribute exists on this block) - deliberately left unclustered rather than declared as a states.hover entry, which would create a NEW state-without-base finding (the framework's baseline currently accepts exactly one such case, sgs/post-grid, and gates against any rise). prefix:\"\" additionally opts this element out of orphan-candidate scanning so shadowHover is reported honestly as an accepted gap. Found live 2026-08-15: DB tagged 2 attrs css_element='item', undeclared until now."
 				},
 				"img-wrap": {
@@ -267,6 +285,21 @@
 							"x": 0.5,
 							"y": 0.5
 						}
+					},
+					"linkUrl": {
+						"type": "string",
+						"default": "",
+						"description": "Destination of this item. Non-empty makes the item an <a> (sanitised with esc_url) that never opens the lightbox and is left out of the lightbox's image list; empty keeps the item's lightbox or plain behaviour."
+					},
+					"linkTarget": {
+						"type": "string",
+						"default": "",
+						"description": "'_blank' opens the link in a new tab (rel=noopener noreferrer is added); anything else opens in the same tab."
+					},
+					"linkLabel": {
+						"type": "string",
+						"default": "",
+						"description": "Accessible name of the link (aria-label). Empty falls back to the image's alt text."
 					}
 				}
 			}
@@ -527,6 +560,65 @@
 			"default": {
 				"desktop": {}
 			}
+		},
+		"tileColour": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of each item's tile (the .sgs-gallery__item box). Empty paints nothing."
+		},
+		"tileColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient fill of each item's tile. Non-empty wins over tileColour."
+		},
+		"tileColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Tile fill on hover and keyboard focus. Empty keeps the resting fill."
+		},
+		"tileColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient tile fill on hover and keyboard focus. Non-empty wins over tileColourHover."
+		},
+		"tileBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width of each item's tile, per side (or per device tier). Empty draws no border."
+		},
+		"tileBorderStyle": {
+			"type": "string",
+			"default": "",
+			"description": "Border style of each item's tile. Empty paints solid once a width is set."
+		},
+		"tileBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient border ring for each item's tile. Non-empty wins over tileBorderColour."
+		},
+		"tileBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Corner radius of each item's tile, per device tier. Empty keeps the stylesheet's small radius."
+		},
+		"tileMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Height of each item's tile per device ({desktop,tablet,mobile}, a CSS length). Non-empty turns tile mode on: the tile takes this height instead of the aspect ratio and the image is laid inside it."
+		},
+		"tilePadding": {
+			"type": "object",
+			"default": {},
+			"description": "Space between a tile's edge and its image, per device tier, each tier a {top,right,bottom,left} box."
+		},
+		"tileFitContain": {
+			"type": "boolean",
+			"default": false,
+			"description": "Fits every image inside its tile without cropping, centred (object-fit contain), whatever each item's own fit says."
 		}
 	},
 	"editorScript": "file:./index.js",

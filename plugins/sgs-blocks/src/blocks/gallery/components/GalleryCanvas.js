@@ -3,7 +3,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import MediaGalleryPicker from '../../../components/MediaGalleryPicker';
-import { focalPointToObjectPosition } from '../../../utils';
+import GalleryCanvasItem from './GalleryCanvasItem';
 import { resolveGalleryMedia } from '../resolve-gallery-media';
 
 export default function GalleryCanvas( {
@@ -13,14 +13,14 @@ export default function GalleryCanvas( {
 	bandStyle,
 	items,
 	captionStyle,
+	tileStyle,
+	tileFitContain,
 	gridStyle,
 	separatorsCanvas,
 	onSelectImages,
 } ) {
 	const {
 		imageSize,
-		aspectRatio,
-		showCaptions,
 		layout,
 		carouselShowArrows,
 		carouselShowDots,
@@ -119,63 +119,16 @@ export default function GalleryCanvas( {
 								className="sgs-gallery__grid"
 								style={ gridStyle }
 							>
-								{ items.map( ( item, index ) => {
-									const isVideo =
-										item.type === 'video' ||
-										( item.mime &&
-											item.mime.startsWith( 'video/' ) );
-									const itemFit = item.objectFit || 'cover';
-									const wrapStyle = {
-										...( aspectRatio ? { aspectRatio } : {} ),
-										objectFit: itemFit,
-										objectPosition:
-											'cover' === itemFit
-												? focalPointToObjectPosition( item.focalPoint || { x: 0.5, y: 0.5 } )
-												: undefined,
-										width: '100%',
-										display: 'block',
-									};
-									return (
-										<figure
-											key={ item._key || item.id || index }
-											className="sgs-gallery__item"
-											style={
-												aspectRatio
-													? {
-															'--sgs-aspect-ratio':
-																aspectRatio,
-													  }
-													: {}
-											}
-										>
-											<div className="sgs-gallery__img-wrap">
-												{ isVideo ? (
-													<video
-														src={ item.url }
-														className="sgs-gallery__img"
-														muted
-														loop
-														playsInline
-														style={ wrapStyle }
-													/>
-												) : (
-													<img
-														src={ item.url }
-														alt={ item.alt || '' }
-														className="sgs-gallery__img"
-														loading="lazy"
-														style={ wrapStyle }
-													/>
-												) }
-											</div>
-											{ showCaptions && item.caption && (
-												<figcaption className="sgs-gallery__caption" style={ captionStyle }>
-													{ item.caption }
-												</figcaption>
-											) }
-										</figure>
-									);
-								} ) }
+								{ items.map( ( item, index ) => (
+									<GalleryCanvasItem
+										key={ item._key || item.id || index }
+										item={ item }
+										attributes={ attributes }
+										captionStyle={ captionStyle }
+										tileStyle={ tileStyle }
+								tileFitContain={ tileFitContain }
+									/>
+								) ) }
 							</div>
 						) }
 						{ carouselControlsPreview }
@@ -211,63 +164,16 @@ export default function GalleryCanvas( {
 						className="sgs-gallery__grid"
 						style={ gridStyle }
 					>
-						{ items.map( ( item, index ) => {
-							const isVideo =
-								item.type === 'video' ||
-								( item.mime &&
-									item.mime.startsWith( 'video/' ) );
-							const itemFit = item.objectFit || 'cover';
-							const wrapStyle = {
-								...( aspectRatio ? { aspectRatio } : {} ),
-								objectFit: itemFit,
-								objectPosition:
-									'cover' === itemFit
-										? focalPointToObjectPosition( item.focalPoint || { x: 0.5, y: 0.5 } )
-										: undefined,
-								width: '100%',
-								display: 'block',
-							};
-							return (
-								<figure
-									key={ item._key || item.id || index }
-									className="sgs-gallery__item"
-									style={
-										aspectRatio
-											? {
-													'--sgs-aspect-ratio':
-														aspectRatio,
-											  }
-											: {}
-									}
-								>
-									<div className="sgs-gallery__img-wrap">
-										{ isVideo ? (
-											<video
-												src={ item.url }
-												className="sgs-gallery__img"
-												muted
-												loop
-												playsInline
-												style={ wrapStyle }
-											/>
-										) : (
-											<img
-												src={ item.url }
-												alt={ item.alt || '' }
-												className="sgs-gallery__img"
-												loading="lazy"
-												style={ wrapStyle }
-											/>
-										) }
-									</div>
-									{ showCaptions && item.caption && (
-										<figcaption className="sgs-gallery__caption" style={ captionStyle }>
-											{ item.caption }
-										</figcaption>
-									) }
-								</figure>
-							);
-						} ) }
+						{ items.map( ( item, index ) => (
+							<GalleryCanvasItem
+								key={ item._key || item.id || index }
+								item={ item }
+								attributes={ attributes }
+								captionStyle={ captionStyle }
+								tileStyle={ tileStyle }
+								tileFitContain={ tileFitContain }
+							/>
+						) ) }
 					</div>
 				) }
 				{ carouselControlsPreview }
