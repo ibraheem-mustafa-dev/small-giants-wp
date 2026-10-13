@@ -9,16 +9,13 @@
  * animations (header shrink, counter reveal) and scroll-driven transforms
  * (hide-on-scroll) keep running underneath it unchanged.
  *
- * When each entrance starts and how it is staggered come from
+ * When each entrance starts comes from
  * assets/js/animation-entrance-timing.js (sgsEntranceTiming, enqueued as this
  * script's dependency): an entrance plays once 1% of its block has passed the
  * block's "Start when" line (6% of the screen height above the bottom edge
  * unless set), elements past that line at load play at once, blocks set to start when
  * the page loads (data-sgs-animation-start="load") play at once wherever they
- * sit, and a stagger
- * set in the editor adds its step per position to the block's own delay. With
- * no stagger set, blocks with no delay of their own that start together play
- * 100ms apart. The rest are created — paused, which already paints their
+ * sit. Each entrance's delay is its own stored delay. The rest are created — paused, which already paints their
  * start pose — once they come within 200px of the viewport. Until this script has
  * put the start poses in place, a head flag (sgs-entrance-pending, printed by
  * includes/animation-attributes.php) holds animated elements at opacity 0; it
@@ -172,15 +169,13 @@
 	/**
 	 * Resolve one element's timing: duration and easing from its theme
 	 * tokens (bounce-in's own overshoot curve wins over any stored easing),
-	 * delay from its data attribute plus its editor stagger, or with none set
- * (and no delay of its own) an automatic load-time stagger.
+	 * delay from its data attribute.
 	 *
-	 * @param {Element}     el        Target element.
-	 * @param {Object}      effect    Entry from EFFECTS.
-	 * @param {number|null} loadIndex Stagger index among elements in view at load, else null.
+	 * @param {Element} el     Target element.
+	 * @param {Object}  effect Entry from EFFECTS.
 	 * @return {Object} { duration, easing, delay, fill }.
 	 */
-	function timing( el, effect, loadIndex ) {
+	function timing( el, effect ) {
 		var rootStyle = globalThis.getComputedStyle( document.documentElement );
 
 		var durationKey = el.dataset.sgsAnimationDuration || 'medium';
@@ -216,14 +211,7 @@
 			}
 		}
 
-		var baseDelay = Number.parseInt( el.dataset.sgsAnimationDelay || '0', 10 ) || 0;
-		var stagger   = T ? T.staggerOffset( el ) : null;
-		var delay     = baseDelay;
-		if ( null !== stagger ) {
-			delay = baseDelay + stagger;
-		} else if ( null !== loadIndex && 0 === baseDelay ) {
-			delay = loadIndex * 100;
-		}
+		var delay = Number.parseInt( el.dataset.sgsAnimationDelay || '0', 10 ) || 0;
 
 		return { duration: duration, easing: easing, delay: delay, fill: 'backwards' };
 	}
@@ -283,11 +271,10 @@
 	 * a finished, fill:'backwards' animation holds nothing once it ends, so
 	 * this only frees the references.
 	 *
-	 * @param {Element}     el        Target element.
-	 * @param {number|null} loadIndex Stagger index among elements in view at load, else null.
+	 * @param {Element} el Target element.
 	 * @return {Animation|null} The created animation, or null when the preset is unknown.
 	 */
-	function createAnimation( el, loadIndex ) {
+	function createAnimation( el ) {
 		var effect = EFFECTS[ el.dataset.sgsAnimation ];
 		if ( ! effect ) {
 			return null;
@@ -301,7 +288,7 @@
 			distance = tokenDistance();
 		}
 		var kf      = keyframes( effect, distance );
-		var t       = timing( el, effect, loadIndex );
+		var t       = timing( el, effect );
 		var options = { duration: t.duration, easing: t.easing, delay: t.delay, fill: t.fill };
 
 		var animation;
@@ -348,17 +335,6 @@
 		return T.inTriggerZone( el );
 	}
 
-	/**
-	 * Whether the observer adds its automatic spacing to this element: only
-	 * with no editor stagger and no delay of its own.
-	 *
-	 * @param {Element} el Element to test.
-	 * @return {boolean} True when automatic spacing applies.
-	 */
-	function autoSpaced( el ) {
-		return null === T.staggerOffset( el ) && ! ( Number.parseInt( el.dataset.sgsAnimationDelay || '0', 10 ) > 0 );
-	}
-
 	try {
 		// "Near" observer — creates the animation paused (fill:'backwards'
 		// already paints the start pose) once an element comes within 200px
@@ -372,7 +348,7 @@
 					}
 					const el = entry.target;
 					if ( ! animations.get( el ) ) {
-						const animation = createAnimation( el, null );
+						const animation = createAnimation( el );
 						if ( animation ) {
 							animation.pause();
 							animations.set( el, animation );
@@ -389,26 +365,16 @@
 		// scroll where the near observer has not fired yet.
 		var playObservers = {};
 		var onPlay = function ( entries, playObserver ) {
-			// Elements that start together (a row of cards) with no stagger
-			// or delay of their own play in sequence, 100ms apart, like the
-			// ones in view at load.
-			var autoIndex = 0;
 			entries.filter( function ( entry ) {
 				return entry.isIntersecting;
 			} ).forEach( function ( entry ) {
 				const el = entry.target;
 				let animation = animations.get( el );
 				if ( ! animation ) {
-					animation = createAnimation( el, null );
+					animation = createAnimation( el );
 				}
 				if ( animation ) {
 					animations.set( el, animation );
-					if ( animation.effect && autoSpaced( el ) ) {
-						var index = autoIndex++;
-						if ( index > 0 ) {
-							animation.effect.updateTiming( { delay: ( animation.effect.getTiming().delay || 0 ) + index * 100 } );
-						}
-					}
 					animation.play();
 				}
 				el.classList.add( 'sgs-animated' );
@@ -442,7 +408,7 @@
 			// asynchronous callback.
 			const rect = el.getBoundingClientRect();
 			if ( rect.top < viewHeight + NEAR_MARGIN_PX && rect.bottom > -NEAR_MARGIN_PX ) {
-				const animation = createAnimation( el, null );
+				const animation = createAnimation( el );
 				if ( animation ) {
 					animation.pause();
 					animations.set( el, animation );
@@ -452,12 +418,9 @@
 			playObserverFor( el ).observe( el );
 		} );
 
-		// Already-visible elements play in sequence (their editor stagger, or
-		// 100ms apart when they have none) rather than all at once.
-		// The automatic spacing counts only the elements it applies to.
-		var autoIndex = 0;
+		// Already-visible elements play with their own stored delays.
 		inViewOnLoad.forEach( function ( el ) {
-			const animation = createAnimation( el, autoSpaced( el ) ? autoIndex++ : null );
+			const animation = createAnimation( el );
 			if ( ! animation ) {
 				return;
 			}

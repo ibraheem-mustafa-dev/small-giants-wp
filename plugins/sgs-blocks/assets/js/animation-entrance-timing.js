@@ -1,5 +1,5 @@
 /**
- * SGS entrance timing — when an entrance starts and how much it is staggered.
+ * SGS entrance timing — when an entrance starts.
  *
  * Read by assets/js/animation-observer.js (enqueued as its dependency), which
  * plays the entrances. Everything here comes from data attributes written by
@@ -14,27 +14,13 @@
  *                                       1% of the block has passed a line this
  *                                       many % of the screen height above its
  *                                       bottom edge (0-50, default 6).
- *   data-sgs-animation-stagger          A block's own stagger step (ms) against
- *                                       matching animated blocks beside it
- *                                       (reaches cards in a repeated list whose
- *                                       parent is not an SGS block).
- *   data-sgs-animation-stagger-children A parent's stagger step (ms) for the
- *                                       animated blocks inside it.
- *   data-sgs-animation-stagger-max      Where the stagger stops growing (items,
- *                                       default 7).
  *   data-sgs-animation-items            A block's own repeated items, which
- *                                       enter one by one with its settings.
- *
- * A stagger adds position × step to the block's own delay, position counted
- * among the animated blocks in the same group and capped at the max. With no
- * stagger set anywhere, the observer keeps its automatic spacing for blocks
- * that arrive together, and only for blocks with no delay of their own.
+ *                                       enter with its settings.
  */
 ( function () {
 	'use strict';
 
 	var DEFAULT_TRIGGER_PCT = 6;
-	var DEFAULT_STAGGER_MAX = 7;
 
 	// Entrance settings an item inherits from its block (data-sgs-animation-items).
 	var INHERITED = [
@@ -151,98 +137,11 @@
 		return rect.height <= 0 || h / rect.height >= 0.01;
 	}
 
-	/**
-	 * The nearest parent that staggers its children, unless another animated
-	 * block sits between (that block's own children belong to it).
-	 *
-	 * @param {Element} el Animated element.
-	 * @return {Element|null} The staggering parent, or null.
-	 */
-	function groupOwner( el ) {
-		for ( var p = el.parentElement; p && p !== document.body; p = p.parentElement ) {
-			if ( p.hasAttribute( 'data-sgs-animation-stagger-children' ) ) {
-				return p;
-			}
-			if ( p.hasAttribute( 'data-sgs-animation' ) ) {
-				return null;
-			}
-		}
-		return null;
-	}
-
-	var members = new WeakMap();
-
-	/**
-	 * A staggering parent's animated blocks, in page order.
-	 *
-	 * @param {Element} owner Staggering parent.
-	 * @return {Element[]} Its group.
-	 */
-	function groupOf( owner ) {
-		if ( ! members.has( owner ) ) {
-			members.set( owner, Array.prototype.filter.call(
-				owner.querySelectorAll( '[data-sgs-animation]' ),
-				function ( d ) {
-					return groupOwner( d ) === owner;
-				}
-			) );
-		}
-		return members.get( owner );
-	}
-
-	/**
-	 * A block's position among the matching blocks beside it: the first
-	 * ancestor level (up to four) where two or more siblings hold a block with
-	 * its own stagger step. Reaches past the wrapper each item of a repeated
-	 * list sits in (a product template's <li>).
-	 *
-	 * @param {Element} el Animated element with its own stagger step.
-	 * @return {number} 0-based position.
-	 */
-	function repeatIndex( el ) {
-		var node = el;
-		for ( var depth = 0; depth < 4 && node.parentElement; depth++ ) {
-			var peers = Array.prototype.filter.call( node.parentElement.children, function ( c ) {
-				return c.matches( '[data-sgs-animation-stagger]' ) || null !== c.querySelector( '[data-sgs-animation-stagger]' );
-			} );
-			if ( peers.length > 1 ) {
-				return Math.max( 0, peers.indexOf( node ) );
-			}
-			node = node.parentElement;
-		}
-		return 0;
-	}
-
-	/**
-	 * The stagger added to a block's own delay, or null when no stagger applies.
-	 *
-	 * @param {Element} el Animated element.
-	 * @return {number|null} Milliseconds, or null.
-	 */
-	function staggerOffset( el ) {
-		var step  = intAttr( el, 'data-sgs-animation-stagger', 0, 1000 );
-		var index;
-		var source = el;
-		if ( null !== step ) {
-			index = repeatIndex( el );
-		} else {
-			source = groupOwner( el );
-			step   = source ? intAttr( source, 'data-sgs-animation-stagger-children', 0, 1000 ) : null;
-			if ( null === step ) {
-				return null;
-			}
-			index = Math.max( 0, groupOf( source ).indexOf( el ) );
-		}
-		var max = intAttr( source, 'data-sgs-animation-stagger-max', 1, 50 );
-		return Math.min( index, null === max ? DEFAULT_STAGGER_MAX : max ) * step;
-	}
-
 	globalThis.sgsEntranceTiming = {
 		expandItems: expandItems,
 		startsOnLoad: startsOnLoad,
 		triggerPct: triggerPct,
 		observerOptions: observerOptions,
 		inTriggerZone: inTriggerZone,
-		staggerOffset: staggerOffset,
 	};
 } )();
