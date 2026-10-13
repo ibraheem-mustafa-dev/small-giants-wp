@@ -1,9 +1,9 @@
 <?php
 /**
  * Standalone tests for the sgs/button and sgs/form submit-button additions:
- *   1. The shared hover lift (includes/helpers-hover-lift.php) prints byte-for-byte what
- *      sgs/button's render.php printed before the lift moved into it. A literal copy of the
- *      pre-move code runs beside the helper over every input.
+ *   1. The shared hover lift (includes/helpers-hover-lift.php) prints sgs/button's original
+ *      lift rules (a literal copy runs beside the helper over every input) inside the
+ *      reduced-motion gate, and no lift declaration in a rendered button or form escapes that gate.
  *   2. sgs/form's submit button: resting shadow, hover shadow, preset hover shadow, automatic
  *      lift and hover lift paint the expected CSS; the lift-attribute prefix reads the
  *      `submit*` names and leaves the block-root names alone; every default prints nothing.
@@ -121,7 +121,7 @@ function normalise_uid( string $text ): string {
 // 1. The shared lift is byte-identical to the pre-move sgs/button code.
 // =====================================================================
 
-/** A literal copy of the pre-move code in button/render.php (clamp, declaration, rule). */
+/** The original button/render.php lift (clamp, declaration, rule), inside the reduced-motion gate. */
 function reference_button_lift( $raw, string $uid, float $hover_scale, string $target ): string {
 	$hover_lift = null !== $raw ? min( 24, max( 0, (int) $raw ) ) : 0;
 	if ( $hover_lift > 0 ) {
@@ -129,7 +129,7 @@ function reference_button_lift( $raw, string $uid, float $hover_scale, string $t
 		if ( abs( $hover_scale - 1.0 ) <= 0.001 || 'face' === $target ) {
 			$lift_decls .= ';transform:none';
 		}
-		return sgs_hover_state_rules( ".{$uid}.sgs-button", $lift_decls );
+		return '@media (prefers-reduced-motion:no-preference){' . sgs_hover_state_rules( ".{$uid}.sgs-button", $lift_decls ) . '}';
 	}
 	return '';
 }
@@ -154,7 +154,51 @@ foreach ( array( null, 0, -3, 1, 6, 24, 25, 99, '7', '7.9', 'abc', 3.9, true ) a
 		}
 	}
 }
-ok( $cases === $identical, "1. lift output byte-identical to the pre-move button code ($identical of $cases input combinations)" );
+ok( $cases === $identical, "1. lift output is the original button rules inside the reduced-motion gate ($identical of $cases input combinations)" );
+
+/**
+ * Every lift declaration (`translate:0 -Npx`) that a visitor asking for reduced motion would still
+ * get: one with no enclosing `@media (prefers-reduced-motion:no-preference)` block.
+ *
+ * @param string $css Stylesheet text.
+ * @return string[] The offending rule preludes.
+ */
+function lifts_outside_motion_gate( string $css ): array {
+	$stack   = array();
+	$bad     = array();
+	$segment = '';
+	$len     = strlen( $css );
+	for ( $i = 0; $i < $len; $i++ ) {
+		$c = $css[ $i ];
+		if ( '{' === $c ) {
+			$stack[] = trim( $segment );
+			$segment = '';
+		} elseif ( '}' === $c ) {
+			if ( 1 === preg_match( '/translate:\s*0(px)?\s+-\d/', $segment ) ) {
+				$gated = false;
+				foreach ( $stack as $prelude ) {
+					if ( false !== strpos( str_replace( ' ', '', $prelude ), '(prefers-reduced-motion:no-preference)' ) ) {
+						$gated = true;
+					}
+				}
+				if ( ! $gated ) {
+					$bad[] = (string) end( $stack );
+				}
+			}
+			array_pop( $stack );
+			$segment = '';
+		} else {
+			$segment .= $c;
+		}
+	}
+	return $bad;
+}
+
+ok( array() === lifts_outside_motion_gate( sgs_hover_lift_rule( '.x', 6 ) ), '1. reduced motion: the shared lift prints no hover or focus lift outside the motion gate' );
+$GLOBALS['sgs_hover_group_active'] = true;
+ok( array() === lifts_outside_motion_gate( sgs_hover_lift_rule( '.x', 6 ) ), '1. reduced motion: the group-hover lift is gated too' );
+unset( $GLOBALS['sgs_hover_group_active'] );
+ok( array( '.x:focus-visible' ) === lifts_outside_motion_gate( '.x:focus-visible{translate:0 -4px}' ), '1. NEGATIVE CONTROL: the gate check flags an ungated focus lift' );
 ok( '' === sgs_hover_lift_rule( '.x', 0 ) && '' === sgs_hover_lift_rule( '.x', -4 ), '1. a lift of 0 or less prints nothing' );
 ok( false !== strpos( sgs_hover_lift_rule( '.x', 99 ), 'translate:0 -24px' ), '1. a lift is clamped to 24px' );
 
@@ -214,6 +258,8 @@ $preset = render_block_child( 'sgs/form', $form_default_attrs + array( 'submitSh
 ok( false !== strpos( $preset['css'], '.sgs-form__button--submit:hover{box-shadow:var(--wp--preset--shadow--lg)}' ), '3. a chosen hover preset paints on hover' );
 $lift_only = render_block_child( 'sgs/form', $form_default_attrs + array( 'submitLiftHover' => 99 ) );
 ok( false !== strpos( $lift_only['css'], 'translate:0 -24px' ), '3. a lift alone paints, clamped to 24px' );
+$lift_four = render_block_child( 'sgs/form', $form_default_attrs + array( 'submitLiftHover' => 4 ) );
+ok( false !== strpos( $lift_four['css'], 'translate:0 -4px' ) && array() === lifts_outside_motion_gate( $lift_four['css'] ), '3. reduced motion: the submit lift (4px) prints no hover or focus-visible lift outside the motion gate' );
 
 // =====================================================================
 // 4. sgs/button label from Site Info.
@@ -277,6 +323,7 @@ ok( false !== strpos( $default_size['css'], 'calc(var(--sgs-btn-icon-size,1em)*1
 
 $lift_render = render_block_child( 'sgs/button', array( 'label' => 'Go', 'liftHover' => 6 ) );
 ok( 1 === preg_match( '/:hover\{translate:0 -6px;transform:none\}/', $lift_render['css'] ), '6. sgs/button lift renders translate:0 -6px;transform:none on hover' );
+ok( array() === lifts_outside_motion_gate( $lift_render['css'] ), '6. reduced motion: the sgs/button lift prints no lift outside the motion gate' );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

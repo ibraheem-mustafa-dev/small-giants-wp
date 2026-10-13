@@ -48,6 +48,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-chrome.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-chrome-extras-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-chrome-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-nav-accessible-label.php';
 // ⚠ The source-aware icon resolver sgs/icon and sgs/nav-bar-menu's trigger both use.
 // It lives in includes/nav-menu-treatments.php, which is require_once'd PER-INSTANCE
 // from sgs/nav-bar-menu's own render.php rather than at plugin bootstrap -- so its
@@ -1222,9 +1223,11 @@ if ( 1 === count( $sgs_nd_distinct_render_styles ) ) {
  * Emitting aria-label="" is an EMPTY ACCESSIBLE NAME -- strictly worse than a
  * mismatch, and it passes any check that only asks whether the attribute exists.
  * This is asserted, not reasoned about: the two glyph-only styles and the
- * empty-label case all keep the generic name.
+ * empty-label case all keep the generic name. So does a label made only of
+ * symbols (`×`): it is not a word, so it cannot name the button
+ * (sgs_nav_label_is_word()); the glyph stays visible and the name is "Close menu".
  */
-$sgs_nd_close_visible_word = $sgs_nd_close_any_text_bearing
+$sgs_nd_close_visible_word = $sgs_nd_close_any_text_bearing && sgs_nav_label_is_word( $sgs_nd_close_label )
 	? $sgs_nd_close_label
 	: '';
 $sgs_nd_close_aria_attr    = '' !== $sgs_nd_close_visible_word

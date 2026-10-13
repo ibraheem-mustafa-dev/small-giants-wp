@@ -302,8 +302,11 @@ final class Sgs_Site_Info_Binding {
 		if ( 1 === \preg_match( '/^[0-9]+$/', $cid ) ) {
 			return 'https://maps.google.com/?cid=' . $cid;
 		}
-		// Line breaks become commas; tags go; runs of spaces and of commas collapse to one.
+		// Line breaks become commas; tags go; HTML entities (kses stores `&` as `&amp;`) decode to the
+		// characters they stand for, so the search is for the text, not the entity; runs of spaces and
+		// of commas collapse to one.
 		$text = \wp_strip_all_tags( (string) \preg_replace( '/<br\s*\/?>|[\r\n]+/i', ',', $address ) );
+		$text = \html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 		$text = (string) \preg_replace( '/\s+/', ' ', $text );
 		$text = (string) \preg_replace( '/\s*(,\s*)+/', ', ', $text );
 		$text = \trim( $text, ', ' );

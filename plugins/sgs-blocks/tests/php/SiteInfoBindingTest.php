@@ -137,6 +137,14 @@ final class SiteInfoBindingTest extends TestCase {
 		$this->assertDoesNotMatchRegularExpression( '/[ <>"#?&]/', $query );
 	}
 
+	public function test_address_entities_decode_before_they_are_encoded(): void {
+		// kses stores `&` as `&amp;`; an escaped apostrophe arrives as `&#039;`.
+		$this->seed( array( 'address' => 'Unit 3 &amp; 4<br>O&#039;Neill Rd' ) );
+		$link  = Binding::link_for_key( 'address' );
+		$query = substr( $link, strlen( 'https://www.google.com/maps/search/?api=1&query=' ) );
+		$this->assertSame( "Unit 3 & 4, O'Neill Rd", rawurldecode( $query ) );
+	}
+
 	public function test_text_attribute_keeps_the_plain_value(): void {
 		// Negative control for the old key-based rule, which rendered phone as "tel:…" inside text.
 		$this->assertSame( '0121 729 8233', Binding::get_value( array( 'key' => 'phone' ), null, 'text' ) );

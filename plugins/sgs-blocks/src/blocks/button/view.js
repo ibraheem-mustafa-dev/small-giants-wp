@@ -43,7 +43,7 @@ function resolveFocusTarget() {
 
 /**
  * Handle a click on a `top`-sourced button: scroll to the top of the page
- * and move focus. Reduced motion gets an instant jump instead of a smooth
+ * and move focus without letting the focus move the scroll position. Reduced motion gets an instant jump instead of a smooth
  * scroll; the native `#top` href still lands the visitor at the right place
  * even if this handler never runs (script blocked, error, etc.).
  *
@@ -68,7 +68,9 @@ function handleTopButtonClick( event ) {
 	if ( ! focusTarget.hasAttribute( 'tabindex' ) ) {
 		focusTarget.setAttribute( 'tabindex', '-1' );
 	}
-	focusTarget.focus();
+	// preventScroll: a plain focus() scrolls the target into view itself, which cancels the
+	// smooth scroll in flight and leaves the page stopped partway up.
+	focusTarget.focus( { preventScroll: true } );
 }
 
 /**

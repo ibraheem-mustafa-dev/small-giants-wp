@@ -20,7 +20,7 @@ describe( 'hover lift', () => {
 	it( 'prints the declaration the front end prints', () => {
 		expect( hoverLiftDecls( 6 ) ).toBe( 'translate:0 -6px' );
 		expect( hoverLiftDecls( 6, true ) ).toBe( 'translate:0 -6px;transform:none' );
-		expect( hoverLiftPreviewRule( '.x', 6 ) ).toBe( '.x:hover{translate:0 -6px}' );
+		expect( hoverLiftPreviewRule( '.x', 6 ) ).toBe( '@media (prefers-reduced-motion:no-preference){.x:hover{translate:0 -6px}}' );
 	} );
 	it( 'NEGATIVE CONTROL: a lift of 0 prints nothing', () => {
 		expect( hoverLiftDecls( 0 ) ).toBe( '' );
@@ -82,7 +82,7 @@ describe( 'form submit button preview', () => {
 	it( 'previews the resting shadow and the lift', () => {
 		const attrs = { submitShadow: '0 4px 14px -6px', submitShadowColour: '#0a7ea880', submitLiftHover: 2 };
 		expect( submitShadowPreviewStyle( attrs, PALETTE ).boxShadow ).toContain( '#0a7ea880' );
-		expect( submitLiftPreviewRule( '.f .b', attrs ) ).toBe( '.f .b:hover{translate:0 -2px}' );
+		expect( submitLiftPreviewRule( '.f .b', attrs ) ).toBe( '@media (prefers-reduced-motion:no-preference){.f .b:hover{translate:0 -2px}}' );
 	} );
 	it( 'NEGATIVE CONTROL: defaults preview nothing', () => {
 		expect( submitShadowPreviewStyle( { submitShadow: '', submitShadowColour: '' }, PALETTE ) ).toEqual( {} );
