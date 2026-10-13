@@ -367,4 +367,39 @@ final class ContainerWrapperTest extends TestCase {
 		$this->assertNotSame( $uid_base, $uid_width_variant, 'maxWidth change diverges from base' );
 		$this->assertNotSame( $uid_gap_variant, $uid_width_variant, 'two independently-differing attribute sets produce two independently-differing uids (guards against a partial-hash regression)' );
 	}
+	// ── The band carries its block's own class (Spec 38A §6.2) ───────────────
+
+	/**
+	 * A real-shaped block puts `sgs-<slug>__content-band` on the band beside `sgs-container__inner`.
+	 */
+	#[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+	public function test_band_carries_the_blocks_own_content_band_class(): void {
+		require_once __DIR__ . '/fixtures/wp-block-band-stub.php';
+		$html = SGS_Container_Wrapper::render( $this->section_attrs(), sgs_test_band_block( 'sgs/hero' ), '<p>inner</p>', 'section' );
+		$this->assertStringContainsString( '<div class="sgs-container__inner sgs-hero__content-band"><p>inner</p></div>', $html );
+	}
+
+	/**
+	 * A motion layer on `content-band` or `inner` prints the band even with no band props; without one, or when the
+	 * caller turns the band off, it is not printed.
+	 */
+	#[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+	public function test_a_motion_band_part_forces_the_band(): void {
+		require_once __DIR__ . '/fixtures/wp-block-band-stub.php';
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/motion/class-sgs-motion-targets.php';
+		$block = sgs_test_band_block( 'sgs/container' );
+		$band  = '<div class="sgs-container__inner sgs-container__content-band"><p>x</p></div>';
+		$this->assertStringNotContainsString( 'sgs-container__inner', SGS_Container_Wrapper::render( array(), $block, '<p>x</p>', 'content' ), 'no band props, no motion: no band' );
+		foreach ( array( 'content-band', 'inner' ) as $part ) {
+			$attrs = array( 'sgsMotion' => array( 'v' => 1, 'elements' => array( $part => array( 'hover' => array( 'state' => array( 'values' => array( 'translateY' => -4 ) ) ) ) ) ) );
+			$this->assertStringContainsString( $band, SGS_Container_Wrapper::render( $attrs, $block, '<p>x</p>', 'content' ), "a layer on {$part} prints the band" );
+			$this->assertStringNotContainsString( 'sgs-container__inner', SGS_Container_Wrapper::render( $attrs, $block, '<p>x</p>', 'content', array( 'wrap_inner' => false ) ), 'wrap_inner false keeps the band off' );
+		}
+		$grid = array( 'layout' => 'grid', 'columns' => 3, 'gap' => '16px', 'sgsMotion' => array( 'v' => 1, 'elements' => array( 'content-band' => array( 'hover' => array() ) ) ) );
+		$html = SGS_Container_Wrapper::render( $grid, $block, '<p>a</p><p>b</p>', 'layout' );
+		$this->assertStringContainsString( '<div class="sgs-container__inner sgs-container__content-band"><p>a</p><p>b</p></div>', $html, 'a grid with no band props gets the band' );
+		$this->assertStringContainsString( '>.sgs-container__inner{gap:16px;display:grid;grid-template-columns:repeat(3,1fr)}', $html, 'the forced band carries the grid, so the items stay grid items' );
+		$other = array( 'sgsMotion' => array( 'v' => 1, 'elements' => array( 'root' => array( 'hover' => array( 'state' => array( 'values' => array( 'translateY' => -4 ) ) ) ) ) ) );
+		$this->assertStringNotContainsString( 'sgs-container__inner', SGS_Container_Wrapper::render( $other, $block, '<p>x</p>', 'content' ), 'a root layer does not force the band' );
+	}
 }

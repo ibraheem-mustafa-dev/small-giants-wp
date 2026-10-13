@@ -146,6 +146,34 @@ final class MotionRendererTest extends TestCase {
 		$this->assertStringNotContainsString( '<cite data-sgs-mh', $out, 'the sibling is untouched' );
 	}
 
+	public function test_edge_band_part_reaches_only_its_own_band_not_a_nested_containers(): void {
+		$band   = 'sgs-container__inner sgs-container__content-band';
+		$html   = '<div class="wp-block-sgs-container"><div class="' . $band . '"><div class="wp-block-sgs-container"><div class="' . $band . '"><p>Hi</p></div></div><br><img src="a.jpg" alt=""></div></div>';
+		$motion = array(
+			'v'        => 1,
+			'elements' => array( 'content-band' => array( 'hover' => array( 'state' => array( 'values' => array( 'translateY' => -4 ) ) ) ) ),
+		);
+		$out    = sgs_test_render_motion_block( array( 'blockName' => 'sgs/container', 'attrs' => array( 'sgsMotion' => $motion ) ), $html );
+		$scope  = $this->scope( $out );
+		$this->assertSame( 1, substr_count( $out, 'data-sgs-mh=' ), 'exactly one element is stamped' );
+		$this->assertStringContainsString( '.' . $scope . ' > .sgs-container__content-band{--sgs-mh-to-ty:-4px;', $this->css(), 'the band rule uses the child combinator' );
+		$this->assertStringNotContainsString( '.' . $scope . ' .sgs-container__content-band{', $this->css(), 'no descendant-form rule' );
+		$this->assertStringContainsString( '"><div data-sgs-mc="translate" data-sgs-mh="self" class="' . $band . '"><div class="wp-block-sgs-container"><div class="' . $band . '"><p>', $out, 'the outer band is stamped and the nested band is not' );
+	}
+
+	public function test_edge_container_inner_part_is_its_own_band_only(): void {
+		$band   = 'sgs-container__inner sgs-container__content-band';
+		$html   = '<div class="wp-block-sgs-container"><div class="' . $band . '"><div class="wp-block-sgs-container"><div class="' . $band . '"><p>Hi</p></div></div></div></div>';
+		$motion = array(
+			'v'        => 1,
+			'elements' => array( 'inner' => array( 'hover' => array( 'state' => array( 'values' => array( 'translateY' => -4 ) ) ) ) ),
+		);
+		$out    = sgs_test_render_motion_block( array( 'blockName' => 'sgs/container', 'attrs' => array( 'sgsMotion' => $motion ) ), $html );
+		$scope  = $this->scope( $out );
+		$this->assertSame( 1, substr_count( $out, 'data-sgs-mh=' ), 'exactly one element is stamped' );
+		$this->assertStringContainsString( '.' . $scope . ' > .sgs-container__inner{', $this->css() );
+	}
+
 	public function test_refusal_part_marked_motion_false_is_not_a_target(): void {
 		// sgs/hero's `headline` is a child sgs/heading (block.json "motion": false), even when that child carries the BEM class.
 		$html   = '<section class="wp-block-sgs-hero"><div class="sgs-hero__content"><h1 class="sgs-hero__headline">Hi</h1></div></section>';

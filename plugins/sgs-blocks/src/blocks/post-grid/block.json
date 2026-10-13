@@ -203,7 +203,7 @@
           }
         },
         "category-badge": {
-          "selector": ".sgs-post-grid__badge",
+          "selector": ".sgs-post-grid__category-badge",
           "label": "Category badge",
           "order": 7,
           "clusters": [

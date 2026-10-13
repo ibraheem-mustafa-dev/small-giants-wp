@@ -116,18 +116,28 @@ namespace {
 			private $start = -1;
 			private $len   = 0;
 			private $tag   = '';
+			private $closer = false;
 			public function __construct( $html ) {
 				$this->html = (string) $html;
 			}
-			public function next_tag() {
-				$from = $this->start < 0 ? 0 : $this->start + $this->len;
-				if ( ! preg_match( '/<([a-zA-Z][a-zA-Z0-9-]*)(?:\s[^>]*)?>/', $this->html, $m, PREG_OFFSET_CAPTURE, $from ) ) {
+			public function next_tag( $query = null ) {
+				$closers = is_array( $query ) && 'visit' === ( $query['tag_closers'] ?? '' );
+				$from    = $this->start < 0 ? 0 : $this->start + $this->len;
+				$pattern = $closers ? '/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)(?:\s[^>]*)?>/' : '/<()([a-zA-Z][a-zA-Z0-9-]*)(?:\s[^>]*)?>/';
+				if ( ! preg_match( $pattern, $this->html, $m, PREG_OFFSET_CAPTURE, $from ) ) {
 					return false;
 				}
-				$this->tag   = strtoupper( $m[1][0] );
-				$this->start = $m[0][1];
-				$this->len   = strlen( $m[0][0] );
+				$this->closer = '/' === $m[1][0];
+				$this->tag    = strtoupper( $m[2][0] );
+				$this->start  = $m[0][1];
+				$this->len    = strlen( $m[0][0] );
 				return true;
+			}
+			public function is_tag_closer() {
+				return $this->closer;
+			}
+			public function has_self_closing_flag() {
+				return '/>' === substr( $this->open(), -2 );
 			}
 			public function get_tag() {
 				return '' === $this->tag ? null : $this->tag;

@@ -1181,8 +1181,10 @@
 }
 
 /* Description — same rules as .product-card .product-desc. font-size sits in the
- * :where() default block below. */
-.product-card .sgs-product-card__description {
+ * :where() default block below. The bound description carries both classes (the
+ * motion part `desc` reaches it in every mode); :where(:not(.product-desc)) keeps
+ * this rule on the typed element only, at the same specificity. */
+.product-card .sgs-product-card__description:where(:not(.product-desc)) {
 	color: var( --sgs-card-desc-colour, var( --wp--preset--color--text, #3a2e26 ) );
 	margin: 0;
 	flex: 1;
@@ -1208,8 +1210,9 @@
  * hardcode the F3 baseline mis-tagged onto innerPadding.)
  */
 
-/* Price row — matches .product-card .price-row. */
-.product-card .sgs-product-card__price-row {
+/* Price row — matches .product-card .price-row. The bound row carries both classes;
+ * :where(:not(.price-row)) keeps this rule on the typed row only. */
+.product-card .sgs-product-card__price-row:where(:not(.price-row)) {
 	display: flex;
 	align-items: baseline;
 	gap: 10px;
@@ -1229,8 +1232,9 @@
 }
 
 /* Price note — matches .product-card .price-note. font-size sits in the :where()
- * default block below. */
-.product-card .sgs-product-card__price-note {
+ * default block below. The bound note carries both classes; :where(:not(.price-note))
+ * keeps this rule on the typed note only. */
+.product-card .sgs-product-card__price-note:where(:not(.price-note)) {
 	color: var( --sgs-card-price-note-colour, var( --wp--preset--color--text-muted, #6b5c50 ) );
 }
 

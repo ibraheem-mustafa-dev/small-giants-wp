@@ -1115,6 +1115,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( $sgs_scroll_row_on ) {
 				$grid_on_inner = true;
 			}
+			// A motion layer on the band parts (`content-band`, `inner`; Spec 38A §6.2) needs the band to exist, so it forces the two-layer structure the same way container queries do, here, at $band_will_render and at $do_wrap, unless the caller turned the band off (`wrap_inner` false).
+			$sgs_motion_band = false !== $opt_wrap_inner && class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Targets' ) && \SGS\Blocks\Motion\Sgs_Motion_Targets::names_band( $attributes );
+			if ( $sgs_motion_band && null === $opt_wrap_inner && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
+				$grid_on_inner = true;
+			}
 			// Container queries (Spec 37 FR-37-16): force the two-layer structure so the
 			// flex/grid container (where gap applies) is the __inner — a DESCENDANT of
 			// the container-type outer — so @container queries can respond to the
@@ -3446,7 +3451,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
 					$band_will_render = true;
 				}
-				if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) || $sgs_scroll_row_on ) {
+				if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) || $sgs_scroll_row_on || $sgs_motion_band ) {
 					$band_will_render = true;
 				}
 				$band_obj_sel = $uid
@@ -4008,7 +4013,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				 */
 				$fx_track_attr = ' data-sgs-fx-track="true"';
 			}
-			// The band also carries its block's own class, `sgs-<slug>__content-band`: the element the motion parts `content-band` and `inner` resolve to (Spec 38A §6.2), distinct from a nested container's band.
+			if ( $sgs_motion_band ) {
+				$do_wrap = true;
+			}
+			// The band also carries its block's own class, `sgs-<slug>__content-band`: the element the motion parts `content-band` and `inner` resolve to (Spec 38A §6.2), as the root's direct child.
 			$inner_class = 'sgs-container__inner' . ( $block instanceof \WP_Block && 0 === strpos( (string) $block->name, 'sgs/' ) ? ' sgs-' . sanitize_html_class( substr( (string) $block->name, 4 ) ) . '__content-band' : '' );
 			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
 				// Responsive band tiers exist: the base band styles were emitted into

@@ -4,7 +4,7 @@
  *
  * A target is `root`, a part the block declares in `supports.sgs.elements` (its element is the part's declared
  * `selector`, else the class `sgs-<block slug>__<part>`; a part marked `isWrapper` is the root itself; a part marked `"motion": false`
- * is not a target), or a cloning-only `custom:<n>` whose
+ * is not a target; a part resolving to the container wrapper's band class is the root's direct-child band only), or a cloning-only `custom:<n>` whose
  * stored selector (already schema-checked) is prefixed by the scoped root. Parts are read from the registered block
  * type at render time, the same `block.json` source `scripts/dbschema/seed_motion_fields.py` seeds `motion_targets`
  * from.
@@ -87,8 +87,9 @@ final class Sgs_Motion_Targets {
 	 * @param string              $scope      The scoped root's class.
 	 * @param string              $target     Target key.
 	 * @param array<string,mixed> $element    The sanitised element.
-	 * @return array{selector:string,match:array{root:bool,classes:array<int,string>,tag:?string}}|null Null for a part
-	 *         the block does not declare.
+	 * @return array{selector:string,match:array{root:bool,classes:array<int,string>,tag:?string,child:bool}}|null Null
+	 *         for a part the block does not declare. `child` is true for a wrapper band part: only a direct child of the
+	 *         root matches.
 	 */
 	public static function resolve( string $block_name, string $scope, string $target, array $element ): ?array {
 		$root = '.' . $scope;
@@ -111,12 +112,44 @@ final class Sgs_Motion_Targets {
 			return self::shape( $root, true, array(), null );
 		}
 		$declared = self::declared_selector( $block_name, $target );
+		$class    = '' !== $declared ? substr( $declared, 1 ) : self::part_class( $block_name, $target );
+		if ( in_array( $class, self::band_classes( $block_name ), true ) ) {
+			return self::shape( $root . ' > .' . $class, false, array( $class ), null, true );
+		}
 		if ( '' !== $declared ) {
 			$last = self::last_compound( $declared );
 			return self::shape( $root . ' ' . $declared, false, $last['classes'], null );
 		}
-		$class = self::part_class( $block_name, $target );
 		return self::shape( $root . ' .' . $class, false, array( $class ), null );
+	}
+
+	/**
+	 * The classes of the band `SGS_Container_Wrapper::render` prints as a direct child of the block root: the shared
+	 * `sgs-container__inner` and the block's own `sgs-<slug>__content-band`. A nested container's band carries the same
+	 * classes, so a part resolving to one of them is matched as a direct child of the scoped root only.
+	 *
+	 * @param string $block_name Block name.
+	 * @return array<int,string>
+	 */
+	private static function band_classes( string $block_name ): array {
+		return array( 'sgs-container__inner', self::part_class( $block_name, 'content-band' ) );
+	}
+
+	/**
+	 * Whether a block's sgsMotion names a band part (`content-band` or `inner`), so the container wrapper must print
+	 * the band for the layer to reach it.
+	 *
+	 * @param array<string,mixed> $attributes Block attributes.
+	 * @return bool
+	 */
+	public static function names_band( array $attributes ): bool {
+		$elements = isset( $attributes['sgsMotion']['elements'] ) && is_array( $attributes['sgsMotion']['elements'] ) ? $attributes['sgsMotion']['elements'] : array();
+		foreach ( array( 'content-band', 'inner' ) as $part ) {
+			if ( ! empty( $elements[ $part ] ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -126,15 +159,17 @@ final class Sgs_Motion_Targets {
 	 * @param bool              $is_root  Whether it is the block root.
 	 * @param array<int,string> $classes  Classes the element carries.
 	 * @param string|null       $tag      Its tag name, upper case.
-	 * @return array{selector:string,match:array{root:bool,classes:array<int,string>,tag:?string}}
+	 * @param bool              $child    Whether only a direct child of the root matches.
+	 * @return array{selector:string,match:array{root:bool,classes:array<int,string>,tag:?string,child:bool}}
 	 */
-	private static function shape( string $selector, bool $is_root, array $classes, ?string $tag ): array {
+	private static function shape( string $selector, bool $is_root, array $classes, ?string $tag, bool $child = false ): array {
 		return array(
 			'selector' => $selector,
 			'match'    => array(
 				'root'    => $is_root,
 				'classes' => $classes,
 				'tag'     => $tag,
+				'child'   => $child,
 			),
 		);
 	}

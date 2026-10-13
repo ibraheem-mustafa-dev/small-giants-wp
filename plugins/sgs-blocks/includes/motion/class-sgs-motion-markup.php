@@ -5,7 +5,8 @@
  * Attributes go on through `WP_HTML_Tag_Processor`, which escapes every value. The block root is the first tag after
  * any leading `<style>`/`<script>` a block prepends (the same skip `includes/animation-attributes.php` uses). A part
  * target is every element carrying its BEM class; a custom target is every element matching its selector's last
- * compound (classes and tag).
+ * compound (classes and tag). A target marked `child` (the container wrapper's band) matches a direct child of the root
+ * only, so a nested container's band, which carries the same classes, is never stamped.
  *
  * Injected layers: the tag processor cannot insert markup, so an element that needs layers is first marked with a
  * temporary attribute, then each `<span class="sgs-motion-layer" data-sgs-layer="<owner>" aria-hidden="true"></span>`
@@ -27,6 +28,9 @@ final class Sgs_Motion_Markup {
 	const MARK = 'data-sgs-ml-mark';
 
 	const VOID = array( 'AREA', 'BASE', 'BR', 'COL', 'EMBED', 'HR', 'IMG', 'INPUT', 'LINK', 'META', 'SOURCE', 'TRACK', 'WBR' );
+
+	/** Elements the tag processor visits as one token: their closer is never visited, so they never open a level. */
+	const ATOMIC = array( 'IFRAME', 'NOEMBED', 'NOFRAMES', 'SCRIPT', 'STYLE', 'TEXTAREA', 'TITLE', 'XMP' );
 
 	/**
 	 * Split leading `<style>`/`<script>` tags from the block's real root.
@@ -52,9 +56,13 @@ final class Sgs_Motion_Markup {
 	 *
 	 * @param \WP_HTML_Tag_Processor $p     Processor on a tag.
 	 * @param array<string,mixed>    $match Target matcher.
+	 * @param int                    $depth The tag's depth below the root (1 for a direct child).
 	 * @return bool
 	 */
-	private static function matches( $p, array $match ): bool {
+	private static function matches( $p, array $match, int $depth = 1 ): bool {
+		if ( ! empty( $match['child'] ) && 1 !== $depth ) {
+			return false;
+		}
 		if ( null !== $match['tag'] && $p->get_tag() !== $match['tag'] ) {
 			return false;
 		}
@@ -97,9 +105,11 @@ final class Sgs_Motion_Markup {
 				$marked = self::write( $p, $plan ) || $marked;
 			}
 		}
-		while ( $p->next_tag() ) {
+		$open = array( (string) $p->get_tag() );
+		while ( self::next_open( $p, $open ) ) {
+			$depth = count( $open ) - ( self::opens_level( $p ) ? 1 : 0 );
 			foreach ( $plans as $plan ) {
-				if ( ! $plan['match']['root'] && self::matches( $p, $plan['match'] ) ) {
+				if ( ! $plan['match']['root'] && self::matches( $p, $plan['match'], $depth ) ) {
 					$marked = self::write( $p, $plan ) || $marked;
 				}
 			}
@@ -109,6 +119,43 @@ final class Sgs_Motion_Markup {
 			$rest = self::inject_layers( $rest );
 		}
 		return $css_tag . $head . $rest;
+	}
+
+	/**
+	 * Advance to the next opening tag, keeping the stack of open elements (the root first). A closer pops back to its
+	 * matching open element; a closer with no open match is ignored.
+	 *
+	 * @param \WP_HTML_Tag_Processor $p    Processor.
+	 * @param array<int,string>      $open Open element names, upper case; the current tag is pushed when it opens a level.
+	 * @return bool Whether an opening tag was found.
+	 */
+	private static function next_open( $p, array &$open ): bool {
+		while ( $p->next_tag( array( 'tag_closers' => 'visit' ) ) ) {
+			$tag = (string) $p->get_tag();
+			if ( $p->is_tag_closer() ) {
+				$at = array_search( $tag, array_reverse( $open, true ), true );
+				if ( false !== $at ) {
+					$open = array_slice( $open, 0, (int) $at );
+				}
+				continue;
+			}
+			if ( self::opens_level( $p ) ) {
+				$open[] = $tag;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Whether the current opening tag holds children (not void, atomic or self-closing).
+	 *
+	 * @param \WP_HTML_Tag_Processor $p Processor on an opening tag.
+	 * @return bool
+	 */
+	private static function opens_level( $p ): bool {
+		$tag = (string) $p->get_tag();
+		return ! in_array( $tag, self::VOID, true ) && ! in_array( $tag, self::ATOMIC, true ) && ! $p->has_self_closing_flag();
 	}
 
 	/**
@@ -224,8 +271,10 @@ final class Sgs_Motion_Markup {
 		if ( $found && $match['root'] ) {
 			return self::holds_priority_image( $p );
 		}
+		$open  = array( (string) $p->get_tag() );
+		$found = $found && self::next_open( $p, $open );
 		while ( $found ) {
-			if ( self::matches( $p, $match ) ) {
+			if ( self::matches( $p, $match, count( $open ) - ( self::opens_level( $p ) ? 1 : 0 ) ) ) {
 				$p->set_attribute( self::MARK, 'probe' );
 				$probe = $p->get_updated_html();
 				$at    = strpos( $probe, self::MARK . '="probe"' );
@@ -239,7 +288,7 @@ final class Sgs_Motion_Markup {
 				}
 				return false;
 			}
-			$found = $p->next_tag();
+			$found = self::next_open( $p, $open );
 		}
 		return false;
 	}

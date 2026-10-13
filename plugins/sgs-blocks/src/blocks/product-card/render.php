@@ -1121,13 +1121,13 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			?>
 		</div>
 		<?php if ( '' !== $sgs_resolved_desc ) : ?>
-			<div class="product-desc"><?php echo wp_kses_post( $sgs_resolved_desc ); ?></div>
+			<div class="product-desc sgs-product-card__description"><?php echo wp_kses_post( $sgs_resolved_desc ); ?></div>
 		<?php endif; ?>
 		<?php
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 		echo sgs_product_card_rating_markup( $attributes );
 		?>
-		<div class="price-row">
+		<div class="price-row sgs-product-card__price-row">
 			<div class="sgs-product-card__price-group">
 			<?php if ( ! empty( $data['price_from_html'] ) ) : ?>
 				<div class="price price--from">
@@ -1598,7 +1598,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				</div>
 
 				<?php if ( '' !== $sgs_resolved_desc ) : ?>
-				<div class="product-desc">
+				<div class="product-desc sgs-product-card__description">
 					<?php echo wp_kses_post( $sgs_resolved_desc ); ?>
 				</div>
 				<?php endif; ?>
@@ -1662,7 +1662,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				?>
 
 				<?php // ── 2c. Price slot — bound to seeded context literals (SSR-wipe-safe). ?>
-				<div class="price-row" aria-live="polite">
+				<div class="price-row sgs-product-card__price-row" aria-live="polite">
 					<div class="sgs-product-card__price-group">
 					<span
 						class="price price--current"
@@ -1693,7 +1693,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					?>
 				</div>
 				<p
-					class="price-note price-note--per-unit"
+					class="price-note price-note--per-unit sgs-product-card__price-note"
 					data-wp-bind--hidden="context.perUnitHidden"
 					data-wp-text="context.perUnitDisplay"
 				><?php echo esc_html( $per_unit_display ); ?></p>
@@ -1805,7 +1805,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 						}
 						?>
 					<a
-						class="sgs-button sgs-button--<?php echo esc_attr( $sgs_cta2_style ); ?> product-card__cta-secondary"
+						class="sgs-button sgs-button--<?php echo esc_attr( $sgs_cta2_style ); ?> product-card__cta-secondary sgs-product-card__cta--secondary"
 						href="<?php echo $sgs_cta2_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both ternary arms esc_url'd above. ?>"
 					><?php echo esc_html( $sgs_cta2_text ); ?></a>
 					<?php endif; ?>
@@ -1981,7 +1981,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 	</div>
 
 	<?php if ( '' !== $sgs_resolved_desc ) : ?>
-		<div class="product-desc">
+		<div class="product-desc sgs-product-card__description">
 			<?php echo wp_kses_post( $sgs_resolved_desc ); ?>
 		</div>
 	<?php endif; ?>
@@ -2053,7 +2053,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 	endif;
 	?>
 
-	<div class="price-row" aria-live="polite">
+	<div class="price-row sgs-product-card__price-row" aria-live="polite">
 		<div class="sgs-product-card__price-group">
 		<?php
 		// Static SSR price. For a VARIABLE product we show "From <min>" — a
@@ -2164,7 +2164,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 			}
 			?>
 		<a
-			class="sgs-button sgs-button--<?php echo esc_attr( $sgs_nv_cta2_style ); ?> product-card__cta-secondary"
+			class="sgs-button sgs-button--<?php echo esc_attr( $sgs_nv_cta2_style ); ?> product-card__cta-secondary sgs-product-card__cta--secondary"
 			href="<?php echo $sgs_nv_cta2_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both ternary arms esc_url'd above. ?>"
 		><?php echo esc_html( $sgs_nv_cta2_text ); ?></a>
 		<?php endif; ?>

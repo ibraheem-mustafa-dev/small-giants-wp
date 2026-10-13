@@ -451,7 +451,7 @@ class Post_Grid_REST {
 				$cats = get_the_category( $post_id );
 				if ( ! empty( $cats ) ) {
 					$card .= sprintf(
-						'<span class="sgs-post-grid__badge"%s>%s</span>',
+						'<span class="sgs-post-grid__badge sgs-post-grid__category-badge"%s>%s</span>',
 						$badge_style,
 						esc_html( $cats[0]->name )
 					);
@@ -491,7 +491,7 @@ class Post_Grid_REST {
 			$cats = get_the_category( $post_id );
 			if ( ! empty( $cats ) ) {
 				$card .= sprintf(
-					'<span class="sgs-post-grid__category"%s>%s</span>',
+					'<span class="sgs-post-grid__category sgs-post-grid__category-badge"%s>%s</span>',
 					$badge_style,
 					esc_html( $cats[0]->name )
 				);
