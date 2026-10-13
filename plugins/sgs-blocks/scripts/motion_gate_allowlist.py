@@ -9,8 +9,8 @@ LANDED      plugins/sgs-blocks/scripts/data/motion-units-landed.json, a JSON arr
             `delete_in_unit` is in that array is an error: the fix it waited for has shipped, so the entry must be
             deleted and the gate must pass on its own. A missing landed file means no unit has landed.
 
-An entry also fails when a field is missing or `delete_in_unit` is not a unit id (letters-and-digits like "M2.2" or
-"M1.8a"), so an exception cannot be open-ended.
+An entry also fails when a field is missing or `delete_in_unit` is not a unit id (a build-plan id: "M2.2",
+"M1.8a", "M6.6C", the wave units "M3.W" and "M5.Z", or a removal group "M6.6-G0"), so an exception cannot be open-ended.
 """
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from pathlib import Path
 
 ALLOW_REL = Path("plugins/sgs-blocks/scripts/data/motion-gate-allowlist.json")
 LANDED_REL = Path("plugins/sgs-blocks/scripts/data/motion-units-landed.json")
-UNIT_ID = re.compile(r"^M\d+\.\d+[a-z]?$")
+UNIT_ID = re.compile(r"^M\d+\.(?:\d+[a-zA-Z]?|[A-Z])(?:-G\d+)?$")
 REQUIRED = ("gate", "pattern", "reason", "delete_in_unit")
 
 
