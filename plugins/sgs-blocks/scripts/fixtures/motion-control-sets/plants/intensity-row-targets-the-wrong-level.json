@@ -1,0 +1,11 @@
+{
+ "name": "intensity-row-targets-the-wrong-level",
+ "expect": "f-target:follow-pointer",
+ "ops": {
+  "preset_set": {
+   "follow-pointer-bold": {
+    "target": "surface"
+   }
+  }
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "name": "dramatic-label",
+ "expect": "e-dramatic:",
+ "ops": {
+  "preset_set": {
+   "magnet-bold": {
+    "label": "Magnet: Dramatic"
+   }
+  }
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "name": "intensity-row-differs-in-trigger",
+ "expect": "d-sibling:magnet",
+ "ops": {
+  "preset_set": {
+   "magnet-bold": {
+    "trigger": "click"
+   }
+  }
+ }
+}

@@ -1,0 +1,13 @@
+{
+ "name": "bold-distance-literal-where-token-maps",
+ "expect": "c-token:hover-translate",
+ "ops": {
+  "preset_set": {
+   "hover-translate-bold": {
+    "values": {
+     "translateX": 18
+    }
+   }
+  }
+ }
+}

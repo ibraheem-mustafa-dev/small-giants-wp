@@ -1,0 +1,16 @@
+{
+ "name": "fx-effect-without-5.4-row",
+ "expect": "a-table:planted-effect",
+ "ops": {
+  "fx_effects_add": [
+   "planted-effect"
+  ],
+  "schema_effect_add": {
+   "planted-effect": {
+    "label": "P",
+    "values": "#/$defs/GlareValues",
+    "x-target-level": "part"
+   }
+  }
+ }
+}

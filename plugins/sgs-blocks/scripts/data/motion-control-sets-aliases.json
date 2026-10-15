@@ -1,0 +1,10 @@
+{
+  "__doc": "Spec 38A section 5.4 rows whose Effect cell is prose, not a backticked slug: the lower-case start of the cell maps to the motion_presets families (or effects) it governs. Read by check-motion-control-sets.py.",
+  "aliases": {
+    "follow pointer": ["follow-pointer"],
+    "hover lift": ["hover-lift"],
+    "hover scale and image zoom": ["hover-scale"],
+    "hover rotate and translate": ["hover-rotate", "hover-translate"],
+    "nav panel open and item stagger": ["nav-panel-item"]
+  }
+}

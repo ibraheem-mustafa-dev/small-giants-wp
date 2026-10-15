@@ -1,0 +1,367 @@
+{
+ "__doc": "Clean fixture world for check-motion-control-sets.py --self-test: fx_effects slugs, motion_presets rows, schema subset and the token bands. Every plant in plants/ mutates a copy and must be caught.",
+ "table": "spec-5.4-table.md",
+ "fx_effects": [
+  "magnet",
+  "parallax",
+  "glare",
+  "horizontal-panel",
+  "scroll-smoother"
+ ],
+ "presets": [
+  {
+   "slug": "magnet-subtle",
+   "panel": "hover",
+   "effect": "magnet",
+   "family": "magnet",
+   "kind": "intensity",
+   "intensity": "subtle",
+   "label": "Magnet: Subtle",
+   "values": {
+    "maxPullX": 4,
+    "radius": 120
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "magnet-standard",
+   "panel": "hover",
+   "effect": "magnet",
+   "family": "magnet",
+   "kind": "intensity",
+   "intensity": "standard",
+   "label": "Magnet: Standard",
+   "values": {
+    "maxPullX": 10,
+    "radius": 120
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "magnet-bold",
+   "panel": "hover",
+   "effect": "magnet",
+   "family": "magnet",
+   "kind": "intensity",
+   "intensity": "bold",
+   "label": "Magnet: Bold",
+   "values": {
+    "maxPullX": 24,
+    "radius": 160
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "parallax-subtle",
+   "panel": "effects",
+   "effect": "parallax",
+   "family": "parallax",
+   "kind": "intensity",
+   "intensity": "subtle",
+   "label": "Parallax: Subtle",
+   "values": {
+    "speedRatio": 0.05
+   },
+   "trigger": "scroll",
+   "target": "part"
+  },
+  {
+   "slug": "parallax-standard",
+   "panel": "effects",
+   "effect": "parallax",
+   "family": "parallax",
+   "kind": "intensity",
+   "intensity": "standard",
+   "label": "Parallax: Standard",
+   "values": {
+    "speedRatio": 0.1
+   },
+   "trigger": "scroll",
+   "target": "part"
+  },
+  {
+   "slug": "parallax-bold",
+   "panel": "effects",
+   "effect": "parallax",
+   "family": "parallax",
+   "kind": "intensity",
+   "intensity": "bold",
+   "label": "Parallax: Bold",
+   "values": {
+    "speedRatio": 0.2
+   },
+   "trigger": "scroll",
+   "target": "part"
+  },
+  {
+   "slug": "follow-pointer-subtle",
+   "panel": "hover",
+   "effect": null,
+   "family": "follow-pointer",
+   "kind": "intensity",
+   "intensity": "subtle",
+   "label": "Follow-Pointer: Subtle",
+   "values": {
+    "maxAngle": 4
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "follow-pointer-standard",
+   "panel": "hover",
+   "effect": null,
+   "family": "follow-pointer",
+   "kind": "intensity",
+   "intensity": "standard",
+   "label": "Follow-Pointer: Standard",
+   "values": {
+    "maxAngle": 8
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "follow-pointer-bold",
+   "panel": "hover",
+   "effect": null,
+   "family": "follow-pointer",
+   "kind": "intensity",
+   "intensity": "bold",
+   "label": "Follow-Pointer: Bold",
+   "values": {
+    "maxAngle": 12
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "hover-rotate-subtle",
+   "panel": "hover",
+   "effect": null,
+   "family": "hover-rotate",
+   "kind": "intensity",
+   "intensity": "subtle",
+   "label": "Hover-Rotate: Subtle",
+   "values": {
+    "rotate": 1
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "hover-rotate-standard",
+   "panel": "hover",
+   "effect": null,
+   "family": "hover-rotate",
+   "kind": "intensity",
+   "intensity": "standard",
+   "label": "Hover-Rotate: Standard",
+   "values": {
+    "rotate": 3
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "hover-rotate-bold",
+   "panel": "hover",
+   "effect": null,
+   "family": "hover-rotate",
+   "kind": "intensity",
+   "intensity": "bold",
+   "label": "Hover-Rotate: Bold",
+   "values": {
+    "rotate": 6
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "hover-translate-subtle",
+   "panel": "hover",
+   "effect": null,
+   "family": "hover-translate",
+   "kind": "intensity",
+   "intensity": "subtle",
+   "label": "Hover-Translate: Subtle",
+   "values": {
+    "translateX": "token:distance.xs"
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "hover-translate-standard",
+   "panel": "hover",
+   "effect": null,
+   "family": "hover-translate",
+   "kind": "intensity",
+   "intensity": "standard",
+   "label": "Hover-Translate: Standard",
+   "values": {
+    "translateX": "token:distance.md"
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "hover-translate-bold",
+   "panel": "hover",
+   "effect": null,
+   "family": "hover-translate",
+   "kind": "intensity",
+   "intensity": "bold",
+   "label": "Hover-Translate: Bold",
+   "values": {
+    "translateX": "token:distance.lg"
+   },
+   "trigger": "hover",
+   "target": "part"
+  },
+  {
+   "slug": "nav-panel-item-subtle",
+   "panel": "hover",
+   "effect": null,
+   "family": "nav-panel-item",
+   "kind": "intensity",
+   "intensity": "subtle",
+   "label": "Nav-Panel-Item: Subtle",
+   "values": {
+    "from": {
+     "translateY": "token:distance.md"
+    }
+   },
+   "trigger": "open",
+   "target": "part"
+  },
+  {
+   "slug": "nav-panel-item-standard",
+   "panel": "hover",
+   "effect": null,
+   "family": "nav-panel-item",
+   "kind": "intensity",
+   "intensity": "standard",
+   "label": "Nav-Panel-Item: Standard",
+   "values": {
+    "from": {
+     "translateY": "token:distance.lg"
+    }
+   },
+   "trigger": "open",
+   "target": "part"
+  },
+  {
+   "slug": "nav-panel-item-bold",
+   "panel": "hover",
+   "effect": null,
+   "family": "nav-panel-item",
+   "kind": "intensity",
+   "intensity": "bold",
+   "label": "Nav-Panel-Item: Bold",
+   "values": {
+    "from": {
+     "translateY": "token:distance.xl"
+    }
+   },
+   "trigger": "open",
+   "target": "part"
+  }
+ ],
+ "schema": {
+  "x-sgs-tokens": {
+   "distance.xs": {
+    "band": {
+     "kind": "length",
+     "unit": "px",
+     "min": 2,
+     "max": 3
+    }
+   },
+   "distance.sm": {
+    "band": {
+     "kind": "length",
+     "unit": "px",
+     "min": 3,
+     "max": 4
+    }
+   },
+   "distance.md": {
+    "band": {
+     "kind": "length",
+     "unit": "px",
+     "min": 6,
+     "max": 12
+    }
+   },
+   "distance.lg": {
+    "band": {
+     "kind": "length",
+     "unit": "px",
+     "min": 12,
+     "max": 24
+    }
+   },
+   "distance.xl": {
+    "band": {
+     "kind": "length",
+     "unit": "px",
+     "min": 24,
+     "max": 48
+    }
+   }
+  },
+  "x-sgs-effects": {
+   "magnet": {
+    "label": "Magnet",
+    "values": "#/$defs/MagnetValues",
+    "x-target-level": "part"
+   },
+   "parallax": {
+    "label": "Parallax",
+    "values": "#/$defs/ParallaxValues",
+    "x-target-level": "part"
+   },
+   "glare": {
+    "label": "Glare",
+    "values": "#/$defs/GlareValues",
+    "x-target-level": "part"
+   },
+   "horizontal-panel": {
+    "label": "Horizontal panel",
+    "values": "#/$defs/HorizontalPanelValues",
+    "x-target-level": "block"
+   }
+  },
+  "$defs": {
+   "MagnetValues": {
+    "properties": {
+     "maxPullX": {
+      "x-sgs-field": {
+       "fieldType": "distance"
+      }
+     },
+     "radius": {
+      "x-sgs-field": {
+       "fieldType": "distance"
+      }
+     }
+    }
+   },
+   "ParallaxValues": {
+    "properties": {
+     "speedRatio": {}
+    }
+   },
+   "GlareValues": {
+    "properties": {}
+   },
+   "HorizontalPanelValues": {
+    "properties": {}
+   }
+  }
+ }
+}

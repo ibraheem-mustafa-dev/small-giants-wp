@@ -1,0 +1,9 @@
+{
+ "name": "schema-entry-missing-for-fx-effect",
+ "expect": "a-schema:parallax",
+ "ops": {
+  "schema_effect_drop": [
+   "parallax"
+  ]
+ }
+}

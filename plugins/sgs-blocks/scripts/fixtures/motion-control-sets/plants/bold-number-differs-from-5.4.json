@@ -1,0 +1,14 @@
+{
+ "name": "bold-number-differs-from-5.4",
+ "expect": "b-values:magnet",
+ "ops": {
+  "preset_set": {
+   "magnet-bold": {
+    "values": {
+     "maxPullX": 30,
+     "radius": 160
+    }
+   }
+  }
+ }
+}

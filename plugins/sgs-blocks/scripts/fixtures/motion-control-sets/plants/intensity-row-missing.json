@@ -1,0 +1,9 @@
+{
+ "name": "intensity-row-missing",
+ "expect": "b-count:parallax",
+ "ops": {
+  "preset_drop": [
+   "parallax-bold"
+  ]
+ }
+}
