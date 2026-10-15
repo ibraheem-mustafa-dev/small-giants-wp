@@ -25,7 +25,7 @@
  * motion, rather than skipping the CSS-fallback discipline entirely).
  */
 
-[data-sgs-fx="generative-background"] {
+[data-sgs-fx~="generative-background"] {
 	position: relative;
 	overflow: hidden;
 	background-color: var( --sgs-genbg-ground, var( --wp--preset--color--surface ) );
@@ -133,7 +133,7 @@
  * descendant selector, so nested structures get one layer, not one each.
  * Enforced by `scripts/check-child-lift.py`.
  */
-:where( [data-sgs-fx="generative-background"] ) > * {
+:where( [data-sgs-fx~="generative-background"] ) > * {
 	position: relative;
 	z-index: 2;
 }

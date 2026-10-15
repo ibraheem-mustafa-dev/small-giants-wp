@@ -59,7 +59,7 @@ const SGS_FX_PARTICLE_COLOUR_VAR = '--sgs-fx-particle-colour';
 function sgs_apply_fx_particles( string $block_content ): string {
 	// Cheap bail before constructing a tag processor for every block on the
 	// page — this filter runs on ALL of them.
-	if ( false === \strpos( $block_content, 'data-sgs-fx="particles"' ) ) {
+	if ( ! sgs_fx_markup_has_effect( $block_content, 'particles' ) ) {
 		return $block_content;
 	}
 
@@ -80,7 +80,7 @@ function sgs_apply_fx_particles( string $block_content ): string {
 		return $block_content;
 	}
 
-	if ( 'particles' !== $processor->get_attribute( 'data-sgs-fx' ) ) {
+	if ( ! sgs_fx_has_effect( $processor->get_attribute( 'data-sgs-fx' ), 'particles' ) ) {
 		return $block_content;
 	}
 

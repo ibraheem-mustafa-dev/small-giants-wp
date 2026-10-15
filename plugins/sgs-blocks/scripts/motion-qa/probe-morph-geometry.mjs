@@ -66,7 +66,7 @@ const SAMPLER = ( [ selector, ms ] ) =>
 		requestAnimationFrame( tick );
 	} );
 
-const VISUAL = 'path[data-sgs-fx="morph"]';
+const VISUAL = 'path[data-sgs-fx~="morph"]';
 const STATIC_CONTROL = '.sgs-fx-shape-target path';
 
 const browser = await chromium.launch();

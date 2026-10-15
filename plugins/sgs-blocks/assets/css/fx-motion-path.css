@@ -179,22 +179,22 @@
  * two selectors rather than one so an explicit `rest="middle"` and an unset
  * attribute are both self-documenting at the call site.
  */
-[data-sgs-fx="motion-path"],
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="middle"] {
+[data-sgs-fx~="motion-path"],
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="middle"] {
 	--sgs-fx-motion-path-rest-y: max(
 		calc( var( --sgs-header-height, 80px ) + 16px ),
 		50vh
 	);
 }
 
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="below-header"] {
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="below-header"] {
 	--sgs-fx-motion-path-rest-y: max(
 		calc( var( --sgs-header-height, 80px ) + 16px ),
 		calc( var( --sgs-header-height, 80px ) + 24px )
 	);
 }
 
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="lower-third"] {
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="lower-third"] {
 	--sgs-fx-motion-path-rest-y: max(
 		calc( var( --sgs-header-height, 80px ) + 16px ),
 		75vh
@@ -214,34 +214,34 @@
  * see the RangeControl `step={5}` in `fx.js`, which is what keeps this table
  * exhaustive rather than a guess at which values a client could pick.
  */
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"] {
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"] {
 	--sgs-fx-motion-path-rest-y: max(
 		calc( var( --sgs-header-height, 80px ) + 16px ),
 		50vh
 	);
 }
 
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="0"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 0vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="5"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 5vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="10"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 10vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="15"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 15vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="20"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 20vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="25"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 25vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="30"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 30vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="35"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 35vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="40"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 40vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="45"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 45vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="50"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 50vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="55"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 55vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="60"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 60vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="65"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 65vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="70"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 70vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="75"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 75vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="80"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 80vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="85"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 85vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="90"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 90vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="95"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 95vh ); }
-[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="100"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 100vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="0"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 0vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="5"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 5vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="10"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 10vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="15"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 15vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="20"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 20vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="25"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 25vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="30"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 30vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="35"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 35vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="40"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 40vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="45"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 45vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="50"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 50vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="55"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 55vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="60"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 60vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="65"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 65vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="70"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 70vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="75"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 75vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="80"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 80vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="85"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 85vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="90"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 90vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="95"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 95vh ); }
+[data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="100"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 100vh ); }
 
 /*
  * The handoff state. `fx-motion-path.js` adds this class via ScrollTrigger's
@@ -252,7 +252,7 @@
  * away normally once its own containing block scrolls past, rather than
  * staying glued to the screen forever.
  */
-[data-sgs-fx="motion-path"].sgs-fx-motion-path--resting {
+[data-sgs-fx~="motion-path"].sgs-fx-motion-path--resting {
 	position: sticky;
 	top: var( --sgs-fx-motion-path-rest-y );
 }
@@ -267,7 +267,7 @@
  * could fall out of sync with this one.
  */
 @media ( prefers-reduced-motion: reduce ) {
-	[data-sgs-fx="motion-path"] {
+	[data-sgs-fx~="motion-path"] {
 		position: sticky;
 		top: var( --sgs-fx-motion-path-rest-y );
 	}

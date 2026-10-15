@@ -17,7 +17,7 @@
  * boot module sets only after a draw has actually succeeded.
  */
 
-[data-sgs-fx="wave-gradient"] {
+[data-sgs-fx~="wave-gradient"] {
 	position: relative;
 	isolation: isolate;
 
@@ -98,7 +98,7 @@
    both out-rank this rule on their own declarations, with no registration
    anywhere. A new decorative layer needs to do nothing except style itself.
    Enforced by `scripts/check-child-lift.py`. */
-:where( [data-sgs-fx="wave-gradient"] ) > * {
+:where( [data-sgs-fx~="wave-gradient"] ) > * {
 	position: relative;
 	z-index: 1;
 }
@@ -217,21 +217,21 @@
 	--sgs-wave-3: #B45BB8;
 }
 
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel,
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon,
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon,
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--pastel,
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--horizon,
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--ribbon,
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--veil {
 	background-image: none;
 }
 
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::before,
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::after,
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::before,
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::after,
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::before,
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::after,
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::before,
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::after {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--pastel::before,
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--pastel::after,
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--horizon::before,
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--horizon::after,
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--ribbon::before,
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--ribbon::after,
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--veil::before,
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--veil::after {
 	content: "";
 	position: absolute;
 	inset: 0;
@@ -240,7 +240,7 @@
 }
 
 /* PASTEL — mid-luminance mint/violet blobs travelling over a shifting base. */
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--pastel {
 	background-color: color-mix( in srgb, var( --sgs-wave-base ) 70%, var( --sgs-wave-3 ) 30% );
 	background-image: linear-gradient(
 		100deg,
@@ -256,7 +256,7 @@
 	animation: sgs-wave-pastel-base 26s ease-in-out infinite;
 }
 
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::before {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--pastel::before {
 	background: radial-gradient(
 		46% 50% at 50% 50%,
 		var( --sgs-wave-1 ) 0%,
@@ -269,7 +269,7 @@
 	animation: sgs-wave-pastel-layer-a 19s ease-in-out infinite;
 }
 
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::after {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--pastel::after {
 	background: radial-gradient(
 		46% 50% at 50% 50%,
 		var( --sgs-wave-2 ) 0%,
@@ -284,7 +284,7 @@
 }
 
 /* HORIZON — dark ground, teal/violet glow banked along the bottom edge. */
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--horizon {
 	background-color: var( --sgs-wave-base );
 	background-image: linear-gradient(
 		to top,
@@ -294,7 +294,7 @@
 	);
 }
 
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::before {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--horizon::before {
 	top: auto;
 	bottom: 0;
 	height: 60%;
@@ -309,7 +309,7 @@
 	animation: sgs-wave-horizon-layer-a 17s ease-in-out infinite;
 }
 
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::after {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--horizon::after {
 	top: auto;
 	bottom: 0;
 	height: 46%;
@@ -326,7 +326,7 @@
 }
 
 /* RIBBON — a single diagonal band crossing a dark ground, plus a thinner echo. */
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--ribbon {
 	background-color: var( --sgs-wave-base );
 	background-image: radial-gradient(
 		120% 120% at 20% 0%,
@@ -335,7 +335,7 @@
 	);
 }
 
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::before {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--ribbon::before {
 	top: 50%;
 	left: -25%;
 	right: auto;
@@ -356,7 +356,7 @@
 	animation: sgs-wave-ribbon-layer-a 20s ease-in-out infinite;
 }
 
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::after {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--ribbon::after {
 	top: 50%;
 	left: -25%;
 	right: auto;
@@ -378,7 +378,7 @@
 }
 
 /* VEIL — broad overlapping sheets that cross and swap sides on a dark ground. */
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--veil {
 	background-color: var( --sgs-wave-base );
 	background-image: radial-gradient(
 		100% 100% at 50% 50%,
@@ -387,7 +387,7 @@
 	);
 }
 
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::before {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--veil::before {
 	top: -29%;
 	left: -37%;
 	right: auto;
@@ -401,7 +401,7 @@
 	animation: sgs-wave-veil-layer-a 22s ease-in-out infinite;
 }
 
-[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::after {
+[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--veil::after {
 	top: -29%;
 	left: -37%;
 	right: auto;
@@ -507,15 +507,15 @@
 }
 
 @media ( prefers-reduced-motion: reduce ) {
-	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel,
-	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::before,
-	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::after,
-	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::before,
-	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::after,
-	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::before,
-	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::after,
-	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::before,
-	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::after {
+	[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--pastel,
+	[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--pastel::before,
+	[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--pastel::after,
+	[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--horizon::before,
+	[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--horizon::after,
+	[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--ribbon::before,
+	[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--ribbon::after,
+	[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--veil::before,
+	[data-sgs-fx~="wave-gradient"].sgs-wave-gradient--veil::after {
 		animation: none;
 	}
 }

@@ -44,7 +44,7 @@ import { resolvePreset } from './surface-treatments/presets';
 import { prefersReducedMotion, rafThrottle } from './motion-utils';
 
 /** Elements the render layer marked as surface-treatment hosts. */
-const SELECTOR = '[data-sgs-fx="surface-treatment"]';
+const SELECTOR = '[data-sgs-fx~="surface-treatment"]';
 
 /** Live cleanups, so a bfcache restore can tear down before re-init. */
 let cleanups = [];

@@ -19,7 +19,7 @@
  * and no second code path to keep in sync (§1.6).
  */
 
-[data-sgs-fx="particles"] {
+[data-sgs-fx~="particles"] {
 	/* The canvas is positioned `absolute` against this box — it must be a
 	   positioning context. `inline-block` on request, same reasoning
 	   `fx-magnet.js` documents for its own selector: a transform/absolute
@@ -27,7 +27,7 @@
 	position: relative;
 }
 
-[data-sgs-fx="particles"]:where( a, span, em, strong, label, code ) {
+[data-sgs-fx~="particles"]:where( a, span, em, strong, label, code ) {
 	display: inline-block;
 }
 

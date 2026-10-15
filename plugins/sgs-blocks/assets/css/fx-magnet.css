@@ -23,7 +23,7 @@
  * (180ms) that it never feels laggy while tracking.
  */
 
-[data-sgs-fx="magnet"] {
+[data-sgs-fx~="magnet"] {
 	/* `inline-block` guards the case where a magnet is applied to something
 	   that is `display: inline` — a transform does not apply to a non-replaced
 	   inline box, so the effect would silently do nothing. Only promoted when
@@ -38,7 +38,7 @@
 }
 
 /* An inline element cannot be transformed. Promote ONLY that case. */
-[data-sgs-fx="magnet"]:where( a, span, em, strong, label, code ) {
+[data-sgs-fx~="magnet"]:where( a, span, em, strong, label, code ) {
 	display: inline-block;
 }
 
@@ -59,7 +59,7 @@
 	 * contract holds even if a future driver forgets its own gate. Belt and
 	 * braces, with the belt named.
 	 */
-	[data-sgs-fx="magnet"] {
+	[data-sgs-fx~="magnet"] {
 		transform: none;
 		transition: none;
 	}

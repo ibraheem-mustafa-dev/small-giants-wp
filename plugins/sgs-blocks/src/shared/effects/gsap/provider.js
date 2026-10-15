@@ -408,7 +408,7 @@ function isDisabledAtThisTier( el ) {
 }
 
 export function bootEffect( effect, init ) {
-	const selector = `[data-sgs-fx="${ effect }"]`;
+	const selector = `[data-sgs-fx~="${ effect }"]`;
 	/*
 	 * Evaluated once, at boot. A visitor who RESIZES across a tier boundary
 	 * mid-session keeps whatever was decided on load — re-booting effects on

@@ -48,7 +48,7 @@ import { createAurora } from './webgl/aurora';
 import { prefersReducedMotion } from './motion-utils';
 
 /** Elements the render layer marked. */
-const SELECTOR = '[data-sgs-fx="wave-gradient"]';
+const SELECTOR = '[data-sgs-fx~="wave-gradient"]';
 
 /** Live instances, so a bfcache restore can tear down before re-init. */
 let instances = [];

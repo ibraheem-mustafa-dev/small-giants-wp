@@ -38,7 +38,7 @@ import { chromium } from 'playwright';
 
 const URL_UNDER_TEST =
 	'https://sandybrown-nightingale-600381.hostingersite.com/?p=2109&cb=d728path';
-const MOVER = '[data-sgs-fx="motion-path"]';
+const MOVER = '[data-sgs-fx~="motion-path"]';
 
 const browser = await chromium.launch();
 const page = await browser.newPage( { viewport: { width: 375, height: 812 } } );

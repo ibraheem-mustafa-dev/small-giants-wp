@@ -46,7 +46,7 @@ import {
 } from './motion-utils';
 
 /** Elements the render layer marked. */
-const SELECTOR = '[data-sgs-fx="particles"]';
+const SELECTOR = '[data-sgs-fx~="particles"]';
 
 /** The only three shipped presets — anything else falls back to 'sparks'. */
 const VALID_PRESETS = [ 'sparks', 'gravity-dots', 'ripple' ];

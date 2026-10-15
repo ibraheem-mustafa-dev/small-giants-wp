@@ -34,7 +34,7 @@ import { createMagnet } from './magnet';
 import { prefersReducedMotion, rafThrottle, isTouchInput } from './motion-utils';
 
 /** Elements the render layer marked. */
-const SELECTOR = '[data-sgs-fx="magnet"]';
+const SELECTOR = '[data-sgs-fx~="magnet"]';
 
 /** Fallbacks when an instance declares no value of its own. */
 const DEFAULT_RADIUS = 120;

@@ -113,7 +113,7 @@ const inViewportFn = () => {
 	// unrelated off-canvas/hidden nav element that happens to sit in the tab
 	// order" — the latter is a site-wide header bug out of Step 13's scope,
 	// not a defect in fx-pin-scrub.js / fx-horizontal-panel.js.
-	const insidePin = !! el.closest( '[data-sgs-fx="pin-scrub"], [data-sgs-fx="horizontal-panel"]' );
+	const insidePin = !! el.closest( '[data-sgs-fx~="pin-scrub"], [data-sgs-fx~="horizontal-panel"]' );
 	const hiddenAncestor = ( () => {
 		let node = el;
 		while ( node && node !== document.body ) {
@@ -298,7 +298,7 @@ async function reachPinTimeline( page ) {
 			return { error: 'NO_GETALL' };
 		}
 		const st = ST.getAll().find(
-			( s ) => s.trigger && 'pin-scrub' === s.trigger.getAttribute( 'data-sgs-fx' )
+			( s ) => s.trigger && ( s.trigger.getAttribute( 'data-sgs-fx' ) || '' ).split( /\s+/ ).includes( 'pin-scrub' )
 		);
 		if ( ! st ) {
 			return { error: 'NO_PIN_SCRUB_TRIGGER' };
@@ -333,7 +333,7 @@ async function effectiveOpacityOfFocus( page ) {
 		if ( ! el || el === document.body ) {
 			return { effective: null, own: null, chain: [], tag: null, text: null };
 		}
-		const root = el.closest( '[data-sgs-fx="pin-scrub"]' );
+		const root = el.closest( '[data-sgs-fx~="pin-scrub"]' );
 		const chain = [];
 		let node = el;
 		while ( node && node !== document.body ) {
@@ -392,7 +392,7 @@ async function traceEffectiveOpacity( page, ms, everyMs ) {
 					if ( ! el || el === document.body ) {
 						return { eff: null, tag: null };
 					}
-					const root = el.closest( '[data-sgs-fx="pin-scrub"]' );
+					const root = el.closest( '[data-sgs-fx~="pin-scrub"]' );
 					let node = el;
 					let eff = 1;
 					while ( node && node !== document.body ) {
@@ -613,7 +613,7 @@ async function runPinScrub( browser, reducedMotion ) {
 		reduce: matchMedia( '(prefers-reduced-motion: reduce)' ).matches,
 	} ) );
 
-	const activation = await findActivePinScrollY( page, '[data-sgs-fx="pin-scrub"]' );
+	const activation = await findActivePinScrollY( page, '[data-sgs-fx~="pin-scrub"]' );
 
 	let tabResults = null;
 	let negControl = null;
@@ -630,7 +630,7 @@ async function runPinScrub( browser, reducedMotion ) {
 				before.focus();
 			}
 		} );
-		tabResults = await tabWalk( page, '[data-sgs-fx="pin-scrub"]', 6 );
+		tabResults = await tabWalk( page, '[data-sgs-fx~="pin-scrub"]', 6 );
 
 		negControl = await negativeControl( page );
 	}
@@ -651,7 +651,7 @@ async function runPinScrub( browser, reducedMotion ) {
 			before.focus();
 		}
 	} );
-	const baseline = await tabWalk( basePage, '[data-sgs-fx="pin-scrub"]', 6 );
+	const baseline = await tabWalk( basePage, '[data-sgs-fx~="pin-scrub"]', 6 );
 	await basePage.close();
 
 	await page.screenshot( {
@@ -686,7 +686,7 @@ async function runPinScrubRealFocus( browser, reducedMotion ) {
 	} ) );
 
 	const focusablesPresent = await page.evaluate( () => {
-		const host = document.querySelector( '[data-sgs-fx="pin-scrub"]' );
+		const host = document.querySelector( '[data-sgs-fx~="pin-scrub"]' );
 		if ( ! host ) {
 			return { error: 'NO_HOST' };
 		}
@@ -699,7 +699,7 @@ async function runPinScrubRealFocus( browser, reducedMotion ) {
 		};
 	} );
 
-	const activation = await findActivePinScrollY( page, '[data-sgs-fx="pin-scrub"]' );
+	const activation = await findActivePinScrollY( page, '[data-sgs-fx~="pin-scrub"]' );
 
 	/*
 	 * `activation.scrollY` is `null` when a spacer exists but no fixed frame
@@ -742,7 +742,7 @@ async function runPinScrubRealFocus( browser, reducedMotion ) {
 		// 5 presses: link, hidden honeypot is skipped (tabindex=-1, verified
 		// live 2026-08-01), form field, submit button, one more to confirm
 		// focus exits the pin cleanly onto `#step22-after`.
-		tabResults = await tabWalk( page, '[data-sgs-fx="pin-scrub"]', 5, { timeline: true } );
+		tabResults = await tabWalk( page, '[data-sgs-fx~="pin-scrub"]', 5, { timeline: true } );
 	} else {
 		// No spacer at all (the reduced-motion arm's expected shape) — still
 		// walk Tab from a known origin with NO forced scroll, so the SIMPLIFY
@@ -755,7 +755,7 @@ async function runPinScrubRealFocus( browser, reducedMotion ) {
 				before.focus( { preventScroll: true } );
 			}
 		} );
-		tabResults = await tabWalk( page, '[data-sgs-fx="pin-scrub"]', 5, { timeline: true } );
+		tabResults = await tabWalk( page, '[data-sgs-fx~="pin-scrub"]', 5, { timeline: true } );
 	}
 
 	await page.screenshot( {
@@ -815,7 +815,7 @@ async function runScrubWindowRace( browser ) {
 	await page.waitForTimeout( 1200 );
 	const hrefStart = page.url();
 
-	const activation = await findActivePinScrollY( page, '[data-sgs-fx="pin-scrub"]' );
+	const activation = await findActivePinScrollY( page, '[data-sgs-fx~="pin-scrub"]' );
 	if ( ! Number.isFinite( activation.scrollY ) ) {
 		await context.close();
 		return { hrefStart, activation, error: 'NO_ACTIVATION' };
@@ -910,7 +910,7 @@ async function runMouseChoreographyControl( browser ) {
 	const hrefStart = page.url();
 
 	const sweep = await page.evaluate( async () => {
-		const host = document.querySelector( '[data-sgs-fx="pin-scrub"]' );
+		const host = document.querySelector( '[data-sgs-fx~="pin-scrub"]' );
 		if ( ! host ) {
 			return { error: 'NO_HOST' };
 		}
@@ -935,7 +935,7 @@ async function runMouseChoreographyControl( browser ) {
 				activeInsidePin: !! (
 					document.activeElement &&
 					document.activeElement.closest &&
-					document.activeElement.closest( '[data-sgs-fx="pin-scrub"]' )
+					document.activeElement.closest( '[data-sgs-fx~="pin-scrub"]' )
 				),
 			} );
 		}
@@ -963,7 +963,7 @@ async function runHorizontalPanel( browser, reducedMotion ) {
 	// Structural facts under THIS arm: is it pinned (desktop, motion-allowed)
 	// or is it the native CSS scroll-snap fallback (reduced motion / mobile)?
 	const structure = await page.evaluate( () => {
-		const host = document.querySelector( '[data-sgs-fx="horizontal-panel"]' );
+		const host = document.querySelector( '[data-sgs-fx~="horizontal-panel"]' );
 		if ( ! host ) {
 			return { error: 'NO_HOST' };
 		}
@@ -978,7 +978,7 @@ async function runHorizontalPanel( browser, reducedMotion ) {
 	// Bring the host into range so, on the motion-allowed arm, the pin can
 	// engage; measure across a sweep like the pin-scrub probe.
 	const activation = await page.evaluate( async () => {
-		const host = document.querySelector( '[data-sgs-fx="horizontal-panel"]' );
+		const host = document.querySelector( '[data-sgs-fx~="horizontal-panel"]' );
 		if ( ! host ) {
 			return { error: 'NO_HOST' };
 		}
@@ -1036,7 +1036,7 @@ async function runHorizontalPanel( browser, reducedMotion ) {
 		// focusable elements are outside the panel row (header nav, later
 		// content). This walk exercises "Tab THROUGH and out the far side":
 		// enough presses to pass every panel and land on whatever comes next.
-		tabResults = await tabWalk( page, '[data-sgs-fx="horizontal-panel"]', 8 );
+		tabResults = await tabWalk( page, '[data-sgs-fx~="horizontal-panel"]', 8 );
 		tabThroughAndOut = tabResults[ tabResults.length - 1 ];
 	} else {
 		// Reduced-motion / not-pinned arm: still walk Tab across the native
@@ -1049,7 +1049,7 @@ async function runHorizontalPanel( browser, reducedMotion ) {
 				before.focus();
 			}
 		} );
-		tabResults = await tabWalk( page, '[data-sgs-fx="horizontal-panel"]', 8 );
+		tabResults = await tabWalk( page, '[data-sgs-fx~="horizontal-panel"]', 8 );
 		tabThroughAndOut = tabResults[ tabResults.length - 1 ];
 	}
 
@@ -1067,7 +1067,7 @@ async function runHorizontalPanel( browser, reducedMotion ) {
 			before.focus();
 		}
 	} );
-	const baseline = await tabWalk( basePage, '[data-sgs-fx="horizontal-panel"]', 8 );
+	const baseline = await tabWalk( basePage, '[data-sgs-fx~="horizontal-panel"]', 8 );
 	await basePage.close();
 
 	await page.screenshot( {

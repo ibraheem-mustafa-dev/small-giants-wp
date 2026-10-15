@@ -160,7 +160,7 @@ try {
 		await page.waitForTimeout( 1200 );
 
 		for ( const fx of effects ) {
-			const sel = `[data-sgs-fx="${ fx }"]`;
+			const sel = `[data-sgs-fx~="${ fx }"]`;
 			const v = await page.evaluate( VISIBILITY, sel );
 			if ( v.missing ) {
 				line( `${ fx }: UNANSWERED — no ${ sel } on this page. Nothing measured.` );

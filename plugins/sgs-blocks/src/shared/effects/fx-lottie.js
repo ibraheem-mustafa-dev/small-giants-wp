@@ -29,7 +29,7 @@ import { init as playerInit } from './lottie-adapter.js';
 import { prefersReducedMotion, rafThrottle } from '../effects/motion-utils.js';
 
 /** Elements the render layer marked. */
-const SELECTOR = '.sgs-lottie[data-sgs-fx="lottie"]';
+const SELECTOR = '.sgs-lottie[data-sgs-fx~="lottie"]';
 
 /** Live instances, keyed by their element, so cleanup can find every one. */
 const instances = new Map();

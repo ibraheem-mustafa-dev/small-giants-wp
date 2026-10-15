@@ -28,6 +28,9 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+// Token matching for the `data-sgs-fx` list grammar; the fx filters loaded after this file call it.
+require_once __DIR__ . '/fx-token-match.php';
+
 /**
  * Block attribute name => rendered data-attribute suffix (Spec 38 §11.2).
  */

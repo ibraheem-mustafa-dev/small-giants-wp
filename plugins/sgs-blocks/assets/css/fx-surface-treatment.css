@@ -11,7 +11,7 @@
  * becomes the positioning context and the canvas fills it edge to edge.
  */
 
-[data-sgs-fx="surface-treatment"] {
+[data-sgs-fx~="surface-treatment"] {
 	position: relative;
 }
 

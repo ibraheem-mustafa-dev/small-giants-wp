@@ -43,11 +43,18 @@ function sgs_effect_owns_scroll_transform( string $effect ): bool {
  */
 function sgs_fx_owns_scroll_transform( string $block_content, array $attrs ): bool {
 	$effect = $attrs['fx'] ?? '';
-
-	if ( ( ! \is_string( $effect ) || '' === $effect )
-		&& \preg_match( '/data-sgs-fx="([a-z0-9-]+)"/i', $block_content, $m ) ) {
-		$effect = $m[1];
+	if ( \is_string( $effect ) && '' !== $effect ) {
+		return sgs_effect_owns_scroll_transform( $effect );
 	}
 
-	return \is_string( $effect ) && sgs_effect_owns_scroll_transform( $effect );
+	// One element can list several effects, space-separated (`Sgs_Motion_Fx_Emitter`); any owner counts.
+	if ( ! \preg_match_all( '/data-sgs-fx="([a-z0-9-]+(?: [a-z0-9-]+)*)"/i', $block_content, $m ) ) {
+		return false;
+	}
+	foreach ( \explode( ' ', \implode( ' ', $m[1] ) ) as $listed ) {
+		if ( sgs_effect_owns_scroll_transform( $listed ) ) {
+			return true;
+		}
+	}
+	return false;
 }

@@ -50,7 +50,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_surface_css' ) ) {
 		}
 		$row    = '.sgs-site-header-row:has(' . $uid_sel . ')';
 		$burger = $uid_sel . ' .sgs-nav-bar-menu__burger';
-		$magnet = $burger . '[data-sgs-fx="magnet"]';
+		$magnet = $burger . '[data-sgs-fx~="magnet"]';
 		// G-2: only a genuinely interactive element inside another row block —
 		// never the whole block — escapes the overlay, so plain content
 		// (text, a notice-banner with no link) passes its tap through to the

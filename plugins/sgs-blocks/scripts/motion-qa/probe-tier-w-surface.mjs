@@ -70,7 +70,7 @@ const URL =
 	process.argv[ 2 ] ||
 	'https://sandybrown-nightingale-600381.hostingersite.com/tier-w-surface-canary/';
 
-const EMITTER_SELECTOR = '[data-sgs-fx="surface-treatment"]';
+const EMITTER_SELECTOR = '[data-sgs-fx~="surface-treatment"]';
 const CANVAS_SELECTOR = 'canvas.sgs-webgl-surface';
 
 const results = [];
@@ -225,7 +225,7 @@ const treatedHandles = await page.locator( EMITTER_SELECTOR ).elementHandles();
 if ( treatedHandles.length === 0 ) {
 	// eslint-disable-next-line no-console
 	console.log(
-		'  [FAIL] no [data-sgs-fx="surface-treatment"] element on the page — ' +
+		'  [FAIL] no [data-sgs-fx~="surface-treatment"] element on the page — ' +
 			'wrong URL or the fixture never rendered. Nothing below would mean anything.'
 	);
 	await browser.close();

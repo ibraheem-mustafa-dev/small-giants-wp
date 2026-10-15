@@ -465,7 +465,7 @@ async function dragAndMeasure( page, selector, nth, readout ) {
 function canvasLuma( page, nth ) {
 	return page.evaluate( ( index ) => {
 		const c = document.querySelectorAll(
-			'canvas[data-sgs-fx="image-sequence"]'
+			'canvas[data-sgs-fx~="image-sequence"]'
 		)[ index ];
 		if ( ! c || ! c.width ) {
 			return null;
@@ -485,7 +485,7 @@ function canvasLuma( page, nth ) {
 
 /** Read every draw target's dash state. */
 const readDraw = () =>
-	Array.from( document.querySelectorAll( '[data-sgs-fx="draw"]' ) ).map(
+	Array.from( document.querySelectorAll( '[data-sgs-fx~="draw"]' ) ).map(
 		( host ) => {
 			const shapes = Array.from(
 				host.querySelectorAll(
@@ -519,14 +519,14 @@ async function measureScrubElement( context, url ) {
 	await page.goto( url, { waitUntil: 'load' } );
 	await page.waitForTimeout( 900 );
 
-	const count = await page.locator( '[data-sgs-fx="scrub"]' ).count();
+	const count = await page.locator( '[data-sgs-fx~="scrub"]' ).count();
 	if ( ! count ) {
 		await page.close();
 		return { error: 'NO_HOST' };
 	}
 
 	const geo = await page.evaluate( () => {
-		const el = document.querySelector( '[data-sgs-fx="scrub"]' );
+		const el = document.querySelector( '[data-sgs-fx~="scrub"]' );
 		const r = el.getBoundingClientRect();
 		return { docTop: r.top + window.scrollY, vh: window.innerHeight };
 	} );
@@ -543,7 +543,7 @@ async function measureScrubElement( context, url ) {
 		await page.waitForTimeout( 90 );
 		// eslint-disable-next-line no-await-in-loop
 		const sample = await page.evaluate( () => {
-			const el = document.querySelector( '[data-sgs-fx="scrub"]' );
+			const el = document.querySelector( '[data-sgs-fx~="scrub"]' );
 			const cs = getComputedStyle( el );
 			const m = new DOMMatrixReadOnly( cs.transform );
 			return {
@@ -577,7 +577,7 @@ async function measurePinScrub( context, url ) {
 	await page.goto( url, { waitUntil: 'load' } );
 	await page.waitForTimeout( 900 );
 
-	const count = await page.locator( '[data-sgs-fx="pin-scrub"]' ).count();
+	const count = await page.locator( '[data-sgs-fx~="pin-scrub"]' ).count();
 	if ( ! count ) {
 		await page.close();
 		return { error: 'NO_HOST' };
@@ -586,12 +586,12 @@ async function measurePinScrub( context, url ) {
 	const pinSpacerPresent = await page.evaluate(
 		() =>
 			!! document
-				.querySelector( '[data-sgs-fx="pin-scrub"]' )
+				.querySelector( '[data-sgs-fx~="pin-scrub"]' )
 				.closest( '.pin-spacer' )
 	);
 
 	const geo = await page.evaluate( () => {
-		const el = document.querySelector( '[data-sgs-fx="pin-scrub"]' );
+		const el = document.querySelector( '[data-sgs-fx~="pin-scrub"]' );
 		const r = el.getBoundingClientRect();
 		return { docTop: r.top + window.scrollY, vh: window.innerHeight };
 	} );
@@ -608,7 +608,7 @@ async function measurePinScrub( context, url ) {
 		await page.waitForTimeout( 90 );
 		// eslint-disable-next-line no-await-in-loop
 		const sample = await page.evaluate( () => {
-			const host = document.querySelector( '[data-sgs-fx="pin-scrub"]' );
+			const host = document.querySelector( '[data-sgs-fx~="pin-scrub"]' );
 			const wrapper =
 				host.querySelector( ':scope > .wp-block-sgs-container' ) || host;
 			const kids = Array.from( wrapper.children ).filter(
@@ -651,27 +651,27 @@ async function measureSplitReveal( context, url ) {
 	await page.goto( url, { waitUntil: 'load' } );
 	await page.waitForTimeout( 900 );
 
-	const count = await page.locator( '[data-sgs-fx="split-reveal"]' ).count();
+	const count = await page.locator( '[data-sgs-fx~="split-reveal"]' ).count();
 	if ( ! count ) {
 		await page.close();
 		return { error: 'NO_HOST' };
 	}
 
 	const originalText = await page.evaluate( () =>
-		document.querySelector( '[data-sgs-fx="split-reveal"]' ).textContent.trim()
+		document.querySelector( '[data-sgs-fx~="split-reveal"]' ).textContent.trim()
 	);
 
 	// Park a full viewport above the heading — its start line ('top 85%',
 	// unauthored default on this canary) has not been crossed yet.
 	await page.evaluate( () => {
-		const el = document.querySelector( '[data-sgs-fx="split-reveal"]' );
+		const el = document.querySelector( '[data-sgs-fx~="split-reveal"]' );
 		const top = el.getBoundingClientRect().top + window.scrollY;
 		window.scrollTo( 0, Math.max( 0, top - window.innerHeight * 1.5 ) );
 	} );
 	await page.waitForTimeout( 500 );
 
 	const pre = await page.evaluate( () => {
-		const el = document.querySelector( '[data-sgs-fx="split-reveal"]' );
+		const el = document.querySelector( '[data-sgs-fx~="split-reveal"]' );
 		// ⚠ NOT `querySelectorAll('span')` — a first cut of this probe hardcoded
 		// `span` and read 0 fragments on this exact canary, reporting a false
 		// DEFECT. Cross-checked live via Chrome DevTools MCP (independent
@@ -692,7 +692,7 @@ async function measureSplitReveal( context, url ) {
 	} );
 
 	await page.evaluate( () => {
-		const el = document.querySelector( '[data-sgs-fx="split-reveal"]' );
+		const el = document.querySelector( '[data-sgs-fx~="split-reveal"]' );
 		const top = el.getBoundingClientRect().top + window.scrollY;
 		window.scrollTo( 0, Math.max( 0, top - window.innerHeight * 0.3 ) );
 	} );
@@ -701,7 +701,7 @@ async function measureSplitReveal( context, url ) {
 	await page.waitForTimeout( 1600 );
 
 	const post = await page.evaluate( () => {
-		const el = document.querySelector( '[data-sgs-fx="split-reveal"]' );
+		const el = document.querySelector( '[data-sgs-fx~="split-reveal"]' );
 		const fragments = el.children; // see the `pre` reader above for why
 		return {
 			spanCount: fragments.length,
@@ -735,14 +735,14 @@ async function measureHorizontalPanel( context, url ) {
 	await page.goto( url, { waitUntil: 'load' } );
 	await page.waitForTimeout( 1000 );
 
-	const count = await page.locator( '[data-sgs-fx="horizontal-panel"]' ).count();
+	const count = await page.locator( '[data-sgs-fx~="horizontal-panel"]' ).count();
 	if ( ! count ) {
 		await page.close();
 		return { error: 'NO_HOST' };
 	}
 
 	const state = await page.evaluate( async () => {
-		const host = document.querySelector( '[data-sgs-fx="horizontal-panel"]' );
+		const host = document.querySelector( '[data-sgs-fx~="horizontal-panel"]' );
 		const marked = host.querySelector( ':scope > [data-sgs-fx-track]' );
 		const track = marked
 			? marked.querySelector( ':scope > .wp-block-sgs-container' ) || marked
@@ -780,7 +780,7 @@ async function measureHorizontalPanel( context, url ) {
 	if ( state.effectRan ) {
 		const spacerTop = await page.evaluate( () => {
 			const spacer = document
-				.querySelector( '[data-sgs-fx="horizontal-panel"]' )
+				.querySelector( '[data-sgs-fx~="horizontal-panel"]' )
 				.closest( '.pin-spacer' );
 			return spacer.getBoundingClientRect().top + window.scrollY;
 		} );
@@ -796,7 +796,7 @@ async function measureHorizontalPanel( context, url ) {
 			// eslint-disable-next-line no-await-in-loop
 			const x = await page.evaluate( () => {
 				const host = document.querySelector(
-					'[data-sgs-fx="horizontal-panel"]'
+					'[data-sgs-fx~="horizontal-panel"]'
 				);
 				const marked = host.querySelector( ':scope > [data-sgs-fx-track]' );
 				const track = marked
@@ -905,7 +905,7 @@ async function measureScramble( context ) {
 	await page.goto( URL, { waitUntil: 'load' } );
 	await page.waitForTimeout( 1500 );
 
-	const count = await page.locator( '[data-sgs-fx="scramble"]' ).count();
+	const count = await page.locator( '[data-sgs-fx~="scramble"]' ).count();
 	if ( ! count ) {
 		return [];
 	}
@@ -913,7 +913,7 @@ async function measureScramble( context ) {
 	// Park a full viewport ABOVE both headings, so neither has crossed its
 	// start line yet and the scramble is still ahead of us.
 	await page.evaluate( () => {
-		const first = document.querySelector( '[data-sgs-fx="scramble"]' );
+		const first = document.querySelector( '[data-sgs-fx~="scramble"]' );
 		const top = first.getBoundingClientRect().top + window.scrollY;
 		window.scrollTo( 0, Math.max( 0, top - window.innerHeight * 1.5 ) );
 	} );
@@ -921,12 +921,12 @@ async function measureScramble( context ) {
 
 	const pre = await page.evaluate( () =>
 		Array.from(
-			document.querySelectorAll( '[data-sgs-fx="scramble"]' )
+			document.querySelectorAll( '[data-sgs-fx~="scramble"]' )
 		).map( ( el ) => el.textContent.trim() )
 	);
 
 	await page.evaluate( () => {
-		const first = document.querySelector( '[data-sgs-fx="scramble"]' );
+		const first = document.querySelector( '[data-sgs-fx~="scramble"]' );
 		const top = first.getBoundingClientRect().top + window.scrollY;
 		window.scrollTo( 0, Math.max( 0, top - window.innerHeight * 0.4 ) );
 	} );
@@ -936,7 +936,7 @@ async function measureScramble( context ) {
 		() =>
 			JSON.stringify(
 				Array.from(
-					document.querySelectorAll( '[data-sgs-fx="scramble"]' )
+					document.querySelectorAll( '[data-sgs-fx~="scramble"]' )
 				).map( ( el ) => el.textContent.trim() )
 			),
 		3200,
@@ -960,14 +960,14 @@ async function measureScramble( context ) {
 			settled: await page.evaluate(
 				( n ) =>
 					document
-						.querySelectorAll( '[data-sgs-fx="scramble"]' )
+						.querySelectorAll( '[data-sgs-fx~="scramble"]' )
 						[ n ].textContent.trim(),
 				i
 			),
 			ariaLabel: await page.evaluate(
 				( n ) =>
 					document
-						.querySelectorAll( '[data-sgs-fx="scramble"]' )
+						.querySelectorAll( '[data-sgs-fx~="scramble"]' )
 						[ n ].getAttribute( 'aria-label' ),
 				i
 			),
@@ -1049,13 +1049,13 @@ async function runArm( browser, reducedMotion ) {
 				canScrollHorizontally: el.scrollWidth > el.clientWidth,
 			} ) ),
 			slider: rect( '.sgs-testimonial-slider__track' ),
-			logoSvg: rect( '[data-sgs-fx="draw"] svg' ),
+			logoSvg: rect( '[data-sgs-fx~="draw"] svg' ),
 			beforeAfter: rect( '.wp-block-sgs-before-after' ),
 			beforeAfterImgCount: document.querySelectorAll(
 				'.wp-block-sgs-before-after img'
 			).length,
 			imageSequencePoster: rect( '.sgs-image-sequence__poster' ),
-			scrambleHeadings: rect( '[data-sgs-fx="scramble"]' ),
+			scrambleHeadings: rect( '[data-sgs-fx~="scramble"]' ),
 		};
 	} );
 
@@ -1067,7 +1067,7 @@ async function runArm( browser, reducedMotion ) {
 	// that is what made v2 report "dash identical before and after".
 	out.drawAtLoad = await page.evaluate( readDraw );
 	const drawGeo = await page.evaluate( () => {
-		const el = document.querySelectorAll( '[data-sgs-fx="draw"]' )[ 1 ];
+		const el = document.querySelectorAll( '[data-sgs-fx~="draw"]' )[ 1 ];
 		const r = el.getBoundingClientRect();
 		return { docTop: r.top + window.scrollY, vh: window.innerHeight };
 	} );
@@ -1125,11 +1125,11 @@ async function runArm( browser, reducedMotion ) {
 	// on both sides, and the assertion (see verdict section) checks that the
 	// movement is spread across multiple samples, not just the first/last.
 	const mpCount = await page
-		.locator( '[data-sgs-fx="motion-path"]' )
+		.locator( '[data-sgs-fx~="motion-path"]' )
 		.count();
 	if ( mpCount ) {
 		const mpGeo = await page.evaluate( () => {
-			const el = document.querySelector( '[data-sgs-fx="motion-path"]' );
+			const el = document.querySelector( '[data-sgs-fx~="motion-path"]' );
 			const r = el.getBoundingClientRect();
 			return { docTop: r.top + window.scrollY, vh: window.innerHeight };
 		} );
@@ -1145,7 +1145,7 @@ async function runArm( browser, reducedMotion ) {
 			await page.waitForTimeout( 90 );
 			// eslint-disable-next-line no-await-in-loop
 			const pos = await page.evaluate( () => {
-				const el = document.querySelector( '[data-sgs-fx="motion-path"]' );
+				const el = document.querySelector( '[data-sgs-fx~="motion-path"]' );
 				const m = new DOMMatrixReadOnly( getComputedStyle( el ).transform );
 				return {
 					x: Math.round( m.m41 * 10 ) / 10,
@@ -1160,7 +1160,7 @@ async function runArm( browser, reducedMotion ) {
 	}
 
 	out.morphCount = await page
-		.locator( '[data-sgs-fx="morph"]' )
+		.locator( '[data-sgs-fx~="morph"]' )
 		.count();
 
 	// ── gallery: momentum ON (instance 0) vs OFF (instance 1) ──
@@ -1230,17 +1230,17 @@ async function runArm( browser, reducedMotion ) {
 	// ── image sequence ──
 	out.imageSequence = [];
 	const seqCount = await page
-		.locator( 'canvas[data-sgs-fx="image-sequence"]' )
+		.locator( 'canvas[data-sgs-fx~="image-sequence"]' )
 		.count();
 	for ( let i = 0; i < seqCount; i++ ) {
-		await bring( page, 'canvas[data-sgs-fx="image-sequence"]', i, 3000 );
+		await bring( page, 'canvas[data-sgs-fx~="image-sequence"]', i, 3000 );
 		const samples = [];
 		for ( const frac of [ 0, 0.25, 0.5, 0.75, 1 ] ) {
 			// eslint-disable-next-line no-await-in-loop
 			await page.evaluate(
 				( [ index, f ] ) => {
 					const c = document.querySelectorAll(
-						'canvas[data-sgs-fx="image-sequence"]'
+						'canvas[data-sgs-fx~="image-sequence"]'
 					)[ index ];
 					const r = c.getBoundingClientRect();
 					const docTop = r.top + window.scrollY;
@@ -1261,14 +1261,14 @@ async function runArm( browser, reducedMotion ) {
 			isReady: await page.evaluate(
 				( index ) =>
 					!! document
-						.querySelectorAll( 'canvas[data-sgs-fx="image-sequence"]' )
+						.querySelectorAll( 'canvas[data-sgs-fx~="image-sequence"]' )
 						[ index ].closest( '.sgs-image-sequence' )
 						?.classList.contains( 'is-ready' ),
 				i
 			),
 			canvasSized: await page.evaluate( ( index ) => {
 				const c = document.querySelectorAll(
-					'canvas[data-sgs-fx="image-sequence"]'
+					'canvas[data-sgs-fx~="image-sequence"]'
 				)[ index ];
 				return { w: c.width, h: c.height };
 			}, i ),

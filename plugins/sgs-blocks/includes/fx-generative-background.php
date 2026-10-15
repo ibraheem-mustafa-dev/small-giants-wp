@@ -73,7 +73,7 @@ function sgs_apply_fx_generative_background( string $block_content ): string {
 		return $block_content;
 	}
 
-	if ( 'generative-background' !== $processor->get_attribute( 'data-sgs-fx' ) ) {
+	if ( ! sgs_fx_has_effect( $processor->get_attribute( 'data-sgs-fx' ), 'generative-background' ) ) {
 		return $block_content;
 	}
 

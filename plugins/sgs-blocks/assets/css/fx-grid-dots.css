@@ -9,7 +9,7 @@
  * positions it.
  */
 
-[data-sgs-fx="grid-dots"] {
+[data-sgs-fx~="grid-dots"] {
 	/* The canvas is absolutely positioned, so the host is its containing block.
 	   `isolation: isolate` keeps the canvas's stacking local to the emitter, so
 	   a z-index here can never reach out and reorder anything on the page —

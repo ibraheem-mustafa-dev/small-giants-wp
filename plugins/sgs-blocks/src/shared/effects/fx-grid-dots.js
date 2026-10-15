@@ -46,7 +46,7 @@ import {
 } from './motion-utils';
 
 /** Elements the render layer marked. */
-const SELECTOR = '[data-sgs-fx="grid-dots"]';
+const SELECTOR = '[data-sgs-fx~="grid-dots"]';
 
 /** Live instances, so a bfcache restore can tear down before re-init. */
 let instances = [];

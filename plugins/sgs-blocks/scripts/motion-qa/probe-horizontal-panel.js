@@ -51,9 +51,9 @@ export async function probeHorizontalPanel( tolerancePx = 4 ) {
 	};
 
 	try {
-		const host = document.querySelector( '[data-sgs-fx="horizontal-panel"]' );
+		const host = document.querySelector( '[data-sgs-fx~="horizontal-panel"]' );
 		if ( ! host ) {
-			return { pass: false, reason: 'NO_HOST', detail: 'No [data-sgs-fx="horizontal-panel"] on the page.' };
+			return { pass: false, reason: 'NO_HOST', detail: 'No [data-sgs-fx~="horizontal-panel"] on the page.' };
 		}
 
 		const marked = host.querySelector( ':scope > [data-sgs-fx-track]' );

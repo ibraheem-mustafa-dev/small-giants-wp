@@ -25,7 +25,7 @@
  * @package SGS\Blocks
  */
 
-[data-sgs-fx="horizontal-panel"] {
+[data-sgs-fx~="horizontal-panel"] {
 	overflow-x: auto;
 	overflow-y: hidden;
 	scroll-snap-type: x mandatory;
@@ -50,12 +50,12 @@
  * guaranteed for sgs/container, so this is a deterministic path, not a
  * positional guess.
  */
-[data-sgs-fx="horizontal-panel"] > [data-sgs-fx-track] > .wp-block-sgs-container {
+[data-sgs-fx~="horizontal-panel"] > [data-sgs-fx-track] > .wp-block-sgs-container {
 	display: flex;
 	width: max-content;
 }
 
-[data-sgs-fx="horizontal-panel"] > [data-sgs-fx-track] > .wp-block-sgs-container > * {
+[data-sgs-fx~="horizontal-panel"] > [data-sgs-fx-track] > .wp-block-sgs-container > * {
 	scroll-snap-align: start;
 
 	/*
@@ -91,7 +91,7 @@
  * replacing it and the content would be stranded.
  */
 @media ( min-width: 768px ) and ( prefers-reduced-motion: no-preference ) {
-	.sgs-js [data-sgs-fx="horizontal-panel"] {
+	.sgs-js [data-sgs-fx~="horizontal-panel"] {
 		/*
 		 * ⛔ D456 — THIS COMPUTES TO `hidden`, NOT `clip`, AND THAT IS LOAD-BEARING.
 		 * DO NOT "fix" it to clip on both axes.

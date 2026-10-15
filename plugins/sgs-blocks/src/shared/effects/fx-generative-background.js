@@ -61,7 +61,7 @@ import { createGenerativeBackground } from './webgl/generative-background';
 import { prefersReducedMotion } from './motion-utils';
 
 /** Elements the render layer marked. */
-const SELECTOR = '[data-sgs-fx="generative-background"]';
+const SELECTOR = '[data-sgs-fx~="generative-background"]';
 
 /** The four colour custom properties this effect reads, in stop order. */
 const COLOUR_PROPS = [

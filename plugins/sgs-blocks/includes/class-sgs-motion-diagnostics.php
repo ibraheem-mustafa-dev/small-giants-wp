@@ -539,12 +539,14 @@ final class Sgs_Motion_Diagnostics {
 	 */
 	private static function extract_effects_from_html( string $html ): array {
 		$out = array();
-		if ( ! \preg_match_all( '/data-sgs-fx="([a-z0-9-]+)"/i', $html, $matches ) ) {
+		if ( ! \preg_match_all( '/data-sgs-fx="([a-z0-9-]+(?: [a-z0-9-]+)*)"/i', $html, $matches ) ) {
 			return $out;
 		}
-		foreach ( $matches[1] as $name ) {
-			$name         = \strtolower( $name );
-			$out[ $name ] = ( $out[ $name ] ?? 0 ) + 1;
+		// `data-sgs-fx` is a space-separated list: count every listed effect once per element.
+		foreach ( $matches[1] as $list ) {
+			foreach ( \explode( ' ', \strtolower( $list ) ) as $name ) {
+				$out[ $name ] = ( $out[ $name ] ?? 0 ) + 1;
+			}
 		}
 		return $out;
 	}

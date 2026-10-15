@@ -240,7 +240,7 @@
  * ⛔ NO `!important` here, ever — see the four-selector reduced-motion
  * rescue below, which is the one mechanism that must win under `reduce`.
  */
-.sgs-nav-bar-menu__burger[data-sgs-fx="magnet"] {
+.sgs-nav-bar-menu__burger[data-sgs-fx~="magnet"] {
 	transition: background-color var(--wp--custom--transition--fast, 150ms ease),
 		var(--sgs-magnet-transition, transform 180ms ease-out);
 }

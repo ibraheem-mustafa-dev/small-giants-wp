@@ -793,7 +793,7 @@
 // milestone cut off, with no scrollbar to reach it. Degrade to MORE content,
 // never less.
 @media (min-width: 768px) {
-	.sgs-timeline--horizontal[data-sgs-fx='horizontal-panel'] {
+	.sgs-timeline--horizontal[data-sgs-fx~='horizontal-panel'] {
 		overflow: hidden;
 
 		.sgs-timeline__list {

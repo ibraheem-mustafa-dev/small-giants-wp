@@ -66,7 +66,7 @@ function sgs_apply_fx_wave_gradient( string $block_content ): string {
 		return $block_content;
 	}
 
-	if ( 'wave-gradient' !== $processor->get_attribute( 'data-sgs-fx' ) ) {
+	if ( ! sgs_fx_has_effect( $processor->get_attribute( 'data-sgs-fx' ), 'wave-gradient' ) ) {
 		return $block_content;
 	}
 

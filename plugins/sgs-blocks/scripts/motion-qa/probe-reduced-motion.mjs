@@ -51,7 +51,7 @@ async function measure( browser, reducedMotion ) {
 	await page.waitForTimeout( 1500 );
 
 	const state = await page.evaluate( async () => {
-		const host = document.querySelector( '[data-sgs-fx="horizontal-panel"]' );
+		const host = document.querySelector( '[data-sgs-fx~="horizontal-panel"]' );
 		if ( ! host ) {
 			return { error: 'NO_HOST' };
 		}
