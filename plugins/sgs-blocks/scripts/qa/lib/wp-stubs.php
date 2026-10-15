@@ -582,6 +582,14 @@ if ( ! function_exists( 'add_action' ) ) {
 	}
 }
 
+if ( ! function_exists( 'add_filter' ) ) {
+	function add_filter( string $tag, $function_to_add, int $priority = 10, int $accepted_args = 1 ): bool {
+		// No-op, as add_action() above: a class that registers its filters as it loads
+		// (Sgs_Motion_Loop_Delays) loads cleanly, and apply_filters() here returns the value unchanged.
+		return true;
+	}
+}
+
 if ( ! function_exists( 'translate_nooped_plural' ) ) {
 	/**
 	 * Real WP core selects singular/plural by count and then runs the result

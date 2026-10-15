@@ -811,11 +811,14 @@ $inner_html = ob_get_clean();
 // Item-array stagger (Spec 38A FR-38A-26): the tiles come from the `mediaItems` attribute, so the container's stored
 // `sgsMotion.stagger` settings become one scoped delay rule per tile, found by its `data-sgs-loop-i` index. Null (no
 // stagger) leaves the tiles untagged; the string is only non-empty where the collector never flushes (the editor preview).
-$gallery_loop_tagged = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $inner_html, 'sgs-gallery__item' );
-$gallery_loop_style  = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/gallery', $uid, $attributes, $gallery_loop_tagged['count'], '.sgs-gallery__item' );
-if ( null !== $gallery_loop_style ) {
-	$inner_html = $gallery_loop_tagged['html'];
-	echo $gallery_loop_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers and a sanitised class by Sgs_Motion_Loop_Delays.
+// The tiles are walked only when stagger settings are stored, so a gallery without one skips the HTML pass.
+if ( ! empty( $attributes['sgsMotion']['stagger'] ) ) {
+	$gallery_loop_tagged = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $inner_html, 'sgs-gallery__item' );
+	$gallery_loop_style  = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/gallery', $uid, $attributes, $gallery_loop_tagged['count'], '.sgs-gallery__item' );
+	if ( null !== $gallery_loop_style ) {
+		$inner_html = $gallery_loop_tagged['html'];
+		echo $gallery_loop_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers and a sanitised class by Sgs_Motion_Loop_Delays.
+	}
 }
 
 // Item tile (fill, border, radius, height, padding, contain fit) — after the per-item crop rules above.
