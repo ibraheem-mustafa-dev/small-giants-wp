@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """check-motion-style-writes.py - front-end motion scripts write custom properties only (Spec 38A FR-38A-47).
 
-SCOPE: every .js file under `plugins/sgs-blocks/assets/js` and `plugins/sgs-blocks/src/shared/effects`. Block `view.js`
-files are outside FR-38A-47's named scope and are not scanned. A file that imports `gsap`, `gsap/...` or `@sgs/gsap...`
-is Tier G and exempt by file: its tweens write inline transforms on their own scope.
+SCOPE: every .js file under `plugins/sgs-blocks/assets/js` and `plugins/sgs-blocks/src/shared/effects`, plus every block
+frontend script under `plugins/sgs-blocks/src/blocks`: a file a `block.json` names in `viewScript`, `viewScriptModule` or
+`script` (`file:./x.js`), any file named `view.js`, `view-*.js` or `*-view.js`, and every file those import by a relative
+path (editor-only files such as `edit.js` and `preview-style.js` are not frontend scripts and are not scanned unless a
+frontend script imports them). A file that imports `gsap`, `gsap/...` or `@sgs/gsap...` (statically or by `import()`) is
+Tier G and exempt by file: its tweens write inline transforms on their own scope. A Tier G file that holds a channel write
+is listed as a `note: tier-G exempt` line, so the exemption is visible in every run.
 THE PROPERTIES: the channel properties the stylesheet composes (every `x-sgs-channels` entry of
 `plugins/sgs-blocks/schemas/motion.schema.json` that is not a `::before`/`::after`/layers slot) plus the FR-38A-47 list
 (transform, translate, rotate, scale, opacity, filter). A script that writes one of these inline overwrites the
@@ -56,12 +60,18 @@ REPO = SCRIPTS.parents[2]
 PLUGIN = REPO / "plugins" / "sgs-blocks"
 SCHEMA = PLUGIN / "schemas" / "motion.schema.json"
 SCAN_DIRS = ("assets/js", "src/shared/effects")
+BLOCKS_DIR = "src/blocks"
+BLOCK_JSON_SCRIPT_KEYS = ("viewScript", "viewScriptModule", "script")
+VIEW_NAME = re.compile(r"^(?:view|view-.+|.+-view)\.js$")
+RELATIVE_IMPORT = re.compile(r"""(?:from\s*|import\s*\(?\s*)['"](\.{1,2}/[^'"]+)['"]""")
 GATE = "motion-style-writes"
 FR_PROPERTIES = ("transform", "translate", "rotate", "scale", "opacity", "filter")
 SLOT_COMPOSITIONS = ("slot", "layers")
 TIER_G_IMPORT = re.compile(r"""(?:from\s*|import\s*\(?\s*|require\s*\(\s*)['"](?:gsap(?:/[^'"]*)?|@sgs/gsap[^'"]*)['"]""")
-BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
-LINE_COMMENT = re.compile(r"(?m)(^|[\s;{}(),])//[^\n]*")
+# One left-to-right pass, so a `//` comment that mentions `gsap/*` is consumed whole and never opens a block comment.
+# A comment starts at a line start or after whitespace or punctuation (never after `:` or a word character), so
+# `'http://x'` and `'gsap/*'` inside a string are left alone.
+COMMENT = re.compile(r"(?:^|(?<=[\s;{}(),\[\]=?&|!+-]))(?://[^\n]*|/\*.*?\*/)", re.S | re.M)
 ALIAS_DECL = re.compile(r"""(?<![\w.$])(?:(?:const|let|var)\s+)?([A-Za-z_$][\w$]*)\s*=\s*[^;=\n]*?\.style\s*(?=[;\n,)]|$)""")
 DESTRUCTURE_DECL = re.compile(r"(?:const|let|var)\s*\{([^}]*)\}\s*=")
 ELEMENT_NAME = re.compile(r"^(?:el|els|elem|element|node|target|currentTarget|item|card|slide|wrapper|root|container|body|documentElement|[A-Za-z]+(?:El|Elem|Element|Node))$")
@@ -86,11 +96,7 @@ def forbidden_properties(schema_path: Path) -> list[str]:
 
 def strip_comments(source: str) -> str:
     """Blank comments but keep line numbers."""
-    def blank(match: re.Match) -> str:
-        return re.sub(r"[^\n]", " ", match.group(0))
-
-    source = BLOCK_COMMENT.sub(blank, source)
-    return LINE_COMMENT.sub(lambda m: m.group(1) + " " * (len(m.group(0)) - len(m.group(1))), source)
+    return COMMENT.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), source)
 
 
 def name_alternations(props: list[str]) -> tuple[str, str]:
@@ -224,38 +230,91 @@ def is_tier_g(source: str) -> bool:
     return bool(TIER_G_IMPORT.search(strip_comments(source)))
 
 
-def find_hits(plugin: Path, props: list[str]) -> list[tuple[str, int, str, str]]:
-    """(relative path, line, kind, source line) for every write in a non-Tier-G file."""
+def resolve_import(base: Path, spec: str) -> Path | None:
+    target = (base.parent / spec).resolve()
+    for candidate in (target, target.with_name(target.name + ".js"), target / "index.js"):
+        if candidate.is_file() and candidate.suffix == ".js":
+            return candidate
+    return None
+
+
+def block_frontend_files(plugin: Path) -> set[Path]:
+    """Block frontend scripts: block.json-declared view scripts, view-named files, and their relative imports."""
+    root = plugin / BLOCKS_DIR
+    if not root.is_dir():
+        return set()
+    seeds: set[Path] = {p.resolve() for p in root.rglob("*.js") if VIEW_NAME.match(p.name)}
+    for manifest in root.rglob("block.json"):
+        try:
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        for key in BLOCK_JSON_SCRIPT_KEYS:
+            value = data.get(key)
+            for ref in ([value] if isinstance(value, str) else value or []):
+                if isinstance(ref, str) and ref.startswith("file:"):
+                    path = (manifest.parent / ref[5:]).resolve()
+                    if path.is_file() and path.suffix == ".js":
+                        seeds.add(path)
+    found: set[Path] = set()
+    queue = sorted(seeds)
+    root_resolved = root.resolve()
+    while queue:
+        path = queue.pop()
+        if path in found:
+            continue
+        found.add(path)
+        for spec in RELATIVE_IMPORT.findall(strip_comments(path.read_text(encoding="utf-8"))):
+            target = resolve_import(path, spec)
+            if target is not None and root_resolved in target.parents and target not in found:
+                queue.append(target)
+    return found
+
+
+def scan_files(plugin: Path) -> list[Path]:
+    files = {p.resolve() for rel_dir in SCAN_DIRS for p in (plugin / rel_dir).rglob("*.js")}
+    return sorted(files | block_frontend_files(plugin))
+
+
+def find_hits(plugin: Path, props: list[str], exempt: list | None = None) -> list[tuple[str, int, str, str]]:
+    """(relative path, line, kind, source line) for every write in a non-Tier-G file.
+
+    A Tier G file's writes are not hits; they are appended to `exempt` (when given) so the exemption can be reported."""
     names, kebab = name_alternations(props)
     hits: set[tuple[str, int, str, str]] = set()
-    for rel_dir in SCAN_DIRS:
-        for path in sorted((plugin / rel_dir).rglob("*.js")):
-            source = path.read_text(encoding="utf-8")
-            if is_tier_g(source):
-                continue
-            rel = path.relative_to(plugin).as_posix()
-            clean = strip_comments(source)
-            lines = source.splitlines()
-            key_vars = key_variables(clean, names, kebab)
+    plugin_resolved = plugin.resolve()
+    for path in scan_files(plugin):
+        source = path.read_text(encoding="utf-8")
+        tier_g = is_tier_g(source)
+        if tier_g and exempt is None:
+            continue
+        rel = path.relative_to(plugin_resolved).as_posix()
+        clean = strip_comments(source)
+        lines = source.splitlines()
+        key_vars = key_variables(clean, names, kebab)
+        file_hits: set[tuple[str, int, str, str]] = set()
 
-            def add(kind: str, offset: int) -> None:
-                line = clean.count(chr(10), 0, offset) + 1
-                hits.add((rel, line, kind, lines[line - 1].strip()))
+        def add(kind: str, offset: int) -> None:
+            line = clean.count(chr(10), 0, offset) + 1
+            file_hits.add((rel, line, kind, lines[line - 1].strip()))
 
-            for kind, pattern in build_patterns(props, [], key_vars):
-                for match in pattern.finditer(clean):
+        for kind, pattern in build_patterns(props, [], key_vars):
+            for match in pattern.finditer(clean):
+                add(kind, match.start())
+        for name, start, end in aliases_of(clean):
+            for kind, pattern in build_patterns(props, [name], key_vars):
+                for match in pattern.finditer(clean, start, end):
                     add(kind, match.start())
-            for name, start, end in aliases_of(clean):
-                for kind, pattern in build_patterns(props, [name], key_vars):
-                    for match in pattern.finditer(clean, start, end):
-                        add(kind, match.start())
-            receivers = element_receivers(clean)
-            for match in BARE_STYLE_ASSIGN.finditer(clean):
-                if ELEMENT_NAME.match(match.group(1)) or match.group(1) in receivers:
-                    add("whole style string", match.start())
-            for offset in waapi_hits(clean, props):
-                line = clean.count("\n", 0, offset) + 1
-                hits.add((rel, line, "animate() frame channel", lines[line - 1].strip()))
+        receivers = element_receivers(clean)
+        for match in BARE_STYLE_ASSIGN.finditer(clean):
+            if ELEMENT_NAME.match(match.group(1)) or match.group(1) in receivers:
+                add("whole style string", match.start())
+        for offset in waapi_hits(clean, props):
+            add("animate() frame channel", offset)
+        if tier_g:
+            exempt.extend(sorted(file_hits))
+        else:
+            hits |= file_hits
     return sorted(hits)
 
 
@@ -276,13 +335,15 @@ def evaluate(hits: list, allow: list[dict], allow_errors: list[str]) -> tuple[li
 def run_check(plugin: Path, schema: Path) -> int:
     props = forbidden_properties(schema)
     allow, allow_errors = allowlist.load(REPO, GATE)
-    hits = find_hits(plugin, props)
+    exempt: list = []
+    hits = find_hits(plugin, props, exempt)
     errors, notes = evaluate(hits, allow, allow_errors)
+    notes += [f"tier-G exempt {rel}:{line} {kind}: {text}" for rel, line, kind, text in exempt]
     for note in notes:
         print(f"note: {note}")
     for error in errors:
         print(f"FAIL: {error}")
-    scanned = sum(1 for d in SCAN_DIRS for _ in (plugin / d).rglob("*.js"))
+    scanned = len(scan_files(plugin))
     print(f"check-motion-style-writes: {'FAIL' if errors else 'OK'} "
           f"({scanned} files scanned, {len(props)} channel properties, {len(hits)} hit(s))")
     return 1 if errors else 0
@@ -330,6 +391,22 @@ PLANTS = [
     ("a write inside a comment", "assets/js/planted-g.js", "// el.style.transform = 'x';\n/* el.style.opacity = 0 */\n", False),
     ("Tier G file with a write", "src/shared/effects/gsap/planted-h.js",
      "import { gsap } from 'gsap';\nel.style.transform = 'x';\n", False),
+    ("block view.js with a transform write", "src/blocks/planted/view.js", "el.style.transform = 'x';\n", True),
+    ("block view-carousel.js with an opacity write", "src/blocks/planted/view-carousel.js", "el.style.opacity = '0';\n", True),
+    ("block notify-view.js with a filter write", "src/blocks/planted/notify-view.js", "el.style.setProperty('filter', 'none');\n", True),
+    ("block script named only in block.json", "src/blocks/planted/guided.js",
+     {"src/blocks/planted/block.json": '{"viewScriptModule": ["file:./view.js", "file:./guided.js"]}',
+      "src/blocks/planted/guided.js": "el.style.transform = 'x';\n"}, True),
+    ("block helper imported by a view script", "src/blocks/planted/helper.js",
+     {"src/blocks/planted/view.js": "import { go } from './helper';\ngo();\n",
+      "src/blocks/planted/helper.js": "export const go = ( el ) => { el.style.transform = 'x'; };\n"}, True),
+    ("block editor file with a write (not a frontend script)", "src/blocks/planted/edit.js", "el.style.transform = 'x';\n", False),
+    ("block view.js with custom-property and layout writes only", "src/blocks/planted/view.js",
+     "el.style.setProperty('--sgs-x', '1');\nel.style.position = 'absolute';\n", False),
+    ("Tier G block view whose comment mentions gsap/* before a dynamic import", "src/blocks/planted/view.js",
+     "// webpack's `gsap/*` externals rewrite never runs here\nconst m = await import( /* webpackIgnore: true */ '@sgs/gsap-draggable' );\nel.style.opacity = '0';\n", False),
+    ("block view.js with a // URL and a /* glob in strings, then a write", "src/blocks/planted/view.js",
+     "const u = 'http://example.com/*';\nel.style.transform = 'x';\n", True),
 ]
 
 
@@ -341,9 +418,10 @@ def self_test(schema: Path) -> int:
             plugin = Path(tmp)
             for directory in SCAN_DIRS:
                 (plugin / directory).mkdir(parents=True, exist_ok=True)
-            target = plugin / rel
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(body, encoding="utf-8")
+            for path, text in (body if isinstance(body, dict) else {rel: body}).items():
+                target = plugin / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(text, encoding="utf-8")
             caught = any(hit[0] == rel for hit in find_hits(plugin, props))
         ok = caught == should_catch
         failures += 0 if ok else 1

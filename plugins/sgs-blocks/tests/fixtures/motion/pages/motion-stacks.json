@@ -1,0 +1,342 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m5z-stacks"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"padding": {
+						"desktop": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"tablet": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"mobile": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						}
+					},
+					"className": "m5z-a-box"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Magnet, sheen and ripple",
+							"url": "https://example.com/",
+							"className": "m5z-a",
+							"sgsMotion": {
+								"v": 1,
+								"elements": {
+									"root": {
+										"hover": {
+											"effects": [
+												{
+													"id": "mag1",
+													"effect": "magnet",
+													"values": {
+														"engage": "over",
+														"pullModel": "normalised",
+														"maxPullX": 10,
+														"maxPullY": 8,
+														"axis": "both",
+														"returnDuration": 250,
+														"returnEasing": "cubic-bezier(.16,.84,.32,1)"
+													},
+													"trigger": "hover"
+												},
+												{
+													"id": "sheen1",
+													"effect": "sheen",
+													"values": {
+														"bandWidth": 60,
+														"angle": -18,
+														"colour": "#ffffff",
+														"opacity": 0.45,
+														"duration": 750,
+														"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+													},
+													"trigger": "hover"
+												}
+											]
+										},
+										"effects": [
+											{
+												"id": "ripple1",
+												"effect": "ripple",
+												"values": {
+													"colour": "#ffffff",
+													"duration": 650,
+													"easing": "linear",
+													"sizeFactor": 2.2,
+													"peakOpacity": 0.35
+												},
+												"trigger": "pointerdown"
+											}
+										]
+									}
+								}
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Follow pointer, scale and lift",
+					"description": "Follow pointer at 8deg with hover scale 1.04 and a 6px lift.",
+					"className": "m5z-b",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"trigger": "hover",
+										"values": {
+											"scale": 1.04,
+											"translateY": -6,
+											"duration": 150,
+											"perspective": 1100,
+											"perspectiveOn": "self",
+											"followPointer": true,
+											"maxAngle": 8,
+											"axisLock": "none",
+											"resetDuration": 600,
+											"resetEasing": "ease-out"
+										}
+									}
+								}
+							}
+						}
+					},
+					"effectHover": "none",
+					"shadowLiftOnHover": false
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Lift, parallax and Follow pointer",
+					"description": "A 6px lift and a page-basis parallax offset sum on one translate, with the tilt applied.",
+					"className": "m5z-c",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"trigger": "hover",
+										"values": {
+											"translateY": -6,
+											"duration": 150,
+											"perspective": 1100,
+											"perspectiveOn": "self",
+											"followPointer": true,
+											"maxAngle": 8,
+											"axisLock": "none",
+											"resetDuration": 600,
+											"resetEasing": "ease-out"
+										}
+									}
+								},
+								"effects": [
+									{
+										"id": "parallax",
+										"effect": "parallax",
+										"values": {
+											"speedRatio": 0.18,
+											"basis": "page"
+										}
+									}
+								]
+							}
+						}
+					},
+					"effectHover": "none",
+					"shadowLiftOnHover": false
+				}
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"padding": {
+						"desktop": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"tablet": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"mobile": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						}
+					},
+					"className": "m5z-d",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "cf1",
+										"effect": "cursor-field",
+										"values": {
+											"field": "image-reveal",
+											"radius": 0,
+											"hoverRadius": 90,
+											"radiusDuration": 400,
+											"radiusEasing": "cubic-bezier(0.16, 0.84, 0.32, 1)",
+											"edge": 0,
+											"washColour": "#ffffff",
+											"washOpacityStart": 0.5,
+											"washOpacityEnd": 0.3,
+											"ring": true,
+											"ringSize": 180,
+											"ringWidth": 3,
+											"ringColour": "#ffffff",
+											"ringShadow": true,
+											"ringLag": 400
+										}
+									},
+									{
+										"id": "rp1",
+										"effect": "ripple",
+										"values": {
+											"colour": "#ffffff",
+											"duration": 650,
+											"easing": "linear",
+											"sizeFactor": 2.2,
+											"peakOpacity": 0.35
+										},
+										"trigger": "pointerdown"
+									}
+								],
+								"hover": {
+									"effects": [
+										{
+											"id": "sheen2",
+											"effect": "sheen",
+											"values": {
+												"bandWidth": 60,
+												"angle": -18,
+												"colour": "#ffffff",
+												"opacity": 0.45,
+												"duration": 750,
+												"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+											},
+											"trigger": "hover"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Ring, ripple and sheen",
+							"level": 3
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Control card",
+					"description": "No motion at all: it never translates, rotates, paints a layer or ripples.",
+					"className": "m5z-control",
+					"effectHover": "none",
+					"shadowLiftOnHover": false
+				}
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"padding": {
+						"desktop": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"tablet": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"mobile": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						}
+					},
+					"className": "m5z-spacer",
+					"minHeight": {
+						"desktop": "1200px"
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Scroll room so the page reaches the parallax scroll position at every width."
+						}
+					}
+				]
+			}
+		]
+	}
+]

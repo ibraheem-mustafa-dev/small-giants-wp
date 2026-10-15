@@ -8,13 +8,13 @@
   {
     "gate": "fx-list-drift",
     "pattern": "cursor-field",
-    "reason": "The cursor-field rest position, falloff and layer opacity parameters (restX, restY, falloff, layerOpacity) are schema fields no cursor-field runtime reads (M5.11 built the image-reveal type and left these, which predate it); M5.Z reads or retires them.",
-    "delete_in_unit": "M5.Z"
+    "reason": "The cursor-field rest position, falloff and layer opacity parameters (restX, restY, falloff, layerOpacity) are schema fields no cursor-field runtime reads (M5.11 built the image-reveal type and left these, which predate it); they are read or retired before the final acceptance in M6.7.",
+    "delete_in_unit": "M6.7"
   },
   {
     "gate": "fx-list-drift",
     "pattern": "magnet",
-    "reason": "The magnet moving-part parameter (data-sgs-fx-magnet-moving-part) is not read: M5.4 built the engage mode and pull model, but moving a part needs the part-to-selector contract in the runtime; M5.Z builds or retires it.",
-    "delete_in_unit": "M5.Z"
+    "reason": "The magnet moving-part parameter (data-sgs-fx-magnet-moving-part) is not read: M5.4 built the engage mode and pull model, but moving a part needs the part-to-selector contract in the runtime; it is built or retired before the final acceptance in M6.7.",
+    "delete_in_unit": "M6.7"
   }
 ]

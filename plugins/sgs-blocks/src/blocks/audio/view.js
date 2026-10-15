@@ -76,7 +76,10 @@ function cvar( el, name, fallback ) {
  */
 function resolveColour( root, name, fallback ) {
 	const probe = document.createElement( 'span' );
-	probe.style.cssText = 'position:absolute;width:0;height:0;color:var(' + name + ', ' + fallback + ')';
+	probe.style.position = 'absolute';
+	probe.style.width = '0';
+	probe.style.height = '0';
+	probe.style.setProperty( 'color', 'var(' + name + ', ' + fallback + ')' );
 	root.appendChild( probe );
 	const c = getComputedStyle( probe ).color || fallback;
 	probe.remove();
