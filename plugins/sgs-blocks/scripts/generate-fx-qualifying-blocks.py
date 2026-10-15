@@ -653,12 +653,40 @@ def _x_scroll_track_blocks() -> set[str]:
     return found
 
 
+MARQUEE_SET_HOOK = "data-sgs-marquee-set"
+
+
+def _marquee_track_blocks() -> set[str]:
+    """Blocks whose own *.php prints the marquee set hook (`data-sgs-marquee-set`), the markup
+    src/shared/effects/fx-marquee.js clones and animates (Spec 38A FR-38A-44, M5.15): the derived 'marquee-track'
+    provision. Read from the markup that ships, never a hand-kept list. Its own token rather than 'track', so the
+    marquee blocks do not also qualify for draggable and carousel-loop.
+
+    :return: Set of block names.
+    """
+    found: set[str] = set()
+    for block_dir in sorted(BLOCKS_DIR.glob("*/")):
+        block_json_path = block_dir / "block.json"
+        if not block_json_path.exists():
+            continue
+        if not any(MARQUEE_SET_HOOK in p.read_text(encoding="utf-8") for p in sorted(block_dir.glob("*.php"))):
+            continue
+        try:
+            name = json.loads(block_json_path.read_text(encoding="utf-8")).get("name")
+        except (OSError, json.JSONDecodeError):
+            continue
+        if name:
+            found.add(name)
+    return found
+
+
 def _block_provisions(
     block_slug: str,
     block_json: dict,
     richtext_blocks: set[str],
     x_scroll_blocks: set[str],
     raster_image_blocks: set[str],
+    marquee_blocks: frozenset[str] | set[str] = frozenset(),
 ) -> set[str]:
     """The set of requirement tokens this block satisfies."""
     provisions: set[str] = set()
@@ -698,6 +726,8 @@ def _block_provisions(
         provisions.add("track")
     if fx_supports.get("pairedFilter") is True:
         provisions.add("item-set")
+    if block_slug in marquee_blocks:
+        provisions.add("marquee-track")
 
     # 'panel' — supports.sgs.fx.motionSurface (2026-07-31, follow-up fix,
     # same idiom as `draggable`/`pairedFilter` immediately above). MEANS: this
@@ -810,6 +840,7 @@ def compute_map() -> dict[str, list[str]]:
     richtext_blocks = _richtext_blocks()
     x_scroll_blocks = _x_scroll_track_blocks()
     raster_image_blocks = _raster_image_blocks()
+    marquee_blocks = _marquee_track_blocks()
     qualifying_effects = _load_qualifying_effects()
 
     result: dict[str, list[str]] = {}
@@ -837,7 +868,7 @@ def compute_map() -> dict[str, list[str]]:
             continue
 
         provisions = _block_provisions(
-            block_slug, block_json, richtext_blocks, x_scroll_blocks, raster_image_blocks
+            block_slug, block_json, richtext_blocks, x_scroll_blocks, raster_image_blocks, marquee_blocks
         )
 
         # PASS 1 — effects with a SPECIFIC target requirement. These are what

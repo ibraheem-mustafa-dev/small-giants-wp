@@ -70,7 +70,7 @@ from __future__ import annotations
 #                                         row at all -- flagged, not silently
 #                                         dropped: there is nothing to seed here.
 #   requires                'text'|'svg'|'svg-subtree'|'section'|'item-set'|
-#                          'track'|'surface'|'image'|'none' — what the effect
+#                          'track'|'marquee-track'|'surface'|'image'|'none' — what the effect
 #                          needs OF ITS TARGET, derived from each §2 row's
 #                          own qualifiers (Conditions/Exposure-surface text).
 #                          Closed vocabulary; per-row citation below.
@@ -1114,7 +1114,7 @@ FX_EFFECTS: list[dict] = [
         "creates_panel": 0,
     },
     {
-        # Spec 38A FR-38A-44 (Effects, Tier V, Block (track)). The shared marquee primitive for sgs/brand-strip and sgs/trust-bar; the target is the track, so requires=track as for draggable and carousel-loop.
+        # Spec 38A FR-38A-44 (Effects, Tier V, Block (track)). The shared marquee primitive for sgs/brand-strip and sgs/trust-bar; the target is the marquee track: requires=marquee-track, the provision generate-fx-qualifying-blocks.py derives from a block's own `data-sgs-marquee-set` markup (not 'track', which would also offer draggable and carousel-loop there).
         "effect": "marquee",
         # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
         # (schemas/motion.schema.json::x-sgs-effects.marquee), never a `data-sgs-fx` value, so it is not in
@@ -1132,7 +1132,7 @@ FX_EFFECTS: list[dict] = [
         "reduced_motion": "simplify",
         "editor_story": "end-state",
         "scope": "block",
-        "requires": "track",
+        "requires": "marquee-track",
         "creates_panel": 0,
     },
     {
