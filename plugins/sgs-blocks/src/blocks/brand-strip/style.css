@@ -34,17 +34,10 @@
 	margin-inline: auto;
 }
 
-/* `overflow: hidden` is ONLY needed to hide the extra cloned sets sliding
- * off-screen during the infinite-scroll marquee (view.js appends clones
- * for that mode alone). Scoping it to scrolling mode fixes a real clipping
- * defect in static mode: a wide static row (see the full-bleed breakout
- * below) needs `overflow: visible` so a row that wraps onto a second line
- * isn't cropped by a fixed-height clipping box. */
-.sgs-brand-strip--scrolling {
-	overflow: hidden;
-	/* The marquee is tap-to-pause/resume on touch (see view.js), so it needs
-	 * to read as tappable — no double-tap-zoom delay, no lingering tap-
-	 * highlight flash over the logos. */
+/* While the shared marquee runs (assets/css/fx-marquee.css clips the strip and lays the lane out as one row) the strip
+ * is tap-to-pause/resume on touch, so it needs to read as tappable: no double-tap-zoom delay, no lingering tap-
+ * highlight flash over the logos. */
+.sgs-brand-strip[data-sgs-marquee="on"] {
 	touch-action: manipulation;
 	-webkit-tap-highlight-color: transparent;
 }
@@ -69,7 +62,7 @@
  * confirmed live 1433 vs 1425 at 1440 — the scrollbar-inclusion trap). The
  * inset padding below reproduces the reference's ~20px side margins within
  * the aligned width. Scrolling mode keeps its own marquee mechanism. */
-.sgs-brand-strip:not(.sgs-brand-strip--scrolling) .sgs-brand-strip__track {
+.sgs-brand-strip:not([data-sgs-marquee="on"]) .sgs-brand-strip__track {
 	flex-wrap: wrap;
 	justify-content: center;
 	padding-left: var(--sgs-static-row-inset, 20px);
@@ -103,7 +96,7 @@
  * 1163px wide inside a 728px track with zero wrap). Constraining the set
  * to the track's own width is what makes `flex-wrap` actually engage once
  * the tiles collectively exceed it. */
-.sgs-brand-strip:not(.sgs-brand-strip--scrolling) .sgs-brand-strip__set {
+.sgs-brand-strip:not([data-sgs-marquee="on"]) .sgs-brand-strip__set {
 	flex-wrap: wrap;
 	justify-content: center;
 	gap: var(--sgs-static-row-gap, 8px);
@@ -113,7 +106,7 @@
 
 /* When few logos, ensure the set fills at least half the viewport
  * so the marquee has no visible gaps on wide screens. */
-.sgs-brand-strip--scrolling .sgs-brand-strip__set {
+.sgs-brand-strip[data-sgs-marquee="on"] .sgs-brand-strip__set {
 	min-width: 50vw;
 }
 
@@ -406,101 +399,12 @@
 	max-width: var(--sgs-tile-size);
 }
 
-/* ===== Infinite scrolling animation ===== */
-
-/*
- * The animation runs on .sgs-brand-strip__track--ready, which is added
- * by view.js AFTER clones are inserted. This prevents a flash of
- * incorrect layout before JS measures and clones.
- *
- * translateX(-100%) moves exactly one set width. The gap correction
- * ensures no stutter at the loop point (Ryan Mulligan pattern).
- *
- * Each .sgs-brand-strip__set has flex-shrink:0 so it maintains its
- * intrinsic width. The track's total width = N sets * set-width + (N-1) gaps.
- * Moving by one set width + one gap = seamless loop.
- */
-.sgs-brand-strip--scrolling .sgs-brand-strip__track {
+/* ===== Marquee =====
+ * The loop, the clipping, the nowrap lane and the edge fade are the shared marquee's (assets/css/fx-marquee.css,
+ * driven by src/shared/effects/fx-marquee.js). While it runs the track is one row that never wraps. */
+.sgs-brand-strip[data-sgs-marquee="on"] .sgs-brand-strip__track {
 	flex-wrap: nowrap;
 	justify-content: flex-start;
-}
-
-.sgs-brand-strip--scrolling .sgs-brand-strip__track--ready {
-	animation: sgs-brand-scroll var(--sgs-scroll-speed, 25s) linear infinite;
-}
-
-/* Pause on hover — toggled by view.js as a CLASS (no-inline migration
-   contract §A: an inline `.style.animationPlayState` write is a real CSS
-   property declaration, not a `--var` value, so it is forbidden inline).
-   Selector MUST match/beat the `--ready` rule's specificity (0,2,0) above:
-   that rule sets the `animation` SHORTHAND, which resets every unspecified
-   sub-property (including animation-play-state) to its initial value
-   ("running") whenever it wins the cascade. A single-class `--paused`
-   selector (0,1,0) always loses to the two-class `--ready` shorthand rule
-   regardless of source order, so pause-on-hover silently never applied
-   (found live 2026-07-17 while verifying the pauseOnHover control — the
-   class toggled correctly but animation-play-state stayed "running"). The
-   compound selector below (0,3,0) guarantees this rule wins. */
-.sgs-brand-strip--scrolling .sgs-brand-strip__track--ready.sgs-brand-strip__track--paused {
-	animation-play-state: paused;
-}
-
-/* The pause / play button (WCAG 2.2.2) is the shared control, assets/css/motion-pause.css,
-   overlaid at the end edge of this position: relative strip. It sits above the fade-edge
-   gradients (z-index 2) so the edge fade never washes it out. */
-.sgs-brand-strip .sgs-brand-strip__pause {
-	z-index: 3;
-}
-
-@keyframes sgs-brand-scroll {
-	0% {
-		transform: translateX(0);
-	}
-	100% {
-		/* JS measures one set's pixel width + gap and sets --sgs-scroll-distance.
-		 * Moving by exactly that distance produces a seamless loop regardless of
-		 * logo count, container width, screen size, or nesting context. */
-		transform: translateX(calc(-1 * var(--sgs-scroll-distance)));
-	}
-}
-
-/* Reverse direction (right-to-left → right) */
-.sgs-brand-strip--reverse .sgs-brand-strip__track--ready {
-	animation-direction: reverse;
-}
-
-/* ===== Fade edges — gradient mask ===== */
-.sgs-brand-strip--fade::before,
-.sgs-brand-strip--fade::after {
-	content: '';
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	width: var(--sgs-fade-width, 60px);
-	z-index: 2;
-	pointer-events: none;
-}
-
-.sgs-brand-strip--fade::before {
-	left: 0;
-	background: linear-gradient(to right, var(--sgs-fade-bg, var(--wp--preset--color--surface, #fff)), transparent);
-}
-
-.sgs-brand-strip--fade::after {
-	right: 0;
-	background: linear-gradient(to left, var(--sgs-fade-bg, var(--wp--preset--color--surface, #fff)), transparent);
-}
-
-/* Match fade colour to block background if set. `.has-background` is a real
-   CLASS (no-inline migration contract §A — background-color is no longer an
-   inline style, so it can no longer be attribute-selector-sniffed via
-   `[style*="background-color"]`; the block root now carries `.has-background`
-   whenever a custom or preset background colour is set — see render.php). */
-.sgs-brand-strip.has-background::before {
-	background: linear-gradient(to right, var(--wp--custom--color--background, currentColor), transparent);
-}
-.sgs-brand-strip.has-background::after {
-	background: linear-gradient(to left, var(--wp--custom--color--background, currentColor), transparent);
 }
 
 /* ===== Hover States =====
@@ -617,15 +521,6 @@
  * MOTION, not colour change, and disabling those too would remove useful
  * hover feedback for no accessibility benefit. */
 @media (prefers-reduced-motion: reduce) {
-	.sgs-brand-strip--scrolling .sgs-brand-strip__track--ready {
-		animation: none;
-	}
-
-	/* Nothing moves, so there is nothing to pause. */
-	.sgs-brand-strip .sgs-brand-strip__pause {
-		display: none;
-	}
-
 	.sgs-brand-strip--effect-grayscale .sgs-brand-strip__logo,
 	.sgs-brand-strip--effect-sepia .sgs-brand-strip__logo {
 		transition: none;

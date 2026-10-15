@@ -127,12 +127,6 @@ const BADGE_SIZE_OPTIONS = [
 	{ label: __( 'Large', 'sgs-blocks' ),  value: 'large' },
 ];
 
-const AUTO_SCROLL_SPEED_OPTIONS = [
-	{ label: __( 'Slow (40s)', 'sgs-blocks' ),   value: 'slow' },
-	{ label: __( 'Medium (25s)', 'sgs-blocks' ),  value: 'medium' },
-	{ label: __( 'Fast (15s)', 'sgs-blocks' ),    value: 'fast' },
-];
-
 // ─── Editor sub-components ────────────────────────────────────────────────────
 
 /** Circle wrapper with the actual selected icon for editor preview. */
@@ -369,8 +363,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		alignItems,
 		gridAutoRows,
 		autoScroll,
-		autoScrollSpeed,
-		autoScrollPauseOnHover,
 		overflowMode,
 		shadow,
 	} = attributes;
@@ -851,21 +843,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					/>
 					{ autoScroll && (
 						<>
-							<SelectControl
-								label={ __( 'Scroll speed', 'sgs-blocks' ) }
-								value={ autoScrollSpeed }
-								options={ AUTO_SCROLL_SPEED_OPTIONS }
-								onChange={ ( val ) => setAttributes( { autoScrollSpeed: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
 							<TrustBarMarqueeControls attributes={ attributes } setAttributes={ setAttributes } />
-							<ToggleControl
-								label={ __( 'Pause on hover', 'sgs-blocks' ) }
-								checked={ !! autoScrollPauseOnHover }
-								onChange={ ( val ) => setAttributes( { autoScrollPauseOnHover: val } ) }
-								__nextHasNoMarginBottom
-							/>
 						</>
 					) }
 				</PanelBody>

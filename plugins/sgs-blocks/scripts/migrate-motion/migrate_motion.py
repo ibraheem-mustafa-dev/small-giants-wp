@@ -98,6 +98,7 @@ CATALOGUE = [
      'marquee', ('sgs/brand-strip',)),
     (('autoScroll', 'autoScrollBelow', 'autoScrollDuration', 'autoScrollSpeed', 'autoScrollPauseOnHover',
       'autoScrollPauseButton'), 'marquee', ('sgs/trust-bar',)),
+    (('pauseButton',), 'marquee', ('sgs/brand-strip',)),
     (('countPopAnimation',), 'state', ('sgs/cart',)),
     (('burgerMorphDuration', 'burgerMorphEasing', 'burgerMorphEasingCustom'), 'state', ('sgs/nav-bar-menu',)),
     (('entryAnimation', 'entryDuration', 'exitDuration', 'entryEasing', 'entryEasingCustom', 'entryFade',

@@ -46,23 +46,6 @@ const IMAGE_EFFECT_OPTIONS = [
 	{ label: __( 'Sepia', 'sgs-blocks' ), value: 'sepia' },
 ];
 
-const SPEED_OPTIONS = [
-	{ label: __( 'Slow', 'sgs-blocks' ), value: 'slow' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Fast', 'sgs-blocks' ), value: 'fast' },
-];
-
-const DIRECTION_OPTIONS = [
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-];
-
-const SPEED_MAP = {
-	slow: '40s',
-	medium: '25s',
-	fast: '15s',
-};
-
 function LogoEditor( { logo, index, onChange, onRemove } ) {
 	const update = ( key, value ) => {
 		onChange( { ...logo, [ key ]: value } );
@@ -205,17 +188,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		brandTextColourGradient,
 		brandTextColourHover,
 		scrolling,
-		scrollSpeed,
-		scrollDuration,
-		scrollDirection,
-		fadeEdges,
-		fadeWidth,
 		imageEffect,
 		maxHeight,
 		columns,
 		showNames,
-		pauseOnHover,
-		pauseButton,
 		nameColour,
 		nameColourGradient,
 		nameTextAlign,
@@ -327,9 +303,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-brand-strip',
 		'none' !== imageEffect ? `sgs-brand-strip--effect-${ imageEffect }` : '',
 		'row' === attributes.logoLayout ? 'sgs-brand-strip--layout-row' : '',
-		scrolling ? 'sgs-brand-strip--scrolling' : '',
-		scrollDirection === 'right' ? 'sgs-brand-strip--reverse' : '',
-		fadeEdges ? 'sgs-brand-strip--fade' : '',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -350,7 +323,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-columns-desktop': columns?.desktop ?? 8,
 		'--sgs-columns-tablet': columns?.tablet ?? 4,
 		'--sgs-columns-mobile': columns?.mobile ?? 2,
-		'--sgs-scroll-speed': scrolling ? SPEED_MAP[ scrollSpeed ] : undefined,
 	};
 
 	return (
@@ -661,95 +633,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					{ scrolling && (
-						<>
-							<SelectControl
-								label={ __( 'Scroll speed', 'sgs-blocks' ) }
-								value={ scrollSpeed }
-								options={ SPEED_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { scrollSpeed: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<RangeControl
-								label={ __( 'Custom scroll time (seconds)', 'sgs-blocks' ) }
-								help={ __(
-									'Seconds for one full loop. 0 uses the Scroll speed choice above; anything higher overrides it.',
-									'sgs-blocks'
-								) }
-								value={ scrollDuration ?? 0 }
-								onChange={ ( val ) =>
-									setAttributes( { scrollDuration: val ?? 0 } )
-								}
-								min={ 0 }
-								max={ 300 }
-								step={ 1 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<SelectControl
-								label={ __( 'Scroll direction', 'sgs-blocks' ) }
-								value={ scrollDirection }
-								options={ DIRECTION_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { scrollDirection: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<ToggleControl
-								label={ __( 'Pause on hover', 'sgs-blocks' ) }
-								help={ __(
-									'Also stop the marquee while a visitor’s pointer is over it, or a finger taps it. Keyboard focus inside the strip always pauses it.',
-									'sgs-blocks'
-								) }
-								checked={ pauseOnHover }
-								onChange={ ( val ) =>
-									setAttributes( { pauseOnHover: val } )
-								}
-								__nextHasNoMarginBottom
-							/>
-							<ToggleControl
-								label={ __( 'Show pause button', 'sgs-blocks' ) }
-								help={ __(
-									'Adds a pause/play button. Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients.',
-									'sgs-blocks'
-								) }
-								checked={ !! pauseButton }
-								onChange={ ( val ) =>
-									setAttributes( { pauseButton: val } )
-								}
-								__nextHasNoMarginBottom
-							/>
-						</>
-					) }
-					<ToggleControl
-						label={ __( 'Fade edges', 'sgs-blocks' ) }
-						help={ __(
-							'Gradient fade on left and right edges for a polished look.',
-							'sgs-blocks'
-						) }
-						checked={ fadeEdges }
-						onChange={ ( val ) =>
-							setAttributes( { fadeEdges: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					{ fadeEdges && (
-						<RangeControl
-							label={ __( 'Fade width (px)', 'sgs-blocks' ) }
-							value={ fadeWidth }
-							onChange={ ( val ) =>
-								setAttributes( { fadeWidth: val } )
-							}
-							min={ 20 }
-							max={ 200 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl

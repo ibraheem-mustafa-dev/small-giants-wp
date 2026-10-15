@@ -249,55 +249,26 @@ a.sgs-trust-bar__badge:focus-visible {
 /* No badge-label colour fallback: <span> inherits theme.json
  * styles.color.text = var:preset|color|text — identical value. */
 
-/* ─── Auto-scroll ────────────────────────────────────────────────────────────── */
+/* ─── Marquee track ──────────────────────────────────────────────────────────── */
 /*
- * When view.js detects item overflow, it:
- *   1. Wraps content in .sgs-trust-bar__track (already in PHP for auto-scroll blocks).
- *   2. Clones items to fill the container.
- *   3. Sets --sgs-scroll-distance on the track.
- *   4. Adds .sgs-trust-bar__track--ready to start the animation.
- *
- * Speed data attributes map to animation-duration via CSS:
- *   data-auto-scroll-speed="slow"   → 40s
- *   data-auto-scroll-speed="medium" → 25s (default)
- *   data-auto-scroll-speed="fast"   → 15s
+ * The marquee track (`data-sgs-marquee-set`) is printed whenever the block runs the shared marquee. It does not
+ * exist as a box until the marquee runs (src/shared/effects/fx-marquee.js, assets/css/fx-marquee.css), so the
+ * badges keep the block's own layout and every badge stays visible with no JavaScript, under reduced motion or
+ * outside the marquee's breakpoint range. While it runs, each copy of the track is one non-shrinking row, and takes
+ * its gap from the lane so the seam between two copies equals the gap between badges.
  */
 
-.sgs-trust-bar[data-auto-scroll="true"] {
-	overflow: hidden;
-	position: relative;
+.sgs-trust-bar__track {
+	display: contents;
 }
 
-.sgs-trust-bar__track {
+.sgs-trust-bar[data-sgs-marquee="on"] .sgs-trust-bar__track {
 	display: flex;
 	align-items: center;
-	gap: var(--wp--preset--spacing--30);
 	flex-wrap: nowrap;
 	justify-content: flex-start;
+	gap: inherit;
 }
-
-.sgs-trust-bar__track--ready {
-	animation: sgs-trust-bar-scroll var(--sgs-trust-bar-scroll-speed, 25s) linear infinite;
-}
-
-/* D298 pattern: view.js toggles this class on hover (pause-on-hover) instead
-   of writing animation-play-state inline — no-inline contract (§A). */
-.sgs-trust-bar__track--ready.is-paused {
-	animation-play-state: paused;
-}
-
-/* The pause / play button (WCAG 2.2.2) is the shared control: assets/css/motion-pause.css
-   (overlay-end placement, over the end edge of this position: relative bar). */
-
-@keyframes sgs-trust-bar-scroll {
-	0%   { transform: translateX(0); }
-	100% { transform: translateX(calc(-1 * var(--sgs-scroll-distance))); }
-}
-
-/* Speed variants applied by view.js via data attribute */
-.sgs-trust-bar[data-auto-scroll-speed="slow"]   .sgs-trust-bar__track--ready { animation-duration: 40s; }
-.sgs-trust-bar[data-auto-scroll-speed="medium"] .sgs-trust-bar__track--ready { animation-duration: 25s; }
-.sgs-trust-bar[data-auto-scroll-speed="fast"]   .sgs-trust-bar__track--ready { animation-duration: 15s; }
 
 /* ─── Overflow: drop mode ────────────────────────────────────────────────────── */
 /*
@@ -333,14 +304,5 @@ a.sgs-trust-bar__badge:focus-visible {
 @media (prefers-reduced-motion: reduce) {
 	.sgs-trust-bar__badge {
 		transition: none;
-	}
-
-	.sgs-trust-bar__track--ready {
-		animation: none;
-	}
-
-	/* Nothing moves, so there is nothing to pause (scoped by the root to outrank the shared sheet). */
-	.sgs-trust-bar .sgs-trust-bar__pause {
-		display: none;
 	}
 }

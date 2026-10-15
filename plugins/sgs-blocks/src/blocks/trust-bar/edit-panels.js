@@ -15,7 +15,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';
 import {
 	IconPreview,
 	ResponsiveOverride,
@@ -27,16 +27,13 @@ import {
 
 /**
  * Numeric limits. These MIRROR the server clamps in includes/helpers-trust-bar-item.php
- * (SGS_TRUST_BAR_STROKE_WIDTH_MIN/MAX, SGS_TRUST_BAR_BARE_ICON_SIZE_MIN/MAX,
- * SGS_TRUST_BAR_SCROLL_DURATION_MIN/MAX) and the ranges in block.json's descriptions;
+ * (SGS_TRUST_BAR_STROKE_WIDTH_MIN/MAX, SGS_TRUST_BAR_BARE_ICON_SIZE_MIN/MAX) and the ranges in block.json's descriptions;
  * TrustBarRenderTest::test_editor_ranges_mirror_the_server_clamps fails if they drift.
  * An editor range narrower than the server clamp would hide values the frontend accepts.
  */
 export const TRUST_BAR_LIMITS = {
 	strokeWidth: { min: 0.25, max: 4, fallback: 1.8 },
 	bareSize: { min: 8, max: 96, fallback: 20 },
-	// 0 means "use the slow / medium / fast preset"; a non-zero value clamps to min..max.
-	scrollDuration: { off: 0, min: 2, max: 300 },
 };
 
 /** Marquee breakpoint choices: the two device-tier standards (768 / 1024), or off. */
@@ -159,7 +156,7 @@ export function TrustBarItemSpacingPanel( { attributes, setAttributes } ) {
 }
 
 /**
- * Marquee options that sit under "Enable auto-scroll": where it runs, and how fast.
+ * The marquee option that sits under "Enable auto-scroll": where it runs. Speed, direction, pause and fade are the marquee effect's own controls.
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
@@ -177,24 +174,6 @@ export function TrustBarMarqueeControls( { attributes, setAttributes } ) {
 				onChange={ ( val ) => setAttributes( { autoScrollBelow: parseInt( val, 10 ) || 0 } ) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
-			/>
-			<RangeControl
-				label={ __( 'Custom scroll time (seconds)', 'sgs-blocks' ) }
-				help={ __( 'Seconds for one full loop. 0 uses the Slow / Medium / Fast choice above; anything higher overrides it.', 'sgs-blocks' ) }
-				value={ attributes.autoScrollDuration ?? TRUST_BAR_LIMITS.scrollDuration.off }
-				onChange={ ( val ) => setAttributes( { autoScrollDuration: val ?? TRUST_BAR_LIMITS.scrollDuration.off } ) }
-				min={ TRUST_BAR_LIMITS.scrollDuration.off }
-				max={ TRUST_BAR_LIMITS.scrollDuration.max }
-				step={ 1 }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			/>
-			<ToggleControl
-				label={ __( 'Show pause button', 'sgs-blocks' ) }
-				help={ __( 'Adds a pause/play button. Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients.', 'sgs-blocks' ) }
-				checked={ attributes.autoScrollPauseButton ?? false }
-				onChange={ ( val ) => setAttributes( { autoScrollPauseButton: val } ) }
-				__nextHasNoMarginBottom
 			/>
 		</>
 	);

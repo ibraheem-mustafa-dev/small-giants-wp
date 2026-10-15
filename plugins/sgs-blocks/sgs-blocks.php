@@ -224,6 +224,8 @@ require_once SGS_BLOCKS_PATH . 'includes/lottie-upload.php';
 require_once SGS_BLOCKS_PATH . 'includes/helpers-svg-kses.php';
 require_once SGS_BLOCKS_PATH . 'includes/svg-upload.php';
 require_once SGS_BLOCKS_PATH . 'includes/lottie-render.php';
+// A Lottie effect layer's attachment ID becomes the player's `data-src` after the motion renderer writes the layer.
+add_filter( 'render_block', 'sgs_lottie_layer_add_source', 100 );
 
 // Configurator — swatch fields on WooCommerce attribute term screens (FR-27-B2 authoring UI).
 require_once SGS_BLOCKS_PATH . 'includes/configurator-term-fields.php';

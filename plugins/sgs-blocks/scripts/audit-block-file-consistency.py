@@ -283,6 +283,12 @@ def compute_support_injected_attrs(supports):
     if supports.get('position'):
         injected.add('style')
 
+    # SGS's own support: `supports.sgs.motion` registers the `sgsMotion` attribute
+    # (includes/motion/class-sgs-motion-renderer.php::ATTR), never block.json.
+    sgs = supports.get('sgs')
+    if isinstance(sgs, dict) and sgs.get('motion'):
+        injected.add('sgsMotion')
+
     return injected
 
 # Shared prefixed-attribute-set PHP helpers: each reads

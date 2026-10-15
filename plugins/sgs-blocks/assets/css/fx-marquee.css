@@ -1,0 +1,65 @@
+/**
+ * SGS motion: marquee (Spec 38A FR-38A-44). The painting half.
+ *
+ * `src/shared/effects/fx-marquee.js` clones the block's `[data-sgs-marquee-set]` and runs a Web Animations loop on
+ * `--sgs-marquee-x` (or `-y` for a vertical marquee) on every copy; this file turns that channel into `translate`,
+ * lays the lane out as one non-wrapping row while the marquee runs, and fades the two ends. It sets no `animation-name`
+ * (an entrance on the same element owns that list) and nothing here applies while the marquee is off, so a static
+ * block keeps its own layout and every item stays visible.
+ *
+ * The script sets `data-sgs-marquee="on"` on the block root and `data-sgs-marquee-lane="on"` on the set's parent
+ * while it runs, and `--sgs-marquee-fade-size` on the root when the edge fade is on.
+ */
+
+@property --sgs-marquee-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-marquee-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+
+[data-sgs-fx~="marquee"][data-sgs-marquee="on"] {
+	overflow: hidden;
+	position: relative;
+}
+
+[data-sgs-fx~="marquee"] [data-sgs-marquee-lane="on"] {
+	display: flex;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+}
+
+[data-sgs-fx~="marquee"][data-sgs-fx-marquee-direction="up"] [data-sgs-marquee-lane="on"],
+[data-sgs-fx~="marquee"][data-sgs-fx-marquee-direction="down"] [data-sgs-marquee-lane="on"] {
+	flex-direction: column;
+}
+
+[data-sgs-fx~="marquee"][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]) {
+	flex: 0 0 auto;
+	max-width: none;
+	translate: var(--sgs-marquee-x) var(--sgs-marquee-y);
+}
+
+/* Edge fade: a mask, so the fade needs no background colour and works over an image or a gradient. */
+[data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"] {
+	--sgs-marquee-fade-axis: to right;
+	mask-image: linear-gradient(
+		var(--sgs-marquee-fade-axis),
+		transparent 0,
+		#000 var(--sgs-marquee-fade-size, 5%),
+		#000 calc(100% - var(--sgs-marquee-fade-size, 5%)),
+		transparent 100%
+	);
+}
+
+[data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"][data-sgs-fx-marquee-direction="up"],
+[data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"][data-sgs-fx-marquee-direction="down"] {
+	--sgs-marquee-fade-axis: to bottom;
+}
+
+/* The pause button stays above the faded ends. */
+[data-sgs-fx~="marquee"] .sgs-motion-pause {
+	z-index: 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-sgs-fx~="marquee"][data-sgs-fx-marquee-edge-fade="true"] {
+		mask-image: none;
+	}
+}

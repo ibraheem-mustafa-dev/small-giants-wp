@@ -206,6 +206,7 @@ class SGS_Motion_Registry {
 		'@sgs/fx-lottie'           => array(
 			'path' => 'build/shared/effects/fx-lottie.js',
 			'deps' => array(
+				'@sgs/loop-control',
 				array(
 					'id'     => '@sgs/lottie-web',
 					'import' => 'dynamic',
@@ -411,6 +412,44 @@ class SGS_Motion_Registry {
 		),
 
 		/*
+		 * Ken Burns (Tier V, Spec 38A FR-38A-52). The module reads the emitted data attributes and runs one WAAPI run on the registered
+		 * scale and translate owners (`--sgs-kb-s`, `--sgs-kb-x`, `--sgs-kb-y`): a loop, or a zoom-out-once that holds its last frame.
+		 * Both go through the shared loop control, the one owner of the off-screen, focus and visitor pauses. It ships no stylesheet.
+		 */
+		'@sgs/fx-ken-burns'        => array(
+			'path' => 'build/shared/effects/fx-ken-burns.js',
+			'deps' => array( '@sgs/loop-control' ),
+		),
+
+		/*
+		 * SVG loop (Tier V, Spec 38A FR-38A-52): a pulse or wave on an SVG part, run as a WAAPI loop through the shared loop control
+		 * on the effect's own opacity, scale and rotate owners (`--sgs-svl-op`, `--sgs-svl-s`, `--sgs-svl-rot`). It ships no stylesheet.
+		 */
+		'@sgs/fx-svg-loop'         => array(
+			'path' => 'build/shared/effects/fx-svg-loop.js',
+			'deps' => array( '@sgs/loop-control' ),
+		),
+
+		/*
+		 * Marquee (Tier V, Spec 38A FR-38A-44): clones the block's marquee set and runs the loop on every copy through
+		 * the shared loop control; fx-marquee.css composes the channel and fades the ends. Serves sgs/brand-strip and
+		 * sgs/trust-bar.
+		 */
+		'@sgs/fx-marquee'          => array(
+			'path' => 'build/shared/effects/fx-marquee.js',
+			'deps' => array( '@sgs/loop-control' ),
+		),
+
+		/*
+		 * Parallax (Tier V, Spec 38A FR-38A-43): registers each target with the shared scroll driver, which writes the
+		 * scrolled distance or in-view progress; fx-parallax.css turns it into `--sgs-plx-*` for the translate channel.
+		 */
+		'@sgs/fx-parallax'         => array(
+			'path' => 'build/shared/effects/fx-parallax.js',
+			'deps' => array( '@sgs/scroll-driver' ),
+		),
+
+		/*
 		 * Follow pointer (the hover state's Rotate driver, FR-38A-41) and glare: each writes only its own custom
 		 * properties (`--sgs-tilt-x/y`, `--sgs-glare-x/y`) from the pointer position; motion.css composes the transform.
 		 */
@@ -421,15 +460,6 @@ class SGS_Motion_Registry {
 		'@sgs/fx-glare'            => array(
 			'path' => 'build/shared/effects/fx-glare.js',
 			'deps' => array(),
-		),
-
-		/*
-		 * Parallax (Tier V, Spec 38A FR-38A-43): registers each target with the shared scroll driver, which writes the
-		 * scrolled distance or in-view progress; fx-parallax.css turns it into `--sgs-plx-*` for the translate channel.
-		 */
-		'@sgs/fx-parallax'         => array(
-			'path' => 'build/shared/effects/fx-parallax.js',
-			'deps' => array( '@sgs/scroll-driver' ),
 		),
 	);
 

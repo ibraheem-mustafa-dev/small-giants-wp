@@ -28,7 +28,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-media-element.php';
 // live in their own files (this render.php is already over the file-length cap).
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-trust-bar-item.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-trust-bar-marquee.php';
-require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-effect.php';
 
 // --- Unique ID for scoped typography <style> ----------------------------------
 $uid = wp_unique_id( 'sgs-tb-' );
@@ -104,10 +104,10 @@ $badge_image_shadow_colour_hover = isset( $attributes['badgeImageShadowColourHov
 
 // --- Auto-scroll attributes --------------------------------------------------
 $auto_scroll       = ! empty( $attributes['autoScroll'] );
-$auto_scroll_speed = sanitize_html_class( $attributes['autoScrollSpeed'] ?? 'medium' );
-$auto_scroll_pause = isset( $attributes['autoScrollPauseOnHover'] ) ? (bool) $attributes['autoScrollPauseOnHover'] : true;
-$auto_scroll_btn   = isset( $attributes['autoScrollPauseButton'] ) ? (bool) $attributes['autoScrollPauseButton'] : false;
 $tb_marquee_below  = sgs_trust_bar_marquee_below( $attributes['autoScrollBelow'] ?? 0 );
+// The badges sit inside the marquee set (`.sgs-trust-bar__track`, `data-sgs-marquee-set`) whenever the block runs the
+// shared marquee. The runtime is `src/shared/effects/fx-marquee.js`, loaded by the block's marquee motion effect.
+$tb_marquee_track  = $auto_scroll || sgs_motion_root_has_effect( $attributes, 'marquee' );
 
 // --- Overflow mode ('wrap' default / 'drop') ----------------------------------
 // 'drop' keeps a single row and lets view.js hide whichever trailing badges do
@@ -321,17 +321,11 @@ $tb_extra_attrs = array(
 // via the universal wrapper mechanism. No CSS selector overrides needed.
 
 if ( $auto_scroll ) {
-	$tb_extra_attrs['data-auto-scroll']       = 'true';
-	$tb_extra_attrs['data-auto-scroll-speed'] = $auto_scroll_speed;
-	$tb_extra_attrs['data-auto-scroll-pause'] = $auto_scroll_pause ? 'true' : 'false';
-
-	// Marquee only below a device-tier breakpoint (autoScrollBelow: 0 / 768 / 1024) and an
-	// optional custom duration in seconds. Both default to "off", which emits nothing extra.
-	$tb_marquee_duration = sgs_trust_bar_marquee_duration( $attributes['autoScrollDuration'] ?? 0 );
+	// overflow-drop.js reads these to know the marquee range (it hides what does not fit outside it).
+	$tb_extra_attrs['data-auto-scroll'] = 'true';
 	if ( $tb_marquee_below > 0 ) {
 		$tb_extra_attrs['data-auto-scroll-below'] = (string) $tb_marquee_below;
 	}
-	$tb_extra_scoped_css .= sgs_trust_bar_marquee_css( $uid_scope, $tb_marquee_below, $tb_marquee_duration );
 }
 
 if ( $tb_overflow_drop ) {
@@ -557,7 +551,7 @@ $tb_per_item_css = '';
 // This is derived from the SAME two variables that compose the parent, so it
 // cannot silently drift. ⚠ If another element is ever added as a sibling of the
 // badges, extend this expression — do not add the element and leave this alone.
-$tb_badge_offset = ( ! $auto_scroll && '' !== $title_html ) ? 1 : 0;
+$tb_badge_offset = ( ! $tb_marquee_track && '' !== $title_html ) ? 1 : 0;
 
 foreach ( $items as $tb_item_index => $item ) {
 	$item       = is_array( $item ) ? $item : array();
@@ -743,25 +737,11 @@ foreach ( $items as $tb_item_index => $item ) {
 	}
 }
 
-// --- Auto-scroll track wrapper ------------------------------------------------
-// view.js queries .sgs-trust-bar[data-auto-scroll="true"] then .sgs-trust-bar__track.
-$badges_html = $auto_scroll
-	? '<div class="sgs-trust-bar__track">' . $items_html . '</div>'
+// --- Marquee track wrapper ----------------------------------------------------
+// The shared marquee runtime clones the `data-sgs-marquee-set` element and moves every copy.
+$badges_html = $tb_marquee_track
+	? '<div class="sgs-trust-bar__track" data-sgs-marquee-set>' . $items_html . '</div>'
 	: $items_html;
-
-// Pause / play button (WCAG 2.2.2), the shared control (includes/helpers-motion-pause.php), an
-// option (autoScrollPauseButton, off by default). Rendered hidden: view.js un-hides it only while the marquee is actually running, so a bar
-// that does not scroll never shows a dead control. Placed after the track (a sibling of it) so
-// it adds no badge before the track's :nth-child-scoped rules.
-if ( $auto_scroll && $auto_scroll_btn ) {
-	$badges_html .= sgs_motion_pause_button(
-		array(
-			'block'     => 'sgs-trust-bar',
-			'label'     => __( 'Pause scrolling', 'sgs-blocks' ),
-			'placement' => 'overlay-end',
-		)
-	);
-}
 
 // --- Scoped typography <style> ------------------------------------------------
 // Label selector covers both variants:

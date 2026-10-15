@@ -3,10 +3,10 @@
  * Server-side render for the SGS Brand Strip block.
  *
  * Two-container architecture (Ryan Mulligan pattern):
- * PHP outputs logos once inside a .sgs-brand-strip__set wrapper.
- * view.js measures actual widths at runtime and clones the set
- * the minimum number of times needed for seamless infinite scroll.
- * CSS @keyframes handles the animation on the GPU compositor thread.
+ * PHP outputs logos once inside a .sgs-brand-strip__set wrapper marked
+ * data-sgs-marquee-set. The shared marquee runtime (src/shared/effects/fx-marquee.js,
+ * run by the block's marquee motion effect) measures actual widths at runtime and
+ * clones the set the minimum number of times needed for a seamless loop.
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
@@ -59,7 +59,6 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
 require_once __DIR__ . '/product-brands-source.php';
 require_once __DIR__ . '/brand-display-render.php';
 
@@ -83,10 +82,6 @@ if ( 'product-brands' === $brand_source ) {
 }
 $brand_display       = sgs_brand_strip_resolve_display( $attributes );
 $scrolling           = $attributes['scrolling'] ?? false;
-$scroll_speed        = $attributes['scrollSpeed'] ?? 'medium';
-$scroll_direction    = $attributes['scrollDirection'] ?? 'left';
-$fade_edges          = $attributes['fadeEdges'] ?? false;
-$fade_width          = $attributes['fadeWidth'] ?? 60;
 $image_effect        = $attributes['imageEffect'] ?? 'none';
 $max_height          = $attributes['maxHeight'] ?? 180;
 $columns_tiers       = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
@@ -94,7 +89,6 @@ $columns_desktop     = isset( $columns_tiers['desktop'] ) ? max( 1, absint( $col
 $columns_tablet      = isset( $columns_tiers['tablet'] ) ? max( 1, absint( $columns_tiers['tablet'] ) ) : 4;
 $columns_mobile      = isset( $columns_tiers['mobile'] ) ? max( 1, absint( $columns_tiers['mobile'] ) ) : 2;
 $show_names          = ! empty( $attributes['showNames'] );
-$pause_on_hover      = ! isset( $attributes['pauseOnHover'] ) || (bool) $attributes['pauseOnHover'];
 $name_colour          = $attributes['nameColour'] ?? '';
 $name_colour_gradient = $attributes['nameColourGradient'] ?? '';
 // logoGap and tilePadding are a spacing preset slug ("50") or a custom length ("12px"),
@@ -158,28 +152,9 @@ $hover_effect        = $attributes['effectHover'] ?? 'none';
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
-// Map scroll speed to CSS animation duration.
-$speed_map       = array(
-	'slow'   => '60s',
-	'medium' => '30s',
-	'fast'   => '15s',
-);
-$animation_speed = $speed_map[ $scroll_speed ] ?? '25s';
-
-// scrollDuration (seconds) overrides the slow/medium/fast preset above when set.
-// 0 or unset keeps the preset — every existing page renders identically. Clamped
-// 2-300s (same range as sgs/trust-bar's autoScrollDuration, the precedent for this
-// control) so an out-of-range value can't produce a stalled or flickering marquee.
-$scroll_duration_raw = $attributes['scrollDuration'] ?? 0;
-if ( is_numeric( $scroll_duration_raw ) && (float) $scroll_duration_raw > 0 ) {
-	$scroll_duration_seconds = max( 2, min( 300, (float) $scroll_duration_raw ) );
-	$animation_speed         = rtrim( rtrim( number_format( $scroll_duration_seconds, 2, '.', '' ), '0' ), '.' ) . 's';
-}
-
 // Sanitise values.
 $allowed_effects     = array( 'none', 'lift', 'scale', 'glow' );
 $safe_hover_effect   = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
-$safe_direction      = in_array( $scroll_direction, array( 'left', 'right' ), true ) ? $scroll_direction : 'left';
 $allowed_img_effects = array( 'none', 'grayscale', 'sepia' );
 $safe_image_effect   = in_array( $image_effect, $allowed_img_effects, true ) ? $image_effect : 'none';
 // tileShadow sanitisation happens at emission time via sgs_shadow_value()
@@ -243,20 +218,8 @@ if ( $logo_layout_row ) {
 if ( 'none' !== $safe_image_effect ) {
 	$classes[] = 'sgs-brand-strip--effect-' . esc_attr( $safe_image_effect );
 }
-if ( $scrolling ) {
-	$classes[] = 'sgs-brand-strip--scrolling';
-}
-if ( 'right' === $safe_direction ) {
-	$classes[] = 'sgs-brand-strip--reverse';
-}
-if ( $fade_edges ) {
-	$classes[] = 'sgs-brand-strip--fade';
-}
 if ( 'none' !== $safe_hover_effect ) {
 	$classes[] = 'sgs-brand-strip--hover-' . esc_attr( $safe_hover_effect );
-}
-if ( ! $pause_on_hover ) {
-	$classes[] = 'sgs-brand-strip--no-pause';
 }
 if ( $has_background ) {
 	$classes[] = 'has-background';
@@ -273,7 +236,6 @@ if ( $has_background ) {
 $css_vars = array_merge(
 	sgs_transition_vars( $attributes ),
 	array(
-		'--sgs-scroll-speed:' . esc_attr( $animation_speed ),
 		'--sgs-logo-max-height:' . absint( $max_height ) . 'px',
 		// Columns-per-device: tile width = strip-width / columns (container-query
 		// driven in style.css), capped at the maxHeight-derived size so tiles grow
@@ -290,9 +252,6 @@ $css_vars = array_merge(
 		'--sgs-tile-border-thickness:' . $tile_border_width . 'px',
 	)
 );
-if ( $fade_edges ) {
-	$css_vars[] = '--sgs-fade-width:' . absint( $fade_width ) . 'px';
-}
 if ( $logo_layout_row ) {
 	$logo_max_width = absint( $attributes['logoMaxWidth'] ?? 0 );
 	if ( $logo_max_width > 0 ) {
@@ -833,8 +792,8 @@ if ( ! empty( $logos ) ) {
 $scoped_css = array_merge( $scoped_css, $border['rules'] );
 
 // $scoped_css is pre-sanitised (sgs_css_length_value() / wp_style_engine_get_styles),
-// so no un-sanitised value survives here. Single set inside track — view.js
-// clones as needed for infinite scroll.
+// so no un-sanitised value survives here. Single set inside track; the shared
+// marquee runtime clones it as needed for the loop.
 // ---------------------------------------------------------------------------
 
 if ( $scoped_css ) :
@@ -843,21 +802,8 @@ if ( $scoped_css ) :
 	<?php
 endif;
 
-// Pause / play button (WCAG 2.2.2), the shared control, an option (pauseButton, off by default):
-// rendered hidden, view.js shows it once the marquee runs. A static strip prints none.
-$sgs_bs_pause_html = ( $scrolling && ! empty( $attributes['pauseButton'] ) )
-	? sgs_motion_pause_button(
-		array(
-			'block'     => 'sgs-brand-strip',
-			'label'     => __( 'Pause scrolling', 'sgs-blocks' ),
-			'placement' => 'overlay-end',
-		)
-	)
-	: '';
-
 printf(
-	'<div %1$s><div class="sgs-brand-strip__track"><div class="sgs-brand-strip__set">%2$s</div></div>%3$s</div>',
+	'<div %1$s><div class="sgs-brand-strip__track"><div class="sgs-brand-strip__set" data-sgs-marquee-set>%2$s</div></div></div>',
 	$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	$logos_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from sgs_render_media(), which escapes its own output.
-	$sgs_bs_pause_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_motion_pause_button() escapes its own output.
+	$logos_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from sgs_render_media(), which escapes its own output.
 );

@@ -43,10 +43,10 @@ final class TrustBarRenderTest extends TestCase {
 	 * else is byte-identical to the pre-change render.
 	 */
 	private const GOLDEN_SCROLL_CSS = '.sgs-tb-1.wp-block-sgs-trust-bar{color:var(--wp--preset--color--text, currentColor)}'
-		. '.sgs-tb-1.sgs-trust-bar[data-auto-scroll="true"] .sgs-trust-bar__marquee-row,.sgs-tb-1.sgs-trust-bar.sgs-trust-bar__marquee-row{display:flex;flex-wrap:nowrap;justify-content:flex-start;overflow:hidden;}.sgs-tb-1.sgs-trust-bar .sgs-trust-bar__marquee-row > .sgs-trust-bar__track,.sgs-tb-1.sgs-trust-bar.sgs-trust-bar__marquee-row > .sgs-trust-bar__track{flex:0 0 auto;gap:inherit;}' . "\n" . '.sgs-container-0c0d0389{--sgs-trust-badge-circle-bg: var(--wp--preset--color--surface, currentColor);--sgs-trust-badge-icon-colour: var(--wp--preset--color--primary-dark, currentColor);--sgs-trust-badge-text-colour: var(--wp--preset--color--text, currentColor);--sgs-trust-badge-circle-shadow: var(--wp--preset--shadow--whisper);}';
+		. "\n" . '.sgs-container-0c0d0389{--sgs-trust-badge-circle-bg: var(--wp--preset--color--surface, currentColor);--sgs-trust-badge-icon-colour: var(--wp--preset--color--primary-dark, currentColor);--sgs-trust-badge-text-colour: var(--wp--preset--color--text, currentColor);--sgs-trust-badge-circle-shadow: var(--wp--preset--shadow--whisper);}';
 
 	/** Golden wrapper opening tag of the pre-change render for scroll_attrs(). */
-	private const GOLDEN_SCROLL_OPEN_TAG = '<section class="sgs-container sgs-trust-bar sgs-trust-bar--icon-circle sgs-trust-bar--medium sgs-tb-1 sgs-container-0c0d0389" aria-label="Trust signals" data-auto-scroll="true" data-auto-scroll-speed="medium" data-auto-scroll-pause="true">';
+	private const GOLDEN_SCROLL_OPEN_TAG = '<section class="sgs-container sgs-trust-bar sgs-trust-bar--icon-circle sgs-trust-bar--medium sgs-tb-1 sgs-container-0c0d0389" aria-label="Trust signals" data-auto-scroll="true">';
 
 	/** @return array<string, mixed> */
 	private function circle_attrs(): array {
@@ -101,7 +101,7 @@ final class TrustBarRenderTest extends TestCase {
 		$this->assertStringNotContainsString( 'sgs-trust-bar__icon', $circle['html'], 'no bare-icon markup in the circle variant' );
 
 		$scroll = $this->render( $this->scroll_attrs() );
-		$this->assertSame( self::GOLDEN_SCROLL_CSS, $scroll['css'], 'auto-scroll scoped CSS is the pre-change render plus the every-width marquee row rules' );
+		$this->assertSame( self::GOLDEN_SCROLL_CSS, $scroll['css'], 'auto-scroll scoped CSS is the pre-change render without the retired marquee rules' );
 		$this->assertStringContainsString( self::GOLDEN_SCROLL_OPEN_TAG, $scroll['html'], 'auto-scroll wrapper tag is byte-identical to the pre-change render' );
 	}
 

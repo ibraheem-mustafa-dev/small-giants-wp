@@ -544,5 +544,75 @@ try {
 ok( $sgs_ft_threw, 'NEGATIVE CONTROL: the old typed signature throws a TypeError on null $mimes' );
 ok( null === sgs_lottie_allow_json_mime( null ), 'upload_mimes filter: a non-array value passes through untouched' );
 
+// ---------------------------------------------------------------------------
+// Lottie effect layer: the server resolves the file attachment ID to `data-src`.
+// ---------------------------------------------------------------------------
+
+echo "\n-- Lottie effect layer source (sgs_lottie_layer_source_url / sgs_lottie_layer_add_source) --\n";
+
+$GLOBALS['sgs_test_attachments'][901] = array(
+	'mime' => 'application/json',
+	'meta' => array( '_sgs_lottie_meta' => array( 'w' => 512, 'h' => 512, 'duration' => 2.0 ) ),
+	'url'  => 'https://example.test/uploads/logo.json',
+);
+$GLOBALS['sgs_test_attachments'][902] = array(
+	'mime' => 'image/png',
+	'meta' => array( '_sgs_lottie_meta' => array( 'w' => 512, 'h' => 512 ) ),
+	'url'  => 'https://example.test/uploads/logo.png',
+);
+$GLOBALS['sgs_test_attachments'][903] = array(
+	'mime' => 'application/json',
+	'meta' => array(),
+	'url'  => 'https://example.test/uploads/no-meta.json',
+);
+
+ok( 'https://example.test/uploads/logo.json' === sgs_lottie_layer_source_url( 901 ), 'layer source: a Lottie JSON with valid meta resolves to its URL' );
+ok( '' === sgs_lottie_layer_source_url( 902 ), 'layer source: a non-JSON attachment resolves to nothing' );
+ok( '' === sgs_lottie_layer_source_url( 903 ), 'layer source: a JSON attachment with no stored meta resolves to nothing' );
+ok( '' === sgs_lottie_layer_source_url( 0 ), 'layer source: ID 0 resolves to nothing' );
+ok( '' === sgs_lottie_layer_source_url( 999 ), 'layer source: an unknown attachment resolves to nothing' );
+
+if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
+	// Minimal stand-in for core's tag processor: finds each opening tag and edits its attributes by regex.
+	class WP_HTML_Tag_Processor { // phpcs:ignore
+		private $html;
+		private $tags  = array();
+		private $orig  = array();
+		private $index = -1;
+		public function __construct( string $html ) {
+			$this->html = $html;
+			preg_match_all( '/<[a-z][^>]*>/i', $html, $m, PREG_OFFSET_CAPTURE );
+			$this->tags = $m[0];
+			$this->orig = array_column( $m[0], 0 );
+		}
+		public function next_tag(): bool {
+			return isset( $this->tags[ ++$this->index ] );
+		}
+		public function get_attribute( string $name ) {
+			return preg_match( '/\s' . preg_quote( $name, '/' ) . '="([^"]*)"/', $this->tags[ $this->index ][0], $m ) ? $m[1] : null;
+		}
+		public function set_attribute( string $name, string $value ): void {
+			$this->tags[ $this->index ][0] = preg_replace( '/>$/', ' ' . $name . '="' . htmlspecialchars( $value, ENT_QUOTES ) . '">', $this->tags[ $this->index ][0] );
+		}
+		public function get_updated_html(): string {
+			$out = $this->html;
+			foreach ( array_reverse( array_keys( $this->tags ) ) as $i ) {
+				$out = substr_replace( $out, $this->tags[ $i ][0], $this->tags[ $i ][1], strlen( $this->orig[ $i ] ) );
+			}
+			return $out;
+		}
+	}
+}
+
+$sgs_layer_html = '<div class="sgs-responsive-logo" data-sgs-fx="lottie" data-sgs-fx-lottie-file="901"><picture></picture></div>';
+$sgs_layer_out  = sgs_lottie_layer_add_source( $sgs_layer_html );
+ok( str_contains( $sgs_layer_out, 'data-src="https://example.test/uploads/logo.json"' ), 'layer filter: a usable Lottie layer gains data-src' );
+ok( str_contains( $sgs_layer_out, '<picture></picture>' ), 'layer filter: the rest of the markup is untouched' );
+ok( ! str_contains( sgs_lottie_layer_add_source( '<div data-sgs-fx="lottie" data-sgs-fx-lottie-file="902"></div>' ), 'data-src' ), 'layer filter: a non-Lottie attachment gains no data-src' );
+ok( ! str_contains( sgs_lottie_layer_add_source( '<div data-sgs-fx="lottie" data-sgs-fx-lottie-file="9x"></div>' ), 'data-src' ), 'layer filter: a non-numeric file value gains no data-src' );
+$sgs_plain = '<div data-sgs-fx="draw" data-src="x"></div>';
+ok( $sgs_plain === sgs_lottie_layer_add_source( $sgs_plain ), 'NEGATIVE CONTROL: markup without a lottie file attribute is returned unchanged' );
+ok( 42 === sgs_lottie_layer_add_source( 42 ), 'layer filter: a non-string passes through untouched' );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

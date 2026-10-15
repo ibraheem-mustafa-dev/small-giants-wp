@@ -238,3 +238,156 @@ describe( 'reduced-motion helper', () => {
 		expect( seen ).toHaveBeenCalledTimes( 1 );
 	} );
 } );
+
+function pointerOn( target, type, pointerType ) {
+	const event = new Event( type );
+	Object.defineProperty( event, 'pointerType', { value: pointerType } );
+	target.dispatchEvent( event );
+}
+
+describe( 'hover rate', () => {
+	test( 'a rate between 0 and 1 is reported on enter and 1 on leave, without pausing', () => {
+		const [ root ] = build();
+		const el = floatIn( root );
+		const onRateChange = jest.fn();
+		loopControl.registerLoop( el, { hoverRate: 0.15, onRateChange } );
+		pointerOn( root, 'pointerenter', 'mouse' );
+		expect( onRateChange ).toHaveBeenLastCalledWith( 0.15 );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+		pointerOn( root, 'pointerleave', 'mouse' );
+		expect( onRateChange ).toHaveBeenLastCalledWith( 1 );
+		expect( onRateChange ).toHaveBeenCalledTimes( 2 );
+	} );
+
+	test( 'a rate of 0 pauses the loop while hovered', () => {
+		const [ root ] = build();
+		const el = floatIn( root );
+		const onPausedChange = jest.fn();
+		loopControl.registerLoop( el, { hoverRate: 0, onPausedChange } );
+		pointerOn( root, 'pointerenter', 'pen' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( true );
+		expect( onPausedChange ).toHaveBeenLastCalledWith( true );
+		pointerOn( root, 'pointerleave', 'pen' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+	} );
+
+	test( 'a touch pointer is ignored', () => {
+		const [ root ] = build();
+		const onRateChange = jest.fn();
+		loopControl.registerLoop( floatIn( root ), {
+			hoverRate: 0.5,
+			onRateChange,
+		} );
+		pointerOn( root, 'pointerenter', 'touch' );
+		expect( onRateChange ).not.toHaveBeenCalled();
+	} );
+
+	test( 'NEGATIVE CONTROL: callers that pass neither option keep today\'s behaviour', () => {
+		const [ root ] = build();
+		const el = floatIn( root );
+		const onRateChange = jest.fn();
+		loopControl.registerLoop( el, { onRateChange } );
+		pointerOn( root, 'pointerenter', 'mouse' );
+		pointerOn( root, 'pointerdown', 'touch' );
+		expect( onRateChange ).not.toHaveBeenCalled();
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+	} );
+
+	test( 'a value of 1 or more, or not a number, leaves hover alone', () => {
+		const [ root ] = build();
+		const onRateChange = jest.fn();
+		loopControl.registerLoop( floatIn( root ), {
+			hoverRate: 1,
+			onRateChange,
+		} );
+		loopControl.registerLoop( floatIn( root ), {
+			hoverRate: '0.2',
+			onRateChange,
+		} );
+		pointerOn( root, 'pointerenter', 'mouse' );
+		expect( onRateChange ).not.toHaveBeenCalled();
+	} );
+
+	test( 'destroy removes the hover listeners', () => {
+		const [ root ] = build();
+		const onRateChange = jest.fn();
+		const loop = loopControl.registerLoop( floatIn( root ), {
+			hoverRate: 0.15,
+			onRateChange,
+		} );
+		loop.destroy();
+		pointerOn( root, 'pointerenter', 'mouse' );
+		expect( onRateChange ).not.toHaveBeenCalled();
+	} );
+} );
+
+describe( 'pause on touch', () => {
+	test( 'a tap pauses and the next tap resumes; a mouse press does nothing', () => {
+		const [ root ] = build();
+		const el = floatIn( root );
+		loopControl.registerLoop( el, { pauseOnTouch: true } );
+		pointerOn( root, 'pointerdown', 'mouse' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+		pointerOn( root, 'pointerdown', 'touch' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( true );
+		pointerOn( root, 'pointerdown', 'touch' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+	} );
+
+	test( 'destroy removes the touch listener', () => {
+		const [ root ] = build();
+		const el = floatIn( root );
+		const loop = loopControl.registerLoop( el, { pauseOnTouch: true } );
+		loop.destroy();
+		pointerOn( root, 'pointerdown', 'touch' );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+	} );
+} );
+
+describe( 'animateLoop hover rate', () => {
+	function animated( config ) {
+		const [ root ] = build();
+		const el = floatIn( root );
+		const animation = {
+			pause: jest.fn(),
+			play: jest.fn(),
+			cancel: jest.fn(),
+			updatePlaybackRate: jest.fn(),
+		};
+		el.animate = jest.fn( () => animation );
+		const loop = loopControl.animateLoop( el, {
+			read: () => ( {
+				period: 1000,
+				phase: 0,
+				easing: 'linear',
+				direction: 'normal',
+			} ),
+			keyframes: () => [ {}, {} ],
+			...config,
+		} );
+		return { root, el, animation, loop };
+	}
+
+	test( 'sets the playback rate on hover and restores it on leave', () => {
+		const { root, animation } = animated( { hoverRate: 0.15 } );
+		pointerOn( root, 'pointerenter', 'mouse' );
+		expect( animation.updatePlaybackRate ).toHaveBeenLastCalledWith( 0.15 );
+		pointerOn( root, 'pointerleave', 'mouse' );
+		expect( animation.updatePlaybackRate ).toHaveBeenLastCalledWith( 1 );
+	} );
+
+	test( 'a rebuild during a hover keeps the hovered rate', () => {
+		const { root, animation, loop } = animated( { hoverRate: 0.15 } );
+		pointerOn( root, 'pointerenter', 'mouse' );
+		animation.updatePlaybackRate.mockClear();
+		loop.rebuild();
+		expect( animation.updatePlaybackRate ).toHaveBeenCalledWith( 0.15 );
+	} );
+
+	test( 'NEGATIVE CONTROL: without the option the playback rate is never touched', () => {
+		const { root, animation } = animated( {} );
+		pointerOn( root, 'pointerenter', 'mouse' );
+		pointerOn( root, 'pointerleave', 'mouse' );
+		expect( animation.updatePlaybackRate ).not.toHaveBeenCalled();
+	} );
+} );

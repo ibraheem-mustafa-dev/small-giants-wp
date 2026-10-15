@@ -100,19 +100,6 @@ final class MotionPauseRenderTest extends TestCase {
 		);
 	}
 
-	public function test_trust_bar_prints_the_button_when_its_option_is_on(): void {
-		$html = $this->html(
-			'sgs/trust-bar',
-			array(
-				'autoScroll'            => true,
-				'autoScrollPauseButton' => true,
-				'items'                 => $this->trust_items(),
-			)
-		);
-		$this->assert_button( $html, 'sgs-trust-bar', 'Pause scrolling' );
-		$this->assertStringContainsString( 'sgs-motion-pause--overlay-end', $this->pause_button( $html ) );
-	}
-
 	/** @return array<int, array<string, mixed>> */
 	private function brand_logos(): array {
 		return array(
@@ -125,18 +112,6 @@ final class MotionPauseRenderTest extends TestCase {
 				'alt'   => 'Two',
 			),
 		);
-	}
-
-	public function test_brand_strip_prints_the_button_when_its_option_is_on(): void {
-		$html = $this->html(
-			'sgs/brand-strip',
-			array(
-				'scrolling'   => true,
-				'pauseButton' => true,
-				'logos'       => $this->brand_logos(),
-			)
-		);
-		$this->assert_button( $html, 'sgs-brand-strip', 'Pause scrolling' );
 	}
 
 	public function test_brand_strip_prints_no_button_when_static(): void {

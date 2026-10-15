@@ -28,6 +28,11 @@
  *   pauseControl    create the pause button for the loop's root. Default false.
  *   label           the button's accessible name. Default 'Pause animation'.
  *   onPausedChange  called with the new paused state whenever it changes.
+ *   hoverRate       0 to 1; the playback rate while a mouse or pen pointer is over the block root. 1 leaves the loop
+ *                   alone; 0 pauses it while hovered; between, `onRateChange( rate )` is called on entering (with the
+ *                   rate) and leaving (with 1). Default: hover does nothing.
+ *   onRateChange    called with the playback rate the loop should run at.
+ *   pauseOnTouch    a touch tap on the block root pauses the loop, and the next tap resumes it. Default false.
  *
  * `animateLoop( el, { keyframes, read } )` is `registerLoop` plus the animation itself, run through the Web
  * Animations API so a loop never competes with the entrance rules in the CSS cascade (a CSS `animation-name` list
@@ -39,11 +44,14 @@
  */
 
 import { initMotionPause } from '../motion-pause';
+import { ensureButton as makeButton, removeButton } from './loop-button';
+
+export { parseTime, parseLength, readLoopTiming } from './loop-timing';
 
 const ROOT_SELECTOR = '[class*="wp-block-sgs-"]';
 const PAUSED_ATTR = 'data-sgs-loop-paused';
 const DEFAULT_LABEL = 'Pause animation';
-const SVG_NS = 'http://www.w3.org/2000/svg';
+const BREAKPOINTS = [ '(max-width: 1023px)', '(max-width: 767px)' ];
 
 /** The root's shared state, kept for the life of the page so a root registered again reuses its listeners. */
 const groups = new WeakMap();
@@ -108,38 +116,6 @@ function sharedObserver() {
 	return observer;
 }
 
-function icon( kind, path ) {
-	const svg = document.createElementNS( SVG_NS, 'svg' );
-	svg.setAttribute(
-		'class',
-		`sgs-motion-pause__icon sgs-motion-pause__icon--${ kind }`
-	);
-	svg.setAttribute( 'viewBox', '0 0 24 24' );
-	svg.setAttribute( 'width', '20' );
-	svg.setAttribute( 'height', '20' );
-	svg.setAttribute( 'aria-hidden', 'true' );
-	svg.setAttribute( 'focusable', 'false' );
-	const shape = document.createElementNS( SVG_NS, 'path' );
-	shape.setAttribute( 'd', path );
-	shape.setAttribute( 'fill', 'currentColor' );
-	svg.appendChild( shape );
-	return svg;
-}
-
-// The helper's button markup (`sgs_motion_pause_button()`), `inline` placement.
-function createButton( label ) {
-	const button = document.createElement( 'button' );
-	button.type = 'button';
-	button.className = 'sgs-motion-pause sgs-motion-pause--inline';
-	button.setAttribute( 'aria-pressed', 'false' );
-	button.setAttribute( 'aria-label', label );
-	button.setAttribute( 'data-sgs-motion-pause', '' );
-	button.hidden = true;
-	button.appendChild( icon( 'pause', 'M7 5h3.5v14H7zM13.5 5H17v14h-3.5z' ) );
-	button.appendChild( icon( 'play', 'M8 5v14l11-7z' ) );
-	return button;
-}
-
 function groupFor( root ) {
 	let group = groups.get( root );
 	if ( group ) {
@@ -159,45 +135,6 @@ function groupFor( root ) {
 	return group;
 }
 
-function ensureButton( group, root, el, label ) {
-	if ( group.button ) {
-		return;
-	}
-	const button = createButton( label );
-	button.addEventListener( 'click', () => {
-		const pressed = button.getAttribute( 'aria-pressed' ) === 'true';
-		if ( pressed ) {
-			group.controller.play();
-		} else {
-			group.controller.pause();
-		}
-		button.setAttribute( 'aria-pressed', pressed ? 'false' : 'true' );
-	} );
-	if ( root === el ) {
-		el.after( button );
-	} else {
-		root.appendChild( button );
-	}
-	group.button = button;
-	// A CSS loop does not run under reduced motion, so the button stays hidden then.
-	const showWhenMoving = ( reduced ) => {
-		button.hidden = reduced;
-	};
-	showWhenMoving( prefersReducedMotion() );
-	group.stopReduced = onReducedMotionChange( showWhenMoving );
-}
-
-function removeButton( group ) {
-	if ( group.stopReduced ) {
-		group.stopReduced();
-		group.stopReduced = null;
-	}
-	if ( group.button ) {
-		group.button.remove();
-		group.button = null;
-	}
-}
-
 /**
  * Put one element's animation under the loop control.
  *
@@ -211,11 +148,33 @@ export function registerLoop( el, options = {} ) {
 	const root = el.closest( ROOT_SELECTOR ) || el.parentElement || el;
 	const group = groupFor( root );
 
+	const hoverRate =
+		typeof options.hoverRate === 'number' &&
+		options.hoverRate >= 0 &&
+		options.hoverRate < 1
+			? options.hoverRate
+			: null;
+
 	const loop = {
 		visible: true,
 		paused: false,
+		hovered: false,
+		tapped: false,
+		rate: 1,
 		apply() {
-			const paused = ! loop.visible || group.controller.isPaused();
+			const stoppedByHover = loop.hovered && hoverRate === 0;
+			const paused =
+				! loop.visible ||
+				loop.tapped ||
+				stoppedByHover ||
+				group.controller.isPaused();
+			const rate = loop.hovered && hoverRate !== null ? hoverRate : 1;
+			if ( rate !== loop.rate ) {
+				loop.rate = rate;
+				if ( typeof options.onRateChange === 'function' ) {
+					options.onRateChange( rate );
+				}
+			}
 			if ( paused ) {
 				el.setAttribute( PAUSED_ATTR, '' );
 			} else {
@@ -232,14 +191,43 @@ export function registerLoop( el, options = {} ) {
 	group.loops.add( loop );
 	loops.set( el, loop );
 
+	// Hover and touch are read on the block root, like the focus pause. Entries are (event, handler) pairs so
+	// `destroy()` removes exactly what was added.
+	const listeners = [];
+	const listen = ( type, handler ) => {
+		root.addEventListener( type, handler );
+		listeners.push( [ type, handler ] );
+	};
+	if ( hoverRate !== null ) {
+		listen( 'pointerenter', ( event ) => {
+			if ( event.pointerType !== 'touch' ) {
+				loop.hovered = true;
+				loop.apply();
+			}
+		} );
+		listen( 'pointerleave', () => {
+			loop.hovered = false;
+			loop.apply();
+		} );
+	}
+	if ( options.pauseOnTouch === true ) {
+		listen( 'pointerdown', ( event ) => {
+			if ( event.pointerType === 'touch' ) {
+				loop.tapped = ! loop.tapped;
+				loop.apply();
+			}
+		} );
+	}
+
 	if ( options.pauseControl === true ) {
-		ensureButton(
+		makeButton(
 			group,
 			root,
 			el,
 			typeof options.label === 'string' && options.label
 				? options.label
-				: DEFAULT_LABEL
+				: DEFAULT_LABEL,
+			{ matches: prefersReducedMotion, onChange: onReducedMotionChange }
 		);
 	}
 
@@ -272,72 +260,14 @@ export function registerLoop( el, options = {} ) {
 			}
 			loops.delete( el );
 			group.loops.delete( loop );
+			listeners.forEach( ( [ type, handler ] ) =>
+				root.removeEventListener( type, handler )
+			);
 			el.removeAttribute( PAUSED_ATTR );
 			if ( group.loops.size === 0 ) {
 				removeButton( group );
 			}
 		},
-	};
-}
-
-const DEFAULTS = {
-	period: 4200,
-	phase: 0,
-	easing: 'ease-in-out',
-	direction: 'alternate',
-};
-const DIRECTIONS = [ 'normal', 'reverse', 'alternate', 'alternate-reverse' ];
-const BREAKPOINTS = [ '(max-width: 1023px)', '(max-width: 767px)' ];
-
-/**
- * A time custom property as milliseconds (`4200ms`, `4.2s`, a bare number), or the fallback.
- *
- * @param {string} text     The property's computed text.
- * @param {number} fallback Value when the text is empty or unreadable.
- * @return {number} Milliseconds.
- */
-export function parseTime( text, fallback ) {
-	const match = /^\s*(-?\d*\.?\d+)\s*(ms|s)?\s*$/.exec( text || '' );
-	if ( ! match ) {
-		return fallback;
-	}
-	const value = parseFloat( match[ 1 ] );
-	return match[ 2 ] === 's' ? value * 1000 : value;
-}
-
-/**
- * A length custom property as CSS text (`12px`), or the fallback.
- *
- * @param {string} text     The property's computed text.
- * @param {string} fallback Value when the text is empty or unreadable.
- * @return {string} A length.
- */
-export function parseLength( text, fallback ) {
-	const value = ( text || '' ).trim();
-	return /^-?\d*\.?\d+(px|rem|em|%)?$/.test( value ) ? value : fallback;
-}
-
-/**
- * The shared timing of a loop from its computed custom properties `--sgs-<name>-period`, `-phase`, `-easing` and
- * `-direction`.
- *
- * @param {HTMLElement} el   The loop element.
- * @param {string}      name The effect's property prefix, for example `float`.
- * @return {{period: number, phase: number, easing: string, direction: string}} Timing in milliseconds.
- */
-export function readLoopTiming( el, name ) {
-	const style = window.getComputedStyle( el );
-	const get = ( key ) =>
-		style.getPropertyValue( `--sgs-${ name }-${ key }` ).trim();
-	const direction = get( 'direction' );
-	const period = parseTime( get( 'period' ), DEFAULTS.period );
-	return {
-		period: period > 0 ? period : DEFAULTS.period,
-		phase: Math.max( 0, parseTime( get( 'phase' ), DEFAULTS.phase ) ),
-		easing: get( 'easing' ) || DEFAULTS.easing,
-		direction: DIRECTIONS.includes( direction )
-			? direction
-			: DEFAULTS.direction,
 	};
 }
 
@@ -351,12 +281,15 @@ export function readLoopTiming( el, name ) {
  * @param {Function}    config.keyframes      `( values ) => Keyframe[]`.
  * @param {boolean}     [config.pauseControl] As `registerLoop`.
  * @param {string}      [config.label]        As `registerLoop`.
+ * @param {number}      [config.hoverRate]    As `registerLoop`; applied to the animation's playback rate.
+ * @param {boolean}     [config.pauseOnTouch] As `registerLoop`.
  * @return {{pause: Function, play: Function, isPaused: Function, destroy: Function}} Controller.
  */
 export function animateLoop( el, config ) {
 	const { read, keyframes } = config;
 	let animation = null;
 	let loop = null;
+	let currentRate = 1;
 
 	const stop = () => {
 		if ( animation ) {
@@ -379,6 +312,9 @@ export function animateLoop( el, config ) {
 			easing: values.easing,
 			fill: 'both',
 		} );
+		if ( currentRate !== 1 ) {
+			animation.updatePlaybackRate( currentRate );
+		}
 		if ( loop && loop.isPaused() ) {
 			animation.pause();
 		}
@@ -387,6 +323,14 @@ export function animateLoop( el, config ) {
 	loop = registerLoop( el, {
 		pauseControl: config.pauseControl,
 		label: config.label,
+		hoverRate: config.hoverRate,
+		pauseOnTouch: config.pauseOnTouch,
+		onRateChange: ( rate ) => {
+			currentRate = rate;
+			if ( animation ) {
+				animation.updatePlaybackRate( rate );
+			}
+		},
 		onPausedChange: ( paused ) => {
 			if ( animation ) {
 				if ( paused ) {
@@ -412,6 +356,7 @@ export function animateLoop( el, config ) {
 
 	return {
 		...loop,
+		rebuild: build,
 		destroy() {
 			stopReduced();
 			queries.forEach( ( query ) => {

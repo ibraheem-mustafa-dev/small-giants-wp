@@ -35,7 +35,7 @@
  * @param {Element} options.container    Element the SVG is rendered into.
  * @param {Object}  options.animationData Parsed Lottie JSON.
  * @param {boolean} [options.loop]       Whether playback loops. Default false.
- * @param {number}  [options.speed]      Playback speed, 0.25–3. Default 1.
+ * @param {number}  [options.speed]      Playback speed, 0.1–5 (the layer's range). Default 1.
  * @return {Promise<SgsLottieInstance>} The player instance.
  */
 export async function init( { container, animationData, loop = false, speed = 1 } ) {
@@ -84,14 +84,14 @@ export async function init( { container, animationData, loop = false, speed = 1 
 
 /**
  * @param {number} value Raw speed.
- * @return {number} Clamped to the atom's 0.25–3 range.
+ * @return {number} Clamped to the lottie layer's 0.1–5 range.
  */
 function clampSpeed( value ) {
 	const num = Number( value );
 	if ( ! Number.isFinite( num ) ) {
 		return 1;
 	}
-	return Math.min( 3, Math.max( 0.25, num ) );
+	return Math.min( 5, Math.max( 0.1, num ) );
 }
 
 /**

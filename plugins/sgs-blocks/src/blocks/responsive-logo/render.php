@@ -101,6 +101,19 @@ if ( ! in_array( $animation_style, $allowed_animation_styles, true ) ) {
 	$animation_style = 'none';
 }
 
+// A `draw` layer on the wrapper part supplies the SVG and the trigger (Spec 38A FR-38A-52); the motion renderer prints
+// the draw attributes on the block, so the inline SVG span below adds none of its own.
+require_once dirname( __DIR__, 3 ) . '/includes/motion/class-sgs-motion-draw-asset.php';
+$draw_layer = \SGS\Blocks\Motion\Sgs_Motion_Draw_Asset::find( $attributes['sgsMotion']['elements']['wrapper'] ?? null );
+if ( null !== $draw_layer ) {
+	$svg_animation_id = $draw_layer['asset'];
+	$animation_style  = array(
+		'load'   => 'draw-on-load',
+		'scroll' => 'scroll-trigger',
+		'hover'  => 'hover-redraw',
+	)[ $draw_layer['trigger'] ];
+}
+
 // ── Lottie substrate (U-17, design §3.1) ─────────────────────────────────────
 // `animationSubstrate` selects between the pre-existing SVG-draw mechanism
 // (svgAnimationSource/animationStyle) and a Lottie/Bodymovin JSON, played by
@@ -660,10 +673,14 @@ if ( $has_lottie_animation ) {
 	);
 	$fx_trigger          = $fx_trigger_by_style[ $animation_style ] ?? 'load';
 
-	printf(
-		'<span class="sgs-responsive-logo__svg" aria-hidden="true" data-sgs-fx="draw" data-sgs-fx-trigger="%s">',
-		esc_attr( $fx_trigger )
-	);
+	if ( null !== $draw_layer ) {
+		echo '<span class="sgs-responsive-logo__svg" aria-hidden="true">';
+	} else {
+		printf(
+			'<span class="sgs-responsive-logo__svg" aria-hidden="true" data-sgs-fx="draw" data-sgs-fx-trigger="%s">',
+			esc_attr( $fx_trigger )
+		);
+	}
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitised above via wp_kses.
 	echo $svg_html;
 	echo '</span>';

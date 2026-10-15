@@ -35,8 +35,6 @@ if ( ! defined( 'SGS_TRUST_BAR_STROKE_WIDTH_MIN' ) ) {
 	define( 'SGS_TRUST_BAR_STROKE_WIDTH_MAX', 4.0 );
 	define( 'SGS_TRUST_BAR_BARE_ICON_SIZE_MIN', 8 );
 	define( 'SGS_TRUST_BAR_BARE_ICON_SIZE_MAX', 96 );
-	define( 'SGS_TRUST_BAR_SCROLL_DURATION_MIN', 2.0 );
-	define( 'SGS_TRUST_BAR_SCROLL_DURATION_MAX', 300.0 );
 }
 
 if ( ! function_exists( 'sgs_trust_bar_finite_number' ) ) {

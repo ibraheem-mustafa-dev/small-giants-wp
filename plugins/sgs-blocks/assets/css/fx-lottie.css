@@ -27,6 +27,22 @@
 	visibility: hidden;
 }
 
+/* A Lottie effect layer on a part: the player's <svg> overlays the part and the poster underneath stays in the layout. */
+.sgs-lottie-layer {
+	position: relative;
+}
+
+.sgs-lottie-layer > svg {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.sgs-lottie-layer:has(> svg) :is(img, picture) {
+	visibility: hidden;
+}
+
 /* Wrapper background: the moving layer fills the section behind its content. */
 .sgs-container__lottie-bg {
 	position: absolute;
@@ -86,11 +102,13 @@
 
 @media print {
 	.sgs-lottie > svg,
+	.sgs-lottie-layer > svg,
 	.sgs-lottie__pause {
 		display: none;
 	}
 
-	.sgs-lottie > :is(img, picture) {
+	.sgs-lottie > :is(img, picture),
+	.sgs-lottie-layer :is(img, picture) {
 		visibility: visible;
 	}
 }

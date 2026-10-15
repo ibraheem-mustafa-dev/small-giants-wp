@@ -52,19 +52,15 @@ final class TrustBarSafetyTest extends TestCase {
 
 	/** @param mixed $raw Non-finite stored value. */
 	#[DataProvider( 'non_finite_provider' )]
-	public function test_non_finite_bare_size_and_duration_and_breakpoint_are_ignored( $raw ): void {
+	public function test_non_finite_bare_size_and_breakpoint_are_ignored( $raw ): void {
 		$this->assertSame( SGS_TRUST_BAR_DEFAULT_BARE_ICON_SIZE, sgs_trust_bar_icon_bare_size( $raw ) );
-		$this->assertSame( 0.0, sgs_trust_bar_marquee_duration( $raw ), 'a non-finite duration means "use the preset"' );
 		$this->assertSame( 0, sgs_trust_bar_marquee_below( $raw ) );
-		$this->assertStringNotContainsString( 'animation-duration', sgs_trust_bar_marquee_css( '.x', 0, sgs_trust_bar_marquee_duration( $raw ) ), 'no duration rule is emitted' );
 	}
 
 	public function test_finite_numbers_still_pass_through_the_guard(): void {
 		$this->assertSame( 2.5, sgs_trust_bar_icon_stroke_width( '2.5' ) );
 		$this->assertSame( 0.25, sgs_trust_bar_icon_stroke_width( 0.1 ), 'clamped to the server minimum' );
 		$this->assertSame( 4.0, sgs_trust_bar_icon_stroke_width( 99 ) );
-		$this->assertSame( 30.0, sgs_trust_bar_marquee_duration( 30 ) );
-		$this->assertSame( 300.0, sgs_trust_bar_marquee_duration( 9999 ) );
 		$this->assertSame( 96, sgs_trust_bar_icon_bare_size( 500 ) );
 	}
 
@@ -206,13 +202,11 @@ final class TrustBarSafetyTest extends TestCase {
 		$this->assertSame( (float) SGS_TRUST_BAR_STROKE_WIDTH_MAX, $read( 'strokeWidth', 'max' ) );
 		$this->assertSame( (float) SGS_TRUST_BAR_BARE_ICON_SIZE_MIN, $read( 'bareSize', 'min' ) );
 		$this->assertSame( (float) SGS_TRUST_BAR_BARE_ICON_SIZE_MAX, $read( 'bareSize', 'max' ) );
-		$this->assertSame( (float) SGS_TRUST_BAR_SCROLL_DURATION_MIN, $read( 'scrollDuration', 'min' ) );
-		$this->assertSame( (float) SGS_TRUST_BAR_SCROLL_DURATION_MAX, $read( 'scrollDuration', 'max' ) );
 		$this->assertSame( (float) SGS_TRUST_BAR_DEFAULT_STROKE_WIDTH, $read( 'strokeWidth', 'fallback' ) );
 		$this->assertSame( (float) SGS_TRUST_BAR_DEFAULT_BARE_ICON_SIZE, $read( 'bareSize', 'fallback' ) );
 
 		// The controls must use the constants, not a re-typed literal that could drift.
-		foreach ( array( 'TRUST_BAR_LIMITS.strokeWidth.min', 'TRUST_BAR_LIMITS.strokeWidth.max', 'TRUST_BAR_LIMITS.bareSize.min', 'TRUST_BAR_LIMITS.bareSize.max', 'TRUST_BAR_LIMITS.scrollDuration.max' ) as $ref ) {
+		foreach ( array( 'TRUST_BAR_LIMITS.strokeWidth.min', 'TRUST_BAR_LIMITS.strokeWidth.max', 'TRUST_BAR_LIMITS.bareSize.min', 'TRUST_BAR_LIMITS.bareSize.max' ) as $ref ) {
 			$this->assertStringContainsString( $ref, substr( $js, (int) strpos( $js, 'export function TrustBarIconPanel' ) ), "$ref drives a RangeControl" );
 		}
 	}
