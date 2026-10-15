@@ -13,7 +13,7 @@ block's render source and the shared includes print that class inside a `class="
 element's tag, or, for a class written into an array passed (directly or through a variable) to a function that prints
 only <img>/<picture>/<video>, treats the element as <img>.
   surface  printed only on media tags, or a background layer (key or class element bg/background/backdrop/-bg on a
-           <div> or <span>); plus the hand-read CONFIRMED media parts, each pinned by patterns that must still match
+           <div> or <span>, or on those and a media tag: the background image and the holder that replaces it); plus the hand-read CONFIRMED media parts, each pinned by patterns that must still match
   svg      printed only on <svg>, or an svg-* holder
   text     printed only on h1-h6, p, blockquote, figcaption, cite, q; or the framework DB says a text attribute is
            printed into it: a `block_attributes` row of the block whose `role` is `text-content` or `content` (the
@@ -204,7 +204,7 @@ def kinds_for(part, cls, found, tags, text_attr=None):
     element = cls.split('__', 1)[-1]
     if tags <= MEDIA_TAGS:
         kinds['surface'] = f"media element <{'/'.join(sorted(tags))}>"
-    elif (BG_KEY.search(part) or BG_KEY.search(element)) and tags <= LAYER_TAGS:
+    elif (BG_KEY.search(part) or BG_KEY.search(element)) and tags <= LAYER_TAGS | MEDIA_TAGS:
         kinds['surface'] = f"background layer <{'/'.join(sorted(tags))}> named {element}"
     if tags == {'svg'}:
         kinds['svg'] = 'carried by an <svg>'
@@ -446,21 +446,22 @@ def self_test():
         os.makedirs(includes)
         parts = ',\n'.join('\t\t\t\t"%s": { "label": "%s" }' % (k, k) for k in
                            ('wrapper_x', 'bg', 'photo', 'clip', 'logo', 'title', 'plain', 'ghost', 'shared-bg', 'mixed',
-                            'name', 'icon', 'figure'))
+                            'name', 'icon', 'figure', 'bg-held'))
         parts = parts.replace('"wrapper_x": { "label": "wrapper_x" }', '"wrapper": { "label": "w", "isWrapper": true }')
         parts += ',\n\t\t\t\t"skipped": { "motion": false, "label": "s" },\n\t\t\t\t"holder": { "selector": ".sgs-demo__held", "label": "h" }'
         render = ('<div class="sgs-demo"><span class="sgs-demo__bg"></span>\n<img class="sgs-demo__photo" src="x">'
                   '<video class="sgs-demo__clip"></video><svg class="sgs-demo__logo"></svg><h2 class="sgs-demo__title">T</h2>'
                   '<div class="sgs-demo__plain"></div><div class="sgs-demo__held"></div><img class="sgs-demo__mixed"><p class="sgs-demo__mixed">'
                   '<span class="sgs-demo__name">N</span><span class="sgs-demo__icon"></span><figure class="sgs-demo__figure"></figure>'
-                  '<img class="sgs-demo__skipped">\n// <div class="sgs-demo__ghost">\n</div>')
+                  '<img class="sgs-demo__skipped"><div class="sgs-demo__bg-held"></div><img class="sgs-demo__bg-held">'
+                  '\n// <div class="sgs-demo__ghost">\n</div>')
         # The DB says a text attribute is printed into name and figure; only name is a text holder.
         texts = {'demo': {'sgs-demo__name': 'name', 'sgs-demo__figure': 'caption'}}
         write_block(blocks, 'demo', parts, render, '\r\n')
         with open(os.path.join(includes, 'shared.php'), 'w', encoding='utf-8') as fh:
             fh.write('<div class="sgs-demo__shared-bg"></div>')
         rows = {r['part']: r for r in analyse(blocks, includes, texts)}
-        expect('part set', sorted(rows), ['bg', 'clip', 'figure', 'ghost', 'holder', 'icon', 'logo', 'mixed', 'name', 'photo',
+        expect('part set', sorted(rows), ['bg', 'bg-held', 'clip', 'figure', 'ghost', 'holder', 'icon', 'logo', 'mixed', 'name', 'photo',
                                           'plain', 'shared-bg', 'title'])
         expect('background layer is a surface', 'surface' in rows['bg']['kinds'], True)
         expect('img is a surface', 'surface' in rows['photo']['kinds'], True)
@@ -470,6 +471,7 @@ def self_test():
         expect('plain div is ambiguous', ambiguous(rows['plain']), True)
         expect('a class in a comment is not printed', rows['ghost']['found'], False)
         expect('mixed tags are ambiguous', ambiguous(rows['mixed']), True)
+        expect('a background part on its image and on the image holder is a surface', 'surface' in rows['bg-held']['kinds'], True)
         expect('a bg layer printed in a shared include counts', 'surface' in rows['shared-bg']['kinds'], True)
         expect('a div with a declared selector is ambiguous', ambiguous(rows['holder']), True)
         expect('a span the DB prints a text attribute into is text', sorted(rows['name']['kinds']), ['text'])
@@ -485,7 +487,7 @@ def self_test():
         text = read_text(os.path.join(blocks, 'demo', 'block.json'))
         expect('CRLF kept', ('\r\n' in text, text.replace('\r\n', '').count('\n')), (True, 0))
         data = json.loads(text)['supports']['sgs']['elements']
-        expect('markers written', sorted(k for k, v in data.items() if v.get('surface')), ['bg', 'clip', 'photo', 'shared-bg'])
+        expect('markers written', sorted(k for k, v in data.items() if v.get('surface')), ['bg', 'bg-held', 'clip', 'photo', 'shared-bg'])
         expect('text markers written', sorted(k for k, v in data.items() if v.get('text')), ['name', 'title'])
         expect('svg markers written', sorted(k for k, v in data.items() if v.get('svg')), ['logo'])
         # Negative controls.

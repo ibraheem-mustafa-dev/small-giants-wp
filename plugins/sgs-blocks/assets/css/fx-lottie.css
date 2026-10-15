@@ -52,6 +52,15 @@
 	pointer-events: none;
 }
 
+/* A background Lottie layer's poster fills its holder, with the holder's fit and focal point. */
+.sgs-container__lottie-bg > .sgs-container__lottie-poster {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: inherit;
+	object-position: inherit;
+}
+
 /* The pause control sits beside the animation (never inside a link). */
 :where(*):has(> .sgs-lottie + .sgs-lottie__pause) {
 	position: relative;

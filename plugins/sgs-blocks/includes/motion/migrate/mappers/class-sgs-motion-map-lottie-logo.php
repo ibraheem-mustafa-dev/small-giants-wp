@@ -25,7 +25,8 @@
  * stored meta is readable. A scroll-driven animation is scrubbed by the scrollbar, not auto-played, so it gets no pause
  * control.
  *
- * `bgLottie` and `bgLottieLoop` (the wrapper background) belong to the `looping-media` family.
+ * `bgLottie` and `bgLottieLoop` (the wrapper background) belong to the `looping-media` family, which reuses
+ * `positive_int` and `runs_long` from here.
  *
  * @package SGS\Blocks
  */
@@ -187,7 +188,7 @@ final class Sgs_Motion_Map_Lottie_Logo implements Sgs_Motion_Mapper_Interface {
 	 * @return array<string,mixed>|null
 	 */
 	private function lottie_layer( string $block_name, array $attrs ): ?array {
-		$file = $this->positive_int( $attrs['lottieId'] ?? null );
+		$file = self::positive_int( $attrs['lottieId'] ?? null );
 		if ( null === $file ) {
 			return null;
 		}
@@ -204,7 +205,7 @@ final class Sgs_Motion_Map_Lottie_Logo implements Sgs_Motion_Mapper_Interface {
 		if ( 1.0 !== $speed ) {
 			$values['speed'] = $speed;
 		}
-		if ( 'scroll' !== $trigger && ( $loop || $this->runs_long( $file ) ) ) {
+		if ( 'scroll' !== $trigger && ( $loop || self::runs_long( $file ) ) ) {
 			$values['pauseControl'] = true;
 		}
 		return array(
@@ -223,7 +224,7 @@ final class Sgs_Motion_Map_Lottie_Logo implements Sgs_Motion_Mapper_Interface {
 	 */
 	private function draw_layer( array $attrs ): ?array {
 		$style = $attrs['animationStyle'] ?? null;
-		$asset = $this->positive_int( $attrs['svgAnimationSource'] ?? null );
+		$asset = self::positive_int( $attrs['svgAnimationSource'] ?? null );
 		if ( ! is_string( $style ) || ! isset( self::DRAW_TRIGGER[ $style ] ) || null === $asset ) {
 			return null;
 		}
@@ -279,7 +280,7 @@ final class Sgs_Motion_Map_Lottie_Logo implements Sgs_Motion_Mapper_Interface {
 	 * @param int $attachment_id Lottie JSON attachment ID.
 	 * @return bool
 	 */
-	private function runs_long( int $attachment_id ): bool {
+	public static function runs_long( int $attachment_id ): bool {
 		if ( ! function_exists( 'get_post_meta' ) ) {
 			return false;
 		}
@@ -293,7 +294,7 @@ final class Sgs_Motion_Map_Lottie_Logo implements Sgs_Motion_Mapper_Interface {
 	 * @param mixed $value Stored value.
 	 * @return int|null
 	 */
-	private function positive_int( $value ): ?int {
+	public static function positive_int( $value ): ?int {
 		if ( is_int( $value ) ) {
 			return $value > 0 ? $value : null;
 		}

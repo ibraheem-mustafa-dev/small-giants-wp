@@ -54,6 +54,7 @@ require_once __DIR__ . '/helpers-css-sizing-keyword.php';
 // chain, so required directly here (idempotent — require_once).
 require_once __DIR__ . '/lottie-render.php';
 require_once __DIR__ . '/container-bg-hover-zoom.php';
+require_once __DIR__ . '/motion/class-sgs-motion-background-lottie.php';
 
 if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
@@ -527,6 +528,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// file uses (e.g. $overlay_opacity_tablet above).
 			$bg_lottie_loop          = array_key_exists( 'bgLottieLoop', $attributes ) ? (bool) $attributes['bgLottieLoop'] : true;
 			$has_bg_lottie           = $bg_lottie_id > 0;
+			// A `lottie` layer on the background part plays in a holder the wrapper prints (Spec 38A FR-38A-52).
+			$has_bg_lottie_layer     = ! $has_bg_lottie && \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::has_layer( $attributes );
 			$bg_parallax             = ! empty( $attributes['bgParallax'] );
 			$bg_ken_burns            = ! empty( $attributes['bgKenBurns'] );
 			$bg_animation_duration   = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
@@ -1301,7 +1304,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					'',
 					'full',
 					array(
-						'class'         => 'sgs-container__image-bg',
+						'class'         => $has_bg_lottie_layer ? \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::POSTER_CLASS : 'sgs-container__image-bg',
 						'aria-hidden'   => 'true',
 						'fetchpriority' => $sgs_bg_img_is_first ? 'high' : 'auto',
 						'loading'       => $sgs_bg_img_is_first ? 'eager' : 'lazy',
@@ -2090,6 +2093,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// separate background-image/video layers so the poster does not
 				// also paint underneath it.
 				$bg_img_html = '';
+				$video_html  = '';
+			}
+			// The background Lottie layer's holder takes the image's place, with the image inside as its poster; a video
+			// gives way to it as it does to bgLottie.
+			if ( $has_bg_lottie_layer ) {
+				$bg_img_html = \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::holder( $bg_img_html );
 				$video_html  = '';
 			}
 

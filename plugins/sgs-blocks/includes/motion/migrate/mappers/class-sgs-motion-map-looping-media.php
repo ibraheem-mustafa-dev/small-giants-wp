@@ -1,19 +1,26 @@
 <?php
 /**
- * The `looping-media` migration mapper (Spec 38A §13.1, §13.2, FR-38A-52, FR-38A-31, FR-38A-32): the Ken Burns and
- * SVG animation attributes to `ken-burns`, `svg-loop` and `ambient-float` effect layers.
+ * The `looping-media` migration mapper (Spec 38A §13.1, §13.2, FR-38A-52, FR-38A-31, FR-38A-32): the Ken Burns, SVG
+ * animation and background Lottie attributes to `ken-burns`, `svg-loop`, `ambient-float` and `lottie` effect layers.
  *
  * Sources (blocks from `git grep -n -E "bgKenBurns|bgSvgAnimation|splitMediaKenBurns|svgAnimation" -- 'plugins/sgs-blocks/src/blocks/*\/block.json'`):
- * - `bgKenBurns`, `bgAnimationDuration`, `bgSvgAnimation`, `bgSvgAnimationSpeed` on `sgs/container`, `sgs/hero`,
+ * - `bgKenBurns`, `bgAnimationDuration`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgLottie`, `bgLottieLoop` on `sgs/container`, `sgs/hero`,
  *   `sgs/trust-bar`, `sgs/site-header`, `sgs/site-footer`, `sgs/multi-button` and `sgs/physics-canvas`, plus `bgKenBurnsMode`
  *   and `bgZoomStart` on `sgs/hero`;
  * - `splitMediaKenBurns` and `splitMediaAnimationDuration` (the media atom of `sgs/hero`);
  * - `kenBurns` and `animationDuration` (the media atom) and `svgAnimation` and `svgAnimationSpeed` on `sgs/media`.
- * `bgLottie` and `bgLottieLoop` belong to the Lottie mapper.
  *
  * Destinations: Ken Burns of a background layer goes to the `background` part (the element that paints the background
  * image, which the host block declares); the media atom's Ken Burns goes to `media`; a background SVG animation goes to
- * the `svg-bg` part and the media block's to `media`.
+ * the `svg-bg` part and the media block's to `media`; a background Lottie goes to `background`, where the wrapper prints
+ * the Lottie's holder (`Sgs_Motion_Background_Lottie`) with the background image inside as its poster.
+ *
+ * Background Lottie, and why: the old wrapper played `bgLottie` on `visible` at speed 1, looping unless `bgLottieLoop`
+ * was false (absent meant true), with the pause button for a loop or a file longer than five seconds; the layer stores
+ * the same (`Sgs_Motion_Map_Lottie_Logo::runs_long` reads the stored length). A `bgLottie` of 0 played nothing, so both
+ * attributes are consumed with no layer; a value that is not an attachment ID stays on the block with a reported row.
+ * The old background image became the Lottie's poster, outside the Ken Burns selector, so a Ken Burns beside a Lottie
+ * never ran: its layer is dropped and reported.
  *
  * Ken Burns, and why:
  * - `bgKenBurnsMode` `zoom-out-once` becomes mode `zoom-out-once` from `bgZoomStart` percent (default 108) to 100 over
@@ -48,6 +55,7 @@ namespace SGS\Blocks\Motion;
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__ ) . '/interface-sgs-motion-mapper.php';
+require_once __DIR__ . '/class-sgs-motion-map-lottie-logo.php';
 
 /**
  * Class Sgs_Motion_Map_Looping_Media
@@ -130,7 +138,7 @@ final class Sgs_Motion_Map_Looping_Media implements Sgs_Motion_Mapper_Interface 
 		if ( ! in_array( $block_name, self::BACKGROUND_BLOCKS, true ) ) {
 			return array();
 		}
-		$owned = array( 'bgKenBurns', 'bgAnimationDuration', 'bgSvgAnimation', 'bgSvgAnimationSpeed' );
+		$owned = array( 'bgKenBurns', 'bgAnimationDuration', 'bgSvgAnimation', 'bgSvgAnimationSpeed', 'bgLottie', 'bgLottieLoop' );
 		if ( self::HERO === $block_name ) {
 			array_push( $owned, 'bgKenBurnsMode', 'bgZoomStart', 'splitMediaKenBurns', 'splitMediaAnimationDuration' );
 		}
@@ -175,6 +183,7 @@ final class Sgs_Motion_Map_Looping_Media implements Sgs_Motion_Mapper_Interface 
 				$this->plan_kenburns( 'splitMediaKenBurns', 'splitMediaAnimationDuration', self::MEDIA_PART, 'splitMediaParallax', 'loop', self::HERO_LOOP, true, $attrs, $layers, $consumed, $reported );
 			}
 			$this->plan_svg( 'bgSvgAnimation', 'bgSvgAnimationSpeed', self::SVG_PART, $attrs, $layers, $consumed, $reported );
+			$this->plan_lottie( $attrs, $layers, $consumed, $reported );
 		}
 
 		$elements = array();
@@ -189,6 +198,60 @@ final class Sgs_Motion_Map_Looping_Media implements Sgs_Motion_Mapper_Interface 
 			'consumed' => array_values( array_unique( $consumed ) ),
 			'reported' => $reported,
 		);
+	}
+
+	/**
+	 * The background Lottie (`bgLottie`, `bgLottieLoop`) as a `lottie` layer on the background part.
+	 *
+	 * @param array<string,mixed>            $attrs    Stored attributes.
+	 * @param array<string,array<int,array>> $layers   Layers by part (appended to).
+	 * @param string[]                       $consumed Consumed attributes (appended to).
+	 * @param array<int,array<string,mixed>> $reported Reported rows (appended to).
+	 */
+	private function plan_lottie( array $attrs, array &$layers, array &$consumed, array &$reported ): void {
+		$held = array_values( array_intersect( array( 'bgLottie', 'bgLottieLoop' ), array_keys( $attrs ) ) );
+		if ( array() === $held ) {
+			return;
+		}
+		$raw = $attrs['bgLottie'] ?? 0;
+		if ( 0 === $raw || '0' === $raw || null === $raw ) {
+			// No file: the old wrapper played nothing, and the loop setting changes nothing.
+			array_push( $consumed, ...$held );
+			return;
+		}
+		$file = Sgs_Motion_Map_Lottie_Logo::positive_int( $raw );
+		if ( null === $file ) {
+			$reported[] = self::row( 'bgLottie', $raw, 'not an attachment ID; the background Lottie attributes stay on the block', false );
+			return;
+		}
+		if ( array_key_exists( 'bgLottieLoop', $attrs ) && ! is_bool( $attrs['bgLottieLoop'] ) ) {
+			$reported[] = self::row( 'bgLottieLoop', $attrs['bgLottieLoop'], 'not a boolean; the background Lottie attributes stay on the block', false );
+			return;
+		}
+		$loop   = $attrs['bgLottieLoop'] ?? true;
+		$values = array( 'file' => $file );
+		if ( $loop ) {
+			$values['loop'] = true;
+		}
+		if ( $loop || Sgs_Motion_Map_Lottie_Logo::runs_long( $file ) ) {
+			$values['pauseControl'] = true;
+		}
+		$kept = array();
+		foreach ( $layers[ self::BACKGROUND_PART ] ?? array() as $layer ) {
+			if ( 'ken-burns' === ( $layer['effect'] ?? '' ) ) {
+				$reported[] = self::row( 'bgKenBurns', true, 'the background image was the Lottie poster, outside the Ken Burns selector, so the Ken Burns never ran beside a background Lottie; no ken-burns layer is written', true );
+				continue;
+			}
+			$kept[] = $layer;
+		}
+		$kept[]                           = array(
+			'id'      => 'lottie',
+			'effect'  => 'lottie',
+			'trigger' => 'visible',
+			'values'  => $values,
+		);
+		$layers[ self::BACKGROUND_PART ] = $kept;
+		array_push( $consumed, ...$held );
 	}
 
 	/**

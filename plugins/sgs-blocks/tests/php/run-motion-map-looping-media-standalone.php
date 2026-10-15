@@ -72,6 +72,8 @@ namespace {
 			'parallax-wins' => array( $mapper, "'' !== \$parallax && true === ( \$attrs[ \$parallax ] ?? false )", 'false' ),
 			'zoom-range'    => array( $mapper, '$start < 100 || $start > 200', 'false' ),
 			'atom-clamp'    => array( $mapper, 'const ATOM_MAX_SECONDS  = 60;', 'const ATOM_MAX_SECONDS  = 600;' ),
+			'lottie-loop'   => array( $mapper, "\$loop   = \$attrs['bgLottieLoop'] ?? true;", "\$loop   = \$attrs['bgLottieLoop'] ?? false;" ),
+			'lottie-kb'     => array( $mapper, "if ( 'ken-burns' === ( \$layer['effect'] ?? '' ) ) {", 'if ( false ) {' ),
 		);
 		if ( ! isset( $faults[ $plant ] ) ) {
 			echo "Unknown plant '$plant'\n";
@@ -244,7 +246,10 @@ namespace SGS\Blocks\Motion {
 	ok( 20 === ( $hero['splitMediaAnimationDuration']['default'] ?? null ) && false === ( $hero['splitMediaKenBurns']['default'] ?? null ), 'hero split media defaults: 20 seconds, Ken Burns off' );
 	ok( 'none' === ( $read( 'media' )['svgAnimation']['default'] ?? null ) && 'medium' === ( $read( 'media' )['svgAnimationSpeed']['default'] ?? null ), 'media svgAnimation defaults to none and its speed to medium' );
 	ok( array() === Sgs_Motion_Map_Looping_Media::owned( 'sgs/text' ) && false === $mapper->handles( 'sgs/text', array( 'bgKenBurns' => true ) ), 'a block that does not declare the attributes is left alone' );
-	ok( false === $mapper->handles( 'sgs/container', array( 'bgLottie' => 'x', 'bgLottieLoop' => true ) ), 'the Lottie attributes belong to the Lottie mapper' );
+	foreach ( Sgs_Motion_Map_Looping_Media::BACKGROUND_BLOCKS as $block ) {
+		ok( $mapper->handles( $block, array( 'bgLottie' => 4079 ) ) && $mapper->handles( $block, array( 'bgLottieLoop' => false ) ), "{$block} is handled for bgLottie and bgLottieLoop" );
+	}
+	ok( 0 === ( $read( 'container' )['bgLottie']['default'] ?? null ) && true === ( $read( 'container' )['bgLottieLoop']['default'] ?? null ), 'container bgLottie defaults to 0 (none) and bgLottieLoop to true, as the mapper reads an absent loop' );
 	ok( false === $mapper->handles( 'sgs/container', array( 'bgSvgContent' => '<svg/>', 'bgSvgOpacity' => 50 ) ), 'the background SVG content and styling stay block settings' );
 
 	// The retired stylesheets, while they exist: speeds and the float cycle.
@@ -357,6 +362,22 @@ namespace SGS\Blocks\Motion {
 	$r = migrate( 'sgs/media', array( 'kenBurns' => true, 'svgAnimation' => 'wave' ) );
 	ok( null !== layer( $r, 'media', 'ken-burns' ) && null !== layer( $r, 'media', 'svg-loop' ) && array() === $r['flags'], 'a media part holds a Ken Burns layer and an SVG loop layer together' );
 
+	// 7b. Background Lottie: a lottie layer on the background part, as the old wrapper played it.
+	$r  = migrate( 'sgs/container', array( 'bgLottie' => 4079 ) );
+	$lt = layer( $r, 'background', 'lottie' );
+	ok( array( 'id' => 'lottie', 'effect' => 'lottie', 'trigger' => 'visible', 'values' => array( 'file' => 4079, 'loop' => true, 'pauseControl' => true ) ) === $lt && array() === $r['flags'] && ! isset( $r['attrs']['bgLottie'] ) && array() === reported_attrs( $r ), 'bgLottie with no stored loop: a visible, looping lottie layer with the pause control on background, schema-clean, consumed, nothing reported', js( $lt ) );
+	$r  = migrate( 'sgs/hero', array( 'bgLottie' => '4079', 'bgLottieLoop' => false ) );
+	$lt = layer( $r, 'background', 'lottie' );
+	ok( array( 'file' => 4079 ) === ( $lt['values'] ?? null ) && array() === $r['flags'] && array( 'bgLottie', 'bgLottieLoop' ) === array_values( array_intersect( array( 'bgLottie', 'bgLottieLoop' ), $r['consumed'] ) ), 'bgLottieLoop false: plays once, no loop and no pause control (a short file), both attributes consumed', js( $lt ) );
+	$r = migrate( 'sgs/container', array( 'bgLottie' => 0, 'bgLottieLoop' => false ) );
+	ok( null === layer( $r, 'background', 'lottie' ) && ! isset( $r['attrs']['bgLottie'] ) && ! isset( $r['attrs']['bgLottieLoop'] ) && array() === reported_attrs( $r ), 'bgLottie 0 played nothing: no layer, both consumed' );
+	$r = migrate( 'sgs/container', array( 'bgLottie' => 'x' ) );
+	ok( null === layer( $r, 'background', 'lottie' ) && 'x' === ( $r['attrs']['bgLottie'] ?? null ) && in_array( 'bgLottie', reported_attrs( $r ), true ), 'a bgLottie that is not an attachment ID stays on the block, reported' );
+	$r = migrate( 'sgs/container', array( 'bgLottie' => 4079, 'bgLottieLoop' => 'yes' ) );
+	ok( null === layer( $r, 'background', 'lottie' ) && 4079 === ( $r['attrs']['bgLottie'] ?? null ) && in_array( 'bgLottieLoop', reported_attrs( $r ), true ), 'a bgLottieLoop that is not a boolean keeps both attributes, reported' );
+	$r = migrate( 'sgs/container', array( 'bgLottie' => 4079, 'bgKenBurns' => true, 'bgAnimationDuration' => 30 ) );
+	ok( null !== layer( $r, 'background', 'lottie' ) && null === layer( $r, 'background', 'ken-burns' ) && in_array( 'bgKenBurns', reported_attrs( $r ), true ) && ! isset( $r['attrs']['bgKenBurns'] ) && array() === $r['flags'], 'a Ken Burns beside a background Lottie never ran (the image was the poster): no ken-burns layer, reported and consumed', js( $r['reported'] ) );
+
 	// 8. Absent values and idempotency.
 	ok( false === $mapper->handles( 'sgs/container', array( 'columns' => 3 ) ) && false === $mapper->handles( 'sgs/media', array() ), 'a block with none of the attributes is not handled' );
 	$r = migrate( 'sgs/container', array( 'columns' => 3 ) );
@@ -367,6 +388,8 @@ namespace SGS\Blocks\Motion {
 		array( 'sgs/hero', array( 'splitMediaKenBurns' => true, 'bgSvgAnimation' => 'float' ) ),
 		array( 'sgs/media', array( 'kenBurns' => true, 'svgAnimation' => 'wave', 'svgAnimationSpeed' => 'slow' ) ),
 		array( 'sgs/site-footer', array( 'bgSvgAnimation' => 'pulse' ) ),
+		array( 'sgs/container', array( 'bgLottie' => 4079, 'bgLottieLoop' => false ) ),
+		array( 'sgs/hero', array( 'bgLottie' => 4079, 'bgKenBurns' => true ) ),
 	) as $case ) {
 		$first  = migrate( $case[0], $case[1] );
 		$runner = new Sgs_Motion_Migrate_Runner( array( new Sgs_Motion_Map_Looping_Media() ) );
