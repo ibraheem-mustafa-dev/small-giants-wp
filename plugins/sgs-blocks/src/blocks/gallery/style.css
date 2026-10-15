@@ -519,8 +519,10 @@
 
 /* Scroll-lock while the lightbox is open — view.js toggles this class on
    <body> instead of writing document.body.style.overflow inline (no-inline
-   contract). */
-body.sgs-gallery-lightbox-open {
+   contract). The lock itself sits on the root: on any page with a WooCommerce
+   product-filters block, WooCommerce's `scrollLimit` watcher writes an inline
+   `overflow: auto` on <body>, which beats a body-level `overflow: hidden`. */
+:root:has( body.sgs-gallery-lightbox-open ) {
 	overflow: hidden;
 }
 

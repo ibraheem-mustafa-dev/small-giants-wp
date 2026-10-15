@@ -1069,8 +1069,9 @@ dialog.sgs-shop-filters {
    behind it does not scroll and its scrollbar is hidden. Keyed on the dialog's
    own `:modal` state, so it needs no script, no smooth-scroll library and no
    per-site setup, and every filter panel the framework renders gets it. It
-   sits on the root because a body-level `overflow: hidden` is overridden by the
-   body's own `overflow: auto`. */
+   sits on the root because WooCommerce's product-filters `scrollLimit` watcher
+   writes an inline `overflow: auto` on <body> (its own overlay, which this
+   sheet replaces, never opens), and that beats any body-level lock. */
 :root:has( dialog.sgs-shop-filters:modal ) {
 	overflow: hidden;
 }
