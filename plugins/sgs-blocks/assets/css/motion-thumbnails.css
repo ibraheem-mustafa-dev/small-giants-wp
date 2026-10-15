@@ -1,0 +1,173 @@
+/**
+ * Preset thumbnails (Spec 38A §11, FR-38A-28): the demos drawn beside the Hover and Entrance presets in the block
+ * editor's inspector. A demo loops only while its choice is hovered, keyboard-focused or chosen. Loaded in the editor only (`includes/motion/class-sgs-motion-editor-canvas.php`).
+ *
+ * Nothing here is written per preset. `src/blocks/extensions/motion/thumbnails/PresetThumbnail.js` reads a preset's
+ * values and puts on the thumbnail the panel kind (`--hover`, `--entrance`), one movement (`--shift-up`, `--grow`, …) and
+ * `--fade` when opacity moves. Each movement sets the "away" state in custom properties (a Hover state's peak, an
+ * Entrance's start); the two keyframe sets move the box between that state and rest.
+ */
+.sgs-motion-thumb {
+	--sgs-thumb-x: 0px;
+	--sgs-thumb-y: 0px;
+	--sgs-thumb-s: 1;
+	--sgs-thumb-r: 0deg;
+	--sgs-thumb-o: 1;
+	--sgs-thumb-b: 0px;
+	--sgs-thumb-c: 0%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	box-sizing: border-box;
+	width: 56px;
+	height: 40px;
+	overflow: hidden;
+	border: 1px solid var(--wp-components-color-gray-300, #ddd);
+	border-radius: 4px;
+	background: var(--wp-components-color-gray-100, #f0f0f0);
+}
+
+.sgs-motion-thumb__box {
+	width: 16px;
+	height: 16px;
+	border-radius: 3px;
+	background: var(--wp-admin-theme-color, #3858e9);
+}
+
+.sgs-motion-thumb--shift-up { --sgs-thumb-y: -9px; }
+.sgs-motion-thumb--shift-down { --sgs-thumb-y: 9px; }
+.sgs-motion-thumb--shift-left { --sgs-thumb-x: -14px; }
+.sgs-motion-thumb--shift-right { --sgs-thumb-x: 14px; }
+.sgs-motion-thumb--grow { --sgs-thumb-s: 1.5; }
+.sgs-motion-thumb--shrink { --sgs-thumb-s: 0.5; }
+.sgs-motion-thumb--turn-cw { --sgs-thumb-r: 45deg; }
+.sgs-motion-thumb--turn-ccw { --sgs-thumb-r: -45deg; }
+.sgs-motion-thumb--tilt { --sgs-thumb-r: 20deg; }
+.sgs-motion-thumb--blur { --sgs-thumb-b: 3px; }
+.sgs-motion-thumb--wipe { --sgs-thumb-c: 100%; }
+.sgs-motion-thumb--fade { --sgs-thumb-o: 0.15; }
+
+/* A thumbnail is still until its choice is hovered, focused with the keyboard or chosen. A still demo is drawn at the
+   preset's away state (a partial clip for a wipe, never fully clipped) so the channel and direction read without
+   motion. The same drawing is what shows under reduced motion, where no animation runs at all. */
+.sgs-motion-thumb__box {
+	translate: var(--sgs-thumb-x) var(--sgs-thumb-y);
+	scale: var(--sgs-thumb-s);
+	rotate: var(--sgs-thumb-r);
+	filter: blur(var(--sgs-thumb-b));
+	clip-path: inset(calc(var(--sgs-thumb-c) * 0.5) 0 0 0);
+}
+
+.sgs-motion-thumb--fade .sgs-motion-thumb__box {
+	opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-motion-thumbs__item:is(:hover, :focus-visible, [aria-checked="true"]) .sgs-motion-thumb--hover:not(.sgs-motion-thumb--still) .sgs-motion-thumb__box {
+		animation: sgs-thumb-hover 2.4s ease-in-out infinite;
+	}
+	.sgs-motion-thumbs__item:is(:hover, :focus-visible, [aria-checked="true"]) .sgs-motion-thumb--entrance:not(.sgs-motion-thumb--still) .sgs-motion-thumb__box {
+		animation: sgs-thumb-entrance 2.4s ease-out infinite;
+	}
+	.sgs-motion-thumbs__item:is(:hover, :focus-visible, [aria-checked="true"]) .sgs-motion-thumb--entrance.sgs-motion-thumb--fade-out .sgs-motion-thumb__box {
+		animation-name: sgs-thumb-leave;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-motion-thumb .sgs-motion-thumb__box {
+		animation: none;
+	}
+}
+
+@keyframes sgs-thumb-hover {
+	0%,
+	20%,
+	100% {
+		translate: 0 0;
+		scale: 1;
+		rotate: 0deg;
+		opacity: 1;
+		filter: blur(0);
+		clip-path: inset(0 0 0 0);
+	}
+	45%,
+	70% {
+		translate: var(--sgs-thumb-x) var(--sgs-thumb-y);
+		scale: var(--sgs-thumb-s);
+		rotate: var(--sgs-thumb-r);
+		opacity: var(--sgs-thumb-o);
+		filter: blur(var(--sgs-thumb-b));
+		clip-path: inset(0 0 0 0);
+	}
+}
+
+@keyframes sgs-thumb-entrance {
+	0% {
+		translate: var(--sgs-thumb-x) var(--sgs-thumb-y);
+		scale: var(--sgs-thumb-s);
+		rotate: var(--sgs-thumb-r);
+		opacity: var(--sgs-thumb-o);
+		filter: blur(var(--sgs-thumb-b));
+		clip-path: inset(var(--sgs-thumb-c) 0 0 0);
+	}
+	40%,
+	100% {
+		translate: 0 0;
+		scale: 1;
+		rotate: 0deg;
+		opacity: 1;
+		filter: blur(0);
+		clip-path: inset(0 0 0 0);
+	}
+}
+
+@keyframes sgs-thumb-leave {
+	0%,
+	30% {
+		opacity: 1;
+	}
+	60%,
+	100% {
+		opacity: var(--sgs-thumb-o);
+	}
+}
+
+/* The gallery: three presets a row, each a 44px-minimum radio holding a demo and a name. */
+.sgs-motion-thumbs {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 8px;
+	margin: 8px 0 16px;
+}
+
+.sgs-motion-thumbs__item.components-button {
+	flex-direction: column;
+	justify-content: flex-start;
+	gap: 4px;
+	height: auto;
+	padding: 6px 4px;
+	border: 1px solid var(--wp-components-color-gray-300, #ddd);
+	border-radius: 4px;
+	white-space: normal;
+	text-align: center;
+}
+
+.sgs-motion-thumbs__item.components-button[aria-checked="true"] {
+	border-color: var(--wp-admin-theme-color, #3858e9);
+	box-shadow: inset 0 0 0 1px var(--wp-admin-theme-color, #3858e9);
+	background: transparent;
+	color: inherit;
+}
+
+/* The focus ring is an outline, so it shows together with the chosen radio's inset border. */
+.sgs-motion-thumbs__item.components-button:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, var(--wp-admin-theme-color, #3858e9));
+	outline-offset: 2px;
+}
+
+.sgs-motion-thumbs__label {
+	font-size: 11px;
+	line-height: 1.3;
+}

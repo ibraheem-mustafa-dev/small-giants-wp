@@ -32,8 +32,12 @@ import {
 import HoverEffects from './hover/HoverEffects';
 import HoverFineTune from './hover/HoverFineTune';
 import FocusState, { focusAvailable } from './hover/FocusState';
+import PresetThumbnailGrid from './thumbnails/PresetThumbnailGrid';
 
 const NONE = 'hover-none';
+const HOVER_CHOICES = hoverPresetChoices().filter(
+	( option ) => option.value !== NONE
+);
 
 /**
  * @param {Object}           props
@@ -83,9 +87,7 @@ export default function HoverPanel( { blockName, elements, motion, layers } ) {
 					'Plays on devices that can hover, and for keyboard focus.',
 					'sgs-blocks'
 				) }
-				options={ hoverPresetChoices().filter(
-					( option ) => option.value !== NONE
-				) }
+				options={ HOVER_CHOICES }
 				value={ choice === NONE ? '' : choice }
 				emptyLabel={
 					layer && ! layer.preset
@@ -93,6 +95,12 @@ export default function HoverPanel( { blockName, elements, motion, layers } ) {
 						: __( 'None', 'sgs-blocks' )
 				}
 				onChange={ ( slug ) => actions.choosePreset( slug || NONE ) }
+			/>
+			<PresetThumbnailGrid
+				label={ __( 'Hover state previews', 'sgs-blocks' ) }
+				options={ HOVER_CHOICES }
+				value={ choice === NONE ? '' : choice }
+				onChange={ ( slug ) => actions.choosePreset( slug ) }
 			/>
 			{ hoverRefs.length > 0 && (
 				<ChoiceAtom

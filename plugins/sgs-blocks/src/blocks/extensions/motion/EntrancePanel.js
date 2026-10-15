@@ -30,6 +30,7 @@ import EntranceFineTune from './entrance/EntranceFineTune';
 import EntranceStagger from './entrance/EntranceStagger';
 import './stagger/with-stagger-rerun';
 import EntranceTextEffects from './entrance/EntranceTextEffects';
+import PresetThumbnailGrid from './thumbnails/PresetThumbnailGrid';
 import { layerEditor, problemText, withTrigger } from './entrance/layer-edit';
 import {
 	BASE_LIST,
@@ -160,6 +161,12 @@ export default function EntrancePanel( {
 				value={ current }
 				onChange={ choose }
 				emptyLabel={ __( 'None', 'sgs-blocks' ) }
+			/>
+			<PresetThumbnailGrid
+				label={ __( 'Entrance previews', 'sgs-blocks' ) }
+				options={ offered }
+				value={ current ?? '' }
+				onChange={ choose }
 			/>
 			{ base && (
 				<TriggerPicker
