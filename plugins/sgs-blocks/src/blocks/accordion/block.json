@@ -30,7 +30,11 @@
       "__experimentalSkipSerialization": true
     },
     "sgs": {
-      "motion": true,
+      "motion": {
+        "states": [
+          "expanded"
+        ]
+      },
       "collection": true,
       "iconPicker": true,
       "boxFamilies": {
@@ -170,6 +174,14 @@
           },
           "_note": "iconColour paints the open/close chevron. openIcon/closeIcon (icon slug) and iconPosition are content/variant fields, not independent style controls, so only the colour member is mapped — the rest are honest gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient (2026-09-06, colour-conformance closeout) mirror the same mechanism, consumed by sgs/accordion-item via block context exactly like the resting pair (providesContext below).",
           "layer": "OUTER"
+        },
+        "turning-icon": {
+          "label": "Turning toggle icon",
+          "order": 4.1,
+          "selector": ".sgs-accordion-item__icon-open--rotates",
+          "clusters": [],
+          "prefix": "",
+          "_note": "The single toggle icon an item prints when it turns instead of cross-fading (`.sgs-accordion-item__icon-open--rotates`, printed by sgs/accordion-item when iconRotation is above 0 or this part holds an Entrance layer). A motion target only (Spec 38A FR-38A-53): an `entrance.base` with trigger State and state `expanded` turns it while the item is open; the item publishes `expanded` on its `<details>`. Colour and size stay on `icon`."
         },
         "answer": {
           "motion": false,
@@ -561,7 +573,7 @@
       "default": 0,
       "minimum": 0,
       "maximum": 360,
-      "description": "Degrees the open icon turns when the item opens. Non-zero prints only the open icon and rotates it; 0 keeps both icons and cross-fades them."
+      "description": "Degrees the open icon turns when the item opens. Non-zero prints only the open icon and rotates it; 0 keeps both icons and cross-fades them. Ignored when the Turning toggle icon part holds an Entrance layer (Spec 38A FR-38A-53): the layer then prints the single icon and sets the angle and timing."
     }
   },
   "providesContext": {
@@ -591,7 +603,8 @@
     "sgs/accordionHeaderMinHeight": "headerMinHeight",
     "sgs/accordionContentPadding": "contentPadding",
     "sgs/accordionIconSize": "iconSize",
-    "sgs/accordionIconRotation": "iconRotation"
+    "sgs/accordionIconRotation": "iconRotation",
+    "sgs/accordionMotion": "sgsMotion"
   },
   "allowedBlocks": [
     "sgs/accordion-item"

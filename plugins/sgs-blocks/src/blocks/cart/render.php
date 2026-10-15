@@ -90,6 +90,12 @@ if ( is_bool( $sgs_count_pop_raw ) ) {
 	$sgs_count_pop_raw = $sgs_count_pop_raw ? 'load-and-change' : 'off';
 }
 $count_pop_animation = in_array( $sgs_count_pop_raw, array( 'change', 'load-and-change' ), true ) ? $sgs_count_pop_raw : 'off';
+// Spec 38A FR-38A-53 (overlap rule): a badge that holds an Entrance layer takes the pop from that layer, so the old
+// attribute is ignored; with no layer this block renders exactly as before.
+$sgs_count_pop_model = sgs_cart_count_pop_mode( $attributes );
+if ( null !== $sgs_count_pop_model ) {
+	$count_pop_animation = $sgs_count_pop_model;
+}
 
 // FR-36-19 panel attrs.
 $panel_heading      = sanitize_text_field( $attributes['panelHeading'] ?? __( 'Your cart', 'sgs-blocks' ) );

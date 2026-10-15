@@ -12,8 +12,18 @@
  * Uses a WeakSet to track programmatic toggles, preventing
  * re-entrant animation loops when closing siblings.
  *
+ * An item whose turning icon holds a `state` Entrance layer (Spec 38A FR-38A-53)
+ * carries the state `expanded` on its <details> while it is open, published through
+ * `@sgs/motion-state` (src/shared/motion-state-publish.js, which loads it only when
+ * the item has state motion); the layer turns the icon. Items with no layer cost nothing.
+ *
  * @package SGS\Blocks
  */
+
+import {
+	preloadMotionState,
+	setState,
+} from '../../shared/motion-state-publish';
 
 const NATIVE_ANIMATION =
 	typeof CSS !== 'undefined' &&
@@ -32,6 +42,15 @@ function syncAriaExpanded( details ) {
 }
 
 /**
+ * Publish the item's `expanded` motion state from its real open state.
+ *
+ * @param {HTMLDetailsElement} details Accordion item.
+ */
+function publishExpanded( details ) {
+	setState( details, 'expanded', details.open );
+}
+
+/**
  * Native-animation path: the browser toggles and animates the item; this only
  * keeps aria-expanded in step and, without <details name> support, closes the
  * siblings of a newly opened item.
@@ -42,8 +61,11 @@ function initNativeItems( accordion, items, allowMultiple ) {
 
 	items.forEach( ( details ) => {
 		syncAriaExpanded( details );
+		preloadMotionState( details );
+		publishExpanded( details );
 		details.addEventListener( 'toggle', () => {
 			syncAriaExpanded( details );
+			publishExpanded( details );
 			if ( allowMultiple || NATIVE_GROUPS || ! details.open ) {
 				return;
 			}
@@ -103,6 +125,8 @@ function initAccordions() {
 			// Start aria-expanded from the item's real open state (the default-open
 			// item above is opened here, after the server wrote aria-expanded).
 			summary.setAttribute( 'aria-expanded', details.open ? 'true' : 'false' );
+			preloadMotionState( details );
+			publishExpanded( details );
 
 			// Wrap content for animation measurement.
 			let wrapper = content.querySelector(
@@ -180,6 +204,7 @@ function initAccordions() {
 function openItem( details, content, wrapper, animatingItems ) {
 	animatingItems.add( details );
 	details.setAttribute( 'open', '' );
+	publishExpanded( details );
 
 	// Sync aria-expanded so legacy screen readers announce the open state.
 	const summary = details.querySelector( 'summary' );
@@ -228,7 +253,8 @@ function openItem( details, content, wrapper, animatingItems ) {
 function closeItem( details, content, wrapper, animatingItems ) {
 	animatingItems.add( details );
 
-	// Sync aria-expanded immediately — the item is logically closed now.
+	// The item is logically closed now: the state and aria-expanded follow at once.
+	setState( details, 'expanded', false );
 	const summary = details.querySelector( 'summary' );
 	if ( summary ) {
 		summary.setAttribute( 'aria-expanded', 'false' );

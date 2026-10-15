@@ -15,6 +15,7 @@ import { SgsColourPanel, DesignTokenPicker, IconPicker, ResponsiveBoxControl, Sg
 import ContainerWrapperControls from "../container/components/ContainerWrapperControls";
 import { usePreviewTier } from "../../utils";
 import { accordionWrapperPreview } from "./preview-style";
+import { partHasEntranceLayer } from "../extensions/motion/part-layer";
 
 const STYLE_OPTIONS = [
   { label: __("Bordered", "sgs-blocks"), value: "bordered" },
@@ -434,17 +435,23 @@ export default function Edit({ attributes, setAttributes, clientId }) {
               />
             ) }
           </ResponsiveOverride>
-          <RangeControl
-            label={ __( "Icon rotation when open (degrees)", "sgs-blocks" ) }
-            help={ __( "0 swaps between the open and close icons. A value such as 45 turns a plus into a cross in time with the panel.", "sgs-blocks" ) }
-            value={ attributes.iconRotation }
-            onChange={ ( val ) => setAttributes( { iconRotation: val ?? 0 } ) }
-            min={ 0 }
-            max={ 360 }
-            step={ 1 }
-            __nextHasNoMarginBottom
-            __next40pxDefaultSize
-          />
+          { partHasEntranceLayer( attributes, "turning-icon" ) ? (
+            <p>
+              { __( "The icon turn is set by the Motion panel on the Turning toggle icon part (Entrance, trigger State, state Expanded).", "sgs-blocks" ) }
+            </p>
+          ) : (
+            <RangeControl
+              label={ __( "Icon rotation when open (degrees)", "sgs-blocks" ) }
+              help={ __( "0 swaps between the open and close icons. A value such as 45 turns a plus into a cross in time with the panel.", "sgs-blocks" ) }
+              value={ attributes.iconRotation }
+              onChange={ ( val ) => setAttributes( { iconRotation: val ?? 0 } ) }
+              min={ 0 }
+              max={ 360 }
+              step={ 1 }
+              __nextHasNoMarginBottom
+              __next40pxDefaultSize
+            />
+          ) }
         </PanelBody>
         {/* Border — block-private width/style/colour attrs (Shape B, 2026-08-30).
             Radius is deliberately NOT mounted here: it stays a WP-native support

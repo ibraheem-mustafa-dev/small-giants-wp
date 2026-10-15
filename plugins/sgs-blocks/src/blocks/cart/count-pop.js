@@ -7,8 +7,21 @@
  * render, at any count including 0). Never plays under reduced motion. Split
  * out of view.js to keep it under the project's 250-line JS budget.
  *
+ * A cart whose badge holds a `state` Entrance layer (Spec 38A FR-38A-53) plays
+ * the pop from that layer instead: the same decision (`mode` is derived from the
+ * layer's state by render.php) pulses `count-changed` (an item was added) or
+ * `count-loaded` (also once at load) on the badge through `@sgs/motion-state`,
+ * so two adds replay it twice. A cart with no layer keeps the class below.
+ *
  * @package
  */
+
+import {
+	preloadMotionState,
+	pulseState,
+} from '../../shared/motion-state-publish';
+
+const STATE_BADGE = '[data-sgs-me~="state"]';
 
 /**
  * Whether the visitor's OS/browser has requested reduced motion. Read fresh
@@ -40,8 +53,18 @@ export function maybeAnimateCountPop( badge, count, mode ) {
 	const shouldPop = isFirstCall
 		? 'load-and-change' === mode
 		: 'off' !== mode && count > previousCount;
+	const onModel = badge.matches( STATE_BADGE );
 
-	if ( shouldPop && ! prefersReducedMotion() ) {
+	if ( isFirstCall && onModel ) {
+		preloadMotionState( badge );
+	}
+
+	if ( shouldPop && onModel ) {
+		pulseState(
+			badge,
+			'load-and-change' === mode ? 'count-loaded' : 'count-changed'
+		);
+	} else if ( shouldPop && ! prefersReducedMotion() ) {
 		badge.classList.remove( 'sgs-cart__badge--pop' );
 		// Force reflow so re-adding the class restarts the animation on
 		// consecutive adds.

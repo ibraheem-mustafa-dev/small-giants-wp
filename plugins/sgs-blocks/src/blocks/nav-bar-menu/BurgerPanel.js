@@ -10,6 +10,7 @@ import { useSelect } from '@wordpress/data';
 import { SgsLengthControl, IconPicker, MotionEasingControl, ResponsiveOverride, ResponsiveBoxControl, SgsBorderControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { resolveTier } from '../../utils';
+import { partHasEntranceLayer } from '../extensions/motion/part-layer';
 
 /**
  * Wave 3C U-9 (§4.4) — burger morph pose options.
@@ -106,6 +107,16 @@ export default function BurgerPanel( {
 	);
 	const burgerIconHeight = useSelect(
 		( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.burgerIconHeight,
+		[ clientId ]
+	);
+	// Spec 38A FR-38A-53: a burger holding an Entrance layer takes the morph's speed and easing from it, so the two
+	// controls below would do nothing; they give way to a pointer to the Motion panel.
+	const morphOnModel = useSelect(
+		( select ) =>
+			partHasEntranceLayer(
+				select( blockEditorStore ).getBlockAttributes( clientId ),
+				'burger'
+			),
 		[ clientId ]
 	);
 
@@ -529,7 +540,16 @@ export default function BurgerPanel( {
 				</ToggleGroupControl>
 			) }
 
-			{ showsIcon && 'none' !== morph && (
+			{ showsIcon && 'none' !== morph && morphOnModel && (
+				<p>
+					{ __(
+						'The morph speed and easing are set by the Motion panel on the Burger toggle part (Entrance, trigger State).',
+						'sgs-blocks'
+					) }
+				</p>
+			) }
+
+			{ showsIcon && 'none' !== morph && ! morphOnModel && (
 				<>
 					<RangeControl
 						label={ __( 'Morph speed', 'sgs-blocks' ) }

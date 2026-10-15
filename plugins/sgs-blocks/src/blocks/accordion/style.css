@@ -134,9 +134,14 @@
 	opacity: 1;
 }
 
-/* Rotating mode: the single open icon stays visible and turns. */
+/* Rotating mode: the single open icon stays visible and turns. The turn itself is the
+   iconRotation angle here; an icon holding an Entrance layer (data-sgs-me, Spec 38A
+   FR-38A-53) is turned by that layer instead, so the angle is not applied to it. */
 .sgs-accordion-item[open] .sgs-accordion-item__icon-open--rotates {
 	opacity: 1;
+}
+
+.sgs-accordion-item[open] .sgs-accordion-item__icon-open--rotates:where(:not([data-sgs-me])) {
 	rotate: var(--sgs-accordion-icon-rotate, 0deg);
 }
 

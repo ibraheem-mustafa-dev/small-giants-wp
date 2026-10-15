@@ -125,6 +125,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', __DIR__ );
 }
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-motion-easing.php';
+// The morph section reads the layer-timing helper (Spec 38A FR-38A-53); with no layer it returns null and the old path runs.
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-state-motion-model.php';
 ok( function_exists( 'sgs_motion_easing_css' ), 'the shared easing resolver (includes/helpers-motion-easing.php) is loaded' );
 ok( false !== strpos( $render_source, "sgs_motion_easing_css( (string) ( \$attributes['burgerMorphEasing'] ?? 'ease' ), (string) ( \$attributes['burgerMorphEasingCustom'] ?? '' ) )" ), 'nav-bar-menu/render.php resolves the burger easing through the shared resolver' );
 

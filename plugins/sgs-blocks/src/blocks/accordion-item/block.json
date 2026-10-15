@@ -113,7 +113,8 @@
 		"sgs/accordionHeaderMinHeight",
 		"sgs/accordionContentPadding",
 		"sgs/accordionIconSize",
-		"sgs/accordionIconRotation"
+		"sgs/accordionIconRotation",
+		"sgs/accordionMotion"
 	],
 	"attributes": {
 		"title": {

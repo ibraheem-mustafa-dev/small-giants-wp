@@ -22,6 +22,7 @@ import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/p
  * @param {string}   root0.pillLabel          The pill trigger's editable word (e.g. "Cart"/"Bag").
  * @param {string}   root0.pillCountStyle     'plain' (count as text) or 'bubble' (round filled chip).
  * @param {string}   root0.countPopAnimation  When the count pops: 'off', 'change' or 'load-and-change'.
+ * @param {boolean}  root0.countPopOnModel    Whether the badge holds a motion layer, which then decides the pop.
  * @param {Function} root0.setAttributes      The block's attribute setter.
  */
 export default function TriggerSettingsControls( {
@@ -33,6 +34,7 @@ export default function TriggerSettingsControls( {
 	pillLabel,
 	pillCountStyle,
 	countPopAnimation,
+	countPopOnModel,
 	setAttributes,
 } ) {
 	const isPill = 'pill' === ( triggerStyle || 'icon' );
@@ -84,22 +86,31 @@ export default function TriggerSettingsControls( {
 				{ /* Pill border colour + radius moved to the Styles tab's "Pill
 				   border" panel (edit.js) — Spec 35 §14 / C1: border colour is
 				   excluded from SgsColourPanel; radius sits with it as the pair. */ }
-				<SelectControl
-					label={ __( 'Count animation', 'sgs-blocks' ) }
-					help={ __(
-						'The count grows in with a soft fade. Never plays when the visitor has asked their device for less motion.',
-						'sgs-blocks'
-					) }
-					value={ 'boolean' === typeof countPopAnimation ? ( countPopAnimation ? 'load-and-change' : 'off' ) : ( countPopAnimation || 'off' ) }
-					options={ [
-						{ label: __( 'Off', 'sgs-blocks' ), value: 'off' },
-						{ label: __( 'When an item is added', 'sgs-blocks' ), value: 'change' },
-						{ label: __( 'When the page loads and when an item is added', 'sgs-blocks' ), value: 'load-and-change' },
-					] }
-					onChange={ ( val ) => setAttributes( { countPopAnimation: val } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
+				{ countPopOnModel ? (
+					<p>
+						{ __(
+							'The count animation is set by the Motion panel on the Badge part (Entrance, trigger State).',
+							'sgs-blocks'
+						) }
+					</p>
+				) : (
+					<SelectControl
+						label={ __( 'Count animation', 'sgs-blocks' ) }
+						help={ __(
+							'The count grows in with a soft fade. Never plays when the visitor has asked their device for less motion.',
+							'sgs-blocks'
+						) }
+						value={ 'boolean' === typeof countPopAnimation ? ( countPopAnimation ? 'load-and-change' : 'off' ) : ( countPopAnimation || 'off' ) }
+						options={ [
+							{ label: __( 'Off', 'sgs-blocks' ), value: 'off' },
+							{ label: __( 'When an item is added', 'sgs-blocks' ), value: 'change' },
+							{ label: __( 'When the page loads and when an item is added', 'sgs-blocks' ), value: 'load-and-change' },
+						] }
+						onChange={ ( val ) => setAttributes( { countPopAnimation: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				) }
 			</PanelBody>
 
 			<PanelBody title={ __( 'Icon', 'sgs-blocks' ) } initialOpen={ false }>

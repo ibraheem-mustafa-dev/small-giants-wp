@@ -35,6 +35,9 @@
 					"subitem",
 					"mega-item",
 					"mega-row"
+				],
+				"states": [
+					"menu-open"
 				]
 			},
 			"separators": {
@@ -893,7 +896,7 @@
 		"burgerMorphDuration": {
 			"type": "number",
 			"default": 200,
-			"description": "Wave 3C U-9 (§4.4). Burger morph transition duration in ms, 0 to 1200. Default 200 matches today's hardcoded `style.css` value exactly."
+			"description": "Wave 3C U-9 (§4.4). Burger morph transition duration in ms, 0 to 1200. Default 200 matches today's hardcoded `style.css` value exactly. Ignored when the burger part holds an Entrance layer (Spec 38A FR-38A-53), whose duration and easing set the morph's speed instead."
 		},
 		"burgerMorphEasing": {
 			"type": "string",
@@ -912,12 +915,12 @@
 				"linear",
 				"custom"
 			],
-			"description": "Burger morph easing curve, from the shared motion easing list (`includes/helpers-motion-easing.php::sgs_motion_easing_css`, editor `MotionEasingControl`). `ease` is the default. `custom` reads `burgerMorphEasingCustom` (validated; falls back to `ease` when invalid)."
+			"description": "Burger morph easing curve, from the shared motion easing list (`includes/helpers-motion-easing.php::sgs_motion_easing_css`, editor `MotionEasingControl`). `ease` is the default. `custom` reads `burgerMorphEasingCustom` (validated; falls back to `ease` when invalid). Ignored when the burger part holds an Entrance layer (Spec 38A FR-38A-53), whose duration and easing set the morph's speed instead."
 		},
 		"burgerMorphEasingCustom": {
 			"type": "string",
 			"default": "",
-			"description": "Wave 3C U-9 (§4.4). A hand-typed `cubic-bezier(x1, y1, x2, y2)` curve, read only when `burgerMorphEasing` is `custom`. Validated by an anchored numeric regex (four numbers, `-?\\d*\\.?\\d+`, no exponent notation, x1 and x2 clamped to 0-1 by the CSS spec) — an invalid value is REFUSED (never passed through) and the morph falls back to `ease`."
+			"description": "Wave 3C U-9 (§4.4). A hand-typed `cubic-bezier(x1, y1, x2, y2)` curve, read only when `burgerMorphEasing` is `custom`. Validated by an anchored numeric regex (four numbers, `-?\\d*\\.?\\d+`, no exponent notation, x1 and x2 clamped to 0-1 by the CSS spec) — an invalid value is REFUSED (never passed through) and the morph falls back to `ease`. Ignored when the burger part holds an Entrance layer (Spec 38A FR-38A-53), whose duration and easing set the morph's speed instead."
 		},
 		"sgsCustomCss": {
 			"type": "string",

@@ -51,13 +51,22 @@ if ( ! function_exists( 'sgs_nav_bar_motion_item_parts' ) ) {
 
 if ( ! function_exists( 'sgs_nav_bar_uses_motion_model' ) ) {
 	/**
-	 * Whether the bar is on the Entrance model: its `sgsMotion` holds elements or stagger settings.
+	 * Whether the bar's panels are on the Entrance model: its `sgsMotion` holds stagger settings or a layer on a part
+	 * other than `burger`. A layer on the burger alone (the morph's speed and easing, includes/helpers-state-motion-model.php)
+	 * leaves the panels on the old motion until the M6.5 sweep.
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return bool
 	 */
 	function sgs_nav_bar_uses_motion_model( array $attributes ): bool {
-		return sgs_nav_drawer_uses_motion_model( $attributes );
+		if ( ! sgs_nav_drawer_uses_motion_model( $attributes ) ) {
+			return false;
+		}
+		$motion = $attributes['sgsMotion'];
+		if ( ! empty( $motion['stagger'] ) ) {
+			return true;
+		}
+		return array() !== array_diff( array_keys( is_array( $motion['elements'] ?? null ) ? $motion['elements'] : array() ), array( 'burger' ) );
 	}
 }
 

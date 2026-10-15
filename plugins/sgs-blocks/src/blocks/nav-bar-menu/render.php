@@ -922,7 +922,6 @@ if ( in_array( $sgs_nm_justify_content, $sgs_nm_justify_allowed, true ) ) {
 $sgs_nm_morph_duration = isset( $attributes['burgerMorphDuration'] ) ? (int) $attributes['burgerMorphDuration'] : 200;
 $sgs_nm_morph_duration = max( 0, min( 1200, $sgs_nm_morph_duration ) );
 $sgs_nm_morph_easing_css = sgs_motion_easing_css( (string) ( $attributes['burgerMorphEasing'] ?? 'ease' ), (string) ( $attributes['burgerMorphEasingCustom'] ?? '' ) );
-
 $sgs_nm_morph_vars = '';
 if ( 200 !== $sgs_nm_morph_duration ) {
 	$sgs_nm_morph_vars .= '--sgs-nbm-burger-morph-duration:' . $sgs_nm_morph_duration . 'ms;';
@@ -930,6 +929,7 @@ if ( 200 !== $sgs_nm_morph_duration ) {
 if ( 'ease' !== $sgs_nm_morph_easing_css ) {
 	$sgs_nm_morph_vars .= '--sgs-nbm-burger-morph-easing:' . $sgs_nm_morph_easing_css . ';';
 }
+$sgs_nm_morph_vars = sgs_nav_bar_burger_morph_vars( $attributes, $sgs_nm_morph_vars ); // Spec 38A FR-38A-53: a burger layer's timing replaces the three attributes.
 if ( '' !== $sgs_nm_morph_vars ) {
 	$css .= $uid_sel . '{' . $sgs_nm_morph_vars . '}';
 }

@@ -57,6 +57,8 @@ $header_min_height_raw    = $block->context['sgs/accordionHeaderMinHeight'] ?? a
 $content_padding_raw      = $block->context['sgs/accordionContentPadding'] ?? array();
 $icon_size_raw            = $block->context['sgs/accordionIconSize'] ?? array();
 $icon_rotation            = max( 0.0, min( 360.0, (float) ( $block->context['sgs/accordionIconRotation'] ?? 0 ) ) );
+// Spec 38A FR-38A-53: a turning-icon layer on `expanded` turns the single icon and `iconRotation` is ignored; no layer, no change.
+$sgs_ai_turn_model = sgs_accordion_icon_turn_on_model( $block->context['sgs/accordionMotion'] ?? null );
 // D636/D644 icon/SVG gradient sibling — non-empty wins over icon_col above.
 $icon_col_gradient       = $block->context['sgs/accordionIconColourGradient'] ?? '';
 $icon_col_hover          = $block->context['sgs/accordionIconColourHover'] ?? '';
@@ -237,7 +239,7 @@ $sgs_ai_len_tiers = static function ( $raw, string $var ) use ( $root_sel, $sgs_
 };
 $responsive_css .= $sgs_ai_len_tiers( $header_gap_raw, '--sgs-accordion-header-gap' );
 $responsive_css .= $sgs_ai_px_tiers( $header_min_height_raw, '--sgs-accordion-header-min-h', true );
-if ( $icon_rotation > 0 ) {
+if ( $icon_rotation > 0 && ! $sgs_ai_turn_model ) {
 	$responsive_css .= $root_sel . '{--sgs-accordion-icon-rotate:' . $icon_rotation . 'deg;}';
 }
 
@@ -367,7 +369,7 @@ if ( '' !== $sgs_ai_icon_hover_grad['defs'] ) {
 
 // A non-zero iconRotation prints only the open icon and turns it on [open];
 // zero prints both icons stacked in one cell and cross-fades them.
-if ( $icon_rotation > 0 ) {
+if ( $icon_rotation > 0 || $sgs_ai_turn_model ) {
 	$icon_html = sprintf(
 		'<span class="sgs-accordion-item__icons"><span class="sgs-accordion-item__icon-open sgs-accordion-item__icon-open--rotates" aria-hidden="true">%s</span></span>',
 		$open_icon_svg

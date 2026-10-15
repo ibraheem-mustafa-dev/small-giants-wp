@@ -45,6 +45,7 @@ import '../../shared/nav-interactivity/mega-disclosure';
 import { initNavIndicator } from '../../shared/effects/nav-indicator';
 import { initMagnet } from '../../shared/effects/magnet';
 import initPanelMotionState from './panel-motion-state';
+import initBurgerMotionState from './burger-motion-state';
 
 /**
  * Normalise a path the same way render.php's items do: no trailing slash,
@@ -139,6 +140,8 @@ function init() {
 	// trigger's state as the `open` motion state (Spec 38A FR-38A-51). See
 	// panel-motion-state.js.
 	initPanelMotionState();
+	// A burger that holds an Entrance layer publishes `menu-open` (Spec 38A FR-38A-53). See burger-motion-state.js.
+	initBurgerMotionState();
 }
 
 /**

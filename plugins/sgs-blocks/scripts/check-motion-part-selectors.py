@@ -103,6 +103,8 @@ LEGACY_ROOTS = {
     "countdown-timer": ("sgs-countdown__",),
     "table-of-contents": ("sgs-toc__",),
     "business-info": ("sgs-business-hours__",),
+    # The accordion prints its items through the child block `sgs/accordion-item`, whose classes carry its own prefix.
+    "accordion": ("sgs-accordion-item__",),
     # The six composites that print the container wrapper's background layers as their own `background` / `svg-bg` parts.
     "site-header": ("sgs-container__image-bg", "sgs-container__svg-bg"),
     "site-footer": ("sgs-container__image-bg", "sgs-container__svg-bg"),
@@ -111,11 +113,19 @@ LEGACY_ROOTS = {
     "multi-button": ("sgs-container__image-bg", "sgs-container__svg-bg"),
     "hero": ("sgs-container__image-bg", "sgs-container__svg-bg"),
 }
+# Child blocks whose render source prints classes a parent's part names (the parent's rendered HTML contains them).
+CHILD_BLOCKS = {"accordion": ("accordion-item",)}
 SELECTOR_OK = re.compile(r"^\.[A-Za-z][A-Za-z0-9_-]*(?: \.[A-Za-z][A-Za-z0-9_-]*)*$")
 
 
 def source_text(block_dir: Path) -> str:
-    """The block's render source; a block with no render.php is read from save.js."""
+    """The block's render source (plus its `CHILD_BLOCKS`'); a block with no render.php is read from save.js."""
+    children = "\n".join(source_text(block_dir.parent / child) for child in CHILD_BLOCKS.get(block_dir.name, ()))
+    return own_source_text(block_dir) + ("\n" + children if children else "")
+
+
+def own_source_text(block_dir: Path) -> str:
+    """One block's own render source."""
     if (block_dir / "render.php").is_file():
         first = bsf.render_files(block_dir)
         files = first + [f for f in bsf.block_php_files(block_dir) if f not in first]
