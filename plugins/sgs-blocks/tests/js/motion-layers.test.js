@@ -314,3 +314,33 @@ describe( 'the on-add stamping hook', () => {
 		expect( without.layer.values.radius ).toBe( 120 );
 	} );
 } );
+
+describe( 'a state preset and the layer state', () => {
+	const def = LAYER_LISTS[ 'entrance.base' ].layerDef;
+
+	it( 'leaves the trigger unset on a layer with no state, so the layer stays valid', () => {
+		const result = added(
+			addLayer( undefined, 'root', 'entrance.base', {
+				preset: 'state-shake',
+			} )
+		);
+		expect( result.layer.trigger ).toBeUndefined();
+		expect( result.layer.preset ).toBe( 'state-shake' );
+	} );
+
+	it( 'sets the state trigger on a layer that already names its state', () => {
+		const next = stampLayer(
+			{ trigger: 'load', state: 'invalid', values: {} },
+			presetBySlug( 'state-shake' ),
+			def
+		);
+		expect( next.state ).toBe( 'invalid' );
+		expect( next.values.keyframes ).toHaveLength( 4 );
+		const fresh = stampLayer(
+			{ state: 'invalid', values: {} },
+			presetBySlug( 'state-shake' ),
+			def
+		);
+		expect( fresh.trigger ).toBe( 'state' );
+	} );
+} );

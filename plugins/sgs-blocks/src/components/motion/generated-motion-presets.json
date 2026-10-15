@@ -684,6 +684,86 @@
 		},
 		{
 			"devices": {},
+			"effect": null,
+			"family": "state-shake",
+			"intensity": null,
+			"kind": "keyframe",
+			"label": "Shake",
+			"panel": "entrance",
+			"slug": "state-shake",
+			"target": "part",
+			"trigger": "state",
+			"values": {
+				"duration": 320,
+				"easing": "linear",
+				"keyframes": [
+					{
+						"offset": 0,
+						"translateX": 0
+					},
+					{
+						"offset": 33,
+						"translateX": -8
+					},
+					{
+						"offset": 66,
+						"translateX": 8
+					},
+					{
+						"offset": 100,
+						"translateX": 0
+					}
+				]
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "state-step-slide",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Step slide",
+			"panel": "entrance",
+			"slug": "state-step-slide",
+			"target": "part",
+			"trigger": "state",
+			"values": {
+				"duration": 480,
+				"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)",
+				"from": {
+					"translateX": 36
+				},
+				"to": {
+					"translateX": 0
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "state-result-scale-in",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Result scale in",
+			"panel": "entrance",
+			"slug": "state-result-scale-in",
+			"target": "part",
+			"trigger": "state",
+			"values": {
+				"duration": "token:entrance.duration",
+				"easing": "token:entrance.easing",
+				"from": {
+					"opacity": 0,
+					"scale": 0.9
+				},
+				"to": {
+					"opacity": 1,
+					"scale": 1
+				}
+			}
+		},
+		{
+			"devices": {},
 			"effect": "scrub",
 			"family": "scrub",
 			"intensity": "subtle",

@@ -31,6 +31,11 @@ const SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/;
 // The sgsMotion document carrying one preset as a layer of the panel (and effect) it belongs to.
 export function wrapPreset( p ) {
 	const layer = { preset: p.slug, trigger: p.trigger, values: p.values };
+	// A state preset leaves the state to the author (the layer names the block's own state); a placeholder lets the
+	// schema check the rest of the layer.
+	if ( 'state' === p.trigger ) {
+		layer.state = 'preset-check';
+	}
 	if ( p.intensity ) {
 		layer.intensity = p.intensity;
 	}

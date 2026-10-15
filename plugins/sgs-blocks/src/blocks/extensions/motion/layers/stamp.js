@@ -267,9 +267,12 @@ export function stampLayer( layer, row, layerDef ) {
 	} else {
 		delete next.intensity;
 	}
+	// A state trigger needs a state, which the author picks on the layer, so a state preset sets it only on a layer
+	// that already names one.
 	if (
 		next.trigger === undefined &&
 		row.trigger &&
+		( 'state' !== row.trigger || next.state ) &&
 		fieldAccepted( layerDef, 'trigger', row.trigger )
 	) {
 		next.trigger = row.trigger;
