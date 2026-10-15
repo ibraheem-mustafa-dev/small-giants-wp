@@ -3,6 +3,7 @@
 		"ambient-float",
 		"carousel-loop",
 		"draggable",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -20,6 +21,7 @@
 		"ambient-float",
 		"carousel-loop",
 		"draggable",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -36,6 +38,7 @@
 	],
 	"sgs/button": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -53,6 +56,7 @@
 	"sgs/buybox": [
 		"ambient-float",
 		"carousel-loop",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -69,6 +73,7 @@
 	],
 	"sgs/choice-flow-result": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -85,6 +90,7 @@
 	],
 	"sgs/collapsible-text": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -103,6 +109,7 @@
 		"ambient-float",
 		"cursor-field",
 		"draw",
+		"follow-pointer",
 		"generative-background",
 		"glare",
 		"grid-dots",
@@ -124,6 +131,7 @@
 	],
 	"sgs/counter": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -140,6 +148,7 @@
 	],
 	"sgs/decorative-image": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -156,6 +165,7 @@
 	"sgs/gallery": [
 		"ambient-float",
 		"carousel-loop",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -173,6 +183,7 @@
 	"sgs/google-reviews": [
 		"ambient-float",
 		"carousel-loop",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -189,6 +200,7 @@
 	],
 	"sgs/heading": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -207,6 +219,7 @@
 		"ambient-float",
 		"cursor-field",
 		"draw",
+		"follow-pointer",
 		"generative-background",
 		"glare",
 		"grid-dots",
@@ -230,6 +243,7 @@
 	"sgs/icon": [
 		"ambient-float",
 		"draw",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -245,6 +259,7 @@
 	],
 	"sgs/image-sequence": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"image-sequence",
 		"lottie",
@@ -262,6 +277,7 @@
 	"sgs/info-box": [
 		"ambient-float",
 		"cursor-field",
+		"follow-pointer",
 		"generative-background",
 		"glare",
 		"grid-dots",
@@ -282,6 +298,7 @@
 	],
 	"sgs/label": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -300,6 +317,7 @@
 		"ambient-float",
 		"cursor-field",
 		"draw",
+		"follow-pointer",
 		"generative-background",
 		"glare",
 		"grid-dots",
@@ -321,6 +339,7 @@
 		"ambient-float",
 		"cursor-field",
 		"draw",
+		"follow-pointer",
 		"generative-background",
 		"glare",
 		"grid-dots",
@@ -343,6 +362,7 @@
 	"sgs/post-grid": [
 		"ambient-float",
 		"carousel-loop",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -359,6 +379,7 @@
 	],
 	"sgs/pricing-table": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -375,6 +396,7 @@
 	],
 	"sgs/product-card": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -393,6 +415,7 @@
 	"sgs/product-faq": [
 		"ambient-float",
 		"cursor-field",
+		"follow-pointer",
 		"generative-background",
 		"glare",
 		"grid-dots",
@@ -413,6 +436,7 @@
 	],
 	"sgs/quote": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -429,6 +453,7 @@
 	],
 	"sgs/responsive-logo": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -446,6 +471,7 @@
 	"sgs/separator": [
 		"ambient-float",
 		"draw",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -461,6 +487,7 @@
 	],
 	"sgs/team-member": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -479,6 +506,7 @@
 	"sgs/testimonial": [
 		"ambient-float",
 		"cursor-field",
+		"follow-pointer",
 		"generative-background",
 		"glare",
 		"grid-dots",
@@ -500,6 +528,7 @@
 	],
 	"sgs/text": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -518,6 +547,7 @@
 		"ambient-float",
 		"carousel-loop",
 		"draggable",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -537,6 +567,7 @@
 		"ambient-float",
 		"cursor-field",
 		"draw",
+		"follow-pointer",
 		"generative-background",
 		"glare",
 		"grid-dots",
@@ -562,6 +593,7 @@
 	"sgs/trustpilot-reviews": [
 		"ambient-float",
 		"carousel-loop",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -578,6 +610,7 @@
 	],
 	"sgs/whatsapp-cta": [
 		"ambient-float",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",
@@ -596,6 +629,7 @@
 		"ambient-float",
 		"carousel-loop",
 		"draggable",
+		"follow-pointer",
 		"glare",
 		"lottie",
 		"magnet",

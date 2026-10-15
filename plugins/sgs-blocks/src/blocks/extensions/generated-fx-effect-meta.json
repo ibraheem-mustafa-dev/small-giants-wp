@@ -125,6 +125,22 @@
 			"scroll"
 		]
 	},
+	"follow-pointer": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [],
+			"properties": [],
+			"slots": []
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"hover"
+		],
+		"pins": false,
+		"triggers": [
+			"hover"
+		]
+	},
 	"generative-background": {
 		"in_picker": true,
 		"owned_properties": {
@@ -576,8 +592,16 @@
 	"svg-loop": {
 		"in_picker": false,
 		"owned_properties": {
-			"channels": [],
-			"properties": [],
+			"channels": [
+				"rotate",
+				"scale",
+				"opacity"
+			],
+			"properties": [
+				"--sgs-svl-rot",
+				"--sgs-svl-s",
+				"--sgs-svl-op"
+			],
 			"slots": []
 		},
 		"owns_scroll_transform": false,
