@@ -13,7 +13,12 @@
  * `fill: 'backwards'` and the stored delay; nothing else computes a delay.
  *
  * A `load` entrance plays at once. Any other trigger plays when `data-sgs-in` is set on the element (by the
- * reveal module for scroll, or by the owning block for open and state). With reduced motion nothing plays.
+ * reveal module for scroll, or by the owning block for open and state). A `state` entrance also REPLAYS each time
+ * its state token is added to `data-sgs-motion-state` on the target or an ancestor (by `@sgs/motion-state`'s
+ * `setMotionState` or `pulseMotionState`; a pulse removes and re-adds the token, so a second failed submit replays the
+ * shake). The target's state name is the renderer's `--sgs-mt-kf` custom property, set on the target itself
+ * (includes/motion/class-sgs-motion-trigger-open-state.php). A replay cancels the target's previous animation first.
+ * With reduced motion nothing plays, read at each play, so a mid-session change is honoured.
  * The script writes no inline style; it only creates animations and marks the element with `data-sgs-me-kf`.
  */
 ( function () {
@@ -21,6 +26,12 @@
 
 	var DEFAULT_DURATION_MS = 750;
 	var DEFAULT_EASING = 'ease-out';
+	var STATE_ATTR = 'data-sgs-motion-state';
+	var STATE_PROP = '--sgs-mt-kf';
+	var STATE_TARGETS = '[data-sgs-me~="state"][data-sgs-me-keyframes]';
+
+	// Target -> the animation this module last created on it, so a replay can cancel it.
+	var running = typeof WeakMap === 'function' ? new WeakMap() : null;
 
 	// Owner property -> channel (the `--sgs-me-*` rows of the §10 channel table).
 	var PROPERTY_CHANNEL = {
@@ -155,7 +166,124 @@
 			animation = el.animate( frames, options );
 		}
 		el.setAttribute( 'data-sgs-me-kf', 'played' );
+		if ( running && animation ) {
+			running.set( el, animation );
+		}
 		return animation;
+	}
+
+	/**
+	 * Play an element's multi-keyframe entrance again, cancelling the run this module started before.
+	 *
+	 * @param {Element} el Element with data-sgs-me-keyframes.
+	 * @return {Animation|null} The new animation, or null when nothing played.
+	 */
+	function replay( el ) {
+		if ( reducedMotion() || 'function' !== typeof el.animate ) {
+			return null;
+		}
+		var previous = running ? running.get( el ) : null;
+		if ( previous && 'function' === typeof previous.cancel ) {
+			previous.cancel();
+		}
+		el.removeAttribute( 'data-sgs-me-kf' );
+		return play( el );
+	}
+
+	/**
+	 * A state attribute value as a token list.
+	 *
+	 * @param {string|null} value Attribute value.
+	 * @return {string[]} Tokens.
+	 */
+	function stateTokens( value ) {
+		return ( value || '' ).split( /\s+/ ).filter( Boolean );
+	}
+
+	/**
+	 * The state a multi-keyframe state entrance replays on, from its own `--sgs-mt-kf`.
+	 *
+	 * @param {Element} el Entrance target.
+	 * @return {string} State name, or ''.
+	 */
+	function stateOf( el ) {
+		return (
+			globalThis.getComputedStyle( el ).getPropertyValue( STATE_PROP ) ||
+			''
+		).trim();
+	}
+
+	/**
+	 * Replay the state entrances whose state token a batch of attribute changes added.
+	 *
+	 * Each record carries the value before its change; the value after it is the next record's old value for the same
+	 * host, or the attribute now. A pulse is two records (token removed, token added), so the add is seen once.
+	 *
+	 * @param {MutationRecord[]} records Changes to data-sgs-motion-state.
+	 * @param {Element[]}        targets Multi-keyframe state entrance targets.
+	 * @return {number} How many replays started.
+	 */
+	function onStateChange( records, targets ) {
+		var started = 0;
+		records.forEach( function ( record, i ) {
+			var host = record.target;
+			var after = null;
+			for ( var j = i + 1; j < records.length; j++ ) {
+				if ( records[ j ].target === host ) {
+					after = records[ j ].oldValue;
+					break;
+				}
+			}
+			if ( j >= records.length ) {
+				after = host.getAttribute( STATE_ATTR );
+			}
+			var before = stateTokens( record.oldValue );
+			var added = stateTokens( after ).filter( function ( name ) {
+				return before.indexOf( name ) === -1;
+			} );
+			if ( ! added.length ) {
+				return;
+			}
+			targets.forEach( function ( el ) {
+				if (
+					( el === host || host.contains( el ) ) &&
+					added.indexOf( stateOf( el ) ) !== -1 &&
+					replay( el )
+				) {
+					started++;
+				}
+			} );
+		} );
+		return started;
+	}
+
+	/**
+	 * Watch the state attribute under a root for the multi-keyframe state entrances in it.
+	 *
+	 * @param {ParentNode} root Where to look.
+	 * @return {MutationObserver|null} The observer, or null when there is no such entrance.
+	 */
+	function watchStates( root ) {
+		var scope = root || document;
+		var targets = Array.prototype.slice.call(
+			scope.querySelectorAll( STATE_TARGETS )
+		);
+		if (
+			! targets.length ||
+			'function' !== typeof globalThis.MutationObserver
+		) {
+			return null;
+		}
+		var observer = new globalThis.MutationObserver( function ( records ) {
+			onStateChange( records, targets );
+		} );
+		observer.observe( scope.documentElement || scope, {
+			attributes: true,
+			attributeFilter: [ STATE_ATTR ],
+			attributeOldValue: true,
+			subtree: true,
+		} );
+		return observer;
 	}
 
 	/**
@@ -178,6 +306,7 @@
 		if ( reducedMotion() ) {
 			return null;
 		}
+		watchStates( root );
 		var waiting = [];
 		( root || document ).querySelectorAll( '[data-sgs-me][data-sgs-me-keyframes]' ).forEach( function ( el ) {
 			if ( startsOnLoad( el ) || el.hasAttribute( 'data-sgs-in' ) ) {
@@ -202,7 +331,16 @@
 		return observer;
 	}
 
-	var api = { init: init, play: play, framesFrom: framesFrom, timingOf: timingOf, CHANNEL_FORMULA: CHANNEL_FORMULA };
+	var api = {
+		init: init,
+		play: play,
+		replay: replay,
+		watchStates: watchStates,
+		onStateChange: onStateChange,
+		framesFrom: framesFrom,
+		timingOf: timingOf,
+		CHANNEL_FORMULA: CHANNEL_FORMULA,
+	};
 	globalThis.sgsMotionKeyframes = api;
 	if ( 'undefined' !== typeof module && module.exports ) {
 		module.exports = api;

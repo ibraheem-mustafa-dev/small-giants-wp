@@ -243,7 +243,9 @@
 }
 
 /* ----------------------------------------------------------------
-   1a. Step visibility and entrance animation
+   1a. Step visibility
+   A step change plays the block's `step-changed` motion state (view.js,
+   Spec 38A FR-38A-53); the motion itself is set in the Motion panel.
    ---------------------------------------------------------------- */
 
 /* Hidden steps — display:none removes from layout entirely. */
@@ -251,33 +253,13 @@
 	display: none;
 }
 
-/* Entrance animation — fade in and slide up when a step becomes active. */
-.sgs-form-step--entering {
-	animation: sgs-step-enter 0.2s ease forwards;
-}
-
-@keyframes sgs-step-enter {
-	from {
-		opacity: 0;
-		transform: translateY(8px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
 /* Progress bar width transition. */
 .sgs-form__progress-track {
-	transition: width 0.3s ease;
+	transition: width var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--default, ease);
 }
 
 /* Honour the user's motion preference. */
 @media (prefers-reduced-motion: reduce) {
-	.sgs-form-step--entering {
-		animation: none;
-	}
-
 	.sgs-form__progress-track {
 		transition: none;
 	}
@@ -324,7 +306,7 @@
 	font-family: inherit;
 	background-color: var(--wp--preset--color--surface, #fff);
 	color: var(--wp--preset--color--text, #1e1e1e);
-	transition: border-color 0.2s, box-shadow 0.2s;
+	transition: border-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), box-shadow var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
 	min-height: 44px;
 }
 
@@ -517,7 +499,7 @@ select.sgs-form-field__input {
 	border: 2px solid var(--wp--preset--color--border, #ccc);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	cursor: pointer;
-	transition: border-color 0.2s, background-color 0.2s;
+	transition: border-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), background-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
 	min-height: 44px;
 	position: relative;
 }
@@ -675,7 +657,7 @@ select.sgs-form-field__input {
 	border: 2px dashed var(--wp--preset--color--border, #ccc);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	cursor: pointer;
-	transition: border-color 0.2s, background-color 0.2s;
+	transition: border-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), background-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
 }
 
 :where(.sgs-form-field__file-label) {
@@ -815,7 +797,7 @@ select.sgs-form-field__input {
 	border-radius: 2px;
 	background-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
 	background-image: var(--sgs-progress-colour-gradient, none);
-	transition: width 0.3s ease;
+	transition: width var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--default, ease);
 }
 
 /* Hover/focus-visible sibling (hover-sibling closeout, 2026-09-06) — same
@@ -866,7 +848,7 @@ select.sgs-form-field__input {
 	justify-content: center;
 	border: 2px solid var(--wp--preset--color--border, #ccc);
 	color: var(--wp--preset--color--text-muted, #555);
-	transition: all 0.2s;
+	transition: all var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
 }
 
 /* Typography defaults at (0,0,0) so the stepNumber control strictly wins. */
@@ -958,7 +940,7 @@ select.sgs-form-field__input {
 	cursor: pointer;
 	min-height: 44px;
 	min-width: 44px;
-	transition: background-color 0.2s, opacity 0.2s;
+	transition: background-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), opacity var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
 }
 
 /* Button typography is a zero-specificity default; the submit button's own
@@ -1256,7 +1238,7 @@ select.sgs-form-field__input {
 	margin: 0;
 	color: var(--wp--preset--color--text-muted, #555);
 	pointer-events: none;
-	transition: all 0.2s ease-out;
+	transition: all var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--ease-out, ease-out);
 }
 
 .sgs-form-field--textarea .sgs-form-field__label {
@@ -1316,7 +1298,7 @@ select.sgs-form-field__input {
 .sgs-form-field--number .sgs-form-field__input::placeholder,
 .sgs-form-field--textarea .sgs-form-field__input::placeholder {
 	color: transparent;
-	transition: color 150ms ease;
+	transition: color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, ease);
 }
 
 .sgs-form-field--text .sgs-form-field__input:focus::placeholder,

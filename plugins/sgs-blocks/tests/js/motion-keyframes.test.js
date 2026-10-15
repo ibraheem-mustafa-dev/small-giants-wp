@@ -1,7 +1,11 @@
 /**
  * Multi-keyframe entrances on WAAPI (Spec 38A FR-38A-20): animate() receives the stored keyframes on the
  * --sgs-me-* properties, the stored delay and fill 'backwards'; reduced motion plays nothing; the channel
- * formulas match assets/css/motion.css.
+ * formulas match assets/css/motion.css. A `state` entrance replays each time its state token is added on the target
+ * or an ancestor, so two pulses of an identical state play twice (Spec 38A FR-38A-53, plan unit M5.17).
+ *
+ * SGS_TEST_KEYFRAMES_JS points the suite at another copy of the module: run against the file before the replay was
+ * added, the replay cases fail (the negative control for the replay itself).
  */
 const fs = require( 'fs' );
 const path = require( 'path' );
@@ -17,7 +21,7 @@ let reduced;
 
 function load() {
 	jest.resetModules();
-	return require( '../../assets/js/motion-keyframes.js' );
+	return require( process.env.SGS_TEST_KEYFRAMES_JS || '../../assets/js/motion-keyframes.js' );
 }
 
 function target( attrs ) {
@@ -160,6 +164,93 @@ describe( 'motion-keyframes', () => {
 	it( 'ignores keyframe JSON with fewer than two frames', () => {
 		const { play } = load();
 		play( target( { frames: [ KEYFRAMES[ 0 ] ] } ) );
+		expect( animate ).not.toHaveBeenCalled();
+	} );
+} );
+
+describe( 'motion-keyframes: state replay', () => {
+	const SHAKE = [
+		{ offset: 0, '--sgs-me-tx': '0px' },
+		{ offset: 0.33, '--sgs-me-tx': '-8px' },
+		{ offset: 0.66, '--sgs-me-tx': '8px' },
+		{ offset: 1, '--sgs-me-tx': '0px' },
+	];
+	const flush = () => new Promise( ( r ) => setTimeout( r, 0 ) );
+
+	// A form host with a shake on its inner part, named `invalid` by the renderer's --sgs-mt-kf rule.
+	function fixture( state = 'invalid' ) {
+		document.head.innerHTML += '<style>.inner { --sgs-mt-kf: ' + state + '; }</style>';
+		document.body.innerHTML = '<div class="host" data-sgs-motion-state=""><form class="inner"></form></div><p class="outside"></p>';
+		const inner = document.querySelector( '.inner' );
+		inner.setAttribute( 'data-sgs-me', 'state translate' );
+		inner.setAttribute( 'data-sgs-me-keyframes', JSON.stringify( SHAKE ) );
+		const outside = document.querySelector( '.outside' );
+		outside.setAttribute( 'data-sgs-me', 'state translate' );
+		outside.setAttribute( 'data-sgs-me-keyframes', JSON.stringify( SHAKE ) );
+		return { host: document.querySelector( '.host' ), inner, outside };
+	}
+
+	function stateModule() {
+		return require( '../../src/shared/effects/motion-state.js' );
+	}
+
+	it( 'plays the shake on each pulse of its state, so two identical failed submits play twice', async () => {
+		const { host, inner } = fixture();
+		const cancels = [];
+		animate.mockImplementation( () => {
+			const run = { cancel: jest.fn() };
+			cancels.push( run.cancel );
+			return run;
+		} );
+		load();
+		const { pulseMotionState } = stateModule();
+		expect( animate ).not.toHaveBeenCalled();
+		pulseMotionState( host, 'invalid' );
+		await flush();
+		pulseMotionState( host, 'invalid' );
+		await flush();
+		expect( animate ).toHaveBeenCalledTimes( 2 );
+		expect( animate.mock.instances.length ).toBe( 2 );
+		expect( animate.mock.calls[ 1 ][ 0 ].map( ( f ) => f[ '--sgs-me-tx' ] ) ).toEqual( [ '0px', '-8px', '8px', '0px' ] );
+		expect( cancels[ 0 ] ).toHaveBeenCalledTimes( 1 );
+		expect( cancels[ 1 ] ).not.toHaveBeenCalled();
+		expect( inner.hasAttribute( 'style' ) ).toBe( false );
+	} );
+
+	it( 'NEGATIVE CONTROL: setting a state that is already on does not replay; only a pulse restarts it', async () => {
+		const { host } = fixture();
+		load();
+		const { setMotionState } = stateModule();
+		setMotionState( host, 'invalid' );
+		await flush();
+		setMotionState( host, 'invalid' );
+		await flush();
+		expect( animate ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'replays only the targets whose own state was added, and only inside the host', async () => {
+		const { host } = fixture( 'invalid' );
+		load();
+		const { pulseMotionState, setMotionState } = stateModule();
+		setMotionState( host, 'success' );
+		pulseMotionState( host, 'step-changed' );
+		await flush();
+		expect( animate ).not.toHaveBeenCalled();
+		pulseMotionState( host, 'invalid' );
+		await flush();
+		expect( animate ).toHaveBeenCalledTimes( 1 );
+		expect( animate.mock.contexts[ 0 ].className ).toBe( 'inner' );
+	} );
+
+	it( 'replays nothing under reduced motion', async () => {
+		reduced = true;
+		const { host } = fixture();
+		load();
+		const { pulseMotionState } = stateModule();
+		pulseMotionState( host, 'invalid' );
+		await flush();
+		pulseMotionState( host, 'invalid' );
+		await flush();
 		expect( animate ).not.toHaveBeenCalled();
 	} );
 } );

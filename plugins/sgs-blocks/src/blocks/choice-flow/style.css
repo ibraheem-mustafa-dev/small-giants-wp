@@ -346,7 +346,7 @@
 	   only when the progressColour or progressColourGradient attribute is set. */
 	background-color: var(--sgs-choice-flow-progress-colour, var(--wp--preset--color--primary, #1F7A7A));
 	background-image: var(--sgs-choice-flow-progress-colour-gradient, none);
-	transition: width 250ms ease-out;
+	transition: width var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--ease-out, ease-out);
 }
 
 /* ===== Root chrome: optional header =====
@@ -578,41 +578,17 @@
 	font-size: 12px;
 	font-weight: 700;
 	white-space: nowrap;
-	transition: left 250ms ease-out;
+	transition: left var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--ease-out, ease-out);
 }
 
-/* ===== Step transition (gap #3) =====
- * Scoped to .sgs-form-step INSIDE a choice-flow instance only — sgs/form-step
- * is a shared inert marker also used by sgs/form, which has its own,
- * unrelated show/hide + transition mechanism; this rule must never leak
- * into that context.
- *
- * `.is-entering` is the PRE-transition state (see view.js's showStepByIndex()
- * docblock) — added before a step is un-hidden, removed one animation frame
- * later. Removing it is what triggers the transition into this rule's own
- * resting state (opacity:1, no translate).
+/* ===== Step transition =====
+ * A step change plays the block's `step-changed` motion state, published by
+ * view.js with `data-sgs-dir` forward or back (Spec 38A FR-38A-53); the
+ * motion itself is set in the Motion panel.
  */
-.sgs-choice-flow .sgs-form-step {
-	opacity: 1;
-	transform: translateY(0);
-	transition: opacity 220ms ease-out, transform 220ms ease-out;
-}
-
-.sgs-choice-flow .sgs-form-step.is-entering {
-	opacity: 0;
-	transform: translateY(8px);
-	transition: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
-	.sgs-choice-flow .sgs-form-step,
 	.sgs-choice-flow__progress-fill {
-		transition-duration: 0.01ms !important;
-	}
-
-	.sgs-choice-flow .sgs-form-step.is-entering {
-		opacity: 1;
-		transform: none;
+		transition: none;
 	}
 }
 
@@ -661,7 +637,7 @@
 .sgs-choice-flow .sgs-form-step.sgs-choice-flow__step--inline {
 	margin-top: 20px;
 	transition: none;
-	animation: sgs-choice-flow-panel-in 0.3s ease both;
+	animation: sgs-choice-flow-panel-in var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--default, ease) both;
 }
 
 @keyframes sgs-choice-flow-panel-in {
@@ -801,7 +777,7 @@
 
 .sgs-choice-flow__summary-toggle > summary::after {
 	content: '▾';
-	transition: transform 200ms ease;
+	transition: transform var(--wp--custom--duration--fast, 200ms) var(--wp--custom--easing--default, ease);
 }
 
 .sgs-choice-flow__summary-toggle[open] > summary::after {
@@ -970,7 +946,7 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.sgs-choice-flow__summary-toggle > summary::after {
-		transition-duration: 0.01ms !important;
+		transition: none;
 	}
 }
 
@@ -1070,7 +1046,7 @@
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__progress-fill {
-	transition: width 0.5s var(--sgs-choice-flow-ease);
+	transition: width var(--wp--custom--duration--slow, 0.5s) var(--sgs-choice-flow-ease);
 }
 
 /* ----- The position line above each question ("Question 1 of 3") -----
@@ -1238,7 +1214,7 @@
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media .sgs-choice-flow__summary-image {
-	transition: filter 0.6s var(--sgs-choice-flow-ease);
+	transition: filter var(--wp--custom--duration--slow, 0.6s) var(--sgs-choice-flow-ease);
 }
 
 /* An option's photo treatment (its `stageEffect`, e.g. a lens finish),
@@ -1394,7 +1370,7 @@
 }
 
 .sgs-choice-flow--layout-showcase .is-updated:is(.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value) {
-	animation: sgs-choice-flow-total-pop 0.35s ease both;
+	animation: sgs-choice-flow-total-pop var(--wp--custom--duration--medium, 0.35s) var(--wp--custom--easing--default, ease) both;
 }
 
 /* The help note: a bordered card; with a link the whole card is the link,
@@ -1413,7 +1389,7 @@
 	font-size: 14px;
 	font-weight: 400;
 	text-decoration: none;
-	transition: background-color 0.25s ease;
+	transition: background-color var(--wp--custom--duration--fast, 0.25s) var(--wp--custom--easing--default, ease);
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--link:hover {
@@ -1477,16 +1453,6 @@
 	}
 }
 
-/* A step rises in over 0.4s (compact keeps its own 220ms; reduced motion
-   is handled globally above for `.sgs-form-step`). */
-.sgs-choice-flow--layout-showcase .sgs-form-step {
-	transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.sgs-choice-flow--layout-showcase .sgs-form-step.is-entering {
-	transform: translateY(18px);
-}
-
 /* ----- Footer bar ----- */
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__footer {
@@ -1545,11 +1511,11 @@
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__nav-back,
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-close--text {
-	transition: border-color 0.25s ease;
+	transition: border-color var(--wp--custom--duration--fast, 0.25s) var(--wp--custom--easing--default, ease);
 }
 
 .sgs-choice-flow--layout-showcase :is(.sgs-choice-flow__continue, .sgs-choice-flow__add-to-basket, .sgs-choice-flow__buy-now) {
-	transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+	transition: background-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), border-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), opacity var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
 }
 
 /* The skip link beside Back, first question only (flow-skip.js); wide

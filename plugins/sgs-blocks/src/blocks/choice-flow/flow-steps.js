@@ -24,6 +24,7 @@ import {
 	BUY_NOW_BUTTON_SELECTOR,
 	SELECTED_CLASS,
 	CONTINUE_HINT_SELECTOR,
+	STEP_CHANGE_EVENT,
 } from './flow-constants.js';
 import { updateStepPosition } from './flow-progress.js';
 import { markStepReached } from './flow-reached.js';
@@ -189,7 +190,9 @@ export function hideContinueHint( flowRoot ) {
  * Show exactly one step (by index), hide all others, and update every piece
  * of chrome that depends on the current step (progress, step text, Back
  * visibility, footer actions, the skip link) and the stage, which lists a
- * default answer only once its step is reached (`flow-reached.js`).
+ * default answer only once its step is reached (`flow-reached.js`). Every
+ * shopper step change dispatches `STEP_CHANGE_EVENT` on the flow root with
+ * `{ from, to }`; view.js turns it into the `step-changed` motion state.
  *
  * @param {HTMLElement} flowRoot    Flow wrapper element.
  * @param {number}      targetIndex Step index to reveal.
@@ -197,23 +200,11 @@ export function hideContinueHint( flowRoot ) {
 export function showStepByIndex( flowRoot, targetIndex ) {
 	const steps = getSteps( flowRoot );
 	const targetStepEl = steps[ targetIndex ];
-
-	// Snap the target step to its pre-transition state BEFORE un-hiding it,
-	// so the CSS opacity+translate transition plays on reveal (removed one
-	// rAF later, which is what actually triggers it).
-	if ( targetStepEl ) {
-		targetStepEl.classList.add( 'is-entering' );
-	}
+	const fromIndex = steps.findIndex( ( stepEl ) => ! stepEl.hidden );
 
 	steps.forEach( ( stepEl, index ) => {
 		stepEl.hidden = index !== targetIndex;
 	} );
-
-	if ( targetStepEl ) {
-		requestAnimationFrame( () => {
-			targetStepEl.classList.remove( 'is-entering' );
-		} );
-	}
 
 	if ( steps.length > 0 ) {
 		updateStepPosition( flowRoot, steps, targetIndex );
@@ -230,6 +221,13 @@ export function showStepByIndex( flowRoot, targetIndex ) {
 	if ( ! flowRoot.dataset.stepRevealed ) {
 		flowRoot.dataset.stepRevealed = '1';
 		return;
+	}
+	if ( fromIndex !== targetIndex ) {
+		flowRoot.dispatchEvent(
+			new CustomEvent( STEP_CHANGE_EVENT, {
+				detail: { from: fromIndex, to: targetIndex },
+			} )
+		);
 	}
 	announceStep( flowRoot, steps, targetIndex );
 	if ( targetStepEl ) {

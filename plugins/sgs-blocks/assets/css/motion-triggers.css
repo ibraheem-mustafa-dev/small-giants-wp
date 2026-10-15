@@ -13,6 +13,10 @@
  *                                      the close timing (renderer, per device; the close delay is per item)
  *   --sgs-mt-on                        1 while a named state is on, set by the renderer's per-instance rule
  *                                      `<target>:is([data-sgs-motion-state~="<name>"], [data-sgs-motion-state~="<name>"] *)`
+ *   data-sgs-dir="forward|back"        the direction of a step change, set by the owning block's script on the state
+ *                                      host next to the `step-changed` state. Under `back` a two-value `state`
+ *                                      entrance plays its horizontal from-value mirrored (a step slides in from the
+ *                                      other side). A multi-keyframe entrance (the WAAPI module) is never mirrored.
  *
  * Open plays the entrance from its from-values to its to-values and holds the to-values while open (a caret stays
  * turned). Close plays from the to-values to the close to-values on the close duration, easing and per-item delay,
@@ -98,6 +102,20 @@
 	}
 }
 
+/* ── Keyframes: a state entrance under a `back` step direction, the horizontal from-value mirrored. ── */
+@keyframes sgs-mt-translate-back {
+	from {
+		--sgs-me-tx: calc(var(--sgs-me-from-tx, 0px) * -1);
+		--sgs-me-ty: var(--sgs-me-from-ty, 0px);
+		translate: calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));
+	}
+	to {
+		--sgs-me-tx: var(--sgs-me-to-tx, 0px);
+		--sgs-me-ty: var(--sgs-me-to-ty, 0px);
+		translate: calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));
+	}
+}
+
 @media (prefers-reduced-motion: no-preference) {
 	/* The name lists: the opening list reuses motion.css's per-channel entrance names; the close list is its twin. */
 	:is([data-sgs-me~="open"], [data-sgs-me~="state"]) {
@@ -119,6 +137,11 @@
 	[data-sgs-me~="open"][data-sgs-me~="opacity"] { --sgs-mt-c-opacity: sgs-me-close-opacity; }
 	[data-sgs-me~="open"][data-sgs-me~="filter"] { --sgs-mt-c-filter: sgs-me-close-filter; }
 	[data-sgs-me~="open"][data-sgs-me~="clip-path"] { --sgs-mt-c-clip-path: sgs-me-close-clip-path; }
+
+	/* A step change backwards: the state entrance's translate plays mirrored (on the host or inside it). */
+	[data-sgs-me~="state"][data-sgs-me~="translate"]:not([data-sgs-me-keyframes]):is([data-sgs-dir="back"], [data-sgs-dir="back"] *) {
+		--sgs-me-a-translate: sgs-mt-translate-back;
+	}
 
 	/* Open: inside (or on) an open host, and inside no host that is not open. A multi-keyframe entrance belongs to the
 	   WAAPI module, as in motion.css. */

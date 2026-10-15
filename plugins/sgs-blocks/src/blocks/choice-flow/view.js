@@ -44,7 +44,11 @@ import { uploadFlowFile } from './flow-fields.js';
 import { initChrome } from './chrome.js';
 import { initEmailResults } from './email.js';
 import { handleSkipClick } from './flow-skip.js';
-import { SKIP_BUTTON_SELECTOR } from './flow-constants.js';
+import { SKIP_BUTTON_SELECTOR, STEP_CHANGE_EVENT } from './flow-constants.js';
+import {
+	publishStepChange,
+	preloadMotionState,
+} from '../../shared/motion-state-publish.js';
 import {
 	FLOW_SELECTOR,
 	OPTION_BUTTON_SELECTOR,
@@ -60,10 +64,26 @@ import {
 } from './navigation.js';
 
 /**
+ * Publish a step change as the block's `step-changed` motion state (Spec 38A
+ * FR-38A-53): `forward` to a later step, `back` to an earlier one.
+ *
+ * @param {CustomEvent} event STEP_CHANGE_EVENT, detail `{ from, to }`.
+ */
+function onStepChange( event ) {
+	const { from, to } = event.detail || {};
+	publishStepChange(
+		event.currentTarget,
+		Number.isInteger( from ) && from >= 0 && to < from ? 'back' : 'forward'
+	);
+}
+
+/**
  * Bootstrap every `sgs/choice-flow` instance present on the page.
  */
 function initAllFlows() {
 	document.querySelectorAll( FLOW_SELECTOR ).forEach( ( flowRoot ) => {
+		preloadMotionState( flowRoot );
+		flowRoot.addEventListener( STEP_CHANGE_EVENT, onStepChange );
 		initFlow( flowRoot );
 		initChrome( flowRoot );
 		initEmailResults( flowRoot, () => getFlowTags( flowRoot ) );

@@ -14,7 +14,10 @@
  *     Mobile read `devices.<tier>.close`.
  *   - `state`: one rule keyed to the named state on the host:
  *     `<target>:is([data-sgs-motion-state~="<name>"],[data-sgs-motion-state~="<name>"] *){--sgs-mt-on:1;animation-name:var(--sgs-mt-in,none);}`.
- *     A multi-keyframe entrance gets only the on flag, because the WAAPI module plays it, not a CSS animation.
+ *     A multi-keyframe entrance gets only the on flag, because the WAAPI module plays it, not a CSS animation, plus
+ *     `<target>{--sgs-mt-kf:<name>}`, which tells that module (`assets/js/motion-keyframes.js`) the state it replays on.
+ * - `init` (priority 20): a block that declares named states gets `@sgs/motion-state` as a dynamic dependency of its
+ *   view script module, so the import map lists it and the block's `import()` of it resolves.
  *
  * The open values, timing and per-item `delay` are the entrance's own and are written by the emitter as for any
  * entrance. The owning block's script sets the state through `@sgs/motion-state`; the generic rules live in the
@@ -44,6 +47,12 @@ final class Sgs_Motion_Trigger_Open_State {
 	const STATE_PATTERN = '/^[a-z][a-z0-9-]{0,63}$/';
 
 	const CLOSE_PREFIX = '--sgs-me-close-';
+
+	/** The state helper's script module (`src/shared/effects/motion-state.js`). */
+	const STATE_MODULE = '@sgs/motion-state';
+
+	/** The custom property naming a multi-keyframe state entrance's state for the WAAPI module. */
+	const KEYFRAMES_STATE_PROP = '--sgs-mt-kf';
 
 	/**
 	 * Whether an `open` or `state` entrance was emitted this request.
@@ -224,7 +233,7 @@ final class Sgs_Motion_Trigger_Open_State {
 		if ( ! $keyframes ) {
 			$decls['animation-name'] = 'var(--sgs-mt-in,none)';
 		}
-		return Sgs_Motion_Emitter::rules(
+		$css = Sgs_Motion_Emitter::rules(
 			$selector . ':is(' . $host . ',' . $host . ' *)',
 			array(
 				'desktop' => $decls,
@@ -232,6 +241,17 @@ final class Sgs_Motion_Trigger_Open_State {
 				'mobile'  => array(),
 			)
 		);
+		if ( $keyframes ) {
+			$css .= Sgs_Motion_Emitter::rules(
+				$selector,
+				array(
+					'desktop' => array( self::KEYFRAMES_STATE_PROP => $state ),
+					'tablet'  => array(),
+					'mobile'  => array(),
+				)
+			);
+		}
+		return $css;
 	}
 
 	/**
@@ -249,13 +269,17 @@ final class Sgs_Motion_Trigger_Open_State {
 	}
 
 	/**
-	 * Enqueue the stylesheet on a front-end render (the renderer runs before `wp_head` in a block theme).
+	 * Enqueue the stylesheet and the `@sgs/motion-state` module on a front-end render (the renderer runs before
+	 * `wp_head` in a block theme).
 	 *
 	 * @return void
 	 */
 	private static function enqueue(): void {
 		if ( sgs_is_frontend_render() ) {
 			wp_enqueue_style( self::STYLE );
+			// The owning block's view script loads the state helper with a native `import()`, which resolves only through
+			// the import map; enqueuing it here lists it there on exactly the pages that print an `open` or `state` entrance.
+			wp_enqueue_script_module( self::STATE_MODULE );
 		}
 	}
 

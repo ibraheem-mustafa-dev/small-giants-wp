@@ -30,7 +30,13 @@
 		},
 		"interactivity": true,
 		"sgs": {
-			"motion": true,
+			"motion": {
+				"states": [
+					"invalid",
+					"step-changed",
+					"success"
+				]
+			},
 			"containerKind": "layout",
 			"boxFamilies": {
 				"padding": [

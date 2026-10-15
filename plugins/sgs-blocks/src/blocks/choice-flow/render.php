@@ -23,11 +23,12 @@
  * property (0–1) on the flow root — this file only emits the static markup
  * + the CSS that consumes that property.
  *
- * Step transition: CSS-only opacity+translate transition on
- * `.sgs-form-step`, gated by `prefers-reduced-motion`. `view.js` toggles an
- * `.is-entering` class alongside its existing `hidden` show/hide — `hidden`
- * remains the real accessibility/layout mechanism; `.is-entering` is a pure
- * visual enhancement layered on top.
+ * Step transition: the block's `step-changed` motion state (Spec 38A
+ * FR-38A-53). `view.js` publishes it on this wrapper, with `data-sgs-dir`
+ * `forward` or `back`, through `@sgs/motion-state` whenever
+ * `showStepByIndex()` changes the step; the motion itself is the `state`
+ * entrance the author sets in the Motion panel. `hidden` remains the real
+ * accessibility/layout mechanism.
  *
  * Step indicator + Back button: `.sgs-choice-flow__step-count`/`__step-label`
  * start empty and are filled by `navigation.js`'s `showStepByIndex()` on

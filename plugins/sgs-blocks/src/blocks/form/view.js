@@ -8,6 +8,12 @@
  */
 
 import { store, getContext, getElement, withSyncEvent } from '@wordpress/interactivity';
+import {
+	pulseState,
+	setState,
+	publishStepChange,
+	preloadMotionState,
+} from '../../shared/motion-state-publish.js';
 
 const { state } = store( 'sgs/form', {
 	state: {
@@ -134,6 +140,8 @@ const { state } = store( 'sgs/form', {
 			} );
 
 			if ( ! isValid ) {
+				// Every rejected attempt replays the block's `invalid` motion (Spec 38A FR-38A-53).
+				pulseState( formRoot, 'invalid' );
 				return;
 			}
 
@@ -142,6 +150,7 @@ const { state } = store( 'sgs/form', {
 				ctx.currentStep++;
 				updateStepVisibility( formRoot, ctx.currentStep );
 				saveStepState( formRoot, ctx.currentStep );
+				publishStepChange( formRoot, 'forward' );
 				formRoot.scrollIntoView( {
 					behavior: 'smooth',
 					block: 'start',
@@ -165,6 +174,7 @@ const { state } = store( 'sgs/form', {
 				ctx.currentStep--;
 				updateStepVisibility( formRoot, ctx.currentStep );
 				saveStepState( formRoot, ctx.currentStep );
+				publishStepChange( formRoot, 'back' );
 				formRoot.scrollIntoView( {
 					behavior: 'smooth',
 					block: 'start',
@@ -187,9 +197,13 @@ const { state } = store( 'sgs/form', {
 
 			// Only allow navigating backwards or to current step.
 			if ( ctx.stepIndex <= ctx.currentStep ) {
+				const moved = ctx.stepIndex < ctx.currentStep;
 				ctx.currentStep = ctx.stepIndex;
 				updateStepVisibility( formRoot, ctx.currentStep );
 				saveStepState( formRoot, ctx.currentStep );
+				if ( moved ) {
+					publishStepChange( formRoot, 'back' );
+				}
 				formRoot.scrollIntoView( {
 					behavior: 'smooth',
 					block: 'start',
@@ -247,6 +261,8 @@ const { state } = store( 'sgs/form', {
 
 			if ( ! formValid ) {
 				formEl.reportValidity();
+				// Every failed submit replays the block's `invalid` motion, even an identical second one.
+				pulseState( formRoot, 'invalid' );
 				return;
 			}
 
@@ -335,6 +351,8 @@ const { state } = store( 'sgs/form', {
 
 				ctx.submitted = true;
 				ctx.submitting = false;
+				setState( formRoot, 'invalid', false );
+				setState( formRoot, 'success' );
 
 				// Clear persisted step state — submission is complete.
 				try {
@@ -498,8 +516,9 @@ const { state } = store( 'sgs/form', {
 /**
  * Show/hide form steps and trigger entrance animation on the active step.
  *
- * Uses a CSS class (sgs-form-step--hidden) rather than the hidden attribute
- * so that the entering step can animate in via CSS transition/keyframe.
+ * Uses a CSS class (sgs-form-step--hidden) rather than the hidden attribute.
+ * The step change's motion is the block's `step-changed` state, published by
+ * the caller (Spec 38A FR-38A-53), not a class this function adds.
  *
  * @param {HTMLElement} formRoot    The form wrapper element.
  * @param {number}      currentStep Zero-based index of the step to show.
@@ -510,14 +529,8 @@ function updateStepVisibility( formRoot, currentStep ) {
 	steps.forEach( ( step, index ) => {
 		if ( index === currentStep ) {
 			step.classList.remove( 'sgs-form-step--hidden' );
-			// Re-trigger the entrance animation by removing and re-adding the class.
-			step.classList.remove( 'sgs-form-step--entering' );
-			// Force reflow so the animation restarts.
-			void step.offsetWidth; // eslint-disable-line no-void
-			step.classList.add( 'sgs-form-step--entering' );
 		} else {
 			step.classList.add( 'sgs-form-step--hidden' );
-			step.classList.remove( 'sgs-form-step--entering' );
 		}
 	} );
 
@@ -731,6 +744,7 @@ function initForms() {
 	);
 
 	forms.forEach( ( formRoot ) => {
+		preloadMotionState( formRoot );
 		const steps = formRoot.querySelectorAll( '.sgs-form-step' );
 
 		if ( steps.length > 1 ) {

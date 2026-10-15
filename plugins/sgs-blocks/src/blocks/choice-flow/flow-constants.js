@@ -35,3 +35,8 @@ export const SKIP_BUTTON_SELECTOR = '.sgs-choice-flow__skip-button';
 export const NO_ADDONS_OPTION_SELECTOR = '[data-add-to-bag-now]';
 export const QUESTION_SELECTOR = '.sgs-choice-flow-question';
 export const ANNOUNCER_SELECTOR = '.sgs-choice-flow__announcer';
+
+// Dispatched on the flow root by showStepByIndex() for every shopper step
+// change (never the start-up reveal); `detail` is `{ from, to }` step indexes.
+// view.js publishes it as the block's `step-changed` motion state.
+export const STEP_CHANGE_EVENT = 'sgs-flow-step-change';

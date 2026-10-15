@@ -11,7 +11,9 @@ THE COMPATIBLE SET (never a hand-written list)
        SELECT DISTINCT block_slug FROM block_attributes WHERE attr_name = 'sgsAnimation'.
     2. Plus the blocks the spec names for state or nav motion (SPEC_NAMED below; the DB has no column for them).
     3. Only blocks that exist as src/blocks/<slug>/block.json (the DB can be wider than the tree).
-    4. Minus blocks whose block.json sets supports.sgs.hideExtensions including "animation".
+    4. Minus blocks whose block.json sets supports.sgs.hideExtensions including "animation", except the SPEC_NAMED
+       blocks: that key hides the legacy entrance extension, and a spec-named block carries the motion model for its
+       declared states whatever it hides.
 
     Core blocks (core/group, core/columns, core/cover, core/image) are never in the set: motion is for SGS blocks only.
 
@@ -48,7 +50,8 @@ CORE_PREFIX = 'core/'
 
 # Blocks the spec names for state or nav motion. Spec 38A section 5.2 (the open and state triggers), FR-38A-51
 # (nav drawer and submenu motion: nav-bar-menu, nav-drawer, nav-drawer-menu, mega-panel) and FR-38A-53 (state-change
-# motion: cart, nav-bar-menu, accordion). Each is verified against the tree, never trusted.
+# motion: cart, nav-bar-menu, accordion; form and choice-flow, plan unit M5.17). Each is verified against the tree,
+# never trusted.
 SPEC_NAMED = (
     'sgs/nav-bar-menu',
     'sgs/nav-drawer',
@@ -56,6 +59,8 @@ SPEC_NAMED = (
     'sgs/mega-panel',
     'sgs/cart',
     'sgs/accordion',
+    'sgs/form',
+    'sgs/choice-flow',
 )
 
 
@@ -219,7 +224,7 @@ def classify(blocks_dir, candidates):
         except ValueError:
             census['unrecognised'].append(slug)
             continue
-        if hides_animation(data):
+        if hides_animation(data) and slug not in SPEC_NAMED:
             census['excluded_hidden'].append(slug)
             continue
         compatible.add(slug)
