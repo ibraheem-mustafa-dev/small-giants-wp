@@ -2,7 +2,8 @@
  * The editor-canvas emitter (Spec 38A §6.5, §9, §10; FR-38A-28): the JS twin of the renderer's per-target path in
  * `includes/motion/` (`Sgs_Motion_Document::sanitise`, `Sgs_Motion_Targets::resolve`, `Sgs_Motion_Layer_Drops::resolve`,
  * `Sgs_Motion_Shared_Element`, `Sgs_Motion_Emitter::emit` with the open and state trigger rules), so the canvas writes
- * the same scoped custom properties, `transition` lists, per-device media queries and data attributes as the page.
+ * the same scoped custom properties, `transition` lists, per-device media queries and data attributes as the page,
+ * and the form Focus state's field rules (`emit-focus.js`, refused off the `sgs/form` root as `focus-not-form`).
  * `tests/js/motion-canvas-emitter-parity.test.js` compares this output with the PHP output on shared fixtures
  * (`tests/php/fixtures/motion-canvas-emitter-dump.php`).
  *
@@ -45,6 +46,7 @@ import { resolveTarget } from './resolve-target';
 import { sanitiseDocument } from './document-sanitise';
 import { resolveLayerDrops } from './layer-drops';
 import { stripShared } from './shared-element';
+import { emitFocus, focusAllowed, FOCUS_REFUSAL } from './emit-focus';
 
 /** Hover colour and shadow properties whose timing the hover state owns (FR-38A-7). */
 const HOVER_PAINT = [ 'color', 'background-color', 'border-color', 'box-shadow' ];
@@ -246,6 +248,10 @@ export function emitTarget( element, selector, context = {} ) {
 	if ( played ) {
 		css += triggerCss( base, selector, attrs );
 	}
+	const focus = element?.hover?.focus;
+	if ( focus && typeof focus === 'object' && ! Array.isArray( focus ) ) {
+		css += emitFocus( focus, selector );
+	}
 	return { css, attrs, entrance: played };
 }
 
@@ -275,7 +281,20 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 		const result = resolveLayerDrops( stored || {} );
 		result.dropped.forEach( ( drop ) => out.dropped.push( { target, ...drop } ) );
 		const loser = Object.prototype.hasOwnProperty.call( losers, target );
-		const element = loser ? stripShared( result.element ) : result.element;
+		let element = loser ? stripShared( result.element ) : result.element;
+		if (
+			element?.hover?.focus !== undefined &&
+			! focusAllowed( blockName, target )
+		) {
+			out.dropped.push( {
+				target,
+				id: FOCUS_REFUSAL,
+				layer: 'hover.focus',
+			} );
+			const hover = { ...element.hover };
+			delete hover.focus;
+			element = { ...element, hover };
+		}
 		const emitted = emitTarget( element, resolved.selector, { ...context, states, noTransition: loser } );
 		out.css += emitted.css;
 		out.plans.push( { target, ...resolved, attrs: emitted.attrs, entrance: emitted.entrance } );

@@ -1253,6 +1253,89 @@
 			},
 			"root": ".sgs-m-0123456789",
 			"context": {}
+		},
+		{
+			"name": "form focus state per device",
+			"block": "sgs/form",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"focus": {
+								"values": {
+									"borderColour": "#0A7EA8",
+									"backgroundColour": "#FFFFFF",
+									"ringSpread": 4,
+									"ringColour": "#0A7EA824",
+									"duration": 200,
+									"easing": "ease"
+								},
+								"devices": {
+									"tablet": {
+										"ringSpread": 3,
+										"duration": 150
+									},
+									"mobile": {
+										"ringSpread": 2,
+										"delay": 50
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "form focus state: a spread with no ring colour takes the form focus colour",
+			"block": "sgs/form",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"focus": {
+								"values": {
+									"ringSpread": 3,
+									"borderColour": "primary"
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "focus state on a non-form block is refused",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"scale": 1.03
+								}
+							},
+							"focus": {
+								"values": {
+									"borderColour": "#0A7EA8",
+									"ringSpread": 4,
+									"ringColour": "#0A7EA824"
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
 		}
 	]
 }

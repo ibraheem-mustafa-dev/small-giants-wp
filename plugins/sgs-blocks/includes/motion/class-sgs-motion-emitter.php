@@ -20,6 +20,7 @@
  *   `sgs_motion_entrance_css` filter appends a trigger's own rules (`Sgs_Motion_Trigger_Open_State`).
  * - `transition`: only the owners present on the element, each with its own duration, easing and delay (the hover
  *   state's list also carries `color`, `background-color`, `border-color` and `box-shadow`), never `all`.
+ * - The form Focus state (`hover.focus`, `sgs/form` root only): its field-control rules (`Sgs_Motion_Focus_State`).
  *
  * Desktop values sit in the base rule; Tablet and Mobile overrides sit in `@media (max-width:1023px)` and
  * `@media (max-width:767px)` (the `SGS_Breakpoints` constants), and a tier with no override emits no block.
@@ -92,6 +93,9 @@ final class Sgs_Motion_Emitter {
 			// A trigger's own rules beyond the entrance values: the `open` close values and the `state` rule
 			// (`Sgs_Motion_Trigger_Open_State`).
 			$css .= (string) apply_filters( 'sgs_motion_entrance_css', '', $base, $selector, $attrs );
+		}
+		if ( is_array( $element['hover']['focus'] ?? null ) ) {
+			$css .= Sgs_Motion_Focus_State::css( $element['hover']['focus'], $selector, $context );
 		}
 		return array(
 			'css'      => $css,
