@@ -52,6 +52,9 @@ const STORED_EASING = ( token ) => {
 async function openCurveField( page ) {
 	const settings = page.getByRole( 'button', { name: 'Settings', exact: true } );
 	if ( await settings.count() && ( await settings.first().getAttribute( 'aria-pressed' ) ) === 'false' ) await settings.first().click();
+	// The motion panels mount in the block inspector's Styles tab (MotionPanels.js: InspectorControls group="styles").
+	const styles = page.getByRole( 'tab', { name: 'Styles', exact: true } );
+	if ( await styles.count() && ( await styles.first().getAttribute( 'aria-selected' ) ) !== 'true' ) await styles.first().click();
 	const hover = page.getByRole( 'button', { name: /^Hover\b/ } ).first();
 	if ( ! await hover.isVisible().catch( () => false ) ) {
 		const titles = await page.locator( '.interface-complementary-area button[aria-expanded]' ).allInnerTexts().catch( () => [] );
@@ -83,6 +86,10 @@ export async function editorCurveCheck( { rep, site, base, pageId } ) {
 		await wpSession.ensureLoggedIn( page, { url: base, user, pwd }, 60000 );
 		await page.goto( `${ base }/wp-admin/post.php?post=${ pageId }&action=edit`, { waitUntil: 'domcontentloaded' } );
 		await page.waitForFunction( () => window.wp?.data?.select( 'core/editor' )?.getCurrentPostId() && window.wp.data.select( 'core/block-editor' ).getBlocks().length > 0, null, { timeout: 90000 } );
+		// A user preference can open pages template-locked, where the root blocks are the template's and the page's own
+		// blocks sit inside core/post-content; post-only puts the page's blocks at the root, where the finder walks.
+		await page.evaluate( () => window.wp.data.dispatch( 'core/editor' ).setRenderingMode?.( 'post-only' ) );
+		await page.waitForFunction( () => ! window.wp.data.select( 'core/block-editor' ).getBlocks().some( ( b ) => 'core/template-part' === b.name ), null, { timeout: 30000 } );
 		const close = page.getByRole( 'button', { name: 'Close', exact: true } );
 		if ( await close.first().isVisible().catch( () => false ) ) await close.first().click();
 		const stored = await page.evaluate( STORED_EASING, SELECTOR );
