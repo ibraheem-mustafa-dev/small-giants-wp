@@ -4,9 +4,20 @@
  */
 .sgs-motion-layers .components-button,
 .sgs-motion-layers__menu .components-button,
-.sgs-motion-layer__confirm .components-button {
+.sgs-motion-layer__confirm .components-button,
+.sgs-motion-panel--hover .components-button,
+.sgs-motion-panel--hover [role="radio"],
+.sgs-motion-panel--entrance .components-button,
+.sgs-motion-panel--entrance [role="radio"],
+.sgs-motion-entrance__stagger .components-button {
 	min-height: 44px;
 	min-width: 44px;
+}
+
+/* A switch row is as tall as a button, so its whole line is the touch target. */
+.sgs-motion-panel--entrance .components-toggle-control .components-base-control__field,
+.sgs-motion-entrance__stagger .components-toggle-control .components-base-control__field {
+	min-height: 44px;
 }
 
 /* The visible number is the position; the list keeps its semantics without a second marker. */

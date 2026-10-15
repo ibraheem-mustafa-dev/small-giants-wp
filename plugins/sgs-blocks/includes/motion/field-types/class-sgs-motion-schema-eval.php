@@ -17,6 +17,8 @@ namespace SGS\Blocks\Motion;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/class-sgs-motion-json-key.php';
+
 /**
  * Class Sgs_Motion_Schema_Eval
  */
@@ -257,6 +259,38 @@ final class Sgs_Motion_Schema_Eval {
 			case 'else':
 				// Read through `if`.
 				return null;
+			case 'items':
+				if ( ! self::has_type( $value, 'array' ) ) {
+					return null;
+				}
+				foreach ( $value as $at => $item ) {
+					$failure = $this->evaluate( $arg, $item );
+					if ( null !== $failure ) {
+						return 'items.' . $at . '.' . $failure;
+					}
+				}
+				return null;
+			case 'maxItems':
+				return self::has_type( $value, 'array' ) && count( $value ) > $arg ? 'maxItems' : null;
+			case 'minItems':
+				return self::has_type( $value, 'array' ) && count( $value ) < $arg ? 'minItems' : null;
+			case 'uniqueItems':
+				return true === $arg && self::has_type( $value, 'array' ) && count( array_unique( array_map( array( Sgs_Motion_Json_Key::class, 'of' ), $value ) ) ) !== count( $value ) ? 'uniqueItems' : null;
+			case 'minProperties':
+				return self::is_object( $value ) && count( $value ) < $arg ? 'minProperties' : null;
+			case 'maxProperties':
+				return self::is_object( $value ) && count( $value ) > $arg ? 'maxProperties' : null;
+			case 'unevaluatedProperties':
+				if ( ! self::is_object( $value ) ) {
+					return null;
+				}
+				$seen = $this->evaluated_names( $node, $value );
+				foreach ( $value as $name => $item ) {
+					if ( ! array_key_exists( (string) $name, $seen ) && null !== $this->evaluate( $arg, $item ) ) {
+						return 'unevaluatedProperties';
+					}
+				}
+				return null;
 			case 'required':
 				if ( ! self::is_object( $value ) ) {
 					return null;
@@ -294,6 +328,39 @@ final class Sgs_Motion_Schema_Eval {
 			default:
 				return 'unsupported:' . $key;
 		}
+	}
+
+	/**
+	 * The property names of an object that a schema node, its references and the `allOf`, `if` and `then` branches that
+	 * apply to it have evaluated (what `unevaluatedProperties` leaves out).
+	 *
+	 * @param mixed               $node  A schema node.
+	 * @param array<string,mixed> $value The object.
+	 * @param array<string,true>  $seen  Names found so far.
+	 * @return array<string,true> The evaluated names, as keys.
+	 */
+	private function evaluated_names( $node, array $value, array $seen = array() ): array {
+		if ( ! self::is_object( $node ) ) {
+			return $seen;
+		}
+		if ( isset( $node['properties'] ) && self::is_object( $node['properties'] ) ) {
+			foreach ( array_keys( $node['properties'] ) as $name ) {
+				if ( array_key_exists( (string) $name, $value ) ) {
+					$seen[ (string) $name ] = true;
+				}
+			}
+		}
+		if ( isset( $node['$ref'] ) && 1 === preg_match( '~^#/\$defs/([A-Za-z0-9_-]+)$~D', (string) $node['$ref'], $m ) && array_key_exists( $m[1], $this->defs ) ) {
+			$seen = $this->evaluated_names( $this->defs[ $m[1] ], $value, $seen );
+		}
+		foreach ( isset( $node['allOf'] ) && is_array( $node['allOf'] ) ? $node['allOf'] : array() as $sub ) {
+			$seen = $this->evaluated_names( $sub, $value, $seen );
+		}
+		if ( array_key_exists( 'if', $node ) ) {
+			$branch = null === $this->evaluate( $node['if'], $value ) ? 'then' : 'else';
+			$seen   = $this->evaluated_names( $node[ $branch ] ?? null, $value, $seen );
+		}
+		return $seen;
 	}
 
 	/**

@@ -296,6 +296,58 @@ export function createEvaluator( defs ) {
 			case 'else':
 				// Read through `if`.
 				return null;
+			case 'items': {
+				if ( ! Array.isArray( value ) ) {
+					return null;
+				}
+				for ( let at = 0; at < value.length; at++ ) {
+					const failure = evaluate( arg, value[ at ] );
+					if ( failure !== null ) {
+						return `items.${ at }.${ failure }`;
+					}
+				}
+				return null;
+			}
+			case 'maxItems':
+				return Array.isArray( value ) && value.length > arg
+					? 'maxItems'
+					: null;
+			case 'minItems':
+				return Array.isArray( value ) && value.length < arg
+					? 'minItems'
+					: null;
+			case 'uniqueItems':
+				return arg === true &&
+					Array.isArray( value ) &&
+					new Set( value.map( ( item ) => JSON.stringify( item ) ) )
+						.size !== value.length
+					? 'uniqueItems'
+					: null;
+			case 'minProperties':
+				return isJsonObject( value ) &&
+					Object.keys( value ).length < arg
+					? 'minProperties'
+					: null;
+			case 'maxProperties':
+				return isJsonObject( value ) &&
+					Object.keys( value ).length > arg
+					? 'maxProperties'
+					: null;
+			case 'unevaluatedProperties': {
+				if ( ! isJsonObject( value ) ) {
+					return null;
+				}
+				const seen = evaluatedNames( node, value );
+				for ( const name of Object.keys( value ) ) {
+					if (
+						! seen.has( name ) &&
+						evaluate( arg, value[ name ] ) !== null
+					) {
+						return 'unevaluatedProperties';
+					}
+				}
+				return null;
+			}
 			case 'required':
 				if ( ! isJsonObject( value ) ) {
 					return null;
@@ -341,6 +393,36 @@ export function createEvaluator( defs ) {
 			default:
 				return `unsupported:${ key }`;
 		}
+	};
+
+	// The property names of an object that a schema node, its references and the `allOf`, `if` and `then` branches
+	// that apply to it have evaluated (what `unevaluatedProperties` leaves out).
+	const evaluatedNames = ( node, value, seen = new Set() ) => {
+		if ( ! isJsonObject( node ) ) {
+			return seen;
+		}
+		Object.keys(
+			isJsonObject( node.properties ) ? node.properties : {}
+		).forEach( ( name ) => {
+			if ( Object.prototype.hasOwnProperty.call( value, name ) ) {
+				seen.add( name );
+			}
+		} );
+		const ref = /^#\/\$defs\/([A-Za-z0-9_-]+)$/.exec(
+			String( node.$ref || '' )
+		);
+		if ( ref && Object.prototype.hasOwnProperty.call( defs, ref[ 1 ] ) ) {
+			evaluatedNames( defs[ ref[ 1 ] ], value, seen );
+		}
+		( Array.isArray( node.allOf ) ? node.allOf : [] ).forEach( ( sub ) =>
+			evaluatedNames( sub, value, seen )
+		);
+		if ( node.if !== undefined ) {
+			const branch =
+				evaluate( node.if, value ) === null ? node.then : node.else;
+			evaluatedNames( branch, value, seen );
+		}
+		return seen;
 	};
 
 	return evaluate;

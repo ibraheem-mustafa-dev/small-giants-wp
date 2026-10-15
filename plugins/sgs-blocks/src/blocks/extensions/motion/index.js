@@ -16,6 +16,7 @@ import MotionPanels from './MotionPanels';
 import './motion-panels.scss';
 import './layers/stamp-ambient-float';
 import './canvas/with-canvas-motion';
+import './EntrancePanel';
 
 export { blockHasMotion };
 

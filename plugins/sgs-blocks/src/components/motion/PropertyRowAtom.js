@@ -74,6 +74,7 @@ function EndAtom( { type, label, value, onChange } ) {
  * @param {Object|null} [props.fieldNode]   The field's schema node.
  * @param {unknown}     [props.presetValue] The preset's stamped row; a differing row shows the Customised tag.
  * @param {string}      [props.help]        Hint text.
+ * @param {string}      [props.endLabel]    Names the from and to inputs when several rows share a property (Rotate, Rotate X, Rotate Y).
  * @return {Element} The control.
  */
 export default function PropertyRowAtom( {
@@ -84,6 +85,7 @@ export default function PropertyRowAtom( {
 	fieldNode = null,
 	presetValue,
 	help,
+	endLabel,
 } ) {
 	const field = useAtomField( {
 		type: 'propertyRow',
@@ -115,7 +117,8 @@ export default function PropertyRowAtom( {
 		}
 		field.commit( nextRow );
 	};
-	const propertyLabel = PROPERTY_LABELS[ row.property ] || row.property;
+	const propertyLabel =
+		endLabel || PROPERTY_LABELS[ row.property ] || row.property;
 
 	return (
 		<AtomFrame

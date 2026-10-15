@@ -86,11 +86,12 @@ export function effectiveStagger( value ) {
 
 /**
  * @param {Object}      props
- * @param {Object}      [props.value]         The stored `stagger` settings.
- * @param {Function}    props.onChange        Receives the new settings (an unset field is left out).
- * @param {number}      props.childCount      Children (or repeated item parts) the delays are written to.
- * @param {number|null} [props.columns]       The container's stored grid columns at this device; none or 1 hides the row restart.
- * @param {Function}    props.onWriteDelays   Receives `( delays, settings )` when Write delays is pressed.
+ * @param {Object}      [props.value]        The stored `stagger` settings.
+ * @param {Function}    props.onChange       Receives the new settings (an unset field is left out).
+ * @param {number}      props.childCount     Children (or repeated item parts) the delays are written to.
+ * @param {number|null} [props.columns]      The container's stored grid columns at this device; none or 1 hides the row restart.
+ * @param {string}      [props.emptyMessage] Replaces "No children to stagger." (a block whose server prints its items).
+ * @param {Function}    props.onWriteDelays  Receives `( delays, settings )` when Write delays is pressed.
  * @return {Element} The helper.
  */
 export default function StaggerHelper( {
@@ -98,6 +99,7 @@ export default function StaggerHelper( {
 	onChange,
 	childCount,
 	columns,
+	emptyMessage,
 	onWriteDelays,
 } ) {
 	const settings = effectiveStagger( value );
@@ -121,7 +123,9 @@ export default function StaggerHelper( {
 		onChange( merged );
 	};
 	const orderOptions = ( boundsOf( 'choice', NODES.order ).options || [] )
-		.filter( ( name ) => Object.prototype.hasOwnProperty.call( STAGGER_ORDERS, name ) )
+		.filter( ( name ) =>
+			Object.prototype.hasOwnProperty.call( STAGGER_ORDERS, name )
+		)
 		.map( ( name ) => ( {
 			value: name,
 			label: ORDER_LABELS[ name ] || name,
@@ -149,7 +153,10 @@ export default function StaggerHelper( {
 			/>
 			<MillisecondsField
 				label={ __( 'Step (ms)', 'sgs-blocks' ) }
-				help={ __( 'How much later each next child starts.', 'sgs-blocks' ) }
+				help={ __(
+					'How much later each next child starts.',
+					'sgs-blocks'
+				) }
 				fieldKey="step"
 				value={ value?.step }
 				onChange={ set( 'step' ) }
@@ -179,13 +186,19 @@ export default function StaggerHelper( {
 				value={ value?.cap }
 				onChange={ set( 'cap' ) }
 			/>
-			<p className="sgs-motion-atom__help sgs-motion-atom__preview" aria-live="polite">
+			<p
+				className="sgs-motion-atom__help sgs-motion-atom__preview"
+				aria-live="polite"
+			>
 				{ delays.length === 0
-					? __( 'No children to stagger.', 'sgs-blocks' )
+					? emptyMessage ||
+					  __( 'No children to stagger.', 'sgs-blocks' )
 					: sprintf(
 							/* translators: %s: the delays in milliseconds, comma separated. */
 							__( 'Delays: %s ms', 'sgs-blocks' ),
-							delays.length > PREVIEW_LIMIT ? `${ shown }, …` : shown
+							delays.length > PREVIEW_LIMIT
+								? `${ shown }, …`
+								: shown
 					  ) }
 			</p>
 			<Button

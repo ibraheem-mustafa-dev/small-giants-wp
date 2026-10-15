@@ -18,7 +18,10 @@
 import { validateField } from '../../../../components/motion/field-types';
 import { createEvaluator } from '../../../../components/motion/field-types/schema-eval';
 import { sameValue } from '../../../../components/motion/atom-utils';
-import { intensityRowsFor } from '../../../../components/motion/IntensityPicker';
+import {
+	intensityRowsFor,
+	restampValues,
+} from '../../../../components/motion/IntensityPicker';
 import presetFile from '../../../../components/motion/generated-motion-presets.json';
 import { DEFS } from './layer-lists';
 
@@ -26,7 +29,11 @@ const evaluate = createEvaluator( DEFS );
 const REF_PREFIX = '#/$defs/';
 const CHOICE_REF = `${ REF_PREFIX }choice`;
 const UNSUPPORTED = 'unsupported:';
-const CLOSE_PATH = /^close\./;
+// The trigger's own values: close values at Desktop and per tier. A preset never stamps them.
+const CLOSE_PATH = /^(?:close\.|devices\.(?:tablet|mobile)\.close\.)/;
+// A stored delay (the stagger helper's, or one the client typed): a re-stamp keeps it unless the new row sets one.
+const DELAY_PATH = /^(?:values|devices\.(?:tablet|mobile))\.delay$/;
+const TIER_NAMES = Object.freeze( [ 'tablet', 'mobile' ] );
 
 const isObject = ( value ) =>
 	Boolean( value ) && typeof value === 'object' && ! Array.isArray( value );
@@ -111,14 +118,23 @@ function shapeRef( layerDef, effect, key ) {
 }
 
 /**
- * Why a layer's `values` or `devices` fail its `$def`, or null when they pass. A keyword the field-type evaluator
- * cannot read falls back to checking that every stored key is a property the shape declares.
+ * Why a layer fails its `$def`, or null when it passes. The whole layer is evaluated (required keys, the `trigger:
+ * state` needs `state` rule, the items of a keyframe list, the keys its effect's `allOf` branch allows). A keyword the
+ * field-type evaluator cannot read falls back to checking `values` and `devices` against their shapes, then that every
+ * stored key is a property the shape declares.
  *
  * @param {Object} layer    The layer.
  * @param {string} layerDef The layer's `$def` name.
  * @return {string|null} The problem, or null.
  */
 export function layerProblem( layer, layerDef ) {
+	const whole = evaluate( { $ref: `${ REF_PREFIX }${ layerDef }` }, layer );
+	if ( whole === null ) {
+		return null;
+	}
+	if ( ! whole.includes( UNSUPPORTED ) ) {
+		return `${ layerDef }: ${ whole }`;
+	}
 	for ( const key of [ 'values', 'devices' ] ) {
 		if ( layer[ key ] === undefined ) {
 			continue;
@@ -146,13 +162,69 @@ export function layerProblem( layer, layerDef ) {
 	return null;
 }
 
-const closePaths = ( layer ) =>
-	( layer.customised || [] ).filter( ( path ) => CLOSE_PATH.test( path ) );
+// Whether an Intensity row belongs to the same family as the layer's own preset, so choosing it changes only the
+// values the row sets (Image zoom set to Bold stays Image zoom, with its own duration and easing).
+function isOwnFamilyIntensity( layer, row ) {
+	const current = layer.preset ? presetBySlug( layer.preset ) : null;
+	return Boolean(
+		current &&
+			row.kind === 'intensity' &&
+			row.family === current.family &&
+			isObject( layer.values )
+	);
+}
+
+// The device overrides after an own-family Intensity: the row's overrides merged over the layer's, tier by tier.
+function mergedDevices( layer, row ) {
+	const merged = copy( isObject( layer.devices ) ? layer.devices : {} );
+	Object.entries( isObject( row.devices ) ? row.devices : {} ).forEach(
+		( [ tier, set ] ) => {
+			merged[ tier ] = restampValues( merged[ tier ], set, [] );
+		}
+	);
+	return merged;
+}
+
+// A delay or close value the layer holds that the new row does not set: carried over a full re-stamp.
+function carryOver( layer, next ) {
+	const prior = isObject( layer.values ) ? layer.values : {};
+	if ( prior.delay !== undefined && next.values.delay === undefined ) {
+		next.values.delay = copy( prior.delay );
+	}
+	const devices = isObject( next.devices ) ? next.devices : {};
+	TIER_NAMES.forEach( ( tier ) => {
+		const earlier = layer.devices?.[ tier ];
+		if ( ! isObject( earlier ) ) {
+			return;
+		}
+		[ 'delay', 'close' ].forEach( ( key ) => {
+			if (
+				earlier[ key ] !== undefined &&
+				devices[ tier ]?.[ key ] === undefined
+			) {
+				devices[ tier ] = {
+					...( devices[ tier ] || {} ),
+					[ key ]: copy( earlier[ key ] ),
+				};
+			}
+		} );
+	} );
+	if ( Object.keys( devices ).length ) {
+		next.devices = devices;
+	} else {
+		delete next.devices;
+	}
+}
 
 /**
  * A layer stamped from a preset row: the row's values and device overrides copied in full, its slug and intensity
- * recorded (no intensity when the row has none), and its trigger set when the layer has none. Customised paths are
- * cleared, except the close paths, which no preset stamps.
+ * recorded (no intensity when the row has none), and its trigger set when the layer has none.
+ *
+ * Three things survive a re-stamp. Close values (`close` and `devices.<tier>.close`), which no preset stamps. A delay
+ * (`values.delay`, `devices.<tier>.delay`) unless the new row sets one, because the stagger helper and the client write
+ * delays and a preset's look never owns them. And, for an Intensity row of the layer's own family, every value the row
+ * does not set: the row's values merge over the layer's, the layer keeps its own preset (`hover-image-zoom` stays) and
+ * only `intensity` changes. Customised paths are cleared except those that survive.
  *
  * @param {Object}      layer    The layer (`id`, `effect` and any fields to keep).
  * @param {Object|null} row      The preset row, or null to stamp nothing.
@@ -166,7 +238,14 @@ export function stampLayer( layer, row, layerDef ) {
 		);
 	}
 	const next = { ...layer };
-	const kept = closePaths( layer );
+	const own = row ? isOwnFamilyIntensity( layer, row ) : false;
+	const survives = ( path ) =>
+		CLOSE_PATH.test( path ) ||
+		( own
+			? valueAtPath( row, path ) === undefined
+			: DELAY_PATH.test( path ) &&
+			  ( ! row || valueAtPath( row, path ) === undefined ) );
+	const kept = ( layer.customised || [] ).filter( survives );
 	delete next.customised;
 	if ( kept.length ) {
 		next.customised = kept;
@@ -174,7 +253,10 @@ export function stampLayer( layer, row, layerDef ) {
 	if ( ! row ) {
 		return next;
 	}
-	if ( fieldAccepted( layerDef, 'preset', row.slug ) ) {
+	if (
+		( ! own || presetBySlug( layer.preset ).kind === 'intensity' ) &&
+		fieldAccepted( layerDef, 'preset', row.slug )
+	) {
 		next.preset = row.slug;
 	}
 	if (
@@ -192,12 +274,23 @@ export function stampLayer( layer, row, layerDef ) {
 	) {
 		next.trigger = row.trigger;
 	}
+	if ( own ) {
+		next.values = restampValues( layer.values, row.values, [] );
+		const devices = mergedDevices( layer, row );
+		if ( Object.keys( devices ).length ) {
+			next.devices = devices;
+		} else {
+			delete next.devices;
+		}
+		return next;
+	}
 	next.values = copy( row.values ) || {};
 	if ( isObject( row.devices ) && Object.keys( row.devices ).length ) {
 		next.devices = copy( row.devices );
 	} else {
 		delete next.devices;
 	}
+	carryOver( layer, next );
 	return next;
 }
 
@@ -292,7 +385,7 @@ export function editField( layer, path, value ) {
 	);
 	const differs =
 		CLOSE_PATH.test( path ) ||
-		( layer.preset && ! sameValue( value, stampedValue( layer, path ) ) );
+		! sameValue( value, stampedValue( layer, path ) );
 	return withCustomised( next, differs ? [ ...others, path ] : others );
 }
 
@@ -315,6 +408,19 @@ export function resetField( layer, path ) {
 	);
 }
 
+// The dot paths of the non-empty leaf values under a node (`values.followPointer`, `devices.tablet.from.opacity`).
+function leafPaths( node, prefix ) {
+	if ( Array.isArray( node ) ) {
+		return node.length ? [ prefix ] : [];
+	}
+	if ( isObject( node ) ) {
+		return Object.entries( node ).flatMap( ( [ key, item ] ) =>
+			leafPaths( item, `${ prefix }.${ key }` )
+		);
+	}
+	return node === undefined || node === null || node === '' ? [] : [ prefix ];
+}
+
 /**
  * What re-stamping a layer from another preset row would do. The trigger never changes (FR-38A-46).
  *
@@ -328,7 +434,18 @@ export function planRestamp( layer, row, layerDef ) {
 	if ( layer.trigger === undefined ) {
 		delete next.trigger;
 	}
-	const replaced = ( layer.customised || [] ).filter(
+	// A layer with a preset records what the client changed in `customised`. A layer with none (a migrated or cloned
+	// one) records nothing, so every value it holds counts: the confirmation names them before they are replaced.
+	const candidates = layer.preset
+		? layer.customised || []
+		: [
+				...new Set( [
+					...( layer.customised || [] ),
+					...leafPaths( layer.values, 'values' ),
+					...leafPaths( layer.devices, 'devices' ),
+				] ),
+		  ];
+	const replaced = candidates.filter(
 		( path ) =>
 			! CLOSE_PATH.test( path ) &&
 			! sameValue( valueAtPath( layer, path ), valueAtPath( next, path ) )
