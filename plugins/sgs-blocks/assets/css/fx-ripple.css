@@ -1,0 +1,52 @@
+/**
+ * SGS motion: ripple (Spec 38A FR-38A-45, FR-38A-49). The painting half.
+ *
+ * `src/shared/effects/fx-ripple.js` writes the circle's custom properties on the element and sets
+ * `data-sgs-ripple="play"`:
+ *   --sgs-ripple-x, --sgs-ripple-y  the origin, px from the element's top-left
+ *   --sgs-ripple-d                  the diameter, max(width, height) x the size factor
+ *   --sgs-ripple-colour             the colour (default white)
+ *   --sgs-ripple-duration           the run time
+ *   --sgs-ripple-ease               the easing
+ * `--sgs-ripple-op` is the peak opacity (the schema field's own property); `--sgs-ripple-s` is the circle's scale,
+ * registered in `assets/css/motion.css`. The circle paints in the element's `::after` slot, which the renderer claims
+ * with `data-sgs-mc="::after"` and which ripple owns alone (no second owner). The element clips the circle to its own
+ * box. Under reduced motion no circle paints.
+ */
+
+[data-sgs-fx~="ripple"][data-sgs-mc~="::after"] {
+	overflow: clip;
+}
+
+[data-sgs-fx~="ripple"][data-sgs-mc~="::after"]::after {
+	inset: auto;
+	left: var(--sgs-ripple-x, 50%);
+	top: var(--sgs-ripple-y, 50%);
+	width: var(--sgs-ripple-d, 0px);
+	height: var(--sgs-ripple-d, 0px);
+	border-radius: 50%;
+	background: var(--sgs-ripple-colour, #fff);
+	opacity: 0;
+	transform: translate(-50%, -50%) scale(var(--sgs-ripple-s));
+}
+
+[data-sgs-fx~="ripple"][data-sgs-mc~="::after"][data-sgs-ripple="play"]::after {
+	animation: sgs-ripple var(--sgs-ripple-duration, 650ms) var(--sgs-ripple-ease, ease-out) both;
+}
+
+@keyframes sgs-ripple {
+	from {
+		--sgs-ripple-s: 0;
+		opacity: var(--sgs-ripple-op);
+	}
+	to {
+		--sgs-ripple-s: 1;
+		opacity: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-sgs-fx~="ripple"][data-sgs-mc~="::after"][data-sgs-ripple="play"]::after {
+		animation: none;
+	}
+}

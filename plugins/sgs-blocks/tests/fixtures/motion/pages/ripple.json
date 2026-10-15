@@ -1,0 +1,97 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m59-ripples"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Pointerdown ripple",
+					"url": "https://example.com/",
+					"className": "m59-down",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "ripple1",
+										"effect": "ripple",
+										"trigger": "pointerdown",
+										"values": {
+											"colour": "#ffffff",
+											"duration": 650,
+											"easing": "linear",
+											"sizeFactor": 2.2,
+											"peakOpacity": 0.35
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Click ripple",
+					"url": "https://example.com/",
+					"className": "m59-click",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "ripple1",
+										"effect": "ripple",
+										"trigger": "click",
+										"values": {
+											"colour": "#ffffff",
+											"duration": 650,
+											"easing": "linear",
+											"sizeFactor": 2.2,
+											"peakOpacity": 0.35
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "No ripple",
+					"url": "https://example.com/",
+					"className": "m59-control"
+				}
+			}
+		]
+	}
+]

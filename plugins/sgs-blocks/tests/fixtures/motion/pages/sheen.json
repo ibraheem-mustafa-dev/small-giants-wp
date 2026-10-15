@@ -1,0 +1,90 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" },
+				"tablet": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" },
+				"mobile": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" }
+			},
+			"className": "m510-cards"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Sheen card",
+					"description": "A diagonal band crosses this card once on each pointer entry.",
+					"className": "m510-sheen",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"effects": [
+										{
+											"id": "sheen1",
+											"effect": "sheen",
+											"trigger": "hover",
+											"values": {
+												"bandWidth": 60,
+												"angle": -18,
+												"colour": "#ffffff",
+												"opacity": 0.45,
+												"duration": 750,
+												"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+											}
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Sheen link card",
+					"description": "Tab to this card: the band crosses once when its link takes keyboard focus.",
+					"sgsBlockLink": "#m510-target",
+					"sgsBlockLinkLabel": "Sheen link card",
+					"className": "m510-sheen-link",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"effects": [
+										{
+											"id": "sheen2",
+											"effect": "sheen",
+											"trigger": "hover",
+											"values": {
+												"bandWidth": 60,
+												"angle": -18,
+												"colour": "#ffffff",
+												"opacity": 0.45,
+												"duration": 750,
+												"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+											}
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Plain card",
+					"description": "No sheen: the control that never shows a band.",
+					"className": "m510-control"
+				}
+			}
+		]
+	}
+]

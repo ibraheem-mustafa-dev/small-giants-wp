@@ -1,0 +1,66 @@
+/**
+ * SGS motion: sheen sweep (Spec 38A FR-38A-35, FR-38A-49). CSS only.
+ *
+ * A diagonal light band crosses the element once on pointer entry and on :focus-visible. It is painted by the
+ * `::before` of the renderer's injected `span.sgs-motion-layer[data-sgs-layer="sheen"]` (aria-hidden), so the element's
+ * own `::before` and `::after` stay free for other owners. The layer is `position: absolute; inset: 0; overflow: hidden`
+ * (assets/css/motion.css), which clips the band. Nothing is written to a `style` attribute and no script runs.
+ *
+ * The values arrive as custom properties on the element (the schema's SheenValues cssProperty names), each with the
+ * Indus `shine()` value as its fallback, so an element with no stored values still sweeps exactly as the draft does:
+ *   --sgs-sheen-band-width  band width as a share of the element        (default 60%)
+ *   --sgs-sheen-angle       the band's skew                             (default -18deg)
+ *   --sgs-sheen-colour      the band's centre colour                    (default white)
+ *   --sgs-sheen-opacity     the band's strength, 0 to 1                 (default 0.45)
+ *   --sgs-sheen-duration    one crossing, a CSS time                    (default 750ms)
+ *   --sgs-sheen-easing      the crossing's easing                       (default cubic-bezier(.16,.84,.32,1))
+ *
+ * `--sgs-sheen-x` (registered in motion.css, <percentage>) is the band's position in its own widths: the keyframes
+ * run it from -120% (just left of the element) to 260% (just right of it), the Indus `translateX(-120%)` to
+ * `translateX(260%)`. At rest the band is parked at -120%, off the element. Each new entry restarts the animation, so
+ * the band replays on every hover; leaving mid-sweep parks it again at once.
+ */
+
+.sgs-motion-layer[data-sgs-layer="sheen"]::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: var(--sgs-sheen-band-width, 60%);
+	background-image: linear-gradient(
+		100deg,
+		transparent,
+		var(--sgs-sheen-colour, #fff),
+		transparent
+	);
+	opacity: var(--sgs-sheen-opacity, 0.45);
+	transform: translateX(-120%) skewX(var(--sgs-sheen-angle, -18deg));
+	pointer-events: none;
+}
+
+@keyframes sgs-sheen-sweep {
+	from { --sgs-sheen-x: -120%; }
+	to { --sgs-sheen-x: 260%; }
+}
+
+/* Keyboard: the element itself, or a link or control inside it, shows :focus-visible. */
+[data-sgs-fx~="sheen"]:focus-visible > .sgs-motion-layer[data-sgs-layer="sheen"]::before,
+[data-sgs-fx~="sheen"]:has(:focus-visible) > .sgs-motion-layer[data-sgs-layer="sheen"]::before {
+	transform: translateX(var(--sgs-sheen-x)) skewX(var(--sgs-sheen-angle, -18deg));
+	animation: sgs-sheen-sweep var(--sgs-sheen-duration, 750ms) var(--sgs-sheen-easing, cubic-bezier(0.16, 0.84, 0.32, 1)) 1 forwards;
+}
+
+/* Pointer: the same guard as the hover state in motion.css, so touch taps do not play it. */
+@media (hover: hover) and (pointer: fine) {
+	:where(:root:not(.sgs-touch-input)) [data-sgs-fx~="sheen"]:hover > .sgs-motion-layer[data-sgs-layer="sheen"]::before {
+		transform: translateX(var(--sgs-sheen-x)) skewX(var(--sgs-sheen-angle, -18deg));
+		animation: sgs-sheen-sweep var(--sgs-sheen-duration, 750ms) var(--sgs-sheen-easing, cubic-bezier(0.16, 0.84, 0.32, 1)) 1 forwards;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-motion-layer[data-sgs-layer="sheen"] {
+		display: none;
+	}
+}
