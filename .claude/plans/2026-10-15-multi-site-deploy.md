@@ -40,7 +40,7 @@ A deploy measured 671s on 2026-10-15: build about 270s, `gate:full` 345s (11 gat
 - Later the same afternoon `main` also failed the fast tier's `check-element-manifest-conformance` after the reseed 668969624 (`orphan_style_defect=49 exceeds baseline 0`); reported to the motion sessions. The cache proof waits on that too.
 - Item 7 (`run-gates.py --jobs`) built with self-test cases (opt-in). One measured parallel run: 241s wall-clock for the 11 full gates on a loaded machine (the serial sum on the same afternoon was 476-697s). `gate:full` adopts `--jobs 4` once a serial and a parallel run on the same tree return the same verdicts.
 - Stopping a deploy mid-run (TaskStop, Ctrl+C) skips `run_isolated()`'s cleanup and leaks its `sgs-deploy-wt-*` worktree; remove it with `git worktree remove --force <path>` after checking no process uses it.
-- Follow-up: `build-deploy.py` grew 78 lines (2,456); split its self-tests and post-deploy steps into modules.
+- `build-deploy.py` split into importable modules by job (99def9852, 4a7e0c669): the command is 496 lines; `deploy_common`, `deploy_guards`, `deploy_ship`, `deploy_verify` and `deploy_selftest` hold the steps (`.claude/dev-setup.md` "Where the code lives"). Self-test, `--assert-wired`, both path-loading scripts, single- and two-site dry runs, and the fast tier (161 gates) pass on the split. Another session's deploy recorded the first live cache pass (2026-10-15 17:04, commit 59022560). The live restore proof is still open: from 17:00 the shared DB was mid-reseed (`roster.json` stale, `motion_presets` 100 against 118 in the repo), so `gate:full` could not pass.
 
 ## Docs to update
 
