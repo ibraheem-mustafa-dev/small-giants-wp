@@ -64,6 +64,9 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from fx_drift import runtime_reads  # noqa: E402  (FR-38A-48; self-test only until M5.5)
+
 sys.stdout.reconfigure(encoding="utf-8")
 
 _PLUGIN_ROOT = Path(__file__).resolve().parent.parent
@@ -1186,7 +1189,8 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.self_test:
-        return _self_test()
+        drift_rc = _self_test()
+        return runtime_reads.self_test() or drift_rc
 
     src = Sources.default()
     try:
