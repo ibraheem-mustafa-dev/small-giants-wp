@@ -16,6 +16,8 @@
  *   under `:hover` and `:focus-visible` (or the root's or hover group's `:hover` and `:focus-within`), never here.
  * - Entrance: `--sgs-me-from-<suffix>`, `--sgs-me-to-<suffix>`, `--sgs-me-dur`, `--sgs-me-delay`, `--sgs-me-ease`,
  *   `--sgs-me-start` and the one perspective `--sgs-persp-self` when the entrance sets it; multi-keyframe entrances also get `data-sgs-me-keyframes` (JSON) for the WAAPI module.
+ *   The trigger passes through the `sgs_motion_entrance_trigger` filter (an empty string drops the entrance), and the
+ *   `sgs_motion_entrance_css` filter appends a trigger's own rules (`Sgs_Motion_Trigger_Open_State`).
  * - `transition`: only the owners present on the element, each with its own duration, easing and delay (the hover
  *   state's list also carries `color`, `background-color`, `border-color` and `box-shadow`), never `all`.
  *
@@ -83,8 +85,14 @@ final class Sgs_Motion_Emitter {
 				$decls[ $tier ]['transition'] = implode( ', ', $trans[ $tier ] );
 			}
 		}
+		$css = self::rules( $selector, $decls );
+		if ( $entrance ) {
+			// A trigger's own rules beyond the entrance values: the `open` close values and the `state` rule
+			// (`Sgs_Motion_Trigger_Open_State`).
+			$css .= (string) apply_filters( 'sgs_motion_entrance_css', '', $base, $selector, $attrs );
+		}
 		return array(
-			'css'      => self::rules( $selector, $decls ),
+			'css'      => $css,
 			'attrs'    => $attrs,
 			'entrance' => $entrance,
 		);
@@ -433,13 +441,14 @@ final class Sgs_Motion_Emitter {
 	}
 
 	/**
-	 * The scoped rules: desktop in the base rule, Tablet and Mobile inside their media queries.
+	 * The scoped rules: desktop in the base rule, Tablet and Mobile inside their media queries. The one per-device
+	 * writer, also used by the trigger rules.
 	 *
 	 * @param string                             $selector Scoped selector.
 	 * @param array<string,array<string,string>> $decls    Per-tier declarations.
 	 * @return string
 	 */
-	private static function rules( string $selector, array $decls ): string {
+	public static function rules( string $selector, array $decls ): string {
 		$media = array(
 			'desktop' => null,
 			'tablet'  => '@media (max-width:' . ( class_exists( '\SGS_Breakpoints' ) ? \SGS_Breakpoints::TABLET_MAX : 1023 ) . 'px)',

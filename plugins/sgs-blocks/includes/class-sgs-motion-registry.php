@@ -130,6 +130,16 @@ class SGS_Motion_Registry {
 			'path' => 'build/shared/effects/gsap/provider.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
+		/*
+		 * The `open` and `state` entrance triggers' state helper (Spec 38A M4.4):
+		 * every block bundle imports this one instance, so one reduced-motion
+		 * listener serves the page. Loaded as a dependency of the block view
+		 * module that imports it.
+		 */
+		'@sgs/motion-state'        => array(
+			'path' => 'build/shared/effects/motion-state.js',
+			'deps' => array(),
+		),
 		'@sgs/fx-scrub'            => array(
 			'path' => 'build/shared/effects/gsap/fx-scrub.js',
 			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-scrolltrigger' ),

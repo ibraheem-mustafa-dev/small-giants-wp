@@ -1,0 +1,221 @@
+/**
+ * The `open` and `state` entrance triggers (Spec 38A §5.2, §8, §9, §12; FR-38A-51 and FR-38A-53 enablers).
+ *
+ * Loaded after `motion.css` (its keyframes, registered properties and channel formulas) and only on a page whose
+ * rendered blocks print an entrance with trigger `open` or `state` (`Sgs_Motion_Trigger_Open_State`). Every rule
+ * keys on ONE attribute, `data-sgs-motion-state`, which a block's script sets through `@sgs/motion-state`
+ * (`src/shared/effects/motion-state.js`) on a state host: the target itself or an ancestor.
+ *
+ *   data-sgs-me="open <channels>"      a part a disclosure opens (renderer)
+ *   data-sgs-me="state <channels>"     a part that plays on a named block state (renderer)
+ *   --sgs-me-close-to-<x>              the close to-values (renderer, per device; each falls back to the from-value)
+ *   --sgs-me-close-dur, --sgs-me-close-delay, --sgs-me-close-ease
+ *                                      the close timing (renderer, per device; the close delay is per item)
+ *   --sgs-mt-on                        1 while a named state is on, set by the renderer's per-instance rule
+ *                                      `<target>:is([data-sgs-motion-state~="<name>"], [data-sgs-motion-state~="<name>"] *)`
+ *
+ * Open plays the entrance from its from-values to its to-values and holds the to-values while open (a caret stays
+ * turned). Close plays from the to-values to the close to-values on the close duration, easing and per-item delay,
+ * and holds them. A nested host that is neither open nor closing shields its subtree, so a closed submenu inside an
+ * open drawer does not play. Under reduced motion nothing plays and every delay is zero: each state shows its final
+ * values at once.
+ */
+
+/* ── Keyframes: close, from the open to-values to the close to-values (each falling back to the from-value). Every
+   keyframe declares its channel with the full §10 composite formula, as the entrance keyframes in motion.css do. ── */
+@keyframes sgs-me-close-translate {
+	from {
+		--sgs-me-tx: var(--sgs-me-to-tx, 0px);
+		--sgs-me-ty: var(--sgs-me-to-ty, 0px);
+		translate: calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));
+	}
+	to {
+		--sgs-me-tx: var(--sgs-me-close-to-tx, var(--sgs-me-from-tx, 0px));
+		--sgs-me-ty: var(--sgs-me-close-to-ty, var(--sgs-me-from-ty, 0px));
+		translate: calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));
+	}
+}
+@keyframes sgs-me-close-rotate {
+	from {
+		--sgs-me-rot: var(--sgs-me-to-rot, 0deg);
+		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+	}
+	to {
+		--sgs-me-rot: var(--sgs-me-close-to-rot, var(--sgs-me-from-rot, 0deg));
+		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+	}
+}
+@keyframes sgs-me-close-transform {
+	from {
+		--sgs-me-rx: var(--sgs-me-to-rx, 0deg);
+		--sgs-me-ry: var(--sgs-me-to-ry, 0deg);
+		transform: perspective(var(--sgs-persp-self)) rotateX(calc(var(--sgs-rx-rest) + var(--sgs-me-rx) + var(--sgs-mh-rx) + var(--sgs-tilt-x))) rotateY(calc(var(--sgs-ry-rest) + var(--sgs-me-ry) + var(--sgs-mh-ry) + var(--sgs-tilt-y)));
+	}
+	to {
+		--sgs-me-rx: var(--sgs-me-from-rx, 0deg);
+		--sgs-me-ry: var(--sgs-me-from-ry, 0deg);
+		transform: perspective(var(--sgs-persp-self)) rotateX(calc(var(--sgs-rx-rest) + var(--sgs-me-rx) + var(--sgs-mh-rx) + var(--sgs-tilt-x))) rotateY(calc(var(--sgs-ry-rest) + var(--sgs-me-ry) + var(--sgs-mh-ry) + var(--sgs-tilt-y)));
+	}
+}
+@keyframes sgs-me-close-scale {
+	from {
+		--sgs-me-s: var(--sgs-me-to-s, 1);
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s));
+	}
+	to {
+		--sgs-me-s: var(--sgs-me-close-to-s, var(--sgs-me-from-s, 1));
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s));
+	}
+}
+@keyframes sgs-me-close-opacity {
+	from {
+		--sgs-me-op: var(--sgs-me-to-op, 1);
+		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op));
+	}
+	to {
+		--sgs-me-op: var(--sgs-me-close-to-op, var(--sgs-me-from-op, 1));
+		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op));
+	}
+}
+@keyframes sgs-me-close-filter {
+	from {
+		--sgs-me-blur: var(--sgs-me-to-blur, 0px);
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+	}
+	to {
+		--sgs-me-blur: var(--sgs-me-close-to-blur, var(--sgs-me-from-blur, 0px));
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+	}
+}
+@keyframes sgs-me-close-clip-path {
+	from {
+		--sgs-me-clip: var(--sgs-me-to-clip, 0%);
+		clip-path: inset(var(--sgs-me-clip));
+	}
+	to {
+		--sgs-me-clip: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip, 0%));
+		clip-path: inset(var(--sgs-me-clip));
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	/* The name lists: the opening list reuses motion.css's per-channel entrance names; the close list is its twin. */
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"]) {
+		--sgs-mt-c-translate: none;
+		--sgs-mt-c-rotate: none;
+		--sgs-mt-c-transform: none;
+		--sgs-mt-c-scale: none;
+		--sgs-mt-c-opacity: none;
+		--sgs-mt-c-filter: none;
+		--sgs-mt-c-clip-path: none;
+		--sgs-mt-in: var(--sgs-me-a-translate), var(--sgs-me-a-rotate), var(--sgs-me-a-transform), var(--sgs-me-a-scale), var(--sgs-me-a-opacity), var(--sgs-me-a-filter), var(--sgs-me-a-clip-path);
+		--sgs-mt-out: var(--sgs-mt-c-translate), var(--sgs-mt-c-rotate), var(--sgs-mt-c-transform), var(--sgs-mt-c-scale), var(--sgs-mt-c-opacity), var(--sgs-mt-c-filter), var(--sgs-mt-c-clip-path);
+		animation-fill-mode: both;
+	}
+	[data-sgs-me~="open"][data-sgs-me~="translate"] { --sgs-mt-c-translate: sgs-me-close-translate; }
+	[data-sgs-me~="open"][data-sgs-me~="rotate"] { --sgs-mt-c-rotate: sgs-me-close-rotate; }
+	[data-sgs-me~="open"][data-sgs-me~="transform"] { --sgs-mt-c-transform: sgs-me-close-transform; }
+	[data-sgs-me~="open"][data-sgs-me~="scale"] { --sgs-mt-c-scale: sgs-me-close-scale; }
+	[data-sgs-me~="open"][data-sgs-me~="opacity"] { --sgs-mt-c-opacity: sgs-me-close-opacity; }
+	[data-sgs-me~="open"][data-sgs-me~="filter"] { --sgs-mt-c-filter: sgs-me-close-filter; }
+	[data-sgs-me~="open"][data-sgs-me~="clip-path"] { --sgs-mt-c-clip-path: sgs-me-close-clip-path; }
+
+	/* Open: inside (or on) an open host, and inside no host that is not open. A multi-keyframe entrance belongs to the
+	   WAAPI module, as in motion.css. */
+	[data-sgs-me~="open"]:not([data-sgs-me-keyframes]):is([data-sgs-motion-state~="open"], [data-sgs-motion-state~="open"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~="open"]), [data-sgs-motion-state]:not([data-sgs-motion-state~="open"]) *) {
+		animation-name: var(--sgs-mt-in, none);
+	}
+
+	/* Close: inside (or on) a closing host, and inside no host that is neither open nor closing. */
+	[data-sgs-me~="open"]:not([data-sgs-me-keyframes]):is([data-sgs-motion-state~="close"], [data-sgs-motion-state~="close"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~="open"]):not([data-sgs-motion-state~="close"]), [data-sgs-motion-state]:not([data-sgs-motion-state~="open"]):not([data-sgs-motion-state~="close"]) *) {
+		animation-name: var(--sgs-mt-out, none);
+		animation-duration: var(--sgs-me-close-dur, var(--sgs-me-dur, var(--wp--custom--duration--slow, 450ms)));
+		animation-timing-function: var(--sgs-me-close-ease, var(--sgs-me-ease, var(--wp--custom--entrance--easing, ease-out)));
+		animation-delay: var(--sgs-me-close-delay, 0ms);
+	}
+}
+
+/* ── Reduced motion (§12, FR-38A-27): no animation, no delay; each state shows its final values at once. ── */
+@media (prefers-reduced-motion: reduce) {
+	[data-sgs-me~="open"]:is([data-sgs-motion-state~="open"], [data-sgs-motion-state~="open"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~="open"]), [data-sgs-motion-state]:not([data-sgs-motion-state~="open"]) *) {
+		--sgs-mt-op-tx: var(--sgs-me-to-tx, 0px);
+		--sgs-mt-op-ty: var(--sgs-me-to-ty, 0px);
+		--sgs-mt-op-rot: var(--sgs-me-to-rot, 0deg);
+		--sgs-mt-op-rx: var(--sgs-me-to-rx, 0deg);
+		--sgs-mt-op-ry: var(--sgs-me-to-ry, 0deg);
+		--sgs-mt-op-s: var(--sgs-me-to-s, 1);
+		--sgs-mt-op-op: var(--sgs-me-to-op, 1);
+		--sgs-mt-op-blur: var(--sgs-me-to-blur, 0px);
+		--sgs-mt-op-clip: var(--sgs-me-to-clip, 0%);
+	}
+	[data-sgs-me~="open"]:is([data-sgs-motion-state~="close"], [data-sgs-motion-state~="close"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~="open"]):not([data-sgs-motion-state~="close"]), [data-sgs-motion-state]:not([data-sgs-motion-state~="open"]):not([data-sgs-motion-state~="close"]) *) {
+		--sgs-mt-op-tx: var(--sgs-me-close-to-tx, var(--sgs-me-from-tx, 0px));
+		--sgs-mt-op-ty: var(--sgs-me-close-to-ty, var(--sgs-me-from-ty, 0px));
+		--sgs-mt-op-rot: var(--sgs-me-close-to-rot, var(--sgs-me-from-rot, 0deg));
+		--sgs-mt-op-rx: var(--sgs-me-from-rx, 0deg);
+		--sgs-mt-op-ry: var(--sgs-me-from-ry, 0deg);
+		--sgs-mt-op-s: var(--sgs-me-close-to-s, var(--sgs-me-from-s, 1));
+		--sgs-mt-op-op: var(--sgs-me-close-to-op, var(--sgs-me-from-op, 1));
+		--sgs-mt-op-blur: var(--sgs-me-close-to-blur, var(--sgs-me-from-blur, 0px));
+		--sgs-mt-op-clip: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip, 0%));
+	}
+	/* A named state: the to-values times the per-instance on flag, so the declaration is the identity while off. */
+	[data-sgs-me~="state"] {
+		--sgs-mt-op-tx: calc(var(--sgs-me-to-tx, 0px) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-ty: calc(var(--sgs-me-to-ty, 0px) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-rot: calc(var(--sgs-me-to-rot, 0deg) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-rx: calc(var(--sgs-me-to-rx, 0deg) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-ry: calc(var(--sgs-me-to-ry, 0deg) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-s: calc(1 + (var(--sgs-me-to-s, 1) - 1) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-op: calc(1 + (var(--sgs-me-to-op, 1) - 1) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-blur: calc(var(--sgs-me-to-blur, 0px) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-clip: calc(var(--sgs-me-to-clip, 0%) * var(--sgs-mt-on, 0));
+	}
+
+	/* The held values feed each touched channel's composite formula only where an open, closing or state value
+	   applies (the --sgs-mt-op-* holders exist only there). */
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="translate"] {
+		--sgs-me-tx: var(--sgs-mt-op-tx, 0px);
+		--sgs-me-ty: var(--sgs-mt-op-ty, 0px);
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="rotate"] {
+		--sgs-me-rot: var(--sgs-mt-op-rot, 0deg);
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="transform"] {
+		--sgs-me-rx: var(--sgs-mt-op-rx, 0deg);
+		--sgs-me-ry: var(--sgs-mt-op-ry, 0deg);
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="scale"] {
+		--sgs-me-s: var(--sgs-mt-op-s, 1);
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="opacity"] {
+		--sgs-me-op: var(--sgs-mt-op-op, 1);
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="filter"] {
+		--sgs-me-blur: var(--sgs-mt-op-blur, 0px);
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="clip-path"] {
+		--sgs-me-clip: var(--sgs-mt-op-clip, 0%);
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="translate"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
+		translate: calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="rotate"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
+		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="transform"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
+		transform: perspective(var(--sgs-persp-self)) rotateX(calc(var(--sgs-rx-rest) + var(--sgs-me-rx) + var(--sgs-mh-rx) + var(--sgs-tilt-x))) rotateY(calc(var(--sgs-ry-rest) + var(--sgs-me-ry) + var(--sgs-mh-ry) + var(--sgs-tilt-y)));
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="scale"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s));
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="opacity"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
+		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op));
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="filter"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+	}
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="clip-path"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
+		clip-path: inset(var(--sgs-me-clip));
+	}
+}

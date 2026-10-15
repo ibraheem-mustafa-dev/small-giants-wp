@@ -156,6 +156,10 @@ if ( moduleConfig ) {
 		// rAF queue for every block bundle, so it is externalised like the
 		// provider. PHP registers it as the script module `@sgs/scroll-driver`.
 		'@sgs/scroll-driver': '@sgs/scroll-driver',
+		// The `open` and `state` triggers' state helper (Spec 38A M4.4): one
+		// instance and one reduced-motion listener for every block bundle.
+		// PHP registers it as the script module `@sgs/motion-state`.
+		'@sgs/motion-state': '@sgs/motion-state',
 		// Tier H Lottie player (D1151). The vendor shim bundles lottie-web's
 		// light build; fx-lottie.js imports it by this id so no other module
 		// carries a second copy.
@@ -249,6 +253,13 @@ if ( moduleConfig ) {
 				'shared',
 				'effects',
 				'scroll-driver.js'
+			),
+			'shared/effects/motion-state': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'motion-state.js'
 			),
 			'shared/effects/gsap/provider': path.resolve(
 				process.cwd(),
