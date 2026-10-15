@@ -85,9 +85,21 @@ describe( 'motion-keyframes', () => {
 		);
 	} );
 
+	it( 'writes the X and Y owners per frame and the per-axis transform formula in every frame', () => {
+		const { play, CHANNEL_FORMULA } = load();
+		play( target( { me: 'load transform', frames: [ { offset: 0, '--sgs-me-rx': '0deg' }, { offset: 0.5, '--sgs-me-rx': '20deg', '--sgs-me-ry': '-10deg' }, { offset: 1, '--sgs-me-rx': '0deg' } ] } ) );
+		const [ frames ] = animate.mock.calls[ 0 ];
+		expect( frames.map( ( f ) => f[ '--sgs-me-rx' ] ) ).toEqual( [ '0deg', '20deg', '0deg' ] );
+		expect( frames.map( ( f ) => f[ '--sgs-me-ry' ] ) ).toEqual( [ undefined, '-10deg', undefined ] );
+		frames.forEach( ( f ) => {
+			expect( f.transform ).toBe( CHANNEL_FORMULA.transform[ 1 ] );
+			expect( f.transform ).toContain( 'perspective(var(--sgs-persp-self))' );
+		} );
+	} );
+
 	it( 'maps each owner property alone to exactly its own channel', () => {
 		const { play, CHANNEL_FORMULA } = load();
-		const table = { 'tx': 'translate', 'ty': 'translate', 'rot': 'rotate', 's': 'scale', 'op': 'opacity', 'blur': 'filter', 'clip': 'clip-path' };
+		const table = { 'tx': 'translate', 'ty': 'translate', 'rot': 'rotate', 'rx': 'transform', 'ry': 'transform', 's': 'scale', 'op': 'opacity', 'blur': 'filter', 'clip': 'clip-path' };
 		Object.keys( table ).forEach( ( suffix ) => {
 			document.body.innerHTML = '';
 			animate.mockClear();

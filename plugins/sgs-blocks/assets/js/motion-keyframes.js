@@ -27,6 +27,8 @@
 		'--sgs-me-tx': 'translate',
 		'--sgs-me-ty': 'translate',
 		'--sgs-me-rot': 'rotate',
+		'--sgs-me-rx': 'transform',
+		'--sgs-me-ry': 'transform',
 		'--sgs-me-s': 'scale',
 		'--sgs-me-op': 'opacity',
 		'--sgs-me-blur': 'filter',
@@ -37,6 +39,7 @@
 	var CHANNEL_FORMULA = {
 		translate: [ 'translate', 'calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y))' ],
 		rotate: [ 'rotate', 'calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot))' ],
+		transform: [ 'transform', 'perspective(var(--sgs-persp-self)) rotateX(calc(var(--sgs-rx-rest) + var(--sgs-me-rx) + var(--sgs-mh-rx) + var(--sgs-tilt-x))) rotateY(calc(var(--sgs-ry-rest) + var(--sgs-me-ry) + var(--sgs-mh-ry) + var(--sgs-tilt-y)))' ],
 		scale: [ 'scale', 'calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s))' ],
 		opacity: [ 'opacity', 'calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op))' ],
 		filter: [ 'filter', 'blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright))' ],

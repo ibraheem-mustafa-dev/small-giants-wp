@@ -16,8 +16,19 @@
 		}
 	},
 	"required": [
-		"v",
-		"elements"
+		"v"
+	],
+	"anyOf": [
+		{
+			"required": [
+				"elements"
+			]
+		},
+		{
+			"required": [
+				"stagger"
+			]
+		}
 	],
 	"additionalProperties": false,
 	"x-sgs-tiers": {
@@ -305,6 +316,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"part"
+			],
 			"values": "#/$defs/ScrubValues",
 			"devices": "#/$defs/ScrubDeviceSet",
 			"slots": []
@@ -313,6 +327,10 @@
 			"label": "Pin scrub",
 			"panels": [
 				"effects"
+			],
+			"x-target-level": [
+				"block",
+				"part"
 			],
 			"values": "#/$defs/PinScrubValues",
 			"devices": "#/$defs/PinScrubDeviceSet",
@@ -323,6 +341,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"block"
+			],
 			"values": "#/$defs/HorizontalPanelValues",
 			"devices": "#/$defs/HorizontalPanelDeviceSet",
 			"slots": []
@@ -331,6 +352,9 @@
 			"label": "Split reveal",
 			"panels": [
 				"entrance"
+			],
+			"x-target-level": [
+				"part"
 			],
 			"values": "#/$defs/SplitRevealValues",
 			"devices": "#/$defs/SplitRevealDeviceSet",
@@ -342,6 +366,9 @@
 				"entrance",
 				"effects"
 			],
+			"x-target-level": [
+				"part"
+			],
 			"values": "#/$defs/ScrambleValues",
 			"devices": "#/$defs/ScrambleDeviceSet",
 			"slots": []
@@ -351,6 +378,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"paired"
+			],
 			"values": "#/$defs/FlipValues",
 			"devices": "#/$defs/FlipDeviceSet",
 			"slots": []
@@ -359,6 +389,9 @@
 			"label": "Draggable",
 			"panels": [
 				"effects"
+			],
+			"x-target-level": [
+				"block"
 			],
 			"values": "#/$defs/DraggableValues",
 			"devices": "#/$defs/DraggableDeviceSet",
@@ -370,6 +403,9 @@
 				"entrance",
 				"effects"
 			],
+			"x-target-level": [
+				"part"
+			],
 			"values": "#/$defs/DrawValues",
 			"devices": "#/$defs/DrawDeviceSet",
 			"slots": []
@@ -378,6 +414,9 @@
 			"label": "Morph",
 			"panels": [
 				"effects"
+			],
+			"x-target-level": [
+				"part"
 			],
 			"values": "#/$defs/MorphValues",
 			"devices": "#/$defs/MorphDeviceSet",
@@ -388,6 +427,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"part"
+			],
 			"values": "#/$defs/MotionPathValues",
 			"devices": "#/$defs/MotionPathDeviceSet",
 			"slots": []
@@ -397,6 +439,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"block"
+			],
 			"values": "#/$defs/ImageSequenceValues",
 			"devices": "#/$defs/ImageSequenceDeviceSet",
 			"slots": []
@@ -405,6 +450,9 @@
 			"label": "Cursor field",
 			"panels": [
 				"effects"
+			],
+			"x-target-level": [
+				"surface"
 			],
 			"values": "#/$defs/CursorFieldValues",
 			"devices": "#/$defs/CursorFieldDeviceSet",
@@ -425,6 +473,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"part"
+			],
 			"values": "#/$defs/SurfaceTreatmentValues",
 			"devices": "#/$defs/SurfaceTreatmentDeviceSet",
 			"slots": []
@@ -433,6 +484,9 @@
 			"label": "Wave gradient",
 			"panels": [
 				"effects"
+			],
+			"x-target-level": [
+				"surface"
 			],
 			"values": "#/$defs/WaveGradientValues",
 			"devices": "#/$defs/WaveGradientDeviceSet",
@@ -452,6 +506,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"surface"
+			],
 			"values": "#/$defs/ParticlesValues",
 			"devices": "#/$defs/ParticlesDeviceSet",
 			"slots": []
@@ -460,6 +517,9 @@
 			"label": "Grid dots",
 			"panels": [
 				"effects"
+			],
+			"x-target-level": [
+				"surface"
 			],
 			"values": "#/$defs/GridDotsValues",
 			"devices": "#/$defs/GridDotsDeviceSet",
@@ -470,6 +530,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"surface"
+			],
 			"values": "#/$defs/GenerativeBackgroundValues",
 			"devices": "#/$defs/GenerativeBackgroundDeviceSet",
 			"slots": []
@@ -478,6 +541,9 @@
 			"label": "Lottie",
 			"panels": [
 				"effects"
+			],
+			"x-target-level": [
+				"part"
 			],
 			"values": "#/$defs/LottieValues",
 			"devices": "#/$defs/LottieDeviceSet",
@@ -488,6 +554,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"part"
+			],
 			"values": "#/$defs/ParallaxValues",
 			"devices": "#/$defs/ParallaxDeviceSet",
 			"slots": []
@@ -496,6 +565,9 @@
 			"label": "Glare",
 			"panels": [
 				"hover"
+			],
+			"x-target-level": [
+				"part"
 			],
 			"values": "#/$defs/GlareValues",
 			"devices": "#/$defs/GlareDeviceSet",
@@ -511,6 +583,9 @@
 			"panels": [
 				"hover"
 			],
+			"x-target-level": [
+				"part"
+			],
 			"values": "#/$defs/MagnetValues",
 			"devices": "#/$defs/MagnetDeviceSet",
 			"slots": []
@@ -519,6 +594,9 @@
 			"label": "Ripple",
 			"panels": [
 				"effects"
+			],
+			"x-target-level": [
+				"part"
 			],
 			"values": "#/$defs/RippleValues",
 			"devices": "#/$defs/RippleDeviceSet",
@@ -534,6 +612,9 @@
 			"panels": [
 				"hover"
 			],
+			"x-target-level": [
+				"part"
+			],
 			"values": "#/$defs/SheenValues",
 			"devices": "#/$defs/SheenDeviceSet",
 			"slots": [
@@ -548,6 +629,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"part"
+			],
 			"values": "#/$defs/ScrollProgressValues",
 			"devices": "#/$defs/ScrollProgressDeviceSet",
 			"slots": []
@@ -556,6 +640,9 @@
 			"label": "Ambient float",
 			"panels": [
 				"effects"
+			],
+			"x-target-level": [
+				"part"
 			],
 			"values": "#/$defs/AmbientFloatValues",
 			"devices": "#/$defs/AmbientFloatDeviceSet",
@@ -566,6 +653,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"block"
+			],
 			"values": "#/$defs/MarqueeValues",
 			"devices": "#/$defs/MarqueeDeviceSet",
 			"slots": []
@@ -575,6 +665,9 @@
 			"panels": [
 				"effects"
 			],
+			"x-target-level": [
+				"surface"
+			],
 			"values": "#/$defs/KenBurnsValues",
 			"devices": "#/$defs/KenBurnsDeviceSet",
 			"slots": []
@@ -583,6 +676,10 @@
 			"label": "SVG loop",
 			"panels": [
 				"effects"
+			],
+			"x-target-level": [
+				"part",
+				"surface"
 			],
 			"values": "#/$defs/SvgLoopValues",
 			"devices": "#/$defs/SvgLoopDeviceSet",
@@ -745,7 +842,9 @@
 			"channels": []
 		},
 		"scroll-progress": {
-			"channels": []
+			"channels": [
+				"scale"
+			]
 		},
 		"marquee": {
 			"channels": []
@@ -940,6 +1039,11 @@
 							"initial": "1"
 						}
 					]
+				},
+				{
+					"owner": "scroll-progress",
+					"runtime": "stylesheet",
+					"properties": []
 				}
 			]
 		},
@@ -2771,6 +2875,24 @@
 						"perDevice": true
 					}
 				},
+				"rotateX": {
+					"$ref": "#/$defs/angle",
+					"x-sgs-field": {
+						"fieldType": "angle",
+						"cssProperty": "--sgs-me-rx",
+						"state": "keyframe",
+						"perDevice": true
+					}
+				},
+				"rotateY": {
+					"$ref": "#/$defs/angle",
+					"x-sgs-field": {
+						"fieldType": "angle",
+						"cssProperty": "--sgs-me-ry",
+						"state": "keyframe",
+						"perDevice": true
+					}
+				},
 				"blur": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
@@ -3242,7 +3364,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-scrub-rows"
 					}
 				},
 				"startElement": {
@@ -3257,7 +3380,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-start"
 					}
 				},
 				"startViewport": {
@@ -3269,7 +3393,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-start"
 					}
 				},
 				"endElement": {
@@ -3283,7 +3408,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-end"
 					}
 				},
 				"endViewport": {
@@ -3294,7 +3420,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-end"
 					}
 				},
 				"smoothing": {
@@ -3310,7 +3437,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-scrub"
 					}
 				},
 				"easing": {
@@ -3319,7 +3447,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ease"
 					}
 				}
 			},
@@ -3387,7 +3516,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-pin-scrub-rows"
 					}
 				},
 				"stagger": {
@@ -3403,7 +3533,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-stagger"
 					}
 				},
 				"hold": {
@@ -3414,7 +3545,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-hold"
 					}
 				},
 				"pinTopOffset": {
@@ -3423,7 +3555,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-pin-scrub-pin-top-offset"
 					}
 				},
 				"smoothing": {
@@ -3438,7 +3571,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-scrub"
 					}
 				}
 			},
@@ -3516,7 +3650,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-scrub"
 					}
 				},
 				"easing": {
@@ -3525,7 +3660,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ease"
 					}
 				},
 				"hold": {
@@ -3536,7 +3672,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-hold"
 					}
 				},
 				"breakpoint": {
@@ -3551,7 +3688,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-horizontal-panel-breakpoint"
 					}
 				},
 				"pinLength": {
@@ -3561,7 +3699,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-end"
 					}
 				},
 				"pinTail": {
@@ -3571,7 +3710,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-horizontal-panel-pin-tail"
 					}
 				},
 				"progressOutput": {
@@ -3580,7 +3720,8 @@
 						"fieldType": "boolean",
 						"cssProperty": "--sgs-fx-progress",
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-horizontal-panel-progress-output"
 					}
 				},
 				"activeState": {
@@ -3589,7 +3730,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-horizontal-panel-active-state"
 					}
 				},
 				"belowMode": {
@@ -3602,7 +3744,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-horizontal-panel-below-mode"
 					}
 				},
 				"proximityFocus": {
@@ -3611,7 +3754,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-horizontal-panel-proximity-focus"
 					}
 				},
 				"focusScale": {
@@ -3621,7 +3765,8 @@
 						"fieldType": "scale",
 						"cssProperty": "--sgs-focus-s",
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-horizontal-panel-focus-scale"
 					}
 				},
 				"edgeScale": {
@@ -3631,7 +3776,8 @@
 						"fieldType": "scale",
 						"cssProperty": "--sgs-focus-s",
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-horizontal-panel-edge-scale"
 					}
 				},
 				"focusOpacity": {
@@ -3640,7 +3786,8 @@
 						"fieldType": "opacity",
 						"cssProperty": "--sgs-focus-op",
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-horizontal-panel-focus-opacity"
 					}
 				},
 				"edgeOpacity": {
@@ -3649,7 +3796,8 @@
 						"fieldType": "opacity",
 						"cssProperty": "--sgs-focus-op",
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-horizontal-panel-edge-opacity"
 					}
 				}
 			},
@@ -3726,7 +3874,8 @@
 						"fieldType": "opacity",
 						"cssProperty": null,
 						"state": "from",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-split-reveal-from-opacity"
 					}
 				},
 				"translateY": {
@@ -3736,7 +3885,8 @@
 						"cssProperty": null,
 						"state": "from",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-split-reveal-from-translate-y"
 					}
 				},
 				"blur": {
@@ -3752,7 +3902,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "from",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-split-reveal-from-blur"
 					}
 				},
 				"rotate": {
@@ -3761,7 +3912,8 @@
 						"fieldType": "angle",
 						"cssProperty": null,
 						"state": "from",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-split-reveal-from-rotate"
 					}
 				}
 			},
@@ -3789,7 +3941,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-stagger"
 					}
 				},
 				"staggerOrder": {
@@ -3804,7 +3957,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-split-reveal-stagger-order"
 					}
 				},
 				"seed": {
@@ -3817,7 +3971,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-split-reveal-seed"
 					}
 				},
 				"unit": {
@@ -3831,7 +3986,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-split"
 					}
 				},
 				"mask": {
@@ -3840,7 +3996,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-mask"
 					}
 				},
 				"duration": {
@@ -3856,7 +4013,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-duration"
 					}
 				},
 				"easing": {
@@ -3865,7 +4023,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ease"
 					}
 				}
 			},
@@ -3965,7 +4124,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-scramble-charset"
 					}
 				},
 				"duration": {
@@ -3982,7 +4142,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-duration"
 					}
 				},
 				"revealDelay": {
@@ -3997,7 +4158,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-scramble-reveal-delay"
 					}
 				},
 				"easing": {
@@ -4006,7 +4168,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ease"
 					}
 				}
 			},
@@ -4066,7 +4229,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-duration"
 					}
 				},
 				"easing": {
@@ -4075,7 +4239,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ease"
 					}
 				}
 			},
@@ -4119,7 +4284,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-momentum"
 					}
 				},
 				"resistance": {
@@ -4130,7 +4296,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-draggable-resistance"
 					}
 				},
 				"threshold": {
@@ -4146,7 +4313,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-draggable-threshold"
 					}
 				}
 			},
@@ -4207,7 +4375,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-draw-from"
 					}
 				},
 				"to": {
@@ -4218,7 +4387,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-draw-to"
 					}
 				},
 				"direction": {
@@ -4231,7 +4401,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-draw-direction"
 					}
 				},
 				"duration": {
@@ -4241,7 +4412,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-duration"
 					}
 				},
 				"easing": {
@@ -4250,7 +4422,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ease"
 					}
 				},
 				"asset": {
@@ -4260,7 +4433,8 @@
 						"fieldType": "assetReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-draw-asset"
 					}
 				}
 			},
@@ -4315,7 +4489,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-duration"
 					}
 				},
 				"easing": {
@@ -4324,7 +4499,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ease"
 					}
 				},
 				"startLine": {
@@ -4335,7 +4511,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-morph-start-line"
 					}
 				},
 				"shape": {
@@ -4351,7 +4528,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-shape"
 					}
 				},
 				"shapeFrom": {
@@ -4360,7 +4538,8 @@
 						"fieldType": "assetReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-shape-asset-from"
 					}
 				},
 				"shapeTo": {
@@ -4369,7 +4548,8 @@
 						"fieldType": "assetReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-shape-asset-to"
 					}
 				}
 			},
@@ -4420,7 +4600,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-motion-path-range-start"
 					}
 				},
 				"rangeEnd": {
@@ -4432,7 +4613,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-motion-path-range-end"
 					}
 				},
 				"originX": {
@@ -4443,7 +4625,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-motion-path-origin-x"
 					}
 				},
 				"originY": {
@@ -4454,7 +4637,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-motion-path-origin-y"
 					}
 				},
 				"easing": {
@@ -4463,7 +4647,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ease"
 					}
 				},
 				"path": {
@@ -4479,7 +4664,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-path"
 					}
 				},
 				"pathAsset": {
@@ -4488,7 +4674,8 @@
 						"fieldType": "assetReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-path-asset"
 					}
 				},
 				"rotate": {
@@ -4498,7 +4685,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-motion-path-rotate"
 					}
 				},
 				"rest": {
@@ -4513,7 +4701,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-motion-path-rest"
 					}
 				},
 				"restViewport": {
@@ -4524,7 +4713,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-motion-path-rest-vh"
 					}
 				},
 				"smoothing": {
@@ -4539,7 +4729,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-scrub"
 					}
 				}
 			},
@@ -4620,7 +4811,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-start"
 					}
 				},
 				"startViewport": {
@@ -4632,7 +4824,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-start"
 					}
 				},
 				"endElement": {
@@ -4646,7 +4839,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-end"
 					}
 				},
 				"endViewport": {
@@ -4657,7 +4851,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-end"
 					}
 				},
 				"pin": {
@@ -4666,7 +4861,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-pin"
 					}
 				}
 			},
@@ -4726,7 +4922,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-field"
 					}
 				},
 				"colour": {
@@ -4735,7 +4932,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-field-colour"
 					}
 				},
 				"radius": {
@@ -4752,7 +4950,8 @@
 						"cssProperty": "--sgs-cursor-field-radius",
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-field-radius"
 					}
 				},
 				"shape": {
@@ -4766,7 +4965,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-field-shape"
 					}
 				},
 				"trail": {
@@ -4777,7 +4977,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-field-trail"
 					}
 				},
 				"blend": {
@@ -4788,7 +4989,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-field-blend"
 					}
 				},
 				"restX": {
@@ -4800,7 +5002,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-rest-x"
 					}
 				},
 				"restY": {
@@ -4812,7 +5015,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-rest-y"
 					}
 				},
 				"falloff": {
@@ -4823,7 +5027,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-falloff"
 					}
 				},
 				"layerOpacity": {
@@ -4832,7 +5037,8 @@
 						"fieldType": "opacity",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-layer-opacity"
 					}
 				},
 				"image": {
@@ -4841,7 +5047,8 @@
 						"fieldType": "assetReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-cursor-field-image"
 					}
 				},
 				"edge": {
@@ -4857,7 +5064,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-edge"
 					}
 				},
 				"hoverRadius": {
@@ -4873,7 +5081,8 @@
 						"fieldType": "distance",
 						"cssProperty": "--sgs-cursor-field-radius",
 						"state": "hover",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-hover-radius"
 					}
 				},
 				"radiusDuration": {
@@ -4882,7 +5091,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-radius-duration"
 					}
 				},
 				"radiusEasing": {
@@ -4891,7 +5101,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-cursor-field-radius-easing"
 					}
 				},
 				"washColour": {
@@ -4900,7 +5111,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-cursor-field-wash-colour"
 					}
 				},
 				"washOpacityStart": {
@@ -4909,7 +5121,8 @@
 						"fieldType": "opacity",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-wash-opacity-start"
 					}
 				},
 				"washOpacityEnd": {
@@ -4918,7 +5131,8 @@
 						"fieldType": "opacity",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-wash-opacity-end"
 					}
 				},
 				"ring": {
@@ -4927,7 +5141,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-cursor-field-ring"
 					}
 				},
 				"ringSize": {
@@ -4943,7 +5158,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-ring-size"
 					}
 				},
 				"ringWidth": {
@@ -4959,7 +5175,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-ring-width"
 					}
 				},
 				"ringColour": {
@@ -4968,7 +5185,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-cursor-field-ring-colour"
 					}
 				},
 				"ringShadow": {
@@ -4977,7 +5195,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-cursor-field-ring-shadow"
 					}
 				},
 				"ringLag": {
@@ -4992,7 +5211,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-cursor-field-ring-lag"
 					}
 				}
 			},
@@ -5136,7 +5356,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-treatment"
 					}
 				},
 				"strength": {
@@ -5147,7 +5368,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-treatment-intensity"
 					}
 				},
 				"shadowColour": {
@@ -5156,7 +5378,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-treatment-shadow"
 					}
 				},
 				"highlightColour": {
@@ -5165,7 +5388,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-treatment-highlight"
 					}
 				},
 				"tintColour": {
@@ -5174,7 +5398,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-treatment-tint"
 					}
 				},
 				"inkColour": {
@@ -5183,7 +5408,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-treatment-ink"
 					}
 				},
 				"reveal": {
@@ -5192,7 +5418,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-treatment-reveal"
 					}
 				}
 			},
@@ -5246,7 +5473,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-wave-variant"
 					}
 				},
 				"baseColour": {
@@ -5255,7 +5483,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-wave-base"
 					}
 				},
 				"colourLow": {
@@ -5264,7 +5493,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-wave-1"
 					}
 				},
 				"colourMid": {
@@ -5273,7 +5503,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-wave-2"
 					}
 				},
 				"colourHigh": {
@@ -5282,7 +5513,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-wave-3"
 					}
 				},
 				"speed": {
@@ -5293,7 +5525,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-wave-speed"
 					}
 				},
 				"amplitude": {
@@ -5304,7 +5537,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-wave-amplitude"
 					}
 				}
 			},
@@ -5360,7 +5594,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-particle-preset"
 					}
 				},
 				"density": {
@@ -5371,7 +5606,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-particle-density"
 					}
 				},
 				"size": {
@@ -5382,7 +5618,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-particle-size"
 					}
 				},
 				"colour": {
@@ -5391,7 +5628,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-particle-colour"
 					}
 				},
 				"life": {
@@ -5406,7 +5644,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-particles-life"
 					}
 				},
 				"speed": {
@@ -5419,7 +5658,8 @@
 						"state": "active",
 						"perDevice": true,
 						"intensity": true,
-						"unit": "x"
+						"unit": "x",
+						"dataAttr": "data-sgs-fx-particles-speed"
 					}
 				},
 				"gravity": {
@@ -5430,7 +5670,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-particles-gravity"
 					}
 				},
 				"drag": {
@@ -5441,7 +5682,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-particles-drag"
 					}
 				},
 				"spawnRate": {
@@ -5453,7 +5695,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"unit": "per second"
+						"unit": "per second",
+						"dataAttr": "data-sgs-fx-particles-spawn-rate"
 					}
 				}
 			},
@@ -5533,7 +5776,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-grid-colour"
 					}
 				},
 				"hoverColour": {
@@ -5542,7 +5786,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "hover",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-grid-colour-hover"
 					}
 				},
 				"shape": {
@@ -5558,7 +5803,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-grid-shape"
 					}
 				},
 				"cell": {
@@ -5574,7 +5820,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-grid-cell"
 					}
 				},
 				"dotSize": {
@@ -5590,7 +5837,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-grid-dot"
 					}
 				},
 				"radius": {
@@ -5606,7 +5854,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-grid-radius"
 					}
 				},
 				"lean": {
@@ -5622,7 +5871,8 @@
 						"fieldType": "angle",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-grid-lean"
 					}
 				},
 				"ease": {
@@ -5638,7 +5888,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-grid-ease"
 					}
 				}
 			},
@@ -5729,7 +5980,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-gen-colour-1"
 					}
 				},
 				"colour2": {
@@ -5738,7 +5990,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-gen-colour-2"
 					}
 				},
 				"colour3": {
@@ -5747,7 +6000,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-gen-colour-3"
 					}
 				},
 				"colour4": {
@@ -5756,7 +6010,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-gen-colour-4"
 					}
 				},
 				"ground": {
@@ -5769,7 +6024,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-gen-ground"
 					}
 				},
 				"backdrop": {
@@ -5782,7 +6038,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-gen-backdrop"
 					}
 				},
 				"speed": {
@@ -5793,7 +6050,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-speed"
 					}
 				},
 				"foldFreq1": {
@@ -5804,7 +6062,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-fold-freq-1"
 					}
 				},
 				"foldFreq2": {
@@ -5815,7 +6074,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-fold-freq-2"
 					}
 				},
 				"foldFreq3": {
@@ -5826,7 +6086,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-fold-freq-3"
 					}
 				},
 				"foldPower1": {
@@ -5837,7 +6098,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-fold-power-1"
 					}
 				},
 				"foldPower2": {
@@ -5848,7 +6110,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-fold-power-2"
 					}
 				},
 				"foldPower3": {
@@ -5859,7 +6122,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-fold-power-3"
 					}
 				},
 				"displaceFreqX": {
@@ -5870,7 +6134,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-disp-freq-x"
 					}
 				},
 				"displaceFreqZ": {
@@ -5881,7 +6146,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-disp-freq-z"
 					}
 				},
 				"displaceAmount": {
@@ -5892,7 +6158,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-disp-amount"
 					}
 				},
 				"glowAmount": {
@@ -5903,7 +6170,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-glow-amount"
 					}
 				},
 				"glowPower": {
@@ -5914,7 +6182,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-glow-power"
 					}
 				},
 				"glowRamp": {
@@ -5925,7 +6194,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-glow-ramp"
 					}
 				},
 				"striationStrength": {
@@ -5936,7 +6206,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-striation-strength"
 					}
 				},
 				"striationFreq": {
@@ -5947,7 +6218,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-striation-freq"
 					}
 				},
 				"colourAttenuation": {
@@ -5958,7 +6230,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-colour-attenuation"
 					}
 				},
 				"parabolaPower": {
@@ -5969,7 +6242,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-parabola-power"
 					}
 				},
 				"rotateX": {
@@ -5985,7 +6259,8 @@
 						"fieldType": "angle",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-rotate-x"
 					}
 				},
 				"rotateY": {
@@ -6001,7 +6276,8 @@
 						"fieldType": "angle",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-rotate-y"
 					}
 				},
 				"rotateZ": {
@@ -6017,7 +6293,8 @@
 						"fieldType": "angle",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-rotate-z"
 					}
 				},
 				"scaleX": {
@@ -6028,7 +6305,8 @@
 						"fieldType": "scale",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-scale-x"
 					}
 				},
 				"scaleY": {
@@ -6039,7 +6317,8 @@
 						"fieldType": "scale",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-scale-y"
 					}
 				},
 				"scaleZ": {
@@ -6050,7 +6329,8 @@
 						"fieldType": "scale",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-scale-z"
 					}
 				},
 				"offsetX": {
@@ -6066,7 +6346,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-offset-x"
 					}
 				},
 				"offsetY": {
@@ -6082,7 +6363,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-gen-offset-y"
 					}
 				}
 			},
@@ -6273,7 +6555,8 @@
 						"fieldType": "assetReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-lottie-file"
 					}
 				},
 				"loop": {
@@ -6282,7 +6565,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-lottie-loop"
 					}
 				},
 				"speed": {
@@ -6294,7 +6578,19 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"unit": "x"
+						"unit": "x",
+						"dataAttr": "data-sgs-fx-lottie-speed"
+					}
+				},
+				"pauseControl": {
+					"$ref": "#/$defs/boolean",
+					"description": "Show a pause button for this loop (WCAG 2.2.2); off by default.",
+					"x-sgs-field": {
+						"fieldType": "boolean",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-lottie-pause-control"
 					}
 				}
 			},
@@ -6343,7 +6639,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-parallax-speed-ratio"
 					}
 				},
 				"basis": {
@@ -6356,7 +6653,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-parallax-basis"
 					}
 				},
 				"axis": {
@@ -6369,7 +6667,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-parallax-axis"
 					}
 				},
 				"clamp": {
@@ -6384,7 +6683,8 @@
 						"fieldType": "distance",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-parallax-clamp"
 					}
 				},
 				"background": {
@@ -6394,7 +6694,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-parallax-background"
 					}
 				}
 			},
@@ -6450,7 +6751,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-glare-glare-colour"
 					}
 				},
 				"glareOpacity": {
@@ -6459,7 +6761,8 @@
 						"fieldType": "opacity",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-glare-glare-opacity"
 					}
 				},
 				"glareSize": {
@@ -6470,7 +6773,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-glare-glare-size"
 					}
 				}
 			},
@@ -6523,7 +6827,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-magnet-engage"
 					}
 				},
 				"pullModel": {
@@ -6536,7 +6841,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-magnet-pull-model"
 					}
 				},
 				"factor": {
@@ -6547,7 +6853,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-magnet-factor"
 					}
 				},
 				"maxPullX": {
@@ -6564,7 +6871,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-magnet-strength"
 					}
 				},
 				"maxPullY": {
@@ -6581,7 +6889,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-magnet-max-pull-y"
 					}
 				},
 				"radius": {
@@ -6598,7 +6907,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-magnet-radius"
 					}
 				},
 				"axis": {
@@ -6612,7 +6922,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-magnet-axis"
 					}
 				},
 				"returnDuration": {
@@ -6621,7 +6932,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-magnet-return-duration"
 					}
 				},
 				"returnEasing": {
@@ -6630,7 +6942,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-magnet-return-easing"
 					}
 				},
 				"movingPart": {
@@ -6639,7 +6952,8 @@
 						"fieldType": "partReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-magnet-moving-part"
 					}
 				}
 			},
@@ -6718,7 +7032,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ripple-colour"
 					}
 				},
 				"duration": {
@@ -6727,7 +7042,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-ripple-duration"
 					}
 				},
 				"easing": {
@@ -6736,7 +7052,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ripple-easing"
 					}
 				},
 				"sizeFactor": {
@@ -6749,7 +7066,8 @@
 						"state": "active",
 						"perDevice": true,
 						"intensity": true,
-						"unit": "x"
+						"unit": "x",
+						"dataAttr": "data-sgs-fx-ripple-size-factor"
 					}
 				},
 				"peakOpacity": {
@@ -6758,7 +7076,8 @@
 						"fieldType": "opacity",
 						"cssProperty": "--sgs-ripple-op",
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-ripple-peak-opacity"
 					}
 				}
 			},
@@ -6812,7 +7131,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-sheen-band-width"
 					}
 				},
 				"angle": {
@@ -6828,7 +7148,8 @@
 						"fieldType": "angle",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-sheen-angle"
 					}
 				},
 				"colour": {
@@ -6837,7 +7158,8 @@
 						"fieldType": "colourReference",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-sheen-colour"
 					}
 				},
 				"opacity": {
@@ -6847,7 +7169,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-sheen-opacity"
 					}
 				},
 				"duration": {
@@ -6856,7 +7179,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-sheen-duration"
 					}
 				},
 				"easing": {
@@ -6865,7 +7189,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-sheen-easing"
 					}
 				}
 			},
@@ -6932,7 +7257,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-scroll-progress-source"
 					}
 				},
 				"output": {
@@ -6946,7 +7272,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-scroll-progress-output"
 					}
 				},
 				"counterFormat": {
@@ -6960,7 +7287,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-scroll-progress-counter-format"
 					}
 				}
 			},
@@ -7001,20 +7329,35 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-ambient-float-travel"
 					}
+				},
+				"travelY": {
+					"$ref": "#/$defs/distance",
+					"x-sgs-field": {
+						"fieldType": "distance",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": true,
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-ambient-float-travel-y"
+					},
+					"description": "Vertical travel, read only when axis is both (travel is then the horizontal travel)."
 				},
 				"axis": {
 					"$ref": "#/$defs/choice",
 					"enum": [
 						"x",
-						"y"
+						"y",
+						"both"
 					],
 					"x-sgs-field": {
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ambient-float-axis"
 					}
 				},
 				"period": {
@@ -7030,7 +7373,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-ambient-float-period"
 					}
 				},
 				"easing": {
@@ -7039,7 +7383,8 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ambient-float-easing"
 					}
 				},
 				"phase": {
@@ -7055,7 +7400,33 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-ambient-float-phase"
+					}
+				},
+				"direction": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"normal",
+						"alternate"
+					],
+					"x-sgs-field": {
+						"fieldType": "choice",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ambient-float-direction"
+					}
+				},
+				"pauseControl": {
+					"$ref": "#/$defs/boolean",
+					"description": "Show a pause button for this loop (WCAG 2.2.2); off by default.",
+					"x-sgs-field": {
+						"fieldType": "boolean",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ambient-float-pause-control"
 					}
 				}
 			},
@@ -7068,6 +7439,9 @@
 			"description": "Tablet or Mobile overrides of AmbientFloatValues: only its per-device fields, all optional.",
 			"properties": {
 				"travel": {
+					"$ref": "#/$defs/distance"
+				},
+				"travelY": {
 					"$ref": "#/$defs/distance"
 				},
 				"period": {
@@ -7122,7 +7496,8 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": true,
-						"unit": "px/s"
+						"unit": "px/s",
+						"dataAttr": "data-sgs-fx-marquee-speed"
 					}
 				},
 				"direction": {
@@ -7137,7 +7512,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-marquee-direction"
 					}
 				},
 				"hoverRate": {
@@ -7148,7 +7524,8 @@
 						"fieldType": "ratio",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-marquee-hover-rate"
 					}
 				},
 				"pauseOnTouch": {
@@ -7157,7 +7534,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-marquee-pause-on-touch"
 					}
 				},
 				"edgeFade": {
@@ -7166,7 +7544,8 @@
 						"fieldType": "boolean",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-marquee-edge-fade"
 					}
 				},
 				"edgeFadeWidth": {
@@ -7177,7 +7556,8 @@
 						"fieldType": "percentage",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-marquee-edge-fade-width"
 					}
 				},
 				"belowBreakpoint": {
@@ -7192,7 +7572,19 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-marquee-below-breakpoint"
+					}
+				},
+				"pauseControl": {
+					"$ref": "#/$defs/boolean",
+					"description": "Show a pause button for this loop (WCAG 2.2.2); off by default.",
+					"x-sgs-field": {
+						"fieldType": "boolean",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-marquee-pause-control"
 					}
 				}
 			},
@@ -7252,7 +7644,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ken-burns-mode"
 					}
 				},
 				"zoomStart": {
@@ -7264,7 +7657,8 @@
 						"cssProperty": "--sgs-kb-s",
 						"state": "active",
 						"perDevice": true,
-						"intensity": true
+						"intensity": true,
+						"dataAttr": "data-sgs-fx-ken-burns-zoom-start"
 					}
 				},
 				"zoomEnd": {
@@ -7275,7 +7669,8 @@
 						"fieldType": "percentage",
 						"cssProperty": "--sgs-kb-s",
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-ken-burns-zoom-end"
 					}
 				},
 				"panDirection": {
@@ -7291,7 +7686,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ken-burns-pan-direction"
 					}
 				},
 				"duration": {
@@ -7300,7 +7696,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-ken-burns-duration"
 					}
 				},
 				"easing": {
@@ -7309,7 +7706,19 @@
 						"fieldType": "easing",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ken-burns-easing"
+					}
+				},
+				"pauseControl": {
+					"$ref": "#/$defs/boolean",
+					"description": "Show a pause button for this loop (WCAG 2.2.2); off by default.",
+					"x-sgs-field": {
+						"fieldType": "boolean",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ken-burns-pause-control"
 					}
 				}
 			},
@@ -7367,7 +7776,8 @@
 						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": false
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-svg-loop-motion"
 					}
 				},
 				"duration": {
@@ -7376,7 +7786,8 @@
 						"fieldType": "duration",
 						"cssProperty": null,
 						"state": "active",
-						"perDevice": true
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-svg-loop-duration"
 					}
 				},
 				"amplitude": {
@@ -7389,7 +7800,19 @@
 						"state": "active",
 						"perDevice": true,
 						"intensity": true,
-						"unit": "x"
+						"unit": "x",
+						"dataAttr": "data-sgs-fx-svg-loop-amplitude"
+					}
+				},
+				"pauseControl": {
+					"$ref": "#/$defs/boolean",
+					"description": "Show a pause button for this loop (WCAG 2.2.2); off by default.",
+					"x-sgs-field": {
+						"fieldType": "boolean",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-svg-loop-pause-control"
 					}
 				}
 			},

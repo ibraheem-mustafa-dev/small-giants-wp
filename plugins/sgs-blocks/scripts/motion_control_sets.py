@@ -207,11 +207,13 @@ def _gaps_siblings_labels_targets(world: dict, rows: list[dict], gaps: dict[str,
     missing = []
     for slug, entry in (world["schema"].get("x-sgs-effects") or {}).items():
         declared = entry.get("x-target-level") or (_values_def(world["schema"], slug) or {}).get("x-target-level")
+        if isinstance(declared, str):
+            declared = [declared]
         row = table.get(slug)
         if not declared:
             missing.append(slug)
-        elif row and row["targets"] and declared not in row["targets"]:
-            gaps[f"f-target:{slug}:schema"] = f"effect={slug} rule=f-target: schema x-target-level {declared!r} but 5.4 says {sorted(row['targets'])}"
+        elif row and row["targets"] and set(declared) != set(row["targets"]):
+            gaps[f"f-target:{slug}:schema"] = f"effect={slug} rule=f-target: schema x-target-level {sorted(declared)} but 5.4 says {sorted(row['targets'])}"
     if missing:
         gaps["f-schema"] = f"rule=f-target: no x-target-level in the schema for {len(missing)} effects: {', '.join(sorted(missing))}"
 

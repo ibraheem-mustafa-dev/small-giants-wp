@@ -1,0 +1,14 @@
+{
+	"description": "A container that keeps only the stagger helper's settings after its last layer is removed: the helper writes delays onto its children, and the container carries no motion of its own.",
+	"expect": {
+		"valid": true,
+		"errors": [],
+		"refusals": []
+	},
+	"motion": {
+		"v": 1,
+		"stagger": {
+			"apply": true
+		}
+	}
+}

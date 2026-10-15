@@ -4,11 +4,5 @@
     "pattern": "transition.slow",
     "reason": "transition.slow has no stylesheet reader, preset reference or field-type offer (transition.fast and .medium do). M5.18 sweeps motion literals onto tokens: it gives transition.slow a reader if a literal equals it, otherwise it retires the token from theme.json and the nine snapshots.",
     "delete_in_unit": "M5.18"
-  },
-  {
-    "gate": "motion-control-sets",
-    "pattern": "f-schema",
-    "reason": "motion.schema.json declares no x-target-level on any of its 28 x-sgs-effects entries, so FR-38A-46's rule that the Target row offers exactly the 5.4 level has no schema source. Track E (the schema's owner in waves 12 to 14) adds x-target-level (block, surface or part, per 5.4) to each effect entry; M3.6's Effects panel reads it, so this entry is deleted in M3.6's commit.",
-    "delete_in_unit": "M3.6"
   }
 ]

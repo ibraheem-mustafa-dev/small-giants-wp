@@ -457,7 +457,9 @@
 	"scroll-progress": {
 		"in_picker": false,
 		"owned_properties": {
-			"channels": [],
+			"channels": [
+				"scale"
+			],
 			"properties": [],
 			"slots": []
 		},

@@ -288,6 +288,33 @@ final class MotionRendererTest extends TestCase {
 		$this->assertSame( array( 0, 1 ), array_column( $this->emitted_frames( $out ), 'offset' ) );
 	}
 
+	public function test_keyframe_entrance_emits_x_and_y_angles_per_frame_under_the_default_perspective(): void {
+		$frames = array(
+			array( 'offset' => 0, 'rotateX' => 0, 'opacity' => 0 ),
+			array( 'offset' => 50, 'rotateX' => 20, 'rotateY' => -10, 'opacity' => 1 ),
+			array( 'offset' => 100, 'rotateX' => 0, 'opacity' => 1 ),
+		);
+		$out    = $this->render( self::keyframe_entrance_from( 'scroll', $frames ) );
+		$css    = $this->css();
+		$emit   = $this->emitted_frames( $out );
+		$this->assertSame( array( '0deg', '20deg', '0deg' ), array_column( $emit, '--sgs-me-rx' ), 'rotateX per frame' );
+		$this->assertSame( '-10deg', $emit[1]['--sgs-me-ry'] ?? null, 'rotateY on the middle frame' );
+		$this->assertStringContainsString( '--sgs-me-from-rx:0deg;', $css, 'frame 0 is the hidden start state' );
+		$this->assertStringContainsString( '--sgs-persp-self:800px;', $css, 'a keyframe X or Y owner gets the default perspective' );
+		$this->assertStringContainsString( 'transform', $out, 'the transform channel is declared' );
+		$this->assertSame( 1, preg_match( '/data-sgs-me=([\'"])[^\'"]*\btransform\b/', $out ), 'data-sgs-me lists the transform channel' );
+	}
+
+	public function test_keyframe_entrance_drops_an_out_of_range_angle(): void {
+		$frames = array(
+			array( 'offset' => 0, 'rotateX' => 0, 'opacity' => 0 ),
+			array( 'offset' => 100, 'rotateX' => 720, 'rotateY' => 15, 'opacity' => 1 ),
+		);
+		$emit = $this->emitted_frames( $this->render( self::keyframe_entrance_from( 'scroll', $frames ) ) );
+		$this->assertArrayNotHasKey( '--sgs-me-rx', $emit[1], 'a 720deg angle is dropped' );
+		$this->assertSame( '15deg', $emit[1]['--sgs-me-ry'] ?? null, 'the valid sibling angle stays' );
+	}
+
 	/**
 	 * The decoded `data-sgs-me-keyframes` frames.
 	 *
