@@ -52,6 +52,11 @@ const PROBES = [
 		what: 'Spec 38A motion model: hover, entrances, reveal, keyframes, tilt, asset guard, scroll driver across engines (pages 5223, 5226, 5229)',
 		args: [ '--page', '5223', '--page', '5226', '--page', '5229', '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
 	},
+	{
+		file: 'probe-scroll-progress.mjs',
+		what: 'Spec 38A FR-38A-36 scroll progress on fixture page 5250: bar scale and counter text equal page progress, section bar, reduced motion, asset guard',
+		args: [ '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
+	},
 ];
 
 const run = ( file, args = [] ) =>
