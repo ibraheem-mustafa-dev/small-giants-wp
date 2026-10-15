@@ -688,6 +688,465 @@
 		{
 			"devices": {},
 			"effect": null,
+			"family": "entrance-fade-left",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Fade left travel: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-fade-left-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": "token:distance.md"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-left",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Fade left travel: Standard",
+			"panel": "entrance",
+			"slug": "entrance-fade-left-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": "token:entrance.distance"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-left",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Fade left travel: Bold",
+			"panel": "entrance",
+			"slug": "entrance-fade-left-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": "token:distance.xl"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-right",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Fade right travel: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-fade-right-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": "-token:distance.md"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-right",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Fade right travel: Standard",
+			"panel": "entrance",
+			"slug": "entrance-fade-right-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": "-token:entrance.distance"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-right",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Fade right travel: Bold",
+			"panel": "entrance",
+			"slug": "entrance-fade-right-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": "-token:distance.xl"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-left",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Slide left travel: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-slide-left-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": -50
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-left",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Slide left travel: Standard",
+			"panel": "entrance",
+			"slug": "entrance-slide-left-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": -100
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-left",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Slide left travel: Bold",
+			"panel": "entrance",
+			"slug": "entrance-slide-left-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": -160
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-right",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Slide right travel: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-slide-right-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": 50
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-right",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Slide right travel: Standard",
+			"panel": "entrance",
+			"slug": "entrance-slide-right-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": 100
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-right",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Slide right travel: Bold",
+			"panel": "entrance",
+			"slug": "entrance-slide-right-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateX": 160
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-scale-in",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Scale in: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-scale-in-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"scale": 0.95
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-scale-in",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Scale in: Standard",
+			"panel": "entrance",
+			"slug": "entrance-scale-in-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"scale": 0.9
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-scale-in",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Scale in: Bold",
+			"panel": "entrance",
+			"slug": "entrance-scale-in-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"scale": 0.8
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-scale-out",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Scale out: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-scale-out-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"scale": 1.05
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-scale-out",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Scale out: Standard",
+			"panel": "entrance",
+			"slug": "entrance-scale-out-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"scale": 1.1
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-scale-out",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Scale out: Bold",
+			"panel": "entrance",
+			"slug": "entrance-scale-out-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"scale": 1.2
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-blur-in",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Blur in: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-blur-in-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"blur": 4
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-blur-in",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Blur in: Standard",
+			"panel": "entrance",
+			"slug": "entrance-blur-in-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"blur": 8
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-blur-in",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Blur in: Bold",
+			"panel": "entrance",
+			"slug": "entrance-blur-in-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"blur": 16
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-rotate-in",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Rotate in: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-rotate-in-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"rotate": -5
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-rotate-in",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Rotate in: Standard",
+			"panel": "entrance",
+			"slug": "entrance-rotate-in-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"rotate": -10
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-rotate-in",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Rotate in: Bold",
+			"panel": "entrance",
+			"slug": "entrance-rotate-in-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"rotate": -20
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-bounce-in",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Bounce in: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-bounce-in-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"scale": 0.65
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-bounce-in",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Bounce in: Standard",
+			"panel": "entrance",
+			"slug": "entrance-bounce-in-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"scale": 0.3
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-bounce-in",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Bounce in: Bold",
+			"panel": "entrance",
+			"slug": "entrance-bounce-in-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"scale": 0.1
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
 			"family": "keyframe-fade-in",
 			"intensity": null,
 			"kind": "keyframe",

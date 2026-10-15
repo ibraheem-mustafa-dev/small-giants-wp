@@ -6,6 +6,6 @@
     "hover scale and image zoom": ["hover-scale"],
     "hover rotate and translate": ["hover-rotate", "hover-translate"],
     "nav panel open and item stagger": ["nav-panel-item"],
-    "entrance presets": ["entrance-fade-up", "entrance-fade-down", "entrance-slide-up", "entrance-slide-down"]
+    "entrance presets": ["entrance-fade-up", "entrance-fade-down", "entrance-fade-left", "entrance-fade-right", "entrance-slide-up", "entrance-slide-down", "entrance-slide-left", "entrance-slide-right", "entrance-scale-in", "entrance-scale-out", "entrance-blur-in", "entrance-rotate-in", "entrance-bounce-in"]
   }
 }
