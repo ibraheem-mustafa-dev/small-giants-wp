@@ -270,6 +270,7 @@ describe( 'the Close order choice', () => {
 describe( 'which blocks print their items on the server', () => {
 	it( 'counts the nav drawer menu, whose items render.php tags and staggers from the stored settings', () => {
 		expect( F.hasServerItems( 'sgs/nav-drawer-menu' ) ).toBe( true );
+		expect( F.hasServerItems( 'sgs/nav-bar-menu' ) ).toBe( true );
 		expect( F.hasServerItems( 'sgs/container' ) ).toBe( false );
 	} );
 } );

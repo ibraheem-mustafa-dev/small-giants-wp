@@ -139,6 +139,7 @@
 					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + per-image staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — no bgParallax/scroll-trigger attributes on this block."
 				},
 				"image": {
+					"surface": true,
 					"selector": ".sgs-gallery__img",
 					"label": "Image",
 					"order": 2,

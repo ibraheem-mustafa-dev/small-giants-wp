@@ -36,6 +36,7 @@ export {
 	elementLayers,
 	layerLabel,
 	layersAt,
+	levelsForTarget,
 } from './refusal-match';
 
 function pairRefusals( rule, layers ) {

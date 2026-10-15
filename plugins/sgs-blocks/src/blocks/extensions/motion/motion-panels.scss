@@ -1,6 +1,6 @@
 /**
- * Motion panels (Spec 38A): the layer list's buttons, the Add effect menu (rendered in a popover outside the list)
- * and the re-stamp confirmation meet the 44px touch target.
+ * Motion panels (Spec 38A): the layer list's buttons, the Add effect menu (rendered in a popover outside the list),
+ * the re-stamp confirmation and the property rows' buttons meet the 44px touch target.
  */
 .sgs-motion-layers .components-button,
 .sgs-motion-layers__menu .components-button,
@@ -9,6 +9,9 @@
 .sgs-motion-panel--hover [role="radio"],
 .sgs-motion-panel--entrance .components-button,
 .sgs-motion-panel--entrance [role="radio"],
+.sgs-motion-panel--effects .components-button,
+.sgs-motion-panel--effects [role="radio"],
+.sgs-motion-effects__row .components-button,
 .sgs-motion-entrance__stagger .components-button {
 	min-height: 44px;
 	min-width: 44px;

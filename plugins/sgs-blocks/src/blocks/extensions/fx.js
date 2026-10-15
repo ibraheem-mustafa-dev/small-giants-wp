@@ -42,10 +42,8 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
-import apiFetch from '@wordpress/api-fetch';
-import { useSelect } from '@wordpress/data';
-import { useState, useEffect, useMemo } from '@wordpress/element';
-import { DesignTokenPicker, resolveColourToken } from '../../components';
+import { useState, useMemo } from '@wordpress/element';
+import { DesignTokenPicker } from '../../components';
 import { isExtensionHidden } from './hide-extensions';
 import { getBlockType } from '@wordpress/blocks';
 import { hasMotionSupport } from './motion/register';
@@ -57,6 +55,33 @@ import fxPathRoutes from '../../../includes/fx-path-routes.json';
 import fxShapeRoutes from '../../../includes/fx-shape-routes.json';
 import { ToggleGroupControl, ToggleGroupControlOption, ToggleGroupControlOptionIcon, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { GSAP_EASING_OPTIONS as FX_EASE_OPTIONS } from '../../components/motion/easing-master-list';
+import {
+	treatmentThumbnail,
+	shapeThumbnail,
+	routeThumbnail,
+} from './motion/effect-helpers/thumbnails';
+import { useMotionBudget } from './motion/effect-helpers/use-motion-budget';
+import {
+	rgbToHue,
+	circularHueDistance,
+	resolveHue,
+	FX_GEN_HUE_SPREAD_WARNING_THRESHOLD,
+} from './motion/effect-helpers/hue';
+import { withGridDotsEditorPreview } from './motion/stories/grid-dots';
+
+// The thumbnails, the hue helpers, the motion budget hook and the grid-dots canvas story live under `./motion/`
+// (Spec 38A M3.6); this panel re-exports them until it is retired (M6.6-G0).
+export {
+	treatmentThumbnail,
+	shapeThumbnail,
+	routeThumbnail,
+	useMotionBudget,
+	rgbToHue,
+	circularHueDistance,
+	resolveHue,
+	FX_GEN_HUE_SPREAD_WARNING_THRESHOLD,
+	withGridDotsEditorPreview,
+};
 
 /**
  * Every runtime effect module that actually exists under
@@ -740,149 +765,6 @@ const FX_TREATMENT_OPTIONS = [
 ];
 
 /**
- * A surface-treatment thumbnail — a small glyph suggesting the finish.
- *
- * Drawn as a simple pattern rather than the real shader output (unlike
- * `routeThumbnail`/`shapeThumbnail`, which can draw the exact `d` the
- * runtime will use): a WebGL grain/halftone/duotone finish has no static
- * path data to preview from, only a live-rendered pixel field, so the
- * closest honest preview at 24px is an iconographic stand-in for each
- * finish rather than a false promise of pixel accuracy.
- *
- * @param {string} id Preset id — `grain` | `halftone` | `duotone`.
- * @return {Object} An SVG element.
- */
-function treatmentThumbnail( id ) {
-	if ( 'halftone' === id ) {
-		return (
-			<svg
-				viewBox="0 0 100 100"
-				width="24"
-				height="24"
-				aria-hidden="true"
-				focusable="false"
-			>
-				<circle cx="22" cy="22" r="13" fill="currentColor" />
-				<circle cx="58" cy="22" r="9" fill="currentColor" />
-				<circle cx="86" cy="24" r="5" fill="currentColor" />
-				<circle cx="22" cy="58" r="9" fill="currentColor" />
-				<circle cx="58" cy="58" r="6" fill="currentColor" />
-				<circle cx="86" cy="60" r="3" fill="currentColor" />
-				<circle cx="22" cy="86" r="5" fill="currentColor" />
-				<circle cx="58" cy="86" r="3" fill="currentColor" />
-			</svg>
-		);
-	}
-
-	if ( 'duotone' === id ) {
-		return (
-			<svg
-				viewBox="0 0 100 100"
-				width="24"
-				height="24"
-				aria-hidden="true"
-				focusable="false"
-			>
-				<rect x="12" y="12" width="76" height="76" fill="currentColor" />
-				<path
-					d="M 12 12 H 88 V 88 Z"
-					fill="none"
-					stroke="currentColor"
-					strokeOpacity="0.35"
-					strokeWidth="10"
-				/>
-				<rect
-					x="12"
-					y="12"
-					width="38"
-					height="76"
-					fill="currentColor"
-					fillOpacity="0.4"
-				/>
-			</svg>
-		);
-	}
-
-	// `grain` — scattered flecks, the default/fallback glyph.
-	return (
-		<svg
-			viewBox="0 0 100 100"
-			width="24"
-			height="24"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<rect
-				x="10"
-				y="10"
-				width="80"
-				height="80"
-				rx="6"
-				fill="none"
-				stroke="currentColor"
-				strokeWidth="6"
-			/>
-			<circle cx="27" cy="30" r="4" fill="currentColor" />
-			<circle cx="52" cy="22" r="3" fill="currentColor" />
-			<circle cx="72" cy="38" r="4.5" fill="currentColor" />
-			<circle cx="34" cy="55" r="3" fill="currentColor" />
-			<circle cx="60" cy="58" r="4" fill="currentColor" />
-			<circle cx="78" cy="70" r="3" fill="currentColor" />
-			<circle cx="24" cy="76" r="4" fill="currentColor" />
-			<circle cx="48" cy="80" r="3" fill="currentColor" />
-		</svg>
-	);
-}
-
-/**
- * A shape-pair thumbnail — the FROM shape, filled small.
- *
- * Filled rather than stroked (unlike `routeThumbnail`, which draws a line):
- * a morph target is a SHAPE, not a path to travel along, so the thumbnail
- * reads the same way the render layer will actually paint it
- * (`fill: currentColor` in `assets/css/fx-morph.css`).
- *
- * @param {string|null} d Path data, or null for the custom-upload option.
- * @return {Object} An SVG element.
- */
-function shapeThumbnail( d ) {
-	if ( null === d ) {
-		// Custom upload: the same outline-with-arrow glyph FX_PATH_OPTIONS
-		// uses, so both "upload your own" options read identically.
-		return (
-			<svg
-				viewBox="0 0 100 100"
-				width="24"
-				height="24"
-				aria-hidden="true"
-				focusable="false"
-			>
-				<path
-					d="M 26 16 H 62 L 80 34 V 88 H 26 Z M 53 46 V 76 M 40 59 L 53 46 L 66 59"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="7"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-				/>
-			</svg>
-		);
-	}
-
-	return (
-		<svg
-			viewBox="0 0 100 100"
-			width="24"
-			height="24"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<path d={ d } fill="currentColor" stroke="none" />
-		</svg>
-	);
-}
-
-/**
  * The option component the route picker renders each thumbnail with.
  *
  * `ToggleGroupControlOptionIcon` is the WP-native "pick one of these pictures"
@@ -897,59 +779,6 @@ function shapeThumbnail( d ) {
  * @type {Function}
  */
 const RouteOption = ToggleGroupControlOptionIcon || ToggleGroupControlOption;
-
-/**
- * A route thumbnail — the actual curve, drawn small.
- *
- * The signed D427 shape is "the client picks a THUMBNAIL", and a thumbnail of
- * a route is simply that route at 24px. Drawing it from the same `d` the render
- * layer will use means the preview cannot drift from the result.
- *
- * @param {string|null} d Path data, or null for the custom-upload option.
- * @return {Object} An SVG element.
- */
-function routeThumbnail( d ) {
-	if ( null === d ) {
-		// Custom upload: an outline sheet with an arrow, drawn in the same
-		// stroke weight so it sits evenly beside the four route curves.
-		return (
-			<svg
-				viewBox="0 0 100 100"
-				width="24"
-				height="24"
-				aria-hidden="true"
-				focusable="false"
-			>
-				<path
-					d="M 26 16 H 62 L 80 34 V 88 H 26 Z M 53 46 V 76 M 40 59 L 53 46 L 66 59"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="7"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-				/>
-			</svg>
-		);
-	}
-
-	return (
-		<svg
-			viewBox="0 0 100 100"
-			width="24"
-			height="24"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<path
-				d={ d }
-				fill="none"
-				stroke="currentColor"
-				strokeWidth="8"
-				strokeLinecap="round"
-			/>
-		</svg>
-	);
-}
 
 /**
  * Which blocks the fx extension applies to at all.
@@ -1603,178 +1432,6 @@ addFilter(
 	'sgs/fx-save-props',
 	addFxSaveProps
 );
-
-/**
- * The per-page Tier G motion cost, surfaced from a MEASURING SCRIPT owned by
- * a different track (Spec 38 §7 build task 19 / D446 / Bean's D448 ruling —
- * GSAP keeps its budget exemption, but per-page cost becomes VISIBLE).
- *
- * ⚠ THE INTERFACE THIS HOOK ASSUMES — written here because the measuring
- * script + admin panel had not landed at the time this was built, and this
- * file owns ONLY the editor-side surfacing (per the D446 task split):
- *
- *   GET /wp-json/sgs/v1/motion-budget?post_id=<id>
- *   → 200 { totalKb: number, budgetKb: number, overBudget: boolean,
- *           effects: [ { effect: string, kb: number } ] }
- *   → 404 (or any error) — read as "no data yet", never surfaced as an
- *     error to the client; the panel simply shows nothing extra.
- *
- * This hook deliberately COMPUTES NOTHING ITSELF. Spec 38 §4.4's own budget
- * table is explicit that its per-effect KB figures are "ESTIMATES … verified
- * + recorded at Wave A build" — reproducing a second estimate here would
- * give the operator two numbers that can silently disagree, which is worse
- * than showing nothing. If the endpoint is missing, this returns `null` and
- * the caller renders no cost information at all rather than a guess.
- *
- * `useSelect`/`useState`/`useEffect` are called UNCONDITIONALLY every time
- * this hook runs (Rules of Hooks) — `enabled` only gates whether the EFFECT
- * BODY performs a fetch, not whether the hook itself is called. This is what
- * lets a caller invoke it from every block instance without one duplicate
- * network request per non-selected/non-qualifying block on the page.
- *
- * @param {boolean} enabled Whether to actually fetch (caller's block both
- *                          qualifies for fx AND is currently selected).
- * @return {Object|null} `{ totalKb, budgetKb, overBudget, effects }`, or
- *                        `null` while loading / when unavailable.
- */
-function useMotionBudget( enabled ) {
-	const postId = useSelect(
-		( select ) => select( 'core/editor' )?.getCurrentPostId?.(),
-		[]
-	);
-	const [ budget, setBudget ] = useState( null );
-
-	useEffect( () => {
-		if ( ! enabled || ! postId ) {
-			return;
-		}
-		let cancelled = false;
-		apiFetch( { path: `/sgs/v1/motion-budget?post_id=${ postId }` } )
-			.then( ( data ) => {
-				if ( ! cancelled ) {
-					setBudget(
-						data && 'number' === typeof data.totalKb ? data : null
-					);
-				}
-			} )
-			.catch( () => {
-				// Endpoint not built yet, or genuinely nothing to measure —
-				// both read the same way: no cost information to show.
-				if ( ! cancelled ) {
-					setBudget( null );
-				}
-			} );
-		return () => {
-			cancelled = true;
-		};
-	}, [ enabled, postId ] );
-
-	return budget;
-}
-
-/*
- * ── Narrow-hue-palette warning (D946/1f) ────────────────────────────────────
- * Bean's approved direction: WARN, don't block. Reuses the exact pattern
- * already shipped for this shape of problem — `sgs/site-header`'s
- * `contrastSafe` mechanism (a computed check against the operator's own
- * colour choices, a non-dismissible `<Notice status="warning">` naming the
- * specific issue) — rather than inventing a second warning mechanism.
- *
- * The CURRENT alpha-composite blob engine's real vulnerability, measured
- * this session, is the OPPOSITE of what the (now-corrected) Colour 2 help
- * text used to say: colours picked too CLOSE together in hue wash out;
- * colours spread wide — even near-opposite ones like navy+gold — work fine.
- */
-
-/**
- * RGB (each 0-255) -> hue, 0-360 degrees. Standard HSL hue formula. A fully
- * achromatic (grey) input has no real hue; it is reported as 0 rather than
- * excluded — a near-grey stop reads as "close to everything" in the
- * plain-English warning anyway, which is the right outcome even though the
- * literal hue value is arbitrary for it.
- *
- * @param {number} r 0-255.
- * @param {number} g 0-255.
- * @param {number} b 0-255.
- * @return {number} Hue, 0-360.
- */
-function rgbToHue( r, g, b ) {
-	const rN = r / 255;
-	const gN = g / 255;
-	const bN = b / 255;
-	const max = Math.max( rN, gN, bN );
-	const min = Math.min( rN, gN, bN );
-	const delta = max - min;
-	if ( delta === 0 ) {
-		return 0;
-	}
-	let h;
-	if ( max === rN ) {
-		h = ( ( gN - bN ) / delta ) % 6;
-	} else if ( max === gN ) {
-		h = ( bN - rN ) / delta + 2;
-	} else {
-		h = ( rN - gN ) / delta + 4;
-	}
-	h *= 60;
-	if ( h < 0 ) {
-		h += 360;
-	}
-	return h;
-}
-
-/**
- * Circular distance between two hues on the colour wheel, 0-180 degrees
- * (the shorter way around).
- *
- * @param {number} a Hue, 0-360.
- * @param {number} b Hue, 0-360.
- * @return {number} Distance, 0-180.
- */
-function circularHueDistance( a, b ) {
-	const diff = Math.abs( a - b ) % 360;
-	return diff > 180 ? 360 - diff : diff;
-}
-
-/**
- * Resolve a stored `DesignTokenPicker` value (slug, hex, rgb(), var(), …) to
- * a hue, via the SAME probe-element technique `wcag-contrast.js`'s
- * `calculateRelativeLuminance()` already uses for `var()` — the browser's
- * own computed style is the only reliable way to turn an arbitrary CSS
- * colour syntax into concrete channels without re-implementing CSS colour
- * parsing.
- *
- * @param {string} value   Stored colour value.
- * @param {Array}  palette Active theme colour palette ([{ slug, color }]).
- * @return {number|null} Hue, 0-360, or null when the value is empty/unresolvable.
- */
-function resolveHue( value, palette ) {
-	const resolved = resolveColourToken( value, palette );
-	if ( ! resolved ) {
-		return null;
-	}
-	const probe = document.createElement( 'div' );
-	probe.style.color = resolved;
-	document.body.appendChild( probe );
-	const computed = getComputedStyle( probe ).color;
-	document.body.removeChild( probe );
-	const m = computed.match( /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/ );
-	if ( ! m ) {
-		return null;
-	}
-	return rgbToHue( parseInt( m[ 1 ], 10 ), parseInt( m[ 2 ], 10 ), parseInt( m[ 3 ], 10 ) );
-}
-
-/**
- * Threshold below which the four generative-background colours are flagged
- * as too close together — a conservative starting threshold, not
- * independently re-validated below 30°; revisit if real client feedback
- * disagrees. The investigation's measured data showed genuinely washed
- * palettes at 4-7 degrees spread and healthy results from 100+ degrees.
- *
- * @type {number}
- */
-const FX_GEN_HUE_SPREAD_WARNING_THRESHOLD = 30;
 
 /**
  * The "Scroll & effects" inspector panel (Spec 38 §7).
@@ -5079,103 +4736,3 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 }, 'withFxControls' );
 
 addFilter( 'editor.BlockEdit', 'sgs/fx-controls', withFxControls );
-
-/**
- * Static grid-dot preview in the EDITOR CANVAS (FR-38-33).
- *
- * Bean, seeing the shipped effect: "the dots aren't visible in the canvas too".
- * They were not, and by design — `data-sgs-fx` is stamped by a PHP `render_block`
- * filter that the editor canvas never runs, so no fx effect previews there. The
- * panel says so ("Scroll effects preview on the live site, not in the editor").
- *
- * ── WHAT THIS DOES AND DELIBERATELY DOES NOT DO ───────────────────────────
- * It paints the RESTING LATTICE only: dot placement, spacing, size and colour,
- * exactly as they sit before the pointer arrives. It does NOT run the effect —
- * no canvas, no rAF, no pointer tracking, no module import into the editor
- * bundle. The interaction remains a live-site thing.
- *
- * That is the whole point rather than a shortcut. The resting lattice is the
- * half a client must JUDGE while designing — is it too dense, too sparse, can I
- * see the dots against this background — and it is precisely what could not be
- * judged before: the 1.35:1 colour shipped because nobody could see the dots
- * until the page was live.
- *
- * ── WHY A GRADIENT AND NOT A CANVAS ───────────────────────────────────────
- * `radial-gradient` + `background-size` IS a dot lattice, natively, at any
- * pitch. A canvas in the editor would mean importing the engine into the editor
- * bundle, mounting per block, and tearing down on deselect — real work, real
- * lifecycle bugs, for a picture CSS already draws.
- *
- * ⛔ CUSTOM PROPERTIES ONLY on `wrapperProps.style`. Spec 32 forbids inline
- * style PROPERTY declarations; a `--var: value` is a VALUE, not a property
- * declaration (the same distinction `view.js` relies on for `--sgs-di-py`), and
- * this is editor chrome rather than rendered block output either way. The actual
- * `background-image` lives in `fx-panel.scss`.
- */
-const withGridDotsEditorPreview = createHigherOrderComponent(
-	( BlockListBlock ) => {
-		return ( props ) => {
-			const { attributes } = props;
-
-			if ( ! attributes || 'grid-dots' !== attributes.fx ) {
-				return <BlockListBlock { ...props } />;
-			}
-
-			/*
-			 * Fall back to the ENGINE's Preset B values, not to invented ones.
-			 * These three literals are the one place this file repeats them, and
-			 * they exist because CSS cannot read `grid-dots.js`'s DEFAULTS table.
-			 * If Preset B ever changes, it changes in grid-dots.js and here.
-			 */
-			const cell = attributes.fxGridCell || 40;
-			const dot = attributes.fxGridDotSize || 2;
-
-			/*
-			 * Resolve the stored colour the SAME way `fx-grid-dots.php` does:
-			 * a palette SLUG becomes its preset custom property (so the preview
-			 * re-colours with the theme, exactly as the live field does), and a
-			 * hex/hex8 passes through verbatim so a picked alpha previews too.
-			 * An unset value emits nothing and the stylesheet's own fallback
-			 * chain applies.
-			 *
-			 * This exists because the preview previously painted with
-			 * `currentColor` — the block's TEXT colour — and so showed a colour
-			 * that never ships. It drew crisp dark dots over the exact faint
-			 * pink field Bean could not see on the live page.
-			 */
-			const stored = attributes.fxGridDotColour || '';
-			let previewColour = '';
-			if ( /^#/.test( stored ) ) {
-				previewColour = stored;
-			} else if ( /^[a-z0-9-]+$/.test( stored ) ) {
-				previewColour = `var(--wp--preset--color--${ stored })`;
-			}
-
-			const wrapperProps = {
-				...( props.wrapperProps || {} ),
-				className: [ props.wrapperProps?.className, 'sgs-grid-dots-preview' ]
-					.filter( Boolean )
-					.join( ' ' ),
-				style: {
-					...( props.wrapperProps?.style || {} ),
-					'--sgs-gd-cell': `${ cell }px`,
-					'--sgs-gd-dot': `${ dot }px`,
-					...( previewColour
-						? { '--sgs-gd-colour': previewColour }
-						: {} ),
-				},
-			};
-
-			return (
-				<BlockListBlock { ...props } wrapperProps={ wrapperProps } />
-			);
-		};
-	},
-	'withGridDotsEditorPreview'
-);
-
-addFilter(
-	'editor.BlockListBlock',
-	'sgs/fx-grid-dots-preview',
-	withGridDotsEditorPreview
-);

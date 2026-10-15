@@ -49,6 +49,7 @@ import {
 	withElement,
 	withList,
 } from './layer-lists';
+import { effectTriggers } from '../effect-options';
 
 export {
 	LAYER_LISTS,
@@ -62,13 +63,15 @@ export {
 /**
  * Add a layer: an effect layer to a list, or the single layer of `hover.state` / `entrance.base`.
  *
- * @param {Object|undefined} motion           The motion value.
- * @param {string}           target           The target.
- * @param {string}           list             The list path.
+ * @param {Object|undefined} motion             The motion value.
+ * @param {string}           target             The target.
+ * @param {string}           list               The list path.
  * @param {Object}           options
- * @param {string}           [options.effect] Effect slug (lists only).
- * @param {string}           [options.preset] Preset slug to stamp; an effect defaults to its Standard preset.
- * @param {Function}         [options.random] Id randomness (tests pass a fixed sequence).
+ * @param {string}           [options.effect]   Effect slug (lists only).
+ * @param {string}           [options.preset]   Preset slug to stamp; an effect defaults to its Standard preset.
+ * @param {Function}         [options.random]   Id randomness (tests pass a fixed sequence).
+ * @param {Object|null}      [options.elements] The block's `supports.sgs.elements`, so a part marked as a surface
+ *                                              accepts surface-level effects.
  * @return {{motion: (Object|undefined), layer: Object}|{refusal: string}|{full: true}|{occupied: true}|{invalid: string}}
  *         The result: written, refused by the schema, the list full, the single layer already set, or not valid.
  */
@@ -76,7 +79,7 @@ export function addLayer(
 	motion,
 	target,
 	list,
-	{ effect, preset, random } = {}
+	{ effect, preset, random, elements = null } = {}
 ) {
 	const entry = listOf( list );
 	if ( ! isTarget( target ) ) {
@@ -96,7 +99,7 @@ export function addLayer(
 				) } is not allowed in ${ list }`
 			);
 		}
-		if ( ! effectsForTarget( [ effect ], target ).length ) {
+		if ( ! effectsForTarget( [ effect ], target, elements ).length ) {
 			return { invalid: `${ effect } cannot move ${ target }` };
 		}
 		if ( entry.maxItems !== null && held() >= entry.maxItems ) {
@@ -116,6 +119,13 @@ export function addLayer(
 		return { invalid: `preset ${ preset } does not fit ${ list }` };
 	}
 	layer = stampLayer( layer, row, entry.layerDef );
+	// An effect whose preset sets no trigger plays on the first trigger its registry row offers in this list.
+	if ( entry.kind === 'list' && layer.trigger === undefined ) {
+		const [ first ] = effectTriggers( effect, entry.layerDef );
+		if ( first ) {
+			layer.trigger = first;
+		}
+	}
 	if ( entry.kind === 'single' && ! isObject( layer.values ) ) {
 		layer.values = {};
 	}
@@ -191,6 +201,42 @@ export function removeLayer( motion, target, list, id ) {
 }
 
 /**
+ * Replace a list layer with a new layer of another effect at the same position (the Effects panel's Effect choice). The
+ * new layer is stamped and checked exactly as `addLayer` does, against the element without the replaced layer.
+ *
+ * @param {Object|undefined} motion  The motion value.
+ * @param {string}           target  The target.
+ * @param {string}           list    The list path (a list, never a single layer).
+ * @param {string}           id      The id of the layer to replace.
+ * @param {Object}           options `addLayer`'s options for the new layer.
+ * @return {Object} `addLayer`'s result, or `{ missing: true }` when no layer has the id.
+ */
+export function swapLayer( motion, target, list, id, options = {} ) {
+	if ( listOf( list ).kind !== 'list' ) {
+		throw new Error( `motion layers: ${ list } holds a single layer` );
+	}
+	const before = layersAt( elementOf( motion, target ), list );
+	const index = indexOfId( before, id );
+	if ( index < 0 ) {
+		return { missing: true };
+	}
+	const added = addLayer(
+		removeLayer( motion, target, list, id ),
+		target,
+		list,
+		options
+	);
+	if ( ! ( 'motion' in added ) ) {
+		return added;
+	}
+	let next = added.motion;
+	for ( let at = before.length - 1; at > index; at -= 1 ) {
+		next = moveLayer( next, target, list, added.layer.id, -1 );
+	}
+	return { motion: next, layer: added.layer };
+}
+
+/**
  * Replace a layer's fields (its id and effect stay); a change the schema refuses is not written.
  *
  * @param {Object|undefined} motion The motion value.
@@ -248,13 +294,15 @@ export function targetsWithLayers( motion, panel ) {
 /**
  * The layer operations bound to one block's motion attribute.
  *
- * @param {Object|undefined} motion        The motion value.
- * @param {Function}         setAttributes The block's `setAttributes`.
- * @return {Object} `{ motion, layersOf, effectsFor, add, refusalFor, move, remove, update }`; `effectsFor` lists the
- *                  effects a target's list may offer, `add` and `update` return the operation's result, and
+ * @param {Object|undefined} motion          The motion value.
+ * @param {Function}         setAttributes   The block's `setAttributes`.
+ * @param {Object|null}      [elements=null] The block's `supports.sgs.elements` (a part marked as a surface accepts
+ *                                           surface-level effects).
+ * @return {Object} `{ motion, layersOf, effectsFor, add, refusalFor, move, remove, swap, update }`; `effectsFor` lists
+ *                  the effects a target's list may offer, `add`, `swap` and `update` return the operation's result, and
  *                  `refusalFor` the text that would refuse adding an effect (or null).
  */
-export function useMotionLayers( motion, setAttributes ) {
+export function useMotionLayers( motion, setAttributes, elements = null ) {
 	const write = useCallback(
 		( next ) => setAttributes( { [ MOTION_ATTRIBUTE_NAME ]: next } ),
 		[ setAttributes ]
@@ -271,17 +319,27 @@ export function useMotionLayers( motion, setAttributes ) {
 			layersOf: ( target, list ) =>
 				layersAt( elementOf( motion, target ), list ),
 			effectsFor: ( target, list ) =>
-				effectsForTarget( effectsForList( list ), target ),
+				effectsForTarget( effectsForList( list ), target, elements ),
 			add: ( target, list, options ) =>
-				commit( addLayer( motion, target, list, options ) ),
+				commit(
+					addLayer( motion, target, list, { ...options, elements } )
+				),
 			refusalFor: ( target, list, effect ) =>
-				addLayer( motion, target, list, { effect } ).refusal || null,
+				addLayer( motion, target, list, { effect, elements } )
+					.refusal || null,
 			move: ( target, list, id, delta ) =>
 				write( moveLayer( motion, target, list, id, delta ) ),
 			remove: ( target, list, id ) =>
 				write( removeLayer( motion, target, list, id ) ),
+			swap: ( target, list, id, options ) =>
+				commit(
+					swapLayer( motion, target, list, id, {
+						...options,
+						elements,
+					} )
+				),
 			update: ( target, list, id, next ) =>
 				commit( updateLayer( motion, target, list, id, next ) ),
 		};
-	}, [ motion, write ] );
+	}, [ motion, write, elements ] );
 }

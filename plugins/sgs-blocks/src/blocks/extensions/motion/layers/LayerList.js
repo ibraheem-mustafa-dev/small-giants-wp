@@ -32,6 +32,8 @@ const ADD_FOCUS = 'add';
  * @param {Function} props.onRemove         `( id )`.
  * @param {Function} [props.renderControls] `( layer, index ) => Element`: the layer's own controls.
  * @param {boolean}  [props.full]           Whether the list holds its maximum number of layers.
+ * @param {number}   [props.firstNumber]    The paint-order number of the first layer shown (2 when the panel shows the
+ *                                          first layer above the list).
  * @return {Element} The list.
  */
 export default function LayerList( {
@@ -44,6 +46,7 @@ export default function LayerList( {
 	onRemove,
 	renderControls,
 	full = false,
+	firstNumber = 1,
 } ) {
 	const [ message, setMessage ] = useState( null );
 	const [ focusNext, setFocusNext ] = useState( null );
@@ -103,7 +106,7 @@ export default function LayerList( {
 											className="sgs-motion-layers__item-number"
 											aria-hidden="true"
 										>
-											{ index + 1 }
+											{ index + firstNumber }
 										</span>{ ' ' }
 										{ name }
 									</span>

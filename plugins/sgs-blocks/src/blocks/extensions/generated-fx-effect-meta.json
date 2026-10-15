@@ -16,6 +16,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"load",
 			"visible"
@@ -31,6 +34,7 @@
 		"owns_scroll_transform": false,
 		"panels": [],
 		"pins": false,
+		"target_level": [],
 		"triggers": [
 			"load"
 		]
@@ -65,6 +69,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"surface"
+		],
 		"triggers": [
 			"hover"
 		]
@@ -83,6 +90,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"block"
+		],
 		"triggers": [
 			"load"
 		]
@@ -101,6 +111,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"scroll",
 			"load",
@@ -121,6 +134,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"paired"
+		],
 		"triggers": [
 			"scroll"
 		]
@@ -137,6 +153,9 @@
 			"hover"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"hover"
 		]
@@ -153,6 +172,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"surface"
+		],
 		"triggers": [
 			"load"
 		]
@@ -176,6 +198,9 @@
 			"hover"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"hover"
 		]
@@ -192,6 +217,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"surface"
+		],
 		"triggers": [
 			"hover"
 		]
@@ -214,6 +242,9 @@
 			"effects"
 		],
 		"pins": true,
+		"target_level": [
+			"block"
+		],
 		"triggers": [
 			"scroll"
 		]
@@ -230,6 +261,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"block"
+		],
 		"triggers": [
 			"scroll"
 		]
@@ -253,6 +287,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"surface"
+		],
 		"triggers": [
 			"load",
 			"visible"
@@ -270,6 +307,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"load",
 			"visible",
@@ -294,6 +334,9 @@
 			"hover"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"hover"
 		]
@@ -310,6 +353,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"block"
+		],
 		"triggers": [
 			"load",
 			"visible"
@@ -327,6 +373,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"scroll",
 			"load",
@@ -347,6 +396,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"scroll"
 		]
@@ -361,6 +413,7 @@
 		"owns_scroll_transform": false,
 		"panels": [],
 		"pins": false,
+		"target_level": [],
 		"triggers": [
 			"load"
 		]
@@ -385,6 +438,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"scroll"
 		]
@@ -401,6 +457,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"surface"
+		],
 		"triggers": [
 			"hover"
 		]
@@ -419,6 +478,10 @@
 			"effects"
 		],
 		"pins": true,
+		"target_level": [
+			"block",
+			"part"
+		],
 		"triggers": [
 			"scroll"
 		]
@@ -445,6 +508,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"pointerdown",
 			"click"
@@ -464,6 +530,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"scroll",
 			"load",
@@ -487,6 +556,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"scroll"
 		]
@@ -501,6 +573,7 @@
 		"owns_scroll_transform": false,
 		"panels": [],
 		"pins": false,
+		"target_level": [],
 		"triggers": [
 			"scroll"
 		]
@@ -526,6 +599,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"scroll",
 			"load",
@@ -553,6 +629,9 @@
 			"hover"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"hover"
 		]
@@ -570,6 +649,9 @@
 			"entrance"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"scroll",
 			"load",
@@ -588,6 +670,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part"
+		],
 		"triggers": [
 			"load"
 		]
@@ -612,6 +697,10 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"part",
+			"surface"
+		],
 		"triggers": [
 			"load",
 			"visible"
@@ -641,6 +730,9 @@
 			"effects"
 		],
 		"pins": false,
+		"target_level": [
+			"surface"
+		],
 		"triggers": [
 			"load"
 		]

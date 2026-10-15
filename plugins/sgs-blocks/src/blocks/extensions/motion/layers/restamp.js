@@ -118,7 +118,7 @@ export function useRestamp( layers ) {
 	return { request, requestIntensity, pending, confirm, cancel };
 }
 
-function ConfirmBody( { count, confirm, cancel } ) {
+function ConfirmBody( { count, message, confirm, cancel } ) {
 	const id = useInstanceId( ConfirmBody, 'sgs-motion-restamp' );
 	const keepRef = useRef( null );
 
@@ -152,7 +152,7 @@ function ConfirmBody( { count, confirm, cancel } ) {
 			>
 				{ __( 'Replace customised values?', 'sgs-blocks' ) }
 			</p>
-			<p id={ `${ id }-text` }>{ restampMessage( count ) }</p>
+			<p id={ `${ id }-text` }>{ message || restampMessage( count ) }</p>
 			<Button variant="primary" onClick={ confirm } __next40pxDefaultSize>
 				{ __( 'Replace', 'sgs-blocks' ) }
 			</Button>
@@ -173,7 +173,8 @@ function ConfirmBody( { count, confirm, cancel } ) {
  * focus back when it closes.
  *
  * @param {Object}      props
- * @param {Object|null} props.pending The pending re-stamp from `useRestamp`.
+ * @param {Object|null} props.pending The pending re-stamp from `useRestamp` (or another replacement that carries its own
+ *                                    `message`, such as the Effects panel's effect swap).
  * @param {Function}    props.confirm Applies it.
  * @param {Function}    props.cancel  Keeps the customised fields.
  * @return {Element|null} The confirmation, or null when nothing waits.
@@ -185,6 +186,7 @@ export function RestampConfirm( { pending, confirm, cancel } ) {
 	return (
 		<ConfirmBody
 			count={ pending.count }
+			message={ pending.message }
 			confirm={ confirm }
 			cancel={ cancel }
 		/>

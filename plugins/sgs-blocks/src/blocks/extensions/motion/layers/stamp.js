@@ -12,85 +12,37 @@
  * The on-add registry lets another unit add a stamping rule that runs when a layer is added (for example a stored
  * phase). It ships empty; rules register themselves with `registerOnAddRule`.
  *
+ * The preset lookup (`preset-lookup.js`), the Customised paths and dot-path values (`customised.js`) and the on-add
+ * rules (`on-add-rules.js`) live in sibling modules; this module re-exports them, so importers read one module.
+ *
  * @package
  */
 
 import { validateField } from '../../../../components/motion/field-types';
-import { createEvaluator } from '../../../../components/motion/field-types/schema-eval';
 import { sameValue } from '../../../../components/motion/atom-utils';
-import {
-	intensityRowsFor,
-	restampValues,
-} from '../../../../components/motion/IntensityPicker';
-import presetFile from '../../../../components/motion/generated-motion-presets.json';
+import { restampValues } from '../../../../components/motion/IntensityPicker';
 import { DEFS } from './layer-lists';
+import { CLOSE_PATH, copy, evaluate, isObject } from './stamp-common';
+import { presetBySlug, presetFits } from './preset-lookup';
+import { heldPaths, valueAtPath } from './customised';
 
-const evaluate = createEvaluator( DEFS );
+export { defaultPresetFor, presetBySlug, presetFits } from './preset-lookup';
+export {
+	editField,
+	heldPaths,
+	isCustomised,
+	leafPaths,
+	resetField,
+	stampedValue,
+	valueAtPath,
+} from './customised';
+
 const REF_PREFIX = '#/$defs/';
 const CHOICE_REF = `${ REF_PREFIX }choice`;
 const UNSUPPORTED = 'unsupported:';
-// The trigger's own values: close values at Desktop and per tier. A preset never stamps them.
-const CLOSE_PATH = /^(?:close\.|devices\.(?:tablet|mobile)\.close\.)/;
 // A stored delay (the stagger helper's, or one the client typed): a re-stamp keeps it unless the new row sets one.
 const DELAY_PATH = /^(?:values|devices\.(?:tablet|mobile))\.delay$/;
 const TIER_NAMES = Object.freeze( [ 'tablet', 'mobile' ] );
-
-const isObject = ( value ) =>
-	Boolean( value ) && typeof value === 'object' && ! Array.isArray( value );
-
-const copy = ( value ) =>
-	value === undefined ? undefined : JSON.parse( JSON.stringify( value ) );
-
-/**
- * A preset row by its slug.
- *
- * @param {string} slug Preset slug.
- * @return {Object|null} The row, or null.
- */
-export function presetBySlug( slug ) {
-	return presetFile.presets.find( ( row ) => row.slug === slug ) || null;
-}
-
-/**
- * The preset a newly added effect layer is stamped from: its Standard intensity row, else the one preset row named
- * for the effect, in either case only a row of the layer's own panel.
- *
- * @param {string} effect   Effect slug.
- * @param {string} layerDef The layer's `$def` name.
- * @return {Object|null} The row, or null when the panel has no preset for the effect.
- */
-export function defaultPresetFor( effect, layerDef ) {
-	const panel = DEFS[ layerDef ]?.[ 'x-sgs-panel' ];
-	const standard = intensityRowsFor( effect )?.standard;
-	if ( standard && standard.panel === panel ) {
-		return standard;
-	}
-	return (
-		presetFile.presets.find(
-			( row ) =>
-				row.kind === 'preset' &&
-				row.effect === effect &&
-				row.panel === panel
-		) || null
-	);
-}
-
-/**
- * Whether a preset row may stamp a layer: the row's panel is the layer's panel and the row's effect is the layer's
- * effect (none for a hover state or an entrance).
- *
- * @param {Object}           row      The preset row.
- * @param {string}           layerDef The layer's `$def` name.
- * @param {string|undefined} effect   The layer's effect slug.
- * @return {boolean} True when the row fits.
- */
-export function presetFits( row, layerDef, effect ) {
-	return (
-		isObject( row ) &&
-		row.panel === DEFS[ layerDef ]?.[ 'x-sgs-panel' ] &&
-		( row.effect ?? null ) === ( effect ?? null )
-	);
-}
 
 // A layer field checked against the field node the layer's `$def` gives it; an absent node accepts nothing.
 function fieldAccepted( layerDef, key, value ) {
@@ -298,133 +250,6 @@ export function stampLayer( layer, row, layerDef ) {
 }
 
 /**
- * The value at a dot path (`values.maxPullX`, `devices.mobile.from.translateY`).
- *
- * @param {Object} source The layer or preset row.
- * @param {string} path   Dot path.
- * @return {unknown} The value, or undefined.
- */
-export function valueAtPath( source, path ) {
-	return path
-		.split( '.' )
-		.reduce(
-			( node, key ) =>
-				node !== null && typeof node === 'object'
-					? node[ key ]
-					: undefined,
-			source
-		);
-}
-
-// A copy of `source` with the value at `path` set (undefined removes it).
-function withValueAt( source, path, value ) {
-	const [ key, ...rest ] = path.split( '.' );
-	const base = Array.isArray( source )
-		? [ ...source ]
-		: { ...( isObject( source ) ? source : {} ) };
-	if ( rest.length ) {
-		base[ key ] = withValueAt( base[ key ], rest.join( '.' ), value );
-	} else if ( value === undefined ) {
-		delete base[ key ];
-	} else {
-		base[ key ] = value;
-	}
-	return base;
-}
-
-/**
- * The value the layer's preset stamped at a path.
- *
- * @param {Object} layer The layer.
- * @param {string} path  Dot path.
- * @return {unknown} The stamped value, or undefined when the layer has no preset or the preset sets no value there.
- */
-export function stampedValue( layer, path ) {
-	const row = layer?.preset ? presetBySlug( layer.preset ) : null;
-	return row ? valueAtPath( row, path ) : undefined;
-}
-
-/**
- * Whether a field is customised: listed in the layer's `customised` paths.
- *
- * @param {Object} layer The layer.
- * @param {string} path  Dot path.
- * @return {boolean} True when customised.
- */
-export function isCustomised( layer, path ) {
-	return (
-		Array.isArray( layer?.customised ) && layer.customised.includes( path )
-	);
-}
-
-// The layer with `customised` set to the given paths, each once (removed when none is left); a path the schema's
-// `customisedPaths` item refuses is not written.
-function withCustomised( layer, paths ) {
-	const next = { ...layer };
-	const kept = [ ...new Set( paths ) ].filter(
-		( path ) => evaluate( DEFS.customisedPaths.items, path ) === null
-	);
-	if ( kept.length ) {
-		next.customised = kept;
-	} else {
-		delete next.customised;
-	}
-	return next;
-}
-
-/**
- * The layer after a field edit: the value set, and the path added to `customised` while it differs from the stamped
- * value (removed once it matches again).
- *
- * @param {Object}  layer The layer.
- * @param {string}  path  Dot path under `values`, `close` or `devices`.
- * @param {unknown} value The new value (undefined clears it).
- * @return {Object} The edited layer.
- */
-export function editField( layer, path, value ) {
-	const next = withValueAt( layer, path, value );
-	const others = ( layer.customised || [] ).filter(
-		( item ) => item !== path
-	);
-	const differs =
-		CLOSE_PATH.test( path ) ||
-		! sameValue( value, stampedValue( layer, path ) );
-	return withCustomised( next, differs ? [ ...others, path ] : others );
-}
-
-/**
- * The layer with one field restored to its stamped value and its Customised tag cleared.
- *
- * @param {Object} layer The layer.
- * @param {string} path  Dot path.
- * @return {Object} The reset layer.
- */
-export function resetField( layer, path ) {
-	const next = withValueAt(
-		layer,
-		path,
-		copy( stampedValue( layer, path ) )
-	);
-	return withCustomised(
-		next,
-		( layer.customised || [] ).filter( ( item ) => item !== path )
-	);
-}
-
-// The dot paths of the non-empty leaf values under a node (`values.followPointer`, `devices.tablet.from.opacity`).
-function leafPaths( node, prefix ) {
-	if ( Array.isArray( node ) ) {
-		return node.length ? [ prefix ] : [];
-	}
-	if ( isObject( node ) ) {
-		return Object.entries( node ).flatMap( ( [ key, item ] ) =>
-			leafPaths( item, `${ prefix }.${ key }` )
-		);
-	}
-	return node === undefined || node === null || node === '' ? [] : [ prefix ];
-}
-
-/**
  * What re-stamping a layer from another preset row would do. The trigger never changes (FR-38A-46).
  *
  * @param {Object} layer    The layer.
@@ -437,17 +262,8 @@ export function planRestamp( layer, row, layerDef ) {
 	if ( layer.trigger === undefined ) {
 		delete next.trigger;
 	}
-	// A layer with a preset records what the client changed in `customised`. A layer with none (a migrated or cloned
-	// one) records nothing, so every value it holds counts: the confirmation names them before they are replaced.
-	const candidates = layer.preset
-		? layer.customised || []
-		: [
-				...new Set( [
-					...( layer.customised || [] ),
-					...leafPaths( layer.values, 'values' ),
-					...leafPaths( layer.devices, 'devices' ),
-				] ),
-		  ];
+	// The confirmation names every held value before it is replaced.
+	const candidates = heldPaths( layer );
 	const replaced = candidates.filter(
 		( path ) =>
 			! CLOSE_PATH.test( path ) &&
@@ -456,41 +272,4 @@ export function planRestamp( layer, row, layerDef ) {
 	return { layer: next, replaced };
 }
 
-const onAddRules = new Map();
-
-/**
- * Register a stamping rule that runs when a layer is added, after the preset stamp.
- *
- * @param {string}   id   Rule id; registering the same id again replaces the rule.
- * @param {Function} rule `( layer, context ) => layer`, where context is `{ target, list, panel, element }`.
- * @return {Function} Removes the rule.
- */
-export function registerOnAddRule( id, rule ) {
-	if ( typeof id !== 'string' || ! id || typeof rule !== 'function' ) {
-		throw new TypeError( 'registerOnAddRule needs an id and a function' );
-	}
-	onAddRules.set( id, rule );
-	return () => {
-		if ( onAddRules.get( id ) === rule ) {
-			onAddRules.delete( id );
-		}
-	};
-}
-
-/**
- * Run every registered on-add rule over a newly stamped layer, in registration order.
- *
- * @param {Object} layer   The stamped layer.
- * @param {Object} context `{ target, list, panel, element }`.
- * @return {Object} The layer after the rules.
- */
-export function applyOnAddRules( layer, context ) {
-	let next = layer;
-	onAddRules.forEach( ( rule ) => {
-		const result = rule( next, context );
-		if ( isObject( result ) ) {
-			next = result;
-		}
-	} );
-	return next;
-}
+export { registerOnAddRule, applyOnAddRules } from './on-add-rules';

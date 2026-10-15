@@ -171,6 +171,9 @@ export default function HoverPanel( { blockName, elements, motion, layers } ) {
 					target={ target }
 					layers={ layers }
 					actions={ actions }
+					blockName={ blockName }
+					elements={ elements }
+					report={ setNotice }
 				/>
 				{ focusAvailable( blockName ) && (
 					<FocusState actions={ actions } />

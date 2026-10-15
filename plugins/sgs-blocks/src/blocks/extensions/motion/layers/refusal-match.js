@@ -17,20 +17,40 @@ const PANELS = defs[ 'x-sgs-panels' ];
 const TARGET_LEVEL_KEY = 'x-target-level';
 
 // The target levels each kind of target can hold (§5.4 "Targeting levels"). The root is the block, paints the block's
-// own background and is an element a part-level effect can attach to; a declared part holds part-level effects.
+// own background and is an element a part-level effect can attach to; a declared part holds part-level effects, and a
+// part its declaration marks `"surface": true` (a background or media part) also holds surface-level effects.
 const ROOT_LEVELS = Object.freeze( [ 'block', 'surface', 'part' ] );
 const PART_LEVELS = Object.freeze( [ 'part' ] );
+const SURFACE_PART_LEVELS = Object.freeze( [ 'surface', 'part' ] );
+
+/**
+ * The target levels one target offers.
+ *
+ * @param {string}      target     `root`, a part key or a `custom:<n>` target.
+ * @param {Object|null} [elements] The block's `supports.sgs.elements`; a part declared with `"surface": true` offers
+ *                                 the surface level.
+ * @return {ReadonlyArray<string>} The levels.
+ */
+export function levelsForTarget( target, elements = null ) {
+	if ( target === 'root' ) {
+		return ROOT_LEVELS;
+	}
+	return elements?.[ target ]?.surface === true
+		? SURFACE_PART_LEVELS
+		: PART_LEVELS;
+}
 
 /**
  * The effect slugs a target may hold, keeping the given order: an effect whose `x-target-level` names a level the
  * target offers.
  *
- * @param {string[]} effects The candidate slugs.
- * @param {string}   target  `root`, a part key or a `custom:<n>` target.
+ * @param {string[]}    effects    The candidate slugs.
+ * @param {string}      target     `root`, a part key or a `custom:<n>` target.
+ * @param {Object|null} [elements] The block's `supports.sgs.elements` (see `levelsForTarget`).
  * @return {string[]} The slugs valid for the target.
  */
-export function effectsForTarget( effects, target ) {
-	const levels = target === 'root' ? ROOT_LEVELS : PART_LEVELS;
+export function effectsForTarget( effects, target, elements = null ) {
+	const levels = levelsForTarget( target, elements );
 	return effects.filter( ( effect ) =>
 		( EFFECTS[ effect ]?.[ TARGET_LEVEL_KEY ] || [] ).some( ( level ) =>
 			levels.includes( level )

@@ -258,6 +258,7 @@
 					"_note": "The `.sgs-trust-bar__icon` span in the icon-bare variant: the icon on its own with no circle behind it, at iconBareSize px. Colour, gradient, hover and stroke width are the same attributes as the icon-circle variant (iconColour, iconColourGradient, iconColourHover, iconStrokeWidth, declared on the icon-badge element). Emitted only when badgeStyle=icon-bare."
 				},
 				"badge-img": {
+					"surface": true,
 					"label": "Badge image (image-badge variant)",
 					"order": 6,
 					"clusters": [
@@ -275,6 +276,7 @@
 					"_note": "The <img> in the image-badge variant (render.php:281-297, .sgs-trust-bar__badge-img). Mirrors icon-badge size/border-radius/box-shadow plus an image-specific object-fit; badgeImageSize maps css:width AND css:height (a single square dimension, render.php:284-285). Emitted only when badgeStyle=image-badge."
 				},
 				"background": {
+					"surface": true,
 					"prefix": "",
 					"selector": ".sgs-container__image-bg",
 					"label": "Background image",
@@ -283,6 +285,7 @@
 					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
 				},
 				"svg-bg": {
+					"surface": true,
 					"prefix": "",
 					"selector": ".sgs-container__svg-bg",
 					"label": "Background SVG",

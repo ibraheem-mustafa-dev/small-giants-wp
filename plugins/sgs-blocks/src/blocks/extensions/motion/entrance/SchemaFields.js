@@ -4,8 +4,8 @@
  * the layer at `<prefix>.<key>`, shows the Customised tag against the preset's stamped value, and writes through
  * `onEdit( path, value )`. A nested object (for example `from` or `to`) draws as a labelled group.
  *
- * Fields of a type with no stand-alone atom here (a part or asset reference, a property row list) are left to the
- * panel that owns them.
+ * Fields of a type with no stand-alone atom here (a part or asset reference, a property row list) are drawn by the
+ * caller's `renderExtra`, or left out when it has none.
  *
  * @package
  */
@@ -64,15 +64,17 @@ export function labelFor( key ) {
 
 /**
  * @param {Object}   props
- * @param {string}   props.defName   The `$def` whose properties are drawn.
- * @param {string}   props.prefix    The layer path the `$def` is stored at (`values`, `close`, `devices.tablet.close`).
- * @param {Object}   props.layer     The layer.
- * @param {Function} props.onEdit    `( path, value )`: the edit, with `undefined` clearing the field.
- * @param {string[]} [props.keys]    Only these keys, in this order; every property when omitted.
- * @param {string[]} [props.skip]    Keys to leave out.
- * @param {boolean}  [props.stamped] Whether to compare against the preset (false for a tier override).
- * @param {string}   [props.label]   The group's accessible name; every group on the panel needs its own.
- * @param {boolean}  [props.nested]  Drawn inside a labelled fieldset, so it adds no group of its own.
+ * @param {string}   props.defName       The `$def` whose properties are drawn.
+ * @param {string}   props.prefix        The layer path the `$def` is stored at (`values`, `close`, `devices.tablet.close`).
+ * @param {Object}   props.layer         The layer.
+ * @param {Function} props.onEdit        `( path, value )`: the edit, with `undefined` clearing the field.
+ * @param {string[]} [props.keys]        Only these keys, in this order; every property when omitted.
+ * @param {string[]} [props.skip]        Keys to leave out.
+ * @param {boolean}  [props.stamped]     Whether to compare against the preset (false for a tier override).
+ * @param {string}   [props.label]       The group's accessible name; every group on the panel needs its own.
+ * @param {boolean}  [props.nested]      Drawn inside a labelled fieldset, so it adds no group of its own.
+ * @param {Function} [props.renderExtra] `( { key, type, node, path, label, stamped } ) => Element|null`: draws a field
+ *                                       of a type this component has no atom for.
  * @return {Element|null} The fields, or null when the `$def` has nothing to draw.
  */
 export default function SchemaFields( {
@@ -85,6 +87,7 @@ export default function SchemaFields( {
 	stamped = true,
 	label = __( 'Values', 'sgs-blocks' ),
 	nested: insideGroup = false,
+	renderExtra,
 } ) {
 	const properties = DEFS[ defName ]?.properties || {};
 	const required = DEFS[ defName ]?.required || [];
@@ -134,12 +137,22 @@ export default function SchemaFields( {
 							layer={ layer }
 							onEdit={ onEdit }
 							stamped={ stamped }
+							renderExtra={ renderExtra }
 							nested
 						/>
 					</fieldset>
 				);
 			}
-			return null;
+			return renderExtra
+				? renderExtra( {
+						key,
+						type,
+						node,
+						path,
+						label: labelFor( key ),
+						stamped,
+				  } )
+				: null;
 		} )
 		.filter( Boolean );
 	if ( ! drawn.length ) {

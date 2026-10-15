@@ -114,6 +114,7 @@
           "_note": "Buttons are native InnerBlocks children (`sgs/button`, the only entry in allowedBlocks), each with its own full text/fill/layout controls. The group sets their default border through the childBtn* attributes, which render.php prints as --sgs-mb-btn-* custom properties that button/style.css reads; a button's own border attributes override them."
         },
         "background": {
+          "surface": true,
           "prefix": "",
           "selector": ".sgs-container__image-bg",
           "label": "Background image",
@@ -122,6 +123,7 @@
           "_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
         },
         "svg-bg": {
+          "surface": true,
           "prefix": "",
           "selector": ".sgs-container__svg-bg",
           "label": "Background SVG",

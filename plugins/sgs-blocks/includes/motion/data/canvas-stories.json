@@ -1,0 +1,9 @@
+{
+	"_note": "The per-effect canvas stories under src/blocks/extensions/motion/stories/ (Spec 38A §11, Spec 38 §9), one entry per story file. `stylesheet` is true when the story renders the effect's own runtime markup in the editor canvas and so needs `assets/css/fx-<effect>.css` there; includes/motion/class-sgs-motion-story-styles.php enqueues those, in the editor only. tests/js/motion-effects-panel.test.js fails when a story file has no entry or an entry has no file.",
+	"stories": {
+		"grid-dots": {
+			"stylesheet": false,
+			"why": "The story paints the resting lattice as a background gradient on the block wrapper, styled by src/blocks/extensions/fx-panel.scss in the editor bundle; it draws none of the runtime canvas that fx-grid-dots.css styles."
+		}
+	}
+}

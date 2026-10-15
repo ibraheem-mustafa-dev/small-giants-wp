@@ -51,6 +51,20 @@ JSON_OUTPUT_FILE = (
     Path(__file__).resolve().parent.parent
     / "src" / "blocks" / "extensions" / "generated-fx-effect-meta.json"
 )
+# The motion schema: each effect's target level (Spec 38A section 5.4) comes from its `x-sgs-effects` entry.
+SCHEMA_FILE = Path(__file__).resolve().parent.parent / "schemas" / "motion.schema.json"
+TARGET_LEVEL_KEY = "x-target-level"
+
+
+def _target_levels() -> dict[str, list[str]]:
+    """Each schema effect's `x-target-level` list. Raises SystemExit(1) naming SCHEMA_FILE when it cannot be read,
+    so a missing schema never produces a meta map in which every effect fits no target."""
+    try:
+        effects = json.loads(SCHEMA_FILE.read_text(encoding="utf-8"))["x-sgs-effects"]
+    except (OSError, ValueError, KeyError) as error:
+        print(f"[generate-fx-effects-php] cannot read x-sgs-effects from {SCHEMA_FILE}: {error}", file=sys.stderr)
+        raise SystemExit(1)
+    return {slug: list(entry.get(TARGET_LEVEL_KEY) or []) for slug, entry in effects.items()}
 
 
 def _php_string_literal(value: str) -> str:
@@ -113,7 +127,7 @@ def _load_rows() -> list[tuple]:
     return rows
 
 
-def _render(rows: list[tuple]) -> tuple[str, str]:
+def _render(rows: list[tuple], levels: dict[str, list[str]]) -> tuple[str, str]:
     """Pure function: rows -> (php_source, json_source). No I/O, so --check can
     call this and diff the result against the committed files without ever
     writing to disk."""
@@ -242,6 +256,10 @@ def _render(rows: list[tuple]) -> tuple[str, str]:
     #                effect writes and the panels (hover, entrance, effects) that may offer it.
     #                The editor's Effects panel and the refusal checks read them here instead of
     #                keeping a second list.
+    #   · target_level — Spec 38A section 5.4's targeting levels (block, surface, part, paired) from the
+    #                effect's `x-sgs-effects` entry in schemas/motion.schema.json; empty for a row the
+    #                schema has no entry for (the site-level and block-owned rows). The Effects panel
+    #                filters its list on it (`src/blocks/extensions/motion/effect-options.js`).
     meta = {
         effect: {
             "pins": bool(int(pins)),
@@ -250,6 +268,7 @@ def _render(rows: list[tuple]) -> tuple[str, str]:
             "in_picker": bool(int(in_picker)),
             "owned_properties": json.loads(owned),
             "panels": json.loads(panels),
+            "target_level": levels.get(effect, []),
         }
         for effect, _plugin_set_json, owns, pins, triggers, in_picker, owned, panels in rows
     }
@@ -284,7 +303,7 @@ def main() -> int:
         return 0
 
     rows = _load_rows()
-    php_source, json_source = _render(rows)
+    php_source, json_source = _render(rows, _target_levels())
 
     if args.check:
         stale = []

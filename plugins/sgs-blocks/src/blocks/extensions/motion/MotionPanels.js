@@ -21,12 +21,12 @@ import { useMotionLayers } from './layers/use-motion-layers';
  * @return {Element|null} The panels, or null when none is registered.
  */
 function MotionPanels( { blockName, clientId, motion, setAttributes } ) {
-	const layers = useMotionLayers( motion, setAttributes );
+	const elements = getBlockType( blockName )?.supports?.sgs?.elements ?? null;
+	const layers = useMotionLayers( motion, setAttributes, elements );
 	const panels = getMotionPanels();
 	if ( ! panels.length ) {
 		return null;
 	}
-	const elements = getBlockType( blockName )?.supports?.sgs?.elements ?? null;
 	return (
 		<InspectorControls group="styles">
 			{ panels.map( ( { id, Component } ) => (

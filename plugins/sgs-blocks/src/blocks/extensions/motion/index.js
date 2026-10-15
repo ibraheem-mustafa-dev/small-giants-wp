@@ -6,7 +6,7 @@
  * the panels receive only the motion value, so typing in a block (FR-38A-29) re-renders no motion panel and a block
  * without the support renders exactly as before.
  *
- * @package SGS\Blocks
+ * @package
  */
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
@@ -18,6 +18,8 @@ import './layers/stamp-ambient-float';
 import './canvas/with-canvas-motion';
 import './HoverPanel';
 import './EntrancePanel';
+import './EffectsPanel';
+import './stories';
 
 export { blockHasMotion };
 

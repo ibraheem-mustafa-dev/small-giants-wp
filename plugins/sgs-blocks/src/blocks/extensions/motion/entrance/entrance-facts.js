@@ -136,6 +136,21 @@ export function moveDefaults( key ) {
 }
 
 /**
+ * The start and end a newly added property row takes (scrub's and pin-scrub's `rows`): the same defaults as the
+ * entrance's from and to values for that property, so a new row moves on its own. A property with no default (colour,
+ * background position) gets none and its row waits for both values.
+ *
+ * @param {string} property A `propertyRow` property.
+ * @return {{from?: number, to?: number}} The defaults.
+ */
+export function rowDefaults( property ) {
+	const key = MOVE_KEYS.find(
+		( name ) => ROW_PROPERTY[ name ] === property && MOVE_DEFAULTS[ name ]
+	);
+	return key ? moveDefaults( key ) : {};
+}
+
+/**
  * The path prefix under which a tier stores its overrides: Desktop is `values`, Tablet and Mobile `devices.<tier>`.
  *
  * @param {string} tier `desktop`, `tablet` or `mobile`.
@@ -179,6 +194,7 @@ const SERVER_ITEM_BLOCKS = Object.freeze( [
 	'sgs/gallery',
 	'sgs/timeline',
 	'sgs/nav-drawer-menu',
+	'sgs/nav-bar-menu',
 ] );
 
 /**
