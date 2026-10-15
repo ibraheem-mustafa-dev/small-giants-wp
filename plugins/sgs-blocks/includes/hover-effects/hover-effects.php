@@ -102,7 +102,9 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		? false
 		: (bool) ( $attrs['sgsHoverGrayscale'] ?? false );
 	$hover_border_acc      = (bool) ( $attrs['sgsHoverBorderAccent'] ?? false );
-	$hover_tilt_3d         = (bool) ( $attrs['sgsHoverTilt3D'] ?? false );
+	// The legacy tilt script yields to Follow pointer: an element whose motion document turns it on never gets both.
+	$hover_tilt_3d         = (bool) ( $attrs['sgsHoverTilt3D'] ?? false )
+		&& true !== ( $attrs['sgsMotion']['elements']['root']['hover']['state']['values']['followPointer'] ?? null );
 	$focus_ring            = (bool) ( $attrs['sgsFocusRing'] ?? $defaults['focus_ring'] );
 	// The typed link, or the page / Site Info link / back-to-top its source names.
 	$block_link_source     = is_string( $attrs['sgsBlockLinkSource'] ?? null ) ? $attrs['sgsBlockLinkSource'] : '';

@@ -1,0 +1,34 @@
+/**
+ * SGS motion: glare (Spec 38A FR-38A-41, FR-38A-49). The painting half.
+ *
+ * `src/shared/effects/fx-glare.js` writes `--sgs-glare-x` and `--sgs-glare-y` (percentages) on the element; the
+ * renderer writes the glare layer's values as three custom properties on the same element:
+ *   --sgs-glare-colour   the highlight colour (default white)
+ *   --sgs-glare-opacity  the highlight strength, 0 to 1 (default 0.42)
+ *   --sgs-glare-size     where the highlight fades to transparent, a percentage (default 55%)
+ * The layer is the renderer's injected `span.sgs-motion-layer[data-sgs-layer="glare"]` (aria-hidden). It paints only
+ * while the pointer is over the element, and never under reduced motion. This file does not touch the transform
+ * channel: `assets/css/motion.css` owns it.
+ */
+
+.sgs-motion-layer[data-sgs-layer="glare"] {
+	background-image: radial-gradient(
+		circle at var(--sgs-glare-x, 50%) var(--sgs-glare-y, 50%),
+		var(--sgs-glare-colour, #fff),
+		transparent var(--sgs-glare-size, 55%)
+	);
+	opacity: 0;
+	transition: opacity 150ms ease-out;
+}
+
+[data-sgs-fx~="glare"]:hover > .sgs-motion-layer[data-sgs-layer="glare"] {
+	opacity: var(--sgs-glare-opacity, 0.42);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-motion-layer[data-sgs-layer="glare"],
+	[data-sgs-fx~="glare"]:hover > .sgs-motion-layer[data-sgs-layer="glare"] {
+		opacity: 0;
+		transition: none;
+	}
+}

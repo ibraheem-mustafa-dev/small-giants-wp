@@ -1,0 +1,100 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m56-cards"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Follow pointer card",
+					"description": "Hover scale, Follow pointer at 8deg and a glare layer.",
+					"className": "m56-follow",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"trigger": "hover",
+										"values": {
+											"scale": 1.04,
+											"duration": 150,
+											"perspective": 1100,
+											"perspectiveOn": "self",
+											"followPointer": true,
+											"maxAngle": 8,
+											"axisLock": "none",
+											"resetDuration": 600,
+											"resetEasing": "ease-out"
+										}
+									},
+									"effects": [
+										{
+											"id": "glare1",
+											"effect": "glare",
+											"trigger": "hover",
+											"values": {
+												"glareColour": "#ffffff",
+												"glareOpacity": 0.42,
+												"glareSize": 55
+											}
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Control card",
+					"description": "Hover scale only, no Follow pointer: it never rotates.",
+					"className": "m56-plain",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"trigger": "hover",
+										"values": {
+											"scale": 1.04,
+											"duration": 150
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	}
+]

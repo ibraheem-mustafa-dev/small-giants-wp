@@ -409,6 +409,19 @@ class SGS_Motion_Registry {
 			'path' => 'build/shared/effects/fx-ambient-float.js',
 			'deps' => array( '@sgs/loop-control' ),
 		),
+
+		/*
+		 * Follow pointer (the hover state's Rotate driver, FR-38A-41) and glare: each writes only its own custom
+		 * properties (`--sgs-tilt-x/y`, `--sgs-glare-x/y`) from the pointer position; motion.css composes the transform.
+		 */
+		'@sgs/fx-follow-pointer'   => array(
+			'path' => 'build/shared/effects/fx-follow-pointer.js',
+			'deps' => array(),
+		),
+		'@sgs/fx-glare'            => array(
+			'path' => 'build/shared/effects/fx-glare.js',
+			'deps' => array(),
+		),
 	);
 
 	/**
