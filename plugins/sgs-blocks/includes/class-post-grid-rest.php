@@ -270,7 +270,9 @@ class Post_Grid_REST {
 				$query->the_post();
 				// Pass card index so render_card can set fetchpriority on first image.
 				$params['_card_index'] = $index;
-				$html .= self::render_card( get_the_ID(), $params );
+				// Each fetched page restarts at index 0 (Spec 38A FR-38A-26), so the card picks up the grid's own
+				// per-index stagger rule already on the page; without a stagger the attribute matches no rule.
+				$html .= \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_item( self::render_card( get_the_ID(), $params ), $index );
 				$index++;
 			}
 			wp_reset_postdata();

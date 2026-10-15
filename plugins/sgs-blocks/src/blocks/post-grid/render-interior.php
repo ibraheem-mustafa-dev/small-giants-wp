@@ -5,7 +5,7 @@
  * Partial of render.php, included with a plain require so it shares render.php's
  * local scope (required once per block instance).
  *
- * Reads: $attributes, $layout, $query, $show_filters, $filter_taxonomy, $card_params, $image_decorative, $carousel_show_arrows, $carousel_show_dots, $carousel_autoplay, $pagination, $total_pages, $current_page.
+ * Reads: $attributes, $uid, $layout, $query, $show_filters, $filter_taxonomy, $card_params, $image_decorative, $carousel_show_arrows, $carousel_show_dots, $carousel_autoplay, $pagination, $total_pages, $current_page.
  * Writes: output only (echoed into the open output buffer); sets $card_params['_card_index'] and its own loop locals.
  *
  * @package SGS\Blocks
@@ -77,11 +77,18 @@ if ( 'carousel' === $layout && $sgs_pg_loop_carousel ) {
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $sgs_pg_inner_fx_attr is built entirely from literal strings above, no dynamic value.
 echo '<div class="sgs-post-grid__inner"' . $sgs_pg_inner_fx_attr . '>';
 if ( $query->have_posts() ) {
+	// Loop stagger (Spec 38A §8, FR-38A-26): one scoped rule per card from its index on this page, through the shared
+	// collector; null when the block has no stagger. The `<style>` string is only non-empty where the collector never flushes (the editor preview).
+	$sgs_pg_loop_style = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::post_grid( $uid, $attributes, (int) $query->post_count );
+	echo (string) $sgs_pg_loop_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers and a sanitised class by Sgs_Motion_Loop_Delays.
 	$card_index = 0;
 	while ( $query->have_posts() ) {
 		$query->the_post();
 		$card_params['_card_index'] = $card_index;
 		$card_html                  = \SGS\Blocks\Post_Grid_REST::render_card( get_the_ID(), $card_params );
+		if ( null !== $sgs_pg_loop_style ) {
+			$card_html = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_item( $card_html, $card_index );
+		}
 		if ( $image_decorative ) {
 			$card_html = sgs_post_grid_make_card_image_decorative( $card_html );
 		}
