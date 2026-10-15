@@ -16,6 +16,7 @@
  *   under `:hover` and `:focus-visible` (or the root's or hover group's `:hover` and `:focus-within`), never here.
  * - Entrance: `--sgs-me-from-<suffix>`, `--sgs-me-to-<suffix>`, `--sgs-me-dur`, `--sgs-me-delay`, `--sgs-me-ease`,
  *   `--sgs-me-start` and the one perspective `--sgs-persp-self` when the entrance sets it; multi-keyframe entrances also get `data-sgs-me-keyframes` (JSON) for the WAAPI module.
+ *   A one-edge or anchored clip replaces the uniform clip holder with four edge holders (`Sgs_Motion_Clip_Edge`).
  *   The trigger passes through the `sgs_motion_entrance_trigger` filter (an empty string drops the entrance), and the
  *   `sgs_motion_entrance_css` filter appends a trigger's own rules (`Sgs_Motion_Trigger_Open_State`).
  * - `transition`: only the owners present on the element, each with its own duration, easing and delay (the hover
@@ -71,8 +72,10 @@ final class Sgs_Motion_Emitter {
 			self::effect_channels( $layer, $channels );
 			self::effect_transition( $layer, $trans );
 		}
-		foreach ( $element['effects'] ?? array() as $layer ) {
-			self::effect_channels( $layer, $channels );
+		foreach ( array( $element['entrance']['text'] ?? array(), $element['effects'] ?? array() ) as $list ) {
+			foreach ( is_array( $list ) ? $list : array() as $layer ) {
+				self::effect_channels( $layer, $channels );
+			}
 		}
 		$entrance = false;
 		$base     = $element['entrance']['base'] ?? null;
@@ -131,7 +134,7 @@ final class Sgs_Motion_Emitter {
 	}
 
 	/**
-	 * Owner (and shared) custom property => channel, read from `x-sgs-channels`.
+	 * Owner (and shared, and plain input) custom property => channel, read from `x-sgs-channels`.
 	 *
 	 * @return array<string,string>
 	 */
@@ -145,7 +148,7 @@ final class Sgs_Motion_Emitter {
 						$map[ (string) $prop['name'] ] = (string) $row['channel'];
 					}
 				}
-				foreach ( $row['shared'] ?? array() as $prop ) {
+				foreach ( array_merge( $row['shared'] ?? array(), $row['inputs'] ?? array() ) as $prop ) {
 					$map[ (string) $prop['name'] ] = (string) $row['channel'];
 				}
 			}
@@ -420,6 +423,7 @@ final class Sgs_Motion_Emitter {
 				$decls[ $tier ][ $persp ] = $css;
 			}
 		}
+		Sgs_Motion_Clip_Edge::apply( $tiers, $decls, $context );
 		$keyframes = Sgs_Motion_Keyframes::json( $tiers['desktop']['keyframes'] ?? null, $used, $keep_op, $decls['desktop'] );
 		if ( $keep_op ) {
 			$op_from = self::ME_PREFIX . 'from-op';

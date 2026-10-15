@@ -112,7 +112,7 @@ final class MotionEditorCanvasTest extends TestCase {
 		$css = Sgs_Motion_Editor_Canvas::final_state_css();
 		$this->assertStringStartsWith( '[data-sgs-me]:not([data-sgs-in]){', $css, 'Replay sets data-sgs-in, so Replay is outside the rule' );
 		$motion = (string) file_get_contents( SGS_BLOCKS_PATH . Sgs_Motion_Assets::CSS_PATH );
-		preg_match_all( '/var\(--sgs-me-from-([a-z]+),/', $motion, $read );
+		preg_match_all( '/var\(--sgs-me-from-([a-z]+(?:-[a-z])?),/', $motion, $read ); // The clip reveal's edge holders too (clip-t, clip-r, clip-b, clip-l).
 		$channels = array_unique( $read[1] );
 		$this->assertNotEmpty( $channels );
 		foreach ( $channels as $channel ) {

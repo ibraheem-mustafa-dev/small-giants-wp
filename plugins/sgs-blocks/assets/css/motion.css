@@ -19,7 +19,9 @@
  *                                     background-position ::before ::after injected)
  *   data-sgs-me="<trigger> <channels>" an entrance: trigger load|scroll|open|state, then the channels it touches
  *   --sgs-me-from-<x>, --sgs-me-to-<x>, --sgs-me-dur, --sgs-me-delay, --sgs-me-ease
- *                                     the entrance's values and timing (to-values default to the identity)
+ *                                     the entrance's values and timing (to-values default to the identity); the clip
+ *                                     reveal's holders are per edge (--sgs-me-from-clip-<t|r|b|l>) over the uniform
+ *                                     --sgs-me-from-clip
  *   data-sgs-in                       set by the reveal module (scroll) or the owning block (open, state)
  *   .sgs-motion-ready                 added by the reveal module; the only gate on a hidden start state
  *   span.sgs-motion-layer             an injected paint layer (aria-hidden), at most two per element
@@ -72,7 +74,10 @@
 @property --sgs-mh-gray { syntax: '<number>'; inherits: false; initial-value: 0; }
 @property --sgs-mh-bright { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-mh-indent { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --sgs-me-clip { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
+@property --sgs-me-clip-t { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
+@property --sgs-me-clip-r { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
+@property --sgs-me-clip-b { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
+@property --sgs-me-clip-l { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
 @property --sgs-plx-bg-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-plx-bg-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-scroll-progress { syntax: '<number>'; inherits: false; initial-value: 0; }
@@ -212,14 +217,22 @@
 		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
 	}
 }
+/* The clip reveal: one owner per edge. Each edge reads its own holder (a one-edge clip, Sgs_Motion_Clip_Edge) and
+   falls back to the uniform amount `--sgs-me-<from|to>-clip` (clipEdge all), so a uniform reveal renders as before. */
 @keyframes sgs-me-clip-path {
 	from {
-		--sgs-me-clip: var(--sgs-me-from-clip, 0%);
-		clip-path: inset(var(--sgs-me-clip));
+		--sgs-me-clip-t: var(--sgs-me-from-clip-t, var(--sgs-me-from-clip, 0%));
+		--sgs-me-clip-r: var(--sgs-me-from-clip-r, var(--sgs-me-from-clip, 0%));
+		--sgs-me-clip-b: var(--sgs-me-from-clip-b, var(--sgs-me-from-clip, 0%));
+		--sgs-me-clip-l: var(--sgs-me-from-clip-l, var(--sgs-me-from-clip, 0%));
+		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l));
 	}
 	to {
-		--sgs-me-clip: var(--sgs-me-to-clip, 0%);
-		clip-path: inset(var(--sgs-me-clip));
+		--sgs-me-clip-t: var(--sgs-me-to-clip-t, var(--sgs-me-to-clip, 0%));
+		--sgs-me-clip-r: var(--sgs-me-to-clip-r, var(--sgs-me-to-clip, 0%));
+		--sgs-me-clip-b: var(--sgs-me-to-clip-b, var(--sgs-me-to-clip, 0%));
+		--sgs-me-clip-l: var(--sgs-me-to-clip-l, var(--sgs-me-to-clip, 0%));
+		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l));
 	}
 }
 
@@ -282,8 +295,11 @@
 		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
 	}
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="clip-path"] {
-		--sgs-me-clip: var(--sgs-me-from-clip, 0%);
-		clip-path: inset(var(--sgs-me-clip));
+		--sgs-me-clip-t: var(--sgs-me-from-clip-t, var(--sgs-me-from-clip, 0%));
+		--sgs-me-clip-r: var(--sgs-me-from-clip-r, var(--sgs-me-from-clip, 0%));
+		--sgs-me-clip-b: var(--sgs-me-from-clip-b, var(--sgs-me-from-clip, 0%));
+		--sgs-me-clip-l: var(--sgs-me-from-clip-l, var(--sgs-me-from-clip, 0%));
+		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l));
 	}
 }
 

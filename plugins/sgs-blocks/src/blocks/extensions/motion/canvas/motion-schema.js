@@ -78,6 +78,9 @@ export function propertyChannels() {
 			( row.shared || [] ).forEach( ( prop ) => {
 				channelMap[ String( prop.name ) ] = String( row.channel );
 			} );
+			( row.inputs || [] ).forEach( ( prop ) => {
+				channelMap[ String( prop.name ) ] = String( row.channel );
+			} );
 		} );
 	}
 	return channelMap;

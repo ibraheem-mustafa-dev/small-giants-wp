@@ -1202,6 +1202,28 @@ FX_EFFECTS: list[dict] = [
         "requires": "none",
         "creates_panel": 0,
     },
+    {
+        # Spec 38A section 10 injected layers (Entrance panel, `open` trigger, Tier V, CSS only, Part; M5.D, Bean's
+        # drawer-entrance ruling 2026-10-15). A colour band in an injected span.sgs-motion-layer, painted by
+        # assets/css/fx-curtain.css: it sweeps across the part as it opens and reverses on close.
+        "effect": "curtain",
+        # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Entrance panel
+        # (schemas/motion.schema.json::x-sgs-effects.curtain), never a `data-sgs-fx` picker value.
+        "in_picker": 0,
+        "pins": 0,
+        "triggers": "open",
+        # Tier V (Spec 38A section 5 effect table): plain CSS, no GSAP plugin.
+        "tier": "V",
+        "plugin_set": [],
+        # 0: the band is its own injected layer; it never moves the part's transform.
+        "owns_scroll_transform": 0,
+        # Suppress: no sweep under reduce; the panel shows at once.
+        "reduced_motion": "suppress",
+        "editor_story": "end-state",
+        "scope": "element",
+        "requires": "none",
+        "creates_panel": 0,
+    },
 ]
 
 # ---------------------------------------------------------------------------

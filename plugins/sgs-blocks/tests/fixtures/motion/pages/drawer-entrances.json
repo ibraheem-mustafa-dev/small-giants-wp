@@ -1,0 +1,116 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" },
+				"tablet": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" },
+				"mobile": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" }
+			},
+			"className": "m5d-panels"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"minHeight": { "desktop": "320px", "tablet": "320px", "mobile": "320px" },
+					"className": "m5d-wipe",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "open",
+										"values": {
+											"from": { "clip": 100, "clipEdge": "bottom" },
+											"duration": 600,
+											"easing": "linear"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{ "name": "sgs/info-box", "attributes": { "heading": "Wipe down", "description": "Opens with a one-edge clip: inset(0 0 100% 0) to inset(0) over 600ms." } }
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"minHeight": { "desktop": "320px", "tablet": "320px", "mobile": "320px" },
+					"className": "m5d-bar",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "open",
+										"values": {
+											"from": { "clip": 100, "clipEdge": "bottom", "clipFromAnchor": "opener-row" },
+											"duration": 600,
+											"easing": "linear"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{ "name": "sgs/info-box", "attributes": { "heading": "Reveal from the bar", "description": "Opens from the opener row's bottom: inset(0 0 calc(100% - row) 0) to inset(0) over 600ms." } }
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"minHeight": { "desktop": "320px", "tablet": "320px", "mobile": "320px" },
+					"className": "m5d-curtain",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"text": [
+										{
+											"id": "curtain1",
+											"effect": "curtain",
+											"trigger": "open",
+											"values": {
+												"colour": "#1f2937",
+												"direction": "right",
+												"duration": 600,
+												"easing": "linear"
+											}
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{ "name": "sgs/info-box", "attributes": { "heading": "Curtain", "description": "A dark band sweeps left to right across this panel as it opens, then reveals it." } }
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"minHeight": { "desktop": "320px", "tablet": "320px", "mobile": "320px" },
+					"className": "m5d-control"
+				},
+				"innerBlocks": [
+					{ "name": "sgs/info-box", "attributes": { "heading": "Control", "description": "No motion: never clipped, never swept." } }
+				]
+			}
+		]
+	}
+]

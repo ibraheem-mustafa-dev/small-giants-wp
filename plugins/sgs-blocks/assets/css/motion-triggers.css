@@ -91,14 +91,22 @@
 		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
 	}
 }
+/* The clip reveal closes per edge: from each edge's open to-value to the uniform close amount, else that edge's
+   from-value (a one-edge wipe closes back the way it opened). */
 @keyframes sgs-me-close-clip-path {
 	from {
-		--sgs-me-clip: var(--sgs-me-to-clip, 0%);
-		clip-path: inset(var(--sgs-me-clip));
+		--sgs-me-clip-t: var(--sgs-me-to-clip-t, var(--sgs-me-to-clip, 0%));
+		--sgs-me-clip-r: var(--sgs-me-to-clip-r, var(--sgs-me-to-clip, 0%));
+		--sgs-me-clip-b: var(--sgs-me-to-clip-b, var(--sgs-me-to-clip, 0%));
+		--sgs-me-clip-l: var(--sgs-me-to-clip-l, var(--sgs-me-to-clip, 0%));
+		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l));
 	}
 	to {
-		--sgs-me-clip: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip, 0%));
-		clip-path: inset(var(--sgs-me-clip));
+		--sgs-me-clip-t: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip-t, var(--sgs-me-from-clip, 0%)));
+		--sgs-me-clip-r: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip-r, var(--sgs-me-from-clip, 0%)));
+		--sgs-me-clip-b: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip-b, var(--sgs-me-from-clip, 0%)));
+		--sgs-me-clip-l: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip-l, var(--sgs-me-from-clip, 0%)));
+		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l));
 	}
 }
 
@@ -169,7 +177,10 @@
 		--sgs-mt-op-s: var(--sgs-me-to-s, 1);
 		--sgs-mt-op-op: var(--sgs-me-to-op, 1);
 		--sgs-mt-op-blur: var(--sgs-me-to-blur, 0px);
-		--sgs-mt-op-clip: var(--sgs-me-to-clip, 0%);
+		--sgs-mt-op-clip-t: var(--sgs-me-to-clip-t, var(--sgs-me-to-clip, 0%));
+		--sgs-mt-op-clip-r: var(--sgs-me-to-clip-r, var(--sgs-me-to-clip, 0%));
+		--sgs-mt-op-clip-b: var(--sgs-me-to-clip-b, var(--sgs-me-to-clip, 0%));
+		--sgs-mt-op-clip-l: var(--sgs-me-to-clip-l, var(--sgs-me-to-clip, 0%));
 	}
 	[data-sgs-me~="open"]:is([data-sgs-motion-state~="close"], [data-sgs-motion-state~="close"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~="open"]):not([data-sgs-motion-state~="close"]), [data-sgs-motion-state]:not([data-sgs-motion-state~="open"]):not([data-sgs-motion-state~="close"]) *) {
 		--sgs-mt-op-tx: var(--sgs-me-close-to-tx, var(--sgs-me-from-tx, 0px));
@@ -180,7 +191,10 @@
 		--sgs-mt-op-s: var(--sgs-me-close-to-s, var(--sgs-me-from-s, 1));
 		--sgs-mt-op-op: var(--sgs-me-close-to-op, var(--sgs-me-from-op, 1));
 		--sgs-mt-op-blur: var(--sgs-me-close-to-blur, var(--sgs-me-from-blur, 0px));
-		--sgs-mt-op-clip: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip, 0%));
+		--sgs-mt-op-clip-t: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip-t, var(--sgs-me-from-clip, 0%)));
+		--sgs-mt-op-clip-r: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip-r, var(--sgs-me-from-clip, 0%)));
+		--sgs-mt-op-clip-b: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip-b, var(--sgs-me-from-clip, 0%)));
+		--sgs-mt-op-clip-l: var(--sgs-me-close-to-clip, var(--sgs-me-from-clip-l, var(--sgs-me-from-clip, 0%)));
 	}
 	/* A named state: the to-values times the per-instance on flag, so the declaration is the identity while off. */
 	[data-sgs-me~="state"] {
@@ -192,7 +206,10 @@
 		--sgs-mt-op-s: calc(1 + (var(--sgs-me-to-s, 1) - 1) * var(--sgs-mt-on, 0));
 		--sgs-mt-op-op: calc(1 + (var(--sgs-me-to-op, 1) - 1) * var(--sgs-mt-on, 0));
 		--sgs-mt-op-blur: calc(var(--sgs-me-to-blur, 0px) * var(--sgs-mt-on, 0));
-		--sgs-mt-op-clip: calc(var(--sgs-me-to-clip, 0%) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-clip-t: calc(var(--sgs-me-to-clip-t, var(--sgs-me-to-clip, 0%)) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-clip-r: calc(var(--sgs-me-to-clip-r, var(--sgs-me-to-clip, 0%)) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-clip-b: calc(var(--sgs-me-to-clip-b, var(--sgs-me-to-clip, 0%)) * var(--sgs-mt-on, 0));
+		--sgs-mt-op-clip-l: calc(var(--sgs-me-to-clip-l, var(--sgs-me-to-clip, 0%)) * var(--sgs-mt-on, 0));
 	}
 
 	/* The held values feed each touched channel's composite formula only where an open, closing or state value
@@ -218,7 +235,10 @@
 		--sgs-me-blur: var(--sgs-mt-op-blur, 0px);
 	}
 	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="clip-path"] {
-		--sgs-me-clip: var(--sgs-mt-op-clip, 0%);
+		--sgs-me-clip-t: var(--sgs-mt-op-clip-t, 0%);
+		--sgs-me-clip-r: var(--sgs-mt-op-clip-r, 0%);
+		--sgs-me-clip-b: var(--sgs-mt-op-clip-b, 0%);
+		--sgs-me-clip-l: var(--sgs-mt-op-clip-l, 0%);
 	}
 	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="translate"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
 		translate: calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));
@@ -239,6 +259,6 @@
 		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
 	}
 	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="clip-path"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
-		clip-path: inset(var(--sgs-me-clip));
+		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l));
 	}
 }

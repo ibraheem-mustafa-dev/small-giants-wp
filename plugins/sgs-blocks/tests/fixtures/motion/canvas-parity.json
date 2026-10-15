@@ -842,5 +842,73 @@
 		],
 		"rootAttrs": {},
 		"losers": {}
+	},
+	{
+		"name": "clip reveal, uniform",
+		"css": ".sgs-m-0123456789{--sgs-me-from-clip:100%;--sgs-me-dur:400ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "load clip-path"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "clip reveal, top edge per device",
+		"css": ".sgs-m-0123456789{--sgs-me-dur:400ms;--sgs-me-from-clip-t:100%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:0%;}@media (max-width:767px){.sgs-m-0123456789{--sgs-me-from-clip-t:60%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:0%;}}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "load clip-path"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "clip reveal, opener-row anchor on the top edge",
+		"css": ".sgs-m-0123456789{--sgs-me-dur:400ms;--sgs-me-from-clip-t:var(--sgs-drawer-opener-row-bottom, 100%);--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:0%;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "load clip-path"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "clip reveal, anchor on an edge it cannot apply to",
+		"css": ".sgs-m-0123456789{--sgs-me-dur:400ms;--sgs-me-from-clip-t:0%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:100%;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "load clip-path"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
 	}
 ]

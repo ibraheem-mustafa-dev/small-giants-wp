@@ -75,7 +75,7 @@ describe( 'motion-keyframes', () => {
 
 	it( 'maps every owner property to its channel and declares only the channels touched', () => {
 		const { play, CHANNEL_FORMULA } = load();
-		const every = { offset: 0, '--sgs-me-tx': '8px', '--sgs-me-ty': '4px', '--sgs-me-rot': '5deg', '--sgs-me-s': '0.9', '--sgs-me-op': '0', '--sgs-me-blur': '6px', '--sgs-me-clip': '0 0 100% 0' };
+		const every = { offset: 0, '--sgs-me-tx': '8px', '--sgs-me-ty': '4px', '--sgs-me-rot': '5deg', '--sgs-me-s': '0.9', '--sgs-me-op': '0', '--sgs-me-blur': '6px', '--sgs-me-clip-t': '0%', '--sgs-me-clip-r': '0%', '--sgs-me-clip-b': '100%', '--sgs-me-clip-l': '0%' };
 		play( target( { frames: [ every, { ...every, offset: 1, '--sgs-me-op': '1' } ] } ) );
 		const [ frames ] = animate.mock.calls[ 0 ];
 		frames.forEach( ( f ) => {
@@ -85,8 +85,20 @@ describe( 'motion-keyframes', () => {
 			);
 		} );
 		expect( Object.keys( frames[ 0 ] ).sort() ).toEqual(
-			[ 'offset', '--sgs-me-tx', '--sgs-me-ty', '--sgs-me-rot', '--sgs-me-s', '--sgs-me-op', '--sgs-me-blur', '--sgs-me-clip', 'translate', 'rotate', 'scale', 'opacity', 'filter', 'clip-path' ].sort()
+			[ 'offset', '--sgs-me-tx', '--sgs-me-ty', '--sgs-me-rot', '--sgs-me-s', '--sgs-me-op', '--sgs-me-blur', '--sgs-me-clip-t', '--sgs-me-clip-r', '--sgs-me-clip-b', '--sgs-me-clip-l', 'translate', 'rotate', 'scale', 'opacity', 'filter', 'clip-path' ].sort()
 		);
+	} );
+
+	it( 'animates a uniform clip amount as all four edge owners, under the four-edge clip formula', () => {
+		const { play, CHANNEL_FORMULA } = load();
+		expect( CHANNEL_FORMULA[ 'clip-path' ] ).toEqual( [ 'clip-path', 'inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l))' ] );
+		play( target( { me: 'load clip-path', frames: [ { offset: 0, '--sgs-me-clip': '40%' }, { offset: 0.5, '--sgs-me-clip': '10%' }, { offset: 1, '--sgs-me-clip': '0%' } ] } ) );
+		const [ frames ] = animate.mock.calls[ 0 ];
+		[ 't', 'r', 'b', 'l' ].forEach( ( e ) => expect( frames.map( ( f ) => f[ `--sgs-me-clip-${ e }` ] ) ).toEqual( [ '40%', '10%', '0%' ] ) );
+		frames.forEach( ( f ) => {
+			expect( f ).not.toHaveProperty( '--sgs-me-clip' );
+			expect( f[ 'clip-path' ] ).toBe( CHANNEL_FORMULA[ 'clip-path' ][ 1 ] );
+		} );
 	} );
 
 	it( 'writes the X and Y owners per frame and the per-axis transform formula in every frame', () => {
@@ -103,7 +115,7 @@ describe( 'motion-keyframes', () => {
 
 	it( 'maps each owner property alone to exactly its own channel', () => {
 		const { play, CHANNEL_FORMULA } = load();
-		const table = { 'tx': 'translate', 'ty': 'translate', 'rot': 'rotate', 'rx': 'transform', 'ry': 'transform', 's': 'scale', 'op': 'opacity', 'blur': 'filter', 'clip': 'clip-path' };
+		const table = { 'tx': 'translate', 'ty': 'translate', 'rot': 'rotate', 'rx': 'transform', 'ry': 'transform', 's': 'scale', 'op': 'opacity', 'blur': 'filter', 'clip': 'clip-path', 'clip-t': 'clip-path', 'clip-r': 'clip-path', 'clip-b': 'clip-path', 'clip-l': 'clip-path' };
 		Object.keys( table ).forEach( ( suffix ) => {
 			document.body.innerHTML = '';
 			animate.mockClear();

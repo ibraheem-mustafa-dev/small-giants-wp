@@ -1,0 +1,93 @@
+/**
+ * SGS motion: curtain sweep (Spec 38A §10 injected layers; Entrance panel, `open` trigger). CSS only.
+ *
+ * A colour band sweeps across the element as its host opens: it grows from the start edge until it covers the
+ * element, then leaves by the far edge, revealing it. As the host closes it plays back the other way. The band is the
+ * `::before` of the renderer's injected `span.sgs-motion-layer[data-sgs-layer="curtain"]` (aria-hidden), painted above
+ * the element's content; the layer is `position: absolute; inset: 0; overflow: hidden` (assets/css/motion.css).
+ * Nothing is written to a `style` attribute and no script runs.
+ *
+ * It plays on the same state attribute as the `open` entrance trigger (assets/css/motion-triggers.css):
+ * `data-sgs-motion-state` on the element or an ancestor, set by the owning block's script through `@sgs/motion-state`.
+ * An element inside a host that is neither open nor closing does not play, so a closed submenu in an open drawer stays
+ * still.
+ *
+ * The values arrive as custom properties on the element (the schema's CurtainValues cssProperty names), and the
+ * direction as the fx emitter's data attribute:
+ *   --sgs-curtain-colour      the band's colour                      (default: the element's text colour)
+ *   --sgs-curtain-duration    the whole sweep, a CSS time            (default 600ms)
+ *   --sgs-curtain-easing      the sweep's easing                     (default ease-in-out)
+ *   data-sgs-fx-curtain-direction="right|left|down|up"  the way the band travels (default right)
+ *
+ * At rest the band is clipped to nothing. Under reduced motion nothing sweeps and the layer is not shown, so the
+ * element is simply there once its host opens.
+ */
+
+.sgs-motion-layer[data-sgs-layer="curtain"] {
+	z-index: 1;
+}
+
+.sgs-motion-layer[data-sgs-layer="curtain"]::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: var(--sgs-curtain-colour, currentColor);
+	clip-path: inset(0 100% 0 0);
+	pointer-events: none;
+}
+
+/* Each keyframe list: hidden at the start edge, covering at half way, hidden at the far edge. */
+@keyframes sgs-curtain-right {
+	0% { clip-path: inset(0 100% 0 0); }
+	50% { clip-path: inset(0); }
+	100% { clip-path: inset(0 0 0 100%); }
+}
+
+@keyframes sgs-curtain-left {
+	0% { clip-path: inset(0 0 0 100%); }
+	50% { clip-path: inset(0); }
+	100% { clip-path: inset(0 100% 0 0); }
+}
+
+@keyframes sgs-curtain-down {
+	0% { clip-path: inset(0 0 100% 0); }
+	50% { clip-path: inset(0); }
+	100% { clip-path: inset(100% 0 0 0); }
+}
+
+@keyframes sgs-curtain-up {
+	0% { clip-path: inset(100% 0 0 0); }
+	50% { clip-path: inset(0); }
+	100% { clip-path: inset(0 0 100% 0); }
+}
+
+[data-sgs-fx~="curtain"] {
+	--sgs-curtain-name: sgs-curtain-right;
+}
+[data-sgs-fx~="curtain"][data-sgs-fx-curtain-direction="left"] {
+	--sgs-curtain-name: sgs-curtain-left;
+}
+[data-sgs-fx~="curtain"][data-sgs-fx-curtain-direction="down"] {
+	--sgs-curtain-name: sgs-curtain-down;
+}
+[data-sgs-fx~="curtain"][data-sgs-fx-curtain-direction="up"] {
+	--sgs-curtain-name: sgs-curtain-up;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	/* Open: inside (or on) an open host, and inside no host that is not open. */
+	[data-sgs-fx~="curtain"]:is([data-sgs-motion-state~="open"], [data-sgs-motion-state~="open"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~="open"]), [data-sgs-motion-state]:not([data-sgs-motion-state~="open"]) *) > .sgs-motion-layer[data-sgs-layer="curtain"]::before {
+		animation: var(--sgs-curtain-name) var(--sgs-curtain-duration, 600ms) var(--sgs-curtain-easing, ease-in-out) 1 both;
+	}
+
+	/* Close: inside (or on) a closing host, and inside no host that is neither open nor closing; the sweep plays back. */
+	[data-sgs-fx~="curtain"]:is([data-sgs-motion-state~="close"], [data-sgs-motion-state~="close"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~="open"]):not([data-sgs-motion-state~="close"]), [data-sgs-motion-state]:not([data-sgs-motion-state~="open"]):not([data-sgs-motion-state~="close"]) *) > .sgs-motion-layer[data-sgs-layer="curtain"]::before {
+		animation: var(--sgs-curtain-name) var(--sgs-curtain-duration, 600ms) var(--sgs-curtain-easing, ease-in-out) 1 reverse both;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-motion-layer[data-sgs-layer="curtain"] {
+		display: none;
+	}
+}

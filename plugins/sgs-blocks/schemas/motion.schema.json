@@ -638,6 +638,23 @@
 				}
 			]
 		},
+		"curtain": {
+			"label": "Curtain",
+			"panels": [
+				"entrance"
+			],
+			"x-target-level": [
+				"part"
+			],
+			"values": "#/$defs/CurtainValues",
+			"devices": "#/$defs/CurtainDeviceSet",
+			"slots": [
+				{
+					"slot": "injected",
+					"label": "Curtain"
+				}
+			]
+		},
 		"scroll-progress": {
 			"label": "Scroll progress",
 			"panels": [
@@ -809,6 +826,11 @@
 			]
 		},
 		"sheen": {
+			"channels": [
+				"injected"
+			]
+		},
+		"curtain": {
 			"channels": [
 				"injected"
 			]
@@ -1297,17 +1319,42 @@
 		{
 			"channel": "clip-path",
 			"composition": "single-owner",
-			"formula": "clip-path: inset(var(--sgs-me-clip))",
+			"formula": "clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l))",
 			"owners": [
 				{
 					"owner": "entrance",
 					"properties": [
 						{
-							"name": "--sgs-me-clip",
-							"syntax": "<percentage>",
-							"initial": "0%"
+							"name": "--sgs-me-clip-t",
+							"syntax": "<length-percentage>",
+							"initial": "0%",
+							"edge": "top"
+						},
+						{
+							"name": "--sgs-me-clip-r",
+							"syntax": "<length-percentage>",
+							"initial": "0%",
+							"edge": "right"
+						},
+						{
+							"name": "--sgs-me-clip-b",
+							"syntax": "<length-percentage>",
+							"initial": "0%",
+							"edge": "bottom"
+						},
+						{
+							"name": "--sgs-me-clip-l",
+							"syntax": "<length-percentage>",
+							"initial": "0%",
+							"edge": "left"
 						}
 					]
+				}
+			],
+			"inputs": [
+				{
+					"name": "--sgs-me-clip",
+					"description": "The uniform clip amount a clip field names (clipEdge all). Plain and unregistered: the stylesheet gives it to all four edge owners through their from, to and close holders; a clipEdge other than all writes the four edge holders instead (Sgs_Motion_Clip_Edge)."
 				}
 			]
 		},
@@ -1408,6 +1455,13 @@
 					]
 				},
 				{
+					"owner": "curtain",
+					"properties": [],
+					"reads": [
+						"--sgs-curtain-colour"
+					]
+				},
+				{
 					"owner": "cursor-field",
 					"properties": [
 						{
@@ -1440,6 +1494,13 @@
 			]
 		}
 	],
+	"x-sgs-clip-anchors": {
+		"opener-row": {
+			"property": "--sgs-drawer-opener-row-bottom",
+			"measuredFrom": "top",
+			"description": "The bottom of the row holding the opener (the header bar), a length from the top of the element, measured by the owning block's script on open. The clipped edge starts there: a top edge is inset by it, a bottom edge by 100% minus it. Unset, the edge starts at the stored clip amount."
+		}
+	},
 	"x-sgs-refusals": {
 		"pairs": [
 			{
@@ -2837,6 +2898,37 @@
 						"perDevice": true,
 						"intensity": true
 					}
+				},
+				"clipEdge": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"all",
+						"top",
+						"right",
+						"bottom",
+						"left"
+					],
+					"description": "Which edge the clip amount insets: all (a uniform inset, the default) or one edge (the others stay at 0).",
+					"x-sgs-field": {
+						"fieldType": "choice",
+						"cssProperty": null,
+						"state": "from",
+						"perDevice": true
+					}
+				},
+				"clipFromAnchor": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"none",
+						"opener-row"
+					],
+					"description": "Where the clipped edge starts, as an x-sgs-clip-anchors name: none uses the clip amount; opener-row starts it at the opener row's bottom. Needs clipEdge top or bottom.",
+					"x-sgs-field": {
+						"fieldType": "choice",
+						"cssProperty": null,
+						"state": "from",
+						"perDevice": true
+					}
 				}
 			},
 			"additionalProperties": false
@@ -2934,6 +3026,37 @@
 					"x-sgs-field": {
 						"fieldType": "percentage",
 						"cssProperty": "--sgs-me-clip",
+						"state": "in-view",
+						"perDevice": true
+					}
+				},
+				"clipEdge": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"all",
+						"top",
+						"right",
+						"bottom",
+						"left"
+					],
+					"description": "Which edge the clip amount insets: all (a uniform inset, the default) or one edge (the others stay at 0).",
+					"x-sgs-field": {
+						"fieldType": "choice",
+						"cssProperty": null,
+						"state": "in-view",
+						"perDevice": true
+					}
+				},
+				"clipFromAnchor": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"none",
+						"opener-row"
+					],
+					"description": "Where the clipped edge starts, as an x-sgs-clip-anchors name: none uses the clip amount; opener-row starts it at the opener row's bottom. Needs clipEdge top or bottom.",
+					"x-sgs-field": {
+						"fieldType": "choice",
+						"cssProperty": null,
 						"state": "in-view",
 						"perDevice": true
 					}
@@ -3370,6 +3493,23 @@
 					"description": "The clip reveal's inset() amount.",
 					"minimum": 0,
 					"maximum": 100
+				},
+				"clipEdge": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"all",
+						"top",
+						"right",
+						"bottom",
+						"left"
+					]
+				},
+				"clipFromAnchor": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"none",
+						"opener-row"
+					]
 				}
 			},
 			"additionalProperties": false
@@ -3417,6 +3557,23 @@
 					"description": "The clip reveal's inset() amount.",
 					"minimum": 0,
 					"maximum": 100
+				},
+				"clipEdge": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"all",
+						"top",
+						"right",
+						"bottom",
+						"left"
+					]
+				},
+				"clipFromAnchor": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"none",
+						"opener-row"
+					]
 				}
 			},
 			"additionalProperties": false
@@ -7803,6 +7960,90 @@
 			},
 			"additionalProperties": false
 		},
+		"CurtainValues": {
+			"type": "object",
+			"x-sgs-kind": "values",
+			"x-sgs-panel": "entrance",
+			"x-sgs-effect": "curtain",
+			"description": "A colour band that sweeps across the element as its host opens (the band grows from the start edge to cover it, then leaves by the far edge, revealing it), and back as it closes.",
+			"properties": {
+				"colour": {
+					"$ref": "#/$defs/colourReference",
+					"x-sgs-field": {
+						"fieldType": "colourReference",
+						"cssProperty": "--sgs-curtain-colour",
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-curtain-colour"
+					}
+				},
+				"direction": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"right",
+						"left",
+						"down",
+						"up"
+					],
+					"description": "The way the band travels.",
+					"x-sgs-field": {
+						"fieldType": "choice",
+						"cssProperty": "--sgs-curtain-direction",
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-curtain-direction"
+					}
+				},
+				"duration": {
+					"$ref": "#/$defs/duration",
+					"x-sgs-field": {
+						"fieldType": "duration",
+						"cssProperty": "--sgs-curtain-duration",
+						"state": "active",
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-curtain-duration",
+						"dataUnit": "ms"
+					}
+				},
+				"easing": {
+					"$ref": "#/$defs/easing",
+					"x-sgs-field": {
+						"fieldType": "easing",
+						"cssProperty": "--sgs-curtain-easing",
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-curtain-easing"
+					}
+				}
+			},
+			"additionalProperties": false
+		},
+		"CurtainValuesDevice": {
+			"type": "object",
+			"x-sgs-kind": "devices",
+			"x-sgs-overrides": "CurtainValues",
+			"description": "Tablet or Mobile overrides of CurtainValues: only its per-device fields, all optional.",
+			"properties": {
+				"duration": {
+					"$ref": "#/$defs/duration"
+				}
+			},
+			"additionalProperties": false
+		},
+		"CurtainDeviceSet": {
+			"type": "object",
+			"x-sgs-kind": "node",
+			"description": "Per-device overrides: Tablet applies at 1023px and below, Mobile at 767px and below; a blank tier inherits the wider one.",
+			"properties": {
+				"tablet": {
+					"$ref": "#/$defs/CurtainValuesDevice"
+				},
+				"mobile": {
+					"$ref": "#/$defs/CurtainValuesDevice"
+				}
+			},
+			"additionalProperties": false
+		},
 		"ScrollProgressValues": {
 			"type": "object",
 			"x-sgs-kind": "values",
@@ -8636,7 +8877,8 @@
 					"enum": [
 						"split-reveal",
 						"scramble",
-						"draw"
+						"draw",
+						"curtain"
 					]
 				},
 				"preset": {
@@ -8736,6 +8978,34 @@
 							},
 							"devices": {
 								"$ref": "#/$defs/DrawDeviceSet"
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"effect": {
+								"const": "curtain"
+							}
+						},
+						"required": [
+							"effect"
+						]
+					},
+					"then": {
+						"properties": {
+							"values": {
+								"$ref": "#/$defs/CurtainValues"
+							},
+							"devices": {
+								"$ref": "#/$defs/CurtainDeviceSet"
+							},
+							"trigger": {
+								"$ref": "#/$defs/choice",
+								"enum": [
+									"open"
+								]
 							}
 						}
 					}

@@ -19,6 +19,7 @@ import {
 } from './motion-schema';
 import { keyframesJson } from './emit-rotation';
 import { filterTrigger } from './trigger-rules';
+import { applyClipEdge } from './emit-clip-edge';
 
 const has = ( obj, key ) => Object.prototype.hasOwnProperty.call( obj, key );
 
@@ -73,6 +74,7 @@ export function emitEntrance( base, decls, attrs, context ) {
 			decls[ tier ][ persp ] = css;
 		}
 	} );
+	applyClipEdge( tiers, decls, context.report );
 	const keyframes = keyframesJson( tiers.desktop.keyframes ?? null, used, keepOp, decls.desktop );
 	if ( keepOp ) {
 		const opFrom = ME_PREFIX + 'from-op';

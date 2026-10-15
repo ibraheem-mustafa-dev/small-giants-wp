@@ -76,15 +76,19 @@ final class Sgs_Motion_Editor_Canvas {
 	 */
 	public static function final_state_css(): string {
 		$resting = array(
-			'tx'   => '0px',
-			'ty'   => '0px',
-			'rot'  => '0deg',
-			'rx'   => '0deg',
-			'ry'   => '0deg',
-			's'    => '1',
-			'op'   => '1',
-			'blur' => '0px',
-			'clip' => '0%',
+			'tx'     => '0px',
+			'ty'     => '0px',
+			'rot'    => '0deg',
+			'rx'     => '0deg',
+			'ry'     => '0deg',
+			's'      => '1',
+			'op'     => '1',
+			'blur'   => '0px',
+			'clip'   => '0%',
+			'clip-t' => '0%',
+			'clip-r' => '0%',
+			'clip-b' => '0%',
+			'clip-l' => '0%',
 		);
 		$rules   = '';
 		foreach ( $resting as $channel => $value ) {

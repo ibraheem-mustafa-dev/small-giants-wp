@@ -1336,6 +1336,114 @@
 			},
 			"root": ".sgs-m-0123456789",
 			"context": {}
+		},
+		{
+			"name": "clip reveal, uniform",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"clip": 100
+									},
+									"duration": 400
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "clip reveal, top edge per device",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"clip": 100,
+										"clipEdge": "top"
+									},
+									"duration": 400
+								},
+								"devices": {
+									"mobile": {
+										"from": {
+											"clip": 60
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "clip reveal, opener-row anchor on the top edge",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"clip": 100,
+										"clipEdge": "top",
+										"clipFromAnchor": "opener-row"
+									},
+									"duration": 400
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "clip reveal, anchor on an edge it cannot apply to",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"clip": 100,
+										"clipEdge": "left",
+										"clipFromAnchor": "opener-row"
+									},
+									"duration": 400
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
 		}
 	]
 }

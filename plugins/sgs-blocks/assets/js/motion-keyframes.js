@@ -43,7 +43,16 @@
 		'--sgs-me-s': 'scale',
 		'--sgs-me-op': 'opacity',
 		'--sgs-me-blur': 'filter',
-		'--sgs-me-clip': 'clip-path',
+		'--sgs-me-clip-t': 'clip-path',
+		'--sgs-me-clip-r': 'clip-path',
+		'--sgs-me-clip-b': 'clip-path',
+		'--sgs-me-clip-l': 'clip-path',
+	};
+
+	// Plain input -> the owner properties it stands for: a keyframe's uniform clip amount (the schema's clip-path
+	// `inputs`) is every edge's value, so it animates as the four registered edge owners.
+	var INPUT_OWNERS = {
+		'--sgs-me-clip': [ '--sgs-me-clip-t', '--sgs-me-clip-r', '--sgs-me-clip-b', '--sgs-me-clip-l' ],
 	};
 
 	// Channel -> [ CSS property, composite formula ]; identical to the formulas in assets/css/motion.css.
@@ -54,7 +63,7 @@
 		scale: [ 'scale', 'calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y))' ],
 		opacity: [ 'opacity', 'calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op) * var(--sgs-svl-op))' ],
 		filter: [ 'filter', 'blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright))' ],
-		'clip-path': [ 'clip-path', 'inset(var(--sgs-me-clip))' ],
+		'clip-path': [ 'clip-path', 'inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l))' ],
 	};
 
 	/**
@@ -100,15 +109,20 @@
 		var channels = {};
 		list.forEach( function ( frame ) {
 			Object.keys( frame || {} ).forEach( function ( key ) {
-				if ( PROPERTY_CHANNEL[ key ] ) {
-					channels[ PROPERTY_CHANNEL[ key ] ] = true;
+				var owner = INPUT_OWNERS[ key ] ? INPUT_OWNERS[ key ][ 0 ] : key;
+				if ( PROPERTY_CHANNEL[ owner ] ) {
+					channels[ PROPERTY_CHANNEL[ owner ] ] = true;
 				}
 			} );
 		} );
 		return list.map( function ( frame ) {
 			var out = {};
 			Object.keys( frame || {} ).forEach( function ( key ) {
-				if ( 'offset' === key || PROPERTY_CHANNEL[ key ] ) {
+				if ( INPUT_OWNERS[ key ] ) {
+					INPUT_OWNERS[ key ].forEach( function ( owner ) {
+						out[ owner ] = frame[ key ];
+					} );
+				} else if ( 'offset' === key || PROPERTY_CHANNEL[ key ] ) {
 					out[ key ] = frame[ key ];
 				}
 			} );

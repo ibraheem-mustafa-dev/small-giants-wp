@@ -5,12 +5,13 @@ The editor's field types (src/components/motion/field-types.js) and atoms read t
 shapes, device sets) and `x-sgs-tokens` (the token bands the duration and distance atoms label their presets from) of
 `schemas/motion.schema.json`; the editor-canvas emitter (src/blocks/extensions/motion/canvas/) also reads
 `x-sgs-channels` (owner property to channel, channel order, the shared perspective default), `x-sgs-writes` (the
-channels each owner writes) and `x-sgs-effects` (each effect's values def), the same keys the PHP emitter reads; the
+channels each owner writes), `x-sgs-effects` (each effect's values def) and `x-sgs-clip-anchors` (the clip reveal's
+anchor rows), the same keys the PHP emitter reads; the
 panel shell (src/blocks/extensions/motion/) reads `x-sgs-refusals` (the refused pairs and their texts),
 `x-sgs-layer-labels` and `x-sgs-panels`; the canvas emitter's document sanitiser (the twin of
 `Sgs_Motion_Document::sanitise`) reads the schema's root node (`type`, `properties`, `required`,
 `additionalProperties`). The rest of the schema (`x-sgs-tiers`, `x-sgs-states`, `x-sgs-intensity`) has no editor
-reader, so this generator copies only those twelve keys into a compact
+reader, so this generator copies only those thirteen keys into a compact
 file. Annotation text (string-valued `description` keys) is dropped because no editor code reads it. The PHP
 side keeps reading the full schema.
 
@@ -35,8 +36,9 @@ sys.stdout.reconfigure(encoding="utf-8")
 PLUGIN = Path(__file__).resolve().parent.parent
 SCHEMA_FILE = PLUGIN / "schemas" / "motion.schema.json"
 OUTPUT_FILE = PLUGIN / "src" / "components" / "motion" / "generated-motion-defs.json"
-KEPT_KEYS = ("$defs", "x-sgs-tokens", "x-sgs-channels", "x-sgs-writes", "x-sgs-effects", "x-sgs-refusals",
-             "x-sgs-layer-labels", "x-sgs-panels", "type", "properties", "required", "additionalProperties")
+KEPT_KEYS = ("$defs", "x-sgs-tokens", "x-sgs-channels", "x-sgs-clip-anchors", "x-sgs-writes", "x-sgs-effects",
+             "x-sgs-refusals", "x-sgs-layer-labels", "x-sgs-panels", "type", "properties", "required",
+             "additionalProperties")
 # What the editor reads by name; the build refuses an extract that lacks one.
 REQUIRED_DEFS = ("tokenReference", "duration", "easing", "distance", "angle", "ratio", "scale", "percentage",
                  "opacity", "colourReference", "partReference", "assetReference", "choice", "boolean", "propertyRow")

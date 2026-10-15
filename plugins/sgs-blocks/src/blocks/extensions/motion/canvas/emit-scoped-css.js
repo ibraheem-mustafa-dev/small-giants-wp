@@ -295,7 +295,8 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 			delete hover.focus;
 			element = { ...element, hover };
 		}
-		const emitted = emitTarget( element, resolved.selector, { ...context, states, noTransition: loser } );
+		const report = ( drop ) => out.dropped.push( { target, layer: 'entrance.base', ...drop } );
+		const emitted = emitTarget( element, resolved.selector, { ...context, states, noTransition: loser, report } );
 		out.css += emitted.css;
 		out.plans.push( { target, ...resolved, attrs: emitted.attrs, entrance: emitted.entrance } );
 	} );

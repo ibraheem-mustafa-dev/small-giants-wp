@@ -11,6 +11,8 @@
  *   - the entrance's hidden start applies only under .sgs-motion-ready and before data-sgs-in, inside
  *     no-preference; every entrance keyframe declares its channel with the composite formula;
  *   - the reduced-motion block zeroes hover movement and every delay;
+ *   - a channel with plain `inputs` (the clip reveal's uniform amount over its four edge owners) gives every owner its
+ *     own holder falling back to each input, in every entrance keyframe and in the hidden start;
  *   - the stylesheet's token readers carry no M2.2 allow-list entry.
  * Each check is also run against planted faults (negative controls) so a check that cannot fail fails here.
  *
@@ -181,6 +183,8 @@ function contractErrors( css ) {
 		errors.push( 'group or root targets do not read their source flag' );
 	}
 
+	errors.push( ...inputErrors( root, rules ) );
+
 	const reduce = rules.filter( ( r ) => inMedia( r, REDUCE ) ).map( decls );
 	const merged = Object.assign( {}, ...reduce );
 	for ( const [ prop, identity ] of [ [ '--sgs-mh-tx', '0px' ], [ '--sgs-mh-ty', '0px' ], [ '--sgs-mh-rot', '0deg' ], [ '--sgs-mh-s', '1' ] ] ) {
@@ -195,6 +199,40 @@ function contractErrors( css ) {
 	}
 	if ( ! merged[ 'transition-duration' ]?.important ) {
 		errors.push( 'reduced motion does not make state changes instant' );
+	}
+	return errors;
+}
+
+/**
+ * A channel with plain `inputs` (x-sgs-channels): each owner property `--sgs-me-<x>` is set, in every frame of its
+ * entrance keyframes and in its hidden start, to its own holder `--sgs-me-<end>-<x>` falling back to the input's holder
+ * `--sgs-me-<end>-<input>`, so a uniform value reaches every owner and a per-owner value overrides it.
+ */
+function inputErrors( root, rules ) {
+	const errors = [];
+	const suffix = ( name ) => name.slice( '--sgs-me-'.length );
+	for ( const channel of channels().filter( ( c ) => ( c.inputs || [] ).length ) ) {
+		const owners = channel.owners.flatMap( ( o ) => ( o.properties || [] ).map( ( p ) => p.name ) );
+		const holds = ( d, end, where ) => {
+			const fallback = channel.inputs.reduceRight( ( inner, input ) => `var(--sgs-me-${ end }-${ suffix( input.name ) }, ${ inner })`, '0%' );
+			for ( const name of owners ) {
+				const want = `var(--sgs-me-${ end }-${ suffix( name ) }, ${ fallback })`;
+				if ( d[ name ]?.value !== norm( want ) ) {
+					errors.push( `${ where } does not set ${ name } to ${ want }` );
+				}
+			}
+		};
+		root.walkAtRules( 'keyframes', ( k ) => {
+			if ( k.params === `sgs-me-${ channel.channel }` ) {
+				k.walkRules( ( frame ) => holds( decls( frame ), 'from' === frame.selector ? 'from' : 'to', `keyframe ${ k.params } ${ frame.selector }` ) );
+			}
+		} );
+		const start = rules.find( ( r ) => r.selector.endsWith( `:not([data-sgs-in])[data-sgs-me~="${ channel.channel }"]` ) );
+		if ( ! start ) {
+			errors.push( `the ${ channel.channel } entrance has no hidden start` );
+		} else {
+			holds( decls( start ), 'from', `the ${ channel.channel } hidden start` );
+		}
 	}
 	return errors;
 }
@@ -275,6 +313,10 @@ describe( 'negative controls: each planted fault is caught', () => {
 		'a missing hover-group selector': [ /:where\(:root:not\(\.sgs-touch-input\)\) \[data-sgs-hover-group\]:hover \{[^}]*\}/, '' ],
 		'reduced motion that keeps hover movement': [ /--sgs-mh-s: 1;\n\t\}\n\t:is/, '}\n\t:is' ],
 		'a persistent channel off its formula': [ /\[data-sgs-mc~="scale"\] \{\n\tscale: [^;]*;/, '[data-sgs-mc~="scale"] {\n\tscale: var(--sgs-mh-s);' ],
+		'a clip edge owner without its @property': [ /@property --sgs-me-clip-b \{[^}]*\}/, '' ],
+		'a clip keyframe that drops an edge from the formula': [ /(--sgs-me-clip-l: var\(--sgs-me-to-clip-l[^;]*;\s*)clip-path: [^;]*;/, '$1clip-path: inset(var(--sgs-me-clip-t));' ],
+		'a clip edge that ignores the uniform amount': [ /--sgs-me-clip-r: var\(--sgs-me-from-clip-r, var\(--sgs-me-from-clip, 0%\)\);/, '--sgs-me-clip-r: var(--sgs-me-from-clip-r, 0%);' ],
+		'a clip hidden start without the left edge': [ /(:not\(\[data-sgs-in\]\)\[data-sgs-me~="clip-path"\] \{\n(?:\t\t--sgs-me-clip-[trb][^\n]*\n){3})\t\t--sgs-me-clip-l[^\n]*\n/, '$1' ],
 	};
 
 	test.each( Object.entries( plants ) )( '%s', ( _label, [ find, replace ] ) => {
