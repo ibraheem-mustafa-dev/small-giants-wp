@@ -5,7 +5,7 @@
  * (includes/motion/), never a `style` attribute. The contract with the renderer:
  *
  *   data-sgs-mh="self|root|group"    the target holds a hover state; the value is its source (§6.2)
- *   --sgs-mh-to-<tx|ty|rot|rx|ry|s|op|blur|gray|bright|indent>
+ *   --sgs-mh-to-<tx|ty|rot|rx|ry|s|op|blur|gray|bright|indent|ring|ring-c>
  *                                     the hover state's to-values (plain, unregistered; per device). Each rotate
  *                                     to-value (Z, X, Y) is the hover angle minus its rest angle (§10)
  *   --sgs-pad-start-rest              the resting inline-start padding an indent hover adds to (default 0px)
@@ -49,6 +49,8 @@
 @property --sgs-mh-rot { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @property --sgs-me-rot { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @property --sgs-me-s { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-me-sx { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-me-sy { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-mh-s { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-focus-s { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-kb-s { syntax: '<number>'; inherits: false; initial-value: 1; }
@@ -98,7 +100,7 @@
 	rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot) + var(--sgs-svl-rot));
 }
 [data-sgs-mc~="scale"] {
-	scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y));
+	scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy));
 }
 [data-sgs-mc~="opacity"] {
 	opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op) * var(--sgs-svl-op));
@@ -148,6 +150,8 @@
 	--sgs-mh-gray: calc(var(--sgs-mh-to-gray, 0) * var(--sgs-mh-on));
 	--sgs-mh-bright: calc(1 + (var(--sgs-mh-to-bright, 1) - 1) * var(--sgs-mh-on));
 	--sgs-mh-indent: calc(var(--sgs-mh-to-indent, 0px) * var(--sgs-mh-on));
+	--sgs-mh-ring: calc(var(--sgs-mh-to-ring, 0px) * var(--sgs-mh-on));
+	--sgs-mh-ring-c: var(--sgs-mh-to-ring-c, transparent);
 }
 
 /* ── Entrance (§9 entrance rule, FR-38A-18): each touched channel plays its own animation of the --sgs-me-*
@@ -190,11 +194,15 @@
 @keyframes sgs-me-scale {
 	from {
 		--sgs-me-s: var(--sgs-me-from-s, 1);
-		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y));
+		--sgs-me-sx: var(--sgs-me-from-sx, 1);
+		--sgs-me-sy: var(--sgs-me-from-sy, 1);
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy));
 	}
 	to {
 		--sgs-me-s: var(--sgs-me-to-s, 1);
-		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y));
+		--sgs-me-sx: var(--sgs-me-to-sx, 1);
+		--sgs-me-sy: var(--sgs-me-to-sy, 1);
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy));
 	}
 }
 @keyframes sgs-me-opacity {
@@ -284,7 +292,9 @@
 	}
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="scale"] {
 		--sgs-me-s: var(--sgs-me-from-s, 1);
-		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y));
+		--sgs-me-sx: var(--sgs-me-from-sx, 1);
+		--sgs-me-sy: var(--sgs-me-from-sy, 1);
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy));
 	}
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="opacity"] {
 		--sgs-me-op: var(--sgs-me-from-op, 1);

@@ -75,7 +75,7 @@ describe( 'motion-keyframes', () => {
 
 	it( 'maps every owner property to its channel and declares only the channels touched', () => {
 		const { play, CHANNEL_FORMULA } = load();
-		const every = { offset: 0, '--sgs-me-tx': '8px', '--sgs-me-ty': '4px', '--sgs-me-rot': '5deg', '--sgs-me-s': '0.9', '--sgs-me-op': '0', '--sgs-me-blur': '6px', '--sgs-me-clip-t': '0%', '--sgs-me-clip-r': '0%', '--sgs-me-clip-b': '100%', '--sgs-me-clip-l': '0%' };
+		const every = { offset: 0, '--sgs-me-tx': '8px', '--sgs-me-ty': '4px', '--sgs-me-rot': '5deg', '--sgs-me-s': '0.9', '--sgs-me-sx': '1.1', '--sgs-me-sy': '0.85', '--sgs-me-op': '0', '--sgs-me-blur': '6px', '--sgs-me-clip-t': '0%', '--sgs-me-clip-r': '0%', '--sgs-me-clip-b': '100%', '--sgs-me-clip-l': '0%' };
 		play( target( { frames: [ every, { ...every, offset: 1, '--sgs-me-op': '1' } ] } ) );
 		const [ frames ] = animate.mock.calls[ 0 ];
 		frames.forEach( ( f ) => {
@@ -85,7 +85,7 @@ describe( 'motion-keyframes', () => {
 			);
 		} );
 		expect( Object.keys( frames[ 0 ] ).sort() ).toEqual(
-			[ 'offset', '--sgs-me-tx', '--sgs-me-ty', '--sgs-me-rot', '--sgs-me-s', '--sgs-me-op', '--sgs-me-blur', '--sgs-me-clip-t', '--sgs-me-clip-r', '--sgs-me-clip-b', '--sgs-me-clip-l', 'translate', 'rotate', 'scale', 'opacity', 'filter', 'clip-path' ].sort()
+			[ 'offset', '--sgs-me-tx', '--sgs-me-ty', '--sgs-me-rot', '--sgs-me-s', '--sgs-me-sx', '--sgs-me-sy', '--sgs-me-op', '--sgs-me-blur', '--sgs-me-clip-t', '--sgs-me-clip-r', '--sgs-me-clip-b', '--sgs-me-clip-l', 'translate', 'rotate', 'scale', 'opacity', 'filter', 'clip-path' ].sort()
 		);
 	} );
 

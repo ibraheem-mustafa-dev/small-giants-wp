@@ -910,5 +910,40 @@
 		],
 		"rootAttrs": {},
 		"losers": {}
+	},
+	{
+		"name": "per-axis scale, expand-down with a Mobile scaleY",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-s:0.95;--sgs-me-from-sy:0.85;--sgs-me-to-sx:1;--sgs-me-dur:400ms;}@media (max-width:767px){.sgs-m-0123456789{--sgs-me-from-sy:0.9;}}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "load scale opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "per-axis scale keyframes",
+		"css": ".sgs-m-0123456789{--sgs-me-dur:400ms;--sgs-me-from-sy:0.85;--sgs-me-from-op:0;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me-keyframes": "[{\"offset\":0,\"--sgs-me-sy\":\"0.85\",\"--sgs-me-op\":\"0\"},{\"offset\":0.6,\"--sgs-me-sx\":\"1.05\"},{\"offset\":1,\"--sgs-me-sy\":\"1\",\"--sgs-me-sx\":\"1\",\"--sgs-me-op\":\"1\"}]",
+					"data-sgs-me": "load scale opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
 	}
 ]

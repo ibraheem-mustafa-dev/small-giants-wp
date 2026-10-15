@@ -82,6 +82,8 @@ final class Sgs_Motion_Editor_Canvas {
 			'rx'     => '0deg',
 			'ry'     => '0deg',
 			's'      => '1',
+			'sx'     => '1',
+			'sy'     => '1',
 			'op'     => '1',
 			'blur'   => '0px',
 			'clip'   => '0%',

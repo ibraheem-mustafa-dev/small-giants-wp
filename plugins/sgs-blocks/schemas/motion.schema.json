@@ -1057,13 +1057,23 @@
 		{
 			"channel": "scale",
 			"composition": "product",
-			"formula": "scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y))",
+			"formula": "scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy))",
 			"owners": [
 				{
 					"owner": "entrance",
 					"properties": [
 						{
 							"name": "--sgs-me-s",
+							"syntax": "<number>",
+							"initial": "1"
+						},
+						{
+							"name": "--sgs-me-sx",
+							"syntax": "<number>",
+							"initial": "1"
+						},
+						{
+							"name": "--sgs-me-sy",
 							"syntax": "<number>",
 							"initial": "1"
 						}
@@ -2651,6 +2661,31 @@
 						"perDevice": true
 					}
 				},
+				"ringSpread": {
+					"$ref": "#/$defs/distance",
+					"minimum": 0,
+					"maximum": 32,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 32,
+						"unit": "px"
+					},
+					"x-sgs-field": {
+						"fieldType": "distance",
+						"cssProperty": "--sgs-mh-ring",
+						"state": "hover",
+						"perDevice": true
+					}
+				},
+				"ringColour": {
+					"$ref": "#/$defs/colourReference",
+					"x-sgs-field": {
+						"fieldType": "colourReference",
+						"cssProperty": "--sgs-mh-ring-c",
+						"state": "hover",
+						"perDevice": false
+					}
+				},
 				"duration": {
 					"$ref": "#/$defs/duration",
 					"x-sgs-field": {
@@ -2773,6 +2808,16 @@
 				"indent": {
 					"$ref": "#/$defs/distance"
 				},
+				"ringSpread": {
+					"$ref": "#/$defs/distance",
+					"minimum": 0,
+					"maximum": 32,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 32,
+						"unit": "px"
+					}
+				},
 				"duration": {
 					"$ref": "#/$defs/duration"
 				},
@@ -2836,6 +2881,30 @@
 					"x-sgs-field": {
 						"fieldType": "scale",
 						"cssProperty": "--sgs-me-s",
+						"state": "from",
+						"perDevice": true,
+						"intensity": true
+					}
+				},
+				"scaleX": {
+					"$ref": "#/$defs/scale",
+					"description": "The horizontal scale; it multiplies with scale (1 is identity).",
+					"maximum": 4,
+					"x-sgs-field": {
+						"fieldType": "scale",
+						"cssProperty": "--sgs-me-sx",
+						"state": "from",
+						"perDevice": true,
+						"intensity": true
+					}
+				},
+				"scaleY": {
+					"$ref": "#/$defs/scale",
+					"description": "The vertical scale; it multiplies with scale (1 is identity).",
+					"maximum": 4,
+					"x-sgs-field": {
+						"fieldType": "scale",
+						"cssProperty": "--sgs-me-sy",
 						"state": "from",
 						"perDevice": true,
 						"intensity": true
@@ -2971,6 +3040,28 @@
 					"x-sgs-field": {
 						"fieldType": "scale",
 						"cssProperty": "--sgs-me-s",
+						"state": "in-view",
+						"perDevice": true
+					}
+				},
+				"scaleX": {
+					"$ref": "#/$defs/scale",
+					"description": "The horizontal scale; it multiplies with scale (1 is identity).",
+					"maximum": 4,
+					"x-sgs-field": {
+						"fieldType": "scale",
+						"cssProperty": "--sgs-me-sx",
+						"state": "in-view",
+						"perDevice": true
+					}
+				},
+				"scaleY": {
+					"$ref": "#/$defs/scale",
+					"description": "The vertical scale; it multiplies with scale (1 is identity).",
+					"maximum": 4,
+					"x-sgs-field": {
+						"fieldType": "scale",
+						"cssProperty": "--sgs-me-sy",
 						"state": "in-view",
 						"perDevice": true
 					}
@@ -3118,6 +3209,28 @@
 						"perDevice": true
 					}
 				},
+				"scaleX": {
+					"$ref": "#/$defs/scale",
+					"description": "The horizontal scale; it multiplies with scale (1 is identity).",
+					"maximum": 4,
+					"x-sgs-field": {
+						"fieldType": "scale",
+						"cssProperty": "--sgs-me-sx",
+						"state": "keyframe",
+						"perDevice": true
+					}
+				},
+				"scaleY": {
+					"$ref": "#/$defs/scale",
+					"description": "The vertical scale; it multiplies with scale (1 is identity).",
+					"maximum": 4,
+					"x-sgs-field": {
+						"fieldType": "scale",
+						"cssProperty": "--sgs-me-sy",
+						"state": "keyframe",
+						"perDevice": true
+					}
+				},
 				"rotate": {
 					"$ref": "#/$defs/angle",
 					"x-sgs-field": {
@@ -3217,6 +3330,28 @@
 					"x-sgs-field": {
 						"fieldType": "scale",
 						"cssProperty": "--sgs-me-s",
+						"state": "close",
+						"perDevice": true
+					}
+				},
+				"scaleX": {
+					"$ref": "#/$defs/scale",
+					"description": "The horizontal scale; it multiplies with scale (1 is identity).",
+					"maximum": 4,
+					"x-sgs-field": {
+						"fieldType": "scale",
+						"cssProperty": "--sgs-me-sx",
+						"state": "close",
+						"perDevice": true
+					}
+				},
+				"scaleY": {
+					"$ref": "#/$defs/scale",
+					"description": "The vertical scale; it multiplies with scale (1 is identity).",
+					"maximum": 4,
+					"x-sgs-field": {
+						"fieldType": "scale",
+						"cssProperty": "--sgs-me-sy",
 						"state": "close",
 						"perDevice": true
 					}
@@ -3410,6 +3545,16 @@
 					"$ref": "#/$defs/scale",
 					"maximum": 4
 				},
+				"scaleX": {
+					"$ref": "#/$defs/scale",
+					"description": "The horizontal scale; it multiplies with scale (1 is identity).",
+					"maximum": 4
+				},
+				"scaleY": {
+					"$ref": "#/$defs/scale",
+					"description": "The vertical scale; it multiplies with scale (1 is identity).",
+					"maximum": 4
+				},
 				"rotate": {
 					"$ref": "#/$defs/angle"
 				},
@@ -3467,6 +3612,16 @@
 				},
 				"scale": {
 					"$ref": "#/$defs/scale",
+					"maximum": 4
+				},
+				"scaleX": {
+					"$ref": "#/$defs/scale",
+					"description": "The horizontal scale; it multiplies with scale (1 is identity).",
+					"maximum": 4
+				},
+				"scaleY": {
+					"$ref": "#/$defs/scale",
+					"description": "The vertical scale; it multiplies with scale (1 is identity).",
 					"maximum": 4
 				},
 				"rotate": {
@@ -3531,6 +3686,16 @@
 				},
 				"scale": {
 					"$ref": "#/$defs/scale",
+					"maximum": 4
+				},
+				"scaleX": {
+					"$ref": "#/$defs/scale",
+					"description": "The horizontal scale; it multiplies with scale (1 is identity).",
+					"maximum": 4
+				},
+				"scaleY": {
+					"$ref": "#/$defs/scale",
+					"description": "The vertical scale; it multiplies with scale (1 is identity).",
 					"maximum": 4
 				},
 				"rotate": {

@@ -1444,6 +1444,80 @@
 			},
 			"root": ".sgs-m-0123456789",
 			"context": {}
+		},
+		{
+			"name": "per-axis scale, expand-down with a Mobile scaleY",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"scale": 0.95,
+										"scaleY": 0.85
+									},
+									"to": {
+										"scaleX": 1
+									},
+									"duration": 400
+								},
+								"devices": {
+									"mobile": {
+										"from": {
+											"scaleY": 0.9
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "per-axis scale keyframes",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"keyframes": [
+										{
+											"offset": 0,
+											"scaleY": 0.85,
+											"opacity": 0
+										},
+										{
+											"offset": 60,
+											"scaleX": 1.05
+										},
+										{
+											"offset": 100,
+											"scaleY": 1,
+											"scaleX": 1,
+											"opacity": 1
+										}
+									],
+									"duration": 400
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
 		}
 	]
 }

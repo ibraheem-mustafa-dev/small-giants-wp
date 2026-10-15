@@ -314,6 +314,8 @@ describe( 'negative controls: each planted fault is caught', () => {
 		'reduced motion that keeps hover movement': [ /--sgs-mh-s: 1;\n\t\}\n\t:is/, '}\n\t:is' ],
 		'a persistent channel off its formula': [ /\[data-sgs-mc~="scale"\] \{\n\tscale: [^;]*;/, '[data-sgs-mc~="scale"] {\n\tscale: var(--sgs-mh-s);' ],
 		'a clip edge owner without its @property': [ /@property --sgs-me-clip-b \{[^}]*\}/, '' ],
+		'a per-axis scale owner without its @property': [ /@property --sgs-me-sy \{[^}]*\}/, '' ],
+		'a scale keyframe that drops the x axis owner': [ /(--sgs-me-sy: var\(--sgs-me-to-sy, 1\);\s*scale: [^;]*?) \* var\(--sgs-me-sx\)/, '$1' ],
 		'a clip keyframe that drops an edge from the formula': [ /(--sgs-me-clip-l: var\(--sgs-me-to-clip-l[^;]*;\s*)clip-path: [^;]*;/, '$1clip-path: inset(var(--sgs-me-clip-t));' ],
 		'a clip edge that ignores the uniform amount': [ /--sgs-me-clip-r: var\(--sgs-me-from-clip-r, var\(--sgs-me-from-clip, 0%\)\);/, '--sgs-me-clip-r: var(--sgs-me-from-clip-r, 0%);' ],
 		'a clip hidden start without the left edge': [ /(:not\(\[data-sgs-in\]\)\[data-sgs-me~="clip-path"\] \{\n(?:\t\t--sgs-me-clip-[trb][^\n]*\n){3})\t\t--sgs-me-clip-l[^\n]*\n/, '$1' ],
