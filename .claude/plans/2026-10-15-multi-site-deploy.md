@@ -37,7 +37,9 @@ A deploy measured 671s on 2026-10-15: build about 270s, `gate:full` 345s (11 gat
 - Items 1-6 built (f1f5a1e76). `build-deploy.py --self-test` passes with cases 17-18, each proven red on a planted fault (a key that ignores the DB, a lock that does not lock).
 - Measured live: a two-site `--theme-only` deploy shipped both sites in 28-39s end to end, side by side, each with its own client `theme.json` (md5-verified) and HTTP 200; `probe-shop-filters.mjs` green on both.
 - The cache's live proof (a repeat deploy restoring from the cache) is open: every full deploy from `main` this afternoon aborted on in-flight motion work committed half-way (the `data-sgs-fx` list-match gate, fixed in 8d8b94849; then `generated-fx-effects.php` stale against the reseeded DB). Run it when `main` builds and gates green: `--target sandybrown,eye-care-test`, then the same command again, which must log `RESTORED` and `PASSED ... not re-run`.
-- Item 7 (`run-gates.py --jobs`) built with self-test cases; `gate:full` adopts it once a serial and a parallel run on the same tree return the same verdicts.
+- Later the same afternoon `main` also failed the fast tier's `check-element-manifest-conformance` after the reseed 668969624 (`orphan_style_defect=49 exceeds baseline 0`); reported to the motion sessions. The cache proof waits on that too.
+- Item 7 (`run-gates.py --jobs`) built with self-test cases (opt-in). One measured parallel run: 241s wall-clock for the 11 full gates on a loaded machine (the serial sum on the same afternoon was 476-697s). `gate:full` adopts `--jobs 4` once a serial and a parallel run on the same tree return the same verdicts.
+- Stopping a deploy mid-run (TaskStop, Ctrl+C) skips `run_isolated()`'s cleanup and leaks its `sgs-deploy-wt-*` worktree; remove it with `git worktree remove --force <path>` after checking no process uses it.
 - Follow-up: `build-deploy.py` grew 78 lines (2,456); split its self-tests and post-deploy steps into modules.
 
 ## Docs to update

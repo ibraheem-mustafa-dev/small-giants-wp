@@ -171,23 +171,45 @@ def run_one(gate: dict) -> tuple[int, str, float]:
     return code, out, elapsed
 
 
-def execute(gates: list[dict], label: str, verbose: bool) -> tuple[list[dict], float]:
-    """Run every gate. Never short-circuits — that is the entire point."""
+def execute(gates: list[dict], label: str, verbose: bool, jobs: int = 1) -> tuple[list[dict], float]:
+    """Run every gate. Never short-circuits — that is the entire point.
+
+    jobs > 1 runs that many gates at once (each is its own process and writes only to
+    temp copies, or to its baseline in an update mode no gate run uses); lines print as
+    gates finish, the results stay in roster order, and the total is wall-clock time.
+    """
     print(_RULE)
-    print(f"RUNNING {len(gates)} gate(s) — {label}")
+    print(f"RUNNING {len(gates)} gate(s) — {label}" + (f" · {jobs} at a time" if jobs > 1 else ""))
     print(_RULE)
 
-    results: list[dict] = []
-    total = 0.0
-    for n, gate in enumerate(gates, 1):
-        code, out, secs = run_one(gate)
-        total += secs
-        results.append({"gate": gate, "code": code, "output": out, "secs": secs})
+    def show(n: int, gate: dict, code: int, out: str, secs: float) -> None:
         mark = "ok  " if code == 0 else "FAIL"
-        print(f"  [{n:>2}/{len(gates)}] {mark} {gate['id']:<42} {secs:6.2f}s")
+        print(f"  [{n:>2}/{len(gates)}] {mark} {gate['id']:<42} {secs:6.2f}s", flush=True)
         if verbose and out.strip():
             print("\n".join("        " + ln for ln in out.rstrip().splitlines()))
-    return results, total
+
+    results: list[dict] = []
+    if jobs <= 1:
+        total = 0.0
+        for n, gate in enumerate(gates, 1):
+            code, out, secs = run_one(gate)
+            total += secs
+            results.append({"gate": gate, "code": code, "output": out, "secs": secs})
+            show(n, gate, code, out, secs)
+        return results, total
+
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    started = time.perf_counter()
+    by_index: dict[int, dict] = {}
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        futures = {pool.submit(run_one, gate): (n, gate) for n, gate in enumerate(gates, 1)}
+        for future in as_completed(futures):
+            n, gate = futures[future]
+            code, out, secs = future.result()
+            by_index[n] = {"gate": gate, "code": code, "output": out, "secs": secs}
+            show(n, gate, code, out, secs)
+    results = [by_index[n] for n in sorted(by_index)]
+    return results, time.perf_counter() - started
 
 
 # ---------------------------------------------------------------------------
@@ -400,6 +422,20 @@ def do_self_test() -> int:
     check("report exits 1 when any gate failed", rc == 1, f"got {rc}")
     check("report names the count", "2 of 3" in text)
 
+    # 4b. Run side by side (--jobs), every gate still runs, both failures are seen,
+    #     and the results come back in roster order.
+    trio = [
+        {"id": "_par_fail_a", "cmd": f'python -c "{_SELF_TEST_FAIL}"'},
+        {"id": "_par_pass", "cmd": f'python -c "{_SELF_TEST_PASS}"'},
+        {"id": "_par_fail_b", "cmd": f'python -c "{_SELF_TEST_FAIL}"'},
+    ]
+    with contextlib.redirect_stdout(io.StringIO()):
+        par, _ = execute(trio, "self-test", False, jobs=3)
+    check("--jobs runs every gate and keeps roster order",
+          [r["gate"]["id"] for r in par] == [g["id"] for g in trio])
+    check("--jobs sees both failures", [r["code"] for r in par] == [1, 0, 1],
+          str([r["code"] for r in par]))
+
     # 5. An unrecognised interpreter is refused, not shelled out blindly.
     code, out, _ = run_one({"id": "_st_bad", "cmd": "rm -rf /"})
     check("unrecognised command is refused", code == 2 and "refusing" in out)
@@ -493,6 +529,8 @@ def main() -> int:
     ap.add_argument("--assert-wired", action="store_true")
     ap.add_argument("--self-test", action="store_true")
     ap.add_argument("-v", "--verbose", action="store_true", help="stream output of passing gates too")
+    ap.add_argument("--jobs", type=int, default=1, metavar="N",
+                    help="run N gates at once (gate:full uses this; the total is wall-clock)")
     args = ap.parse_args()
 
     if args.self_test:
@@ -512,7 +550,7 @@ def main() -> int:
         return 1
 
     label = f"tier: {args.tier}" if not args.only else f"only: {' '.join(args.only)}"
-    results, total = execute(gates, label, args.verbose)
+    results, total = execute(gates, label, args.verbose, args.jobs)
     return report(results, total, label)
 
 
