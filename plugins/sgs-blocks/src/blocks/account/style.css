@@ -13,6 +13,10 @@
 .sgs-account {
 	container-type: inline-size;
 	container-name: sgs-account;
+	/* Size containment leaves the element no content width, so where a parent gives it auto margins (a constrained
+	 * layout inside a flex column) it would shrink to 0px. An explicit width keeps it filling its parent. */
+	width: 100%;
+	box-sizing: border-box;
 	max-width: var(--sgs-account-content-max-width, 100%);
 	margin-inline: auto;
 }

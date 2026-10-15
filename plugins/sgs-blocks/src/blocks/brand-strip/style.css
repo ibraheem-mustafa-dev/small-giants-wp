@@ -6,6 +6,10 @@
 	/* Query container so `100cqw` (used in the tile sizing below) resolves to
 	 * THIS strip's own width — not the marquee track's, which is far wider. */
 	container-type: inline-size;
+	/* Size containment leaves the element no content width, so where a parent gives it auto margins (a constrained
+	 * layout inside a flex column) it would shrink to 0px. An explicit width keeps it filling its parent. */
+	width: 100%;
+	box-sizing: border-box;
 
 	/* Columns-per-device (operator control). Desktop value by default; the
 	 * tablet/mobile media queries at the foot of this file switch

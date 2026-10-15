@@ -195,6 +195,24 @@ describe( 'trigger', () => {
 		expect( lastPlayer().seek ).toHaveBeenCalledWith( 0.5 );
 		expect( lastPlayer().play ).not.toHaveBeenCalled();
 	} );
+
+	test( 'scroll shows the frame for the current position as soon as the player mounts, before any scroll event', async () => {
+		const { el } = layer( 'data-sgs-fx-trigger="scroll"' );
+		el.getBoundingClientRect = () => ( { top: 300, height: 100 } );
+		window.innerHeight = 700;
+		boot();
+		report( el, true );
+		await settle();
+		expect( lastPlayer().seek ).toHaveBeenCalledWith( 0.5 );
+	} );
+
+	test( 'NEGATIVE CONTROL: a visible-trigger layer is played, never seeked, when it mounts', async () => {
+		const { el } = layer( 'data-sgs-fx-trigger="visible"' );
+		boot();
+		report( el, true );
+		await settle();
+		expect( lastPlayer().seek ).not.toHaveBeenCalled();
+	} );
 } );
 
 describe( 'values', () => {

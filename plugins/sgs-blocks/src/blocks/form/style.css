@@ -26,6 +26,10 @@
 .sgs-form {
 	container-type: inline-size;
 	container-name: sgs-form;
+	/* Size containment leaves the element no content width, so where a parent gives it auto margins (a constrained
+	 * layout inside a flex column) it would shrink to 0px. An explicit width keeps it filling its parent. */
+	width: 100%;
+	box-sizing: border-box;
 }
 
 /* Universal box-sizing for all form elements — prevents inputs/buttons/textareas

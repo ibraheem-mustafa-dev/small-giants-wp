@@ -281,6 +281,12 @@ async function mount( binding ) {
 		return;
 	}
 
+	// A scroll-driven animation shows the frame for where the page already is; the scroll listener only seeks on the
+	// next scroll, so a page opened or restored part-way down would otherwise hold frame 0.
+	if ( 'scroll' === config.trigger ) {
+		binding.player.seek( scrollProgress( el ) );
+	}
+
 	registerWithLoopControl( binding );
 }
 
