@@ -1,0 +1,165 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "96px",
+					"right": "96px",
+					"bottom": "96px",
+					"left": "96px"
+				},
+				"tablet": {
+					"top": "96px",
+					"right": "96px",
+					"bottom": "96px",
+					"left": "96px"
+				},
+				"mobile": {
+					"top": "96px",
+					"right": "96px",
+					"bottom": "96px",
+					"left": "96px"
+				}
+			},
+			"className": "m54-over-box"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Over, normalised",
+					"url": "https://example.com/",
+					"className": "m54-over",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"effects": [
+										{
+											"id": "mag1",
+											"effect": "magnet",
+											"trigger": "hover",
+											"values": {
+												"engage": "over",
+												"pullModel": "normalised",
+												"maxPullX": 10,
+												"maxPullY": 8,
+												"axis": "both",
+												"returnDuration": 250,
+												"returnEasing": "cubic-bezier(.16,.84,.32,1)"
+											}
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "96px",
+					"right": "96px",
+					"bottom": "96px",
+					"left": "96px"
+				},
+				"tablet": {
+					"top": "96px",
+					"right": "96px",
+					"bottom": "96px",
+					"left": "96px"
+				},
+				"mobile": {
+					"top": "96px",
+					"right": "96px",
+					"bottom": "96px",
+					"left": "96px"
+				}
+			},
+			"className": "m54-prox-box"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Proximity",
+					"url": "https://example.com/",
+					"className": "m54-prox",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"effects": [
+										{
+											"id": "mag1",
+											"effect": "magnet",
+											"trigger": "hover",
+											"values": {
+												"engage": "proximity",
+												"pullModel": "distance",
+												"factor": 0.5,
+												"maxPullX": 30,
+												"maxPullY": 30,
+												"radius": 120,
+												"axis": "both",
+												"returnDuration": 250,
+												"returnEasing": "ease-out"
+											}
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "96px",
+					"right": "96px",
+					"bottom": "96px",
+					"left": "96px"
+				},
+				"tablet": {
+					"top": "96px",
+					"right": "96px",
+					"bottom": "96px",
+					"left": "96px"
+				},
+				"mobile": {
+					"top": "96px",
+					"right": "96px",
+					"bottom": "96px",
+					"left": "96px"
+				}
+			},
+			"className": "m54-control-box"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "No magnet",
+					"url": "https://example.com/",
+					"className": "m54-control"
+				}
+			}
+		]
+	}
+]

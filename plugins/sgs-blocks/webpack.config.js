@@ -159,6 +159,9 @@ if ( moduleConfig ) {
 		// The shared loop control (Spec 38A FR-38A-37): one IntersectionObserver and one pause state per block root for
 		// every looping effect. PHP registers it as the script module `@sgs/loop-control`.
 		'@sgs/loop-control': '@sgs/loop-control',
+		// The shared magnet (Spec 38A FR-38A-40): one document pointer listener and one rAF queue for every magnet, whether
+		// the fx effect or the nav labels. PHP registers it as the script module `@sgs/magnet`.
+		'@sgs/magnet': '@sgs/magnet',
 		// The `open` and `state` triggers' state helper (Spec 38A M4.4): one
 		// instance and one reduced-motion listener for every block bundle.
 		// PHP registers it as the script module `@sgs/motion-state`.
@@ -263,6 +266,13 @@ if ( moduleConfig ) {
 				'shared',
 				'effects',
 				'loop-control.js'
+			),
+			'shared/effects/magnet': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'magnet.js'
 			),
 			'shared/effects/motion-state': path.resolve(
 				process.cwd(),

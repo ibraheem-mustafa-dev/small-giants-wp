@@ -70,8 +70,8 @@
 /* Magnet label (opt-in via `itemMagnetEnabled`, BOTH-classified). */
 [data-magnet] .sgs-nav-drawer-menu__magnet-target {
 	display: inline-block;
-	transform: translateX(var(--magnet-x, 0px));
-	transition: transform 0.2s ease-out;
+	translate: var(--sgs-mag-x, 0px) var(--sgs-mag-y, 0px);
+	transition: translate var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, ease-out);
 }
 
 .sgs-nav-drawer-menu__item {

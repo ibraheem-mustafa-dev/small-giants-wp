@@ -1,42 +1,38 @@
 /**
- * SGS shared motion — magnetic pull (Spec 38 §3.3, FR-38-30). Tier V.
+ * SGS shared motion — magnetic pull (Spec 38 §3.3, FR-38-30; Spec 38A FR-38A-40). Tier V.
  *
- * An element leans toward the pointer. Two consumers, one core:
+ * An element leans toward the pointer. ONE runtime serves every consumer (the
+ * `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` label magnets through
+ * `initMagnet`, the `magnet` fx effect through `registerMagnet`).
  *
- *   · `sgs/nav-bar-menu`'s label magnet (Mega-Menu Build Spec §6, row 4) — the
- *     default: ±8px, HORIZONTAL only, engaging only
- *     while the cursor is over the label's own box.
- *   · the `magnet` fx effect — award-tier magnetic buttons, which differ in
- *     one load-bearing way: the pull engages from a PROXIMITY RADIUS, i.e.
- *     while the pointer is still OUTSIDE the element. That is the whole feel;
- *     an element that only reacts once you are already on it is just a hover.
+ * ── THE CATCH AREA ────────────────────────────────────────────────────────
+ * `engage: 'proximity'` (the default) pulls while the pointer is still OUTSIDE
+ * the element, inside a radius measured to the element's BOX (default 120px).
+ * That needs pointer positions from outside the element, which an element
+ * listener never sees, so the pointer is read at DOCUMENT level: one shared,
+ * rAF-throttled `mousemove` listener drives every registered magnet. A magnet
+ * whose cached resting box is farther than its radius from the pointer does no
+ * work and no DOM read. `engage: 'over'` pulls only while the pointer is over
+ * the element's own box.
  *
- * ── WHY TIER V ────────────────────────────────────────────────────────────
- * Magnetic buttons and cursor followers "are commonly ~20-30 lines of vanilla
- * JS (mousemove + rAF + CSS transform) — write it, don't dependency it". GSAP
- * adds nothing §1.3's ratchet would accept.
+ * ── PULL MODELS ───────────────────────────────────────────────────────────
+ *   distance    pull = offset from the element centre x factor, capped at the
+ *               max pull of each axis.
+ *   normalised  the offset is divided by half the element's own size and clamped
+ *               to -1..1, so the pull reaches its end at the element's edge
+ *               whatever its size; the max pull of an axis is the TOTAL travel
+ *               (edge to edge), so the element moves at most half of it either way.
+ * Proximity scales either model by 1 - distance / radius, so the pull eases to
+ * nothing at the radius and the element never snaps when the pointer leaves.
  *
- * ── TWO ENTRY POINTS, AND WHY ─────────────────────────────────────────────
+ * ── OUTPUT ────────────────────────────────────────────────────────────────
+ * Writes custom properties only (FR-38A-47): `--sgs-mag-x` / `--sgs-mag-y` (the
+ * magnet slot of the translate channel in motion.css), `--sgs-mag-dur` (0ms
+ * while tracking, the return duration on release) and `--sgs-mag-ease`. CSS owns
+ * every declaration. With no JS the properties stay at their 0px defaults.
  *
- *   initMagnet( el, opts? ) -> cleanup
- *     Self-contained: attaches the element's OWN mousemove/mouseleave. This is
- *     the contract `sgs/nav-bar-menu` imports; with no `opts` it applies the
- *     default label magnet (±8px, horizontal only, engaging only while the
- *     cursor is over the element's own box). Do not change its default
- *     behaviour.
- *
- *   createMagnet( el, opts? ) -> { apply( x, y ), reset(), destroy() }
- *     Driver-agnostic core with NO listeners of its own. Proximity mode needs
- *     pointer positions from OUTSIDE the element, which an element listener
- *     never sees — so `fx-magnet.js` drives every magnet on the page from ONE
- *     shared document listener rather than N per-element ones.
- *
- * CONSUMING CSS ships per consumer (`sgs/nav-bar-menu/style.css`, or
- * `assets/css/fx-magnet.css` for the fx effect). Both read the same pair:
- *   transform: translate( var( --magnet-x, 0px ), var( --magnet-y, 0px ) );
- * Both default to zero, so with no JS the element sits exactly where it would
- * without the effect — a pure enhancement, never load-bearing for reading or
- * activating anything.
+ * Reduced motion is read live: a mid-session switch rests every magnet and
+ * detaches the listener, and the switch back re-attaches it.
  *
  * @package
  */
@@ -47,9 +43,30 @@ import {
 	isTouchInput,
 } from './motion-utils';
 
-/** Nav-menu's shipped defaults. Changing these changes that block. */
+/** Nav-menu label defaults (`initMagnet` with no options). */
 const MAX_PULL_PX = 8;
 const PULL_FACTOR = 0.15;
+
+/** The default catch area, in px from the element's box. */
+export const DEFAULT_RADIUS = 120;
+export const DEFAULT_RETURN_MS = 250;
+export const DEFAULT_RETURN_EASE = 'ease-out';
+
+const MQ = '(prefers-reduced-motion: reduce)';
+
+/**
+ * A finite number from a value, else the fallback. Infinity is accepted
+ * (nav-bar-menu lifts the cap with it).
+ *
+ * @param {*}      value    The candidate.
+ * @param {number} fallback Used when the candidate is not a number.
+ * @return {number} The number.
+ */
+function num( value, fallback ) {
+	return 'number' === typeof value && ! Number.isNaN( value )
+		? value
+		: fallback;
+}
 
 /**
  * Clamp a value between a minimum and a maximum.
@@ -66,13 +83,12 @@ function clamp( value, min, max ) {
 /**
  * Shortest distance from a point to a rectangle. Zero when the point is inside.
  *
- * Deliberately measured to the BOX, not to the centre: distance-to-centre makes
- * a wide element engage late at its ends, because the far end of a 300px button
- * is 150px from its own centre before the pointer is anywhere near it.
+ * Measured to the BOX, not the centre: distance-to-centre makes a wide element
+ * engage late at its ends.
  *
- * @param {DOMRect} rect The element's box.
- * @param {number}  x    Pointer clientX.
- * @param {number}  y    Pointer clientY.
+ * @param {Object} rect Box with left, right, top, bottom.
+ * @param {number} x    Pointer clientX.
+ * @param {number} y    Pointer clientY.
  * @return {number} Distance in px, 0 when inside.
  */
 function distanceToRect( rect, x, y ) {
@@ -82,139 +98,298 @@ function distanceToRect( rect, x, y ) {
 }
 
 /**
- * The driver-agnostic core. Attaches NO listeners.
+ * The element's current translate in px (every channel owner included), so the
+ * resting box can be recovered from a rect that already includes it.
  *
- * @param {HTMLElement} el             The element to nudge.
- * @param {Object}      [opts]         Options.
- * @param {string}      [opts.axis]    'x' (default) | 'y' | 'both'.
- * @param {number}      [opts.radius]  Proximity radius in px. 0/absent = engage
- *                                     only while the pointer is over the box.
- * @param {number}      [opts.maxPull] Max displacement in px.
- * @param {number}      [opts.factor]  Fraction of the offset applied.
- * @return {{apply: Function, reset: Function, destroy: Function}} The driver.
+ * @param {HTMLElement} el The element.
+ * @return {{x: number, y: number}} Offsets, zero when none.
+ */
+function currentTranslate( el ) {
+	const value =
+		( 'function' === typeof window.getComputedStyle &&
+			window.getComputedStyle( el ).translate ) ||
+		'';
+	if ( ! value || 'none' === value ) {
+		return { x: 0, y: 0 };
+	}
+	const parts = value.split( /\s+/ ).map( parseFloat );
+	return { x: parts[ 0 ] || 0, y: parts[ 1 ] || 0 };
+}
+
+/**
+ * The driver-agnostic core. Attaches NO listeners; the shared driver below (or a
+ * test) calls `apply` with pointer positions.
+ *
+ * @param {HTMLElement} el                    The element to nudge.
+ * @param {Object}      [opts]                Options.
+ * @param {string}      [opts.engage]         'proximity' (default) | 'over'.
+ * @param {string}      [opts.pullModel]      'distance' (default) | 'normalised'.
+ * @param {string}      [opts.axis]           'x' (default) | 'y' | 'both'.
+ * @param {number}      [opts.radius]         Catch area in px (proximity). Default 120.
+ * @param {number}      [opts.maxPull]        Max pull in px for both axes.
+ * @param {number}      [opts.maxPullX]       Max pull in px on x (overrides maxPull).
+ * @param {number}      [opts.maxPullY]       Max pull in px on y (overrides maxPull).
+ * @param {number}      [opts.factor]         Fraction of the offset applied (distance model).
+ * @param {number}      [opts.returnDuration] Return time in ms. Default 250.
+ * @param {string}      [opts.returnEasing]   CSS easing for the return. Default ease-out.
+ * @return {{apply: Function, reset: Function, invalidate: Function, destroy: Function}} The driver.
  */
 export function createMagnet( el, opts = {} ) {
+	const proximity = 'over' !== opts.engage;
+	const normalised = 'normalised' === opts.pullModel;
 	const axis = opts.axis || 'x';
-	const radius = Number( opts.radius ) || 0;
-	const maxPull = Number( opts.maxPull ) || MAX_PULL_PX;
-	const factor = Number( opts.factor ) || PULL_FACTOR;
+	const radius = Math.max( 0, num( opts.radius, DEFAULT_RADIUS ) );
+	const maxPull = num( opts.maxPull, MAX_PULL_PX );
+	const maxX = Math.max( 0, num( opts.maxPullX, maxPull ) );
+	const maxY = Math.max( 0, num( opts.maxPullY, maxPull ) );
+	const factor = num( opts.factor, PULL_FACTOR );
+	const returnMs = Math.max(
+		0,
+		num( opts.returnDuration, DEFAULT_RETURN_MS )
+	);
 
-	const write = ( x, y ) => {
-		el.style.setProperty( '--magnet-x', x.toFixed( 2 ) + 'px' );
-		el.style.setProperty( '--magnet-y', y.toFixed( 2 ) + 'px' );
+	let rest = null;
+	let curX = 0;
+	let curY = 0;
+	let held = false;
+
+	const write = ( x, y, ms ) => {
+		el.style.setProperty( '--sgs-mag-x', x.toFixed( 2 ) + 'px' );
+		el.style.setProperty( '--sgs-mag-y', y.toFixed( 2 ) + 'px' );
+		el.style.setProperty( '--sgs-mag-dur', ms + 'ms' );
+		curX = x;
+		curY = y;
 	};
 
-	const reset = () => write( 0, 0 );
+	if ( opts.returnEasing ) {
+		el.style.setProperty( '--sgs-mag-ease', String( opts.returnEasing ) );
+	}
 
-	// Resting position written up front, so the element sits at its natural
-	// spot until (and unless) the pointer engages it.
-	reset();
+	// Resting write up front, so the element sits at its natural spot until
+	// (and unless) the pointer engages it.
+	write( 0, 0, 0 );
+
+	/** Back to rest over the return duration (once; repeated calls do nothing). */
+	const reset = () => {
+		if ( held || 0 !== curX || 0 !== curY ) {
+			held = false;
+			write( 0, 0, returnMs );
+		}
+	};
+
+	/** Forget the cached resting box (scroll, resize, layout change). */
+	const invalidate = () => {
+		rest = null;
+	};
+
+	const measure = () => {
+		const rect = el.getBoundingClientRect();
+		const t = currentTranslate( el );
+		rest = {
+			left: rect.left - t.x,
+			right: rect.right - t.x,
+			top: rect.top - t.y,
+			bottom: rect.bottom - t.y,
+			width: rect.width,
+			height: rect.height,
+		};
+	};
+
+	const pull = ( offset, half, max, strength ) => {
+		const base = normalised
+			? clamp( offset / half, -1, 1 ) * ( max / 2 )
+			: clamp( offset * factor, -max, max );
+		return base * strength;
+	};
 
 	const apply = ( clientX, clientY ) => {
-		// Reactive touch gate (NOT a one-time device check): a hybrid
-		// trackpad+touchscreen device can switch pointer types mid-session,
-		// and some browsers fire synthetic mousemove after a tap — both would
-		// otherwise leave the element stuck off-centre with no real cursor to
-		// release it.
+		// Reactive touch gate: a hybrid device can switch pointer types
+		// mid-session and some browsers fire a synthetic mousemove after a tap.
 		if ( isTouchInput() ) {
+			reset();
 			return;
 		}
-		const rect = el.getBoundingClientRect();
-		if ( 0 === rect.width ) {
+		if ( ! rest ) {
+			measure();
+		}
+		if ( 0 === rest.width || 0 === rest.height ) {
 			return;
 		}
-
-		// Proximity mode falls off to nothing at the radius edge, so the
-		// element eases back rather than snapping when the pointer leaves
-		// range. With no radius this is the original always-on behaviour and
-		// the caller only calls apply() while the pointer is over the element.
-		let strength = 1;
-		if ( radius > 0 ) {
-			const distance = distanceToRect( rect, clientX, clientY );
-			if ( distance > radius ) {
-				reset();
-				return;
-			}
-			strength = 1 - distance / radius;
+		const distance = distanceToRect( rest, clientX, clientY );
+		const reach = proximity ? radius : 0;
+		if ( distance > reach ) {
+			reset();
+			return;
 		}
-
-		const centreX = rect.left + rect.width / 2;
-		const centreY = rect.top + rect.height / 2;
-		const pullX =
-			'y' === axis
-				? 0
-				: clamp(
-						( clientX - centreX ) * factor * strength,
-						-maxPull,
-						maxPull
-				  );
-		const pullY =
-			'x' === axis
-				? 0
-				: clamp(
-						( clientY - centreY ) * factor * strength,
-						-maxPull,
-						maxPull
-				  );
-		write( pullX, pullY );
+		const strength = proximity && radius > 0 ? 1 - distance / radius : 1;
+		const dx = clientX - ( rest.left + rest.width / 2 );
+		const dy = clientY - ( rest.top + rest.height / 2 );
+		held = true;
+		write(
+			'y' === axis ? 0 : pull( dx, rest.width / 2, maxX, strength ),
+			'x' === axis ? 0 : pull( dy, rest.height / 2, maxY, strength ),
+			0
+		);
 	};
 
 	return {
 		apply,
 		reset,
+		invalidate,
 		destroy: () => {
-			el.style.removeProperty( '--magnet-x' );
-			el.style.removeProperty( '--magnet-y' );
+			[
+				'--sgs-mag-x',
+				'--sgs-mag-y',
+				'--sgs-mag-dur',
+				'--sgs-mag-ease',
+			].forEach( ( name ) => el.style.removeProperty( name ) );
 		},
 	};
 }
 
-/**
- * Attach the magnet effect to one element, with its own listeners.
- *
- * CONTRACT — `sgs/nav-bar-menu` imports this and calls it with no options,
- * which gives the default label magnet.
- *
- * @param {HTMLElement} el     The element to nudge toward the cursor.
- * @param {Object}      [opts] Passed through to {@link createMagnet}.
- * @return {Function} Cleanup — removes the listeners. Safe on a
- *                     detached/empty element.
- */
-export function initMagnet( el, opts = {} ) {
-	if ( ! el || typeof el.addEventListener !== 'function' ) {
-		return () => {};
-	}
+/* ==========================================================================
+ * The shared document driver: ONE listener set for every registered magnet.
+ * ========================================================================== */
 
-	const magnet = createMagnet( el, opts );
+const registry = new Set();
+let attached = false;
+let mediaQuery = null;
+let resizeObserver = null;
 
-	// Reduced motion: the effect is off entirely — no listeners attached, no
-	// displacement ever applied. The resting write above already ran, so the
-	// element sits at its natural position.
-	if ( prefersReducedMotion() ) {
-		return () => {};
-	}
-
-	const handleMove = rafThrottle( ( event ) =>
+const onMove = rafThrottle( ( event ) => {
+	registry.forEach( ( magnet ) =>
 		magnet.apply( event.clientX, event.clientY )
 	);
-	const handleLeave = () => magnet.reset();
+} );
+const restAll = () => registry.forEach( ( magnet ) => magnet.reset() );
+const invalidateAll = () =>
+	registry.forEach( ( magnet ) => magnet.invalidate() );
 
-	// Belt-and-braces: a touch tap that fires pointerdown resets immediately,
-	// rather than waiting for a mousemove that gates itself out.
-	const handlePointerDown = ( event ) => {
-		if ( 'touch' === event.pointerType ) {
-			handleLeave();
+/**
+ * The pointer left the window: let go of everything.
+ *
+ * @param {MouseEvent} event The mouseout event.
+ */
+const onOut = ( event ) => {
+	if ( ! event.relatedTarget ) {
+		onMove.cancel();
+		restAll();
+	}
+};
+const onDown = ( event ) => {
+	if ( 'touch' === event.pointerType ) {
+		onMove.cancel();
+		restAll();
+	}
+};
+const onPageShow = () => invalidateAll();
+
+function attach() {
+	if ( attached ) {
+		return;
+	}
+	attached = true;
+	document.addEventListener( 'mousemove', onMove );
+	document.addEventListener( 'mouseout', onOut );
+	document.addEventListener( 'pointerdown', onDown );
+	// Capture, so a scroll inside any container refreshes the cached boxes.
+	window.addEventListener( 'scroll', invalidateAll, {
+		capture: true,
+		passive: true,
+	} );
+	window.addEventListener( 'resize', invalidateAll );
+	window.addEventListener( 'pageshow', onPageShow );
+	if ( 'function' === typeof window.ResizeObserver ) {
+		resizeObserver = new window.ResizeObserver( invalidateAll );
+		resizeObserver.observe( document.documentElement );
+	}
+}
+
+function detach() {
+	if ( ! attached ) {
+		return;
+	}
+	attached = false;
+	onMove.cancel();
+	document.removeEventListener( 'mousemove', onMove );
+	document.removeEventListener( 'mouseout', onOut );
+	document.removeEventListener( 'pointerdown', onDown );
+	window.removeEventListener( 'scroll', invalidateAll, { capture: true } );
+	window.removeEventListener( 'resize', invalidateAll );
+	window.removeEventListener( 'pageshow', onPageShow );
+	if ( resizeObserver ) {
+		resizeObserver.disconnect();
+		resizeObserver = null;
+	}
+}
+
+/** Attach while there are magnets and motion is allowed; rest and detach otherwise. */
+function sync() {
+	if ( registry.size > 0 && ! prefersReducedMotion() ) {
+		attach();
+		return;
+	}
+	restAll();
+	detach();
+}
+
+function watchMotionPreference() {
+	if (
+		mediaQuery ||
+		'undefined' === typeof window ||
+		'function' !== typeof window.matchMedia
+	) {
+		return;
+	}
+	mediaQuery = window.matchMedia( MQ );
+	if ( mediaQuery && 'function' === typeof mediaQuery.addEventListener ) {
+		mediaQuery.addEventListener( 'change', sync );
+	}
+}
+
+function unwatchMotionPreference() {
+	if ( mediaQuery && 'function' === typeof mediaQuery.removeEventListener ) {
+		mediaQuery.removeEventListener( 'change', sync );
+	}
+	mediaQuery = null;
+}
+
+/**
+ * Register one element with the shared driver.
+ *
+ * @param {HTMLElement} el     The element.
+ * @param {Object}      [opts] Passed to {@link createMagnet}.
+ * @return {Function} Cleanup: unregisters, clears the custom properties and, with
+ *                     the last magnet gone, removes every listener.
+ */
+export function registerMagnet( el, opts = {} ) {
+	if ( ! el || 'function' !== typeof el.getBoundingClientRect ) {
+		return () => {};
+	}
+	const magnet = createMagnet( el, opts );
+	registry.add( magnet );
+	watchMotionPreference();
+	sync();
+	return () => {
+		registry.delete( magnet );
+		magnet.destroy();
+		if ( 0 === registry.size ) {
+			detach();
+			unwatchMotionPreference();
 		}
 	};
+}
 
-	el.addEventListener( 'mousemove', handleMove );
-	el.addEventListener( 'mouseleave', handleLeave );
-	el.addEventListener( 'pointerdown', handlePointerDown );
-
-	return () => {
-		handleMove.cancel();
-		el.removeEventListener( 'mousemove', handleMove );
-		el.removeEventListener( 'mouseleave', handleLeave );
-		el.removeEventListener( 'pointerdown', handlePointerDown );
-	};
+/**
+ * Attach the magnet effect to one element. CONTRACT: `sgs/nav-bar-menu` and
+ * `sgs/nav-drawer-menu` import this. With no options it is the label magnet:
+ * horizontal only, 8px cap, factor 0.15, and a 120px catch area around the label
+ * (pass `engage: 'over'` for the old over-the-box-only behaviour).
+ *
+ * @param {HTMLElement} el     The element to nudge toward the cursor.
+ * @param {Object}      [opts] Passed to {@link createMagnet}.
+ * @return {Function} Cleanup. Safe on a detached or empty element.
+ */
+export function initMagnet( el, opts = {} ) {
+	return registerMagnet( el, opts );
 }

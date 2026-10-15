@@ -1,66 +1,60 @@
 /**
- * SGS motion — magnetic pull (Spec 38 §3.3, FR-38-30). Tier V.
+ * SGS motion — magnetic pull (Spec 38 §3.3, FR-38-30; Spec 38A FR-38A-40). Tier V.
  *
- * The PAINTING half. `src/shared/effects/fx-magnet.js` writes custom-property
- * VALUES only (Spec 32 no-inline); every property declaration lives here.
+ * The PAINTING half. `src/shared/effects/magnet.js` writes custom-property
+ * VALUES only (FR-38A-47): `--sgs-mag-x` / `--sgs-mag-y` (the magnet slot of the
+ * `translate` channel in `motion.css`), `--sgs-mag-dur` (0ms while the pointer
+ * tracks, the return duration on release) and `--sgs-mag-ease`. This file owns
+ * the one thing the magnet paints itself: its RETURN transition.
  *
- * ── WHY `translate` AND NOT `left`/`top` ──────────────────────────────────
- * `transform` is compositor-driven and triggers neither layout nor paint, so a
- * magnet pulling on every pointer frame costs nothing on the main thread. The
- * house rule ("transition only transform/opacity") is satisfied by construction
- * rather than by discipline.
+ * The transition is on the magnet's own two custom properties, never on
+ * `translate`, so the entrance and the hover state keep their own timing on the
+ * same element (§10, "Own timing"). Pointer tracking has no transition (the
+ * pull is already per frame); the transition exists for the moment the pointer
+ * leaves the catch area and the driver writes 0 once, so the element eases back
+ * rather than snapping.
  *
- * ── FAIL-OPEN BY CONSTRUCTION ─────────────────────────────────────────────
- * Both custom properties default to `0px`, so with JS blocked, JS still
- * loading, or the module never enqueued, the element sits at exactly its
- * natural position. There is no second code path and nothing to keep in sync —
- * the effect's absence IS its resting state (§1.6).
- *
- * ── THE TRANSITION IS THE RELEASE, NOT THE PULL ───────────────────────────
- * The pull itself is already per-frame, so it needs no transition. The
- * transition exists for the moment the pointer leaves the radius and the
- * driver writes 0 once: without it the element would SNAP back. Short enough
- * (180ms) that it never feels laggy while tracking.
+ * Fail-open by construction: both properties default to 0px, so with JS blocked
+ * or not yet loaded the element sits at its natural position.
  */
 
+/* Same definitions as motion.css, so the return can animate where this file is loaded alone. */
+@property --sgs-mag-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-mag-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+
 [data-sgs-fx~="magnet"] {
-	/* `inline-block` guards the case where a magnet is applied to something
-	   that is `display: inline` — a transform does not apply to a non-replaced
-	   inline box, so the effect would silently do nothing. Only promoted when
-	   it would otherwise be inline; anything already block/flex/grid is left
-	   alone. */
-	--sgs-magnet-transition: transform 180ms ease-out;
-	transition: var( --sgs-magnet-transition );
-	transform: translate( var( --magnet-x, 0px ), var( --magnet-y, 0px ) );
-	/* The transform must not repaint the element's own descendants
-	   independently, or a magnet on a container would shear its children. */
-	will-change: transform;
+	transition:
+		--sgs-mag-x var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, ease-out),
+		--sgs-mag-y var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, ease-out);
 }
 
-/* An inline element cannot be transformed. Promote ONLY that case. */
-[data-sgs-fx~="magnet"]:where( a, span, em, strong, label, code ) {
+/*
+ * An element the renderer gave no translate channel still moves: the magnet's
+ * slot alone. Where the channel exists (`data-sgs-mc~="translate"`), motion.css
+ * composes the magnet with every other owner and this rule steps aside.
+ * (`translate` is a no-op on a non-replaced inline box, so an inline host is
+ * promoted to inline-block.)
+ */
+[data-sgs-fx~="magnet"]:not([data-sgs-mc~="translate"]) {
+	translate: var(--sgs-mag-x, 0px) var(--sgs-mag-y, 0px);
+}
+
+[data-sgs-fx~="magnet"]:where(a, span, em, strong, label, code) {
 	display: inline-block;
 }
 
 /*
- * ⛔ NO POINTER GATE HERE, deliberately — unlike the cursor field, which
- * removes itself entirely on a coarse pointer. This effect needs no such rule:
- * with no mouse there are no `mousemove` events, so `--magnet-x/y` stay at
- * their 0px defaults and the element simply never moves. Adding a media query
- * would be a second mechanism enforcing what absence already guarantees, and a
- * second mechanism is a second thing that can drift.
+ * No pointer gate here, deliberately: with no mouse there are no `mousemove`
+ * events, so the properties stay at 0px and the element never moves.
  */
 
-@media ( prefers-reduced-motion: reduce ) {
-	/*
-	 * SUPPRESS (§10). The JS already registers no listener under `reduce`, so
-	 * nothing writes a non-zero value and this rule has nothing to override —
-	 * it exists as the CSS-side kill switch the house pattern requires, so the
-	 * contract holds even if a future driver forgets its own gate. Belt and
-	 * braces, with the belt named.
-	 */
+@media (prefers-reduced-motion: reduce) {
+	/* The JS already detaches under `reduce`; this is the CSS-side kill switch the house pattern requires. */
 	[data-sgs-fx~="magnet"] {
-		transform: none;
 		transition: none;
+	}
+
+	[data-sgs-fx~="magnet"]:not([data-sgs-mc~="translate"]) {
+		translate: none;
 	}
 }

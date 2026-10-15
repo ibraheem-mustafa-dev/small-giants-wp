@@ -314,7 +314,7 @@ class SGS_Motion_Registry {
 
 		'@sgs/fx-magnet'           => array(
 			'path' => 'build/shared/effects/fx-magnet.js',
-			'deps' => array(),
+			'deps' => array( '@sgs/magnet' ),
 		),
 
 		/*
@@ -459,6 +459,23 @@ class SGS_Motion_Registry {
 		),
 		'@sgs/fx-glare'            => array(
 			'path' => 'build/shared/effects/fx-glare.js',
+			'deps' => array(),
+		),
+
+		/*
+		 * Ripple (Tier V, Spec 38A FR-38A-45): on pointerdown or click it writes the circle's position, diameter,
+		 * colour and timing as custom properties; fx-ripple.css paints it in the element's ::after slot.
+		 */
+		/*
+		 * The shared magnet (Spec 38A FR-38A-40): one document pointer listener and rAF queue for the fx magnet and the
+		 * nav labels alike, so every bundle imports this one instance.
+		 */
+		'@sgs/magnet'              => array(
+			'path' => 'build/shared/effects/magnet.js',
+			'deps' => array(),
+		),
+		'@sgs/fx-ripple'           => array(
+			'path' => 'build/shared/effects/fx-ripple.js',
 			'deps' => array(),
 		),
 	);

@@ -89,14 +89,14 @@
 
 /*
  * Magnet label (Mega-Menu Build Spec §6 row 4, opt-in via
- * `itemMagnetEnabled`). `--magnet-x` defaults to 0 (no displacement) so a
+ * `itemMagnetEnabled`). `--sgs-mag-x` (the magnet slot of the translate channel, written by `magnet.js`) defaults to 0 (no displacement) so a
  * bar with the effect off — or with JS unavailable — renders the label
  * exactly where it would sit without this rule at all.
  */
 [data-magnet] .sgs-nav-bar-menu__magnet-target {
 	display: inline-block;
-	transform: translateX(var(--magnet-x, 0px));
-	transition: transform 0.2s ease-out;
+	translate: var(--sgs-mag-x, 0px) var(--sgs-mag-y, 0px);
+	transition: translate var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, ease-out);
 }
 
 /*
@@ -230,8 +230,8 @@
  * Magnetic-pull companion rule (Spec 36 §14 FR-41-31). Required the moment
  * `triggerMagnetEnabled` emits `data-sgs-fx="magnet"` on this element: the
  * shared `fx-magnet` runtime's own stylesheet (`assets/css/fx-magnet.css`)
- * declares `[data-sgs-fx="magnet"]{transition:var(--sgs-magnet-transition)}`
- * at (0,1,0) — the SAME specificity as this block's own hover-background
+ * declares a `[data-sgs-fx~="magnet"]` return transition on the magnet's own
+ * custom properties (`--sgs-mag-x/y`) at (0,1,0) — the SAME specificity as this block's own hover-background
  * transition above — so without this rule, whichever stylesheet happens to
  * enqueue last silently wins and the other transition is dropped. This
  * selector's extra class raises it to (0,2,0), so BOTH transitions always
@@ -242,7 +242,8 @@
  */
 .sgs-nav-bar-menu__burger[data-sgs-fx~="magnet"] {
 	transition: background-color var(--wp--custom--transition--fast, 150ms ease),
-		var(--sgs-magnet-transition, transform 180ms ease-out);
+		--sgs-mag-x var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, ease-out),
+		--sgs-mag-y var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, ease-out);
 }
 
 /* Burger ICON glyph size — distinct from `burgerSize`, which governs the 44px

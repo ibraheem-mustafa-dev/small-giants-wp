@@ -1,134 +1,151 @@
 /**
- * SGS motion — magnet boot module (Spec 38 §3.3, FR-38-30). Tier V.
+ * SGS motion — magnet boot module (Spec 38 §3.3, FR-38-30; Spec 38A FR-38A-40). Tier V.
  *
  * The `@sgs/fx-magnet` script module the PHP motion registry enqueues when a
- * page renders a block carrying `data-sgs-fx="magnet"`. It finds those elements
- * and drives them; the pull itself lives in `magnet.js`, which knows nothing
- * about blocks or WordPress.
- *
- * ── ONE DOCUMENT LISTENER, NOT N ELEMENT LISTENERS ────────────────────────
- *
- * This is the whole reason the boot module is not a two-line `forEach` over
- * `initMagnet`. A magnetic button's defining behaviour is that it reacts while
- * the pointer is still OUTSIDE it — an element-scoped `mousemove` cannot see
- * that, because it only fires once the pointer is already over the element, by
- * which point the effect has nothing left to do.
- *
- * So the driver has to be document-scoped. Attaching one document listener PER
- * MAGNET would then multiply per-frame work by the number of magnets on the
- * page, so instead there is exactly ONE listener here, rAF-throttled once, and
- * each registered magnet's `apply()` runs from that single tick.
- *
- * ── WHAT THIS MODULE DELIBERATELY DOES NOT DO ─────────────────────────────
+ * page renders a block carrying `data-sgs-fx="magnet"`. It reads each marked
+ * element's attributes and registers it with the shared driver in `magnet.js`,
+ * which owns the pull and the ONE document-level pointer listener (so a magnet
+ * reacts while the pointer is still outside it, inside its catch area).
  *
  * It writes no CSS and applies no marker attribute. `assets/css/fx-magnet.css`
- * owns the transform (Spec 32: JS writes custom-property VALUES only), and the
- * render layer owns `data-sgs-fx`. With JS blocked the element sits exactly
- * where it would without the effect, because `--magnet-x/y` default to 0 —
- * fail-open by construction rather than by a fallback branch (§1.6).
+ * owns the return transition and the motion channel owns the translate
+ * (FR-38A-47: scripts write custom properties only); with JS blocked the
+ * element sits where it would without the effect, because `--sgs-mag-x/y`
+ * default to 0.
  *
  * @package
  */
 
-import { createMagnet } from './magnet';
-import { prefersReducedMotion, rafThrottle, isTouchInput } from './motion-utils';
+import { registerMagnet, DEFAULT_RADIUS, DEFAULT_RETURN_MS } from '@sgs/magnet';
 
 /** Elements the render layer marked. */
 const SELECTOR = '[data-sgs-fx~="magnet"]';
 
 /** Fallbacks when an instance declares no value of its own. */
-const DEFAULT_RADIUS = 120;
 const DEFAULT_STRENGTH = 24;
+const DEFAULT_FACTOR = 0.35;
 
-/** Live magnets, so a bfcache restore can tear down before re-init. */
-let magnets = [];
+/** A CSS easing keyword, cubic-bezier() or linear(); anything else is dropped. */
+const EASING =
+	/^(?:linear|ease|ease-in|ease-out|ease-in-out)$|^(?:cubic-bezier|linear)\([\d.,\s%-]+\)$/;
 
-/** The single shared pointer driver, or null when nothing is registered. */
-let onPointerMove = null;
+/** Cleanups for the live magnets, so a bfcache restore can tear down before re-init. */
+let cleanups = [];
+
+/**
+ * A number read from one attribute, bounded; the fallback when the attribute is
+ * absent or not a number. Zero is a real value, never "off".
+ *
+ * @param {HTMLElement} el       The element.
+ * @param {string}      name     Attribute name.
+ * @param {number}      fallback Value when absent or invalid.
+ * @param {number}      min      Lower bound.
+ * @param {number}      max      Upper bound.
+ * @return {number} The bounded number.
+ */
+function readNumber( el, name, fallback, min, max ) {
+	const value = parseFloat( el.getAttribute( name ) );
+	return Number.isFinite( value )
+		? Math.max( min, Math.min( max, value ) )
+		: fallback;
+}
 
 /**
  * Read one instance's options off its own attributes.
  *
  * Every value is BOUNDED rather than trusted: a huge radius would make a button
- * react from across the page, and a huge strength would tear it out of its own
- * layout. An absent attribute falls back to the default rather than to zero,
- * because zero is indistinguishable from "the client turned it off".
+ * react from across the page, and a huge pull would tear it out of its layout.
+ * An absent attribute falls back to the default, never to zero. `engage`
+ * defaults to proximity (a catch area of 120px around the box), so a magnet
+ * reacts before the pointer is on it unless it is set to `over`.
  *
  * @param {HTMLElement} el The marked element.
- * @return {Object} Options for {@link createMagnet}.
+ * @return {Object} Options for `createMagnet`.
  */
-function readOptions( el ) {
-	const axis = el.getAttribute( 'data-sgs-fx-magnet-axis' ) || 'both';
-	const radius = parseInt(
-		el.getAttribute( 'data-sgs-fx-magnet-radius' ),
-		10
-	);
-	const strength = parseInt(
-		el.getAttribute( 'data-sgs-fx-magnet-strength' ),
-		10
+export function readOptions( el ) {
+	const axis = el.getAttribute( 'data-sgs-fx-magnet-axis' );
+	const easing = (
+		el.getAttribute( 'data-sgs-fx-magnet-return-easing' ) || ''
+	).trim();
+	const maxPullX = readNumber(
+		el,
+		'data-sgs-fx-magnet-strength',
+		DEFAULT_STRENGTH,
+		0,
+		200
 	);
 	return {
+		engage:
+			'over' === el.getAttribute( 'data-sgs-fx-magnet-engage' )
+				? 'over'
+				: 'proximity',
+		pullModel:
+			'normalised' === el.getAttribute( 'data-sgs-fx-magnet-pull-model' )
+				? 'normalised'
+				: 'distance',
 		axis: [ 'x', 'y', 'both' ].includes( axis ) ? axis : 'both',
-		radius: Math.max( 20, Math.min( 400, radius || DEFAULT_RADIUS ) ),
-		maxPull: Math.max( 2, Math.min( 80, strength || DEFAULT_STRENGTH ) ),
-		// A magnetic button should reach its cap comfortably inside its radius,
-		// rather than creeping toward it — 0.15 is nav-menu's subtle label
-		// nudge and reads as nothing at button scale.
-		factor: 0.35,
+		radius: readNumber(
+			el,
+			'data-sgs-fx-magnet-radius',
+			DEFAULT_RADIUS,
+			0,
+			400
+		),
+		maxPullX,
+		// A single-limit instance (the legacy attribute) pulls the same on both axes.
+		maxPullY: readNumber(
+			el,
+			'data-sgs-fx-magnet-max-pull-y',
+			maxPullX,
+			0,
+			200
+		),
+		factor: readNumber(
+			el,
+			'data-sgs-fx-magnet-factor',
+			DEFAULT_FACTOR,
+			0,
+			1
+		),
+		returnDuration: readNumber(
+			el,
+			'data-sgs-fx-magnet-return-duration',
+			DEFAULT_RETURN_MS,
+			0,
+			5000
+		),
+		returnEasing: EASING.test( easing ) ? easing : undefined,
 	};
 }
 
 /**
- * Attach every marked element and start the shared driver.
+ * Register every marked element with the shared driver.
  *
  * @return {void}
  */
 function boot() {
-	const els = [ ...document.querySelectorAll( SELECTOR ) ];
-	if ( ! els.length ) {
-		return;
-	}
-
-	// Reduced motion: register nothing and attach no listener. `createMagnet`
-	// still runs so the resting value is written, which keeps the element's
-	// computed transform identical to the no-JS state (§10 suppress).
-	els.forEach( ( el ) => magnets.push( createMagnet( el, readOptions( el ) ) ) );
-	if ( prefersReducedMotion() ) {
-		return;
-	}
-
-	onPointerMove = rafThrottle( ( event ) => {
-		if ( isTouchInput() ) {
-			return;
-		}
-		magnets.forEach( ( m ) => m.apply( event.clientX, event.clientY ) );
-	} );
-	document.addEventListener( 'mousemove', onPointerMove );
+	cleanups = [ ...document.querySelectorAll( SELECTOR ) ].map( ( el ) =>
+		registerMagnet( el, readOptions( el ) )
+	);
 }
 
 /**
- * Tear every magnet down and remove the shared listener.
+ * Tear every magnet down; the driver removes its listeners with the last one.
  *
  * @return {void}
  */
 function teardown() {
-	if ( onPointerMove ) {
-		onPointerMove.cancel();
-		document.removeEventListener( 'mousemove', onPointerMove );
-		onPointerMove = null;
-	}
-	magnets.forEach( ( m ) => m.destroy() );
-	magnets = [];
+	cleanups.forEach( ( cleanup ) => cleanup() );
+	cleanups = [];
 }
 
 boot();
 
 /*
  * bfcache (§1.6). A back-navigation restores the page from memory WITHOUT
- * re-running module code, so the listener survives but the registered elements
- * may describe a DOM that has since been re-rendered. Tearing down and
- * re-booting on a persisted restore keeps the two in step. On a normal load
- * `persisted` is false and this does nothing.
+ * re-running module code, so the registered elements may describe a DOM that
+ * has since been re-rendered. Tearing down and re-booting on a persisted
+ * restore keeps the two in step; a normal load does nothing here.
  */
 window.addEventListener( 'pageshow', ( event ) => {
 	if ( event.persisted ) {

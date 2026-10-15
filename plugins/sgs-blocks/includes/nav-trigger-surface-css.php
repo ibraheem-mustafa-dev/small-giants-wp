@@ -10,9 +10,9 @@
  * toggle, focus return, `aria-expanded` and 44px floor, with no JS.
  *
  * The row is the containing block; every positioned box between the row and
- * the button is made static, and a magnet's transform (which would make the
- * button itself the containing block) moves to the button's children, whose
- * custom properties the magnet runtime already writes.
+ * the button is made static, and a magnet's translate (which would make the
+ * button itself the containing block) moves to the button's children, which
+ * read the button's `--sgs-mag-x/y` (the host's return transition animates them).
  *
  * G-2 (U-18): PASS-THROUGH for plain content. Only a genuinely INTERACTIVE
  * descendant of another row block (`a[href]`, `button`, `input`, `select`,
@@ -62,8 +62,8 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_surface_css' ) ) {
 		$rules  = $row . '{position:relative;}';
 		$rules .= $row . ' :has(' . $uid_sel . '),' . $uid_sel . ',' . $uid_sel . ' .sgs-nav-bar-menu__toggle-wrap,' . $burger . '{position:static;}';
 		$rules .= $burger . '::after{content:"";position:absolute;inset:0;cursor:pointer;}';
-		$rules .= $magnet . '{transform:none;will-change:auto;}';
-		$rules .= $magnet . '>.sgs-nav-bar-menu__burger-icon,' . $magnet . '>.sgs-nav-bar-menu__burger-text{transform:translate(var(--magnet-x,0px),var(--magnet-y,0px));transition:var(--sgs-magnet-transition);}';
+		$rules .= $magnet . '{translate:none;transform:none;will-change:auto;}';
+		$rules .= $magnet . '>.sgs-nav-bar-menu__burger-icon,' . $magnet . '>.sgs-nav-bar-menu__burger-text{--sgs-mag-x:inherit;--sgs-mag-y:inherit;translate:var(--sgs-mag-x,0px) var(--sgs-mag-y,0px);}';
 		$rules .= ':where(' . $others . '){position:relative;}' . $others . '{z-index:1;}';
 
 		return sgs_tier_exact_media_css( $tiers, $rules, '(max-width:' . ( max( 1, $collapse_point ) - 1 ) . 'px)' );
