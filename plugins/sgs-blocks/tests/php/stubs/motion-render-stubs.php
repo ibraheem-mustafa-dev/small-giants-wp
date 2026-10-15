@@ -150,12 +150,16 @@ namespace {
 			private $len   = 0;
 			private $tag   = '';
 			private $closer = false;
+			/** Characters after the open tag that belong to a raw-text element's content and closing tag (never visited). */
+			private $skip = 0;
+			/** Elements whose content and closing tag the real processor consumes together with the opener. */
+			const RAW_TEXT = array( 'IFRAME', 'NOEMBED', 'NOFRAMES', 'SCRIPT', 'STYLE', 'TEXTAREA', 'TITLE', 'XMP' );
 			public function __construct( $html ) {
 				$this->html = (string) $html;
 			}
 			public function next_tag( $query = null ) {
 				$closers = is_array( $query ) && 'visit' === ( $query['tag_closers'] ?? '' );
-				$from    = $this->start < 0 ? 0 : $this->start + $this->len;
+				$from    = $this->start < 0 ? 0 : $this->start + $this->len + $this->skip;
 				$body    = '(?:\s(?:[^>"\']|"[^"]*"|\'[^\']*\')*)?>/';
 				$pattern = $closers ? '/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)' . $body : '/<()([a-zA-Z][a-zA-Z0-9-]*)' . $body;
 				if ( ! preg_match( $pattern, $this->html, $m, PREG_OFFSET_CAPTURE, $from ) ) {
@@ -165,6 +169,13 @@ namespace {
 				$this->tag    = strtoupper( $m[2][0] );
 				$this->start  = $m[0][1];
 				$this->len    = strlen( $m[0][0] );
+				$this->skip   = 0;
+				if ( ! $this->closer && in_array( $this->tag, self::RAW_TEXT, true ) ) {
+					$after      = $this->start + $this->len;
+					$this->skip = preg_match( '/<\/' . $this->tag . '(?:\s[^>]*)?>/i', $this->html, $c, PREG_OFFSET_CAPTURE, $after )
+						? $c[0][1] + strlen( $c[0][0] ) - $after
+						: strlen( $this->html ) - $after;
+				}
 				return true;
 			}
 			public function is_tag_closer() {

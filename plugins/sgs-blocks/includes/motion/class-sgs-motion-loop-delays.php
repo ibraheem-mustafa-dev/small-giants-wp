@@ -68,9 +68,6 @@ final class Sgs_Motion_Loop_Delays {
 		'closeOrder' => 'same',
 	);
 
-	/** Void elements, which never open a nesting level. */
-	const VOID = array( 'AREA', 'BASE', 'BR', 'COL', 'EMBED', 'HR', 'IMG', 'INPUT', 'LINK', 'META', 'SOURCE', 'TRACK', 'WBR' );
-
 	/**
 	 * Hook the filters.
 	 *
@@ -343,7 +340,7 @@ final class Sgs_Motion_Loop_Delays {
 	 * Each item's close delay at each device, when the block's own entrance plays on the `open` trigger.
 	 *
 	 * @param array<string,mixed> $attributes The block's attributes.
-	 * @param array<string,mixed> $stagger    Normalised settings (`closeOrder` `same` or `reversed`).
+	 * @param array<string,mixed> $stagger    Normalised settings (`closeOrder` `same`, `reversed` or `together`).
 	 * @param array<string,int[]> $delays     Open delays per device.
 	 * @return array<string,int[]>|null Null when no entrance of the block has the `open` trigger.
 	 */
@@ -356,7 +353,7 @@ final class Sgs_Motion_Loop_Delays {
 		if ( ! $open ) {
 			return null;
 		}
-		$order = 'reversed' === ( $stagger['closeOrder'] ?? 'same' ) ? 'reversed' : 'same';
+		$order = in_array( $stagger['closeOrder'] ?? 'same', array( 'reversed', 'together' ), true ) ? $stagger['closeOrder'] : 'same';
 		$out   = array();
 		foreach ( $delays as $device => $list ) {
 			$out[ $device ] = Sgs_Motion_Stagger::compute_close_delays( $list, $order );
@@ -436,7 +433,7 @@ final class Sgs_Motion_Loop_Delays {
 				$processor->set_attribute( self::ITEM_ATTR, (string) $count );
 				++$count;
 			}
-			if ( ! in_array( $tag, self::VOID, true ) && ! $processor->has_self_closing_flag() ) {
+			if ( ! in_array( $tag, Sgs_Motion_Markup::VOID, true ) && ! in_array( $tag, Sgs_Motion_Markup::ATOMIC, true ) && ! $processor->has_self_closing_flag() ) {
 				++$depth;
 			}
 		}

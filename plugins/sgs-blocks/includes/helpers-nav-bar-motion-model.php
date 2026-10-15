@@ -130,9 +130,6 @@ if ( ! function_exists( 'sgs_nav_bar_motion_tag_panels' ) ) {
 	 * @return array{html:string,counts:array<string,int>} The HTML and, per item class, the most items one panel holds.
 	 */
 	function sgs_nav_bar_motion_tag_panels( string $html, array $parts ): array {
-		// Elements whose content the tag processor skips: never a nesting level (their closer may not be visited).
-		$raw        = array( 'SCRIPT', 'STYLE', 'TEXTAREA', 'TITLE', 'IFRAME', 'NOEMBED', 'NOFRAMES', 'XMP' );
-		$void       = array( 'AREA', 'BASE', 'BR', 'COL', 'EMBED', 'HR', 'IMG', 'INPUT', 'LINK', 'META', 'SOURCE', 'TRACK', 'WBR' );
 		$containers = array();
 		$counts     = array();
 		foreach ( $parts as $pair ) {
@@ -157,7 +154,7 @@ if ( ! function_exists( 'sgs_nav_bar_motion_tag_panels' ) ) {
 				$processor->set_attribute( 'data-sgs-motion-state', '' );
 			}
 			$top = count( $stack ) - 1;
-			if ( $top >= 0 && '' !== $stack[ $top ][1] && ! in_array( $tag, $raw, true ) ) {
+			if ( $top >= 0 && '' !== $stack[ $top ][1] && ! in_array( $tag, \SGS\Blocks\Motion\Sgs_Motion_Markup::ATOMIC, true ) ) {
 				$item_class = $stack[ $top ][1];
 				if ( ! $processor->has_class( $item_class ) ) {
 					$processor->add_class( $item_class );
@@ -166,7 +163,7 @@ if ( ! function_exists( 'sgs_nav_bar_motion_tag_panels' ) ) {
 				++$stack[ $top ][2];
 				$counts[ $item_class ] = max( $counts[ $item_class ], $stack[ $top ][2] );
 			}
-			if ( in_array( $tag, $raw, true ) || in_array( $tag, $void, true ) || $processor->has_self_closing_flag() ) {
+			if ( in_array( $tag, \SGS\Blocks\Motion\Sgs_Motion_Markup::ATOMIC, true ) || in_array( $tag, \SGS\Blocks\Motion\Sgs_Motion_Markup::VOID, true ) || $processor->has_self_closing_flag() ) {
 				continue;
 			}
 			$takes = '';

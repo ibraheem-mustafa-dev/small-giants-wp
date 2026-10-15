@@ -182,6 +182,17 @@ $check( array( 0, 80, 160, 0, 80, 160 ) === $column( $rows, 'mobile' ), 'post-te
 $check( 1 === preg_match( '/\.(sgs-m-[0-9a-f]{10}) > \*\[data-sgs-loop-i="5"\]\{/', $collected() ), 'post-template: rule scoped to the list and the item index' );
 $check( $no_style_attr( $out ) && false === stripos( $collected(), 'nth-child' ), 'post-template: no style attribute and no nth-child' );
 
+// 7b. Items holding elements whose closing tag the tag processor never visits (iframe, script, textarea) do not hide later items.
+$atomic_html = '<ul class="wp-block-post-template">'
+	. '<li class="wp-block-post">A</li>'
+	. '<li class="wp-block-post"><iframe src="https://example.com/embed" title="Embed"></iframe><script>var a = 1;</script><textarea>x</textarea><p>B</p></li>'
+	. '<li class="wp-block-post">C</li><li class="wp-block-post">D</li><li class="wp-block-post">E</li><li class="wp-block-post">F</li>'
+	. '</ul>';
+$reset();
+$out = Sgs_Motion_Loop_Delays::filter( $atomic_html, $post_template );
+preg_match_all( '/<li\b[^>]*\bdata-sgs-loop-i="(\d+)"/', $out, $atomic_found );
+$check( array( '0', '1', '2', '3', '4', '5' ) === $atomic_found[1], 'post-template: items after an iframe, script and textarea are still tagged in order: ' . json_encode( $atomic_found[1] ) );
+
 // 8. WooCommerce product-template: settings and columns from the enclosing product collection.
 $parent   = (object) array(
 	'parsed_block' => array(
@@ -340,6 +351,10 @@ $check( array( 0, 55, 110, 165 ) === $close_of( $css_same ), 'drawer menu, close
 $reset();
 Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-drawer-menu', 'sgs-nav-drawer-menu-a1', $menu_attrs( null ), 4, '.sgs-nav-drawer-menu__item' );
 $check( array( 0, 55, 110, 165 ) === $close_of( $collected() ), 'drawer menu, no closeOrder: the same order' );
+$reset();
+Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-drawer-menu', 'sgs-nav-drawer-menu-a1', $menu_attrs( 'together' ), 4, '.sgs-nav-drawer-menu__item' );
+$css_together = $collected();
+$check( array( 0, 0, 0, 0 ) === $close_of( $css_together ), 'drawer menu, closeOrder together: every close delay 0 (' . json_encode( $close_of( $css_together ) ) . ')' );
 $reset();
 Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-drawer-menu', 'sgs-nav-drawer-menu-a1', $menu_attrs( 'reversed', 'scroll' ), 4, '.sgs-nav-drawer-menu__item' );
 $css_scroll = $collected();
