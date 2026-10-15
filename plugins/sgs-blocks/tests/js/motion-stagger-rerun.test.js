@@ -24,11 +24,17 @@ jest.mock( '@wordpress/data', () => {
 			__unstableMarkNextChangeAsNotPersistent: () => {},
 			updateBlockAttributes: ( ids, updates ) => {
 				mockState.writes.push( ids.slice() );
-				ids.forEach( ( id ) => {
-					mockState.blocks[ id ] = {
-						...mockState.blocks[ id ],
-						attributes: { ...mockState.blocks[ id ].attributes, ...updates[ id ] },
-					};
+				// The same merge the real store applies, at any depth of the tree.
+				const merge = ( block ) => {
+					if ( ids.includes( block.clientId ) ) {
+						return { ...block, attributes: { ...block.attributes, ...updates[ block.clientId ] } };
+					}
+					return block.innerBlocks
+						? { ...block, innerBlocks: block.innerBlocks.map( merge ) }
+						: block;
+				};
+				Object.keys( mockState.blocks ).forEach( ( key ) => {
+					mockState.blocks[ key ] = merge( mockState.blocks[ key ] );
 				} );
 			},
 		} ),
@@ -55,8 +61,17 @@ const motionOf = ( delay, customised ) => {
 	}
 	return { ...added.motion, elements: { root: { entrance: { base: layer } } } };
 };
+const find = ( blocks, id ) =>
+	blocks.reduce(
+		( found, block ) =>
+			found || ( block.clientId === id ? block : find( block.innerBlocks || [], id ) ),
+		null
+	);
 const delayOf = ( id ) =>
-	layersAt( elementOf( mockState.blocks[ id ].attributes.sgsMotion, 'root' ), 'entrance.base' )[ 0 ].values.delay;
+	layersAt(
+		elementOf( find( Object.values( mockState.blocks ), id ).attributes.sgsMotion, 'root' ),
+		'entrance.base'
+	)[ 0 ].values.delay;
 const child = ( id, delay, customised = false ) => ( {
 	name: 'sgs/card',
 	clientId: id,
@@ -165,6 +180,81 @@ describe( 'the stagger re-run', () => {
 	it( 'does nothing for a container with no stored stagger settings', () => {
 		mockState.containerAttributes = { layout: 'stack' };
 		setChildren( [ mockState.blocks.c, mockState.blocks.b, mockState.blocks.a ] );
+		render();
+		expect( mockState.writes ).toEqual( [] );
+	} );
+} );
+
+describe( 'the stagger re-run under the Flatten order', () => {
+	const flatten = () => {
+		mockState.containerAttributes = {
+			layout: 'stack',
+			sgsMotion: { v: 1, stagger: { step: 100, order: 'flatten' } },
+		};
+	};
+	const column = ( id, leaves ) => ( { name: 'sgs/column', clientId: id, attributes: {}, innerBlocks: leaves } );
+	// Leaves n0..n5 holding the delay of their position in the given flat order.
+	const leaves = ( ids ) => ids.map( ( id, at ) => child( id, at * 100 ) );
+	const mountFresh = ( cols ) => {
+		act( () => root.unmount() );
+		mockState.writes = [];
+		mockState.blocks = {};
+		flatten();
+		setChildren( cols );
+		root = createRoot( document.createElement( 'div' ) );
+		render();
+	};
+	const flatDelays = () => [ 'n0', 'n1', 'n2', 'n3', 'n4', 'n5' ].map( delayOf );
+
+	it( 'moving an item inside a nested list re-runs and renumbers the run 0 to 5 times the step', () => {
+		const [ n0, n1, n2, n3, n4, n5 ] = leaves( [ 'n0', 'n1', 'n2', 'n3', 'n4', 'n5' ] );
+		mountFresh( [ column( 'colA', [ n0, n1, n2 ] ), column( 'colB', [ n3, n4, n5 ] ) ] );
+		expect( mockState.writes ).toEqual( [] );
+		// n5 moves to the front of the second list; the direct children (the two columns) do not change.
+		setChildren( [ column( 'colA', [ n0, n1, n2 ] ), column( 'colB', [ n5, n3, n4 ] ) ] );
+		render();
+		expect( mockState.writes ).toEqual( [ [ 'n5', 'n3', 'n4' ] ] );
+		expect( delayOf( 'n0' ) ).toBe( 0 );
+		expect( delayOf( 'n1' ) ).toBe( 100 );
+		expect( delayOf( 'n2' ) ).toBe( 200 );
+		expect( delayOf( 'n5' ) ).toBe( 300 );
+		expect( delayOf( 'n3' ) ).toBe( 400 );
+		expect( delayOf( 'n4' ) ).toBe( 500 );
+	} );
+
+	it( 'writes nothing when the nested order changes but every nested item already holds its delay', () => {
+		const [ n0, n1, n2, n3, n4, n5 ] = leaves( [ 'n0', 'n1', 'n2', 'n3', 'n4', 'n5' ] );
+		mountFresh( [ column( 'colA', [ n0, n1, n2 ] ), column( 'colB', [ n3, n4, n5 ] ) ] );
+		// Swap n3 and n4 and give each the delay of its new position up front: the order key changes, the values are right.
+		setChildren( [ column( 'colA', [ n0, n1, n2 ] ), column( 'colB', [ child( 'n4', 300 ), child( 'n3', 400 ), n5 ] ) ] );
+		render();
+		render();
+		expect( mockState.writes ).toEqual( [] );
+		expect( rerunUpdates( {
+			blockName: 'sgs/container',
+			attributes: mockState.containerAttributes,
+			children: mockState.order.map( ( id ) => mockState.blocks[ id ] ),
+		} ) ).toEqual( {} );
+	} );
+
+	it( 'writes nothing when nothing changes', () => {
+		const [ n0, n1, n2, n3, n4, n5 ] = leaves( [ 'n0', 'n1', 'n2', 'n3', 'n4', 'n5' ] );
+		mountFresh( [ column( 'colA', [ n0, n1, n2 ] ), column( 'colB', [ n3, n4, n5 ] ) ] );
+		render();
+		expect( mockState.writes ).toEqual( [] );
+		expect( flatDelays() ).toEqual( [ 0, 100, 200, 300, 400, 500 ] );
+	} );
+
+	it( 'leaves the behaviour of every other order unchanged: a nested move does not re-run', () => {
+		const [ n0, n1, n2, n3, n4, n5 ] = leaves( [ 'n0', 'n1', 'n2', 'n3', 'n4', 'n5' ] );
+		mountFresh( [ column( 'colA', [ n0, n1, n2 ] ), column( 'colB', [ n3, n4, n5 ] ) ] );
+		mockState.containerAttributes = {
+			layout: 'stack',
+			sgsMotion: { v: 1, stagger: { step: 100, order: 'row-first' } },
+		};
+		render();
+		mockState.writes = [];
+		setChildren( [ column( 'colA', [ n0, n1, n2 ] ), column( 'colB', [ n5, n3, n4 ] ) ] );
 		render();
 		expect( mockState.writes ).toEqual( [] );
 	} );

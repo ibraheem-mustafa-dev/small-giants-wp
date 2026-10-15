@@ -22,7 +22,8 @@ import {
 	TIERS,
 	columnsAt,
 } from '../entrance/entrance-facts';
-import { staggerUpdates } from '../entrance/stagger-write';
+import { staggerItems, staggerUpdates } from '../entrance/stagger-write';
+import { effectiveStagger } from '../../../../components/motion/StaggerHelper';
 
 /**
  * Deep equality of two JSON values, whatever their key order.
@@ -75,8 +76,13 @@ export function rerunUpdates( { blockName, attributes, children } ) {
 		settings: motion.stagger,
 		template: layersAt( elementOf( motion, 'root' ), BASE_LIST )[ 0 ],
 	} );
+	// The blocks the helper writes (the nested items under Flatten), so a nested item is compared with its own stored value.
+	const items = staggerItems(
+		children,
+		effectiveStagger( motion.stagger ).order
+	);
 	const current = Object.fromEntries(
-		children.map( ( child ) => [
+		items.map( ( child ) => [
 			child.clientId,
 			child.attributes?.[ MOTION_ATTRIBUTE_NAME ],
 		] )
@@ -90,7 +96,8 @@ export function rerunUpdates( { blockName, attributes, children } ) {
 }
 
 /**
- * Re-runs the helper's write when the container's children change order, count or identity.
+ * Re-runs the helper's write when the container's children change order, count or identity (under the Flatten order,
+ * when the flattened nested items do).
  *
  * @param {Object} args
  * @param {string} args.clientId The container's client id.
@@ -99,10 +106,23 @@ export function rerunUpdates( { blockName, attributes, children } ) {
 export function useStaggerRerun( { clientId, name } ) {
 	const registry = useRegistry();
 	const orderKey = useSelect(
-		( select ) =>
-			( select( EDITOR_STORE ).getBlockOrder?.( clientId ) || [] ).join(
-				'|'
-			),
+		( select ) => {
+			const store = select( EDITOR_STORE );
+			const order = effectiveStagger(
+				store.getBlockAttributes?.( clientId )?.[
+					MOTION_ATTRIBUTE_NAME
+				]?.stagger
+			).order;
+			// Under Flatten the watched order is the flattened items the helper writes, so a change inside a nested list counts.
+			const ids =
+				'flatten' === order
+					? staggerItems(
+							store.getBlocks?.( clientId ) || [],
+							order
+					  ).map( ( block ) => block.clientId )
+					: store.getBlockOrder?.( clientId ) || [];
+			return ids.join( '|' );
+		},
 		[ clientId ]
 	);
 	const seen = useRef( null );
