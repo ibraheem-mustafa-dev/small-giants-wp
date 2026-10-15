@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """generate-motion-editor-defs.py -- writes src/components/motion/generated-motion-defs.json.
 
-The editor's field types (src/components/motion/field-types.js) and atoms need only two parts of
-`schemas/motion.schema.json`: the `$defs` (field types, value shapes, device sets) and `x-sgs-tokens` (the token bands
-the duration and distance atoms label their presets from). Importing the whole schema would put the channel map, the
-refusal texts and the effect tables in the editor bundle for nothing, so this generator copies those two keys into a
-compact file. Annotation text (string-valued `description` keys) is dropped because no editor code reads it. The PHP
+The editor's field types (src/components/motion/field-types.js) and atoms read the `$defs` (field types, value
+shapes, device sets) and `x-sgs-tokens` (the token bands the duration and distance atoms label their presets from) of
+`schemas/motion.schema.json`; the editor-canvas emitter (src/blocks/extensions/motion/canvas/) also reads
+`x-sgs-channels` (owner property to channel, channel order, the shared perspective default), `x-sgs-writes` (the
+channels each owner writes) and `x-sgs-effects` (each effect's values def), the same keys the PHP emitter reads; the
+panel shell (src/blocks/extensions/motion/) reads `x-sgs-refusals` (the refused pairs and their texts),
+`x-sgs-layer-labels` and `x-sgs-panels`. The rest of the schema (`x-sgs-tiers`, `x-sgs-states`, `x-sgs-intensity` and
+the document's own `properties`) has no editor reader, so this generator copies only those eight keys into a compact
+file. Annotation text (string-valued `description` keys) is dropped because no editor code reads it. The PHP
 side keeps reading the full schema.
 
 The output has no timestamp, keeps the schema's key order (field type order is meaningful) and uses fixed separators,
@@ -29,7 +33,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 PLUGIN = Path(__file__).resolve().parent.parent
 SCHEMA_FILE = PLUGIN / "schemas" / "motion.schema.json"
 OUTPUT_FILE = PLUGIN / "src" / "components" / "motion" / "generated-motion-defs.json"
-KEPT_KEYS = ("$defs", "x-sgs-tokens")
+KEPT_KEYS = ("$defs", "x-sgs-tokens", "x-sgs-channels", "x-sgs-writes", "x-sgs-effects", "x-sgs-refusals",
+             "x-sgs-layer-labels", "x-sgs-panels")
 # What the editor reads by name; the build refuses an extract that lacks one.
 REQUIRED_DEFS = ("tokenReference", "duration", "easing", "distance", "angle", "ratio", "scale", "percentage",
                  "opacity", "colourReference", "partReference", "assetReference", "choice", "boolean", "propertyRow")

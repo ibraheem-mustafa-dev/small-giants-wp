@@ -1,6 +1,6 @@
 /**
- * The motion schema extract for the editor (Spec 38A): the `$defs` and `x-sgs-tokens` of `schemas/motion.schema.json`,
- * as written by `scripts/generate-motion-editor-defs.py` into `generated-motion-defs.json`.
+ * The motion schema extract for the editor (Spec 38A): the `$defs`, `x-sgs-tokens`, `x-sgs-channels`, `x-sgs-writes`,
+ * `x-sgs-effects`, `x-sgs-refusals`, `x-sgs-layer-labels` and `x-sgs-panels` of `schemas/motion.schema.json`, as written by `scripts/generate-motion-editor-defs.py` into `generated-motion-defs.json`.
  *
  * This is the only module that imports the `@sgs/motion-defs` id. In the webpack build that id is an external
  * (`webpack.config.js`, the script config's dependency-extraction plugin): it resolves to the `window.sgsMotionDefs`
@@ -9,7 +9,7 @@
  * `includes/motion/motion-defs-script.php`. In Jest, `jest.config.js` maps the id straight to the JSON file.
  *
  * Every editor module that reads the extract (`field-types.js`, `TriggerPicker.js`, `StaggerHelper.js`) imports this
- * module, never the id or the JSON.
+ * module, never the id or the JSON; so does the editor-canvas emitter (`src/blocks/extensions/motion/canvas/`).
  */
 
 // eslint-disable-next-line import/no-unresolved -- a webpack external (window.sgsMotionDefs), mapped to the JSON in jest.config.js.
