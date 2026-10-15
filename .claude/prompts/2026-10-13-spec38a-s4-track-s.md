@@ -18,7 +18,7 @@ CROSS-TRACK WAITS
 - M4.5 (nav drawer, reseed and deploy) waits for Track I's M3.5 (Entrance panel): start M4.5 when Track I messages the M3.5 commit hash.
 - M5.17 waits for your own M4.4 and M4.6.
 
-HOLD (owner decision pending): do not build the form states (`invalid`, `step-changed`, `success` on `sgs/form` and `sgs/choice-flow`) in M4.4 or M5.17 until Bean answers the proposal in the build plan's "M4.4 and M5.17 (PROPOSED)" bullet. Build M4.4's `open` and `state` triggers and M5.17's cart pop, burger morph and accordion turn.
+FORM STATES (Bean approved 2026-10-15): build M4.4's `open` and `state` triggers and the form states (`invalid`, `step-changed`, `success` on `sgs/form` and `step-changed` on `sgs/choice-flow`) per the build plan's M4.4 and M5.17 bullet, matching the framework's existing state pattern, with the acceptance on a page linking a saved `sgs_form` post and a saved `sgs_choice_flow` post (Specs 42 and 43); M5.17 also builds the cart pop, burger morph and accordion turn.
 
 HOW TO RUN Subagent-driven units (/subagent-driven-development): one implementer per unit at the model the unit table names, then an Opus review; at most three heavy subagents at once. The main thread does every git operation, build, reseed and deploy, reads every diff, reruns each unit's tests and planted faults, and fact-checks every subagent claim against the files. Subagents never commit. M4.5 deploys to sandybrown; M4.6 deploys indus-test (named explicitly). Gate 5b needs a Bean glance at the drawer on indus-test.
 
