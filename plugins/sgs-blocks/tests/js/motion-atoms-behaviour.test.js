@@ -162,7 +162,7 @@ describe( 'the intensity picker', () => {
 
 	it( 'finds the three rows of a family and none for a family without them', () => {
 		expect( Object.keys( intensityRowsFor( 'hover-lift' ) ) ).toEqual( [ 'subtle', 'standard', 'bold' ] );
-		expect( intensityRowsFor( 'entrance-fade-up' ) ).toBeNull();
+		expect( intensityRowsFor( 'entrance-fade-in' ) ).toBeNull();
 	} );
 
 	it( 're-stamps the layer from each of the three preset rows', () => {
@@ -203,7 +203,7 @@ describe( 'the intensity picker', () => {
 	} );
 
 	it( 'renders nothing for a family without intensity rows', () => {
-		act( () => root.render( h( IntensityPicker, { family: 'entrance-fade-up', onChange: () => {} } ) ) );
+		act( () => root.render( h( IntensityPicker, { family: 'entrance-fade-in', onChange: () => {} } ) ) );
 		expect( container.textContent ).toBe( '' );
 	} );
 } );
