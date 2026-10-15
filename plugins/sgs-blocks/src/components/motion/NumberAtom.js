@@ -19,14 +19,15 @@ const DEFAULT_STEPS = { opacity: 0.05, scale: 0.05, ratio: 0.1, percentage: 1 };
 
 /**
  * @param {Object}      props
- * @param {string}      props.label         Field label.
- * @param {unknown}     props.value         The stored number, or undefined.
- * @param {Function}    props.onChange      Receives a schema-valid number, or undefined to clear.
- * @param {string}      [props.type]        `ratio` (default), `scale`, `percentage` or `opacity`.
- * @param {Object|null} [props.fieldNode]   The field's schema node.
- * @param {number}      [props.step]        Spinner step; defaults to the node's `multipleOf`, else a step for the type.
- * @param {unknown}     [props.presetValue] The preset's stamped value; a differing value shows the Customised tag.
- * @param {string}      [props.help]        Hint text.
+ * @param {string}      props.label                 Field label.
+ * @param {unknown}     props.value                 The stored number, or undefined.
+ * @param {Function}    props.onChange              Receives a schema-valid number, or undefined to clear.
+ * @param {string}      [props.type]                `ratio` (default), `scale`, `percentage` or `opacity`.
+ * @param {Object|null} [props.fieldNode]           The field's schema node.
+ * @param {number}      [props.step]                Spinner step; defaults to the node's `multipleOf`, else a step for the type.
+ * @param {unknown}     [props.presetValue]         The preset's stamped value; a differing value shows the Customised tag.
+ * @param {string}      [props.help]                Hint text.
+ * @param {boolean}     [props.hideLabelFromVision] Visually hide the label when a wrapper already shows it.
  * @return {Element} The control.
  */
 export default function NumberAtom( {
@@ -38,6 +39,7 @@ export default function NumberAtom( {
 	step,
 	presetValue,
 	help,
+	hideLabelFromVision,
 } ) {
 	const range = boundsOf( type, fieldNode );
 	const field = useAtomField( {
@@ -61,6 +63,7 @@ export default function NumberAtom( {
 		>
 			<NumberControl
 				label={ label }
+				hideLabelFromVision={ hideLabelFromVision }
 				value={ field.draft }
 				min={ range.min ?? undefined }
 				max={ range.max ?? undefined }

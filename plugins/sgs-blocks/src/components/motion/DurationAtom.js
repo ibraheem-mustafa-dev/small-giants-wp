@@ -26,13 +26,14 @@ const SEED_MS = 300;
 
 /**
  * @param {Object}      props
- * @param {string}      props.label         Field label.
- * @param {unknown}     props.value         A `token:duration.*` reference, a number of milliseconds, or undefined.
- * @param {Function}    props.onChange      Receives a schema-valid duration, or undefined to clear.
- * @param {Object|null} [props.fieldNode]   The field's schema node (its narrowing range or token pattern).
- * @param {unknown}     [props.presetValue] The preset's stamped value; a differing value shows the Customised tag.
- * @param {string}      [props.emptyLabel]  Label of the unset option.
- * @param {string}      [props.help]        Hint text.
+ * @param {string}      props.label                 Field label.
+ * @param {unknown}     props.value                 A `token:duration.*` reference, a number of milliseconds, or undefined.
+ * @param {Function}    props.onChange              Receives a schema-valid duration, or undefined to clear.
+ * @param {Object|null} [props.fieldNode]           The field's schema node (its narrowing range or token pattern).
+ * @param {unknown}     [props.presetValue]         The preset's stamped value; a differing value shows the Customised tag.
+ * @param {string}      [props.emptyLabel]          Label of the unset option.
+ * @param {string}      [props.help]                Hint text.
+ * @param {boolean}     [props.hideLabelFromVision] Visually hide the label when a wrapper already shows it.
  * @return {Element} The control.
  */
 export default function DurationAtom( {
@@ -43,6 +44,7 @@ export default function DurationAtom( {
 	presetValue,
 	emptyLabel = __( 'Not set', 'sgs-blocks' ),
 	help,
+	hideLabelFromVision,
 } ) {
 	const range = boundsOf( 'duration', fieldNode );
 	const [ exactChosen, setExactChosen ] = useState( false );
@@ -105,6 +107,7 @@ export default function DurationAtom( {
 		>
 			<SelectControl
 				label={ label }
+				hideLabelFromVision={ hideLabelFromVision }
 				value={ mode }
 				options={ options }
 				onChange={ choose }
