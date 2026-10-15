@@ -1,0 +1,322 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"className": "m513-kb",
+			"minHeight": {
+				"desktop": "320px",
+				"tablet": "320px",
+				"mobile": "320px"
+			},
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"backgroundImage": {
+				"id": 3457,
+				"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+			},
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"background": {
+						"effects": [
+							{
+								"id": "kb",
+								"effect": "ken-burns",
+								"values": {
+									"mode": "zoom-out-once",
+									"zoomStart": 108,
+									"zoomEnd": 100,
+									"duration": 20000,
+									"pauseControl": true
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Ken Burns: zoom out once from 108% over 20s",
+					"level": "h2"
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"className": "m513-svg",
+			"minHeight": {
+				"desktop": "240px",
+				"tablet": "240px",
+				"mobile": "240px"
+			},
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"bgSvgContent": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200 200\"><circle cx=\"100\" cy=\"100\" r=\"80\" fill=\"#c0392b\"/></svg>",
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"svg-bg": {
+						"effects": [
+							{
+								"id": "svl",
+								"effect": "svg-loop",
+								"values": {
+									"motion": "pulse",
+									"duration": 6000,
+									"amplitude": 1,
+									"pauseControl": true
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "SVG pulse: 6s, amplitude 1, pause button on"
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "div",
+			"className": "m513-logo-wrap",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/responsive-logo",
+				"attributes": {
+					"className": "m513-logo",
+					"logoId": 2072,
+					"logoUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/sgs-motion-canary/sgs-canary-logo.svg",
+					"width": 240,
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"wrapper": {
+								"entrance": {
+									"text": [
+										{
+											"id": "dr",
+											"effect": "draw",
+											"trigger": "load",
+											"values": {
+												"asset": 2072,
+												"from": 0,
+												"to": 100,
+												"duration": 2000
+											}
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "500px",
+					"right": "500px",
+					"bottom": "500px",
+					"left": "500px"
+				},
+				"tablet": {
+					"top": "500px",
+					"right": "500px",
+					"bottom": "500px",
+					"left": "500px"
+				},
+				"mobile": {
+					"top": "500px",
+					"right": "500px",
+					"bottom": "500px",
+					"left": "500px"
+				}
+			},
+			"className": "m513-before"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Scroll space."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"className": "m513-lottie",
+			"minHeight": {
+				"desktop": "240px",
+				"tablet": "240px",
+				"mobile": "240px"
+			},
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"wrapper": {
+						"effects": [
+							{
+								"id": "lt",
+								"effect": "lottie",
+								"trigger": "scroll",
+								"values": {
+									"file": 4079,
+									"loop": false,
+									"speed": 1
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Lottie on scroll"
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "500px",
+					"right": "500px",
+					"bottom": "500px",
+					"left": "500px"
+				},
+				"tablet": {
+					"top": "500px",
+					"right": "500px",
+					"bottom": "500px",
+					"left": "500px"
+				},
+				"mobile": {
+					"top": "500px",
+					"right": "500px",
+					"bottom": "500px",
+					"left": "500px"
+				}
+			},
+			"className": "m513-after"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Scroll space."
+				}
+			}
+		]
+	}
+]

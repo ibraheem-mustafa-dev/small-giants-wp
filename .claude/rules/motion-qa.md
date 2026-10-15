@@ -19,7 +19,7 @@ Wired into `build-deploy.py` as `step_motion_qa()` — ON by default for blocks 
 
 Not in `prebuild`, on purpose — these need a live canary. Post-deploy is the honest home: the canary is up by definition, and the payload gate has just proven the live plugin is this run's payload.
 
-The runner registers only the five probes that are standing checks with negative controls and stable fixtures (`PROBES` in `scripts/motion-qa/run-live-probes.mjs`). Other probes in the directory are one-shot artefacts, runnable by hand, not claimed as covered. Promoting one means giving it a fixture and a negative control first.
+The runner registers only the probes that are standing checks with negative controls and stable fixtures (`PROBES` in `scripts/motion-qa/run-live-probes.mjs`). Other probes in the directory are one-shot artefacts, runnable by hand, not claimed as covered. Promoting one means giving it a fixture and a negative control first.
 
 ## Load-bearing canary fixtures — the deploy gate depends on these pages
 
@@ -47,11 +47,16 @@ The runner registers only the five probes that are standing checks with negative
 | 5250 | Spec 38A FR-38A-36 scroll progress: page bar, counter and section bar (`probe-scroll-progress.mjs`, fixture `tests/fixtures/motion/pages/scroll-progress.json`) |
 | 5276 | Spec 38A M4.5 nav drawer stagger, a by-hand fixture (its probe is not in `PROBES`): a burger whose `drawerRef` is 5279 (`plugins/sgs-blocks/tests/fixtures/motion/pages/nav-drawer-stagger-page.json`; `probe-motion-nav-drawer.mjs --page 5276`) |
 | 5279 | Spec 38A M4.5 `sgs_drawer` for page 5276, a by-hand fixture (`plugins/sgs-blocks/tests/fixtures/motion/pages/nav-drawer-stagger-drawer.json`) |
-| 5287 | Spec 38A M3.10 motion accessibility (`probe-motion-a11y.mjs`, tree `tests/fixtures/motion/pages/motion-a11y.json`); currently EMPTY because a save was lost; rebuild by `--post-id`, never delete |
+| 5287 | Spec 38A M3.10 motion accessibility (`probe-motion-a11y.mjs`, tree `tests/fixtures/motion/pages/motion-a11y.json`); currently EMPTY because the builder lost its save (the editor opened the page in template-locked mode; `wp-build-page.js::waitForEditor` switches to post-only since `521988e37`); rebuild by `--post-id`, never delete |
+| 5297 | Spec 38A FR-38A-37 ambient float: three y floats with stored periods 2.8, 4.2 and 5s and phases 0, 900 and 2100ms (one with the pause button), a two-axis ring float, a focusable button float and a control (`probe-ambient-float.mjs`, tree `tests/fixtures/motion/pages/ambient-float.json`) |
+| 5303 | Spec 38A FR-38A-52 looping media: a Ken Burns zoom-out-once from 108% over 20s, a 6s SVG pulse, a logo draw on load and a Lottie on scroll (`probe-looping-media.mjs`, tree `tests/fixtures/motion/pages/looping-media.json`; media IDs 3457, 2072 and 4079) |
+| 5305 | Spec 38A FR-38A-44 marquee: the three reference drafts' marquees (a 45px/s brand strip with a 0.15x hover and 5% fade, a 24s trust bar below 1024px pausing on hover and touch, a 64s brand strip and a 30s ticker below 768px) and a control trust bar (`probe-marquee.mjs`, tree `tests/fixtures/motion/pages/marquee.json`) |
 
 The one-shot probes for 5255, 5259, 5261, 5267, 5270 and 5272 failed live on 2026-10-15 although a diagnostic read the effects working: every canary page runs Lenis smooth scroll (`html.lenis`), and those probes read values mid-transition. Treat their red as unproven until they are recalibrated (Track E's next session); 5270 also needs a media image on its reveal layers.
 
 Page 5196 (a draft, "Editor typing baseline (200 blocks)") is not a deploy-gate fixture: it is Spec 38A FR-38A-29's editor typing-latency page (`plugins/sgs-blocks/scripts/perf/editor-typing-baseline.json`), re-measured by M3.11. Never edit or delete it; its tree is `plugins/sgs-blocks/scripts/perf/fixtures/editor-200-blocks.json`.
+
+Run the probes headed with `SGS_HEADED=1` when the host's edge answers a headless browser with its "Checking your browser" page (it does under burst load); the loop probes also wait for that page to hand over (`probe-loop-lib.mjs::passChallenge`).
 
 All are titled `[GATE — DO NOT DELETE] …` on the canary so they survive a tidy-up. Deleting or emptying any of them breaks every blocks deploy until the fixture is rebuilt. Probes reference pages by ID (`?p=`), so renaming a title is safe but re-creating a page under a new ID is not.
 

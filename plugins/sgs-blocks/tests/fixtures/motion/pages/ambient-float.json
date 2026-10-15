@@ -1,0 +1,189 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m512-floats"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Ambient float",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Float A: 2.8s, phase 0, pause button on",
+					"className": "m512-a",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "fa",
+										"effect": "ambient-float",
+										"values": {
+											"travel": -12,
+											"axis": "y",
+											"period": 2800,
+											"phase": 0,
+											"easing": "ease-in-out",
+											"direction": "alternate",
+											"pauseControl": true
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Float B: 4.2s, phase 900ms (the floatIt pair)",
+					"className": "m512-b",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "fb",
+										"effect": "ambient-float",
+										"values": {
+											"travel": -12,
+											"axis": "y",
+											"period": 4200,
+											"phase": 900,
+											"easing": "ease-in-out",
+											"direction": "alternate"
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Float C: 5s, phase 2100ms",
+					"className": "m512-c",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "fc",
+										"effect": "ambient-float",
+										"values": {
+											"travel": -12,
+											"axis": "y",
+											"period": 5000,
+											"phase": 2100,
+											"easing": "ease-in-out",
+											"direction": "alternate"
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Ring: both axes, 14px and -9px, 9.5s, phase 3000ms",
+					"className": "m512-ring",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "fr",
+										"effect": "ambient-float",
+										"values": {
+											"travel": 14,
+											"axis": "both",
+											"period": 9500,
+											"phase": 3000,
+											"easing": "ease-in-out",
+											"direction": "alternate",
+											"travelY": -9
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Focusable float",
+					"url": "#m512",
+					"className": "m512-focus",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "ff",
+										"effect": "ambient-float",
+										"values": {
+											"travel": -12,
+											"axis": "y",
+											"period": 3000,
+											"phase": 0,
+											"easing": "ease-in-out",
+											"direction": "alternate"
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Control: no motion",
+					"className": "m512-control"
+				}
+			}
+		]
+	}
+]

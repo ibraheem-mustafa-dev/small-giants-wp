@@ -1,0 +1,508 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m515-speed-section"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Indus: 45px/s, 0.15x on hover, 5% edge fade",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/brand-strip",
+				"attributes": {
+					"className": "m515-speed",
+					"logos": [
+						{
+							"media": {
+								"id": 3455,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 1",
+							"name": "Brand 1"
+						},
+						{
+							"media": {
+								"id": 3457,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 2",
+							"name": "Brand 2"
+						},
+						{
+							"media": {
+								"id": 3458,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 3",
+							"name": "Brand 3"
+						},
+						{
+							"media": {
+								"id": 3459,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 4",
+							"name": "Brand 4"
+						},
+						{
+							"media": {
+								"id": 3455,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 5",
+							"name": "Brand 5"
+						},
+						{
+							"media": {
+								"id": 3457,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 6",
+							"name": "Brand 6"
+						},
+						{
+							"media": {
+								"id": 3458,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 7",
+							"name": "Brand 7"
+						},
+						{
+							"media": {
+								"id": 3459,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 8",
+							"name": "Brand 8"
+						},
+						{
+							"media": {
+								"id": 3455,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 9",
+							"name": "Brand 9"
+						},
+						{
+							"media": {
+								"id": 3457,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 10",
+							"name": "Brand 10"
+						}
+					],
+					"logoGap": "14px",
+					"maxHeight": 150,
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "mqi",
+										"effect": "marquee",
+										"values": {
+											"speed": 45,
+											"hoverRate": 0.15,
+											"edgeFade": true,
+											"edgeFadeWidth": 5,
+											"pauseControl": true
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m515-loop24-section"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Mama's: 24s loop below 1024px, pauses on hover and touch",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/trust-bar",
+				"attributes": {
+					"className": "m515-loop24",
+					"items": [
+						{
+							"icon": "check",
+							"label": "Baked fresh when you order"
+						},
+						{
+							"icon": "check",
+							"label": "Handmade in Birmingham"
+						},
+						{
+							"icon": "check",
+							"label": "Registered food business"
+						},
+						{
+							"icon": "check",
+							"label": "Free UK delivery over £35"
+						}
+					],
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "mqm",
+										"effect": "marquee",
+										"values": {
+											"duration": 24000,
+											"hoverRate": 0,
+											"pauseOnTouch": true,
+											"belowBreakpoint": "tablet",
+											"pauseControl": true
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m515-loop64-section"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Eye Care brands: 64s loop, pauses on hover",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/brand-strip",
+				"attributes": {
+					"className": "m515-loop64",
+					"logos": [
+						{
+							"media": null,
+							"name": "Ray-Ban"
+						},
+						{
+							"media": null,
+							"name": "Gucci"
+						},
+						{
+							"media": null,
+							"name": "Oakley"
+						},
+						{
+							"media": null,
+							"name": "Prada"
+						},
+						{
+							"media": null,
+							"name": "Versace"
+						},
+						{
+							"media": null,
+							"name": "Balenciaga"
+						},
+						{
+							"media": null,
+							"name": "Dolce & Gabbana"
+						},
+						{
+							"media": null,
+							"name": "Michael Kors"
+						},
+						{
+							"media": null,
+							"name": "Carrera"
+						},
+						{
+							"media": null,
+							"name": "Polaroid"
+						},
+						{
+							"media": null,
+							"name": "Police"
+						},
+						{
+							"media": null,
+							"name": "Emporio Armani"
+						},
+						{
+							"media": null,
+							"name": "Ralph Lauren"
+						},
+						{
+							"media": null,
+							"name": "Coach"
+						},
+						{
+							"media": null,
+							"name": "Tiffany"
+						},
+						{
+							"media": null,
+							"name": "Superdry"
+						}
+					],
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "mqe",
+										"effect": "marquee",
+										"values": {
+											"duration": 64000,
+											"hoverRate": 0,
+											"pauseControl": true
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m515-ticker-section"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Eye Care ticker: 30s, mobile only",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/trust-bar",
+				"attributes": {
+					"className": "m515-ticker",
+					"items": [
+						{
+							"icon": "check",
+							"label": "100% genuine, supplied direct by the brands"
+						},
+						{
+							"icon": "check",
+							"label": "Free UK delivery over £75, or collect in Birmingham"
+						},
+						{
+							"icon": "check",
+							"label": "Prescription lenses glazed here in 7–10 days"
+						},
+						{
+							"icon": "check",
+							"label": "30 days to return, free adjustments for life"
+						}
+					],
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "mqt",
+										"effect": "marquee",
+										"values": {
+											"duration": 30000,
+											"hoverRate": 0,
+											"belowBreakpoint": "mobile",
+											"pauseControl": true
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m515-control-section"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Control: a trust bar with no marquee",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/trust-bar",
+				"attributes": {
+					"className": "m515-control",
+					"items": [
+						{
+							"icon": "check",
+							"label": "Baked fresh when you order"
+						},
+						{
+							"icon": "check",
+							"label": "Handmade in Birmingham"
+						},
+						{
+							"icon": "check",
+							"label": "Registered food business"
+						},
+						{
+							"icon": "check",
+							"label": "Free UK delivery over £35"
+						}
+					]
+				}
+			}
+		]
+	}
+]
