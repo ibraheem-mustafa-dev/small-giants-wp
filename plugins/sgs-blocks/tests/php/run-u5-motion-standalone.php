@@ -79,6 +79,14 @@ function read_pre_m45( string $rel ): string {
 	return str_replace( "\r\n", "\n", (string) $out );
 }
 
+/** A file at the last commit before the bar's panels gained the Entrance model (Spec 38A M4.6). */
+function read_pre_m46( string $rel ): string {
+	$out = shell_exec( 'git show 3aae70faf:plugins/sgs-blocks/' . $rel );
+	return str_replace( "
+", "
+", (string) $out );
+}
+
 $anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred' );
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -271,6 +279,17 @@ foreach ( array( 'transition-behavior: allow-discrete;', 'pointer-events: none;'
 	ok( has( $nbm_css, $needle ), "panel exit rule has `$needle`" );
 }
 ok( ! has( $nbm_css, 'sgs-nav-bar-menu__submenu-wrap--fade' ), 'the old open-only keyframe classes are gone' );
+
+// Spec 38A M4.6: one model per bar. Off the model the panels keep the U-5 shape and values above; on it they print
+// the `none` shape, become motion state hosts and take their item delays from the stored stagger settings.
+ok( has( $nbm_render, "'animation'   => \$sgs_nm_motion_model ? 'none' : (string) ( \$attributes['submenuAnimation'] ?? 'none' )," ), 'a bar on the Entrance model prints the none panel shape, so the old panel rules never reach it' );
+ok( has( $nbm_render, "if ( ! \$sgs_nm_motion_model ) {
+	\$css .= \$uid_sel . '{' . \$sgs_nm_panel_vars . '}';" ) && has( $nbm_render, "if ( ! \$sgs_nm_motion_model && \$sgs_nm_stagger > 0 ) {" ), 'the --sgs-nbm-* values and the stagger classes the old ladder keys on are written off the model only' );
+ok( has( $nbm_render, "sgs_nav_bar_motion_panels( \$items_html, \$uid, \$attributes )" ) && has( read_file( 'includes/helpers-nav-bar-motion-model.php' ), "Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-bar-menu'" ), 'on the model the items take stored per-index delays (Sgs_Motion_Loop_Delays), never a ladder' );
+ok( ! has( read_pre_m46( 'src/blocks/nav-bar-menu/render.php' ), 'sgs_nav_bar_motion_panels' ), 'negative control: before M4.6 the bar had no Entrance-model path' );
+$nbm_edit = read_file( 'src/blocks/nav-bar-menu/edit.js' );
+ok( ! has( $nbm_edit, '<PanelMotionPanel' ) && has( $nbm_edit, 'showAnimationControl={ false }' ) && has( read_pre_m46( 'src/blocks/nav-bar-menu/edit.js' ), '<PanelMotionPanel' ), 'the old Panel motion panel and the bar animation select are unmounted (decision 11); before M4.6 the panel was mounted' );
+ok( has( read_file( 'src/blocks/nav-bar-menu/view.js' ), "import initPanelMotionState from './panel-motion-state';" ), 'the bar publishes each panel open state through @sgs/motion-state (panel-motion-state.js)' );
 
 $dsp = read_file( 'src/shared/nav-menu-panels/DropdownStylePanel.js' );
 ok( has( $dsp, "value: 'slide-down'" ) && ! has( $dsp, 'value="slide"' ), 'the editor saves slide-down, the value the renderer accepts' );

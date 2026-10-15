@@ -20,7 +20,11 @@
 		"align": false,
 		"anchor": false,
 		"sgs": {
-			"motion": true,
+			"motion": {
+				"opens": [
+					"root"
+				]
+			},
 			"shadowLift": false,
 			"colourExemptions": {
 				"background": {

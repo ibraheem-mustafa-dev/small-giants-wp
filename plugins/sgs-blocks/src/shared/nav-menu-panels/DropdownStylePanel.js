@@ -61,6 +61,9 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  *                                                  `sgs/nav-drawer-menu` (see docblock above).
  * @param {boolean}  [root0.showBoxControls]        True on `sgs/nav-drawer-menu`: shows the section's
  *                                                  corner radius and box shadow without the bar-only sizing controls.
+ * @param {boolean}  [root0.showAnimationControl]   Whether the bar shows its old "Open and close animation"
+ *                                                  select (default true). `sgs/nav-bar-menu` passes false: its
+ *                                                  panels move on the Entrance and reveal panel (Spec 38A FR-38A-51).
  * @param {string}   [root0.submenuAnimation]       `submenuAnimation` — bar only.
  * @param {string}   [root0.submenuTopOffset]       `submenuTopOffset` — bar only.
  * @param {string}   [root0.submenuMinWidth]        `submenuMinWidth` — bar only.
@@ -80,6 +83,7 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 export default function DropdownStylePanel( {
 	showSizingControls,
 	showBoxControls = false,
+	showAnimationControl = true,
 	submenuAnimation,
 	submenuTopOffset,
 	submenuMinWidth,
@@ -100,7 +104,9 @@ export default function DropdownStylePanel( {
 				setAttributes( {
 					...( showSizingControls
 						? {
-								submenuAnimation: 'none',
+								...( showAnimationControl
+									? { submenuAnimation: 'none' }
+									: {} ),
 								submenuTopOffset: '',
 								submenuMinWidth: '',
 						  }
@@ -112,7 +118,7 @@ export default function DropdownStylePanel( {
 				} )
 			}
 		>
-			{ showSizingControls && (
+			{ showSizingControls && showAnimationControl && (
 				<ToolsPanelItem
 					hasValue={ () => !! submenuAnimation && 'none' !== submenuAnimation }
 					label={ __( 'Open and close animation', 'sgs-blocks' ) }

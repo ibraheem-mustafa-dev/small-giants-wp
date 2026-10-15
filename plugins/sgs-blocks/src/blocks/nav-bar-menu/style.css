@@ -564,7 +564,11 @@
  * a dropdown list or of a mega panel's content row. The bar adds
  * `.sgs-nav-bar-menu--panel-stagger` and writes --sgs-nbm-stagger-step, -dur,
  * -max and -dist. Items re-animate on every open because a panel returning
- * from `display:none` restarts its descendants' animations.
+ * from `display:none` restarts its descendants' animations. Only for a bar not
+ * on the Entrance model (Spec 38A FR-38A-51): on it the bar never prints the
+ * stagger classes, its items take stored delays (render.php), and an item
+ * carrying an entrance (`data-sgs-me`) is excluded here so the two never stack
+ * (the `:where()` keeps each rule's specificity). Deleted in M6.6-G5.
  */
 :is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(1) {
 	--sgs-i: 0;
@@ -657,7 +661,7 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-	.sgs-nav-bar-menu--panel-stagger [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion :is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > * {
+	.sgs-nav-bar-menu--panel-stagger [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion :is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :where(:not([data-sgs-me])) {
 		animation: sgs-nav-bar-menu-panel-item-in var(--sgs-nbm-stagger-dur, 180ms) var(--sgs-nbm-panel-ease, ease-out) both;
 		animation-delay: min(calc(var(--sgs-i, 0) * var(--sgs-nbm-stagger-step, 0ms)), var(--sgs-nbm-stagger-max, 100000ms));
 	}
@@ -730,14 +734,14 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-	.sgs-nav-bar-menu--panel-stagger-rows [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion .sgs-mega-group > * {
+	.sgs-nav-bar-menu--panel-stagger-rows [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion .sgs-mega-group > :where(:not([data-sgs-me])) {
 		animation: sgs-nav-bar-menu-panel-item-in var(--sgs-nbm-stagger-dur, 180ms) var(--sgs-nbm-panel-ease, ease-out) both;
 		animation-delay: min(calc(var(--sgs-i, 0) * var(--sgs-nbm-stagger-step, 0ms)), var(--sgs-nbm-stagger-max, 100000ms));
 	}
 
 	/* Only one granularity animates at a time: suppress the column-level
 	   (outer) stagger once "rows" scope is active. */
-	.sgs-nav-bar-menu--panel-stagger-rows [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion .sgs-mega-panel__content > * {
+	.sgs-nav-bar-menu--panel-stagger-rows [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion .sgs-mega-panel__content > :where(:not([data-sgs-me])) {
 		animation: none;
 	}
 }

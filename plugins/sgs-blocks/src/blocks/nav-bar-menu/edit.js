@@ -90,7 +90,6 @@ import TypographyPanel from '../../shared/nav-menu-panels/TypographyPanel';
 import ItemsPanel from '../../shared/nav-menu-panels/ItemsPanel';
 import SeparatorsPanel from '../../shared/nav-menu-panels/SeparatorsPanel';
 import DropdownStylePanel from '../../shared/nav-menu-panels/DropdownStylePanel';
-import PanelMotionPanel from './PanelMotionPanel';
 import EffectsPanel from '../../shared/nav-menu-panels/EffectsPanel';
 import FeaturedPanel from '../../shared/nav-menu-panels/FeaturedPanel';
 import ItemEffectsPanel from '../../shared/nav-menu-panels/ItemEffectsPanel';
@@ -181,7 +180,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		scrimFadeDuration,
 		scrimFadeEasing,
 		scrimFadeEasingCustom,
-		submenuAnimation,
 		submenuTopOffset,
 		submenuMinWidth,
 		submenuPadding,
@@ -803,7 +801,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				<DropdownStylePanel
 					showSizingControls={ true }
-					submenuAnimation={ submenuAnimation }
+					showAnimationControl={ false }
 					submenuTopOffset={ submenuTopOffset }
 					submenuMinWidth={ submenuMinWidth }
 					submenuPadding={ submenuPadding }
@@ -823,7 +821,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					axes={ [ 'row' ] }
 				/>
 
-				<PanelMotionPanel attributes={ attributes } setAttributes={ setAttributes } />
+				{ /* Panel and item motion live in the Entrance and reveal panel
+				   (Spec 38A FR-38A-51): the `panel`, `subitem`, `mega-item` and
+				   `mega-row` parts take the Panel opens trigger, and the bar's
+				   stagger settings write each item's delay. */ }
 
 				{ /* The scrim behind an open dropdown or mega panel (Wave 3C U-2,
 				   family M-14) — off by default; a bar that never touches it ships

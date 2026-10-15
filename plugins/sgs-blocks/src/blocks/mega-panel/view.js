@@ -2,8 +2,11 @@
  * SGS Mega Panel — frontend view module.
  *
  * Wires the shared cursor spotlight into every rendered panel. The panel's
- * item stagger is CSS owned by the bar (`sgs/nav-bar-menu` `submenuItemStagger`,
- * Wave 3C U-5), so nothing here runs on open.
+ * open motion and item stagger belong to the bar that shows it
+ * (`sgs/nav-bar-menu`): on the Entrance model its `mega-item` and `mega-row`
+ * parts take stored delays written by the server and the bar's
+ * `panel-motion-state.js` publishes the open state (Spec 38A FR-38A-51); a bar
+ * off the model keeps its U-5 CSS stagger. Nothing here runs on open.
  *
  * - Cursor spotlight (`initSpotlight`), always on for the aside slot when a
  *   `.sgs-mega-aside` child is present — no opt-in attribute for this one.

@@ -1,0 +1,325 @@
+[
+	{
+		"name": "sgs/mega-panel",
+		"attributes": {
+			"className": "m46-mega"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 1"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 1"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 2"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 2"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 3"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 3"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 4"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 4"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 5"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 5"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 6"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 6"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 7"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 7"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 8"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 8"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 9"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 9"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 10"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 10"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 11"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 11"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 12"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 12"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 13"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 13"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 14"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 14"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-group",
+				"attributes": {
+					"className": "m46-column"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Column 15"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Row 15"
+						}
+					}
+				]
+			}
+		]
+	}
+]

@@ -29,7 +29,14 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"motion": true,
+			"motion": {
+				"opens": [
+					"panel",
+					"subitem",
+					"mega-item",
+					"mega-row"
+				]
+			},
 			"separators": {
 				"separators": {
 					"axes": [
@@ -414,6 +421,35 @@
 						"css:box-shadow-color": "submenuShadowColour"
 					},
 					"_note": "The floating dropdown PANEL — <div class=\"sgs-nav-bar-menu__submenu\"> — as distinct from the links inside it, which are the `sublink` element (Spec 36 section 14 FR-41-9). Base only: NO `states` key at all, because the panel has neither a hover nor a current state for any property. Its visibility is a binary open/closed disclosure toggled by the trigger; once open the pointer is always over an interactive CHILD, so a pointer-driven change on the panel surface itself is never perceivable — the hoverable surface inside the panel is the LINK background (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent on `sublink`). Recorded as `supports.sgs.colourExemptions.submenu-bg` and `.submenu-border`. `\"prefix\": \"\"` for the same reason `sublink` carries it: a `submenu` prefix would claim submenuColour* and the submenu typography family, which belong to the LINK. Every member is therefore explicit."
+				},
+				"panel": {
+					"selector": ".sgs-nav-bar-menu__panel-motion",
+					"label": "Dropdown or mega panel",
+					"order": 9.1,
+					"clusters": [],
+					"prefix": "",
+					"_note": "The wrap of every dropdown and mega panel (`.sgs-nav-bar-menu__panel-motion`, includes/nav-menu-markup.php), shown while its trigger is expanded. A motion target only (Spec 38A FR-38A-51): its `open` entrance plays as the panel opens and its close values as it closes; on the Entrance model each wrap is a motion state host (includes/helpers-nav-bar-motion-model.php). Styling stays on `submenu-panel`."
+				},
+				"subitem": {
+					"label": "Dropdown item",
+					"order": 9.2,
+					"clusters": [],
+					"prefix": "",
+					"_note": "Each `<li class=\"sgs-nav-bar-menu__subitem\">` of a dropdown. A motion target only (Spec 38A FR-38A-51): its `open` entrance plays as the dropdown opens, delayed by its stored index delay (the bar's stagger settings, written per index by Sgs_Motion_Loop_Delays::item_array). Its link's styling stays on `sublink`."
+				},
+				"mega-item": {
+					"label": "Mega panel column",
+					"order": 9.3,
+					"clusters": [],
+					"prefix": "",
+					"_note": "Each direct child of a mega panel's content row (a `sgs/mega-group` or `sgs/mega-aside` column), which this bar classes `sgs-nav-bar-menu__mega-item` at render when the part holds an entrance (includes/helpers-nav-bar-motion-model.php). A motion target only (Spec 38A FR-38A-51), delayed by its stored index delay. Its styling stays on the mega panel blocks."
+				},
+				"mega-row": {
+					"label": "Mega panel row",
+					"order": 9.4,
+					"clusters": [],
+					"prefix": "",
+					"_note": "Each direct child of a `sgs/mega-group` column inside a mega panel (its heading, link list or card), which this bar classes `sgs-nav-bar-menu__mega-row` at render when the part holds an entrance (includes/helpers-nav-bar-motion-model.php). A motion target only (Spec 38A FR-38A-51), delayed by its stored index delay, counted from 0 in each column."
 				},
 				"disabled-item": {
 					"motion": false,

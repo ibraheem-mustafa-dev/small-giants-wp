@@ -1,0 +1,116 @@
+[
+	{
+		"name": "sgs/site-header",
+		"attributes": {
+			"className": "m46-header"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"rowSlot": "middle",
+					"className": "m46-row"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/nav-bar-menu",
+						"attributes": {
+							"ref": 0,
+							"className": "m46-bar",
+							"submenuOpenOn": "click",
+							"sgsMotion": {
+								"v": 1,
+								"elements": {
+									"panel": {
+										"entrance": {
+											"base": {
+												"trigger": "open",
+												"values": {
+													"from": {
+														"opacity": 0,
+														"translateY": -8,
+														"scale": 0.99
+													},
+													"to": {
+														"opacity": 1,
+														"translateY": 0,
+														"scale": 1
+													},
+													"duration": 340,
+													"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+												},
+												"close": {
+													"closeDuration": 200,
+													"closeEasing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+												}
+											}
+										}
+									},
+									"subitem": {
+										"entrance": {
+											"base": {
+												"trigger": "open",
+												"values": {
+													"from": {
+														"opacity": 0,
+														"translateY": 8
+													},
+													"to": {
+														"opacity": 1,
+														"translateY": 0
+													},
+													"duration": 460,
+													"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+												},
+												"close": {
+													"to": {
+														"opacity": 1,
+														"translateY": 0
+													},
+													"closeDuration": 0
+												}
+											}
+										}
+									},
+									"mega-item": {
+										"entrance": {
+											"base": {
+												"trigger": "open",
+												"values": {
+													"from": {
+														"opacity": 0,
+														"translateY": 8
+													},
+													"to": {
+														"opacity": 1,
+														"translateY": 0
+													},
+													"duration": 460,
+													"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+												},
+												"close": {
+													"to": {
+														"opacity": 1,
+														"translateY": 0
+													},
+													"closeDuration": 0
+												}
+											}
+										}
+									}
+								},
+								"stagger": {
+									"offset": 0,
+									"step": 26,
+									"order": "row-first",
+									"perRow": false,
+									"cap": 320
+								}
+							}
+						}
+					}
+				]
+			}
+		]
+	}
+]
