@@ -283,7 +283,7 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
     """Pre-deploy content-compat gate. Scans the TARGET site's stored post_content against
     the LOCAL block.json schemas (i.e. the code about to be deployed) for:
       * stranded content — old scalar shapes an InnerBlocks render no longer reads
-        (the empty-Indus-homepage class), and
+        (a client homepage that rendered empty), and
       * undeclared attrs — dropped from the EDITOR schema (not from render.php's
         `$attributes`; PHP keeps an unrecognised key), DELETED on next editor save.
 

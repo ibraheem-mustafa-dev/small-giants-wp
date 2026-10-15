@@ -117,7 +117,7 @@ ALLOWLIST: Tuple[Tuple[str, str], ...] = (
         "SAFE_TARGETS and the target-to-secrets map name the production site as a deploy target",
     ),
     (
-        "plugins/sgs-blocks/scripts/build-deploy.py",
+        "plugins/sgs-blocks/scripts/deploy_common.py",
         "TARGETS keys name each client's own test site; a deploy target is an operational "
         "identifier until the target registry moves into sites/<client>/",
     ),

@@ -16,7 +16,7 @@ Usage examples:
     python plugins/sgs-blocks/scripts/build-deploy.py --dry-run
 
     # Verify a specific page instead of the target's homepage
-    python plugins/sgs-blocks/scripts/build-deploy.py --verify-url https://sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-mamas-munches/
+    python plugins/sgs-blocks/scripts/build-deploy.py --verify-url https://sandybrown-nightingale-600381.hostingersite.com/<page-slug>/
 
 Guards (per spec):
     - Refuses to deploy when a file that SHIPS AND EXECUTES is uncommitted, unless
