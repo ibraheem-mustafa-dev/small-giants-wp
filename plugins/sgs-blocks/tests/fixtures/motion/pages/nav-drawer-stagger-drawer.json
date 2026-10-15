@@ -1,0 +1,236 @@
+[
+	{
+		"name": "sgs/nav-drawer",
+		"attributes": {
+			"className": "m45-drawer",
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "open",
+								"values": {
+									"from": {
+										"opacity": 0
+									},
+									"to": {
+										"opacity": 1
+									},
+									"duration": 300,
+									"easing": "ease-out"
+								},
+								"close": {
+									"closeDuration": 200,
+									"closeEasing": "ease-out"
+								}
+							}
+						}
+					}
+				},
+				"stagger": {
+					"apply": false,
+					"offset": 50,
+					"step": 50,
+					"order": "row-first",
+					"perRow": false,
+					"closeOrder": "reversed"
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Eye tests",
+					"url": "#",
+					"className": "m45-item",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "open",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 18
+											},
+											"to": {
+												"opacity": 1,
+												"translateY": 0
+											},
+											"duration": 500,
+											"easing": "ease",
+											"delay": 50
+										},
+										"close": {
+											"closeDuration": 250,
+											"closeEasing": "ease",
+											"closeDelay": 200
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Glasses",
+					"url": "#",
+					"className": "m45-item",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "open",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 18
+											},
+											"to": {
+												"opacity": 1,
+												"translateY": 0
+											},
+											"duration": 500,
+											"easing": "ease",
+											"delay": 100
+										},
+										"close": {
+											"closeDuration": 250,
+											"closeEasing": "ease",
+											"closeDelay": 150
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Contact lenses",
+					"url": "#",
+					"className": "m45-item",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "open",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 18
+											},
+											"to": {
+												"opacity": 1,
+												"translateY": 0
+											},
+											"duration": 500,
+											"easing": "ease",
+											"delay": 150
+										},
+										"close": {
+											"closeDuration": 250,
+											"closeEasing": "ease",
+											"closeDelay": 100
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Book an appointment",
+					"url": "#",
+					"className": "m45-item",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "open",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 18
+											},
+											"to": {
+												"opacity": 1,
+												"translateY": 0
+											},
+											"duration": 500,
+											"easing": "ease",
+											"delay": 200
+										},
+										"close": {
+											"closeDuration": 250,
+											"closeEasing": "ease",
+											"closeDelay": 50
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Opening hours and how to find us",
+					"className": "m45-custom",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "open",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 18
+											},
+											"to": {
+												"opacity": 1,
+												"translateY": 0
+											},
+											"duration": 500,
+											"easing": "ease",
+											"delay": 300
+										},
+										"close": {
+											"closeDuration": 250,
+											"closeEasing": "ease",
+											"closeDelay": 0
+										},
+										"customised": [
+											"values.delay"
+										]
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	}
+]

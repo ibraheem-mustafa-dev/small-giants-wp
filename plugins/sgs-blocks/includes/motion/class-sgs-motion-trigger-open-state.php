@@ -51,6 +51,11 @@ final class Sgs_Motion_Trigger_Open_State {
 	/** The state helper's script module (`src/shared/effects/motion-state.js`). */
 	const STATE_MODULE = '@sgs/motion-state';
 
+	/**
+	 * The module the triggers enqueue: it lists `@sgs/motion-state` in the import map (see the registry's MODULES).
+	 */
+	const STATE_LOADER = '@sgs/motion-state-loader';
+
 	/** The custom property naming a multi-keyframe state entrance's state for the WAAPI module. */
 	const KEYFRAMES_STATE_PROP = '--sgs-mt-kf';
 
@@ -279,7 +284,7 @@ final class Sgs_Motion_Trigger_Open_State {
 			wp_enqueue_style( self::STYLE );
 			// The owning block's view script loads the state helper with a native `import()`, which resolves only through
 			// the import map; enqueuing it here lists it there on exactly the pages that print an `open` or `state` entrance.
-			wp_enqueue_script_module( self::STATE_MODULE );
+			wp_enqueue_script_module( self::STATE_LOADER );
 		}
 	}
 

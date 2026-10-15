@@ -133,12 +133,30 @@ class SGS_Motion_Registry {
 		/*
 		 * The `open` and `state` entrance triggers' state helper (Spec 38A M4.4):
 		 * every block bundle imports this one instance, so one reduced-motion
-		 * listener serves the page. Loaded as a dependency of the block view
-		 * module that imports it.
+		 * listener serves the page. Block view scripts load it with a native
+		 * `import( '@sgs/motion-state' )`, which resolves only through the import
+		 * map, so it is listed there by the loader below.
 		 */
 		'@sgs/motion-state'        => array(
 			'path' => 'build/shared/effects/motion-state.js',
 			'deps' => array(),
+		),
+		/*
+		 * What the `open` and `state` triggers enqueue. WordPress prints an
+		 * enqueued module as a `<script type="module">` and leaves it out of the
+		 * import map, which lists only the dependencies of enqueued modules; this
+		 * id loads the same file and names `@sgs/motion-state` as a dynamic
+		 * dependency, which puts it in the map. Both ids resolve to the same URL,
+		 * so the page holds one instance.
+		 */
+		'@sgs/motion-state-loader' => array(
+			'path' => 'build/shared/effects/motion-state.js',
+			'deps' => array(
+				array(
+					'id'     => '@sgs/motion-state',
+					'import' => 'dynamic',
+				),
+			),
 		),
 		'@sgs/fx-scrub'            => array(
 			'path' => 'build/shared/effects/gsap/fx-scrub.js',

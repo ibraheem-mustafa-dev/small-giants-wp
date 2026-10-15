@@ -138,10 +138,10 @@ $check( ! $has( $css, '--sgs-mt-kf' ), 'a two-value state entrance (CSS-played) 
 // 5. A state entrance lists @sgs/motion-state in the import map by enqueuing it; an undeclared state does not.
 $GLOBALS['sgs_test_enqueued'] = array();
 $render( 'sgs/form', array( 'inner' => array( 'entrance' => array( 'base' => $slide ) ) ), $form_html );
-$check( ! empty( $GLOBALS['sgs_test_enqueued']['module:@sgs/motion-state'] ), 'a state entrance enqueues the state helper module' );
+$check( ! empty( $GLOBALS['sgs_test_enqueued']['module:@sgs/motion-state-loader'] ), 'a state entrance enqueues the state helper module' );
 $GLOBALS['sgs_test_enqueued'] = array();
 $render( 'sgs/form', array( 'inner' => array( 'entrance' => array( 'base' => array_merge( $slide, array( 'state' => 'count-changed' ) ) ) ) ), $form_html );
-$check( empty( $GLOBALS['sgs_test_enqueued']['module:@sgs/motion-state'] ), 'an undeclared state does not enqueue it' );
+$check( empty( $GLOBALS['sgs_test_enqueued']['module:@sgs/motion-state-loader'] ), 'an undeclared state does not enqueue it' );
 
 // 6. No inline style anywhere.
 foreach ( $markups as $i => $markup ) {

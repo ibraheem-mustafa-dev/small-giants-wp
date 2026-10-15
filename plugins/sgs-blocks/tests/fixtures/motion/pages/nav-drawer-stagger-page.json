@@ -1,0 +1,34 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"className": "m45-page"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Drawer stagger fixture",
+					"level": "h1"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "The drawer on this page opens from the header menu button. Its panel fades in and its five items arrive at their stored delays."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/nav-bar-menu",
+		"attributes": {
+			"ref": 0,
+			"drawerRef": 5279,
+			"showBurger": true,
+			"className": "m45-burger"
+		},
+		"innerBlocks": []
+	}
+]

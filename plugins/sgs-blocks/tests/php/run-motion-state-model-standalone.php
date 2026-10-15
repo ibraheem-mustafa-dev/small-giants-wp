@@ -129,7 +129,7 @@ $check( $has( $css, '.' . $scope . ' .sgs-cart__badge{--sgs-mt-kf:count-changed;
 $check( $has( $css, '--sgs-me-dur:500ms;' ), 'cart: the pop duration is emitted: ' . $css );
 $check( $has( $css, '--sgs-me-ease:var(--wp--custom--easing--default);' ), 'cart: the easing token prints the theme custom property, not a curve: ' . $css );
 $check( ! $has( $css, 'cubic-bezier' ) && ! $has( $css, 'sgs-cart-count-pop' ), 'cart: no literal curve and no old keyframe name in the model path: ' . $css );
-$check( ! empty( $GLOBALS['sgs_test_enqueued']['module:@sgs/motion-state'] ), 'cart: a declared state entrance enqueues the state helper module' );
+$check( ! empty( $GLOBALS['sgs_test_enqueued']['module:@sgs/motion-state-loader'] ), 'cart: a declared state entrance enqueues the state helper module' );
 
 list( $html, $css ) = $render( 'sgs/nav-bar-menu', array( 'burger' => array( 'entrance' => array( 'base' => $morph ) ) ), $bar_html );
 $markups[]          = $html;
@@ -161,7 +161,7 @@ foreach ( $cases as $label => list( $block, $part, $block_html, $state, $layer )
 	$refusal            = $dropped();
 	$check( ! $has( $html, 'data-sgs-me=' ) && ! $has( $css, 'data-sgs-motion-state' ) && ! $has( $css, '--sgs-me-' ), "$label: refused with no entrance attribute and no CSS: $css" );
 	$check( isset( $refusal[0][1][2]['id'] ) && 'state-not-declared' === $refusal[0][1][2]['id'], "$label: the refusal is reported" );
-	$check( empty( $GLOBALS['sgs_test_enqueued']['module:@sgs/motion-state'] ) && ! in_array( 'sgs-motion-triggers', $GLOBALS['sgs_test_enqueued_styles'], true ), "$label: nothing is enqueued" );
+	$check( empty( $GLOBALS['sgs_test_enqueued']['module:@sgs/motion-state-loader'] ) && ! in_array( 'sgs-motion-triggers', $GLOBALS['sgs_test_enqueued_styles'], true ), "$label: nothing is enqueued" );
 }
 
 // 4. The helpers the three renders read.
