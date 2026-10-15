@@ -7080,7 +7080,10 @@
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": false,
-						"dataAttr": "data-sgs-fx-lottie-file"
+						"dataAttr": "data-sgs-fx-lottie-file",
+						"allowedTypes": [
+							"application/json"
+						]
 					}
 				},
 				"loop": {
