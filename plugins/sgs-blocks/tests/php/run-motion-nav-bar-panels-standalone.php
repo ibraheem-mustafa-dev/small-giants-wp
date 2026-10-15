@@ -16,7 +16,8 @@
  *   editor preview as a `<style>` tag;
  * - the closing panel stays displayed and out of the pointer's way; the scrim reads the panel layer's timing (a token
  *   duration gives no number, so the scrim keeps its own default);
- * - negative controls: a bar with no `sgsMotion` is off the model, and `apply: false` switches server delays off.
+ * - negative controls: a bar with no `sgsMotion` is off the model, and a bar with no stagger settings writes no server
+ *   delays; `apply: false` is not an off switch (it only decides whether a child with no entrance takes the container's).
  *
  * @package SGS\Blocks\Tests
  */
@@ -177,12 +178,17 @@ unset( $token_bar['sgsMotion']['elements']['panel']['entrance']['base']['close']
 $tt = sgs_nav_bar_motion_timing( $token_bar );
 $ok( null === $tt['enter_ms'] && null === $tt['exit_ms'], 'a token duration gives no number, so the scrim keeps its own default' );
 
-// 6. Negative control: `apply: false` switches server-written delays off, which is why the bar stores none.
+// 6. `apply: false` is not an off switch: the server delays are still written. Negative control: no stagger settings,
+// no delays.
 $apply_off = $bar;
 $apply_off['sgsMotion']['stagger']['apply'] = false;
 $reset();
-sgs_nav_bar_motion_panels( $html, 'sgs-nav-bar-menu-abc', $apply_off );
-$ok( '' === implode( '', $GLOBALS['sgs_collected_css'] ?? array() ) && null === Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-bar-menu', 'u', $apply_off, 3, '.sgs-nav-bar-menu__subitem' ), 'NEGATIVE CONTROL: stagger settings with apply false write no delays (Sgs_Motion_Loop_Delays::normalise)' );
+$ok( null !== Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-bar-menu', 'u', $apply_off, 3, '.sgs-nav-bar-menu__subitem' ), 'apply false still writes the server delays (Sgs_Motion_Loop_Delays::normalise)' );
+$no_stagger = $bar;
+unset( $no_stagger['sgsMotion']['stagger'] );
+$reset();
+sgs_nav_bar_motion_panels( $html, 'sgs-nav-bar-menu-abc', $no_stagger );
+$ok( '' === implode( '', $GLOBALS['sgs_collected_css'] ?? array() ) && null === Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-bar-menu', 'u', $no_stagger, 3, '.sgs-nav-bar-menu__subitem' ), 'NEGATIVE CONTROL: a bar with no stagger settings writes no delays' );
 
 echo "\nRESULT  $pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

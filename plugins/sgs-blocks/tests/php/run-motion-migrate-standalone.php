@@ -226,14 +226,14 @@ namespace SGS\Blocks\Motion {
 	$types = Sgs_Motion_Migrate_Runner::post_types( array( 'post', 'page', 'product', 'sgs_header', 'wp_template', 'attachment', 'revision', 'nav_menu_item' ) );
 	ok( in_array( 'sgs_header', $types, true ) && in_array( 'product', $types, true ) && in_array( 'wp_template', $types, true ), 'the sweep covers sgs_header, product and wp_template' );
 	ok( ! in_array( 'attachment', $types, true ) && ! in_array( 'revision', $types, true ) && ! in_array( 'nav_menu_item', $types, true ), 'the sweep skips attachment, revision and nav_menu_item' );
-	$deploy = (string) file_get_contents( $root . '/scripts/build-deploy.py' );
+	$deploy = (string) file_get_contents( $root . '/scripts/deploy_common.py' );
 	preg_match( '/NON_BLOCK_POST_TYPES = \((.*?)\)/s', $deploy, $dm );
 	preg_match_all( '/"([a-z_]+)"/', (string) ( $dm[1] ?? '' ), $dn );
 	$php_list = Sgs_Motion_Migrate_Runner::NON_BLOCK_POST_TYPES;
 	sort( $php_list );
 	$py_list = $dn[1];
 	sort( $py_list );
-	ok( $php_list === $py_list && array() !== $py_list, 'the PHP non-block list equals build-deploy.py NON_BLOCK_POST_TYPES' );
+	ok( $php_list === $py_list && array() !== $py_list, 'the PHP non-block list equals deploy_common.py NON_BLOCK_POST_TYPES (build-deploy.py imports it)' );
 
 	// 2. An sgs_header-type post with an old attribute on a nested block.
 	$header = '<!-- wp:sgs/site-header {"className":"x"} -->' . "\n"
