@@ -44,7 +44,7 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown   # THE on
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>
 ```
 
-- `build-deploy.py` builds, gates, deploys with rollback, verifies, and purges OPcache, the LiteSpeed page cache and the theme pattern cache. Targets are `TARGETS` in that file: `sandybrown` (default canary), `indus-test`, `eye-care-test` (named explicitly only). Scope with `--blocks-only` / `--theme-only`. Ship one commit to several sites with `--target a,b` or `--target all` (one build and gate run, sites in parallel); a commit that already passed its gates is not rebuilt.
+- `build-deploy.py` builds, gates, deploys with rollback, verifies, and purges OPcache, the LiteSpeed page cache and the theme pattern cache. Targets are `TARGETS` in `deploy_common.py` beside it: `sandybrown` (default canary), `indus-test`, `eye-care-test` (named explicitly only). Scope with `--blocks-only` / `--theme-only`. Ship one commit to several sites with `--target a,b` or `--target all` (one build and gate run, sites in parallel); a commit that already passed its gates is not rebuilt.
 - ⛔ Never hand-roll tar/scp/`rm -rf` on the server — that recipe can take client sites down. Never use `--allow-dirty` or `--skip-verify`.
 - No Node on the server: build locally, deploy `build/`.
 

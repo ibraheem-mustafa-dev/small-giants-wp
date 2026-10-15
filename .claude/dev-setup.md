@@ -230,7 +230,7 @@ For an above-the-fold hero image, the theme injects a `<link rel="preload" as="i
 
 ## Deployment process
 
-**Deploy targets** (the `TARGETS` dict in `plugins/sgs-blocks/scripts/build-deploy.py`):
+**Deploy targets** (the `TARGETS` dict in `plugins/sgs-blocks/scripts/deploy_common.py`, which `build-deploy.py` imports):
 
 | Target | Site | Purpose |
 |---|---|---|
@@ -308,6 +308,8 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target all
 **A commit that already passed is not rebuilt.** After `gate:full` passes, `deploy_cache.py` stores the pass record, `build/` and every file the build left new or changed under the deploy roots in `~/.cache/sgs-deploy/<key>/`, keyed on the commit's tree hash plus the framework DB's sha256 (the full gates read the theme, `sites/`, specs, plans and the DB, so nothing narrower is safe). A later isolated deploy of the same commit with the same DB restores them and skips both steps, logging when the gates passed; a `--theme-only` deploy whose gates are cached skips the build entirely. Shared-checkout runs (`--no-isolate`, `--allow-dirty`, `--payload`) never use the cache; `--no-cache` forces a fresh build and gate run. The newest 5 entries are kept.
 
 **Packaging takes turns machine-wide.** Packaging swaps the shared `vendor/` autoloader to its no-dev form and back, so two deploys packaging at once could ship the dev autoloader (D849). It runs under the lock file `sgs-deploy-package.lock` in the temp folder; a waiting deploy logs `[package-lock]`. Packaging takes seconds.
+
+**Where the code lives.** `build-deploy.py` is the command (its flags, `main()`, the build-and-gate step and `step_gate_full`, which `run-gates.py --assert-wired` checks for). The steps are importable sibling modules: `deploy_common.py` (TARGETS, paths, run ID, tar and dirty-gate rules, logging, SSH and composer helpers), `deploy_guards.py` (dirty gate, theme.json payload and guard, ownership marker, stored-content audit, isolation decision), `deploy_ship.py` (build, packaging, upload, remote extract, isolated worktree), `deploy_verify.py` (purge and every post-deploy check), `deploy_selftest.py` (`--self-test`), plus `deploy_cache.py` and `deploy_multi.py`. A script that needs TARGETS or the SSH helpers imports `deploy_common`.
 
 **Motion QA runs for sandybrown only.** `qa:motion` probes the canary's fixture pages, so a deploy to another target logs `[motion-qa] SKIPPED` rather than reporting the canary's result as its own.
 

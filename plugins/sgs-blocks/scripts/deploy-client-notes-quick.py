@@ -34,24 +34,12 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import subprocess
 import sys
 import time
 from pathlib import Path
 
-def _load_build_deploy():
-    """`build-deploy.py`'s filename has a hyphen, so it can't be a plain
-    `import` target — load it by path instead."""
-    import importlib.util
+import deploy_common as _bd  # the deploy targets and SSH/run helpers build-deploy.py uses
 
-    path = Path(__file__).resolve().parent / "build-deploy.py"
-    spec = importlib.util.spec_from_file_location("sgs_build_deploy", path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-_bd = _load_build_deploy()
 TARGETS = _bd.TARGETS
 log = _bd.log
 err = _bd.err

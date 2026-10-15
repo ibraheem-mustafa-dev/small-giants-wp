@@ -42,7 +42,7 @@ Before invoking this skill, load:
 
 ## Stage 1 — CHECK
 
-Identify the target from the user's argument; the default is `sandybrown`. Targets are the keys of `TARGETS` in `plugins/sgs-blocks/scripts/build-deploy.py`; a target with `explicit_opt_in_required: true` needs explicit written confirmation at the HARD-GATE.
+Identify the target from the user's argument; the default is `sandybrown`. Targets are the keys of `TARGETS` in `plugins/sgs-blocks/scripts/deploy_common.py`; a target with `explicit_opt_in_required: true` needs explicit written confirmation at the HARD-GATE.
 
 ### Automated checks (report pass / fail / needs-manual)
 
@@ -61,7 +61,7 @@ Site loads on mobile + desktop; forms submit correctly; contact details correct;
 ### HARD-GATE — operator approval
 
 <HARD-GATE id="operator-deploy-approval">
-For a target whose `explicit_opt_in_required` is true in `build-deploy.py::TARGETS`, do NOT run any deploy command until the operator has explicitly typed "deploy" or "confirmed" in response to a clear summary of what will be deployed and to which target.
+For a target whose `explicit_opt_in_required` is true in `deploy_common.py::TARGETS`, do NOT run any deploy command until the operator has explicitly typed "deploy" or "confirmed" in response to a clear summary of what will be deployed and to which target.
 
 Present: target URL, files changed, any failed checklist items. Wait for explicit approval before Phase 2. Failed items require the operator to acknowledge each failure before approval.
 </HARD-GATE>
