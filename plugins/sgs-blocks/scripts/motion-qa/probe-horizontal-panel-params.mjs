@@ -33,7 +33,7 @@
  */
 
 import { chromium } from 'playwright';
-import { parseArgs, siteBase, Reporter, near } from './probe-motion-model-lib.mjs';
+import { gotoThroughCheck, parseArgs, siteBase, Reporter, near } from './probe-motion-model-lib.mjs';
 
 const HEIGHT = 900;
 const PANELS = 5;
@@ -164,7 +164,8 @@ async function open( browser, url, width, attrs = {} ) {
 			await route.fulfill( { response, body: html } );
 		} );
 	}
-	await page.goto( url, { waitUntil: 'networkidle' } );
+	await gotoThroughCheck( page, url );
+	await page.waitForLoadState( 'networkidle' ).catch( () => null );
 	await page.waitForTimeout( 600 );
 	return { context, page };
 }
@@ -287,7 +288,7 @@ async function main() {
 		process.exit( report.summary() );
 	}
 	const url = `${ siteBase( args.site ) }/?page_id=${ args.pages[ 0 ] }`;
-	const browser = await chromium.launch();
+	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
 	try {
 		const desktop = await checkDesktop( browser, url, report );
 		await checkSnapRow( browser, url, report );

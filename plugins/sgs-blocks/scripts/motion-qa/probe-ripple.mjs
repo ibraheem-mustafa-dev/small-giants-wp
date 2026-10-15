@@ -28,7 +28,7 @@
  */
 
 import { chromium, firefox, webkit } from 'playwright';
-import { parseArgs, siteBase, Reporter, near } from './probe-motion-model-lib.mjs';
+import { gotoThroughCheck, parseArgs, siteBase, Reporter, near } from './probe-motion-model-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
 const HEIGHT = 900;
@@ -48,7 +48,7 @@ export function expectedAt( maxSide, t ) {
 async function openPage( ctx, url, opts = {} ) {
 	const context = await ctx.browser.newContext( { viewport: { width: ctx.width, height: HEIGHT }, ...opts } );
 	const page = await context.newPage();
-	await page.goto( url, { waitUntil: 'load' } ).catch( () => page.goto( url, { waitUntil: 'load' } ) );
+	await gotoThroughCheck( page, url );
 	await page.evaluate( () => document.addEventListener( 'click', ( e ) => e.preventDefault(), true ) );
 	await page.waitForTimeout( 400 );
 	return { page, close: () => context.close() };
@@ -173,7 +173,8 @@ async function reducedChecks( ctx, url ) {
 	await page.mouse.move( down.x, down.y );
 	await page.mouse.down();
 	const calm = await playing( page, SEL.down );
-	const anims = await page.evaluate( () => document.getAnimations().filter( ( a ) => a.effect && a.effect.pseudoElement === '::after' ).length );
+	// Only the ripple host's own ::after animations count: other effects on the page may run theirs.
+	const anims = await page.evaluate( ( sel ) => { const el = document.querySelector( sel ); return document.getAnimations().filter( ( a ) => a.effect && a.effect.target === el && a.effect.pseudoElement === '::after' ).length; }, SEL.down );
 	await page.mouse.up();
 	rep.check( 'ripple-reduced:down', { selector: SEL.down, property: 'a ripple after a press with prefers-reduced-motion: reduce', measured: { playing: calm, afterAnimations: anims }, expected: { playing: false, afterAnimations: 0 }, pass: ! calm && anims === 0 } );
 	await close();
@@ -190,7 +191,7 @@ async function findPage( browser, urls ) {
 	const context = await browser.newContext( { viewport: { width: 1440, height: HEIGHT } } );
 	for ( const url of urls ) {
 		const page = await context.newPage();
-		await page.goto( url, { waitUntil: 'load' } );
+		await gotoThroughCheck( page, url );
 		const found = await page.evaluate( ( sel ) => !! document.querySelector( sel ), SEL.down );
 		await page.close();
 		if ( found ) {
@@ -212,7 +213,7 @@ async function main() {
 	const urls = args.pages.map( ( id ) => `${ base }/?p=${ id }&cb=m59` );
 	const all = [];
 	for ( const engine of args.engines ) {
-		const browser = await BROWSERS[ engine ].launch();
+		const browser = await BROWSERS[ engine ].launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
 		const url = await findPage( browser, urls );
 		for ( const width of args.widths ) {
 			const rep = new Reporter( { engine, width, site: args.site } );

@@ -42,7 +42,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
-import { parseArgs, siteBase, Reporter, collectMotion, styleWritesTransform, FIXTURE_DIR } from './probe-motion-model-lib.mjs';
+import { gotoThroughCheck, parseArgs, siteBase, Reporter, collectMotion, styleWritesTransform, FIXTURE_DIR } from './probe-motion-model-lib.mjs';
 import * as L from './probe-motion-stacks-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
@@ -261,7 +261,7 @@ async function main() {
 	const url = local ? null : `${ siteBase( args.site ) }/?p=${ args.pages[ 0 ] }&cb=m5z`;
 	const all = [];
 	for ( const engine of args.engines ) {
-		const browser = await BROWSERS[ engine ].launch();
+		const browser = await BROWSERS[ engine ].launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
 		for ( const width of args.widths ) {
 			const rep = new Reporter( { engine, width, mode: local ? 'local' : 'live' } );
 			const context = await browser.newContext( { viewport: { width, height: HEIGHT } } );
@@ -274,7 +274,7 @@ async function main() {
 				} else {
 					page = await context.newPage();
 					settled = watchNetwork( page, log );
-					await page.goto( url, { waitUntil: 'load' } ).catch( () => page.goto( url, { waitUntil: 'load' } ) );
+					await gotoThroughCheck( page, url );
 				}
 				await page.waitForTimeout( 500 );
 				await settled();

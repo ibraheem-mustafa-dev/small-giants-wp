@@ -200,3 +200,17 @@ export async function selfTest() {
 	if ( planted.valid ) failures.push( 'schema accepted a planted unknown key' );
 	return failures;
 }
+
+/**
+ * Open a canary URL and wait out the host's bot check ("Just a moment..." with a 403): reload every few seconds until the
+ * title is the page's own, for at most `tries` loads. Returns true when the real page loaded, false when still challenged.
+ */
+export async function gotoThroughCheck( page, url, tries = 6 ) {
+	for ( let i = 0; i < tries; i++ ) {
+		await page.goto( url, { waitUntil: 'load' } ).catch( () => null );
+		const title = await page.title().catch( () => '' );
+		if ( ! /just a moment|checking your browser/i.test( title ) ) return true;
+		await page.waitForTimeout( 5000 );
+	}
+	return false;
+}

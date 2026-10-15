@@ -29,11 +29,13 @@
  */
 
 import { chromium, firefox, webkit } from 'playwright';
-import { parseArgs, siteBase, Reporter, near, parseTranslate, isRest, styleWritesTransform } from './probe-motion-model-lib.mjs';
+import { gotoThroughCheck, parseArgs, siteBase, Reporter, near, parseTranslate, isRest, styleWritesTransform } from './probe-motion-model-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
 const HEIGHT = 900;
 const SETTLE = 450;
+// The pull eases over the magnet's 250ms transition; a read sooner than that lands mid-ease (20px of a 30px pull).
+const READ_MS = 450;
 const TARGET = ( cls ) => `${ cls }[data-sgs-fx~="magnet"], ${ cls } [data-sgs-fx~="magnet"]`;
 const OVER = TARGET( '.m54-over' );
 const PROX = TARGET( '.m54-prox' );
@@ -46,14 +48,15 @@ const PROX_MODEL = { factor: 0.5, cap: 30, radius: 120 };
 /** The pull the distance model gives on x for a pointer `gap` px right of the box (box width `w`). */
 export function expectedProximityPull( w, gap, { factor, cap, radius } ) {
 	if ( gap > radius ) return 0;
-	return Math.min( cap, ( w / 2 + gap ) * factor * ( 1 - gap / radius ) );
+	// The runtime caps the offset pull first and then scales it by 1 - distance / radius (magnet.js::apply and pull).
+	return Math.min( cap, ( w / 2 + gap ) * factor ) * ( 1 - gap / radius );
 }
 
 /** Take the pointer there and read the element once the frame and the pull have landed. */
 async function readAt( page, selector, point ) {
 	if ( point ) {
 		await page.mouse.move( point.x, point.y, { steps: 3 } );
-		await page.waitForTimeout( 140 );
+		await page.waitForTimeout( READ_MS );
 	}
 	return page.evaluate( ( sel ) => {
 		const el = document.querySelector( sel );
@@ -67,7 +70,17 @@ async function readAt( page, selector, point ) {
 /** The element's box at rest (the pointer parked far away first), scrolled to the middle of the viewport. */
 async function restBox( page, selector ) {
 	await page.mouse.move( 5, 5 );
-	await page.evaluate( ( sel ) => document.querySelector( sel )?.scrollIntoView( { block: 'center' } ), selector );
+	await page.evaluate( ( sel ) => document.querySelector( sel )?.scrollIntoView( { block: 'center', behavior: 'instant' } ), selector );
+	// Lenis smooth scroll keeps moving the page after an instant jump: wait until the box is steady and Lenis has stopped.
+	await page.waitForFunction( ( sel ) => {
+		const el = document.querySelector( sel );
+		if ( ! el ) return true;
+		const top = el.getBoundingClientRect().top;
+		const steady = window.__magTop !== undefined && Math.abs( window.__magTop - top ) < 0.5;
+		window.__magTop = top;
+		return steady && ! document.documentElement.classList.contains( 'lenis-scrolling' );
+	}, selector, { polling: 120, timeout: 5000 } ).catch( () => null );
+	await page.evaluate( () => { delete window.__magTop; } );
 	await page.waitForTimeout( SETTLE );
 	return page.evaluate( ( sel ) => {
 		const el = document.querySelector( sel );
@@ -100,8 +113,9 @@ async function sampleReturn( page, selector, ms ) {
 async function magnetChecks( ctx, url ) {
 	const { rep } = ctx;
 	const { page, close } = await ctx.newPage( url );
-	const over = await restBox( page, OVER );
-	const prox = await restBox( page, PROX );
+	// The boxes are re-measured (restBox) right before each section reads them: scrolling one element in moves the others.
+	let over = await restBox( page, OVER );
+	let prox = await restBox( page, PROX );
 	const mid = ( b ) => ( { x: ( b.left + b.right ) / 2, y: ( b.top + b.bottom ) / 2 } );
 
 	if ( ! prox ) {
@@ -121,17 +135,21 @@ async function magnetChecks( ctx, url ) {
 		rep.control( 'magnet-proximity-edge:prox', { selector: PROX, property: 'the radius+1 read judged as a pull', measured: past.translate, expected: 'rest', red: isRest( past.translate ) } );
 	}
 
+	over = await restBox( page, OVER );
 	if ( ! over ) {
 		for ( const id of [ 'magnet-over-outside:over', 'magnet-normalised:over', 'magnet-1px-outside:over', 'magnet-return:over' ] ) {
 			rep.check( id, { selector: OVER, pass: null, why: 'no .m54-over element with data-sgs-fx="magnet" on the page' } );
 		}
 	} else {
-		const { y } = mid( over );
+		let { y } = mid( over );
 		const away = await readAt( page, OVER, { x: over.right + 30, y } );
 		rep.check( 'magnet-over-outside:over', { selector: OVER, property: 'translate with the pointer 30px outside an over-element magnet', measured: away.translate, expected: 'rest', pass: isRest( away.translate ) } );
 		if ( prox ) {
+			prox = await restBox( page, PROX );
 			const proxAway = await readAt( page, PROX, { x: prox.right + 30, y: mid( prox ).y } );
 			rep.control( 'magnet-over-outside:over', { selector: PROX, property: 'a proximity magnet at the same distance', measured: proxAway.translate, expected: 'a pull', red: ! isRest( proxAway.translate ) } );
+			over = await restBox( page, OVER );
+			( { y } = mid( over ) );
 		}
 
 		const edge = await readAt( page, OVER, { x: over.right, y } );
@@ -169,6 +187,7 @@ async function magnetChecks( ctx, url ) {
 		const near40 = await readAt( page, CONTROL, { x: control.right + 40, y } );
 		rep.check( 'magnet-no-magnet:control', { selector: CONTROL, property: 'translate with the pointer at the edge and 40px away', measured: [ edge.translate, near40.translate ], expected: 'rest', pass: isRest( edge.translate ) && isRest( near40.translate ) } );
 		if ( prox ) {
+			prox = await restBox( page, PROX );
 			const pulled = await readAt( page, PROX, { x: prox.right + 40, y: mid( prox ).y } );
 			rep.control( 'magnet-no-magnet:control', { selector: PROX, property: 'the proximity magnet read as the control', measured: pulled.translate, expected: 'rest', red: ! isRest( pulled.translate ) } );
 		}
@@ -185,7 +204,7 @@ async function magnetChecks( ctx, url ) {
 async function navChecks( ctx, url ) {
 	const { rep } = ctx;
 	const { page, close } = await ctx.newPage( url );
-	const box = await restBox( page, NAV );
+	const box = ctx.navGiven ? await restBox( page, NAV ) : null;
 	if ( ! box ) {
 		rep.check( 'magnet-nav-label', { selector: NAV, pass: null, why: 'no nav-bar label magnet on the page (pass --nav-page for a page with an sgs/nav-bar-menu that has the label magnet on)' } );
 		await close();
@@ -244,17 +263,17 @@ async function main() {
 	const navUrl = navPage ? `${ base }/?p=${ navPage }&cb=m54` : url;
 	const all = [];
 	for ( const engine of args.engines ) {
-		const browser = await BROWSERS[ engine ].launch();
+		const browser = await BROWSERS[ engine ].launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
 		for ( const width of args.widths ) {
 			const rep = new Reporter( { engine, width, site: args.site } );
 			const newPage = async ( target, opts = {} ) => {
 				const context = await browser.newContext( { viewport: { width, height: HEIGHT }, ...opts } );
 				const page = await context.newPage();
-				await page.goto( target, { waitUntil: 'load' } ).catch( () => page.goto( target, { waitUntil: 'load' } ) );
+				await gotoThroughCheck( page, target );
 				await page.waitForTimeout( 500 );
 				return { page, close: () => context.close() };
 			};
-			const ctx = { browser, engine, width, rep, newPage };
+			const ctx = { browser, engine, width, rep, newPage, navGiven: !! navPage };
 			for ( const [ run, target ] of [ [ magnetChecks, url ], [ navChecks, navUrl ], [ reducedChecks, url ] ] ) {
 				try {
 					await run( ctx, target );

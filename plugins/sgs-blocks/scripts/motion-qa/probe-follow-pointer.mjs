@@ -42,7 +42,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
-import { parseArgs, siteBase, Reporter } from './probe-motion-model-lib.mjs';
+import { gotoThroughCheck, parseArgs, siteBase, Reporter } from './probe-motion-model-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
 const PLUGIN = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
@@ -62,6 +62,8 @@ export function decompose( m ) {
 }
 
 /** Whether both angles are the expected ones within the tolerance. */
+/** The top right reading: Y at the maximum, X positive and short of it (the pointer sits 11.5% down, not on the edge). */
+export const nearCorner = ( a ) => Math.abs( a.y - MAX_ANGLE ) <= TOLERANCE && a.x >= 0.5 * MAX_ANGLE && a.x <= MAX_ANGLE + TOLERANCE;
 export const anglesNear = ( a, x, y, tol = TOLERANCE ) => Math.abs( a.x - x ) <= tol && Math.abs( a.y - y ) <= tol;
 
 /** The declaration names of a style attribute. */
@@ -86,6 +88,9 @@ function selfTest() {
 	want( anglesNear( decompose( rot( 8, 8 ) ), 8, 8 ), 'decompose reads back 8 and 8' );
 	want( ! anglesNear( decompose( rot( -8, -8 ) ), 8, 8 ), 'the judge rejects the opposite corner' );
 	want( ! anglesNear( decompose( rot( 8, 7.5 ) ), 8, 8 ), 'the judge rejects a 0.5deg error' );
+	want( nearCorner( decompose( rot( 6.2, 8 ) ) ), 'the corner judge accepts Y at the maximum and X short of it' );
+	want( ! nearCorner( decompose( rot( -6.2, -8 ) ) ), 'the corner judge rejects the opposite corner' );
+	want( ! nearCorner( decompose( rot( 2.4, 2.4 ) ) ), 'the corner judge rejects a mid-decay reading' );
 	want( customOnly( '--sgs-tilt-x: 8deg; --sgs-tilt-y: 8deg;' ), 'custom-only accepts two custom properties' );
 	want( ! customOnly( '--sgs-tilt-x: 8deg; transform: none;' ), 'custom-only rejects a transform' );
 	want( ! customOnly( '' ), 'custom-only rejects an empty style (the writer did not run)' );
@@ -174,8 +179,13 @@ export async function atCorner( page, sel, corner, inset = 1 ) {
 	await page.mouse.move( 2, 2 );
 	await page.waitForTimeout( RESET_MS + 400 );
 	const box = await ( await page.$( sel ) ).boundingBox();
-	const x = corner.includes( 'right' ) ? box.x + box.width - inset : box.x + inset;
-	const y = corner.includes( 'top' ) ? box.y + inset : box.y + box.height - inset;
+	// A tilted card's corner is pulled inward (6px on a 1280px card at 8deg), so a pointer within about 20px of an edge flickers
+	// in and out of :hover and the angle reads mid-decay. The point is 5% in horizontally (where the writer reaches the maximum
+	// on Y) and 11.5% in vertically, with `inset` as the floor; X is then positive and short of the maximum.
+	const insetX = Math.max( inset, box.width * 0.05 );
+	const insetY = Math.max( inset, box.height * 0.115 );
+	const x = corner.includes( 'right' ) ? box.x + box.width - insetX : box.x + insetX;
+	const y = corner.includes( 'top' ) ? box.y + insetY : box.y + box.height - insetY;
 	await page.mouse.move( x, y - 20 );
 	await page.mouse.move( x, y, { steps: 4 } );
 	await page.waitForTimeout( 300 );
@@ -191,10 +201,10 @@ async function checks( page, rep ) {
 	}
 	const tr = await atCorner( page, FOLLOW, 'top right', 8 );
 	const angles = decompose( tr.matrix );
-	rep.check( 'follow-corner-angles', { selector: FOLLOW, property: 'computed transform at the top right corner', measured: angles, expected: `rotateX ${ MAX_ANGLE }deg, rotateY ${ MAX_ANGLE }deg within ${ TOLERANCE }deg`, pass: anglesNear( angles, MAX_ANGLE, MAX_ANGLE ) } );
+	rep.check( 'follow-corner-angles', { selector: FOLLOW, property: 'computed transform at the top right corner', measured: angles, expected: `rotateY ${ MAX_ANGLE }deg within ${ TOLERANCE }deg and rotateX positive, between ${ 0.5 * MAX_ANGLE } and ${ MAX_ANGLE }deg`, pass: nearCorner( angles ) } );
 	const bl = await atCorner( page, FOLLOW, 'bottom left', 12 );
 	const opposite = decompose( bl.matrix );
-	rep.control( 'follow-corner-angles', { selector: FOLLOW, property: 'the bottom left corner (12px in) against the same judge', measured: opposite, expected: 'both angles negative, so the judge for +8deg and +8deg rejects it', red: ! anglesNear( opposite, MAX_ANGLE, MAX_ANGLE ) && opposite.x < -1 && opposite.y < -1 } );
+	rep.control( 'follow-corner-angles', { selector: FOLLOW, property: 'the bottom left corner (12px in) against the same judge', measured: opposite, expected: 'both angles negative, so the top right judge rejects it', red: ! nearCorner( opposite ) && opposite.x < -1 && opposite.y < -1 } );
 
 	const both = await atCorner( page, FOLLOW, 'top right', 8 );
 	const plain = await atCorner( page, PLAIN, 'top right' );
@@ -216,12 +226,12 @@ async function checks( page, rep ) {
 	await page.waitForTimeout( 400 );
 	const reducedNow = await page.evaluate( readState, FOLLOW );
 	const box = await ( await page.$( FOLLOW ) ).boundingBox();
-	await page.mouse.move( box.x + box.width - 10, box.y + 10 );
+	await page.mouse.move( box.x + box.width * 0.95, box.y + box.height * 0.115 );
 	await page.waitForTimeout( 300 );
 	const reducedMoved = await page.evaluate( readState, FOLLOW );
 	await page.emulateMedia( { reducedMotion: 'no-preference' } );
 	await page.waitForTimeout( 100 );
-	await page.mouse.move( box.x + box.width - 8, box.y + 8, { steps: 3 } );
+	await page.mouse.move( box.x + box.width * 0.95, box.y + box.height * 0.115, { steps: 3 } );
 	await page.waitForTimeout( 400 );
 	const resumed = decompose( ( await page.evaluate( readState, FOLLOW ) ).matrix );
 	const stopped = anglesNear( decompose( reducedNow.matrix ), 0, 0, 0.05 ) && anglesNear( decompose( reducedMoved.matrix ), 0, 0, 0.05 ) && ! /--sgs-tilt/.test( reducedMoved.style || '' );
@@ -250,7 +260,7 @@ async function main() {
 	const url = local ? null : `${ siteBase( args.site ) }/?p=${ args.pages[ 0 ] }&cb=m56`;
 	const all = [];
 	for ( const engine of args.engines ) {
-		const browser = await BROWSERS[ engine ].launch();
+		const browser = await BROWSERS[ engine ].launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
 		for ( const width of args.widths ) {
 			const rep = new Reporter( { engine, width, mode: local ? 'local' : 'live' } );
 			const context = await browser.newContext( { viewport: { width, height: HEIGHT } } );
@@ -260,7 +270,7 @@ async function main() {
 					page = await openHarness( context );
 				} else {
 					page = await context.newPage();
-					await page.goto( url, { waitUntil: 'load' } ).catch( () => page.goto( url, { waitUntil: 'load' } ) );
+					await gotoThroughCheck( page, url );
 				}
 				await page.waitForTimeout( 400 );
 				await checks( page, rep );

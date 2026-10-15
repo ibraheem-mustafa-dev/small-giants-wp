@@ -32,7 +32,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
-import { parseArgs, siteBase, Reporter } from './probe-motion-model-lib.mjs';
+import { gotoThroughCheck, parseArgs, siteBase, Reporter } from './probe-motion-model-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
 const PLUGIN = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
@@ -142,7 +142,8 @@ async function openPage( context, { local, url, strip } ) {
 		page.on( 'console', ( m ) => console.error( 'console:', m.text() ) );
 		page.on( 'pageerror', ( e ) => console.error( 'pageerror:', e.message ) );
 	}
-	await page.goto( local ? `${ HARNESS_ORIGIN }/harness.html` : url, { waitUntil: 'load' } );
+	if ( local ) await page.goto( `${ HARNESS_ORIGIN }/harness.html`, { waitUntil: 'load' } );
+	else await gotoThroughCheck( page, url );
 	await page.waitForTimeout( 400 );
 	return page;
 }
@@ -344,7 +345,7 @@ async function rippleWithReveal( page, rep ) {
 }
 
 async function unregisteredControl( browserType, rep, { local, url, width } ) {
-	const browser = await browserType.launch();
+	const browser = await browserType.launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
 	const context = await browser.newContext( { viewport: { width, height: HEIGHT } } );
 	try {
 		const page = await openPage( context, { local, url, strip: true } );
@@ -372,7 +373,7 @@ export async function main( argv ) {
 	for ( const engine of args.engines ) {
 		for ( const width of args.widths ) {
 			const rep = new Reporter( { engine, width, mode: local ? 'local' : 'live' } );
-			const browser = await BROWSERS[ engine ].launch();
+			const browser = await BROWSERS[ engine ].launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
 			const context = await browser.newContext( { viewport: { width, height: HEIGHT } } );
 			try {
 				const page = await openPage( context, { local, url, strip: false } );
