@@ -1427,6 +1427,74 @@
 		},
 		{
 			"devices": {},
+			"effect": null,
+			"family": "state-count-pop",
+			"intensity": null,
+			"kind": "keyframe",
+			"label": "Count pop",
+			"panel": "entrance",
+			"slug": "state-count-pop",
+			"target": "part",
+			"trigger": "state",
+			"values": {
+				"duration": 500,
+				"easing": "token:easing.default",
+				"keyframes": [
+					{
+						"offset": 0,
+						"opacity": 0,
+						"scale": 0.6
+					},
+					{
+						"offset": 60,
+						"opacity": 1,
+						"scale": 1.15
+					},
+					{
+						"offset": 100,
+						"opacity": 1,
+						"scale": 1
+					}
+				]
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "state-icon-turn",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Icon turn",
+			"panel": "entrance",
+			"slug": "state-icon-turn",
+			"target": "part",
+			"trigger": "state",
+			"values": {
+				"duration": "token:duration.medium",
+				"easing": "token:easing.default",
+				"to": {
+					"rotate": 45
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "state-burger-morph",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Burger morph timing",
+			"panel": "entrance",
+			"slug": "state-burger-morph",
+			"target": "part",
+			"trigger": "state",
+			"values": {
+				"duration": "token:duration.fast",
+				"easing": "token:easing.default"
+			}
+		},
+		{
+			"devices": {},
 			"effect": "scrub",
 			"family": "scrub",
 			"intensity": "subtle",
