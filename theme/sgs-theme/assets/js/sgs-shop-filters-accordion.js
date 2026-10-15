@@ -18,6 +18,11 @@
  * `sgs-shop-filters:rebuilt` on the dialog so the per-group looks
  * (sgs-shop-filters-groups.js) run again.
  *
+ * Every node the SGS scripts build inside a group carries `data-sgs-generated`
+ * (GENERATED). A group dissolved after a re-render keeps WooCommerce's own nodes
+ * and drops the generated ones, because the rebuilt event makes them again: kept,
+ * each would sit beside its new copy, a second segmented row under the first.
+ *
  * @package SGS\Theme
  */
 
@@ -26,6 +31,7 @@
 
 	const HEADING = '.sgs-shop-filters__group-heading';
 	const GROUP = 'sgs-shop-filters__group';
+	const GENERATED = 'data-sgs-generated';
 
 	// A heading block's generated class (sgs-hdg-xxxxxxxx) is stable across renders.
 	function keyOf( heading ) {
@@ -62,6 +68,7 @@
 
 			const summary = document.createElement( 'summary' );
 			summary.className = 'sgs-shop-filters__group-summary';
+			summary.setAttribute( GENERATED, '' );
 			heading.parentNode.insertBefore( details, heading );
 			summary.appendChild( heading );
 			details.appendChild( summary );
@@ -79,12 +86,13 @@
 		} );
 	}
 
-	// Dissolves each headless group: its summary is dropped, any other content is
-	// moved back out in place so no filter control is lost, then the shell is removed.
+	// Dissolves each headless group: the nodes SGS generated (its summary, a
+	// segmented row) are dropped, WooCommerce's own content is moved back out in
+	// place so no filter control is lost, then the shell is removed.
 	function unwrapEmptyGroups( root ) {
 		emptyGroups( root ).forEach( function ( group ) {
 			Array.from( group.childNodes ).forEach( function ( child ) {
-				if ( child.nodeType === 1 && child.matches( 'summary' ) ) {
+				if ( child.nodeType === 1 && child.hasAttribute( GENERATED ) ) {
 					return;
 				}
 				group.parentNode.insertBefore( child, group );

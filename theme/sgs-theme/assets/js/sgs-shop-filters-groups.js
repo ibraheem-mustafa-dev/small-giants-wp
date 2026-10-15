@@ -20,6 +20,9 @@
 
 	const SETTINGS = window.sgsShopFilters || {};
 	const ITEM = '.wc-block-product-filter-chips__item, .wc-block-product-filter-checkbox-list__item';
+	// Marks every node built here, so a group dissolved after WooCommerce re-renders
+	// drops it rather than keeping it beside its rebuilt copy (sgs-shop-filters-accordion.js).
+	const GENERATED = 'data-sgs-generated';
 
 	function groupOf( heading ) {
 		return heading.closest( '.sgs-shop-filters__group' );
@@ -33,6 +36,7 @@
 		}
 		const count = document.createElement( 'span' );
 		count.className = 'sgs-shop-filters__group-count';
+		count.setAttribute( GENERATED, '' );
 		count.textContent = String( group.querySelectorAll( ITEM ).length );
 		summary.appendChild( count );
 	}
@@ -48,6 +52,7 @@
 		const current = ( new URLSearchParams( window.location.search ).get( param ) || '' ).split( ',' )[ 0 ];
 		const row = document.createElement( 'div' );
 		row.className = 'sgs-shop-filters__segmented';
+		row.setAttribute( GENERATED, '' );
 		row.setAttribute( 'role', 'group' );
 		row.setAttribute( 'aria-label', heading.textContent.trim() );
 		const options = [ { value: '', label: SETTINGS.segmentedAllLabel || 'All' } ].concat(

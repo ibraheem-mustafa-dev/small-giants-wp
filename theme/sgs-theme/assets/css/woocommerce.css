@@ -2047,102 +2047,9 @@ body.woocommerce-cart .with-empty-cart-icon,
 	margin-top: var(--wp--preset--spacing--20, 0.75rem);
 }
 
-/* ── Price slider ── */
+/* ── Price slider ── (its handles and bar: section 8i (3)) */
 .sgs-shop-filters .wc-block-product-filter-price-slider {
 	padding: 0.25rem 0 0.5rem;
-}
-
-/* Slider track */
-.sgs-shop-filters .wc-block-product-filter-price-slider__range-input-wrapper,
-.sgs-shop-filters .wc-block-price-filter__range-input-wrapper {
-	position: relative;
-	height: 4px;
-	/* Was `surface-alt` (near-white) - invisible on the panel. */
-	background: color-mix(in oklab, var(--wp--preset--color--primary) 22%, var(--wp--preset--color--surface));
-	border-radius: 9999px;
-	margin: 1.5rem 0 0.5rem;
-}
-
-/* WooCommerce paints its OWN track on `__range` (the element carrying the
- * --low/--high custom properties) in an unthemed near-black. Left alone it sits
- * directly under ours: that is the "doubled up" slider, two bars, one branded
- * and one black. Ours is the themed one, so theirs is made transparent - the
- * element is KEPT because it is the positioning context for the thumbs and the
- * filled region, and removing it would break both. */
-.sgs-shop-filters .wc-block-product-filter-price-slider__range {
-	background: transparent;
-}
-
-/* Filled track region (WC uses inline style on the progress element) */
-.sgs-shop-filters .wc-block-product-filter-price-slider__progress,
-.sgs-shop-filters .wc-block-price-filter__progress {
-	position: absolute;
-	height: 100%;
-	background: var(--wp--preset--color--primary);
-	border-radius: 9999px;
-}
-
-/* Range thumb inputs */
-.sgs-shop-filters .wc-block-product-filter-price-slider__range-input,
-.sgs-shop-filters .wc-block-price-filter__range-input {
-	-webkit-appearance: none;
-	appearance: none;
-	position: absolute;
-	width: 100%;
-	height: 4px;
-	background: transparent;
-	pointer-events: none;
-	top: 0;
-}
-
-.sgs-shop-filters .wc-block-product-filter-price-slider__range-input::-webkit-slider-thumb,
-.sgs-shop-filters .wc-block-price-filter__range-input::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	appearance: none;
-	width: 20px;
-	height: 20px;
-	border-radius: 50%;
-	background: var(--wp--preset--color--primary);
-	border: 2px solid var(--wp--preset--color--surface, #fff);
-	box-shadow: 0 0 0 1px var(--wp--preset--color--primary);
-	cursor: pointer;
-	pointer-events: all;
-}
-
-.sgs-shop-filters .wc-block-product-filter-price-slider__range-input::-moz-range-thumb,
-.sgs-shop-filters .wc-block-price-filter__range-input::-moz-range-thumb {
-	width: 20px;
-	height: 20px;
-	border-radius: 50%;
-	background: var(--wp--preset--color--primary);
-	border: 2px solid var(--wp--preset--color--surface, #fff);
-	box-shadow: 0 0 0 1px var(--wp--preset--color--primary);
-	cursor: pointer;
-	pointer-events: all;
-}
-
-.sgs-shop-filters .wc-block-product-filter-price-slider__range-input:focus-visible::-webkit-slider-thumb,
-.sgs-shop-filters .wc-block-price-filter__range-input:focus-visible::-webkit-slider-thumb {
-	outline: 3px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 3px;
-}
-
-/* Price text inputs (min / max fields) */
-.sgs-shop-filters .wc-block-product-filter-price-slider__amount,
-.sgs-shop-filters .wc-block-price-filter__amount {
-	font-size: 0.8125rem;
-	color: var(--wp--preset--color--text, #1e1e1e);
-	border: 1px solid var(--wp--preset--color--surface-alt, #e0e0e0);
-	border-radius: var(--wp--custom--border-radius--small, 4px);
-	padding: 0.25em 0.5em;
-	width: 5rem;
-	background: var(--wp--preset--color--surface, #fff);
-}
-
-.sgs-shop-filters .wc-block-product-filter-price-slider__amount:focus-visible,
-.sgs-shop-filters .wc-block-price-filter__amount:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }
 
 /* ── Attribute chips ── */
@@ -2812,11 +2719,7 @@ body.sgs-shop-filters-plain .sgs-shop-filters:modal {
  * The gradient is REBUILT rather than replaced with a flat colour, because the
  * stops carry the meaning: --low and --high are set by WooCommerce on the parent
  * `__range` element and inherit down, so re-using them keeps the filled region
- * tracking the handles exactly as before. Only the colour changes.
- *
- * ⚠ An earlier pass here styled `__range-input-wrapper` and `__progress`. Those
- * elements DO NOT EXIST in WooCommerce 11 — same dead-selector class as the
- * chips. Kept only as a note so nobody re-adds them believing they do something. */
+ * tracking the handles exactly as before. Only the colour changes. */
 .sgs-shop-filters .range-bar {
 	background-image: linear-gradient(
 		to right,
@@ -2929,39 +2832,91 @@ select.orderby:focus-visible {
 	padding-inline: 10px;
 }
 
-/* (4) The handles themselves.
- * ⚠ An earlier pass styled `__range-input::-webkit-slider-thumb`. The inputs are
- * actually `class="min"` and `class="max"` — that selector matched NOTHING, which
- * is why the handles kept the browser's default black-bordered circle while the
- * bar beside them was brand pink. Targeted by element+type instead, so a future
- * WooCommerce class rename cannot silently un-style them again. */
-.sgs-shop-filters input[type="range"]::-webkit-slider-thumb {
-	appearance: none;
+/* (4) The handles and the bar, as one geometry.
+ *
+ * A look sets only these tokens; every size and offset below is derived from them:
+ *   --sgs-price-track       the bar's thickness
+ *   --sgs-price-thumb       the handle's visible diameter
+ *   --sgs-price-hit         the handle's pressable box, at least 24px (WCAG 2.5.8);
+ *                           the space around the visible circle is a transparent border
+ *   --sgs-price-fill        the handle's colour
+ *   --sgs-price-ring        the colour of the ring inside the handle's edge
+ *   --sgs-price-ring-width  that ring's width (0 for a plain dot)
+ *
+ * Centring: Chromium and Safari place a range thumb at the top of the input's track
+ * and move it only by its own margin, so the margin is computed from the track and
+ * the handle. WooCommerce's fixed `margin: -5px 0 0` centres only its own 16px
+ * handle; any other size sat off the bar. Firefox centres the thumb on its track by
+ * itself, so its track is given the bar's height and its thumb no margin.
+ *
+ * The inputs are WooCommerce's `class="min"` and `class="max"`, selected by element
+ * and type. The hover and focus selectors are listed because WooCommerce repaints
+ * the handle near-black with a white border in both states. */
+.sgs-shop-filters .wc-block-product-filter-price-slider__range {
+	--sgs-price-track: 4px;
+	--sgs-price-thumb: 16px;
+	--sgs-price-hit: max(24px, var(--sgs-price-thumb));
+	--sgs-price-fill: var(--wp--preset--color--primary);
+	--sgs-price-ring: var(--wp--preset--color--surface, #fff);
+	--sgs-price-ring-width: 2px;
+	height: var(--sgs-price-track);
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__range .range-bar,
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"] {
+	height: var(--sgs-price-track);
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"]::-webkit-slider-runnable-track {
+	height: var(--sgs-price-track);
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"]::-moz-range-track {
+	height: var(--sgs-price-track);
+	background: transparent;
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"]::-webkit-slider-thumb,
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"]::-webkit-slider-thumb:hover,
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"]:focus::-webkit-slider-thumb {
 	-webkit-appearance: none;
-	width: 18px;
-	height: 18px;
+	appearance: none;
+	box-sizing: border-box;
+	width: var(--sgs-price-hit);
+	height: var(--sgs-price-hit);
+	margin-top: calc((var(--sgs-price-track) - var(--sgs-price-hit)) / 2);
+	border: calc((var(--sgs-price-hit) - var(--sgs-price-thumb)) / 2) solid transparent;
 	border-radius: 50%;
-	background: var(--wp--preset--color--primary);
-	border: 2px solid var(--wp--preset--color--surface, #fff);
-	box-shadow: 0 0 0 1px var(--wp--preset--color--primary);
+	background: var(--sgs-price-fill) padding-box;
+	box-shadow: inset 0 0 0 1px var(--sgs-price-fill), inset 0 0 0 calc(var(--sgs-price-ring-width) + 1px) var(--sgs-price-ring);
 	cursor: pointer;
 	pointer-events: all;
 }
 
-.sgs-shop-filters input[type="range"]::-moz-range-thumb {
-	width: 18px;
-	height: 18px;
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"]::-moz-range-thumb,
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"]::-moz-range-thumb:hover,
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"]:focus::-moz-range-thumb {
+	box-sizing: border-box;
+	width: var(--sgs-price-hit);
+	height: var(--sgs-price-hit);
+	margin: 0;
+	border: calc((var(--sgs-price-hit) - var(--sgs-price-thumb)) / 2) solid transparent;
 	border-radius: 50%;
-	background: var(--wp--preset--color--primary);
-	border: 2px solid var(--wp--preset--color--surface, #fff);
-	box-shadow: 0 0 0 1px var(--wp--preset--color--primary);
+	background: var(--sgs-price-fill) padding-box;
+	box-shadow: inset 0 0 0 1px var(--sgs-price-fill), inset 0 0 0 calc(var(--sgs-price-ring-width) + 1px) var(--sgs-price-ring);
 	cursor: pointer;
 	pointer-events: all;
 }
 
-.sgs-shop-filters input[type="range"]:focus-visible::-webkit-slider-thumb {
+/* The focus ring hugs the visible circle, not the larger pressable box. */
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"]:focus-visible::-webkit-slider-thumb {
 	outline: 3px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 3px;
+	outline-offset: calc(2px - (var(--sgs-price-hit) - var(--sgs-price-thumb)) / 2);
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"]:focus-visible::-moz-range-thumb {
+	outline: 3px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline-offset: calc(2px - (var(--sgs-price-hit) - var(--sgs-price-thumb)) / 2);
 }
 
 /* (6) "Filters" is the panel's title and the group labels sit beneath it, but
@@ -3308,8 +3263,14 @@ select.orderby:focus-visible {
 	padding-inline: 4px;
 }
 
+.sgs-shop-price-thin .sgs-shop-filters .wc-block-product-filter-price-slider__range {
+	--sgs-price-track: 6px;
+	--sgs-price-thumb: 14px;
+	--sgs-price-fill: var(--wp--preset--color--text);
+	--sgs-price-ring-width: 0px;
+}
+
 .sgs-shop-price-thin .sgs-shop-filters .range-bar {
-	height: 6px;
 	background-color: var(--wp--preset--color--border);
 	border-radius: 3px;
 	background-image: linear-gradient(
@@ -3319,22 +3280,6 @@ select.orderby:focus-visible {
 		var(--wp--preset--color--text) var(--high, 100%),
 		transparent var(--high, 100%)
 	) !important; /* WooCommerce writes this gradient inline (8h) */
-}
-
-.sgs-shop-price-thin .sgs-shop-filters input[type="range"]::-webkit-slider-thumb {
-	width: 14px;
-	height: 14px;
-	border: 0;
-	background: var(--wp--preset--color--text);
-	box-shadow: none;
-}
-
-.sgs-shop-price-thin .sgs-shop-filters input[type="range"]::-moz-range-thumb {
-	width: 14px;
-	height: 14px;
-	border: 0;
-	background: var(--wp--preset--color--text);
-	box-shadow: none;
 }
 
 .sgs-shop-price-thin .sgs-shop-filters .wc-block-product-filter-price-slider__left,

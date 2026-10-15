@@ -8,13 +8,18 @@
  *   - with the sheet open on a phone, the page behind it does not scroll and its
  *     scrollbar is hidden, and both come back when the sheet closes;
  *   - the sheet's scroll region reaches the sheet's right edge, so its scrollbar sits
- *     where the page's was, and that scrollbar is styled exactly like the page's.
+ *     where the page's was, and that scrollbar is styled exactly like the page's;
+ *   - the price slider's handles are centred on its bar, in Chromium and Firefox
+ *     (read from the painted pixels: a range thumb has no box the DOM can measure);
+ *   - choosing a filter and removing it again leaves the panel built exactly as it
+ *     was (WooCommerce re-renders the panel on each choice and the groups, counts
+ *     and segmented rows are rebuilt; none may be lost or doubled).
  *
  * Usage:
  *   node scripts/qa/probe-shop-filters.mjs --url https://<host>/shop/ [--url ...]
  * Exits 1 when any check fails, printing each check with its measured values.
  */
-import { chromium } from 'playwright';
+import { chromium, firefox } from 'playwright';
 
 const urls = [];
 for ( let i = 2; i < process.argv.length; i++ ) {
@@ -48,11 +53,135 @@ function readFill() {
 	return { tag: dialog.tagName, contentWidth: Math.round( contentWidth ), groups };
 }
 
+/**
+ * The panel's built structure: each group with its heading text and the classes
+ * of its direct children, plus anything loose between the groups.
+ */
+function readStructure() {
+	const dialog = document.getElementById( 'sgs-shop-filters' );
+	const content = dialog.querySelector( 'details.sgs-shop-filters__group' )?.parentElement;
+	if ( ! content ) {
+		return '';
+	}
+	return Array.from( content.children ).map( ( el ) => {
+		if ( el.matches( 'details.sgs-shop-filters__group' ) ) {
+			const heading = el.querySelector( '.sgs-shop-filters__group-heading' );
+			const parts = Array.from( el.children ).map( ( c ) => c.className.split( ' ' )[ 0 ] || c.tagName.toLowerCase() );
+			return `[${ heading ? heading.textContent.trim() : '?' }: ${ parts.join( ',' ) }]`;
+		}
+		return el.className.split( ' ' )[ 0 ] || el.tagName.toLowerCase();
+	} ).join( ' ' );
+}
+
+/** Chooses the first option of the first group that offers one, as a shopper would. */
+async function chooseFirstFilter( page ) {
+	const target = await page.evaluateHandle( () => {
+		const dialog = document.getElementById( 'sgs-shop-filters' );
+		for ( const group of dialog.querySelectorAll( 'details.sgs-shop-filters__group' ) ) {
+			group.open = true;
+			const option = group.querySelector( '.sgs-shop-filters__segment[aria-pressed="false"], .wc-block-product-filter-checkbox-list__label, .wc-block-product-filter-chips__item' );
+			if ( option && option.getBoundingClientRect().width > 0 ) {
+				return option;
+			}
+		}
+		return null;
+	} );
+	const label = await target.evaluate( ( el ) => el && el.textContent.trim() );
+	if ( label ) {
+		await target.click();
+	}
+	return label;
+}
+
+/**
+ * Vertical centres of the left slider handle and of the bar, in CSS px, read from
+ * screenshots: a pixel counts as painted when it differs from the panel colour in
+ * the crop's top-left corner.
+ */
+async function readSliderCentres( page ) {
+	const found = await page.evaluate( () => {
+		const range = document.querySelector( '#sgs-shop-filters .wc-block-product-filter-price-slider__range' );
+		if ( ! range ) {
+			return false;
+		}
+		range.closest( 'details' )?.setAttribute( 'open', '' );
+		// Instant: the theme's smooth scrolling would move the slider after it is measured.
+		range.scrollIntoView( { block: 'center', behavior: 'instant' } );
+		return true;
+	} );
+	if ( ! found ) {
+		return null;
+	}
+	await page.waitForTimeout( 600 );
+	const box = await page.evaluate( () => {
+		const r = document.querySelector( '#sgs-shop-filters .wc-block-product-filter-price-slider__range' ).getBoundingClientRect();
+		return { x: r.left, y: r.top, width: r.width, height: r.height };
+	} );
+	const pad = 24;
+	const handleClip = { x: Math.max( 0, box.x - 8 ), y: box.y - pad, width: Math.min( 60, box.width ), height: box.height + pad * 2 };
+	const barClip = { x: Math.round( box.x + box.width / 2 ), y: box.y - pad, width: 1, height: box.height + pad * 2 };
+	const handlePng = ( await page.screenshot( { clip: handleClip } ) ).toString( 'base64' );
+	const barPng = ( await page.screenshot( { clip: barClip } ) ).toString( 'base64' );
+	// The bar column's background is read from the handle crop: a 1px column has no clear corner.
+	return page.evaluate( async ( [ handleB64, barB64, offset ] ) => {
+		const load = ( b64 ) => new Promise( ( resolve ) => {
+			const img = new Image();
+			img.onload = () => {
+				const canvas = document.createElement( 'canvas' );
+				canvas.width = img.width;
+				canvas.height = img.height;
+				const ctx = canvas.getContext( '2d' );
+				ctx.drawImage( img, 0, 0 );
+				resolve( { w: img.width, h: img.height, data: ctx.getImageData( 0, 0, img.width, img.height ).data } );
+			};
+			img.src = 'data:image/png;base64,' + b64;
+		} );
+		const handle = await load( handleB64 );
+		const bar = await load( barB64 );
+		const at = ( im, x, y ) => Array.from( im.data.slice( ( y * im.w + x ) * 4, ( y * im.w + x ) * 4 + 3 ) );
+		const bg = at( handle, 0, 0 );
+		const painted = ( p ) => Math.abs( p[ 0 ] - bg[ 0 ] ) + Math.abs( p[ 1 ] - bg[ 1 ] ) + Math.abs( p[ 2 ] - bg[ 2 ] ) > 60;
+		// The unbroken painted run in column x that passes through row y.
+		const run = ( im, x, y ) => {
+			if ( ! painted( at( im, x, y ) ) ) {
+				return null;
+			}
+			let first = y;
+			let last = y;
+			while ( first > 0 && painted( at( im, x, first - 1 ) ) ) {
+				first--;
+			}
+			while ( last < im.h - 1 && painted( at( im, x, last + 1 ) ) ) {
+				last++;
+			}
+			return { centre: ( first + last + 1 ) / 2, size: last - first + 1 };
+		};
+		// The bar's own box starts at row `offset` of each crop.
+		const barRow = offset + 1;
+		const barRun = run( bar, 0, barRow );
+		// The handle's centre column is the one with the tallest run through the bar.
+		let tallest = null;
+		for ( let x = 0; x < handle.w; x++ ) {
+			const r = run( handle, x, barRow );
+			if ( r && ( ! tallest || r.size > tallest.size ) ) {
+				tallest = r;
+			}
+		}
+		return {
+			handleCentre: tallest && tallest.centre - offset,
+			handleSize: tallest && tallest.size,
+			barCentre: barRun && barRun.centre - offset,
+			barSize: barRun && barRun.size,
+			background: bg.join( ',' ),
+		};
+	}, [ handlePng, barPng, pad ] );
+}
+
 function check( results, name, pass, detail ) {
 	results.push( { name, pass: !! pass, detail } );
 }
 
-async function probe( browser, url ) {
+async function probe( browser, url, browserName ) {
 	const results = [];
 	const page = await browser.newPage();
 	const errors = [];
@@ -68,6 +197,27 @@ async function probe( browser, url ) {
 		const narrow = desktop.groups.filter( ( w ) => w < desktop.contentWidth - TOLERANCE_PX );
 		check( results, 'desktop: filter groups fill the panel width', ! narrow.length, desktop );
 	}
+
+	const centres = await readSliderCentres( page );
+	if ( centres ) {
+		const measured = null !== centres.handleCentre && null !== centres.barCentre;
+		check( results, 'desktop: price slider handles centred on the bar', measured && Math.abs( centres.handleCentre - centres.barCentre ) <= 1, centres );
+	}
+	// Firefox runs the slider check only; the rest is engine-independent DOM and script.
+	if ( 'chromium' !== browserName ) {
+		await page.close();
+		return results;
+	}
+
+	// Choose a filter, then remove it: WooCommerce re-renders the panel each time.
+	await page.goto( fresh, { waitUntil: 'networkidle', timeout: 60000 } );
+	const built = await page.evaluate( readStructure );
+	const chosen = await chooseFirstFilter( page );
+	await page.waitForTimeout( 3000 );
+	await page.evaluate( () => document.querySelector( '#sgs-shop-filters .wc-block-product-filter-removable-chips__item button' )?.click() );
+	await page.waitForTimeout( 3000 );
+	const rebuilt = await page.evaluate( readStructure );
+	check( results, 'desktop: choosing then removing a filter leaves the panel built as it was', chosen && built === rebuilt, { chosen, before: built, after: rebuilt } );
 
 	// Phone: the modal bottom sheet.
 	await page.setViewportSize( PHONE );
@@ -126,17 +276,19 @@ async function probe( browser, url ) {
 	return results;
 }
 
-const browser = await chromium.launch();
 let failed = 0;
-for ( const url of urls ) {
-	console.log( `\n${ url }` );
-	for ( const r of await probe( browser, url ) ) {
-		if ( ! r.pass ) {
-			failed++;
+for ( const [ browserName, engine ] of [ [ 'chromium', chromium ], [ 'firefox', firefox ] ] ) {
+	const browser = await engine.launch();
+	for ( const url of urls ) {
+		console.log( `\n${ url } (${ browserName })` );
+		for ( const r of await probe( browser, url, browserName ) ) {
+			if ( ! r.pass ) {
+				failed++;
+			}
+			console.log( `  ${ r.pass ? 'PASS' : 'FAIL' }  ${ r.name }${ r.pass ? '' : '  ' + JSON.stringify( r.detail ) }` );
 		}
-		console.log( `  ${ r.pass ? 'PASS' : 'FAIL' }  ${ r.name }${ r.pass ? '' : '  ' + JSON.stringify( r.detail ) }` );
 	}
+	await browser.close();
 }
-await browser.close();
 console.log( failed ? `\n[shop-filters] FAIL: ${ failed } check(s) failed` : '\n[shop-filters] PASS' );
 process.exit( failed ? 1 : 0 );
