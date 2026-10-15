@@ -2847,7 +2847,8 @@ select.orderby:focus-visible {
  * and move it only by its own margin, so the margin is computed from the track and
  * the handle. WooCommerce's fixed `margin: -5px 0 0` centres only its own 16px
  * handle; any other size sat off the bar. Firefox centres the thumb on its track by
- * itself, so its track is given the bar's height and its thumb no margin.
+ * itself, so its track is given the bar's height, its thumb no margin, and
+ * WooCommerce's fixed Firefox nudge loses its vertical part (below).
  *
  * The inputs are WooCommerce's `class="min"` and `class="max"`, selected by element
  * and type. The hover and focus selectors are listed because WooCommerce repaints
@@ -2906,6 +2907,16 @@ select.orderby:focus-visible {
 	box-shadow: inset 0 0 0 1px var(--sgs-price-fill), inset 0 0 0 calc(var(--sgs-price-ring-width) + 1px) var(--sgs-price-ring);
 	cursor: pointer;
 	pointer-events: all;
+}
+
+/* WooCommerce also nudges each Firefox handle 2px down (its fix for its own 1px
+ * track); the geometry above already centres it, so only the sideways nudge stays. */
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"].min::-moz-range-thumb {
+	transform: translateX(-2px);
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"].max::-moz-range-thumb {
+	transform: translateX(2px);
 }
 
 /* The focus ring hugs the visible circle, not the larger pressable box. */
