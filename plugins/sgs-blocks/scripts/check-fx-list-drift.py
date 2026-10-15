@@ -65,7 +65,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from fx_drift import runtime_reads  # noqa: E402  (FR-38A-48; self-test only until M5.5)
+from fx_drift import runtime_reads  # noqa: E402  (FR-38A-48, invariant I10)
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -861,6 +861,7 @@ _INVARIANTS = {
     # from SHIPPED_EFFECTS is unreachable from the editor; an effect in SHIPPED_EFFECTS
     # but not in the registry cannot load at runtime.
     "I9": "the motion registry (@sgs/fx-* modules) agrees with SHIPPED_EFFECTS (editor)",
+    "I10": "every effect parameter (its x-sgs-field dataAttr or cssProperty) is read by that effect's runtime (FR-38A-48)",
 }
 
 
@@ -1230,6 +1231,9 @@ def main() -> int:
         # and reporting "0 violations" here would be a lie rather than an observation.
         return 1
 
+    violations += [Violation("I10", line, "Read the parameter in the effect's runtime file by the name its schema field gives, "
+                             "or list the effect in motion-gate-allowlist.json with the unit that builds it.")
+                   for line in runtime_reads.gate_findings()]
     _print_report(src, violations)
 
     if not args.check:

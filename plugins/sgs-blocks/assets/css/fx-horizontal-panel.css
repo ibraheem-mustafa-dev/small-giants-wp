@@ -91,7 +91,7 @@
  * replacing it and the content would be stranded.
  */
 @media ( min-width: 768px ) and ( prefers-reduced-motion: no-preference ) {
-	.sgs-js [data-sgs-fx~="horizontal-panel"] {
+	.sgs-js [data-sgs-fx~="horizontal-panel"]:not( [data-sgs-fx-horizontal-panel-breakpoint="desktop"] ) {
 		/*
 		 * ⛔ D456 — THIS COMPUTES TO `hidden`, NOT `clip`, AND THAT IS LOAD-BEARING.
 		 * DO NOT "fix" it to clip on both axes.
@@ -125,4 +125,92 @@
 		overflow-x: clip;
 		scroll-snap-type: none;
 	}
+}
+
+/*
+ * The pin breakpoint (`data-sgs-fx-horizontal-panel-breakpoint`, read by the module as the same three widths): the
+ * tablet default and `mobile` hand over from 768px (the rule above; `mobile` also below it), `desktop` from 1024px.
+ * Each rule applies only where the module runs, so the native scroller is never switched off with nothing replacing
+ * it. The overflow-x note (D456) above applies to all three.
+ */
+@media ( min-width: 1024px ) and ( prefers-reduced-motion: no-preference ) {
+	.sgs-js [data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-breakpoint="desktop"] {
+		overflow-x: clip;
+		scroll-snap-type: none;
+	}
+}
+
+@media ( max-width: 767.98px ) and ( prefers-reduced-motion: no-preference ) {
+	.sgs-js [data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-breakpoint="mobile"] {
+		overflow-x: clip;
+		scroll-snap-type: none;
+	}
+}
+
+/*
+ * Below the pin breakpoint the default is the snap row above. `below-mode="static"` stacks the panels instead: the
+ * host stops scrolling and the row becomes a column. Reduced motion above the breakpoint keeps the snap row.
+ */
+@media ( max-width: 767.98px ) {
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-below-mode="static"]:not( [data-sgs-fx-horizontal-panel-breakpoint="mobile"] ) {
+		overflow: visible;
+		scroll-snap-type: none;
+	}
+
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-below-mode="static"]:not( [data-sgs-fx-horizontal-panel-breakpoint="mobile"] ) > [data-sgs-fx-track],
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-below-mode="static"]:not( [data-sgs-fx-horizontal-panel-breakpoint="mobile"] ) > [data-sgs-fx-track] > .wp-block-sgs-container {
+		display: flex;
+		flex-direction: column;
+		width: auto;
+	}
+
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-below-mode="static"]:not( [data-sgs-fx-horizontal-panel-breakpoint="mobile"] ) > [data-sgs-fx-track] > *,
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-below-mode="static"]:not( [data-sgs-fx-horizontal-panel-breakpoint="mobile"] ) > [data-sgs-fx-track] > .wp-block-sgs-container > * {
+		flex: 0 1 auto;
+		width: 100%;
+	}
+}
+
+@media ( min-width: 768px ) and ( max-width: 1023.98px ) {
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-below-mode="static"][data-sgs-fx-horizontal-panel-breakpoint="desktop"] {
+		overflow: visible;
+		scroll-snap-type: none;
+	}
+
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-below-mode="static"][data-sgs-fx-horizontal-panel-breakpoint="desktop"] > [data-sgs-fx-track],
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-below-mode="static"][data-sgs-fx-horizontal-panel-breakpoint="desktop"] > [data-sgs-fx-track] > .wp-block-sgs-container {
+		display: flex;
+		flex-direction: column;
+		width: auto;
+	}
+
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-below-mode="static"][data-sgs-fx-horizontal-panel-breakpoint="desktop"] > [data-sgs-fx-track] > *,
+	[data-sgs-fx~="horizontal-panel"][data-sgs-fx-horizontal-panel-below-mode="static"][data-sgs-fx-horizontal-panel-breakpoint="desktop"] > [data-sgs-fx-track] > .wp-block-sgs-container > * {
+		flex: 0 1 auto;
+		width: 100%;
+	}
+}
+
+/*
+ * Proximity focus (FR-38A-39) and the active panel (FR-38A-38). The module marks each panel `data-sgs-fx-panel`
+ * while it runs and writes `--sgs-focus-s` and `--sgs-focus-op` on it; with the parameter on, the panel applies them
+ * through the same `scale` and `opacity` properties `motion.css` composes (a panel that holds its own scale or
+ * opacity channel, `data-sgs-mc`, takes the composed rule there instead, so the focus value multiplies with its
+ * other motion rather than replacing it). With the parameter off nothing is written and nothing applies.
+ *
+ * `--sgs-fx-active` is 1 on the active panel and 0 elsewhere, inherited by its parts, so a part restyles through
+ * the active state with no script of its own: `color: color-mix( in srgb, var( --accent ) calc( var( --sgs-fx-active ) * 100% ), grey )`.
+ */
+@property --sgs-fx-active { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+[data-sgs-fx-horizontal-panel-proximity-focus="true"] [data-sgs-fx-panel]:not( [data-sgs-mc~="scale"] ) {
+	scale: var( --sgs-focus-s );
+}
+
+[data-sgs-fx-horizontal-panel-proximity-focus="true"] [data-sgs-fx-panel]:not( [data-sgs-mc~="opacity"] ) {
+	opacity: var( --sgs-focus-op );
+}
+
+[data-sgs-fx-panel-active] {
+	--sgs-fx-active: 1;
 }

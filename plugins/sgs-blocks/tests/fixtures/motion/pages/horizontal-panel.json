@@ -1,0 +1,115 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"minHeight": {
+				"desktop": "90vh",
+				"mobile": "60vh"
+			},
+			"className": "m55-before"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Scroll to the horizontal track",
+					"level": "h2"
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/timeline",
+		"attributes": {
+			"orientation": "horizontal",
+			"scrollEffect": "pinned-horizontal",
+			"className": "m55-hp",
+			"entries": [
+				{
+					"date": "1990",
+					"title": "Milestone 1",
+					"description": "<p>Panel 1 of five.</p>",
+					"icon": "",
+					"image": 0
+				},
+				{
+					"date": "1998",
+					"title": "Milestone 2",
+					"description": "<p>Panel 2 of five.</p>",
+					"icon": "",
+					"image": 0
+				},
+				{
+					"date": "2006",
+					"title": "Milestone 3",
+					"description": "<p>Panel 3 of five.</p>",
+					"icon": "",
+					"image": 0
+				},
+				{
+					"date": "2014",
+					"title": "Milestone 4",
+					"description": "<p>Panel 4 of five.</p>",
+					"icon": "",
+					"image": 0
+				},
+				{
+					"date": "2022",
+					"title": "Milestone 5",
+					"description": "<p>Panel 5 of five.</p>",
+					"icon": "",
+					"image": 0
+				}
+			],
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"effects": [
+							{
+								"id": "horizontal-panel",
+								"effect": "horizontal-panel",
+								"values": {
+									"smoothing": 0,
+									"pinLength": "70vh",
+									"pinTail": "40vh",
+									"hold": 0,
+									"breakpoint": "tablet",
+									"belowMode": "snap",
+									"progressOutput": true,
+									"activeState": true,
+									"proximityFocus": true,
+									"focusScale": 1,
+									"edgeScale": 0.94,
+									"focusOpacity": 1,
+									"edgeOpacity": 0.55
+								}
+							}
+						]
+					}
+				}
+			}
+		}
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"minHeight": {
+				"desktop": "90vh",
+				"mobile": "60vh"
+			},
+			"className": "m55-after"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Scroll to the horizontal track",
+					"level": "h2"
+				}
+			}
+		]
+	}
+]

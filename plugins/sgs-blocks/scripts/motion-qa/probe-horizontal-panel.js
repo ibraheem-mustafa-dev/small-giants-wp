@@ -26,6 +26,10 @@
  *      defect survived earlier fixes. The assertion below is on the FINAL
  *      value against the REQUIRED value.
  *
+ * The pin length, linear mapping, hold, smoothing, focus, progress and snap-row checks of FR-38A-38 and
+ * FR-38A-39 live in `probe-horizontal-panel-params.mjs` (fixture `horizontal-panel.json`); this probe keeps the
+ * landing-position assertion, which holds at any stored pin length, tail or hold.
+ *
  * USAGE — paste the exported body into a Playwright/CDP `evaluate` call, or
  * run via the runner in this directory. Returns a verdict object; `pass` is
  * the gate.

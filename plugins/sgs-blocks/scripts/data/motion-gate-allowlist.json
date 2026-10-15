@@ -4,5 +4,17 @@
     "pattern": "transition.slow",
     "reason": "transition.slow has no stylesheet reader, preset reference or field-type offer (transition.fast and .medium do). M5.18 sweeps motion literals onto tokens: it gives transition.slow a reader if a literal equals it, otherwise it retires the token from theme.json and the nine snapshots.",
     "delete_in_unit": "M5.18"
+  },
+  {
+    "gate": "fx-list-drift",
+    "pattern": "cursor-field",
+    "reason": "The cursor-field rest position, falloff and layer opacity parameters (restX, restY, falloff, layerOpacity) are schema fields no cursor-field runtime reads (M5.11 built the image-reveal type and left these, which predate it); M5.Z reads or retires them.",
+    "delete_in_unit": "M5.Z"
+  },
+  {
+    "gate": "fx-list-drift",
+    "pattern": "magnet",
+    "reason": "The magnet moving-part parameter (data-sgs-fx-magnet-moving-part) is not read: M5.4 built the engage mode and pull model, but moving a part needs the part-to-selector contract in the runtime; M5.Z builds or retires it.",
+    "delete_in_unit": "M5.Z"
   }
 ]
