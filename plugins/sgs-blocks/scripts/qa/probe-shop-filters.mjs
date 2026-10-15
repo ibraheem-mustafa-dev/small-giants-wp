@@ -118,7 +118,7 @@ async function readSliderCentres( page ) {
 		return { x: r.left, y: r.top, width: r.width, height: r.height };
 	} );
 	const pad = 24;
-	const handleClip = { x: Math.max( 0, box.x - 8 ), y: box.y - pad, width: Math.min( 60, box.width ), height: box.height + pad * 2 };
+	const handleClip = { x: Math.max( 0, box.x - 8 ), y: box.y - pad, width: box.width + 16, height: box.height + pad * 2 };
 	const barClip = { x: Math.round( box.x + box.width / 2 ), y: box.y - pad, width: 1, height: box.height + pad * 2 };
 	const handlePng = ( await page.screenshot( { clip: handleClip } ) ).toString( 'base64' );
 	const barPng = ( await page.screenshot( { clip: barClip } ) ).toString( 'base64' );
@@ -154,17 +154,45 @@ async function readSliderCentres( page ) {
 			while ( last < im.h - 1 && painted( at( im, x, last + 1 ) ) ) {
 				last++;
 			}
-			return { centre: ( first + last + 1 ) / 2, size: last - first + 1 };
+			return { first, last, centre: ( first + last + 1 ) / 2, size: last - first + 1 };
 		};
 		// The bar's own box starts at row `offset` of each crop.
 		const barRow = offset + 1;
 		const barRun = run( bar, 0, barRow );
 		// The handle's centre column is the one with the tallest run through the bar.
+		// A handle column has paint above or below the bar's band (a handle may carry
+		// a ring in the panel colour, so its run through the bar can be short); a
+		// column painted only on the bar's rows is bar.
 		let tallest = null;
+		let firstHandle = -1;
+		let lastHandle = -1;
+		let firstPainted = -1;
+		let lastPainted = -1;
 		for ( let x = 0; x < handle.w; x++ ) {
 			const r = run( handle, x, barRow );
 			if ( r && ( ! tallest || r.size > tallest.size ) ) {
 				tallest = r;
+			}
+		}
+		// Only rows a handle can reach count, so the price boxes below never do.
+		const reach = tallest ? Math.ceil( tallest.size / 2 ) + 3 : 0;
+		const outsideBand = ( x ) => {
+			for ( let y = Math.max( 0, barRow - reach ); y <= Math.min( handle.h - 1, barRow + reach ); y++ ) {
+				if ( barRun && ( y < barRun.first - 1 || y > barRun.last + 1 ) && painted( at( handle, x, y ) ) ) {
+					return true;
+				}
+			}
+			return false;
+		};
+		for ( let x = 0; x < handle.w; x++ ) {
+			const r = run( handle, x, barRow );
+			if ( outsideBand( x ) ) {
+				firstHandle = firstHandle < 0 ? x : firstHandle;
+				lastHandle = x;
+			}
+			if ( r ) {
+				firstPainted = firstPainted < 0 ? x : firstPainted;
+				lastPainted = x;
 			}
 		}
 		return {
@@ -172,6 +200,9 @@ async function readSliderCentres( page ) {
 			handleSize: tallest && tallest.size,
 			barCentre: barRun && barRun.centre - offset,
 			barSize: barRun && barRun.size,
+			// Bar showing beyond the outer edge of the end handles, in px (0 = none).
+			barPastLeft: firstHandle < 0 ? null : firstHandle - firstPainted,
+			barPastRight: lastHandle < 0 ? null : lastPainted - lastHandle,
 			background: bg.join( ',' ),
 		};
 	}, [ handlePng, barPng, pad ] );
@@ -202,6 +233,9 @@ async function probe( browser, url, browserName ) {
 	if ( centres ) {
 		const measured = null !== centres.handleCentre && null !== centres.barCentre;
 		check( results, 'desktop: price slider handles centred on the bar', measured && Math.abs( centres.handleCentre - centres.barCentre ) <= 1, centres );
+		// At the default (widest) range the bar must end under the handles, never past them.
+		// 1px allows for a circle's anti-aliased outermost column.
+		check( results, 'desktop: price slider bar ends under the end handles', centres.barPastLeft !== null && centres.barPastLeft <= 1 && centres.barPastRight !== null && centres.barPastRight <= 1, centres );
 	}
 	// Firefox runs the slider check only; the rest is engine-independent DOM and script.
 	if ( 'chromium' !== browserName ) {

@@ -2047,7 +2047,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	margin-top: var(--wp--preset--spacing--20, 0.75rem);
 }
 
-/* ── Price slider ── (its handles and bar: section 8i (3)) */
+/* ── Price slider ── (its handles and bar: section 8i (4)) */
 .sgs-shop-filters .wc-block-product-filter-price-slider {
 	padding: 0.25rem 0 0.5rem;
 }
@@ -2824,14 +2824,6 @@ select.orderby:focus-visible {
  * problem, not the specificity — so the original was corrected in place and this
  * one deleted rather than out-specified. */
 
-/* (3) The slider's handles escaped the panel. The track spans the full content
- * width, and each handle is a 20px circle CENTRED on the track's end — so half a
- * handle sat outside the box at each end. Insetting the slider by the handle's
- * radius puts both circles fully inside without shortening the usable range. */
-.sgs-shop-filters .wc-block-product-filter-price-slider {
-	padding-inline: 10px;
-}
-
 /* (4) The handles and the bar, as one geometry.
  *
  * A look sets only these tokens; every size and offset below is derived from them:
@@ -2909,14 +2901,30 @@ select.orderby:focus-visible {
 	pointer-events: all;
 }
 
-/* WooCommerce also nudges each Firefox handle 2px down (its fix for its own 1px
- * track); the geometry above already centres it, so only the sideways nudge stays. */
-.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"].min::-moz-range-thumb {
-	transform: translateX(-2px);
+/* Ends: a thumb travels inside its input, so at the lowest and highest price its
+ * centre sits half the pressable box in from each end. The bar, and WooCommerce's
+ * faint unfilled track (`__range::before`), are inset by that much, so each end
+ * handle's centre sits on the bar's end and no bar shows past it. WooCommerce's
+ * fill stops (--low, --high) are fractions of that same travel, so they still line
+ * up. WooCommerce's fixed nudges on the end handles (2px out in both engines, 2px
+ * down in Firefox, fixes for its own track) are cancelled; this geometry places them. */
+.sgs-shop-filters .wc-block-product-filter-price-slider__range .range-bar {
+	margin-inline: calc(var(--sgs-price-hit) / 2);
 }
 
+.sgs-shop-filters .wc-block-product-filter-price-slider__range::before {
+	left: calc(var(--sgs-price-hit) / 2);
+	width: calc(100% - var(--sgs-price-hit));
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"].min::-webkit-slider-thumb,
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"].max::-webkit-slider-thumb {
+	margin-left: 0;
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"].min::-moz-range-thumb,
 .sgs-shop-filters .wc-block-product-filter-price-slider__range input[type="range"].max::-moz-range-thumb {
-	transform: translateX(2px);
+	transform: none;
 }
 
 /* The focus ring hugs the visible circle, not the larger pressable box. */
@@ -3267,13 +3275,7 @@ select.orderby:focus-visible {
 
 /* Price slider: a 6px round-ended track in the border colour, the chosen range in
    the text colour, 14px round handles at both ends and the prices as small plain
-   text. Each handle paints 2px past its input, so the track sits 4px in on both
-   sides: flush right, the filter panel's scroll area clipped the right handle to
-   12px in the drawer and the desktop column. */
-.sgs-shop-price-thin .sgs-shop-filters .wc-block-product-filter-price-slider {
-	padding-inline: 4px;
-}
-
+   text (sizes as tokens; the shared geometry is section 8i (4)). */
 .sgs-shop-price-thin .sgs-shop-filters .wc-block-product-filter-price-slider__range {
 	--sgs-price-track: 6px;
 	--sgs-price-thumb: 14px;
