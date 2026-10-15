@@ -78,11 +78,11 @@ Open owed items:
 - **Track L: closed** (handoff `36a319bb0`). Built M5.8 (closed; the scroll-progress probe runs in every deploy, `4885fbca6`), M5.12 to M5.15, M5.16a-c and M6.3, with council fixes `dd5abde72` and `b98ddd044`. Open: live fixtures for FR-38A-37, 44 and 52; a `bgLottie` mapper (needed before M6.5).
 - **Track S: closed.** Built all nine units (M4.1 to M4.6, M6.2, M6.4, M5.17; the `@sgs/motion-state-loader` makes open and state motion play live) with council fixes `a62541995`, `7640bcd95`, `f5d5ccc10` and `94f12c84d`. sandybrown runs `9ec0b8064` (drawer probe 5276: 15 pass, 12 controls red); indus-test runs `fb5145ee9`, where Gate 5b measured stored timings in three engines. Open: 15 items in its plan bullet (chiefly the `closeOrder` `together` schema value, the `tag_children` raw-text depth bug, form-states live acceptance, the buybox `main-photo` part). Next: a Track S follow-up session (prompt with Bean) closes items 1, 14 and 9, then M6.5's prerequisites.
 - **Track E: code done**, with open items in its plan bullet, chiefly recalibrating six live probes for Lenis smooth scroll. Its QC council's fixes 1, 2, 3 and 5 are on main (`44372db1c`, whose message mislabels them as Track S's); fix 4 (magnet transition timing) landed with Track I's canvas twin in `daf70362f`, parity green.
-- **Track I: in progress** (session small-giants-wp-b5); M3.7 is live-proven (`5a8cb0e39`).
+- **Track I: panels built, Gate 5 not yet passed.** On main: M3.2 to M3.8 and M3.12 (all three motion panels, canvas preview, final state and thumbnails; FR-38A-28 built); M3.9 frontend live (page 5244); Bean's first Gate 5 run found defects, fixed in `daf70362f` (Target row, product-card grid delegation, Apply entrance to children, Card hovered). Open: the Gate 5 re-check, M3.9's editor round trip, M3.10 (page 5287 empty), M3.11, the hover ring: the plan's "Track I carried to the next session (2026-10-15)" bullet.
 
 **Blockers:** none. **Bean decisions:** none open. Ruled 2026-10-15: Gate 5b's glance passed; stored brand-strip and trust-bar marquees wait for M6.5 (static rows until then); the all-effects stress page's weight is accepted.
 
-**Resume from:** the Track S follow-up prompt; Track L's next prompt, `prompts/2026-10-15-spec38a-track-l-live-fixtures.md`; Track I finishing its units.
+**Resume from:** the Track S follow-up prompt; Track L's next prompt, `prompts/2026-10-15-spec38a-track-l-live-fixtures.md`; Track I's carried-items bullet in `plans/2026-10-12-spec38a-motion-build.md`, starting with an agent-run Gate 5 re-check.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
