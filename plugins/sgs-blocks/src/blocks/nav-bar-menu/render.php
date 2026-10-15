@@ -1054,6 +1054,7 @@ if ( $sgs_nm_motion_model ) {
 	$sgs_nm_panel_out  = $sgs_nm_timing['exit_ms'];
 	$sgs_nm_panel_ease = $sgs_nm_timing['easing'];
 	$sgs_nm_stagger    = 0;
+	$sgs_nm_panel_vars = '';
 	$css              .= $sgs_nm_panels['css'] ?? '';
 } else {
 	$sgs_nm_panel_in    = sgs_flat_duration_ms( $attributes['submenuAnimationDuration'] ?? 180, 180 );
