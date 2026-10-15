@@ -100,11 +100,13 @@ require_once $sgs_blocks_dir . '/includes/trustpilot-helpers.php';
 require_once $sgs_blocks_dir . '/includes/helpers-link.php';
 
 // Real SGS code: sgs/gallery, sgs/card-grid, sgs/timeline and the nav blocks call Sgs_Motion_Loop_Delays (and through it
-// the stagger function and the emitter's per-device writer), which the plugin bootstrap loads through
-// includes/motion-loader.php rather than the render.php itself.
+// the stagger function and the emitter's per-device writer), and sgs/post-grid calls Sgs_Motion_Loop_Inherit for the
+// cards' inherited entrance, which the plugin bootstrap loads through includes/motion-loader.php rather than the
+// render.php itself.
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-stagger.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-emitter.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-loop-delays.php';
+require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-loop-inherit.php';
 
 /**
  * Parse --flag value / --flag=value style CLI args.

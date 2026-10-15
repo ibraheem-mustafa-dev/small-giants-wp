@@ -207,7 +207,8 @@ defined( 'ABSPATH' ) || exit;
 		endforeach;
 	}
 
-	$wc_cards_html = (string) ob_get_clean();
+	// The cards share one motion scope (identical motion), so the editor preview prints its style tag once.
+	$wc_cards_html = \SGS\Blocks\Motion\Sgs_Motion_Delegate::single_scope_styles( (string) ob_get_clean() );
 
 	// Item-array stagger (Spec 38A FR-38A-26) on the delegated cards: each card's
 	// root (product-card's wrapper class) gets its loop index and one scoped

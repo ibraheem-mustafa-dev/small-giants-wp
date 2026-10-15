@@ -77,6 +77,16 @@ export function setTrustedServerHtml( container, html ) {
 }
 
 /**
+ * Tell the motion scripts that cards were added under an element (Spec 38A §8): the reveal and keyframes modules arm
+ * the entrances of the fetched cards, which the server stamped with the first page's inherited entrance.
+ *
+ * @param {Element} container The element now holding the fetched cards.
+ */
+export function scanMotion( container ) {
+	container.dispatchEvent( new CustomEvent( 'sgs-motion:scan', { bubbles: true } ) );
+}
+
+/**
  * After a failed load: the client's own error message (errorMessage) when set,
  * otherwise the posts that were showing before the load, put back unchanged.
  *
@@ -139,6 +149,8 @@ export async function fetchPosts( queryData, page, filterCategory ) {
 		// images carry the same media-atom marker class as the initial
 		// render's — see the $sgs_pg_uid comment in class-post-grid-rest.php.
 		uid:                   queryData.uid,
+		// Spec 38A §8: the entrance the first page's cards inherit, stamped by the route on the fetched cards.
+		itemMotion:            queryData.itemMotion ? JSON.stringify( queryData.itemMotion ) : undefined,
 	};
 
 	// Filter button overrides the block's base category setting.

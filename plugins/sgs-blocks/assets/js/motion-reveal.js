@@ -10,6 +10,8 @@
  * is revealed too when the page cannot scroll far enough for its top to cross the start line. An element with no layout box, zero size or a position outside the horizontal viewport is left to the observers.
  * With reduced motion on, the class is removed and every observer released; a change of that preference mid-session
  * re-arms or releases them. Without IntersectionObserver the class is never added, so everything stays visible.
+ * Elements printed after load (a post-grid's load more) are armed the same way when their block fires
+ * `sgs-motion:scan` on the element holding them (Spec 38A §8): one in view is revealed at once, the rest are observed.
  */
 ( ( d, w ) => {
 	if ( ! w.IntersectionObserver ) {
@@ -25,21 +27,15 @@
 				Object.keys( obs ).forEach( ( k ) => obs[ k ].unobserve( e.target ) );
 			}
 		} );
-	const sync = () => {
-		Object.keys( obs ).forEach( ( k ) => obs[ k ].disconnect() );
-		obs = {};
-		if ( mq.matches ) {
-			root.classList.remove( 'sgs-motion-ready' );
-			return;
-		}
-		const rows = [ ...d.querySelectorAll( '[data-sgs-me~="scroll"]:not([data-sgs-in])' ) ].map( ( el ) => {
+	const pending = '[data-sgs-me~="scroll"]:not([data-sgs-in])';
+	const measure = ( list ) =>
+		list.map( ( el ) => {
 			const s = parseFloat( w.getComputedStyle( el ).getPropertyValue( '--sgs-me-start' ) );
 			const r = el.getBoundingClientRect();
 			const seen = el.getClientRects().length && r.width && r.height && r.right > 0 && r.left < w.innerWidth;
 			return [ el, s >= 0 ? s : 6, r, seen && r.top < w.innerHeight * ( 1 - ( s >= 0 ? s : 6 ) / 100 ) ];
 		} );
-		rows.forEach( ( [ el, , , up ] ) => up && el.setAttribute( 'data-sgs-in', '' ) );
-		root.classList.add( 'sgs-motion-ready' );
+	const arm = ( rows ) =>
 		rows.forEach( ( [ el, s, r, up ] ) => {
 			if ( up ) {
 				return;
@@ -49,7 +45,27 @@
 				( obs.f = obs.f || new w.IntersectionObserver( ( l, io ) => hit( l, io, 1 ), { threshold: 1 } ) ).observe( el );
 			}
 		} );
+	const sync = () => {
+		Object.keys( obs ).forEach( ( k ) => obs[ k ].disconnect() );
+		obs = {};
+		if ( mq.matches ) {
+			root.classList.remove( 'sgs-motion-ready' );
+			return;
+		}
+		const rows = measure( [ ...d.querySelectorAll( pending ) ] );
+		rows.forEach( ( [ el, , , up ] ) => up && el.setAttribute( 'data-sgs-in', '' ) );
+		root.classList.add( 'sgs-motion-ready' );
+		arm( rows );
 	};
+	d.addEventListener( 'sgs-motion:scan', ( e ) => {
+		const host = e.target;
+		if ( mq.matches || ! root.classList.contains( 'sgs-motion-ready' ) || ! host || ! host.querySelectorAll ) {
+			return;
+		}
+		const rows = measure( [ ...( host.matches( pending ) ? [ host ] : [] ), ...host.querySelectorAll( pending ) ] );
+		rows.forEach( ( [ el, , , up ] ) => up && el.setAttribute( 'data-sgs-in', '' ) );
+		arm( rows );
+	} );
 	mq.addEventListener( 'change', sync );
 	'loading' === d.readyState ? d.addEventListener( 'DOMContentLoaded', sync ) : sync();
 } )( document, window );

@@ -11,7 +11,8 @@
  *   layer reaches the card root; an unmapped grid part (`subtitle`) reaches nothing; the card's own layers win;
  * - every delegated card gets its loop index and its own `--sgs-me-delay` rule;
  * - with `apply` on, each card (delegated) and each manual item part takes the container's entrance, delays removed,
- *   the container keeps its own; with `apply` off nothing is inherited and the delays are exactly those of a stagger
+ *   the container's own entrance moves to them (`run-motion-loop-inherit-standalone.php` checks the container); with
+ *   `apply` off nothing is inherited and the delays are exactly those of a stagger
  *   with no `apply` key; an item part with its own entrance inherits nothing;
  * - each item-array caller's item selector resolves to its declared part.
  * Negative controls: a grid in manual mode hands nothing to a card; a stagger with `apply` off gives cards no entrance.
@@ -218,7 +219,7 @@ namespace {
 		$check( 0 === preg_match( '/\sstyle\s*=/i', $html ), "$mode: no style attribute" );
 	}
 
-	// 3. apply on: each delegated card takes the grid's entrance, delay removed; the grid keeps its own.
+	// 3. apply on: each delegated card takes the grid's entrance, delay removed.
 	$reset();
 	$html  = $render_grid( $grid( 'wc-product', true, array( 'root' => array( 'entrance' => array( 'base' => $base ) ), 'title' => $title ) ), array( 21, 22 ) );
 	$all   = $css();
@@ -226,6 +227,21 @@ namespace {
 	$check( 2 === $cards_with( $html, 'data-sgs-me="scroll translate opacity"' ), 'apply on: every delegated card root carries the grid entrance' );
 	$check( is_array( $root ) && ! isset( $root['values']['delay'] ) && 400 === ( $root['values']['duration'] ?? null ), 'apply on: the inherited layer is the grid entrance with its delay removed' );
 	$check( 1 === preg_match( '/\.sgs-cg-test1234 \.wp-block-sgs-product-card\[data-sgs-loop-i="1"\]\{--sgs-me-delay:80ms;\}/', $all ), 'apply on: the stagger delay still reaches each card' );
+
+	// 3b. Editor preview: the delegated cards share one scope (their motion is identical), so its style tag is printed
+	// once, never once per card with the same id; each card's delay still comes from its own loop rule.
+	$reset();
+	$GLOBALS['sgs_test_is_admin'] = true;
+	$item_delay = array( 'entrance' => array( 'base' => array( 'trigger' => 'scroll', 'values' => array( 'from' => array( 'opacity' => 0 ), 'to' => array(), 'duration' => 300, 'delay' => 200 ) ) ) );
+	$html = $render_grid( $grid( 'wc-product', false, array( 'item' => $item_delay, 'title' => $title ) ), array( 31, 32, 33 ) );
+	preg_match_all( '/<style id="(sgs-m-[0-9a-f]{10})">/', $html, $ids );
+	$check( array() !== $ids[1] && count( $ids[1] ) === count( array_unique( $ids[1] ) ), 'editor: no two style tags share an id: ' . json_encode( array_count_values( $ids[1] ) ) );
+	$check( 1 === count( array_unique( $ids[1] ) ), 'editor: the delegated cards share one scope (identical motion): ' . json_encode( array_unique( $ids[1] ) ) );
+	$check( 3 === preg_match_all( '/<div [^>]*class="[^"]*wp-block-sgs-product-card[^"]*sgs-m-[0-9a-f]{10}/', $html ), 'editor: every card carries the shared scope class' );
+	foreach ( array( 0 => 0, 1 => 80, 2 => 160 ) as $i => $ms ) {
+		$check( 1 === preg_match( '/\.sgs-cg-test1234 \.wp-block-sgs-product-card\[data-sgs-loop-i="' . $i . '"\]\{--sgs-me-delay:' . $ms . 'ms;\}/', $html ), "editor: card $i keeps its own stagger delay ($ms ms), never another card's" );
+	}
+	$GLOBALS['sgs_test_is_admin'] = false;
 
 	// 4. The card's own layers win; the grid's item layer maps to the card root.
 	$item_hover = array( 'hover' => array( 'state' => array( 'values' => array( 'translateY' => -8 ) ) ) );
@@ -239,7 +255,7 @@ namespace {
 	$check( array( 'translateY' => -8 ) === ( $merged['elements']['root']['hover']['state']['values'] ?? null ), 'map: the grid item layer becomes the card root layer' );
 
 	// 5. Manual card grid, apply on: the item part takes the container entrance; apply off writes only delays.
-	$items = '<div class="sgs-card-grid__item" data-sgs-loop-i="0">A</div><div class="sgs-card-grid__item" data-sgs-loop-i="1">B</div>';
+	$items = '<div class="sgs-card-grid sgs-cg-m1"><div class="sgs-card-grid__item" data-sgs-loop-i="0">A</div><div class="sgs-card-grid__item" data-sgs-loop-i="1">B</div></div>';
 	$reset();
 	$manual_on = $grid( 'manual', true, array( 'root' => array( 'entrance' => array( 'base' => $base ) ) ) );
 	$tag       = Sgs_Motion_Loop_Delays::item_array( 'sgs/card-grid', 'sgs-cg-m1', $manual_on, 2, '.sgs-card-grid__item' );

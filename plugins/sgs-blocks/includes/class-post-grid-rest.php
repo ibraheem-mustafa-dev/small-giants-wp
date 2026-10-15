@@ -222,6 +222,19 @@ class Post_Grid_REST {
 					return sanitize_html_class( (string) $value );
 				},
 			],
+			// Spec 38A §8: the entrance attributes the first page's cards inherit ("Apply entrance to children"), as
+			// the JSON object render.php put in the query data; Sgs_Motion_Loop_Inherit::decode_attrs() accepts only
+			// the entrance attributes in their own grammar, so anything else stamps nothing.
+			'itemMotion'            => [
+				'type'              => 'string',
+				'default'           => '',
+				'validate_callback' => static function ( $value ) {
+					return is_string( $value ) && strlen( $value ) <= 4096;
+				},
+				'sanitize_callback' => static function ( $value ) {
+					return (string) $value;
+				},
+			],
 		];
 	}
 
@@ -263,7 +276,8 @@ class Post_Grid_REST {
 		$query = new \WP_Query( $query_args );
 
 		// Build card HTML using the shared render method.
-		$html = '';
+		$html       = '';
+		$item_attrs = \SGS\Blocks\Motion\Sgs_Motion_Loop_Inherit::decode_attrs( (string) ( $params['itemMotion'] ?? '' ) );
 		if ( $query->have_posts() ) {
 			$index = 0;
 			while ( $query->have_posts() ) {
@@ -272,7 +286,9 @@ class Post_Grid_REST {
 				$params['_card_index'] = $index;
 				// Each fetched page restarts at index 0 (Spec 38A FR-38A-26), so the card picks up the grid's own
 				// per-index stagger rule already on the page; without a stagger the attribute matches no rule.
-				$html .= \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_item( self::render_card( get_the_ID(), $params ), $index );
+				// The first page's inherited entrance (Spec 38A §8), when the grid applies its entrance to its cards.
+				$card  = \SGS\Blocks\Motion\Sgs_Motion_Loop_Inherit::stamp_class( self::render_card( get_the_ID(), $params ), 'sgs-post-grid__card', $item_attrs );
+				$html .= \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_item( $card, $index );
 				$index++;
 			}
 			wp_reset_postdata();

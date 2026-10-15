@@ -14,7 +14,7 @@
  * No user-supplied HTML ever reaches the DOM through this path.
  */
 
-import { showSkeletons, announce, setTrustedServerHtml, showLoadFailure, fetchPosts } from './view-fetch.js';
+import { showSkeletons, announce, setTrustedServerHtml, showLoadFailure, fetchPosts, scanMotion } from './view-fetch.js';
 import { initStandardPagination, initLoadMore, initInfiniteScroll } from './view-pagination.js';
 import { initCarousel } from './view-carousel.js';
 
@@ -60,6 +60,7 @@ function initFilters( gridEl, queryData ) {
 		try {
 			const data = await fetchPosts( queryData, 1, filterId );
 			setTrustedServerHtml( innerEl, data.html );
+			scanMotion( innerEl );
 			announce( gridEl, 'Posts filtered. ' + data.totalPosts + ' results shown.' );
 		} catch ( err ) {
 			showLoadFailure( gridEl, innerEl, previousPosts );

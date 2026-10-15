@@ -116,6 +116,28 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
+	 * Whether the block rendering now sits in the page's first section (the LCP rule, §9): read by code that emits
+	 * entrances from inside a block's render callback (`Sgs_Motion_Loop_Inherit`).
+	 *
+	 * @return bool
+	 */
+	public static function in_first_section(): bool {
+		return array() !== self::$stack && ! empty( self::$stack[ count( self::$stack ) - 1 ]['first'] );
+	}
+
+	/**
+	 * Record and enqueue the assets that attributes written outside the renderer's own pass need (the items'
+	 * inherited entrance, `Sgs_Motion_Loop_Inherit`).
+	 *
+	 * @param array<string,string> $attrs Attributes written on an element.
+	 * @return void
+	 */
+	public static function note_used( array $attrs ): void {
+		self::note_features( $attrs, false );
+		Sgs_Motion_Assets::enqueue_used();
+	}
+
+	/**
 	 * Record which assets the data attributes just printed need.
 	 *
 	 * @param array<string,mixed> $attrs  Attributes printed on a target or the root.
@@ -332,6 +354,7 @@ final class Sgs_Motion_Renderer {
 		$plans         = array();
 		$css           = '';
 		$losers        = Sgs_Motion_Shared_Element::losers( $block_content, $name, $scope, $doc['elements'] );
+		$moved         = Sgs_Motion_Loop_Inherit::moved_target( $name, $attrs[ self::ATTR ] ?? null );
 		foreach ( $doc['elements'] as $target => $element ) {
 			$target   = (string) $target;
 			$resolved = Sgs_Motion_Targets::resolve( $name, $scope, $target, (array) $element );
@@ -346,7 +369,7 @@ final class Sgs_Motion_Renderer {
 			if ( isset( $losers[ $target ] ) ) {
 				$element = Sgs_Motion_Shared_Element::strip( $element, $name, $target, $losers[ $target ] );
 			}
-			$suppress = $resolved['match']['root'] && $legacy_scroll;
+			$suppress = ( $resolved['match']['root'] && $legacy_scroll ) || $target === $moved;
 			foreach ( $element['effects'] ?? array() as $layer ) {
 				$suppress = $suppress || sgs_effect_owns_scroll_transform( (string) $layer['effect'] );
 			}

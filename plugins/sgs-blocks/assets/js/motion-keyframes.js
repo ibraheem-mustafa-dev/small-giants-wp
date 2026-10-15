@@ -18,6 +18,8 @@
  * `setMotionState` or `pulseMotionState`; a pulse removes and re-adds the token, so a second failed submit replays the
  * shake). The target's state name is the renderer's `--sgs-mt-kf` custom property, set on the target itself
  * (includes/motion/class-sgs-motion-trigger-open-state.php). A replay cancels the target's previous animation first.
+ * Entrances a block prints after load (a post-grid's load more) are wired when the block fires `sgs-motion:scan` on the
+ * element holding them; a target already played is never played again, so a repeated scan plays nothing twice.
  * With reduced motion nothing plays, read at each play, so a mid-session change is honoured.
  * The script writes no inline style; it only creates animations and marks the element with `data-sgs-me-kf`.
  */
@@ -29,6 +31,7 @@
 	var STATE_ATTR = 'data-sgs-motion-state';
 	var STATE_PROP = '--sgs-mt-kf';
 	var STATE_TARGETS = '[data-sgs-me~="state"][data-sgs-me-keyframes]';
+	var TARGETS = '[data-sgs-me][data-sgs-me-keyframes]';
 
 	// Target -> the animation this module last created on it, so a replay can cancel it.
 	var running = typeof WeakMap === 'function' ? new WeakMap() : null;
@@ -313,18 +316,18 @@
 	}
 
 	/**
-	 * Wire every multi-keyframe entrance under a root: load entrances play now, the rest when data-sgs-in appears.
+	 * Wire multi-keyframe entrances: load entrances play now, the rest when data-sgs-in appears (`play` marks a target
+	 * `data-sgs-me-kf`, so a second scan of the same items plays nothing again).
 	 *
-	 * @param {ParentNode} root Where to look.
+	 * @param {Element[]} list Entrance targets.
 	 * @return {MutationObserver|null} The observer waiting on signals, or null when nothing waits.
 	 */
-	function init( root ) {
+	function wire( list ) {
 		if ( reducedMotion() ) {
 			return null;
 		}
-		watchStates( root );
 		var waiting = [];
-		( root || document ).querySelectorAll( '[data-sgs-me][data-sgs-me-keyframes]' ).forEach( function ( el ) {
+		list.forEach( function ( el ) {
 			if ( startsOnLoad( el ) || el.hasAttribute( 'data-sgs-in' ) ) {
 				play( el );
 			} else {
@@ -347,8 +350,43 @@
 		return observer;
 	}
 
+	/**
+	 * Wire every multi-keyframe entrance under a root.
+	 *
+	 * @param {ParentNode} root Where to look.
+	 * @return {MutationObserver|null} The observer waiting on signals, or null when nothing waits.
+	 */
+	function init( root ) {
+		if ( reducedMotion() ) {
+			return null;
+		}
+		watchStates( root );
+		return wire( Array.prototype.slice.call( ( root || document ).querySelectorAll( TARGETS ) ) );
+	}
+
+	/**
+	 * Wire the entrances a block printed after load, when it fires `sgs-motion:scan` on the element holding them
+	 * (a post-grid's load more, Spec 38A §8).
+	 *
+	 * @param {Event} event The scan event; its target holds the new items.
+	 * @return {MutationObserver|null} The observer waiting on signals, or null when nothing waits.
+	 */
+	function onScan( event ) {
+		var host = event && event.target;
+		if ( ! host || 'function' !== typeof host.querySelectorAll ) {
+			return null;
+		}
+		var list = Array.prototype.slice.call( host.querySelectorAll( TARGETS ) );
+		if ( 'function' === typeof host.matches && host.matches( TARGETS ) ) {
+			list.unshift( host );
+		}
+		return wire( list );
+	}
+
 	var api = {
 		init: init,
+		wire: wire,
+		onScan: onScan,
 		play: play,
 		replay: replay,
 		watchStates: watchStates,
@@ -361,6 +399,7 @@
 	if ( 'undefined' !== typeof module && module.exports ) {
 		module.exports = api;
 	}
+	document.addEventListener( 'sgs-motion:scan', onScan );
 
 	if ( 'loading' === document.readyState ) {
 		document.addEventListener( 'DOMContentLoaded', function () {

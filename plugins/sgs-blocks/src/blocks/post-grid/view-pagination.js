@@ -1,6 +1,6 @@
 /* Post grid: standard, load-more and infinite-scroll pagination. */
 
-import { REDUCED_MOTION, showSkeletons, announce, setTrustedServerHtml, showLoadFailure, fetchPosts } from './view-fetch.js';
+import { REDUCED_MOTION, showSkeletons, announce, setTrustedServerHtml, showLoadFailure, fetchPosts, scanMotion } from './view-fetch.js';
 
 // ==========================================================================
 // Standard (numbered) pagination
@@ -38,6 +38,7 @@ export function initStandardPagination( gridEl, queryData ) {
 		try {
 			const data = await fetchPosts( queryData, page );
 			setTrustedServerHtml( innerEl, data.html );
+			scanMotion( innerEl );
 
 			allBtns.forEach( ( b ) => {
 				const isActive = parseInt( b.dataset.page, 10 ) === data.currentPage;
@@ -112,6 +113,7 @@ export function initLoadMore( gridEl, queryData ) {
 			while ( tempDiv.firstChild ) {
 				innerEl.appendChild( tempDiv.firstChild );
 			}
+			scanMotion( innerEl );
 
 			currentPage             = nextPage;
 			btn.dataset.currentPage = currentPage;
@@ -176,6 +178,7 @@ export function initInfiniteScroll( gridEl, queryData ) {
 				while ( tempDiv.firstChild ) {
 					innerEl.appendChild( tempDiv.firstChild );
 				}
+				scanMotion( innerEl );
 
 				currentPage                  = nextPage;
 				sentinel.dataset.currentPage = currentPage;

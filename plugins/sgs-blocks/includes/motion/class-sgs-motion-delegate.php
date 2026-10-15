@@ -23,6 +23,8 @@
  *   `stagger-write.js::inheritedBase`).
  * - With the block's stagger `apply` on, a child root with no entrance takes the block's own entrance, delays removed
  *   (each child's delay comes from its stagger rule, `Sgs_Motion_Loop_Delays::item_array`).
+ * - Every child gets the same motion, so the children share one motion scope; `single_scope_styles` keeps the editor
+ *   preview to one `<style>` per scope (each child's delay is its own loop rule, never in the shared scope).
  *
  * @package SGS\Blocks
  */
@@ -131,6 +133,29 @@ final class Sgs_Motion_Delegate {
 		$out['v']        = 1;
 		$out['elements'] = $handed;
 		return $out;
+	}
+
+	/**
+	 * The delegated children's markup with each motion scope's inline `<style>` printed once. The children of one block
+	 * get identical motion, so they share one scope (`Sgs_Motion_Renderer` hashes the motion), and where the collector
+	 * never flushes (the editor preview) each child would otherwise print the same tag with the same id.
+	 *
+	 * @param string $html The rendered children.
+	 * @return string
+	 */
+	public static function single_scope_styles( string $html ): string {
+		$seen = array();
+		return (string) preg_replace_callback(
+			'/<style id="(sgs-m-[0-9a-f]{10})">.*?<\/style>/s',
+			static function ( array $m ) use ( &$seen ): string {
+				if ( isset( $seen[ $m[1] ] ) ) {
+					return '';
+				}
+				$seen[ $m[1] ] = true;
+				return $m[0];
+			},
+			$html
+		);
 	}
 
 	/**

@@ -312,7 +312,10 @@ $extra_styles = array_filter(
 // -------------------------------------------------------------------------
 // Build query data for view.js hydration (AJAX pagination/filtering).
 // -------------------------------------------------------------------------
-$sgs_query_data = wp_json_encode(
+// "Apply entrance to children" (Spec 38A §8): the attributes each card inherits, carried to the REST route so cards
+// fetched later (load more, page buttons, filters) take the same entrance as the first page's.
+$sgs_pg_item_motion = \SGS\Blocks\Motion\Sgs_Motion_Loop_Inherit::item_attrs( 'sgs/post-grid', $attributes, '.sgs-post-grid__card' );
+$sgs_query_data     = wp_json_encode(
 	array_filter(
 		array(
 			'postType'              => $post_type,
@@ -356,6 +359,7 @@ $sgs_query_data = wp_json_encode(
 			// initial render's — see the $sgs_pg_uid comment in
 			// class-post-grid-rest.php.
 			'uid'                   => $uid,
+			'itemMotion'            => array() === $sgs_pg_item_motion ? null : $sgs_pg_item_motion,
 		),
 		static function ( $v ) {
 			return '' !== $v && null !== $v;

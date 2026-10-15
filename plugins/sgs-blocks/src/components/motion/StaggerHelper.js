@@ -152,7 +152,7 @@ export default function StaggerHelper( {
 			<ToggleControl
 				label={ __( 'Apply entrance to children', 'sgs-blocks' ) }
 				help={ __(
-					'Gives every child this container’s entrance, then writes each child’s delay.',
+					'Moves this container’s entrance onto every child without one (the container itself then stays still), then writes each child’s delay.',
 					'sgs-blocks'
 				) }
 				checked={ Boolean( settings.apply ) }

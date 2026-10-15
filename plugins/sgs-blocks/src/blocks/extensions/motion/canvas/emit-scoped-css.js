@@ -51,6 +51,7 @@ import { resolveLayerDrops } from './layer-drops';
 import { stripShared } from './shared-element';
 import { emitFocus, focusAllowed, FOCUS_REFUSAL } from './emit-focus';
 import { hasRing, RING_REFUSAL, ringPaints, ringRefused, stripRing } from './emit-ring';
+import { movedEntranceTarget } from './stagger-apply';
 
 /** Hover colour and shadow properties whose timing the hover state owns (FR-38A-7). */
 const HOVER_PAINT = [ 'color', 'background-color', 'border-color', 'box-shadow' ];
@@ -284,7 +285,8 @@ function usesSource( targets, source ) {
 /**
  * Emit a whole block's motion: sanitise the document, then for each resolvable target (in stored order) drop refused
  * layers and, for a target that shares its element with an earlier-declared one (`losers`, found in the canvas DOM by
- * `shared-element.js`), its hover state and entrance; emit its CSS and data attributes.
+ * `shared-element.js`), its hover state and entrance; emit its CSS and data attributes. With the stagger's `apply` on,
+ * the container's own entrance plays on its children only (`stagger-apply.js`).
  *
  * @param {Object} motion  The stored motion attribute.
  * @param {Object} options `blockName`, `elements` (`supports.sgs.elements`), `root` (the scoped root selector),
@@ -303,6 +305,7 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 	if ( ! targets || typeof targets !== 'object' || Array.isArray( targets ) ) {
 		return out;
 	}
+	const moved = movedEntranceTarget( motion, targets, elements );
 	Object.entries( targets ).forEach( ( [ target, stored ] ) => {
 		const resolved = resolveTarget( blockName, elements, root, target, stored || {} );
 		if ( resolved === null ) {
@@ -337,7 +340,8 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 			}
 		}
 		const report = ( drop ) => out.dropped.push( { target, layer: 'entrance.base', ...drop } );
-		const emitted = emitTarget( element, resolved.selector, { ...context, states, noTransition: loser, report } );
+		const suppressEntrance = Boolean( context.suppressEntrance ) || target === moved;
+		const emitted = emitTarget( element, resolved.selector, { ...context, suppressEntrance, states, noTransition: loser, report } );
 		out.css += emitted.css;
 		out.plans.push( { target, ...resolved, attrs: emitted.attrs, entrance: emitted.entrance } );
 	} );

@@ -7,7 +7,8 @@
  * Input: tests/fixtures/motion/canvas-parity-cases.json. Each case runs the renderer's per-target path with the real
  * classes, in the renderer's order (`Sgs_Motion_Document::sanitise`, `Sgs_Motion_Shared_Element::losers` over the
  * case's `html` when it has one, `Sgs_Motion_Targets::resolve`, `Sgs_Motion_Layer_Drops::resolve`,
- * `Sgs_Motion_Shared_Element::strip`, `Sgs_Motion_Emitter::emit` with the open and state trigger filters) under the
+ * `Sgs_Motion_Shared_Element::strip`, `Sgs_Motion_Emitter::emit` with the open and state trigger filters, and the
+ * container entrance a stagger's `apply` moves to the children, `Sgs_Motion_Loop_Inherit::moved_target`) under the
  * scope the case names, through the WordPress stand-ins in `tests/php/stubs/motion-render-stubs.php` (block types read
  * from the real block.json files).
  *
@@ -25,6 +26,7 @@ declare( strict_types=1 );
 use SGS\Blocks\Motion\Sgs_Motion_Document;
 use SGS\Blocks\Motion\Sgs_Motion_Emitter;
 use SGS\Blocks\Motion\Sgs_Motion_Layer_Drops;
+use SGS\Blocks\Motion\Sgs_Motion_Loop_Inherit;
 use SGS\Blocks\Motion\Sgs_Motion_Shared_Element;
 use SGS\Blocks\Motion\Sgs_Motion_Targets;
 
@@ -56,6 +58,7 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 	);
 	$sgs_uses_root = false;
 	$sgs_uses_item = false;
+	$sgs_moved     = Sgs_Motion_Loop_Inherit::moved_target( $sgs_name, $sgs_motion );
 	foreach ( $sgs_targets as $sgs_target => $sgs_element ) {
 		$sgs_target = (string) $sgs_target;
 		foreach ( array_merge( array( $sgs_element['hover']['state'] ?? array() ), $sgs_element['hover']['effects'] ?? array() ) as $sgs_layer ) {
@@ -75,7 +78,7 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 			$sgs_resolved['selector'],
 			array(
 				'lcp'               => ! empty( $sgs_context['lcp'] ),
-				'suppress_entrance' => ! empty( $sgs_context['suppress_entrance'] ),
+				'suppress_entrance' => ! empty( $sgs_context['suppress_entrance'] ) || $sgs_target === $sgs_moved,
 				'no_transition'     => isset( $sgs_losers[ $sgs_target ] ),
 				'block'             => $sgs_name,
 				'target'            => $sgs_target,
