@@ -1,6 +1,60 @@
 /**
- * Horizontal-panel parameters and published state (Spec 38A FR-38A-38, FR-38A-39, FR-38A-50).
+ * Horizontal-panel parameters and published state (Spec 38A FR-38A-38, FR-38A-39, FR-38A-50), and the pin's ease
+ * fallback: a stored ease neither GSAP nor `resolveEase` understands plays linear instead of throwing on every render.
+ *
+ * For the pin, GSAP is a recording double whose `parseEase` returns undefined for a name it does not know (as the real
+ * one does for `cubic-bezier(0, 0, 0.58, 1)`, `token:easing.ease-out` with no token on the page, and `bogus`);
+ * `@sgs/motion-provider` is the real provider with the matchMedia wrapper and the boot call replaced.
  */
+
+jest.mock(
+	'@sgs/motion-provider',
+	() => {
+		const linear = ( p ) => p;
+		const gsapDouble = {
+			to: jest.fn( () => ( {
+				progress: jest.fn( () => 0 ),
+				kill: jest.fn(),
+				scrollTrigger: { kill: jest.fn() },
+			} ) ),
+			parseEase: jest.fn( ( ease ) => {
+				if ( 'function' === typeof ease ) {
+					return ease;
+				}
+				return 'none' === ease ? linear : undefined;
+			} ),
+			matchMedia: () => ( {
+				add: ( query, setup ) => setup(),
+				revert: jest.fn(),
+			} ),
+		};
+		const actual = jest.requireActual(
+			'../../src/shared/effects/gsap/provider.js'
+		);
+		return {
+			...actual,
+			__gsap: gsapDouble,
+			tierG: jest.fn(),
+			bootEffect: jest.fn(),
+			resolveStart: () => 'top top',
+			withMotionAllowed: ( setup ) => setup( gsapDouble ),
+		};
+	},
+	{ virtual: true }
+);
+jest.mock( 'gsap', () => ( {
+	gsap: { defaults: jest.fn(), registerPlugin: jest.fn() },
+} ) );
+jest.mock( 'gsap/ScrollTrigger', () => ( { ScrollTrigger: {} } ) );
+jest.mock( '../../src/shared/effects/motion-utils.js', () => ( {
+	chromeOffsetPx: () => 0,
+} ) );
+jest.mock( '../../src/shared/effects/gsap/horizontal-panel-geometry.js', () => ( {
+	resolveTrack: ( el ) => el.firstElementChild,
+	layoutPanels: ( track ) => Array.from( track.children ),
+	travelDistance: () => 800,
+} ) );
+
 import {
 	readParams,
 	readHold,
@@ -131,5 +185,46 @@ describe( 'createState', () => {
 		state.clear();
 		expect( el.hasAttribute( 'data-sgs-fx-progress-total' ) ).toBe( false );
 		expect( panels[ 1 ].hasAttribute( 'data-sgs-fx-panel-active' ) ).toBe( false );
+	} );
+} );
+
+describe( 'the pin ease', () => {
+	const { __gsap: gsapDouble } = require( '@sgs/motion-provider' );
+	const {
+		initHorizontalPanel,
+	} = require( '../../src/shared/effects/gsap/fx-horizontal-panel.js' );
+
+	const pinned = ( ease ) => {
+		const el = document.createElement( 'section' );
+		if ( ease ) {
+			el.setAttribute( 'data-sgs-fx-ease', ease );
+		}
+		const track = document.createElement( 'div' );
+		track.append( document.createElement( 'div' ), document.createElement( 'div' ) );
+		el.append( track );
+		gsapDouble.to.mockClear();
+		initHorizontalPanel( el );
+		return gsapDouble.to.mock.calls[ 0 ][ 1 ].ease;
+	};
+
+	it( 'a cubic-bezier() reaches the pin through resolveEase as its own curve', () => {
+		const ease = pinned( 'cubic-bezier(0, 0, 0.58, 1)' );
+		expect( () => ease( 0.5 ) ).not.toThrow();
+		expect( ease( 0.5 ) ).toBeGreaterThan( 0.6 );
+	} );
+
+	it.each( [ 'token:easing.ease-out', 'bogus' ] )(
+		'an ease GSAP cannot parse (%s) falls back to linear instead of throwing',
+		( stored ) => {
+			const ease = pinned( stored );
+			expect( () => ease( 0.5 ) ).not.toThrow();
+			expect( ease( 0.5 ) ).toBeCloseTo( 0.5 );
+		}
+	);
+
+	it( 'a parseable ease still shapes the travel (the negative control: the double is not always linear)', () => {
+		const square = ( p ) => p * p;
+		gsapDouble.parseEase.mockImplementationOnce( () => square );
+		expect( pinned( 'power2.in' )( 0.5 ) ).toBeCloseTo( 0.25 );
 	} );
 } );

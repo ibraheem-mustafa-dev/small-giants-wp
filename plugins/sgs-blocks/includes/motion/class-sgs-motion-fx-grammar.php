@@ -297,7 +297,8 @@ final class Sgs_Motion_Fx_Grammar {
 	}
 
 	/**
-	 * GSAP's `elastic.out(1, 0.5)` (`gsap-core.js`, `_configElastic`: amplitude 1, period 0.5).
+	 * GSAP's `elastic.out(1, 0.5)` (`gsap-core.js`, `_configElastic` with amplitude 1, period 0.5): p1 is the
+	 * amplitude, p3 = period / 2π · asin(1 / p1) the phase shift, and the sine runs at 2π / period.
 	 *
 	 * @param float $t Progress 0 to 1.
 	 * @return float
@@ -306,10 +307,10 @@ final class Sgs_Motion_Fx_Grammar {
 		if ( $t <= 0 || $t >= 1 ) {
 			return $t <= 0 ? 0.0 : 1.0;
 		}
-		$p  = 0.5;
-		$p1 = 2 * M_PI;
-		$p3 = $p1 / $p * asin( 1 );
-		return pow( 2, -10 * $t ) * sin( ( $t - $p3 / $p1 ) * $p1 / $p ) + 1;
+		$amplitude = 1.0;
+		$period    = 0.5;
+		$p3        = $period / ( 2 * M_PI ) * asin( 1 / $amplitude );
+		return $amplitude * pow( 2, -10 * $t ) * sin( ( $t - $p3 ) * ( 2 * M_PI / $period ) ) + 1;
 	}
 
 	/**

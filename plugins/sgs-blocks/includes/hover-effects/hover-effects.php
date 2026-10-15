@@ -132,13 +132,15 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	// device from the block's own `padding` (build_hover_indent_base_css()).
 	$hover_indent = sgs_css_single_length_value( $attrs['sgsHoverIndent'] ?? '' );
 
-	// One model per block (Spec 38A plan, overlap rule): a block holding the new motion attribute moves through
-	// includes/motion/class-sgs-motion-renderer.php only, so the legacy movement outputs (scale, lift, image zoom,
-	// grayscale, opacity, indent, tilt), including the ones a block's own hover defaults switch on, stand down:
-	// their `.sgs-has-hover-*:hover` rules set `transform`, `filter` and `opacity` outright and would replace the
-	// model's composed channels. Shadow, border accent, focus ring, block link and the click ripple are not motion
-	// channels and stay.
-	if ( ! empty( $attrs['sgsMotion'] ) ) {
+	// One model per channel (Spec 38A plan, overlap rule): when the block's motion document holds a hover on the root
+	// (a hover state or hover effect layers), the root's hover moves through includes/motion/class-sgs-motion-renderer.php
+	// only, so the legacy movement outputs (scale, lift, image zoom, grayscale, opacity, indent, tilt), including the
+	// ones a block's own hover defaults switch on, stand down: their `.sgs-has-hover-*:hover` rules set `transform`,
+	// `filter` and `opacity` outright on the root and would replace the model's composed channels. A motion document
+	// holding only an entrance, or a hover on a child element, leaves the root hover to the legacy outputs. Shadow,
+	// border accent, focus ring, block link and the click ripple are not motion channels and always stay.
+	$sgs_root_hover = $attrs['sgsMotion']['elements']['root']['hover'] ?? null;
+	if ( is_array( $sgs_root_hover ) && ( ! empty( $sgs_root_hover['state'] ) || ! empty( $sgs_root_hover['effects'] ) ) ) {
 		$hover_scale        = 0;
 		$hover_scale_preset = '';
 		$hover_lift         = 0;

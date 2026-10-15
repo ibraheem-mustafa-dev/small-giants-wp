@@ -114,5 +114,67 @@ $left = array_values( array_intersect( $movement, $model ) );
 $check( array() === $left, 'with sgsMotion no legacy movement class is added (left: ' . implode( ', ', $left ) . ')' );
 $check( in_array( 'sgs-has-focus-ring', $model, true ) === in_array( 'sgs-has-focus-ring', $legacy, true ), 'with sgsMotion the non-motion focus ring output is unchanged' );
 
+// The stand-down is scoped to a hover on the root: a motion document holding only an entrance never touches the
+// root's hover channels, so the block's own hover defaults keep painting.
+$entrance_only = $classes(
+	\SGS\Blocks\inject_hover_effects(
+		$content,
+		array(
+			'blockName' => 'sgs/info-box',
+			'attrs'     => array(
+				'sgsMotion' => array(
+					'v'        => 1,
+					'elements' => array(
+						'root' => array(
+							'entrance' => array( 'preset' => 'fade-up' ),
+						),
+					),
+				),
+			),
+		)
+	)
+);
+$check( in_array( 'sgs-has-hover-scale', $entrance_only, true ), 'an entrance-only sgsMotion keeps the block default sgs-has-hover-scale' );
+
+$root_effects = $classes(
+	\SGS\Blocks\inject_hover_effects(
+		$content,
+		array(
+			'blockName' => 'sgs/info-box',
+			'attrs'     => array(
+				'sgsMotion' => array(
+					'v'        => 1,
+					'elements' => array(
+						'root' => array(
+							'hover' => array( 'effects' => array( array( 'effect' => 'magnet' ) ) ),
+						),
+					),
+				),
+			),
+		)
+	)
+);
+$check( ! in_array( 'sgs-has-hover-scale', $root_effects, true ), 'a root hover effect layer stands the legacy scale down' );
+
+$child_hover = $classes(
+	\SGS\Blocks\inject_hover_effects(
+		$content,
+		array(
+			'blockName' => 'sgs/info-box',
+			'attrs'     => array(
+				'sgsMotion' => array(
+					'v'        => 1,
+					'elements' => array(
+						'icon' => array(
+							'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.1 ) ) ),
+						),
+					),
+				),
+			),
+		)
+	)
+);
+$check( in_array( 'sgs-has-hover-scale', $child_hover, true ), 'a hover on a child element only keeps the root legacy scale' );
+
 echo "RESULT {$pass} passed, {$fail} failed\n";
 exit( $fail > 0 ? 1 : 0 );

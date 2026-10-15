@@ -829,6 +829,20 @@ function sgs_inject_fx_attributes( string $block_content, array $block ): string
 		return $block_content;
 	}
 
+	// One model per block (Spec 38A plan, overlap rule): when the block's motion document holds an effect layer,
+	// `Sgs_Motion_Fx_Emitter` (through the renderer, a later render_block filter) owns the `data-sgs-fx*` grammar on
+	// this block, so the flat path writes nothing and clears any flat attribute a static save left on the root;
+	// otherwise the two writers' parameters would mix (a flat scrub taking a layer's start). A motion document
+	// without an effect layer leaves the flat fx in charge.
+	if ( sgs_fx_motion_holds_layer( $attrs['sgsMotion'] ?? null ) ) {
+		foreach ( FX_ATTR_MAP as $data_attr ) {
+			$processor->remove_attribute( $data_attr );
+		}
+		$processor->remove_attribute( 'data-sgs-fx-disable-tablet' );
+		$processor->remove_attribute( 'data-sgs-fx-disable-mobile' );
+		return $head . $processor->get_updated_html();
+	}
+
 	// Distinguish "already on THIS root" (correct it below) from "emitted on
 	// a DESCENDANT by SGS_Container_Wrapper via sgs_fx_data_attr_string()"
 	// (still bail — one effect, one target element, unchanged from before).
@@ -909,3 +923,25 @@ function sgs_inject_fx_attributes( string $block_content, array $block ): string
 	return $head . $processor->get_updated_html();
 }
 \add_filter( 'render_block', __NAMESPACE__ . '\\sgs_inject_fx_attributes', 10, 2 );
+
+/**
+ * Whether a block's motion document holds an effect layer: any element's `effects`, `hover.effects` or
+ * `entrance.text`, the layers `Sgs_Motion_Fx_Emitter` writes as `data-sgs-fx*`.
+ *
+ * @param mixed $motion The block's `sgsMotion` attribute.
+ * @return bool True when at least one element carries an effect layer.
+ */
+function sgs_fx_motion_holds_layer( $motion ): bool {
+	if ( ! \is_array( $motion ) || ! \is_array( $motion['elements'] ?? null ) ) {
+		return false;
+	}
+	foreach ( $motion['elements'] as $element ) {
+		if ( ! \is_array( $element ) ) {
+			continue;
+		}
+		if ( ! empty( $element['effects'] ) || ! empty( $element['hover']['effects'] ) || ! empty( $element['entrance']['text'] ) ) {
+			return true;
+		}
+	}
+	return false;
+}

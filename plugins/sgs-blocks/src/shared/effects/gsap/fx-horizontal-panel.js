@@ -86,7 +86,11 @@ function pin( gsap, el, track, params ) {
 		return undefined;
 	}
 	const state = createState( el, panels, params );
-	const curve = gsap.parseEase( resolveEase( params.ease || 'none' ) );
+	// A stored ease neither resolveEase nor GSAP understands (an unknown name, a token missing from the page) parses
+	// to undefined; the travel then plays linear rather than throwing on every render.
+	const curve =
+		gsap.parseEase( resolveEase( params.ease || 'none' ) ) ||
+		gsap.parseEase( 'none' );
 	let lengths = pinLengths( el, track, params, panels.length );
 	let tween = null;
 	// ScrollTrigger can render the tween (and call onUpdate) while `gsap.to` is still returning.
