@@ -97,12 +97,7 @@ final class Sgs_Motion_Targets {
 			return self::shape( $root, true, array(), null );
 		}
 		if ( 0 === strpos( $target, 'custom:' ) ) {
-			$selector = isset( $element['selector'] ) && is_string( $element['selector'] ) ? trim( $element['selector'] ) : '';
-			if ( '' === $selector ) {
-				return null;
-			}
-			$last = self::last_compound( $selector );
-			return self::shape( $root . ' ' . $selector, false, $last['classes'], $last['tag'] );
+			return Sgs_Motion_Custom_Target::resolve( $scope, $element );
 		}
 		$parts = self::parts( $block_name );
 		if ( ! array_key_exists( $target, $parts ) ) {
@@ -117,7 +112,7 @@ final class Sgs_Motion_Targets {
 			return self::shape( $root . ' > .' . $class, false, array( $class ), null, true );
 		}
 		if ( '' !== $declared ) {
-			$last = self::last_compound( $declared );
+			$last = Sgs_Motion_Custom_Target::last_compound( $declared );
 			return self::shape( $root . ' ' . $declared, false, $last['classes'], null );
 		}
 		return self::shape( $root . ' .' . $class, false, array( $class ), null );
@@ -178,25 +173,6 @@ final class Sgs_Motion_Targets {
 				'tag'     => $tag,
 				'child'   => $child,
 			),
-		);
-	}
-
-	/**
-	 * The classes and tag of a selector's last compound (used to find a custom target's elements in the markup; the
-	 * descendant context before it is not checked there, only in the emitted CSS).
-	 *
-	 * @param string $selector A schema-valid scoped selector.
-	 * @return array{classes:array<int,string>,tag:?string}
-	 */
-	private static function last_compound( string $selector ): array {
-		$parts    = preg_split( '/\s*[>+~]\s*|\s+/', $selector );
-		$compound = is_array( $parts ) ? (string) end( $parts ) : '';
-		$compound = (string) preg_replace( '/::?[a-zA-Z-]+(\([^)]*\))?|\[[^\]]*\]/', '', $compound );
-		preg_match_all( '/\.([A-Za-z0-9_-]+)/', $compound, $m );
-		$tag = preg_match( '/^([a-zA-Z][a-zA-Z0-9]*)/', $compound, $t ) ? strtoupper( $t[1] ) : null;
-		return array(
-			'classes' => $m[1],
-			'tag'     => $tag,
 		);
 	}
 }
