@@ -330,10 +330,11 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 		}
 		const state = element?.hover?.state;
 		if ( state && typeof state === 'object' && ! Array.isArray( state ) && hasRing( state ) ) {
-			// The ring is a `box-shadow`: a shadowed element drops it (FR-38A-42); an invisible ring is dropped too.
+			// The ring and the accent line are a `box-shadow`: a shadowed element drops both (FR-38A-42); an invisible
+			// pair is dropped on its own.
 			const refused = Boolean( attributes ) && ringRefused( elements, target, attributes, ringDelegate );
 			if ( refused || ! ringPaints( state ) ) {
-				element = { ...element, hover: { ...element.hover, state: stripRing( state ) } };
+				element = { ...element, hover: { ...element.hover, state: stripRing( state, refused ) } };
 			}
 			if ( refused ) {
 				out.dropped.push( { target, id: RING_REFUSAL, layer: 'hover.state' } );

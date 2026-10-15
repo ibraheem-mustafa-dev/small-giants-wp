@@ -1,13 +1,15 @@
 <?php
 /**
- * Motion rotation: the hover state's rest and hover angles and Follow pointer's settle timing (Spec 38A §10;
- * FR-38A-41, FR-38A-42).
+ * Motion rotation: the hover state's rest and hover pairs (the angles and the grayscale) and Follow pointer's settle
+ * timing (Spec 38A §10; FR-38A-41, FR-38A-42; §5.1 Grayscale to colour).
  *
  * One modular Rotate writes two channels. The Z angle (`rotate`, `restRotate`) feeds the `rotate` channel; the X and
  * Y angles (`rotateX`, `rotateY`, `restRotateX`, `restRotateY`) feed the summed `transform` channel, under the
  * element's one perspective (`--sgs-persp-self`). Each pair is written the same way: the rest angle directly to its
  * own property (a styling value), and the hover angle as `--sgs-mh-to-<suffix>`, stored as the hover angle minus the
- * rest angle, so the engaged hover reads the hover angle exactly. Follow pointer (`followPointer`) adds the
+ * rest angle, so the engaged hover reads the hover angle exactly. Grayscale is the same kind of pair (`grayscale`,
+ * `restGrayscale`): the rest amount is written to `--sgs-gray-rest`, which the `filter` channel adds to the hover
+ * owner, so an element can rest grey and turn to colour on hover. Follow pointer (`followPointer`) adds the
  * `transform` channel and transitions `--sgs-tilt-x` and `--sgs-tilt-y` on its own settle duration and easing (the
  * pointer writer itself is a front-end script that writes those two properties only).
  *
@@ -25,11 +27,12 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Sgs_Motion_Rotation {
 
-	/** Hover angle field => its rest angle field. */
+	/** Hover field => its rest field: the three rotate angles and the grayscale amount. */
 	const PAIRS = array(
-		'rotate'  => 'restRotate',
-		'rotateX' => 'restRotateX',
-		'rotateY' => 'restRotateY',
+		'rotate'    => 'restRotate',
+		'rotateX'   => 'restRotateX',
+		'rotateY'   => 'restRotateY',
+		'grayscale' => 'restGrayscale',
 	);
 
 	/** The Follow pointer switch and its settle timing fields on the hover state. */
@@ -41,7 +44,7 @@ final class Sgs_Motion_Rotation {
 	const DEF = 'HoverStateValues';
 
 	/**
-	 * Whether a field key is one of the rotate angles (hover or rest).
+	 * Whether a field key is one of the rest and hover pair fields (a rotate angle or the grayscale, hover or rest).
 	 *
 	 * @param string $key Field key.
 	 * @return bool

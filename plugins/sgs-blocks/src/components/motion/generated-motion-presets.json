@@ -118,6 +118,42 @@
 		{
 			"devices": {},
 			"effect": null,
+			"family": "hover-grayscale-to-colour",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Grayscale to colour",
+			"panel": "hover",
+			"slug": "hover-grayscale-to-colour",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": "token:duration.medium",
+				"easing": "token:easing.ease-out",
+				"grayscale": 0,
+				"restGrayscale": 1
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "hover-border-accent",
+			"intensity": null,
+			"kind": "preset",
+			"label": "Border accent",
+			"panel": "hover",
+			"slug": "hover-border-accent",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"accentColour": "accent",
+				"accentWidth": 3,
+				"duration": "token:duration.fast",
+				"easing": "token:easing.ease-out"
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
 			"family": "follow-pointer",
 			"intensity": null,
 			"kind": "preset",

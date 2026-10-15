@@ -2002,6 +2002,174 @@
 			"attributes": {
 				"source": "wc-product"
 			}
+		},
+		{
+			"name": "grayscale to colour: rest grey, hover colour",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"restGrayscale": 1,
+									"grayscale": 0,
+									"duration": "token:duration.medium"
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "grayscale to colour: a mobile rest amount rewrites that tier",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"restGrayscale": 1,
+									"grayscale": 0
+								},
+								"devices": {
+									"mobile": {
+										"restGrayscale": 0.5
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "rest grayscale alone switches the filter channel on",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"restGrayscale": 0.6,
+									"blur": 2
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "border accent line on an unshadowed block",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"accentWidth": 3,
+									"accentColour": "accent",
+									"duration": 250
+								},
+								"devices": {
+									"tablet": {
+										"accentWidth": 2
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "border accent kept when an invisible ring beside it is dropped",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"accentWidth": 3,
+									"accentColour": "#0A7EA8"
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "border accent dropped at a zero width, the ring kept",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"accentWidth": 0,
+									"accentColour": "#0A7EA8",
+									"ringSpread": 2,
+									"ringColour": "#0A7EA8"
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "border accent and ring refused on a block that sets a shadow",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"wrapper": {
+						"hover": {
+							"state": {
+								"values": {
+									"accentWidth": 3,
+									"accentColour": "#0A7EA8",
+									"ringSpread": 2,
+									"ringColour": "#0A7EA8",
+									"translateY": -4
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {},
+			"attributes": {
+				"shadow": "md"
+			}
 		}
 	]
 }

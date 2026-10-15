@@ -1,6 +1,8 @@
 /**
- * The hover ring's resting-shadow guard for the editor (Spec 38A §5.1; FR-38A-42's ring clause; build plan M3.9): the
- * twin of `includes/motion/class-sgs-motion-ring-guard.php`, used by the canvas emitter and the Hover panel.
+ * The resting-shadow guard of the hover ring and the Border accent line (both a `box-shadow`) for the editor (Spec
+ * 38A §5.1; FR-38A-42's ring clause; build plan M3.9): the twin of `includes/motion/class-sgs-motion-ring-guard.php`,
+ * used by the canvas emitter and the Hover panel. A shadowed element drops every pair; any other drops only a pair that
+ * would paint nothing.
  *
  * The ring is a hover `box-shadow`, so it is offered only on an element whose block sets no shadow of its own. A block
  * names the attributes that paint a `box-shadow` on an element in `block.json`
@@ -20,8 +22,14 @@ import { valueCss } from './motion-schema';
 /** The refusal id reported for a ring on a shadowed element. */
 export const RING_REFUSAL = 'ring-resting-shadow';
 
+/** The hover state's `box-shadow` pairs: size field => colour field (the ring, the Border accent line). */
+export const RING_PAIRS = Object.freeze( {
+	ringSpread: 'ringColour',
+	accentWidth: 'accentColour',
+} );
+
 /** The hover state values the guard removes. */
-export const RING_KEYS = Object.freeze( [ 'ringSpread', 'ringColour' ] );
+export const RING_KEYS = Object.freeze( [ 'ringSpread', 'ringColour', 'accentWidth', 'accentColour' ] );
 
 const SHADOW_KEY = 'css:box-shadow';
 const STYLE_KEY = 'restingShadow';
@@ -170,7 +178,7 @@ const tierValues = ( state ) => [
 ];
 
 /**
- * Whether a hover state layer stores a ring value on any device.
+ * Whether a hover state layer stores a ring or accent value on any device.
  *
  * @param {Object} state Hover state layer.
  * @return {boolean} True when it does.
@@ -184,32 +192,56 @@ export function hasRing( state ) {
 }
 
 /**
- * Whether a hover state layer's ring would show: a colour, and a spread above zero on some device.
+ * The keys of every stored `box-shadow` pair that would paint nothing (no colour, or a zero size on every device).
+ *
+ * @param {Object} state Hover state layer.
+ * @return {string[]} The keys.
+ */
+export function ringUnpainted( state ) {
+	const tiers = tierValues( state );
+	const out = [];
+	Object.entries( RING_PAIRS ).forEach( ( [ size, colour ] ) => {
+		const stored = tiers.some(
+			( values ) =>
+				Object.prototype.hasOwnProperty.call( values, size ) ||
+				Object.prototype.hasOwnProperty.call( values, colour )
+		);
+		const sized = tiers.some( ( values ) => {
+			const css = valueCss( HOVER, size, values[ size ] );
+			return css !== null && ! /^0(?:\.0+)?[a-z%]*$/.test( css );
+		} );
+		const coloured = valueCss( HOVER, colour, plain( state?.values )[ colour ] ) !== null;
+		if ( stored && ! ( sized && coloured ) ) {
+			out.push( size, colour );
+		}
+	} );
+	return out;
+}
+
+/**
+ * Whether every `box-shadow` pair the layer stores would show: a colour, and a size above zero on some device.
  *
  * @param {Object} state Hover state layer.
  * @return {boolean} True when it paints.
  */
 export function ringPaints( state ) {
-	if ( valueCss( HOVER, 'ringColour', plain( state?.values ).ringColour ) === null ) {
-		return false;
-	}
-	return tierValues( state ).some( ( values ) => {
-		const css = valueCss( HOVER, 'ringSpread', values.ringSpread );
-		return css !== null && ! /^0(?:\.0+)?[a-z%]*$/.test( css );
-	} );
+	return ringUnpainted( state ).length === 0;
 }
 
 /**
- * A hover state layer without its ring values on any device.
+ * A hover state layer without its `box-shadow` values: every pair when the element is refused, else only the pairs
+ * that would paint nothing.
  *
- * @param {Object} state Hover state layer.
+ * @param {Object}  state          Hover state layer.
+ * @param {boolean} [refused=true] Whether the element has a shadow of its own.
  * @return {Object} The layer.
  */
-export function stripRing( state ) {
+export function stripRing( state, refused = true ) {
+	const keys = refused ? RING_KEYS : ringUnpainted( state );
 	const drop = ( values ) =>
 		Object.fromEntries(
 			Object.entries( plain( values ) ).filter(
-				( [ key ] ) => ! RING_KEYS.includes( key )
+				( [ key ] ) => ! keys.includes( key )
 			)
 		);
 	const out = { ...state };

@@ -88,11 +88,11 @@
 @keyframes sgs-me-close-filter {
 	from {
 		--sgs-me-blur: var(--sgs-me-to-blur, 0px);
-		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(calc(var(--sgs-gray-rest) + var(--sgs-mh-gray))) brightness(var(--sgs-mh-bright));
 	}
 	to {
 		--sgs-me-blur: var(--sgs-me-close-to-blur, var(--sgs-me-from-blur, 0px));
-		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(calc(var(--sgs-gray-rest) + var(--sgs-mh-gray))) brightness(var(--sgs-mh-bright));
 	}
 }
 /* The clip reveal closes per edge: from each edge's open to-value to the uniform close amount, else that edge's
@@ -268,7 +268,7 @@
 		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op) * var(--sgs-svl-op));
 	}
 	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="filter"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
-		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(calc(var(--sgs-gray-rest) + var(--sgs-mh-gray))) brightness(var(--sgs-mh-bright));
 	}
 	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="clip-path"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
 		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l));

@@ -49,10 +49,13 @@ export const FIELD_LABELS = Object.freeze( {
 	resetEasing: { label: __( 'Reset easing', 'sgs-blocks' ) },
 	opacity: { label: __( 'Opacity on hover', 'sgs-blocks' ) },
 	blur: { label: __( 'Blur on hover', 'sgs-blocks' ) },
+	restGrayscale: { label: __( 'Grayscale at rest', 'sgs-blocks' ) },
 	grayscale: { label: __( 'Grayscale on hover', 'sgs-blocks' ) },
 	brightness: { label: __( 'Brightness on hover', 'sgs-blocks' ) },
 	ringSpread: { label: __( 'Ring thickness', 'sgs-blocks' ) },
 	ringColour: { label: __( 'Ring colour', 'sgs-blocks' ) },
+	accentWidth: { label: __( 'Accent line thickness', 'sgs-blocks' ) },
+	accentColour: { label: __( 'Accent line colour', 'sgs-blocks' ) },
 	indent: { label: __( 'Indent on hover', 'sgs-blocks' ) },
 	duration: { label: __( 'Duration', 'sgs-blocks' ) },
 	delay: { label: __( 'Delay', 'sgs-blocks' ) },
@@ -67,14 +70,19 @@ export const FIELD_LABELS = Object.freeze( {
  */
 export const HIDDEN_KEYS = Object.freeze( [ 'perspectiveOn' ] );
 
-/** The Hover panel's message in place of the ring fields on an element whose block sets a shadow (FR-38A-42). */
+/** The Hover panel's message in place of the ring and accent line fields on an element whose block sets a shadow (FR-38A-42). */
 export const RING_REFUSAL_MESSAGE = __(
-	'This element has a shadow of its own (or its style can add one), and a hover ring would replace it, so the ring is not offered here. Clear the shadow to use a ring, or put the ring on a different part.',
+	'This element has a shadow of its own (or its style can add one), and a hover ring or accent line would replace it, so neither is offered here. Clear the shadow to use them, or put them on a different part.',
 	'sgs-blocks'
 );
 
-/** The ring fields, which the Hover panel leaves out on a shadowed element. */
-export const RING_KEYS = Object.freeze( [ 'ringSpread', 'ringColour' ] );
+/** The ring and accent line fields (both a `box-shadow`), which the Hover panel leaves out on a shadowed element. */
+export const RING_KEYS = Object.freeze( [
+	'ringSpread',
+	'ringColour',
+	'accentWidth',
+	'accentColour',
+] );
 
 /** The groups of the hover state's Fine-tune, in order. */
 export const HOVER_GROUPS = Object.freeze( [
@@ -108,12 +116,12 @@ export const HOVER_GROUPS = Object.freeze( [
 	{
 		id: 'look',
 		label: __( 'Opacity and filter', 'sgs-blocks' ),
-		keys: [ 'opacity', 'blur', 'grayscale', 'brightness' ],
+		keys: [ 'opacity', 'blur', 'restGrayscale', 'grayscale', 'brightness' ],
 	},
 	{
 		id: 'ring',
-		label: __( 'Ring', 'sgs-blocks' ),
-		keys: [ 'ringSpread', 'ringColour' ],
+		label: __( 'Ring and accent line', 'sgs-blocks' ),
+		keys: [ 'ringSpread', 'ringColour', 'accentWidth', 'accentColour' ],
 		refusable: true,
 	},
 	{

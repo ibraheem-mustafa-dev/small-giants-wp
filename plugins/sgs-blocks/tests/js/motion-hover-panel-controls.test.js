@@ -369,7 +369,7 @@ describe( 'the hover ring (FR-38A-42)', () => {
 	// The hero's own declaration: its wrapper element paints `shadow` as a box-shadow.
 	const HERO_ELEMENTS = require( '../../src/blocks/hero/block.json' ).supports
 		.sgs.elements;
-	const REFUSAL = 'a hover ring would replace it';
+	const REFUSAL = 'a hover ring or accent line would replace it';
 	const ringField = () => host.querySelector( '[aria-label="Ring thickness"]' );
 	const hasColour = () =>
 		host.querySelector( '.sgs-motion-hover__group--ring .sgs-motion-atom--colour' ) !== null;
@@ -388,7 +388,7 @@ describe( 'the hover ring (FR-38A-42)', () => {
 		expect( ringField() ).toBeNull();
 		expect( hasColour() ).toBe( false );
 		expect( host.textContent ).toContain( REFUSAL );
-		expect( host.textContent ).toContain( 'Clear the shadow to use a ring' );
+		expect( host.textContent ).toContain( 'Clear the shadow to use them' );
 	} );
 
 	it( 'treats a shadow of none as no shadow', () => {

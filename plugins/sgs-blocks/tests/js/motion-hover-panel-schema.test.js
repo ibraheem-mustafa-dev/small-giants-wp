@@ -95,7 +95,7 @@ describe( 'fields the schema may or may not hold', () => {
 			'HoverStateValues',
 			HOVER_GROUPS,
 			undefined,
-			[ 'ringSpread', 'ringColour' ]
+			[ 'ringSpread', 'ringColour', 'accentWidth', 'accentColour' ]
 		);
 		expect( keysOf( omitted ) ).not.toContain( 'ringSpread' );
 		expect( keysOf( omitted ) ).not.toContain( 'ringColour' );

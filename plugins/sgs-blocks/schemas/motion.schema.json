@@ -1298,7 +1298,7 @@
 		{
 			"channel": "filter",
 			"composition": "function-list",
-			"formula": "filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright))",
+			"formula": "filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(calc(var(--sgs-gray-rest) + var(--sgs-mh-gray))) brightness(var(--sgs-mh-bright))",
 			"owners": [
 				{
 					"owner": "entrance",
@@ -1317,6 +1317,11 @@
 							"name": "--sgs-mh-blur",
 							"syntax": "<length>",
 							"initial": "0px"
+						},
+						{
+							"name": "--sgs-gray-rest",
+							"syntax": "<number>",
+							"initial": "0"
 						},
 						{
 							"name": "--sgs-mh-gray",
@@ -1352,7 +1357,7 @@
 		{
 			"channel": "box-shadow",
 			"composition": "single-owner",
-			"formula": "box-shadow: 0 0 0 var(--sgs-mh-ring) var(--sgs-mh-ring-c)",
+			"formula": "box-shadow: 0 0 0 var(--sgs-mh-ring) var(--sgs-mh-ring-c), inset 0 calc(-1 * var(--sgs-mh-accent)) 0 0 var(--sgs-mh-accent-c)",
 			"owners": [
 				{
 					"owner": "hoverState",
@@ -1364,6 +1369,16 @@
 						},
 						{
 							"name": "--sgs-mh-ring-c",
+							"syntax": "<color>",
+							"initial": "transparent"
+						},
+						{
+							"name": "--sgs-mh-accent",
+							"syntax": "<length>",
+							"initial": "0px"
+						},
+						{
+							"name": "--sgs-mh-accent-c",
 							"syntax": "<color>",
 							"initial": "transparent"
 						}
@@ -1709,6 +1724,7 @@
 					],
 					"values": [
 						"blur",
+						"restGrayscale",
 						"grayscale",
 						"brightness"
 					]
@@ -2686,6 +2702,18 @@
 						"perDevice": true
 					}
 				},
+				"restGrayscale": {
+					"$ref": "#/$defs/ratio",
+					"description": "The resting grayscale amount, a styling value: the element rests grey and the hover grayscale is the amount it turns to (Grayscale to colour); the renderer stores the hover amount minus this one.",
+					"minimum": 0,
+					"maximum": 1,
+					"x-sgs-field": {
+						"fieldType": "ratio",
+						"cssProperty": "--sgs-gray-rest",
+						"state": "rest",
+						"perDevice": true
+					}
+				},
 				"brightness": {
 					"$ref": "#/$defs/ratio",
 					"minimum": 0,
@@ -2727,6 +2755,33 @@
 					"x-sgs-field": {
 						"fieldType": "colourReference",
 						"cssProperty": "--sgs-mh-ring-c",
+						"state": "hover",
+						"perDevice": false
+					}
+				},
+				"accentWidth": {
+					"$ref": "#/$defs/distance",
+					"description": "Border accent: the thickness of the accent line drawn along the element's bottom edge on hover (an inset box-shadow beside the ring).",
+					"minimum": 0,
+					"maximum": 16,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 16,
+						"unit": "px"
+					},
+					"x-sgs-field": {
+						"fieldType": "distance",
+						"cssProperty": "--sgs-mh-accent",
+						"state": "hover",
+						"perDevice": true
+					}
+				},
+				"accentColour": {
+					"$ref": "#/$defs/colourReference",
+					"description": "Border accent: the accent line's colour.",
+					"x-sgs-field": {
+						"fieldType": "colourReference",
+						"cssProperty": "--sgs-mh-accent-c",
 						"state": "hover",
 						"perDevice": false
 					}
@@ -2845,6 +2900,12 @@
 					"minimum": 0,
 					"maximum": 1
 				},
+				"restGrayscale": {
+					"$ref": "#/$defs/ratio",
+					"description": "The resting grayscale amount, a styling value: the element rests grey and the hover grayscale is the amount it turns to (Grayscale to colour); the renderer stores the hover amount minus this one.",
+					"minimum": 0,
+					"maximum": 1
+				},
 				"brightness": {
 					"$ref": "#/$defs/ratio",
 					"minimum": 0,
@@ -2860,6 +2921,17 @@
 					"x-sgs-range": {
 						"min": 0,
 						"max": 32,
+						"unit": "px"
+					}
+				},
+				"accentWidth": {
+					"$ref": "#/$defs/distance",
+					"description": "Border accent: the thickness of the accent line drawn along the element's bottom edge on hover (an inset box-shadow beside the ring).",
+					"minimum": 0,
+					"maximum": 16,
+					"x-sgs-range": {
+						"min": 0,
+						"max": 16,
 						"unit": "px"
 					}
 				},

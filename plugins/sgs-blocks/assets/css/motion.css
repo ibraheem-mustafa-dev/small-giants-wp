@@ -5,12 +5,14 @@
  * (includes/motion/), never a `style` attribute. The contract with the renderer:
  *
  *   data-sgs-mh="self|root|group|item"    the target holds a hover state; the value is its source (§6.2)
- *   --sgs-mh-to-<tx|ty|rot|rx|ry|s|op|blur|gray|bright|indent|ring|ring-c>
+ *   --sgs-mh-to-<tx|ty|rot|rx|ry|s|op|blur|gray|bright|indent|ring|ring-c|accent|accent-c>
  *                                     the hover state's to-values (plain, unregistered; per device). Each rotate
- *                                     to-value (Z, X, Y) is the hover angle minus its rest angle (§10)
+ *                                     to-value (Z, X, Y) is the hover angle minus its rest angle, and the grayscale
+ *                                     to-value the hover amount minus the rest grayscale (§10)
  *   --sgs-pad-start-rest              the resting inline-start padding an indent hover adds to (default 0px)
  *   --sgs-rot-rest, --sgs-rx-rest, --sgs-ry-rest
  *                                     the rest Z, X and Y angles, resting styling values (FR-38A-42)
+ *   --sgs-gray-rest                   the resting grayscale (Grayscale to colour), a resting styling value
  *   --sgs-persp-self                  the element's one perspective (a length, or none), read by the transform channel
  *   data-sgs-mroot                    a block root whose targets use source root
  *   data-sgs-hover-group              the hover-group block (source group reads the nearest one)
@@ -74,11 +76,14 @@
 @property --sgs-focus-op { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-me-blur { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-mh-blur { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-gray-rest { syntax: '<number>'; inherits: false; initial-value: 0; }
 @property --sgs-mh-gray { syntax: '<number>'; inherits: false; initial-value: 0; }
 @property --sgs-mh-bright { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-mh-indent { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-mh-ring { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-mh-ring-c { syntax: '<color>'; inherits: false; initial-value: transparent; }
+@property --sgs-mh-accent { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-mh-accent-c { syntax: '<color>'; inherits: false; initial-value: transparent; }
 @property --sgs-me-clip-t { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
 @property --sgs-me-clip-r { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
 @property --sgs-me-clip-b { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
@@ -109,7 +114,7 @@
 	opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op) * var(--sgs-svl-op));
 }
 [data-sgs-mc~="filter"] {
-	filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+	filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(calc(var(--sgs-gray-rest) + var(--sgs-mh-gray))) brightness(var(--sgs-mh-bright));
 }
 [data-sgs-mc~="transform"] {
 	transform: perspective(var(--sgs-persp-self)) rotateX(calc(var(--sgs-rx-rest) + var(--sgs-me-rx) + var(--sgs-mh-rx) + var(--sgs-tilt-x))) rotateY(calc(var(--sgs-ry-rest) + var(--sgs-me-ry) + var(--sgs-mh-ry) + var(--sgs-tilt-y)));
@@ -118,7 +123,7 @@
 	padding-inline-start: calc(var(--sgs-pad-start-rest, 0px) + var(--sgs-mh-indent));
 }
 [data-sgs-mc~="box-shadow"] {
-	box-shadow: 0 0 0 var(--sgs-mh-ring) var(--sgs-mh-ring-c);
+	box-shadow: 0 0 0 var(--sgs-mh-ring) var(--sgs-mh-ring-c), inset 0 calc(-1 * var(--sgs-mh-accent)) 0 0 var(--sgs-mh-accent-c);
 }
 [data-sgs-mc~="background-position"] {
 	background-position: calc(50% + var(--sgs-plx-bg-x)) calc(50% + var(--sgs-plx-bg-y));
@@ -162,6 +167,8 @@
 	--sgs-mh-indent: calc(var(--sgs-mh-to-indent, 0px) * var(--sgs-mh-on));
 	--sgs-mh-ring: calc(var(--sgs-mh-to-ring, 0px) * var(--sgs-mh-on));
 	--sgs-mh-ring-c: var(--sgs-mh-to-ring-c, transparent);
+	--sgs-mh-accent: calc(var(--sgs-mh-to-accent, 0px) * var(--sgs-mh-on));
+	--sgs-mh-accent-c: var(--sgs-mh-to-accent-c, transparent);
 }
 
 /* ── Entrance (§9 entrance rule, FR-38A-18): each touched channel plays its own animation of the --sgs-me-*
@@ -228,11 +235,11 @@
 @keyframes sgs-me-filter {
 	from {
 		--sgs-me-blur: var(--sgs-me-from-blur, 0px);
-		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(calc(var(--sgs-gray-rest) + var(--sgs-mh-gray))) brightness(var(--sgs-mh-bright));
 	}
 	to {
 		--sgs-me-blur: var(--sgs-me-to-blur, 0px);
-		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(calc(var(--sgs-gray-rest) + var(--sgs-mh-gray))) brightness(var(--sgs-mh-bright));
 	}
 }
 /* The clip reveal: one owner per edge. Each edge reads its own holder (a one-edge clip, Sgs_Motion_Clip_Edge) and
@@ -312,7 +319,7 @@
 	}
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="filter"] {
 		--sgs-me-blur: var(--sgs-me-from-blur, 0px);
-		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
+		filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(calc(var(--sgs-gray-rest) + var(--sgs-mh-gray))) brightness(var(--sgs-mh-bright));
 	}
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="clip-path"] {
 		--sgs-me-clip-t: var(--sgs-me-from-clip-t, var(--sgs-me-from-clip, 0%));
@@ -354,7 +361,7 @@
 
 /* ── Reduced motion (§12, FR-38A-27): nothing moves, every delay is zero, and colour, shadow, opacity and filter
    changes become instant state flips. Entrances show their final state, because the entrance rules above apply
-   only under no-preference. The rest Z, X and Y angles are styling values and stay. ── */
+   only under no-preference. The rest Z, X and Y angles and the rest grayscale are styling values and stay. ── */
 @media (prefers-reduced-motion: reduce) {
 	[data-sgs-mh] {
 		--sgs-mh-indent: 0px;

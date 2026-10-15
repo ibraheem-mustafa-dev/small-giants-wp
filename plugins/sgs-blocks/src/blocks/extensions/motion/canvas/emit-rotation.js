@@ -1,5 +1,5 @@
 /**
- * The hover state's rotate pairs, Follow pointer's settle timing and a multi-keyframe entrance's frames for the
+ * The hover state's rest and hover pairs (the rotate angles and the grayscale), Follow pointer's settle timing and a multi-keyframe entrance's frames for the
  * editor-canvas emitter (Spec 38A §9, §10): the JS twin of `includes/motion/class-sgs-motion-rotation.php` and
  * `includes/motion/class-sgs-motion-keyframes.php`. Field keys, owner properties and channels come from the schema
  * extract through `motion-schema.js`.
@@ -20,11 +20,12 @@ import {
 	tokenOr,
 } from './motion-schema';
 
-/** Hover angle field => its rest angle field. */
+/** Hover field => its rest field: the three rotate angles and the grayscale amount (Grayscale to colour). */
 export const PAIRS = Object.freeze( {
 	rotate: 'restRotate',
 	rotateX: 'restRotateX',
 	rotateY: 'restRotateY',
+	grayscale: 'restGrayscale',
 } );
 
 const FOLLOW = 'followPointer';
@@ -33,7 +34,7 @@ const FOLLOW_EASING = 'resetEasing';
 const DEF = 'HoverStateValues';
 
 /**
- * Whether a field key is one of the rotate angles (hover or rest).
+ * Whether a field key is one of the rest and hover pair fields (a rotate angle or the grayscale, hover or rest).
  *
  * @param {string} key Field key.
  * @return {boolean} True for an angle key.

@@ -21,8 +21,11 @@
  *   `sgs_motion_entrance_css` filter appends a trigger's own rules (`Sgs_Motion_Trigger_Open_State`).
  * - `transition`: only the owners present on the element, each with its own duration, easing and delay (the hover
  *   state's list also carries `color`, `background-color`, `border-color` and `box-shadow`), never `all`.
- * - The hover ring (`ringSpread`, `ringColour`): a `box-shadow` painted by the stylesheet's `box-shadow` channel from the
- *   two owner properties; dropped on an element whose block sets a shadow (`Sgs_Motion_Ring_Guard`).
+ * - The hover ring (`ringSpread`, `ringColour`) and the Border accent line (`accentWidth`, `accentColour`): a
+ *   `box-shadow` painted by the stylesheet's `box-shadow` channel from their owner properties; dropped on an element
+ *   whose block sets a shadow (`Sgs_Motion_Ring_Guard`).
+ * - The rest grayscale (`restGrayscale`) is written plain to `--sgs-gray-rest`, and the hover grayscale is stored minus
+ *   it, the same pair as the rotate angles (`Sgs_Motion_Rotation::PAIRS`).
  * - The form Focus state (`hover.focus`, `sgs/form` root only): its field-control rules (`Sgs_Motion_Focus_State`).
  *
  * Desktop values sit in the base rule; Tablet and Mobile overrides sit in `@media (max-width:1023px)` and
@@ -67,13 +70,14 @@ final class Sgs_Motion_Emitter {
 		$trans    = array_fill_keys( self::TIERS, array() );
 		$state    = $element['hover']['state'] ?? null;
 		if ( is_array( $state ) && Sgs_Motion_Ring_Guard::has_ring( $state ) ) {
-			// The ring is a `box-shadow`: it would replace the element's own shadow on hover (FR-38A-42), so a shadowed
-			// element drops it; an invisible ring (no colour, or a zero spread on every device) is dropped too.
+			// The ring and the accent line are a `box-shadow`: they would replace the element's own shadow on hover
+			// (FR-38A-42), so a shadowed element drops both; an invisible pair (no colour, or a zero size on every device)
+			// is dropped on its own.
 			$block   = (string) ( $context['block'] ?? '' );
 			$target  = (string) ( $context['target'] ?? '' );
 			$refused = is_array( $context['attributes'] ?? null ) && Sgs_Motion_Ring_Guard::refused( $block, $target, $context['attributes'] );
 			if ( $refused || ! Sgs_Motion_Ring_Guard::paints( $state ) ) {
-				$state = Sgs_Motion_Ring_Guard::strip( $state );
+				$state = Sgs_Motion_Ring_Guard::strip( $state, $refused );
 			}
 			if ( $refused ) {
 				do_action(

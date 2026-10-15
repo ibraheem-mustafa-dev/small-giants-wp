@@ -1328,5 +1328,131 @@
 		],
 		"rootAttrs": {},
 		"losers": {}
+	},
+	{
+		"name": "grayscale to colour: rest grey, hover colour",
+		"css": ".sgs-m-0123456789{--sgs-gray-rest:1;--sgs-mh-to-gray:calc(0 - 1);transition:--sgs-mh-gray var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "filter"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "grayscale to colour: a mobile rest amount rewrites that tier",
+		"css": ".sgs-m-0123456789{--sgs-gray-rest:1;--sgs-mh-to-gray:calc(0 - 1);transition:--sgs-mh-gray var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}@media (max-width:767px){.sgs-m-0123456789{--sgs-gray-rest:0.5;--sgs-mh-to-gray:calc(0 - 0.5);}}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "filter"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "rest grayscale alone switches the filter channel on",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-blur:2px;--sgs-gray-rest:0.6;transition:--sgs-mh-blur var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "filter"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "border accent line on an unshadowed block",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-accent:3px;--sgs-mh-to-accent-c:var(--wp--preset--color--accent, currentColor);transition:--sgs-mh-accent 250ms var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-accent-c 250ms var(--wp--custom--easing--ease-out) 0ms, color 250ms var(--wp--custom--easing--ease-out) 0ms, background-color 250ms var(--wp--custom--easing--ease-out) 0ms, border-color 250ms var(--wp--custom--easing--ease-out) 0ms, box-shadow 250ms var(--wp--custom--easing--ease-out) 0ms;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-mh-to-accent:2px;}}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "box-shadow"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "border accent kept when an invisible ring beside it is dropped",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-accent:3px;--sgs-mh-to-accent-c:#0A7EA8;transition:--sgs-mh-accent var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-accent-c var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "box-shadow"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "border accent dropped at a zero width, the ring kept",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ring:2px;--sgs-mh-to-ring-c:#0A7EA8;transition:--sgs-mh-ring var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ring-c var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "box-shadow"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "border accent and ring refused on a block that sets a shadow",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "wrapper",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
 	}
 ]
