@@ -1413,15 +1413,6 @@
     },
     {
       "slug": "sgs/brand-strip",
-      "attr": "fadeWidth",
-      "fields": {
-        "css_property": "width",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/brand-strip",
       "attr": "itemBackgroundColourHover",
       "fields": {
         "css_property": "background-color",
@@ -1601,14 +1592,6 @@
       "fields": {
         "css_property": "padding",
         "css_element": "strip-spacing"
-      }
-    },
-    {
-      "slug": "sgs/brand-strip",
-      "attr": "scrollDuration",
-      "fields": {
-        "css_property": "animation",
-        "css_element": "track"
       }
     },
     {
@@ -25369,13 +25352,6 @@
     },
     {
       "slug": "sgs/trust-bar",
-      "attr": "autoScrollDuration",
-      "fields": {
-        "css_property": "animation-duration"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
@@ -27391,6 +27367,15 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "fadeWidth",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {

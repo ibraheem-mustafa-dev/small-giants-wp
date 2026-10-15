@@ -476,7 +476,10 @@
 			"channels": [
 				"scale"
 			],
-			"properties": [],
+			"properties": [
+				"--sgs-sp-x",
+				"--sgs-sp-y"
+			],
 			"slots": []
 		},
 		"owns_scroll_transform": false,
