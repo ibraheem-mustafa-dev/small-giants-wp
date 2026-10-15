@@ -34,6 +34,7 @@ The runner registers only the FOUR probes that are standing checks with negative
 | 5223 | Spec 38A motion model: hover lift and scale, part Fade up, load entrances, reveal, the scroll-driver host element (`probe-motion-model.mjs`) |
 | 5226 | Spec 38A motion model: three-keyframe entrance and tilt (`probe-motion-model.mjs`) |
 | 5229 | Spec 38A motion model: a page with no motion, the asset-guard reference (`probe-motion-model.mjs`) |
+| 5244 | Spec 38A M3.9: per-device entrance distances, custom easings, part isolation, tilted cards and the polaroid frame (`probe-motion-per-device.mjs`, tree `tests/fixtures/motion/pages/motion-per-device.json`) |
 
 Page 5196 (a draft, "Editor typing baseline (200 blocks)") is not a deploy-gate fixture: it is Spec 38A FR-38A-29's editor typing-latency page (`plugins/sgs-blocks/scripts/perf/editor-typing-baseline.json`), re-measured by M3.11. Never edit or delete it; its tree is `plugins/sgs-blocks/scripts/perf/fixtures/editor-200-blocks.json`.
 

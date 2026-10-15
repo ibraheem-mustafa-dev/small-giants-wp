@@ -1,0 +1,531 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m39-dev-all-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Entrance distance 24, 16 and 8",
+					"level": "h2",
+					"className": "m39-dev-all",
+					"shadowLiftOnHover": false,
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "scroll",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 24
+											},
+											"duration": 400,
+											"easing": "ease-out"
+										},
+										"devices": {
+											"tablet": {
+												"from": {
+													"translateY": 16
+												}
+											},
+											"mobile": {
+												"from": {
+													"translateY": 8
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m39-dev-cleared-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Entrance distance with Mobile cleared",
+					"level": "h2",
+					"className": "m39-dev-cleared",
+					"shadowLiftOnHover": false,
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "scroll",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 24
+											},
+											"duration": 400,
+											"easing": "ease-out"
+										},
+										"devices": {
+											"tablet": {
+												"from": {
+													"translateY": 16
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m39-ease-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Custom cubic-bezier hover easing",
+					"level": "h2",
+					"className": "m39-ease-bezier",
+					"shadowLiftOnHover": false,
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"values": {
+											"translateY": -6,
+											"duration": 300,
+											"easing": "cubic-bezier(0.2, 0.9, 0.3, 1.2)"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Custom linear() hover easing",
+					"level": "h2",
+					"className": "m39-ease-linear",
+					"shadowLiftOnHover": false,
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"values": {
+											"translateY": -6,
+											"duration": 300,
+											"easing": "linear(0, 0.25 40%, 1)"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m39-media-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/team-member",
+				"attributes": {
+					"name": "Part target",
+					"role": "Only the photo moves",
+					"photo": {
+						"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/indus-diamond.png",
+						"id": 4602,
+						"alt": ""
+					},
+					"shadowLiftOnHover": false,
+					"imageZoomHover": false,
+					"sgsHoverScalePreset": "none",
+					"sgsHoverShadow": "none",
+					"sgsHoverImageZoom": false,
+					"className": "m39-media",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"image": {
+								"hover": {
+									"state": {
+										"source": "root",
+										"values": {
+											"translateY": -8,
+											"scale": 1.06,
+											"duration": 300,
+											"easing": "ease-out"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m39-tilt-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Tilted card A",
+					"description": "Rests at -3deg and straightens on hover.",
+					"className": "m39-tilt-a",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "root",
+										"values": {
+											"restRotate": "-3deg",
+											"rotate": "0deg",
+											"translateX": -4,
+											"translateY": -6,
+											"duration": 300,
+											"easing": "cubic-bezier(.3,1.4,.5,1)"
+										}
+									}
+								}
+							}
+						}
+					},
+					"effectHover": "none",
+					"shadowLiftOnHover": false,
+					"sgsHoverScalePreset": "none",
+					"sgsHoverShadow": "none",
+					"sgsHoverImageZoom": false
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Read more",
+							"url": "https://example.com/"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Tilted card B",
+					"description": "Rests at 2deg and straightens on hover.",
+					"className": "m39-tilt-b",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "root",
+										"values": {
+											"restRotate": "2deg",
+											"rotate": "0deg",
+											"translateX": -4,
+											"translateY": -6,
+											"duration": 300,
+											"easing": "cubic-bezier(.3,1.4,.5,1)"
+										}
+									}
+								}
+							}
+						}
+					},
+					"effectHover": "none",
+					"shadowLiftOnHover": false,
+					"sgsHoverScalePreset": "none",
+					"sgsHoverShadow": "none",
+					"sgsHoverImageZoom": false
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Read more",
+							"url": "https://example.com/"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Tilted card C",
+					"description": "Rests at -1.5deg and straightens on hover.",
+					"className": "m39-tilt-c",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "root",
+										"values": {
+											"restRotate": "-1.5deg",
+											"rotate": "0deg",
+											"translateX": -4,
+											"translateY": -6,
+											"duration": 300,
+											"easing": "cubic-bezier(.3,1.4,.5,1)"
+										}
+									}
+								}
+							}
+						}
+					},
+					"effectHover": "none",
+					"shadowLiftOnHover": false,
+					"sgsHoverScalePreset": "none",
+					"sgsHoverShadow": "none",
+					"sgsHoverImageZoom": false
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Read more",
+							"url": "https://example.com/"
+						}
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m39-polaroid-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"padding": {
+						"desktop": {
+							"top": "16px",
+							"right": "24px",
+							"bottom": "16px",
+							"left": "24px"
+						},
+						"tablet": {
+							"top": "16px",
+							"right": "24px",
+							"bottom": "16px",
+							"left": "24px"
+						},
+						"mobile": {
+							"top": "16px",
+							"right": "24px",
+							"bottom": "16px",
+							"left": "24px"
+						}
+					},
+					"className": "m39-polaroid",
+					"shadowLiftOnHover": false,
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "root",
+										"values": {
+											"restRotate": "-2.5deg",
+											"rotate": "0deg",
+											"translateX": -4,
+											"translateY": -6,
+											"duration": 300,
+											"easing": "cubic-bezier(.3,1.4,.5,1)"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/media",
+						"attributes": {
+							"imageId": 4602,
+							"imageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/indus-diamond.png",
+							"imageAlt": "Sample image"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "A polaroid frame resting at -2.5deg."
+						}
+					}
+				]
+			}
+		]
+	}
+]
