@@ -45,6 +45,8 @@ The runner registers only the five probes that are standing checks with negative
 | 5270 | Spec 38A M5.11 cursor-field image reveal: two reveal cards and a control (`probe-cursor-field-reveal.mjs --page 5270`, tree `tests/fixtures/motion/pages/cursor-field.json`) |
 | 5272 | Spec 38A M5.Z stacked effects: magnet + sheen + ripple, Follow pointer + scale + lift, lift + parallax + Follow pointer, cursor-field ring + ripple + sheen, and a control (`probe-motion-stacks.mjs --page 5272`, tree `tests/fixtures/motion/pages/motion-stacks.json`) |
 | 5250 | Spec 38A FR-38A-36 scroll progress: page bar, counter and section bar (`probe-scroll-progress.mjs`, fixture `tests/fixtures/motion/pages/scroll-progress.json`) |
+| 5276 | Spec 38A M4.5 nav drawer stagger, a by-hand fixture (its probe is not in `PROBES`): a burger whose `drawerRef` is 5279 (`plugins/sgs-blocks/tests/fixtures/motion/pages/nav-drawer-stagger-page.json`; `probe-motion-nav-drawer.mjs --page 5276`) |
+| 5279 | Spec 38A M4.5 `sgs_drawer` for page 5276, a by-hand fixture (`plugins/sgs-blocks/tests/fixtures/motion/pages/nav-drawer-stagger-drawer.json`) |
 
 The one-shot probes for 5255, 5259, 5261, 5267, 5270 and 5272 failed live on 2026-10-15 although a diagnostic read the effects working: every canary page runs Lenis smooth scroll (`html.lenis`), and those probes read values mid-transition. Treat their red as unproven until they are recalibrated (Track E's next session); 5270 also needs a media image on its reveal layers.
 
