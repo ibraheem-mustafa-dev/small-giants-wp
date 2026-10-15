@@ -59,6 +59,7 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
 import '../../shared/wishlist-store';
 import { toastActions } from '../../shared/toast/store.js';
+import { renderThumbStrip } from './thumb-strip';
 
 /**
  * Module-level WeakMap: ctx → card ref.
@@ -669,57 +670,6 @@ function applyPillSelection( ctx, detail ) {
 		ctx.discountLabel = '';
 		ctx.discountHidden = true;
 	}
-}
-
-/**
- * Rebuild the thumbnail strip DOM for a card from a gallery array (A4).
- *
- * The strip is SSR-rendered for first paint (no-JS-safe), but a variation swap
- * changes the image SET, so the buttons + images must be rebuilt. Built with
- * createElement/setAttribute (never innerHTML) so the manifest-sourced url/alt
- * cannot inject markup. Clicks are handled by a delegated listener on the card
- * (see initPillBridge) — injected buttons therefore need no data-wp-on directive
- * (the Interactivity API does not bind directives on imperatively-added nodes).
- * Mirrors the imperative DOM approach already used in applyAvailability().
- *
- * @param {Element} card        The card root (.product-card--live).
- * @param {Array}   gallery     Ordered [{ url, w, h, alt }] items.
- * @param {number}  selectedIdx Index to mark aria-current.
- */
-function renderThumbStrip( card, gallery, selectedIdx ) {
-	const strip = card.querySelector( '.product-card__thumbs' );
-	if ( ! strip ) {
-		return;
-	}
-	while ( strip.firstChild ) {
-		strip.removeChild( strip.firstChild );
-	}
-	const items = Array.isArray( gallery ) ? gallery : [];
-	items.forEach( ( item, i ) => {
-		if ( ! item || ! item.url ) {
-			return;
-		}
-		const btn = document.createElement( 'button' );
-		btn.type = 'button';
-		btn.className = 'product-card__thumb';
-		btn.setAttribute( 'role', 'listitem' );
-		btn.dataset.index = String( i );
-		btn.setAttribute( 'aria-current', i === selectedIdx ? 'true' : 'false' );
-		btn.setAttribute( 'aria-label', 'Image ' + ( i + 1 ) );
-		const img = document.createElement( 'img' );
-		img.src = item.url;
-		img.alt = item.alt || '';
-		if ( item.w ) {
-			img.width = item.w;
-		}
-		if ( item.h ) {
-			img.height = item.h;
-		}
-		img.loading = 'lazy';
-		img.decoding = 'async';
-		btn.appendChild( img );
-		strip.appendChild( btn );
-	} );
 }
 
 /**

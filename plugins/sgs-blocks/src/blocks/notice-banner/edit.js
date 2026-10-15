@@ -842,7 +842,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				{ canRotate && 'rotate' === messageMode && showMessageArrows && (
 					<>
 						<button
-							className="sgs-notice-banner__prev"
+							className="sgs-notice-banner__arrows sgs-notice-banner__prev"
 							type="button"
 							aria-label={ __( 'Previous announcement', 'sgs-blocks' ) }
 							style={ arrowStyle }
@@ -850,7 +850,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							<span aria-hidden="true">&lsaquo;</span>
 						</button>
 						<button
-							className="sgs-notice-banner__next"
+							className="sgs-notice-banner__arrows sgs-notice-banner__next"
 							type="button"
 							aria-label={ __( 'Next announcement', 'sgs-blocks' ) }
 							style={ arrowStyle }

@@ -51,7 +51,9 @@ final class Sgs_Motion_Emitter {
 	 *
 	 * @param array<string,mixed> $element  The resolved element (refusals already dropped).
 	 * @param string              $selector The target's scoped selector.
-	 * @param array<string,mixed> $context  `lcp` (bool), `suppress_entrance` (bool), `block`, `target`.
+	 * @param array<string,mixed> $context  `lcp` (bool), `suppress_entrance` (bool), `no_transition` (bool: a target
+	 *                                      that shares its element with an earlier-declared one writes no `transition`,
+	 *                                      `Sgs_Motion_Shared_Element`), `block`, `target`.
 	 * @return array{css:string,attrs:array<string,string>,entrance:bool}
 	 */
 	public static function emit( array $element, string $selector, array $context ): array {
@@ -81,7 +83,7 @@ final class Sgs_Motion_Emitter {
 			$attrs['data-sgs-mc'] = implode( ' ', self::ordered_channels( $channels ) );
 		}
 		foreach ( self::TIERS as $tier ) {
-			if ( array() !== $trans[ $tier ] ) {
+			if ( array() !== $trans[ $tier ] && empty( $context['no_transition'] ) ) {
 				$decls[ $tier ]['transition'] = implode( ', ', $trans[ $tier ] );
 			}
 		}

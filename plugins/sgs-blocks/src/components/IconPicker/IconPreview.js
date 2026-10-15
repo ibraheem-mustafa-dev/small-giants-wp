@@ -58,6 +58,8 @@ export function withInlineFillStroke( svgString ) {
  * @param {Array}   [props.brands]  Brand registry entries (src/utils/brand-registry.js BRANDS), from the caller.
  * @param {string} [props.svg]    Raw SVG markup — only read when source is 'custom'.
  * @param {number} [props.size]   Pixel size of the preview box. Default 24.
+ * @param {string} [props.glyphClassName] A class for the glyph's own element (the `<svg>`, or the dashicon span),
+ *   the element a server render resolver puts a part class on (`nav-drawer` `closeIcon`); an emoji has none.
  * @param {string} [props.gradient] Optional `iconColourGradient`-style CSS
  *   gradient function (`linear-gradient(...)`/`radial-gradient(...)`). SVG
  *   icons are STROKE-based, so a gradient can't ride `color`/`currentColor`
@@ -69,7 +71,26 @@ export function withInlineFillStroke( svgString ) {
  *   only stroke-based sources); emoji/dashicon ignore it, matching the
  *   frontend's `$icon_svg` scoping.
  */
-export default function IconPreview( { source, name, size = 24, gradient = '', svg: customSvg = '', branded = false, brands = [] } ) {
+/**
+ * An SVG string with one class added to its root `<svg>` tag.
+ *
+ * @param {string} markup    Sanitised SVG markup.
+ * @param {string} className A class token (a caller's BEM part class).
+ * @return {string} Markup.
+ */
+export function withSvgClass( markup, className ) {
+	return String( markup ).replace( /<svg\b([^>]*)>/i, ( tag, attrs ) => {
+		const current = /\sclass\s*=\s*"([^"]*)"/i.exec( attrs );
+		if ( current ) {
+			return tag.replace( current[ 0 ], ` class="${ current[ 1 ] } ${ className }"` );
+		}
+		return `<svg${ attrs } class="${ className }">`;
+	} );
+}
+
+export default function IconPreview( { source, name, size = 24, gradient = '', svg: customSvg = '', branded = false, brands = [], glyphClassName = '' } ) {
+	// The glyph class goes on the sanitised markup's own `<svg>` tag.
+	const glyph = ( markup ) => ( glyphClassName ? withSvgClass( markup, glyphClassName ) : markup );
 	const [ svg, setSvg ] = useState( '' );
 	const gradientId = useInstanceId( IconPreview, 'sgs-icon-preview-grad' );
 
@@ -122,13 +143,13 @@ export default function IconPreview( { source, name, size = 24, gradient = '', s
 				style={ box }
 				aria-hidden="true"
 				// eslint-disable-next-line react/no-danger
-				dangerouslySetInnerHTML={ { __html: sanitiseSvg( brandMark.svg ) } }
+				dangerouslySetInnerHTML={ { __html: glyph( sanitiseSvg( brandMark.svg ) ) } }
 			/>
 		);
 	}
 
 	if ( 'custom' === source ) {
-		const safe = sanitiseSvg( customSvg );
+		const safe = glyph( sanitiseSvg( customSvg ) );
 		return safe ? (
 			<span
 				className="sgs-icon-preview__svg"
@@ -145,7 +166,7 @@ export default function IconPreview( { source, name, size = 24, gradient = '', s
 	if ( 'dashicon' === source ) {
 		return (
 			<span
-				className={ `dashicons dashicons-${ name || 'star-filled' }` }
+				className={ [ `dashicons dashicons-${ name || 'star-filled' }`, glyphClassName ].filter( Boolean ).join( ' ' ) }
 				style={ { ...box, fontSize: size, width: size, height: size } }
 				aria-hidden="true"
 			/>
@@ -163,7 +184,7 @@ export default function IconPreview( { source, name, size = 24, gradient = '', s
 				style={ box }
 				aria-hidden="true"
 				// eslint-disable-next-line react/no-danger
-				dangerouslySetInnerHTML={ { __html: sanitiseSvg( gradedSvg ) } }
+				dangerouslySetInnerHTML={ { __html: glyph( sanitiseSvg( gradedSvg ) ) } }
 			/>
 		);
 	}

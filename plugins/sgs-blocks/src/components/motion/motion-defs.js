@@ -1,6 +1,7 @@
 /**
  * The motion schema extract for the editor (Spec 38A): the `$defs`, `x-sgs-tokens`, `x-sgs-channels`, `x-sgs-writes`,
- * `x-sgs-effects`, `x-sgs-refusals`, `x-sgs-layer-labels` and `x-sgs-panels` of `schemas/motion.schema.json`, as written by `scripts/generate-motion-editor-defs.py` into `generated-motion-defs.json`.
+ * `x-sgs-effects`, `x-sgs-refusals`, `x-sgs-layer-labels`, `x-sgs-panels` and the root node (`type`, `properties`,
+ * `required`, `additionalProperties`) of `schemas/motion.schema.json`, as written by `scripts/generate-motion-editor-defs.py` into `generated-motion-defs.json`.
  *
  * This is the only module that imports the `@sgs/motion-defs` id. In the webpack build that id is an external
  * (`webpack.config.js`, the script config's dependency-extraction plugin): it resolves to the `window.sgsMotionDefs`

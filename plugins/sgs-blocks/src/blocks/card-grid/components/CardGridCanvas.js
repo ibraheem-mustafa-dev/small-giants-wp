@@ -134,7 +134,7 @@ export default function CardGridCanvas( { attributes, isWcProductMode, isCptColl
 										// eslint-disable-next-line jsx-a11y/media-has-caption
 										<video
 											src={ item.media.url }
-											className="sgs-card-grid__image"
+											className="sgs-card-grid__image sgs-card-grid__media"
 											style={ itemMediaStyle }
 											muted
 											loop
@@ -144,7 +144,7 @@ export default function CardGridCanvas( { attributes, isWcProductMode, isCptColl
 										<img
 											src={ item.media.url }
 											alt={ item.media.alt || '' }
-											className="sgs-card-grid__image"
+											className="sgs-card-grid__image sgs-card-grid__media"
 											style={ itemMediaStyle }
 										/>
 									)

@@ -123,7 +123,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 					</div>
 
 					{ showCategory && firstCat && ( cardStyle === 'card' || isOverlay ) && (
-						<span className="sgs-post-grid__badge" style={ { ...badgeFillStyle, ...typographyPreviewStyle( attributes, 'badge', tier ) } }>
+						<span className="sgs-post-grid__badge sgs-post-grid__category-badge" style={ { ...badgeFillStyle, ...typographyPreviewStyle( attributes, 'badge', tier ) } }>
 							{ firstCat.name }
 						</span>
 					) }
@@ -145,7 +145,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 				) }
 
 				{ showCategory && firstCat && ( cardStyle === 'flat' || cardStyle === 'minimal' ) && (
-					<span className="sgs-post-grid__category" style={ { ...badgeStyle, ...typographyPreviewStyle( attributes, 'category', tier ) } }>
+					<span className="sgs-post-grid__category sgs-post-grid__category-badge" style={ { ...badgeStyle, ...typographyPreviewStyle( attributes, 'category', tier ) } }>
 						{ firstCat.name }
 					</span>
 				) }

@@ -52,6 +52,8 @@ import {
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { sanitiseSvg, svgBackgroundPreview, backgroundPreview, wrapperToneClass, surfaceBackdropPreview, OVERLAY_BLEND_MODES } from '../../utils';
 import { heroCanvasPreview, splitMediaAtTier } from './canvas-preview';
+import { namesBand } from '../extensions/motion/canvas/resolve-target';
+import { getBlockType } from '@wordpress/blocks';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 // BORDER_STYLE_OPTIONS (the local 4-option none/solid/dashed/dotted list) was removed
@@ -509,7 +511,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	Object.assign( wrapperStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient }, previewTier, colourPalette ) );
 
 	// Content band (`.sgs-container__inner`): standard variant only; split passes wrap_inner=false.
-	const { hasBandProps: showContentBand, bandStyle: contentBandStyle } = heroPreview.band;
+	const { hasBandProps: bandFromProps, bandStyle: contentBandStyle } = heroPreview.band;
+	// A motion layer on the band part (`content-band`, `inner`; Spec 38A §6.2) forces the band, as
+	// `Sgs_Motion_Targets::names_band()` does on the page; split passes wrap_inner=false there too.
+	const showContentBand = bandFromProps || ( ! isSplit && namesBand( attributes.sgsMotion, 'sgs/hero', getBlockType( 'sgs/hero' )?.supports?.sgs?.elements || {} ) );
 
 	// Split-image preview style — mirrors render.php's scoped `.sgs-hero__split-image`
 	// CSS builder (render.php:576-626, 561-573) for the Phase-1 image-display
@@ -1968,7 +1973,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				   frontend's `.sgs-container__inner`) whenever Content band padding is set —
 				   see the `showContentBand` derivation above for why split never wraps. */ }
 				{ showContentBand ? (
-					<div className="sgs-container__inner" style={ contentBandStyle }>
+					<div className="sgs-container__inner sgs-hero__content-band" style={ contentBandStyle }>
 						<div { ...innerBlocksProps } />
 					</div>
 				) : (

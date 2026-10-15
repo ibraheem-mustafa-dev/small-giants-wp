@@ -1,0 +1,798 @@
+[
+	{
+		"name": "hover part per device",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-s:1.04;--sgs-mh-to-ty:-6px;transition:--sgs-mh-s 250ms var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ty 250ms var(--wp--custom--easing--ease-out) 0ms, color 250ms var(--wp--custom--easing--ease-out) 0ms, background-color 250ms var(--wp--custom--easing--ease-out) 0ms, border-color 250ms var(--wp--custom--easing--ease-out) 0ms, box-shadow 250ms var(--wp--custom--easing--ease-out) 0ms;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-s:1.02;}}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-ty:-3px;}}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover indent",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-indent:8px;transition:--sgs-mh-indent var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "padding-inline-start"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover tokens and paint timing",
+		"css": ".sgs-m-0123456789 .sgs-hero__content{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--sm));--sgs-mh-to-op:0.8;transition:--sgs-mh-ty var(--wp--custom--duration--medium) var(--wp--custom--easing--spring) 40ms, --sgs-mh-op var(--wp--custom--duration--medium) var(--wp--custom--easing--spring) 40ms, color var(--wp--custom--duration--medium) var(--wp--custom--easing--spring) 40ms, background-color var(--wp--custom--duration--medium) var(--wp--custom--easing--spring) 40ms, border-color var(--wp--custom--duration--medium) var(--wp--custom--easing--spring) 40ms, box-shadow var(--wp--custom--duration--medium) var(--wp--custom--easing--spring) 40ms;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-hero__content{transition:--sgs-mh-ty 150ms var(--wp--custom--easing--spring) 40ms, --sgs-mh-op 150ms var(--wp--custom--easing--spring) 40ms, color 150ms var(--wp--custom--easing--spring) 40ms, background-color 150ms var(--wp--custom--easing--spring) 40ms, border-color 150ms var(--wp--custom--easing--spring) 40ms, box-shadow 150ms var(--wp--custom--easing--spring) 40ms;}}",
+		"plans": [
+			{
+				"target": "content",
+				"selector": ".sgs-m-0123456789 .sgs-hero__content",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate opacity"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover source root on a part",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-s:1.05;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "root",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {
+			"data-sgs-mroot": ""
+		},
+		"losers": {}
+	},
+	{
+		"name": "hover source group on the root",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "group",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "band part is the direct child",
+		"css": ".sgs-m-0123456789 > .sgs-hero__content-band{--sgs-mh-to-tx:3px;transition:--sgs-mh-tx var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "content-band",
+				"selector": ".sgs-m-0123456789 > .sgs-hero__content-band",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "declared part selector",
+		"css": ".sgs-m-0123456789 .sgs-testimonial__quote{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "quote-text",
+				"selector": ".sgs-m-0123456789 .sgs-testimonial__quote",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "wrapper part is the root",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-s:1.02;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "quote-box",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "custom target",
+		"css": ".sgs-m-0123456789 p.lede{--sgs-mh-to-tx:4px;transition:--sgs-mh-tx var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "custom:1",
+				"selector": ".sgs-m-0123456789 p.lede",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "undeclared and motion-false parts are skipped",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-s:1.03;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "entrance per device",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-ty:24px;--sgs-me-dur:600ms;--sgs-me-delay:100ms;--sgs-me-ease:var(--wp--custom--easing--ease-out);--sgs-me-start:10%;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-me-from-ty:16px;--sgs-me-dur:400ms;}}@media (max-width:767px){.sgs-m-0123456789{--sgs-me-from-ty:8px;}}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "load translate opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "entrance on a part, scroll",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-me-from-s:0.9;--sgs-me-from-blur:6px;--sgs-me-to-s:1;}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-me": "scroll scale filter"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "entrance under the LCP rule",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:1;--sgs-me-from-ty:24px;--sgs-me-dur:600ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "load translate opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "entrance suppressed by a scroll owner",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-s:1.02;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "keyframes reversed",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-ty:40px;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me-keyframes": "[{\"offset\":0,\"--sgs-me-op\":\"0\",\"--sgs-me-ty\":\"40px\"},{\"offset\":0.6,\"--sgs-me-op\":\"1\",\"--sgs-me-ty\":\"-6px\"},{\"offset\":1,\"--sgs-me-op\":\"1\",\"--sgs-me-ty\":\"0px\"}]",
+					"data-sgs-me": "scroll translate opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "keyframes with angles and LCP",
+		"css": ".sgs-m-0123456789{--sgs-persp-self:800px;--sgs-me-from-rx:0deg;--sgs-me-from-op:1;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me-keyframes": "[{\"offset\":0,\"--sgs-me-rx\":\"0deg\",\"--sgs-me-op\":\"1\"},{\"offset\":0.5,\"--sgs-me-rx\":\"20deg\",\"--sgs-me-ry\":\"-10deg\",\"--sgs-me-op\":\"1\"},{\"offset\":1,\"--sgs-me-rx\":\"0deg\",\"--sgs-me-op\":\"1\"}]",
+					"data-sgs-me": "load transform opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "rotate pairs, follow pointer and an entrance flip",
+		"css": ".sgs-m-0123456789{--sgs-persp-self:800px;--sgs-rot-rest:-1deg;--sgs-rx-rest:10deg;--sgs-mh-to-rx:-6deg;--sgs-mh-to-ry:5deg;--sgs-me-from-op:0;--sgs-me-from-rx:90deg;--sgs-me-to-ry:0deg;transition:--sgs-mh-rx var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ry var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}@media (max-width:767px){.sgs-m-0123456789{--sgs-persp-self:500px;--sgs-rx-rest:6deg;--sgs-mh-to-rx:-2deg;}}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-me": "scroll transform opacity",
+					"data-sgs-mc": "rotate transform"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "rotate Z with a rest angle per device",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:2deg;--sgs-mh-to-rot:6deg;transition:--sgs-mh-rot var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:5deg;--sgs-mh-to-rot:3deg;}}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "rotate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "three panels stacked",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--sm));--sgs-mh-to-s:1.04;--sgs-persp-self:1000px;--sgs-rx-rest:4deg;--sgs-mh-to-ry:6deg;--sgs-me-from-op:0;--sgs-me-from-ty:var(--wp--custom--entrance--distance);--sgs-me-from-rx:-12deg;--sgs-me-to-op:1;--sgs-me-to-ty:0px;--sgs-me-to-rx:0deg;--sgs-me-dur:var(--wp--custom--entrance--duration);--sgs-me-delay:0ms;--sgs-me-ease:var(--wp--custom--entrance--easing);--sgs-me-start:6%;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ry var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-mag-x 250ms cubic-bezier(0.16, 0.84, 0.32, 1) 0ms, --sgs-mag-y 250ms cubic-bezier(0.16, 0.84, 0.32, 1) 0ms, --sgs-sheen-x 750ms ease-out 0ms;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-me-from-ty:16px;}}@media (max-width:767px){.sgs-m-0123456789{--sgs-mh-to-ty:-2px;--sgs-me-from-ty:8px;}}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-me": "scroll translate transform opacity",
+					"data-sgs-mc": "translate scale transform ::after injected"
+				},
+				"entrance": true
+			},
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mc": "translate scale background-position"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "custom targets: unreviewed, a list and a sibling are refused; a child combinator resolves",
+		"css": ".sgs-m-0123456789 > .sgs-hero__content p{--sgs-mh-to-tx:2px;transition:--sgs-mh-tx var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "custom:4",
+				"selector": ".sgs-m-0123456789 > .sgs-hero__content p",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "off-schema scale and garbage string",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{transition:color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "unknown source value",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-s:1.02;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "invalid trigger",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "scroll opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "per-device on a part entrance only tablet to",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-me-from-op:0;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-hero__media{--sgs-me-to-op:0.5;}}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-me-from-ty:calc(-1 * var(--wp--custom--distance--md));}}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-me": "scroll translate opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "negative distance tokens",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--lg));--sgs-mh-to-tx:var(--wp--custom--distance--xs);transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-tx var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--xs));}}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "token easing on device",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-s:1.02;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--spring) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--spring) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--spring) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--spring) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--spring) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "group source on part",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-s:1.02;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "group",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover effect per device duration",
+		"css": ".sgs-m-0123456789{transition:--sgs-mag-x var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, --sgs-mag-y var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "element effects non-hover",
+		"css": "",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mc": "translate background-position"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "bogus effect",
+		"css": "",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "colour value injection",
+		"css": ".sgs-m-0123456789{transition:color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "version missing",
+		"css": "",
+		"plans": [],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "string numbers",
+		"css": ".sgs-m-0123456789{transition:color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "tilt effect plus state rotateX",
+		"css": ".sgs-m-0123456789{--sgs-persp-self:800px;--sgs-mh-to-rx:5deg;transition:--sgs-mh-rx var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "transform"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "two perspectives",
+		"css": ".sgs-m-0123456789{--sgs-persp-self:800px;--sgs-mh-to-rx:5deg;--sgs-me-from-rx:20deg;transition:--sgs-mh-rx var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-me": "scroll transform",
+					"data-sgs-mc": "transform"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "many effects",
+		"css": ".sgs-m-0123456789{transition:--sgs-mag-x var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, --sgs-mag-y var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, --sgs-sheen-x var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mc": "translate injected"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "state plus magnet translate",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mag-x var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, --sgs-mag-y var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "open trigger",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-to-op:1;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "open opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "open trigger close",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-to-op:1;}.sgs-m-0123456789{--sgs-me-close-to-op:0;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "open opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "shared element: item and current, two entrances and two hover sources",
+		"css": ".sgs-m-0123456789 .sgs-breadcrumbs__item{--sgs-mh-to-ty:-2px;--sgs-me-from-ty:12px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "current",
+				"selector": ".sgs-m-0123456789 .sgs-breadcrumbs__item--current",
+				"root": false,
+				"attrs": {},
+				"entrance": false
+			},
+			{
+				"target": "item",
+				"selector": ".sgs-m-0123456789 .sgs-breadcrumbs__item",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "root",
+					"data-sgs-me": "scroll translate",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {
+			"data-sgs-mroot": ""
+		},
+		"losers": {
+			"current": "item"
+		}
+	},
+	{
+		"name": "shared element: root and wrapper part",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-3px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "quote-box",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {},
+				"entrance": false
+			},
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {
+			"quote-box": "root"
+		}
+	},
+	{
+		"name": "state trigger the block does not declare",
+		"css": "",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "custom targets with a child combinator and a pseudo-class",
+		"css": ".sgs-m-0123456789 > .sgs-hero__content p.lede{--sgs-mh-to-tx:2px;transition:--sgs-mh-tx var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}.sgs-m-0123456789 a.cta:hover{--sgs-mh-to-s:1.03;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "custom:1",
+				"selector": ".sgs-m-0123456789 > .sgs-hero__content p.lede",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			},
+			{
+				"target": "custom:2",
+				"selector": ".sgs-m-0123456789 a.cta:hover",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "empty motion",
+		"css": "",
+		"plans": [],
+		"rootAttrs": {},
+		"losers": {}
+	}
+]

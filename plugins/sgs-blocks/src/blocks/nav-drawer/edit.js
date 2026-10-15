@@ -1437,6 +1437,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 									<IconPreview
 										source={ closeIcon?.source || 'lucide' }
 										name={ closeIcon?.name || 'x' }
+										glyphClassName="sgs-nav-drawer__close-icon"
 									/>
 								</span>
 								<span className="sgs-nav-drawer__close-text" style={ closeLabelStyle }>
@@ -1448,6 +1449,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							<IconPreview
 								source={ closeIcon?.source || 'lucide' }
 								name={ closeIcon?.name || 'x' }
+								glyphClassName="sgs-nav-drawer__close-icon"
 							/>
 						) }
 					</span>

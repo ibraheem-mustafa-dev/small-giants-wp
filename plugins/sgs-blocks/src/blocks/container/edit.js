@@ -23,6 +23,8 @@ import { resolveOnTiers } from "../../utils/responsive";
 import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, backgroundPreview, svgBackgroundPreview, tierBoxLonghands, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, flattenPresetSetting, separatorsFlowPreview, typographyPreviewStyle, textIndentPreviewCss, sgsBorderPreview } from "../../utils";
 import ShapeDividerPreview from "../../components/ShapeDividerPreview";
 import { gridItemVars, gridItemStateCss } from "./grid-item-preview";
+import { namesBand } from "../extensions/motion/canvas/resolve-target";
+import { getBlockType } from "@wordpress/blocks";
 import { containerColumnsPreview, containerRowsPreview, bandMarginPreview } from "./layout-preview";
 import {
   LayoutPanel,
@@ -318,7 +320,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // that band carries no width cap, so the cap the helper adds is removed again.
   const bandMargin = bandMarginPreview( attributes, previewTier );
   const bandForMarginOnly = Object.keys( bandMargin ).length > 0 && "" === bandMaxWidth;
-  const { hasBandProps, bandStyle } = contentBandPreview( {
+  const { hasBandProps: bandFromProps, bandStyle } = contentBandPreview( {
     contentWidth: bandForMarginOnly ? "none" : bandMaxWidth,
     bandPadding: bandPad,
     style,
@@ -328,6 +330,9 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     delete bandStyle.maxWidth;
     delete bandStyle.marginInline;
   }
+  // A motion layer on the band part (`content-band`, `inner`; Spec 38A §6.2) needs the band, so it forces it here as
+  // `Sgs_Motion_Targets::names_band()` forces it in the container wrapper on the page.
+  const hasBandProps = bandFromProps || namesBand( attributes.sgsMotion, name, getBlockType( name )?.supports?.sgs?.elements || {} );
   Object.assign( bandStyle, bandMargin );
   if ( "grid" === layout && hasBandProps && style.gridTemplateRows !== undefined ) {
     bandStyle.gridTemplateRows = style.gridTemplateRows;
@@ -438,8 +443,8 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     hasBandProps
       ? {
           className: scrollRowPreview
-            ? "sgs-container__inner sgs-container--scroll-row"
-            : "sgs-container__inner",
+            ? "sgs-container__inner sgs-container__content-band sgs-container--scroll-row"
+            : "sgs-container__inner sgs-container__content-band",
           style: bandStyle,
           ref: gridRef,
         }

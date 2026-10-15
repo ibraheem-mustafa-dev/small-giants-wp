@@ -133,8 +133,15 @@ namespace {
 	}
 
 	if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
-		/** A regex stand-in for the opening-tag walk the motion markup class uses. */
+		/**
+		 * A regex stand-in for the opening-tag walk the motion markup class uses. Attributes are read by a tokeniser that
+		 * consumes each quoted value whole, so text inside a value that looks like an attribute (`title="a data-x=1"`)
+		 * or a `>` inside a value is never read as markup (`sgs_test_tag_processor_self_test()` proves it).
+		 */
 		class WP_HTML_Tag_Processor {
+			/** One attribute: name, then a double-quoted, single-quoted or bare value (all optional). */
+			const ATTR = '/\s+([^\s"\'>\/=]+)(?:\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|([^\s"\'=<>`]+)))?/';
+
 			private $html;
 			private $start = -1;
 			private $len   = 0;
@@ -146,7 +153,8 @@ namespace {
 			public function next_tag( $query = null ) {
 				$closers = is_array( $query ) && 'visit' === ( $query['tag_closers'] ?? '' );
 				$from    = $this->start < 0 ? 0 : $this->start + $this->len;
-				$pattern = $closers ? '/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)(?:\s[^>]*)?>/' : '/<()([a-zA-Z][a-zA-Z0-9-]*)(?:\s[^>]*)?>/';
+				$body    = '(?:\s(?:[^>"\']|"[^"]*"|\'[^\']*\')*)?>/';
+				$pattern = $closers ? '/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)' . $body : '/<()([a-zA-Z][a-zA-Z0-9-]*)' . $body;
 				if ( ! preg_match( $pattern, $this->html, $m, PREG_OFFSET_CAPTURE, $from ) ) {
 					return false;
 				}
@@ -168,11 +176,33 @@ namespace {
 			private function open() {
 				return substr( $this->html, $this->start, $this->len );
 			}
-			public function get_attribute( $name ) {
-				if ( ! preg_match( '/\s' . preg_quote( $name, '/' ) . '(?:="([^"]*)")?(?=[\s>\/])/', $this->open(), $m ) ) {
-					return null;
+			/**
+			 * The open tag's attributes in order: lower-case name => [ value or true, offset, length ] (first wins).
+			 */
+			private function attributes() {
+				$open = $this->open();
+				$head = preg_match( '/^<[a-zA-Z][a-zA-Z0-9-]*/', $open, $t ) ? strlen( $t[0] ) : 0;
+				$out  = array();
+				preg_match_all( self::ATTR, $open, $all, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, $head );
+				foreach ( $all as $m ) {
+					$name = strtolower( $m[1][0] );
+					if ( isset( $out[ $name ] ) ) {
+						continue;
+					}
+					$value = true;
+					foreach ( array( 2, 3, 4 ) as $group ) {
+						if ( isset( $m[ $group ] ) && -1 !== $m[ $group ][1] ) {
+							$value = html_entity_decode( $m[ $group ][0], ENT_QUOTES );
+							break;
+						}
+					}
+					$out[ $name ] = array( $value, $m[0][1], strlen( $m[0][0] ) );
 				}
-				return isset( $m[1] ) ? html_entity_decode( $m[1], ENT_QUOTES ) : true;
+				return $out;
+			}
+			public function get_attribute( $name ) {
+				$attrs = $this->attributes();
+				return isset( $attrs[ strtolower( $name ) ] ) ? $attrs[ strtolower( $name ) ][0] : null;
 			}
 			public function has_class( $class ) {
 				$classes = $this->get_attribute( 'class' );
@@ -182,14 +212,22 @@ namespace {
 				$this->html = substr_replace( $this->html, $new, $this->start, $this->len );
 				$this->len  = strlen( $new );
 			}
+			/** The open tag without one attribute. */
+			private function without( $name ) {
+				$open  = $this->open();
+				$attrs = $this->attributes();
+				$found = $attrs[ strtolower( $name ) ] ?? null;
+				return null === $found ? $open : substr_replace( $open, '', $found[1], $found[2] );
+			}
 			public function set_attribute( $name, $value ) {
-				$open = preg_replace( '/\s' . preg_quote( $name, '/' ) . '(?:="[^"]*")?(?=[\s>\/])/', '', $this->open() );
+				$open = $this->without( $name );
 				$attr = true === $value ? ' ' . $name : ' ' . $name . '="' . htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ) . '"';
-				$this->replace_open( preg_replace( '/^<[a-zA-Z][a-zA-Z0-9-]*/', '$0' . str_replace( '$', '\$', $attr ), $open, 1 ) );
+				$head = preg_match( '/^<[a-zA-Z][a-zA-Z0-9-]*/', $open, $t ) ? strlen( $t[0] ) : 0;
+				$this->replace_open( substr_replace( $open, $attr, $head, 0 ) );
 				return true;
 			}
 			public function remove_attribute( $name ) {
-				$this->replace_open( preg_replace( '/\s' . preg_quote( $name, '/' ) . '(?:="[^"]*")?(?=[\s>\/])/', '', $this->open() ) );
+				$this->replace_open( $this->without( $name ) );
 				return true;
 			}
 			public function add_class( $class ) {
@@ -200,6 +238,40 @@ namespace {
 				return $this->html;
 			}
 		}
+	}
+
+	/**
+	 * The stand-in's own check: attribute-like text and a `>` inside quoted values are never read as attributes or as
+	 * the end of the tag, and a write replaces only the real attribute. Returns the failures (empty when it holds).
+	 *
+	 * @return array<int,string>
+	 */
+	function sgs_test_tag_processor_self_test(): array {
+		$fail = array();
+		$p    = new WP_HTML_Tag_Processor( '<div title="x data-sgs-mh=&quot;root&quot; class=&quot;no&quot;" data-q=\'a > b\' class="real"><span class="in">t</span></div>' );
+		$p->next_tag();
+		if ( null !== $p->get_attribute( 'data-sgs-mh' ) ) {
+			$fail[] = 'read an attribute from inside a quoted value';
+		}
+		if ( 'real' !== $p->get_attribute( 'class' ) ) {
+			$fail[] = 'class was not the real attribute';
+		}
+		if ( 'a > b' !== $p->get_attribute( 'data-q' ) ) {
+			$fail[] = 'a > inside a single-quoted value ended the tag';
+		}
+		$p->set_attribute( 'class', 'real two' );
+		$p->set_attribute( 'data-sgs-mh', 'self' );
+		$html = $p->get_updated_html();
+		if ( false === strpos( $html, 'title="x data-sgs-mh=&quot;root&quot; class=&quot;no&quot;"' ) ) {
+			$fail[] = 'a write changed text inside another attribute\'s value';
+		}
+		if ( 1 !== substr_count( $html, ' class="real two"' ) || 1 !== substr_count( $html, ' data-sgs-mh="self"' ) ) {
+			$fail[] = 'a write did not replace exactly the real attribute';
+		}
+		if ( ! $p->next_tag() || 'SPAN' !== $p->get_tag() || ! $p->has_class( 'in' ) ) {
+			$fail[] = 'the walk did not reach the next real tag';
+		}
+		return $fail;
 	}
 
 	require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-breakpoints.php';

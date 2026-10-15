@@ -13,6 +13,13 @@
  * is appended just before that element's matching close tag and the mark is removed. A void element (an `<img>`)
  * cannot hold a layer and gets none.
  *
+ * Two plans on one element (two parts whose selectors match the same tag, such as a breadcrumb item that is also the
+ * current item): the renderer has already taken the later-declared plan's hover state and entrance away
+ * (`Sgs_Motion_Shared_Element`, which finds such elements through `element_hits()`), so what is left merges here. The
+ * token lists (`data-sgs-mc`, `data-sgs-fx`) and the layer owners join, space-separated and de-duplicated; any other
+ * attribute an earlier plan already wrote keeps the earlier value, as `Sgs_Motion_Fx_Emitter::merge` does for effect
+ * attributes. Which attributes a plan wrote is held in a temporary attribute for the length of the pass.
+ *
  * @package SGS\Blocks
  */
 
@@ -26,6 +33,12 @@ defined( 'ABSPATH' ) || exit;
 final class Sgs_Motion_Markup {
 
 	const MARK = 'data-sgs-ml-mark';
+
+	/** Temporary attribute: the attribute names the plans of this pass already wrote on the element. */
+	const WRITTEN = 'data-sgs-ml-written';
+
+	/** Space-separated token lists two plans on one element join. */
+	const TOKEN_ATTRS = array( 'data-sgs-mc', 'data-sgs-fx' );
 
 	const VOID = array( 'AREA', 'BASE', 'BR', 'COL', 'EMBED', 'HR', 'IMG', 'INPUT', 'LINK', 'META', 'SOURCE', 'TRACK', 'WBR' );
 
@@ -97,6 +110,9 @@ final class Sgs_Motion_Markup {
 			$p->add_class( $scope );
 		}
 		foreach ( $root_attrs as $name => $value ) {
+			if ( in_array( $name, self::TOKEN_ATTRS, true ) ) {
+				$value = self::join_tokens( $p->get_attribute( $name ), (string) $value );
+			}
 			$p->set_attribute( $name, '' === $value ? true : $value );
 		}
 		$marked = false;
@@ -114,11 +130,51 @@ final class Sgs_Motion_Markup {
 				}
 			}
 		}
-		$rest = $p->get_updated_html();
+		$rest = (string) preg_replace( '/\s' . preg_quote( self::WRITTEN, '/' ) . '="[^"]*"/', '', $p->get_updated_html() );
 		if ( $marked ) {
 			$rest = self::inject_layers( $rest );
 		}
 		return $css_tag . $head . $rest;
+	}
+
+	/**
+	 * Which targets each element matches, in the order given: one list per element that more than one target matches.
+	 * The root (the first tag after any leading style or script) is element 0 and is matched by every root target.
+	 *
+	 * @param string                            $html    Block HTML.
+	 * @param array<string,array<string,mixed>> $matches Target => matcher (`Sgs_Motion_Targets::resolve()['match']`).
+	 * @return array<int,array<int,string>>
+	 */
+	public static function element_hits( string $html, array $matches ): array {
+		list( , $rest ) = self::split_head( $html );
+		$p              = new \WP_HTML_Tag_Processor( $rest );
+		if ( ! $p->next_tag() ) {
+			return array();
+		}
+		$out  = array();
+		$hits = array();
+		foreach ( $matches as $target => $match ) {
+			if ( ! empty( $match['root'] ) ) {
+				$hits[] = (string) $target;
+			}
+		}
+		if ( count( $hits ) > 1 ) {
+			$out[] = $hits;
+		}
+		$open = array( (string) $p->get_tag() );
+		while ( self::next_open( $p, $open ) ) {
+			$depth = count( $open ) - ( self::opens_level( $p ) ? 1 : 0 );
+			$hits  = array();
+			foreach ( $matches as $target => $match ) {
+				if ( empty( $match['root'] ) && self::matches( $p, $match, $depth ) ) {
+					$hits[] = (string) $target;
+				}
+			}
+			if ( count( $hits ) > 1 ) {
+				$out[] = $hits;
+			}
+		}
+		return $out;
 	}
 
 	/**
@@ -166,14 +222,51 @@ final class Sgs_Motion_Markup {
 	 * @return bool Whether the tag was marked for layers.
 	 */
 	private static function write( $p, array $plan ): bool {
+		$written = self::tokens( $p->get_attribute( self::WRITTEN ) );
 		foreach ( $plan['attrs'] as $name => $value ) {
-			$p->set_attribute( $name, $value );
+			$name = (string) $name;
+			if ( in_array( $name, self::TOKEN_ATTRS, true ) ) {
+				// A token list joins whatever is already on the element: an earlier plan's, or the block's own
+				// render.php value (a canvas or list that carries `data-sgs-fx` before the renderer runs).
+				$p->set_attribute( $name, self::join_tokens( $p->get_attribute( $name ), (string) $value ) );
+			} elseif ( in_array( $name, $written, true ) ) {
+				continue;
+			} else {
+				$p->set_attribute( $name, $value );
+			}
+			if ( ! in_array( $name, $written, true ) ) {
+				$written[] = $name;
+			}
+		}
+		if ( array() !== $written ) {
+			$p->set_attribute( self::WRITTEN, implode( ' ', $written ) );
 		}
 		if ( array() === $plan['layers'] || in_array( $p->get_tag(), self::VOID, true ) ) {
 			return false;
 		}
-		$p->set_attribute( self::MARK, implode( ' ', $plan['layers'] ) );
+		$p->set_attribute( self::MARK, self::join_tokens( $p->get_attribute( self::MARK ), implode( ' ', $plan['layers'] ) ) );
 		return true;
+	}
+
+	/**
+	 * The space-separated tokens of an attribute value (none for a missing or boolean attribute).
+	 *
+	 * @param mixed $value Attribute value from the tag processor.
+	 * @return array<int,string>
+	 */
+	private static function tokens( $value ): array {
+		return is_string( $value ) ? array_values( array_filter( explode( ' ', $value ), 'strlen' ) ) : array();
+	}
+
+	/**
+	 * Two token lists joined, the earlier tokens first, each token once.
+	 *
+	 * @param mixed  $existing The value already on the element.
+	 * @param string $added    The value a later plan writes.
+	 * @return string
+	 */
+	private static function join_tokens( $existing, string $added ): string {
+		return implode( ' ', array_values( array_unique( array_merge( self::tokens( $existing ), self::tokens( $added ) ) ) ) );
 	}
 
 	/**

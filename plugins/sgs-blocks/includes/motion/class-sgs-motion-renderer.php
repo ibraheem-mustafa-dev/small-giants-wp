@@ -6,7 +6,8 @@
  * 1. drops every key and value the schema does not allow (`Sgs_Motion_Document::sanitise`);
  * 2. drops the later of two refused layers per element, or clears a refused value such as a second perspective
  *    (`Sgs_Motion_Layer_Drops::resolve`), and an X or Y rotation owner on a block whose parent's pin-scrub animates its
- *    children's transform (the cross-element §10 rule);
+ *    children's transform (the cross-element §10 rule), and the hover state and entrance of a target that shares its
+ *    element with an earlier-declared target (`Sgs_Motion_Shared_Element`);
  * 3. suppresses an element's entrance when one of its effects owns the scroll range (`sgs_effect_owns_scroll_transform`,
  *    and for the root also the legacy `fx` attribute through `sgs_fx_owns_scroll_transform`);
  * 4. resolves each target to its scoped selector (`Sgs_Motion_Targets`) and emits its per-device custom properties and
@@ -325,6 +326,7 @@ final class Sgs_Motion_Renderer {
 		$legacy_scroll = sgs_fx_owns_scroll_transform( $block_content, $attrs );
 		$plans         = array();
 		$css           = '';
+		$losers        = Sgs_Motion_Shared_Element::losers( $block_content, $name, $scope, $doc['elements'] );
 		foreach ( $doc['elements'] as $target => $element ) {
 			$target   = (string) $target;
 			$resolved = Sgs_Motion_Targets::resolve( $name, $scope, $target, (array) $element );
@@ -335,7 +337,10 @@ final class Sgs_Motion_Renderer {
 			foreach ( $result['dropped'] as $drop ) {
 				do_action( 'sgs_motion_layer_dropped', $name, $target, $drop );
 			}
-			$element  = $result['element'];
+			$element = $result['element'];
+			if ( isset( $losers[ $target ] ) ) {
+				$element = Sgs_Motion_Shared_Element::strip( $element, $name, $target, $losers[ $target ] );
+			}
 			$suppress = $resolved['match']['root'] && $legacy_scroll;
 			foreach ( $element['effects'] ?? array() as $layer ) {
 				$suppress = $suppress || sgs_effect_owns_scroll_transform( (string) $layer['effect'] );
@@ -349,6 +354,7 @@ final class Sgs_Motion_Renderer {
 					'suppress_entrance' => $suppress,
 					'block'             => $name,
 					'target'            => $target,
+					'no_transition'     => isset( $losers[ $target ] ),
 				)
 			);
 			$css      .= $emitted['css'];

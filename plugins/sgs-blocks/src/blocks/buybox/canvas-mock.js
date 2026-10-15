@@ -256,7 +256,7 @@ function SampleValueLadder( { attributes, tier } ) {
 				<li key={ row.pack } className="value-ladder__row" aria-current={ 0 === index ? 'true' : undefined }>
 					<span className="value-ladder__pack">{ row.pack }</span>
 					<span className="value-ladder__per-unit">{ row.perUnit }</span>
-					{ row.saving && <span className="value-ladder__saving" style={ savingStyle }>{ row.saving }</span> }
+					{ row.saving && <span className="value-ladder__saving buybox__value-ladder__saving" style={ savingStyle }>{ row.saving }</span> }
 					{ index === lastIndex && (
 						<span className="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge">{ badgeText }</span>
 					) }
@@ -352,7 +352,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 				</div>
 				<div className="product-card__thumbs" aria-hidden="true">
 					{ [ 1, 2, 3, 4 ].map( ( n ) => (
-						<span key={ n } className="product-card__thumb" aria-current={ 1 === n ? 'true' : undefined } style={ { display: 'block', background: 'var(--wp--preset--color--surface-alt, #f0f0f0)' } } />
+						<span key={ n } className="product-card__thumb sgs-buybox__gallery-thumb" aria-current={ 1 === n ? 'true' : undefined } style={ { display: 'block', background: 'var(--wp--preset--color--surface-alt, #f0f0f0)' } } />
 					) ) }
 				</div>
 				{ attributes.gallerySavingBadge && (

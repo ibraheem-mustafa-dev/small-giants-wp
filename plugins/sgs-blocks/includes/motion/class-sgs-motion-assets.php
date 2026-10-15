@@ -15,8 +15,11 @@
  * applies only under `.sgs-motion-ready`, which `motion-reveal.js` adds, so nothing is hidden before it runs. The
  * hidden-start rules live in `assets/css/motion.css`; only the per-instance values go through the CSS collector (`sgs_collect_css`), which prints in the head.
  *
- * The editor iframe gets `motion.css` through `enqueue_block_assets`, guarded by `is_admin()` so the front end never
- * loads it through that hook. A request that is not a front-end render (a REST block preview) enqueues nothing.
+ * The editor gets `motion.css` and the keyframes script (so Replay plays a multi-keyframe entrance through the same
+ * WAAPI module, `src/blocks/extensions/motion/canvas/replay.js`) through `enqueue_block_assets`, guarded by `is_admin()`
+ * so the front end never loads them through that hook. `enqueue_block_assets` also fires for the outer admin document,
+ * so both load there as well as in the canvas iframe; the keyframes script finds no stamped element there and plays
+ * nothing. A request that is not a front-end render (a REST block preview) enqueues nothing.
  *
  * @package SGS\Blocks
  */
@@ -36,16 +39,16 @@ final class Sgs_Motion_Assets {
 	const REVEAL    = 'sgs-motion-reveal';
 	const KEYFRAMES = 'sgs-motion-keyframes';
 	const DRIVER    = '@sgs/scroll-driver';
+	const LOOP      = '@sgs/loop-control';
 
 	const CSS_PATH       = 'assets/css/motion.css';
 	const REVEAL_PATH    = 'assets/js/motion-reveal.js';
-	const LOOP      = '@sgs/loop-control';
 	const KEYFRAMES_PATH = 'assets/js/motion-keyframes.js';
 	const DRIVER_PATH    = 'build/shared/effects/scroll-driver.js';
+	const LOOP_PATH      = 'build/shared/effects/loop-control.js';
 
 	/**
 	 * Hook registration and the editor stylesheet.
-	const LOOP_PATH      = 'build/shared/effects/loop-control.js';
 	 *
 	 * @return void
 	 */
@@ -79,20 +82,22 @@ final class Sgs_Motion_Assets {
 		if ( self::exists( self::DRIVER_PATH ) ) {
 			wp_register_script_module( self::DRIVER, SGS_BLOCKS_URL . self::DRIVER_PATH, array(), self::module_version() );
 		}
-	}
-
-	/**
 		if ( self::exists( self::LOOP_PATH ) ) {
 			wp_register_script_module( self::LOOP, SGS_BLOCKS_URL . self::LOOP_PATH, array(), self::version( self::LOOP_PATH ) );
 		}
-	 * Load `motion.css` in the editor iframe only.
+	}
+
+	/**
+	 * Load `motion.css` and the keyframes script in the editor only.
 	 *
 	 * @return void
 	 */
 	public static function enqueue_editor_style(): void {
-		if ( is_admin() ) {
-			wp_enqueue_style( self::STYLE );
+		if ( ! is_admin() ) {
+			return;
 		}
+		wp_enqueue_style( self::STYLE );
+		wp_enqueue_script( self::KEYFRAMES );
 	}
 
 	/**

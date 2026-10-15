@@ -68,13 +68,13 @@ export default function CanvasGlyph( { attributes, glyphBrand, drawFixed, logoGr
 
 	if ( 'emoji' === iconSource ) {
 		return (
-			<span className="sgs-icon__emoji" aria-hidden="true">
+			<span className="sgs-icon__glyph sgs-icon__emoji" aria-hidden="true">
 				{ emojiChar || '⭐' }
 			</span>
 		);
 	}
 	if ( 'dashicon' === iconSource ) {
-		return <span className={ `sgs-icon__dashicon dashicons dashicons-${ dashiconName || 'star-filled' }` } aria-hidden="true" />;
+		return <span className={ `sgs-icon__glyph sgs-icon__dashicon dashicons dashicons-${ dashiconName || 'star-filled' }` } aria-hidden="true" />;
 	}
 
 	const raw = source.svg ?? loaded;
@@ -82,7 +82,7 @@ export default function CanvasGlyph( { attributes, glyphBrand, drawFixed, logoGr
 	const svg = paintGradient && source.stroke && raw ? withSvgStrokeGradient( raw, paintGradient, `${ gradientId }` ) : raw;
 	return (
 		<span
-			className="sgs-icon__svg"
+			className="sgs-icon__glyph sgs-icon__svg"
 			aria-hidden="true"
 			// eslint-disable-next-line react/no-danger
 			dangerouslySetInnerHTML={ { __html: sanitiseSvg( svg || '' ) } }

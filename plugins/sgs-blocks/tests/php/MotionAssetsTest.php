@@ -149,6 +149,23 @@ final class MotionAssetsTest extends TestCase {
 		$this->assertTrue( wp_style_is( 'sgs-motion', 'enqueued' ), 'editor: the stylesheet loads' );
 	}
 
+	public function test_happy_editor_hook_enqueues_the_keyframes_script_in_admin_only_and_no_effect_stylesheet(): void {
+		Sgs_Motion_Assets::enqueue_editor_style();
+		$this->assertArrayNotHasKey( 'script:sgs-motion-keyframes', $GLOBALS['sgs_test_enqueued'], 'front end: the block-assets hook loads nothing' );
+
+		$GLOBALS['sgs_test_is_admin'] = true;
+		Sgs_Motion_Assets::enqueue_editor_style();
+		$this->assertArrayHasKey( 'script:sgs-motion-keyframes', $GLOBALS['sgs_test_enqueued'], 'editor: Replay plays keyframes through the shared module' );
+		$this->assertSame( array(), preg_grep( '/^sgs-fx-/', $GLOBALS['sgs_test_enqueued_styles'] ), 'editor: no fx-*.css until the effect previews need one' );
+	}
+
+	public function test_edge_a_page_with_motion_but_no_effect_loads_no_effect_stylesheet(): void {
+		$this->render( array( 'v' => 1, 'elements' => array( 'root' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.02 ) ) ) ) ) ) );
+		Sgs_Motion_Assets::enqueue_used();
+		$this->assertContains( 'sgs-motion', $GLOBALS['sgs_test_enqueued_styles'] );
+		$this->assertSame( array(), preg_grep( '/^sgs-fx-/', $GLOBALS['sgs_test_enqueued_styles'] ) );
+	}
+
 	public function test_happy_assets_are_registered(): void {
 		$driver = SGS_BLOCKS_PATH . 'build/shared/effects/scroll-driver.js';
 		$made   = ! file_exists( $driver );

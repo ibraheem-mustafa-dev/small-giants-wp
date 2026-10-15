@@ -10,31 +10,14 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
-import { getBlockType } from '@wordpress/blocks';
-import { hasMotionSupport, MOTION_ATTRIBUTE_NAME } from './register';
+import { MOTION_ATTRIBUTE_NAME } from './register';
+import { blockHasMotion } from './support-cache';
 import MotionPanels from './MotionPanels';
 import './motion-panels.scss';
 import './layers/stamp-ambient-float';
+import './canvas/with-canvas-motion';
 
-const supportByName = new Map();
-
-/**
- * Whether a block type declares the motion support, remembered per block name once the type is registered.
- *
- * @param {string} name Block name.
- * @return {boolean} True when `supports.sgs.motion` is declared.
- */
-export function blockHasMotion( name ) {
-	if ( supportByName.has( name ) ) {
-		return supportByName.get( name );
-	}
-	const type = getBlockType( name );
-	const supported = hasMotionSupport( type );
-	if ( type ) {
-		supportByName.set( name, supported );
-	}
-	return supported;
-}
+export { blockHasMotion };
 
 const withMotionPanels = createHigherOrderComponent(
 	( BlockEdit ) =>
