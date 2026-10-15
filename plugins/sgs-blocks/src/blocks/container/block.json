@@ -208,12 +208,14 @@
 					"_note": "Background image/video (backgroundImage*/bgVideo*), background SVG (bgSvg*), overlay gradient (overlayGradient*), parallax/Ken Burns, and shape dividers (shapeDivider*) are governed by dedicated controls outside the Text/Fill/Layout style clusters, so this element declares none."
 				},
 				"svg-bg": {
+					"prefix": "",
 					"label": "Background SVG",
 					"order": 6,
 					"clusters": [],
 					"_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so a `draw` effect layer reaches the SVG's paths, where the flat `fx: draw` drew; it declares no style clusters because its look is governed by the bgSvg* controls."
 				},
 				"background": {
+					"prefix": "",
 					"selector": ".sgs-container__image-bg",
 					"label": "Background image",
 					"order": 7,

@@ -275,6 +275,7 @@
 					"_note": "The <img> in the image-badge variant (render.php:281-297, .sgs-trust-bar__badge-img). Mirrors icon-badge size/border-radius/box-shadow plus an image-specific object-fit; badgeImageSize maps css:width AND css:height (a single square dimension, render.php:284-285). Emitted only when badgeStyle=image-badge."
 				},
 				"background": {
+					"prefix": "",
 					"selector": ".sgs-container__image-bg",
 					"label": "Background image",
 					"order": 8,
@@ -282,6 +283,7 @@
 					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
 				},
 				"svg-bg": {
+					"prefix": "",
 					"selector": ".sgs-container__svg-bg",
 					"label": "Background SVG",
 					"order": 9,
