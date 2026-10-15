@@ -67,11 +67,11 @@ final class Sgs_Motion_Emitter {
 			self::hover_state( $state, $decls, $trans, $channels );
 		}
 		foreach ( $element['hover']['effects'] ?? array() as $layer ) {
-			self::effect_channels( (string) $layer['effect'], $channels );
+			self::effect_channels( $layer, $channels );
 			self::effect_transition( $layer, $trans );
 		}
 		foreach ( $element['effects'] ?? array() as $layer ) {
-			self::effect_channels( (string) $layer['effect'], $channels );
+			self::effect_channels( $layer, $channels );
 		}
 		$entrance = false;
 		$base     = $element['entrance']['base'] ?? null;
@@ -235,7 +235,7 @@ final class Sgs_Motion_Emitter {
 					$angles[ $key ]        = $css;
 					$raw[ $key ]           = $value;
 					$angle_changed[ $key ] = true;
-				} elseif ( 'rest' === $fields[ $key ]['state'] ) {
+				} elseif ( in_array( $fields[ $key ]['state'], array( 'rest', 'active' ), true ) ) {
 					$decls[ $tier ][ $prop ] = $css;
 				} elseif ( 0 === strpos( $prop, self::MH_PREFIX ) ) {
 					$decls[ $tier ][ self::MH_PREFIX . 'to-' . substr( $prop, strlen( self::MH_PREFIX ) ) ] = $css;
@@ -272,14 +272,23 @@ final class Sgs_Motion_Emitter {
 	}
 
 	/**
-	 * The channels an effect writes, from `x-sgs-writes`.
+	 * The channels an effect layer writes, from `x-sgs-writes`. `channels` lists every channel the effect can write;
+	 * an optional `select` (`{field, true, false}`) narrows it to the list matching the layer's desktop boolean value,
+	 * so parallax stamps `background-position` only when its `background` switch is on and `translate` otherwise.
 	 *
-	 * @param string             $effect   Effect slug.
-	 * @param array<string,bool> $channels Channel set (by reference).
+	 * @param array<string,mixed> $layer    An effect layer.
+	 * @param array<string,bool>  $channels Channel set (by reference).
 	 * @return void
 	 */
-	private static function effect_channels( string $effect, array &$channels ): void {
-		foreach ( Sgs_Motion_Field_Types::schema()['x-sgs-writes'][ $effect ]['channels'] ?? array() as $channel ) {
+	private static function effect_channels( array $layer, array &$channels ): void {
+		$writes = Sgs_Motion_Field_Types::schema()['x-sgs-writes'][ (string) ( $layer['effect'] ?? '' ) ] ?? array();
+		$list   = $writes['channels'] ?? array();
+		$select = $writes['select'] ?? null;
+		if ( is_array( $select ) && isset( $select['field'] ) ) {
+			$on   = ! empty( $layer['values'][ (string) $select['field'] ] );
+			$list = $select[ $on ? 'true' : 'false' ] ?? $list;
+		}
+		foreach ( $list as $channel ) {
 			$channels[ (string) $channel ] = true;
 		}
 	}

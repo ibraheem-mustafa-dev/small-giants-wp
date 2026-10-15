@@ -39,7 +39,7 @@ const ids = ( motion, list ) => {
 };
 
 describe( 'the layer lists', () => {
-	it( 'reads the five lists and their panels from the schema extract', () => {
+	it( 'reads the six lists and their panels from the schema extract', () => {
 		expect(
 			Object.fromEntries(
 				Object.entries( LAYER_LISTS ).map( ( [ list, entry ] ) => [
@@ -50,6 +50,7 @@ describe( 'the layer lists', () => {
 		).toEqual( {
 			'hover.state': [ 'single', 'hover' ],
 			'hover.effects': [ 'list', 'hover' ],
+			'hover.focus': [ 'single', 'hover' ],
 			'entrance.base': [ 'single', 'entrance' ],
 			'entrance.text': [ 'list', 'entrance' ],
 			effects: [ 'list', 'effects' ],

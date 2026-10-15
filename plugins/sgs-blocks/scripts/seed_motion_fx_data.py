@@ -1179,6 +1179,29 @@ FX_EFFECTS: list[dict] = [
         "requires": "svg-subtree",
         "creates_panel": 0,
     },
+    {
+        # Spec 38A FR-38A-41 (Hover, Tier V, Part). Follow pointer: the hover state's pointer-driven rotation, a field
+        # (followPointer) on hover.state rather than a layer. Its row exists so the `follow-pointer` token that
+        # Sgs_Motion_Fx_Emitter adds to data-sgs-fx loads @sgs/fx-follow-pointer (the pointer writer that sets
+        # --sgs-tilt-x / --sgs-tilt-y) through SGS_Motion_Registry.
+        "effect": "follow-pointer",
+        # in_picker=0 and creates_panel=0: no picker entry and no panel; the Hover panel's followPointer switch
+        # turns it on.
+        "in_picker": 0,
+        "pins": 0,
+        "triggers": "hover",
+        # Tier V (Spec 38A section 5 effect table): vanilla JS, no GSAP plugin.
+        "tier": "V",
+        "plugin_set": [],
+        # 0: the rotation composes on the transform channel (section 10), so it never needs an entrance suppressed.
+        "owns_scroll_transform": 0,
+        # Suppress: the element rests at its resting angle, and the pointer writer stops when the preference is reduce.
+        "reduced_motion": "suppress",
+        "editor_story": "end-state",
+        "scope": "element",
+        "requires": "none",
+        "creates_panel": 0,
+    },
 ]
 
 # ---------------------------------------------------------------------------

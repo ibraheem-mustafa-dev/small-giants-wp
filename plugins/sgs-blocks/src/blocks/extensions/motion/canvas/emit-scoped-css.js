@@ -19,7 +19,7 @@ import {
 	MH_PREFIX,
 	orderedChannels,
 	ownerProperties,
-	ownerWrites,
+	layerWrites,
 	propertyChannels,
 	rules,
 	tierValues,
@@ -103,7 +103,7 @@ function hoverState( state, decls, trans, channels ) {
 				angles[ key ] = css;
 				raw[ key ] = value;
 				angleChanged[ key ] = true;
-			} else if ( f[ key ].state === 'rest' ) {
+			} else if ( [ 'rest', 'active' ].includes( f[ key ].state ) ) {
 				decls[ tier ][ prop ] = css;
 			} else if ( prop.startsWith( MH_PREFIX ) ) {
 				decls[ tier ][ MH_PREFIX + 'to-' + prop.slice( MH_PREFIX.length ) ] = css;
@@ -221,11 +221,11 @@ export function emitTarget( element, selector, context = {} ) {
 		hoverState( state, decls, trans, channels );
 	}
 	listOf( element?.hover?.effects ).forEach( ( layer ) => {
-		ownerWrites( String( layer.effect ) ).forEach( ( c ) => ( channels[ c ] = true ) );
+		layerWrites( layer ).forEach( ( c ) => ( channels[ c ] = true ) );
 		effectTransition( layer, trans );
 	} );
 	listOf( element?.effects ).forEach( ( layer ) => {
-		ownerWrites( String( layer.effect ) ).forEach( ( c ) => ( channels[ c ] = true ) );
+		layerWrites( layer ).forEach( ( c ) => ( channels[ c ] = true ) );
 	} );
 	let played = false;
 	const base = element?.entrance?.base;

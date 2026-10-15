@@ -214,14 +214,15 @@ function tokensRead( css ) {
 /**
  * Every `--sgs-mh-to-*` the renderer can emit for a hover state, derived the way the emitter names them: an owner
  * property `--sgs-mh-<x>` gives `--sgs-mh-to-<x>`, any other non-timing field gives `--sgs-mh-to-<field key>`, and
- * the resting fields (state `rest`: the rest Z, X and Y angles and the perspective, written to their own property) and
- * the timing fields emit no to-value of their own.
+ * the resting and active fields (state `rest` or `active`: the rest Z, X and Y angles, the perspective and Follow
+ * pointer's maximum angle and axis lock, each written plain to its own property) and the timing fields emit no
+ * to-value of their own.
  */
 function emittedHoverToValues() {
 	const out = new Set();
 	for ( const [ key, field ] of Object.entries( SCHEMA.$defs.HoverStateValues.properties ) ) {
 		const prop = field[ 'x-sgs-field' ]?.cssProperty;
-		if ( ! prop || prop.startsWith( 'transition-' ) || 'rest' === field[ 'x-sgs-field' ].state ) {
+		if ( ! prop || prop.startsWith( 'transition-' ) || [ 'rest', 'active' ].includes( field[ 'x-sgs-field' ].state ) ) {
 			continue;
 		}
 		out.add( prop.startsWith( '--sgs-mh-' ) ? `--sgs-mh-to-${ prop.slice( '--sgs-mh-'.length ) }` : `--sgs-mh-to-${ key }` );

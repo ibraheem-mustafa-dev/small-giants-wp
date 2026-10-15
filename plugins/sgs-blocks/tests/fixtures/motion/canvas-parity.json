@@ -288,7 +288,7 @@
 	},
 	{
 		"name": "rotate pairs, follow pointer and an entrance flip",
-		"css": ".sgs-m-0123456789{--sgs-persp-self:800px;--sgs-rot-rest:-1deg;--sgs-rx-rest:10deg;--sgs-mh-to-rx:-6deg;--sgs-mh-to-ry:5deg;--sgs-me-from-op:0;--sgs-me-from-rx:90deg;--sgs-me-to-ry:0deg;transition:--sgs-mh-rx var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ry var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}@media (max-width:767px){.sgs-m-0123456789{--sgs-persp-self:500px;--sgs-rx-rest:6deg;--sgs-mh-to-rx:-2deg;}}",
+		"css": ".sgs-m-0123456789{--sgs-persp-self:800px;--sgs-tilt-max:8deg;--sgs-rot-rest:-1deg;--sgs-rx-rest:10deg;--sgs-mh-to-rx:-6deg;--sgs-mh-to-ry:5deg;--sgs-me-from-op:0;--sgs-me-from-rx:90deg;--sgs-me-to-ry:0deg;transition:--sgs-mh-rx var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ry var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}@media (max-width:767px){.sgs-m-0123456789{--sgs-persp-self:500px;--sgs-rx-rest:6deg;--sgs-mh-to-rx:-2deg;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -325,7 +325,7 @@
 	},
 	{
 		"name": "three panels stacked",
-		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--sm));--sgs-mh-to-s:1.04;--sgs-persp-self:1000px;--sgs-rx-rest:4deg;--sgs-mh-to-ry:6deg;--sgs-me-from-op:0;--sgs-me-from-ty:var(--wp--custom--entrance--distance);--sgs-me-from-rx:-12deg;--sgs-me-to-op:1;--sgs-me-to-ty:0px;--sgs-me-to-rx:0deg;--sgs-me-dur:var(--wp--custom--entrance--duration);--sgs-me-delay:0ms;--sgs-me-ease:var(--wp--custom--entrance--easing);--sgs-me-start:6%;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ry var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-mag-x 250ms cubic-bezier(0.16, 0.84, 0.32, 1) 0ms, --sgs-mag-y 250ms cubic-bezier(0.16, 0.84, 0.32, 1) 0ms, --sgs-sheen-x 750ms ease-out 0ms;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-me-from-ty:16px;}}@media (max-width:767px){.sgs-m-0123456789{--sgs-mh-to-ty:-2px;--sgs-me-from-ty:8px;}}",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--sm));--sgs-mh-to-s:1.04;--sgs-persp-self:1000px;--sgs-tilt-max:8deg;--sgs-tilt-lock:none;--sgs-rx-rest:4deg;--sgs-mh-to-ry:6deg;--sgs-me-from-op:0;--sgs-me-from-ty:var(--wp--custom--entrance--distance);--sgs-me-from-rx:-12deg;--sgs-me-to-op:1;--sgs-me-to-ty:0px;--sgs-me-to-rx:0deg;--sgs-me-dur:var(--wp--custom--entrance--duration);--sgs-me-delay:0ms;--sgs-me-ease:var(--wp--custom--entrance--easing);--sgs-me-start:6%;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ry var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-mag-x 250ms cubic-bezier(0.16, 0.84, 0.32, 1) 0ms, --sgs-mag-y 250ms cubic-bezier(0.16, 0.84, 0.32, 1) 0ms, --sgs-sheen-x 750ms ease-out 0ms;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-tilt-max:6deg;--sgs-me-from-ty:16px;}}@media (max-width:767px){.sgs-m-0123456789{--sgs-mh-to-ty:-2px;--sgs-me-from-ty:8px;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -343,7 +343,7 @@
 				"selector": ".sgs-m-0123456789 .sgs-hero__media",
 				"root": false,
 				"attrs": {
-					"data-sgs-mc": "translate scale background-position"
+					"data-sgs-mc": "translate scale"
 				},
 				"entrance": false
 			}
@@ -518,7 +518,7 @@
 				"selector": ".sgs-m-0123456789 .sgs-hero__media",
 				"root": false,
 				"attrs": {
-					"data-sgs-mc": "translate background-position"
+					"data-sgs-mc": "translate"
 				},
 				"entrance": false
 			}

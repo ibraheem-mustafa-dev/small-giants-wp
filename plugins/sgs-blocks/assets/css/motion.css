@@ -50,6 +50,9 @@
 @property --sgs-mh-s { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-focus-s { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-kb-s { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-svl-s { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-svl-op { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --sgs-svl-rot { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @property --sgs-me-rx { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @property --sgs-me-ry { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @property --sgs-rx-rest { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
@@ -85,13 +88,13 @@
 	translate: calc(var(--sgs-me-tx) + var(--sgs-mh-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mh-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));
 }
 [data-sgs-mc~="rotate"] {
-	rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+	rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot) + var(--sgs-svl-rot));
 }
 [data-sgs-mc~="scale"] {
-	scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s));
+	scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s));
 }
 [data-sgs-mc~="opacity"] {
-	opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op));
+	opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op) * var(--sgs-svl-op));
 }
 [data-sgs-mc~="filter"] {
 	filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(var(--sgs-mh-gray)) brightness(var(--sgs-mh-bright));
@@ -158,11 +161,11 @@
 @keyframes sgs-me-rotate {
 	from {
 		--sgs-me-rot: var(--sgs-me-from-rot, 0deg);
-		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot) + var(--sgs-svl-rot));
 	}
 	to {
 		--sgs-me-rot: var(--sgs-me-to-rot, 0deg);
-		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot) + var(--sgs-svl-rot));
 	}
 }
 @keyframes sgs-me-transform {
@@ -180,21 +183,21 @@
 @keyframes sgs-me-scale {
 	from {
 		--sgs-me-s: var(--sgs-me-from-s, 1);
-		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s));
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s));
 	}
 	to {
 		--sgs-me-s: var(--sgs-me-to-s, 1);
-		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s));
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s));
 	}
 }
 @keyframes sgs-me-opacity {
 	from {
 		--sgs-me-op: var(--sgs-me-from-op, 1);
-		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op));
+		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op) * var(--sgs-svl-op));
 	}
 	to {
 		--sgs-me-op: var(--sgs-me-to-op, 1);
-		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op));
+		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op) * var(--sgs-svl-op));
 	}
 }
 @keyframes sgs-me-filter {
@@ -257,7 +260,7 @@
 	}
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="rotate"] {
 		--sgs-me-rot: var(--sgs-me-from-rot, 0deg);
-		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot));
+		rotate: calc(var(--sgs-rot-rest) + var(--sgs-me-rot) + var(--sgs-mh-rot) + var(--sgs-svl-rot));
 	}
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="transform"] {
 		--sgs-me-rx: var(--sgs-me-from-rx, 0deg);
@@ -266,11 +269,11 @@
 	}
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="scale"] {
 		--sgs-me-s: var(--sgs-me-from-s, 1);
-		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s));
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s));
 	}
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="opacity"] {
 		--sgs-me-op: var(--sgs-me-from-op, 1);
-		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op));
+		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op) * var(--sgs-svl-op));
 	}
 	.sgs-motion-ready [data-sgs-me~="scroll"]:not([data-sgs-in])[data-sgs-me~="filter"] {
 		--sgs-me-blur: var(--sgs-me-from-blur, 0px);

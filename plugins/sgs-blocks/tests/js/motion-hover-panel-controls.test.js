@@ -145,12 +145,14 @@ describe( 'the rendered controls exist and are named', () => {
 		).toBe( 'true' );
 	} );
 
-	it( 'shows no Driven by or Intensity on an element with nothing hovering, and no Focus state on sgs/form today', () => {
+	it( 'shows no Driven by or Intensity on an element with nothing hovering, and offers the Focus state on sgs/form only', () => {
 		mount( undefined, 'sgs/form' );
 		expect( byLabel( 'Driven by', '[role="radiogroup"]' ) ).toBeUndefined();
 		expect(
 			byLabel( 'Hover state intensity', '[role="radiogroup"]' )
 		).toBeUndefined();
+		expect( host.textContent ).toContain( 'Add Focus state' );
+		mount( undefined, 'sgs/info-box' );
 		expect( host.textContent ).not.toContain( 'Add Focus state' );
 	} );
 

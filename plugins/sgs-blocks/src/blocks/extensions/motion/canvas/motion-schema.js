@@ -104,6 +104,31 @@ export function ownerWrites( owner ) {
 }
 
 /**
+ * The channels an effect layer writes (`Sgs_Motion_Emitter::effect_channels`): its effect's `channels`, narrowed by
+ * an optional `select` (`{field, true, false}`) to the list matching the layer's desktop boolean value, so parallax
+ * writes `background-position` only when its `background` switch is on and `translate` otherwise.
+ *
+ * @param {Object} layer An effect layer.
+ * @return {string[]} Channels.
+ */
+export function layerWrites( layer ) {
+	const writes = WRITES[ String( layer?.effect ?? '' ) ] || {};
+	let list = writes.channels;
+	const select = writes.select;
+	if ( select && typeof select === 'object' && select.field !== undefined ) {
+		const value = layer?.values?.[ String( select.field ) ];
+		// PHP's empty(): false, 0, '', '0', null and an empty array are all off.
+		const on = ! (
+			! value ||
+			'0' === value ||
+			( Array.isArray( value ) && 0 === value.length )
+		);
+		list = select[ on ? 'true' : 'false' ] ?? list;
+	}
+	return Array.isArray( list ) ? list.map( String ) : [];
+}
+
+/**
  * The owner properties a named owner holds in `x-sgs-channels`, in table order.
  *
  * @param {string} ownerName Owner key.
