@@ -163,7 +163,7 @@ final class Sgs_Motion_Migrate_Command {
 			foreach ( is_array( $posts ) ? $posts : array() as $post ) {
 				$last_id = (int) $post['ID'];
 				$result  = $runner->migrate_content( (string) $post['post_content'] );
-				if ( ! $result['changed'] && array() === $result['flags'] ) {
+				if ( ! $result['changed'] && array() === $result['flags'] && array() === $result['reported'] ) {
 					continue;
 				}
 				$rows[] = array(
@@ -195,6 +195,9 @@ final class Sgs_Motion_Migrate_Command {
 			foreach ( $result['changes'] as $change ) {
 				++$blocks;
 				\WP_CLI::log( sprintf( '  block %s %s [%s]: removes %s; sgsMotion = %s', $change['path'], $change['block'], implode( ',', $change['families'] ), array() === $change['consumed'] ? '(nothing)' : implode( ',', $change['consumed'] ), wp_json_encode( $change['motion'] ) ) );
+			}
+			foreach ( $result['reported'] as $note ) {
+				\WP_CLI::log( sprintf( '  REPORTED block %s %s [%s]: %s = %s (%s; %s)', $note['path'], $note['block'], $note['family'], $note['attr'] ?? '?', wp_json_encode( $note['value'] ?? null ), $note['reason'] ?? '', ! empty( $note['consumed'] ) ? 'removed' : 'left in place' ) );
 			}
 			foreach ( $result['flags'] as $flag ) {
 				++$flags;

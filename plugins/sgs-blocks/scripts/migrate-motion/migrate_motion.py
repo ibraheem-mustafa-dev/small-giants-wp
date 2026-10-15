@@ -76,7 +76,6 @@ CATALOGUE = [
     (('sgsStaggerDelay',), 'block-reveals', _STAGGER_BLOCKS),
     (('revealOnScroll', 'revealStagger', 'revealTrigger'), 'block-reveals', ('sgs/timeline',)),
     (('photoEntrance',), 'block-reveals', ('sgs/buybox',)),
-    (('captionReveal',), 'block-reveals', ('sgs/gallery',)),
     (('animationStyle', 'animationSubstrate', 'svgAnimationSource'), 'lottie-logo', ('sgs/responsive-logo',)),
     (('lottieId', 'lottieLoop', 'lottieSpeed', 'lottieTrigger'), 'lottie-logo', ('sgs/responsive-logo', 'sgs/media')),
     (('bgKenBurns', 'bgKenBurnsMode', 'bgZoomStart', 'bgAnimationDuration', 'bgSvgAnimation', 'bgSvgAnimationSpeed',
@@ -104,6 +103,8 @@ RENAMES = {'shadowHoverColour': 'shadowColourHover'}
 # Names that look like motion but are not catalogued: reported as unrecognised, never ignored.
 BROAD = re.compile(r'^(sgs(Hover|Animation|Parallax|Click)|fx|bgHover|bgKenBurns|bgParallax|bgLottie|bgSvgAnim)|'
                    r'(Parallax|KenBurns|Lottie|Marquee)')
+# `captionReveal` (sgs/gallery) is a display option, not motion (Bean, 2026-10-15): it is not catalogued, never
+# swept and never removed.
 NEVER_MOTION = {'sgsMotion'}
 BLOCK_RE = re.compile(r'<!--\s+wp:([a-z][a-z0-9_-]*(?:/[a-z][a-z0-9_-]*)?)\s*(\{.*?\})?\s*(/)?-->', re.S)
 

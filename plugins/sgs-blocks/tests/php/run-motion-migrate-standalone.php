@@ -121,19 +121,22 @@ namespace SGS\Blocks\Motion {
 	require_once $root . '/includes/motion/migrate/class-sgs-motion-migrate-backup.php';
 	require_once $root . '/includes/motion/migrate/class-sgs-motion-migrate-lock.php';
 	require_once $root . '/includes/motion/migrate/class-sgs-motion-migrate-runner.php';
+	require_once $root . '/includes/motion/migrate/interface-sgs-motion-group-mapper.php';
+	require_once $root . '/includes/motion/migrate/mappers/class-sgs-motion-map-entrance.php';
+	require_once $root . '/includes/motion/migrate/mappers/class-sgs-motion-map-block-reveals.php';
 
 	$plant = (string) getenv( 'SGS_MOTION_MIGRATE_PLANT' );
 	$pass  = 0;
 	$fail  = 0;
 
-	function ok( bool $cond, string $label ): void {
+	function ok( bool $cond, string $label, string $detail = '' ): void {
 		global $pass, $fail;
 		if ( $cond ) {
 			++$pass;
 			echo "PASS  $label\n";
 		} else {
 			++$fail;
-			echo "FAIL  $label\n";
+			echo "FAIL  $label" . ( '' === $detail ? '' : "  [$detail]" ) . "\n";
 		}
 	}
 
@@ -174,8 +177,30 @@ namespace SGS\Blocks\Motion {
 		}
 	}
 
-	/** A real-shaped mapper class for the family-loading check (file `class-sgs-motion-map-entrance.php`). */
-	final class Sgs_Motion_Map_Entrance extends Fixture_Mapper {
+	/** A real-shaped mapper class for the family-loading check (file `class-sgs-motion-map-fixture.php`). */
+	final class Sgs_Motion_Map_Fixture extends Fixture_Mapper {
+	}
+
+	/** Wraps the real entrance mapper and records every block the per-block pass hands it (the double-apply probe). */
+	final class Spy_Entrance implements Sgs_Motion_Mapper_Interface, Sgs_Motion_Group_Mapper_Interface {
+		public $mapped = array();
+		private $inner;
+		public function __construct() {
+			$this->inner = new Sgs_Motion_Map_Entrance();
+		}
+		public function family(): string {
+			return $this->inner->family();
+		}
+		public function handles( string $block_name, array $attrs ): bool {
+			return $this->inner->handles( $block_name, $attrs );
+		}
+		public function map( string $block_name, array $attrs ): array {
+			$this->mapped[] = $block_name . ':' . implode( ',', array_keys( $attrs ) );
+			return $this->inner->map( $block_name, $attrs );
+		}
+		public function map_groups( array $blocks ): array {
+			return $this->inner->map_groups( $blocks );
+		}
 	}
 
 	$runner = new Sgs_Motion_Migrate_Runner( array( new Fixture_Mapper() ) );
@@ -290,11 +315,11 @@ namespace SGS\Blocks\Motion {
 
 	// 6. Family listing reads file names.
 	$dir = ABSPATH . 'inside';
-	file_put_contents( $dir . '/class-sgs-motion-map-block-reveals.php', '<?php' );
-	file_put_contents( $dir . '/class-sgs-motion-map-entrance.php', '<?php' );
+	file_put_contents( $dir . '/class-sgs-motion-map-ghost.php', '<?php' );
+	file_put_contents( $dir . '/class-sgs-motion-map-fixture.php', '<?php' );
 	file_put_contents( $dir . '/other.php', '<?php' );
-	ok( array( 'block-reveals', 'entrance' ) === Sgs_Motion_Migrate_Runner::families( $dir ), 'families() lists the file suffixes, sorted' );
-	ok( array( 'entrance' ) === Sgs_Motion_Migrate_Runner::loadable_families( $dir ) && array( 'block-reveals' ) === Sgs_Motion_Migrate_Runner::broken_families( $dir ), 'a mapper file whose class is missing is broken and not listed as loadable' );
+	ok( array( 'fixture', 'ghost' ) === Sgs_Motion_Migrate_Runner::families( $dir ), 'families() lists the file suffixes, sorted' );
+	ok( array( 'fixture' ) === Sgs_Motion_Migrate_Runner::loadable_families( $dir ) && array( 'ghost' ) === Sgs_Motion_Migrate_Runner::broken_families( $dir ), 'a mapper file whose class is missing is broken and not listed as loadable' );
 	ok( 'SGS\\Blocks\\Motion\\Sgs_Motion_Map_Block_Reveals' === Sgs_Motion_Migrate_Runner::mapper_class( 'block-reveals' ), 'mapper_class() maps a family slug to its class name' );
 
 	// 7. Backup directory resolves outside ABSPATH; an inside candidate is refused.
@@ -321,6 +346,47 @@ namespace SGS\Blocks\Motion {
 	ok( array( 7, 9 ) === $GLOBALS['cleaned'], 'restore clears each post cache' );
 	file_put_contents( $dir . '/bad.json', '{"posts":[{"ID":1}]}' );
 	ok( null === Sgs_Motion_Migrate_Backup::read( $dir . '/bad.json' ) && null === Sgs_Motion_Migrate_Backup::restore( $dir . '/missing.json' ), 'a malformed or missing backup is refused' );
+
+	// 9. The group pass (Spec 38A FR-38A-31): a staggered container migrates end to end through migrate_content.
+	$stagger_post = '<!-- wp:sgs/container {"sgsAnimation":"fade-in","sgsAnimationStaggerChildren":"70","sgsAnimationStaggerMax":"3"} -->' . "\n"
+		. '<!-- wp:sgs/info-box {"sgsAnimation":"fade-up"} /-->' . "\n"
+		. '<!-- wp:sgs/info-box {"sgsAnimation":"fade-up","sgsAnimationDelay":"50"} /-->' . "\n"
+		. '<!-- wp:sgs/info-box {"sgsAnimation":"slide-left","sgsAnimationDuration":"fast"} /-->' . "\n"
+		. '<!-- /wp:sgs/container -->';
+	$spy       = new Spy_Entrance();
+	$grouped   = ( new Sgs_Motion_Migrate_Runner( array( $spy ) ) )->migrate_content( $stagger_post );
+	$tree      = parse_blocks( $grouped['content'] );
+	$delays    = array_map( static fn( $b ) => $b['attrs']['sgsMotion']['elements']['root']['entrance']['base']['values']['delay'] ?? 0, $tree[0]['innerBlocks'] );
+	ok( $grouped['changed'] && array() === $grouped['flags'] && false === strpos( $grouped['content'], 'sgsAnimation' ), 'a staggered container migrates in one migrate_content call: no sgsAnimation* attribute left, no flag', json_encode( $grouped['flags'] ) );
+	ok( array( 0, 120, 140 ) === $delays, 'the three children store the delays the entrance mapper computes (0, 50 + 70, 2 x 70)', json_encode( $delays ) );
+	$parent = $tree[0]['attrs']['sgsMotion'] ?? array();
+	ok( 'entrance-fade-in' === ( $parent['elements']['root']['entrance']['base']['preset'] ?? '' ) && 210 === ( $parent['stagger']['cap'] ?? null ) && false === ( $parent['stagger']['apply'] ?? true ), 'the container keeps its own entrance and gets the helper settings (cap 210, apply false)' );
+	$paths = array_column( $grouped['changes'], 'path' );
+	sort( $paths );
+	ok( array( '0', '0/0', '0/1', '0/2' ) === $paths, 'every block has exactly one change row', json_encode( $paths ) );
+	ok( array( 'sgs/container:sgsAnimation,sgsMotion' ) === $spy->mapped, 'double-apply: the per-block pass is handed only the container, with just its own sgsAnimation left (the three children and the stagger attributes were consumed by the group pass)', json_encode( $spy->mapped ) );
+
+	// 9b. Running twice changes nothing.
+	$again = ( new Sgs_Motion_Migrate_Runner( array( new Sgs_Motion_Map_Entrance() ) ) )->migrate_content( $grouped['content'] );
+	ok( ! $again['changed'] && $again['content'] === $grouped['content'] && array() === $again['changes'] && array() === $again['flags'], 'idempotent: a second migrate_content over the migrated post changes nothing' );
+
+	// 9c. A runner built without the entrance mapper (--family=block-reveals) never runs its group pass.
+	$skipped = ( new Sgs_Motion_Migrate_Runner( array( new Sgs_Motion_Map_Block_Reveals() ) ) )->migrate_content( $stagger_post );
+	ok( ! $skipped['changed'] && $skipped['content'] === $stagger_post && array() === $skipped['changes'], '--family=block-reveals: the entrance group pass is skipped and the old stagger attributes stay untouched' );
+
+	// 9d. Reported rows reach the result.
+	$report_post = '<!-- wp:sgs/container {"sgsAnimationStaggerChildren":"500","sgsAnimationStaggerMax":"50"} -->' . "\n"
+		. '<!-- wp:sgs/info-box {"sgsAnimation":"fade-up"} /-->' . "\n"
+		. '<!-- /wp:sgs/container -->' . "\n"
+		. '<!-- wp:sgs/hero {"sgsAnimationStagger":"abc"} /-->';
+	$reported = ( new Sgs_Motion_Migrate_Runner( array( new Sgs_Motion_Map_Entrance() ) ) )->migrate_content( $report_post );
+	$by_attr  = array();
+	foreach ( $reported['reported'] as $row ) {
+		$by_attr[ $row['path'] . ' ' . $row['attr'] ] = $row;
+	}
+	ok( isset( $by_attr['0 sgsAnimationStaggerMax'] ) && 'entrance' === $by_attr['0 sgsAnimationStaggerMax']['family'] && 'sgs/container' === $by_attr['0 sgsAnimationStaggerMax']['block'] && '' !== $by_attr['0 sgsAnimationStaggerMax']['reason'], 'a group-pass reported row (cap above the ceiling) appears in the result with its path, block and family', json_encode( $reported['reported'] ) );
+	ok( isset( $by_attr['1 sgsAnimationStagger'] ) && false === $by_attr['1 sgsAnimationStagger']['consumed'], 'a per-block reported row (a non-numeric step) appears in the result', json_encode( $reported['reported'] ) );
+	ok( array() === $none['reported'] && array() === $skipped['reported'] && array() === $again['reported'], 'a post with nothing to report has an empty reported list' );
 
 	// Tidy the fake tree.
 	foreach ( array_merge( glob( $dir . '/*' ) ?: array(), glob( $above . '/*/*' ) ?: array() ) as $f ) {
