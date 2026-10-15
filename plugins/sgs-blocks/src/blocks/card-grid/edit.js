@@ -111,7 +111,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const [ palette ] = useSettings( 'color.palette' );
 	const wrapper = wrapperPreview( attributes, previewTier, palette );
 	const cardPreview = cardGridPreview( attributes, previewTier, palette );
-	const blockProps = useBlockProps( { className } );
+	// In the products and collection modes the server preview prints the whole grid, its layout classes included, so
+	// the editor wrapper carries none: its own grid rule would put that preview in one column of three.
+	const blockProps = useBlockProps(
+		isWcProductMode || isCptCollectionMode ? {} : { className }
+	);
 
 	// D649 — heading level is an identity control (document-outline placement),
 	// not a style control; the tag mirrors render.php's own allowlist fallback.
