@@ -532,17 +532,6 @@ final class SGS_Blocks {
 			);
 		}
 
-		$scroll_js = SGS_BLOCKS_PATH . 'assets/js/scroll-progress.js';
-		if ( file_exists( $scroll_js ) ) {
-			wp_enqueue_script(
-				'sgs-scroll-progress',
-				SGS_BLOCKS_URL . 'assets/js/scroll-progress.js',
-				[],
-				SGS_BLOCKS_VERSION,
-				true
-			);
-		}
-
 		$tilt_js = SGS_BLOCKS_PATH . 'assets/js/tilt-3d.js';
 		if ( file_exists( $tilt_js ) ) {
 			wp_enqueue_script(

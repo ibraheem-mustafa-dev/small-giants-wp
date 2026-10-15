@@ -380,6 +380,16 @@ class SGS_Motion_Registry {
 			'path' => 'build/shared/effects/fx-generative-background.js',
 			'deps' => array(),
 		),
+
+		/*
+		 * Scroll progress (Tier V, Spec 38A FR-38A-36). Its only dependency is
+		 * the shared scroll driver, the one writer of `--sgs-scroll-progress`;
+		 * no GSAP import.
+		 */
+		'@sgs/fx-scroll-progress'  => array(
+			'path' => 'build/shared/effects/fx-scroll-progress.js',
+			'deps' => array( '@sgs/scroll-driver' ),
+		),
 	);
 
 	/**

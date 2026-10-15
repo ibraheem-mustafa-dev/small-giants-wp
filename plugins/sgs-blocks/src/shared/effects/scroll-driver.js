@@ -7,24 +7,40 @@
  * webpack, so every bundle shares this one instance, one scroll listener and
  * one rAF queue.
  *
- * Scoped elements carry `data-sgs-scroll="page|view"`:
+ * Scoped elements carry `data-sgs-scroll="page|view|section"`:
  *  - `page`: progress of the document scroll, 0 at the top, 1 at the bottom.
  *  - `view`: progress of the element crossing the viewport, 0 when its top
  *    meets the viewport bottom, 1 when its bottom meets the viewport top.
+ *  - `section`: the `view` formula measured on the element's section, written
+ *    on the element itself. The section is the element's closest `<section>`;
+ *    failing that, its outermost `.wp-block-sgs-container` ancestor that sits
+ *    directly in the page content (`.entry-content`, `.wp-block-post-content`,
+ *    `main` or the editor root); failing that, the element itself.
  * A missing or unknown value means `view`. `observe()` registers an element
  * without the attribute.
  *
  * Under `prefers-reduced-motion: reduce` nothing is written and any written
- * value is removed; a mid-session change in either direction is honoured.
+ * value is removed, except on information elements (`information: true` or
+ * `data-sgs-scroll-information`): a progress indicator reports position rather
+ * than decorating, so it keeps tracking. A mid-session change in either
+ * direction is honoured, and the scroll listener keeps running while any
+ * information element is observed.
  *
- * @package SGS\Blocks
+ * `observe()` also takes `onUpdate( el, progress )`, called after each
+ * computation so a consumer can render text from the same number without a
+ * second rAF; the driver stays the only writer of the property.
+ *
+ * @package
  */
 
 const PROPERTY = '--sgs-scroll-progress';
 const SELECTOR = '[data-sgs-scroll]';
 const REDUCED_QUERY = '(prefers-reduced-motion: reduce)';
 
-/** @type {Map<Element, 'page'|'view'>} */
+const SECTION_PARENTS =
+	'.entry-content, .wp-block-post-content, main, .is-root-container';
+
+/** @type {Map<Element, {basis: 'page'|'view'|'section', measureEl: Element, information: boolean, onUpdate: (Function|null)}>} */
 const observed = new Map();
 /** @type {WeakMap<Element, string>} */
 const lastWritten = new WeakMap();
@@ -34,7 +50,33 @@ let listening = false;
 let reducedQuery = null;
 
 function normaliseBasis( value ) {
-	return 'page' === value ? 'page' : 'view';
+	return 'page' === value || 'section' === value ? value : 'view';
+}
+
+function resolveSection( el ) {
+	const section = el.closest( 'section' );
+	if ( section ) {
+		return section;
+	}
+	let outer = null;
+	let node = el.closest( '.wp-block-sgs-container' );
+	while ( node ) {
+		const parent = node.parentElement;
+		if ( parent && parent.matches( SECTION_PARENTS ) ) {
+			outer = node;
+		}
+		node = parent ? parent.closest( '.wp-block-sgs-container' ) : null;
+	}
+	return outer || el;
+}
+
+function hasInformation() {
+	for ( const entry of observed.values() ) {
+		if ( entry.information ) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function isReduced() {
@@ -86,28 +128,38 @@ function clear( el ) {
  */
 export function update() {
 	frame = 0;
-	if ( isReduced() ) {
-		return;
-	}
+	const reduced = isReduced();
 	const page = pageProgress();
-	observed.forEach( ( basis, el ) => {
-		write( el, 'page' === basis ? page : viewProgress( el ) );
+	observed.forEach( ( entry, el ) => {
+		if ( reduced && ! entry.information ) {
+			return;
+		}
+		const progress =
+			'page' === entry.basis ? page : viewProgress( entry.measureEl );
+		write( el, progress );
+		if ( entry.onUpdate ) {
+			entry.onUpdate( el, clamp( progress ) );
+		}
 	} );
 }
 
 function schedule() {
-	if ( ! frame && ! isReduced() ) {
+	if ( ! frame && ( ! isReduced() || hasInformation() ) ) {
 		frame = window.requestAnimationFrame( update );
 	}
 }
 
 function onReducedChange() {
 	if ( isReduced() ) {
-		if ( frame ) {
+		observed.forEach( ( entry, el ) => {
+			if ( ! entry.information ) {
+				clear( el );
+			}
+		} );
+		if ( frame && ! hasInformation() ) {
 			window.cancelAnimationFrame( frame );
 			frame = 0;
 		}
-		observed.forEach( ( basis, el ) => clear( el ) );
 		return;
 	}
 	schedule();
@@ -148,8 +200,11 @@ function unlisten() {
  * Register an element. Without `basis` the element's `data-sgs-scroll`
  * value decides, and an unknown value means `view`.
  *
- * @param {Element}                 el        Element to drive.
- * @param {{basis?: 'page'|'view'}} [options] Optional basis override.
+ * @param {Element}  el                    Element to drive.
+ * @param {Object}   [options]             Optional settings.
+ * @param {string}   [options.basis]       `page`, `view` or `section`.
+ * @param {boolean}  [options.information] Keep writing under reduced motion.
+ * @param {Function} [options.onUpdate]    Called with (el, progress) after each computation.
  */
 export function observe( el, options = {} ) {
 	if ( ! el || 1 !== el.nodeType ) {
@@ -158,7 +213,16 @@ export function observe( el, options = {} ) {
 	const basis = normaliseBasis(
 		options.basis || el.getAttribute( 'data-sgs-scroll' )
 	);
-	observed.set( el, basis );
+	const information =
+		true === options.information ||
+		null !== el.getAttribute( 'data-sgs-scroll-information' );
+	observed.set( el, {
+		basis,
+		measureEl: 'section' === basis ? resolveSection( el ) : el,
+		information,
+		onUpdate:
+			'function' === typeof options.onUpdate ? options.onUpdate : null,
+	} );
 	listen();
 	schedule();
 }

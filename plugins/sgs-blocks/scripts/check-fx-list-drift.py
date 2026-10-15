@@ -344,6 +344,20 @@ def parse_picker_effects(src: Sources) -> list[str]:
     return picker
 
 
+def parse_motion_panel_effects(src: Sources) -> list[str]:
+    """generated-fx-effect-meta.json — effects offered only by the Spec 38A motion panels.
+
+    A row with `in_picker: false` and a non-empty `panels` list is added as a layer in
+    the motion inspector (Effects, Hover or Entrance panel), never through fx.js's
+    picker, so SHIPPED_EFFECTS is the wrong roster for it.
+    """
+    meta = json.loads(_read(src.effect_meta_json))
+    return sorted(
+        slug for slug, row in meta.items()
+        if not row.get("in_picker") and row.get("panels")
+    )
+
+
 def parse_cursor_field_types(src: Sources) -> list[str]:
     """fx-cursor-field.php `SGS_FX_CURSOR_FIELD_TYPES` — the render layer's allowlist."""
     path = src.cursor_field_php
@@ -788,7 +802,14 @@ def evaluate(src: Sources) -> list[Violation]:
     BLOCK_DEDICATED_EFFECTS = frozenset(
         { "draggable", "flip", "image-sequence", "carousel-loop", "lottie" }
     )
-    for effect in sorted(set(registry_effects) - set(shipped) - BLOCK_DEDICATED_EFFECTS):
+    # Spec 38A effects reached through the motion panels (`in_picker: false` with a
+    # `panels` list in the generated meta, e.g. `scroll-progress`) have their editor
+    # surface there, not in fx.js. A registered module with no meta row, or with an
+    # empty `panels` list, still fails.
+    motion_panel_effects = set(parse_motion_panel_effects(src))
+    for effect in sorted(
+        set(registry_effects) - set(shipped) - BLOCK_DEDICATED_EFFECTS - motion_panel_effects
+    ):
         violations.append(Violation(
             "I9",
             f"`{effect}` is registered as a runtime module (@sgs/fx-{effect} in "
@@ -1026,6 +1047,14 @@ _CASES = (
         "fx_js",
         "\t'wave-gradient',\n",
         "\t'wave-gradient',\n\t'selftest-unregistered',\n",
+    ),
+    _Case(
+        # I9 leg 3: a registered motion-panel effect loses its panels. It is then offered
+        # by neither fx.js nor the motion inspector, so the exemption must stop applying.
+        "I9", "empty the panels of a registered motion-panel effect",
+        "effect_meta_json",
+        pattern=r'("scroll-progress":\s*\{[^{}]*(?:\{[^{}]*\}[^{}]*)*?"panels":\s*)\[[^\]]*\]',
+        replacement=r"\g<1>[]",
     ),
 )
 
