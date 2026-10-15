@@ -220,6 +220,7 @@ Source: the per-effect audit `.claude/reports/2026-10-12-motion-effects-audit.md
 | hover rotate and translate | Hover | V | Part | translate 2 / 6 / 12px; rotate 1 / 3 / 6deg |
 | `sheen` (new) | Hover | V | Part | band opacity 0.2 / 0.35 / 0.5 |
 | `scroll-progress` (new) | Effects | V | Part | hidden |
+| `curtain` (new) | Entrance and reveal | V | Part | hidden |
 | `ambient-float` (new) | Effects | V | Part | travel 6 / 12 / 20px |
 | `marquee` (new, shared) | Effects | V | Block (track) | hidden (speed is the control) |
 | `ken-burns` | Effects | V | Surface | zoom 104 / 108 / 115% |
