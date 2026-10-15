@@ -58,6 +58,14 @@
 			"reason": "PROSE COLLISION. The render-corpus match is the ENGLISH WORD, not the attribute: view.js:519/531/576 set aria-labels 'Play testimonials' / 'Pause testimonials'. No code reads attributes.testimonials — edit.js:5 records that the custom repeater (testimonials array + TextareaControl rows) was replaced by InnerBlocks. Check by grepping `testimonials` in view.js and confirming every hit is inside an aria-label string.",
 			"seededAt": "2026-08-08",
 			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/brand-strip|plugins/sgs-blocks/src/blocks/brand-strip/block.json|pauseOnHover",
+			"reason": "MIGRATION-ONLY ATTRIBUTE (Spec 38A M5.15, 2026-10-15). The shared marquee replaced brand-strip's own marquee: hover pausing is now the marquee effect layer's `hoverRate` (0 = stop) and `pauseOnTouch`, set in the motion Effects panel, so the old inspector toggle was removed as a control that no longer did anything. The attribute stays registered only so the M6.5 sweep's marquee mapper (includes/motion/migrate/mappers/class-sgs-motion-map-marquee.php, which maps pauseOnHover true or absent to hoverRate 0 plus pauseOnTouch) can read stored values; render.php no longer reads it. Deleted with brand-strip's other old marquee attributes in M6.6 (build plan, M5.15 bullet), and this entry goes with it."
+		},
+		{
+			"key": "21-render-without-control|sgs/trust-bar|plugins/sgs-blocks/src/blocks/trust-bar/block.json|autoScrollPauseOnHover",
+			"reason": "MIGRATION-ONLY ATTRIBUTE (Spec 38A M5.15, 2026-10-15). The shared marquee replaced trust-bar's own marquee: hover pausing is now the marquee effect layer's `hoverRate` (0 = stop) and `pauseOnTouch`, set in the motion Effects panel, so the old inspector toggle was removed as a control that no longer did anything. The attribute stays registered only so the M6.5 sweep's marquee mapper (includes/motion/migrate/mappers/class-sgs-motion-map-marquee.php) can read stored values. Deleted with trust-bar's other old marquee attributes in M6.6 (build plan, M5.15 bullet), and this entry goes with it."
 		}
 	]
 }
