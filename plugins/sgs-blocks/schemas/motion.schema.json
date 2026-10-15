@@ -2758,7 +2758,8 @@
 						"fieldType": "distance",
 						"cssProperty": "--sgs-me-tx",
 						"state": "from",
-						"perDevice": true
+						"perDevice": true,
+						"intensity": true
 					}
 				},
 				"translateY": {
@@ -2778,7 +2779,8 @@
 						"fieldType": "scale",
 						"cssProperty": "--sgs-me-s",
 						"state": "from",
-						"perDevice": true
+						"perDevice": true,
+						"intensity": true
 					}
 				},
 				"rotate": {
@@ -2787,7 +2789,8 @@
 						"fieldType": "angle",
 						"cssProperty": "--sgs-me-rot",
 						"state": "from",
-						"perDevice": true
+						"perDevice": true,
+						"intensity": true
 					}
 				},
 				"rotateX": {
@@ -2821,7 +2824,8 @@
 						"fieldType": "distance",
 						"cssProperty": "--sgs-me-blur",
 						"state": "from",
-						"perDevice": true
+						"perDevice": true,
+						"intensity": true
 					}
 				},
 				"clip": {
@@ -2833,7 +2837,8 @@
 						"fieldType": "percentage",
 						"cssProperty": "--sgs-me-clip",
 						"state": "from",
-						"perDevice": true
+						"perDevice": true,
+						"intensity": true
 					}
 				}
 			},
@@ -7595,7 +7600,7 @@
 					"$ref": "#/$defs/duration",
 					"x-sgs-field": {
 						"fieldType": "duration",
-						"cssProperty": null,
+						"cssProperty": "--sgs-ripple-duration",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-ripple-duration",
@@ -7618,7 +7623,7 @@
 					"maximum": 5,
 					"x-sgs-field": {
 						"fieldType": "ratio",
-						"cssProperty": null,
+						"cssProperty": "--sgs-ripple-size",
 						"state": "active",
 						"perDevice": true,
 						"intensity": true,
@@ -7685,7 +7690,7 @@
 					"maximum": 100,
 					"x-sgs-field": {
 						"fieldType": "percentage",
-						"cssProperty": null,
+						"cssProperty": "--sgs-sheen-band-width",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-sheen-band-width"
@@ -7702,7 +7707,7 @@
 					},
 					"x-sgs-field": {
 						"fieldType": "angle",
-						"cssProperty": null,
+						"cssProperty": "--sgs-sheen-angle",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-sheen-angle",
@@ -7713,7 +7718,7 @@
 					"$ref": "#/$defs/colourReference",
 					"x-sgs-field": {
 						"fieldType": "colourReference",
-						"cssProperty": null,
+						"cssProperty": "--sgs-sheen-colour",
 						"state": "active",
 						"perDevice": false,
 						"dataAttr": "data-sgs-fx-sheen-colour"
@@ -7723,7 +7728,7 @@
 					"$ref": "#/$defs/opacity",
 					"x-sgs-field": {
 						"fieldType": "opacity",
-						"cssProperty": null,
+						"cssProperty": "--sgs-sheen-opacity",
 						"state": "active",
 						"perDevice": true,
 						"intensity": true,
@@ -7734,7 +7739,7 @@
 					"$ref": "#/$defs/duration",
 					"x-sgs-field": {
 						"fieldType": "duration",
-						"cssProperty": null,
+						"cssProperty": "--sgs-sheen-duration",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-sheen-duration",
@@ -7745,7 +7750,7 @@
 					"$ref": "#/$defs/easing",
 					"x-sgs-field": {
 						"fieldType": "easing",
-						"cssProperty": null,
+						"cssProperty": "--sgs-sheen-easing",
 						"state": "active",
 						"perDevice": false,
 						"dataAttr": "data-sgs-fx-sheen-easing"
@@ -8066,10 +8071,10 @@
 					"$ref": "#/$defs/duration",
 					"description": "Loop duration, used instead of speed when a draft stores a time per loop (a stored duration cannot become px/s).",
 					"minimum": 2000,
-					"maximum": 300000,
+					"maximum": 120000,
 					"x-sgs-range": {
 						"min": 2000,
-						"max": 300000,
+						"max": 120000,
 						"unit": "ms"
 					},
 					"x-sgs-field": {
@@ -8186,10 +8191,10 @@
 					"$ref": "#/$defs/duration",
 					"description": "Loop duration, used instead of speed when a draft stores a time per loop (a stored duration cannot become px/s).",
 					"minimum": 2000,
-					"maximum": 300000,
+					"maximum": 120000,
 					"x-sgs-range": {
 						"min": 2000,
-						"max": 300000,
+						"max": 120000,
 						"unit": "ms"
 					}
 				},
