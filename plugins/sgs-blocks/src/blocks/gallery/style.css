@@ -822,4 +822,15 @@
 	}
 }
 
+/* Devices that cannot hover (touch) see captions and the slide overlay at rest: content never waits on a hover
+   that cannot happen (Spec 38A FR-38A-30, WCAG 1.4.13). */
+@media ( hover: none ) {
+	.sgs-gallery--caption-reveal .sgs-gallery__caption {
+		opacity: 1;
+		transform: none;
+	}
 
+	.sgs-gallery--hover-overlay-slide .sgs-gallery__overlay {
+		transform: translateY( 0 );
+	}
+}

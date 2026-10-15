@@ -293,3 +293,15 @@
 		transform: none;
 	}
 }
+
+/* Devices that cannot hover (touch) see the overlay and its bio at rest (Spec 38A FR-38A-30, WCAG 1.4.13). */
+@media (hover: none) {
+	.sgs-has-hover-overlay .sgs-team-member__overlay {
+		opacity: 1;
+		transform: none;
+	}
+
+	.sgs-has-hover-overlay .sgs-team-member__overlay-bio {
+		transform: none;
+	}
+}

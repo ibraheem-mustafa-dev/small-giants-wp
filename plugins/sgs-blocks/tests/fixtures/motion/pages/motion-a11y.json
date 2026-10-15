@@ -1,0 +1,317 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m310-entrance-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Motion accessibility acceptance",
+					"level": "h1",
+					"className": "m310-entrance",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "load",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 24
+											},
+											"duration": 600
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m310-reveal-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Captions revealed on hover",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/gallery",
+				"attributes": {
+					"layout": "grid",
+					"columns": {
+						"desktop": 2,
+						"tablet": 2,
+						"mobile": 1
+					},
+					"showCaptions": true,
+					"captionReveal": true,
+					"enableLightbox": false,
+					"effectHover": "none",
+					"className": "m310-reveal",
+					"mediaItems": [
+						{
+							"id": 3459,
+							"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+							"alt": "A stack of cookies",
+							"caption": "First revealed caption"
+						},
+						{
+							"id": 3459,
+							"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+							"alt": "Another stack of cookies",
+							"caption": "Second revealed caption"
+						}
+					]
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m310-card-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "A card that lifts on hover and on keyboard focus",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Keyboard parity card",
+					"description": "Hover and keyboard focus lift and scale this card by the same amount.",
+					"className": "m310-card",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "root",
+										"values": {
+											"translateY": -6,
+											"scale": 1.04,
+											"duration": 200,
+											"easing": "ease-out"
+										}
+									}
+								}
+							}
+						}
+					},
+					"effectHover": "none",
+					"shadowLiftOnHover": false,
+					"sgsHoverScalePreset": "none",
+					"sgsHoverShadow": "none",
+					"sgsHoverImageZoom": false
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Read more about parity",
+							"url": "https://example.com/"
+						}
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m310-loop-pause-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "A looping float over five seconds with a pause control",
+					"level": "h2",
+					"className": "m310-loop-pause",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "ambient-float",
+										"effect": "ambient-float",
+										"trigger": "load",
+										"values": {
+											"travel": 12,
+											"axis": "y",
+											"period": 8000,
+											"easing": "ease-in-out",
+											"direction": "alternate",
+											"pauseControl": true
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m310-loop-nopause-wrap"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "The same loop without a pause control",
+					"level": "h2",
+					"className": "m310-loop-nopause",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "ambient-float",
+										"effect": "ambient-float",
+										"trigger": "load",
+										"values": {
+											"travel": 12,
+											"axis": "y",
+											"period": 8000,
+											"easing": "ease-in-out",
+											"direction": "alternate"
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		]
+	}
+]
