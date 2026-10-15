@@ -134,13 +134,13 @@ namespace {
 
 	// 2. The runtime vocabularies kept in code match their JavaScript twins.
 	$src = dirname( __DIR__, 2 ) . '/src/';
-	preg_match( '/const HOLD_FRACTIONS = \{([^}]*)\}/', (string) file_get_contents( $src . 'shared/effects/gsap/fx-pin-scrub.js' ), $m );
+	preg_match( '/const HOLD_FRACTIONS = \{([^}]*)\}/', (string) file_get_contents( $src . 'shared/effects/gsap/pin-scrub-params.js' ), $m );
 	preg_match_all( '/(\w+):\s*([\d.]+)/', $m[1] ?? '', $pairs, PREG_SET_ORDER );
 	$js_hold = array();
 	foreach ( $pairs as $pair ) {
 		$js_hold[ $pair[1] ] = 0 + $pair[2];
 	}
-	fx_check( \SGS\Blocks\Motion\Sgs_Motion_Legacy_Fx_Value::LEGACY_HOLD == $js_hold, 'the migration LEGACY_HOLD equals fx-pin-scrub.js HOLD_FRACTIONS: ' . json_encode( $js_hold ) );
+	fx_check( array() !== $js_hold && \SGS\Blocks\Motion\Sgs_Motion_Legacy_Fx_Value::LEGACY_HOLD == $js_hold, 'the migration LEGACY_HOLD equals pin-scrub-params.js HOLD_FRACTIONS: ' . json_encode( $js_hold ) );
 	preg_match( '/export function resolveTrigger\b.*?\n\}/s', (string) file_get_contents( $src . 'shared/effects/gsap/provider.js' ), $m );
 	preg_match_all( "/'(load|scroll|hover|[a-z]+)'/", $m[0] ?? '', $words );
 	fx_check( array() === array_diff( Grammar::RUNTIME_TRIGGERS, $words[1] ) && array() === array_diff( array_unique( $words[1] ), Grammar::RUNTIME_TRIGGERS ), 'RUNTIME_TRIGGERS equals the words provider.js resolveTrigger reads: ' . json_encode( array_values( array_unique( $words[1] ) ) ) );
