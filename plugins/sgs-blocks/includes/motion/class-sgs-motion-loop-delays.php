@@ -263,13 +263,15 @@ final class Sgs_Motion_Loop_Delays {
 	}
 
 	/**
-	 * Accept a stagger settings array that is not switched off.
+	 * Accept a non-empty stagger settings array. `apply` is not an off switch: it only decides, in the editor helper,
+	 * whether a child with no entrance of its own takes the container's (`stagger-write.js`), so it never stops the
+	 * per-item delays.
 	 *
 	 * @param mixed $stagger Raw value.
 	 * @return array<string,mixed>|null Settings keys only, or null.
 	 */
 	private static function normalise( $stagger ): ?array {
-		if ( ! is_array( $stagger ) || array() === $stagger || false === ( $stagger['apply'] ?? true ) ) {
+		if ( ! is_array( $stagger ) || array() === $stagger ) {
 			return null;
 		}
 		return array_intersect_key( $stagger, array_flip( array( 'offset', 'step', 'order', 'perRow', 'cap', 'closeOrder' ) ) );

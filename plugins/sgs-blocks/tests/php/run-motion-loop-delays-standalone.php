@@ -135,7 +135,8 @@ unset( $none['sgsMotion'] );
 $check( null === Sgs_Motion_Loop_Delays::post_grid( 'sgs-post-grid-none', $none, 6 ), 'no stagger settings: nothing returned' );
 $off                                = $grid_attrs;
 $off['sgsMotion']['stagger']['apply'] = false;
-$check( null === Sgs_Motion_Loop_Delays::post_grid( 'sgs-post-grid-off', $off, 6 ), 'stagger switched off: nothing returned' );
+$check( null !== Sgs_Motion_Loop_Delays::post_grid( 'sgs-post-grid-off', $off, 6 ), 'apply false is not an off switch: the delays are still written' );
+$reset();
 $zero                                 = $grid_attrs;
 $zero['sgsMotion']['stagger']['step'] = 0;
 $check( null === Sgs_Motion_Loop_Delays::post_grid( 'sgs-post-grid-zero', $zero, 6 ), 'all delays zero: nothing returned' );
@@ -287,7 +288,8 @@ foreach ( array( 'sgs/card-grid', 'sgs/gallery', 'sgs/timeline' ) as $slug ) {
 	$check( null === Sgs_Motion_Loop_Delays::item_array( $slug, 'sgs-x-1', array(), 5, '.sgs-x__item' ), "$slug: no stagger settings, nothing returned" );
 }
 $off_attrs = array( 'sgsMotion' => array( 'stagger' => array( 'apply' => false, 'step' => 80 ) ) );
-$check( null === Sgs_Motion_Loop_Delays::item_array( 'sgs/gallery', 'sgs-x-1', $off_attrs, 5, '.sgs-x__item' ), 'item array: stagger switched off, nothing returned' );
+$check( null !== Sgs_Motion_Loop_Delays::item_array( 'sgs/gallery', 'sgs-x-apply', $off_attrs, 5, '.sgs-x__item' ), 'item array: apply false still writes the delays (the migrated drawer menu stores it)' );
+$reset();
 $check( null === Sgs_Motion_Loop_Delays::item_array( 'sgs/gallery', 'sgs-x-1', $gal_attrs, 0, '.sgs-x__item' ), 'item array: no items, nothing returned' );
 $check( null === Sgs_Motion_Loop_Delays::item_array( 'sgs/gallery', 'sgs-x-1', $gal_attrs, 5, '.a > .b, .c' ), 'item array: a selector that is not a class chain is refused' );
 $check( '' === $collected(), 'item array: nothing collected for the refused calls' );
