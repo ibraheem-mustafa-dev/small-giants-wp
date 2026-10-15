@@ -1,0 +1,165 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"sgsMotion": {
+				"v": 1,
+				"stagger": {
+					"apply": true,
+					"offset": 0,
+					"step": 40,
+					"order": "reverse"
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"content": "Item",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "scroll",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 24
+											},
+											"duration": 500,
+											"delay": 120
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"content": "Item",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "scroll",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 24
+											},
+											"duration": 500,
+											"delay": 80
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"content": "Item",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "scroll",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 24
+											},
+											"duration": 500,
+											"delay": 40
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"sgsMotion": {
+						"v": 1,
+						"stagger": {
+							"apply": true,
+							"offset": 0,
+							"step": 30
+						}
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/info-box",
+						"attributes": {
+							"content": "Item",
+							"sgsMotion": {
+								"v": 1,
+								"elements": {
+									"root": {
+										"entrance": {
+											"base": {
+												"trigger": "scroll",
+												"values": {
+													"from": {
+														"opacity": 0,
+														"translateY": 24
+													},
+													"duration": 500,
+													"delay": 0
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "sgs/info-box",
+						"attributes": {
+							"content": "Item",
+							"sgsMotion": {
+								"v": 1,
+								"elements": {
+									"root": {
+										"entrance": {
+											"base": {
+												"trigger": "scroll",
+												"values": {
+													"from": {
+														"opacity": 0,
+														"translateY": 24
+													},
+													"duration": 500,
+													"delay": 30
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				]
+			}
+		]
+	}
+]

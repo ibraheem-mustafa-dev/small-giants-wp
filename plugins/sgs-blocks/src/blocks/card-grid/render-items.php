@@ -5,7 +5,7 @@
  * Partial of render.php, included with a plain require so it shares render.php's
  * local scope (required once per block instance).
  *
- * Reads: $items, $variant, $root_sel, $hover_effect, $heading_level, $no_image_label, $image_fallback, $sgs_cg_media_classes, $card_grid_overlay_active and $card_grid_per_item_css.
+ * Reads: $items, $card_grid_loop_style, $card_grid_loop_i, $variant, $root_sel, $hover_effect, $heading_level, $no_image_label, $image_fallback, $sgs_cg_media_classes, $card_grid_overlay_active and $card_grid_per_item_css.
  * Writes: $card_grid_per_item_css (extended); the echoed card markup goes into the buffer render.php collects as $inner_html.
  *
  * @package SGS\Blocks
@@ -124,7 +124,7 @@ foreach ( $items as $index => $item ) :
 	$item_needs_wrap = $item_has_media || $item_use_fallback || '' !== $item_glyph_html
 		|| 'overlay' === $variant || 'overlay-slide' === $hover_effect;
 	?>
-	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item" data-card-key="<?php echo esc_attr( $card_grid_item_key ); ?>"<?php echo $link_attr; ?>>
+	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item" data-card-key="<?php echo esc_attr( $card_grid_item_key ); ?>"<?php echo null !== $card_grid_loop_style ? \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_attr( $card_grid_loop_i++ ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ` data-sgs-loop-i="<int>"`. ?><?php echo $link_attr; ?>>
 		<?php if ( $item_needs_wrap ) : ?>
 		<div class="<?php echo esc_attr( $image_wrap_class ); ?>"<?php echo $item_decorative ? ' aria-hidden="true"' : ''; ?>>
 			<?php if ( '' !== $media_html ) : ?>

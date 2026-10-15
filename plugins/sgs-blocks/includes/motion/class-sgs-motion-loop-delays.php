@@ -10,6 +10,9 @@
  * - `sgs/post-grid`: `render-interior.php` calls `post_grid()` and `tag_item()`; settings come from the block's own
  *   `sgsMotion.stagger`; columns per device from `Sgs_Motion_Stagger::columns_for_block` (a grid layout only; list,
  *   masonry and carousel are one column).
+ * - `sgs/gallery`, `sgs/card-grid`, `sgs/timeline` render their items from an attribute array: each block calls
+ *   `item_array()` with its item count and item class and tags the items (`item_attr()` in its own loop, or
+ *   `tag_by_class()` over the buffered items); the settings are the container's stored `sgsMotion.stagger`.
  * - Core `core/post-template` and WooCommerce `woocommerce/product-template`: a `render_block` filter tags each direct
  *   `<li>` child of the rendered list, adds the scope class `sgs-m-<hash>` to the list and collects the rules. These
  *   core blocks are not SGS blocks and register no `supports.sgs.motion`, so they hold no `sgsMotion` of their own.
@@ -155,6 +158,69 @@ final class Sgs_Motion_Loop_Delays {
 			return null;
 		}
 		return self::collect( self::rules( '.' . $uid . ' .sgs-post-grid__card', $delays, true ), $uid . '-loop' );
+	}
+
+	/**
+	 * The rules for a block that renders its items from an attribute array (`sgs/gallery`, `sgs/card-grid`,
+	 * `sgs/timeline`), whose items are not inner blocks, so the stagger helper cannot write a delay on each child.
+	 * The block's stored `sgsMotion.stagger` settings are turned into one scoped rule per item by the same delay
+	 * function, found by the item's `data-sgs-loop-i` index (never `:nth-child`). Columns per device come from the
+	 * block's own grid-columns attribute (1 when it has none).
+	 *
+	 * @param string              $block_name    Block slug, for example `sgs/card-grid`.
+	 * @param string              $uid           The block's per-instance class (on the block root).
+	 * @param array<string,mixed> $attributes    The block's attributes.
+	 * @param int                 $count         Items rendered.
+	 * @param string              $item_selector Class selector of one item under the root, for example `.sgs-card-grid__item`.
+	 * @return string|null Null when the block has no stagger (do not tag the items); otherwise the `<style>` tag to echo
+	 *                     before the block (an empty string when the rules went to the front-end collector).
+	 */
+	public static function item_array( string $block_name, string $uid, array $attributes, int $count, string $item_selector ): ?string {
+		$stagger = self::normalise( $attributes['sgsMotion']['stagger'] ?? null );
+		if ( null === $stagger || $count < 1 || '' === $uid || 1 !== preg_match( '/^(?:\.[A-Za-z][A-Za-z0-9_-]*)+$/', $item_selector ) ) {
+			return null;
+		}
+		$columns = array();
+		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $device ) {
+			$columns[ $device ] = Sgs_Motion_Stagger::columns_for_block( $block_name, $attributes, $device );
+		}
+		$delays = self::device_delays( $stagger, $count, $columns );
+		if ( null === $delays ) {
+			return null;
+		}
+		return self::collect( self::rules( '.' . $uid . ' ' . $item_selector, $delays, true ), $uid . '-loop' );
+	}
+
+	/**
+	 * The index attribute for an item written in the block's own markup, with a leading space.
+	 *
+	 * @param int $index Position among the block's items, from 0.
+	 * @return string ` data-sgs-loop-i="N"`.
+	 */
+	public static function item_attr( int $index ): string {
+		return ' ' . self::ITEM_ATTR . '="' . max( 0, $index ) . '"';
+	}
+
+	/**
+	 * Give every element that carries a class its position as the loop index, in document order.
+	 *
+	 * @param string $html       The rendered items.
+	 * @param string $item_class One class name (no dot) every item carries.
+	 * @return array{html:string,count:int} The HTML and how many items were tagged.
+	 */
+	public static function tag_by_class( string $html, string $item_class ): array {
+		$processor = new \WP_HTML_Tag_Processor( $html );
+		$count     = 0;
+		while ( $processor->next_tag() ) {
+			if ( $processor->has_class( $item_class ) ) {
+				$processor->set_attribute( self::ITEM_ATTR, (string) $count );
+				++$count;
+			}
+		}
+		return array(
+			'html'  => $processor->get_updated_html(),
+			'count' => $count,
+		);
 	}
 
 	/**

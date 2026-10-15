@@ -220,5 +220,80 @@ $check( array( 0, 60, 120, 180 ) === $column( $rows, 'desktop' ), 'sgs_motion_lo
 $reset();
 $check( '<p>x</p>' === Sgs_Motion_Loop_Delays::filter( '<p>x</p>', array( 'blockName' => 'core/paragraph', 'attrs' => array() ) ), 'other blocks pass through' );
 
+// 10. Item-array blocks (Spec 38A FR-38A-26): card-grid, gallery and timeline render items from an attribute array.
+// card-grid: the old observer stopped counting at 7 positions, so the mapper stores cap = 7 x step.
+$reset();
+$cg_attrs = array(
+	'columns'   => array( 'desktop' => 3, 'tablet' => 2, 'mobile' => 1 ),
+	'sgsMotion' => array( 'stagger' => array( 'step' => 80, 'offset' => 0, 'order' => 'row-first', 'perRow' => false, 'cap' => 560 ) ),
+);
+$tag = Sgs_Motion_Loop_Delays::item_array( 'sgs/card-grid', 'sgs-cg-abc12345', $cg_attrs, 10, '.sgs-card-grid__item' );
+$check( '' === $tag, 'card-grid: on the front end the rules go to the collector' );
+$css_cg = $collected();
+list( $cg_rows ) = $parse( $css_cg );
+$expected_cg = array( 0, 80, 160, 240, 320, 400, 480, 560, 560, 560 );
+$check( $expected_cg === $column( $cg_rows, 'desktop' ), 'card-grid desktop (cap 7 x step): ' . json_encode( $column( $cg_rows, 'desktop' ) ) );
+$check( $expected_cg === $column( $cg_rows, 'mobile' ), 'card-grid mobile: perRow false, the same position at every device' );
+$check( false !== strpos( $css_cg, '.sgs-cg-abc12345 .sgs-card-grid__item[data-sgs-loop-i="9"]' ), 'card-grid: rule scoped to the block uid and the item by its index attribute' );
+$check( false === stripos( $css_cg, 'nth-child' ), 'card-grid: no nth-child rule' );
+// Planted-fault control: an uncapped computation must NOT satisfy the capped expectation, or the assertion above is vacuous.
+$reset();
+$planted = $cg_attrs;
+unset( $planted['sgsMotion']['stagger']['cap'] );
+Sgs_Motion_Loop_Delays::item_array( 'sgs/card-grid', 'sgs-cg-abc12345', $planted, 10, '.sgs-card-grid__item' );
+list( $planted_rows ) = $parse( $collected() );
+$check( $expected_cg !== $column( $planted_rows, 'desktop' ) && 720 === $column( $planted_rows, 'desktop' )[9], 'planted fault (cap dropped) is caught by the card-grid expectation: ' . json_encode( $column( $planted_rows, 'desktop' ) ) );
+
+// gallery: step x index with no cap; the tiles are found by class in the buffered markup, never a style attribute.
+$gallery_html = '<div class="sgs-gallery__grid">'
+	. '<figure class="sgs-gallery__item" data-gallery-item-key="a"><img src="a.jpg" alt=""></figure>'
+	. '<figure class="sgs-gallery__item sgs-gallery__item--linked" data-gallery-item-key="b"><a href="#"><img src="b.jpg" alt=""></a></figure>'
+	. '<figure class="sgs-gallery__item"><figcaption class="sgs-gallery__caption">C</figcaption></figure>'
+	. '<figure class="sgs-gallery__item"><img src="d.jpg" alt=""></figure>'
+	. '</div><dialog class="sgs-gallery__lightbox"><img src="x.jpg" alt=""></dialog>';
+$gal_tagged = Sgs_Motion_Loop_Delays::tag_by_class( $gallery_html, 'sgs-gallery__item' );
+$check( 4 === $gal_tagged['count'], 'gallery: four tiles tagged (' . $gal_tagged['count'] . ')' );
+$check( 4 === preg_match_all( '/<figure [^>]*data-sgs-loop-i="\d"/', $gal_tagged['html'] ), 'gallery: each tile carries an index' );
+$check( false !== strpos( $gal_tagged['html'], 'data-sgs-loop-i="3"' ) && false === strpos( $gal_tagged['html'], '<dialog class="sgs-gallery__lightbox" data-sgs-loop-i' ) && false === strpos( $gal_tagged['html'], 'sgs-gallery__caption" data-sgs-loop-i' ), 'gallery: the lightbox and caption are not tagged' );
+$check( $no_style_attr( $gal_tagged['html'] ), 'gallery: no style attribute' );
+$reset();
+$gal_attrs = array(
+	'columns'   => 3,
+	'sgsMotion' => array( 'stagger' => array( 'step' => 60, 'offset' => 0, 'order' => 'row-first', 'perRow' => false ) ),
+);
+Sgs_Motion_Loop_Delays::item_array( 'sgs/gallery', 'sgs-gallery-abc12345', $gal_attrs, $gal_tagged['count'], '.sgs-gallery__item' );
+list( $gal_rows ) = $parse( $collected() );
+$check( array( 0, 60, 120, 180 ) === $column( $gal_rows, 'desktop' ), 'gallery desktop (uncapped step x index): ' . json_encode( $column( $gal_rows, 'desktop' ) ) );
+$check( array( 0, 60, 120, 180 ) === $column( $gal_rows, 'mobile' ), 'gallery mobile: the same at every device' );
+$reset();
+Sgs_Motion_Loop_Delays::item_array( 'sgs/gallery', 'sgs-gallery-abc12345', $gal_attrs, 25, '.sgs-gallery__item' );
+list( $gal_long ) = $parse( $collected() );
+$check( 1440 === $column( $gal_long, 'desktop' )[24], 'gallery: no cap on a long gallery (item 24 = 1440)' );
+$check( 0 === Sgs_Motion_Loop_Delays::tag_by_class( $gallery_html, 'sgs-gallery__nothing' )['count'], 'tag_by_class: a class no item carries tags nothing' );
+
+// timeline: entries uncapped, found by index; item_attr is the attribute the block writes in its own loop.
+$reset();
+$tl_attrs = array( 'sgsMotion' => array( 'stagger' => array( 'step' => 100, 'offset' => 0, 'order' => 'row-first', 'perRow' => false ) ) );
+Sgs_Motion_Loop_Delays::item_array( 'sgs/timeline', 'sgs-tl-abc12345', $tl_attrs, 12, '.sgs-timeline__entry' );
+$css_tl = $collected();
+list( $tl_rows ) = $parse( $css_tl );
+$check( range( 0, 1100, 100 ) === $column( $tl_rows, 'desktop' ), 'timeline desktop (uncapped, 12 entries): ' . json_encode( $column( $tl_rows, 'desktop' ) ) );
+$check( false !== strpos( $css_tl, '.sgs-tl-abc12345 .sgs-timeline__entry[data-sgs-loop-i="11"]' ), 'timeline: rule scoped to the uid and the entry by its index' );
+$check( ' data-sgs-loop-i="3"' === Sgs_Motion_Loop_Delays::item_attr( 3 ), 'item_attr writes the index attribute' );
+
+// No settings, a switched-off stagger, an unusable selector or no items: nothing returned, nothing collected.
+$reset();
+foreach ( array( 'sgs/card-grid', 'sgs/gallery', 'sgs/timeline' ) as $slug ) {
+	$check( null === Sgs_Motion_Loop_Delays::item_array( $slug, 'sgs-x-1', array(), 5, '.sgs-x__item' ), "$slug: no stagger settings, nothing returned" );
+}
+$off_attrs = array( 'sgsMotion' => array( 'stagger' => array( 'apply' => false, 'step' => 80 ) ) );
+$check( null === Sgs_Motion_Loop_Delays::item_array( 'sgs/gallery', 'sgs-x-1', $off_attrs, 5, '.sgs-x__item' ), 'item array: stagger switched off, nothing returned' );
+$check( null === Sgs_Motion_Loop_Delays::item_array( 'sgs/gallery', 'sgs-x-1', $gal_attrs, 0, '.sgs-x__item' ), 'item array: no items, nothing returned' );
+$check( null === Sgs_Motion_Loop_Delays::item_array( 'sgs/gallery', 'sgs-x-1', $gal_attrs, 5, '.a > .b, .c' ), 'item array: a selector that is not a class chain is refused' );
+$check( '' === $collected(), 'item array: nothing collected for the refused calls' );
+$reset( false );
+$editor_items = Sgs_Motion_Loop_Delays::item_array( 'sgs/timeline', 'sgs-tl-edit', $tl_attrs, 3, '.sgs-timeline__entry' );
+$check( 0 === strpos( (string) $editor_items, '<style id="sgs-tl-edit-loop">' ) && '' === $collected(), 'item array in the editor: rules returned as a style tag, collector untouched' );
+
 echo $failures ? "FAILED: $failures of $checks checks\n" : "PASS: $checks checks\n";
 exit( $failures ? 1 : 0 );

@@ -387,6 +387,12 @@ if ( $hover_shadow ) {
 // load-bearing in practice — it only prevents an empty selector.
 $card_grid_per_item_css = '';
 
+// Item-array stagger (Spec 38A FR-38A-26): the cards come from the `items` attribute, so the container's stored
+// `sgsMotion.stagger` settings become one scoped delay rule per card, found by its `data-sgs-loop-i` index. Null (no
+// stagger) leaves the cards untagged; the string is only non-empty where the collector never flushes (the editor preview).
+$card_grid_loop_style = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/card-grid', $uid, $attributes, count( $items ), '.sgs-card-grid__item' );
+$card_grid_loop_i     = 0;
+
 // Build the interior HTML (card items).
 ob_start();
 require __DIR__ . '/render-items.php';
@@ -402,7 +408,7 @@ $card_grid_per_item_tag = $card_grid_per_item_css ? '<style>' . wp_strip_all_tag
 $card_grid_style_tags = $card_grid_native_style_tag . $sgs_grid_typo_tag . $card_grid_per_item_tag;
 $inner_html           = ob_get_clean();
 
-echo $card_grid_style_tags . SGS_Container_Wrapper::render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $card_grid_style_tags is CSS passed through wp_strip_all_tags(); SGS_Container_Wrapper::render() escapes internally.
+echo (string) $card_grid_loop_style . $card_grid_style_tags . SGS_Container_Wrapper::render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $card_grid_style_tags is CSS passed through wp_strip_all_tags(); SGS_Container_Wrapper::render() escapes internally.
 	$attributes,
 	$block,
 	$inner_html,

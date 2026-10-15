@@ -745,7 +745,14 @@ if ( 'carousel' === $mobile_layout ) {
 
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
+// Item-array stagger (Spec 38A FR-38A-26): the entries come from the `entries` attribute, so the container's stored
+// `sgsMotion.stagger` settings become one scoped delay rule per entry, found by its `data-sgs-loop-i` index. Null (no
+// stagger) leaves the entries untagged; the string is only non-empty where the collector never flushes (the editor preview).
+$sgs_tl_loop_style = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/timeline', $uid, $attributes, count( $entries ), '.sgs-timeline__entry' );
+$sgs_tl_loop_i     = 0;
+
 ?>
+<?php echo (string) $sgs_tl_loop_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers and a sanitised class by Sgs_Motion_Loop_Delays. ?>
 <?php if ( $scoped_css ) : ?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
@@ -896,7 +903,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 					$entry_class_attr = implode( ' ', $entry_classes );
 				}
 				?>
-				<li class="<?php echo esc_attr( $entry_class_attr ); ?>">
+				<li class="<?php echo esc_attr( $entry_class_attr ); ?>"<?php echo null !== $sgs_tl_loop_style ? \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_attr( $sgs_tl_loop_i++ ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ` data-sgs-loop-i="<int>"`. ?>>
 					<time class="sgs-timeline__date"<?php echo $datetime_attr ? ' datetime="' . esc_attr( $datetime_attr ) . '"' : ''; ?>>
 						<?php echo esc_html( $date_raw ); ?>
 					</time>
