@@ -10,7 +10,8 @@
  *   true   → `setMotionState( panel, 'open', true )`   every open entrance in the panel plays.
  *   false  → `setMotionState( panel, 'open', false )`  the host gains `close`, which keeps the panel displayed while each
  *            target plays its stored close values, duration and close delay; once they settle
- *            (`motionSettled`) the state is cleared and the panel hides. A re-open before then wins.
+ *            (`motionSettled`) the state is cleared and the panel hides. A re-open before then wins. While it closes the
+ *            panel is `inert`, so its links leave the Tab order and the accessibility tree; settling or re-opening clears it.
  *
  * `@sgs/motion-state` is loaded with a native `import()` that webpack leaves alone (`webpackIgnore`), resolved through
  * the import map, which `Sgs_Motion_Trigger_Open_State` fills on any page that prints an `open` entrance. It is loaded
@@ -95,15 +96,19 @@ export function triggerFor( panel ) {
  */
 export function publish( mod, panel, open ) {
 	if ( open ) {
+		panel.removeAttribute( 'inert' );
 		mod.setMotionState( panel, 'open', true );
 		return;
 	}
 	if ( ! mod.hasMotionState( panel, 'open' ) ) {
 		return;
 	}
+	// The closing panel stays displayed for its close animation but is out of the Tab order and the accessibility tree.
+	panel.setAttribute( 'inert', '' );
 	mod.setMotionState( panel, 'open', false );
 	mod.motionSettled( panel ).then( () => {
 		if ( mod.hasMotionState( panel, 'close' ) ) {
+			panel.removeAttribute( 'inert' );
 			mod.clearMotionState( panel );
 		}
 	} );

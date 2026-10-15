@@ -7,6 +7,7 @@
  */
 
 const mockCalls = [];
+let mockSettleGate = null;
 
 jest.mock(
 	'@sgs/motion-state',
@@ -27,6 +28,8 @@ jest.mock(
 			...actual,
 			setMotionState: wrap( 'setMotionState' ),
 			clearMotionState: wrap( 'clearMotionState' ),
+			motionSettled: ( ...args ) =>
+				mockSettleGate || actual.motionSettled( ...args ),
 		};
 	},
 	{ virtual: true }
@@ -75,6 +78,7 @@ describe( 'nav bar panel motion state', () => {
 	beforeEach( () => {
 		jest.resetModules();
 		mockCalls.length = 0;
+		mockSettleGate = null;
 		window.matchMedia = () => ( {
 			matches: false,
 			addEventListener() {},
@@ -141,5 +145,54 @@ describe( 'nav bar panel motion state', () => {
 		triggers[ 0 ].setAttribute( 'aria-expanded', 'false' );
 		await settle();
 		expect( mockCalls ).toEqual( [] );
+	} );
+
+	describe( 'a closing panel is inert until the close settles', () => {
+		async function openThenClose( triggers ) {
+			initPanelMotionState();
+			await settle();
+			triggers[ 0 ].setAttribute( 'aria-expanded', 'true' );
+			await settle();
+			triggers[ 0 ].setAttribute( 'aria-expanded', 'false' );
+			await settle();
+		}
+
+		it( 'sets inert when the close starts and clears it when the close settles', async () => {
+			const { panels, triggers } = barMarkup();
+			let release;
+			mockSettleGate = new Promise( ( resolve ) => {
+				release = resolve;
+			} );
+			await openThenClose( triggers );
+			expect( panels[ 0 ].getAttribute( ATTR ) ).toBe( 'close' );
+			expect( panels[ 0 ].hasAttribute( 'inert' ) ).toBe( true );
+
+			release();
+			await settle();
+			expect( panels[ 0 ].getAttribute( ATTR ) ).toBe( '' );
+			expect( panels[ 0 ].hasAttribute( 'inert' ) ).toBe( false );
+		} );
+
+		it( 'a re-open during the close clears inert at once', async () => {
+			const { panels, triggers } = barMarkup();
+			mockSettleGate = new Promise( () => {} );
+			await openThenClose( triggers );
+			expect( panels[ 0 ].hasAttribute( 'inert' ) ).toBe( true );
+			triggers[ 0 ].setAttribute( 'aria-expanded', 'true' );
+			await settle();
+			expect( panels[ 0 ].getAttribute( ATTR ) ).toBe( 'open' );
+			expect( panels[ 0 ].hasAttribute( 'inert' ) ).toBe( false );
+		} );
+
+		it( 'an open panel and a never-opened collapse are never inert', async () => {
+			const { panels, triggers } = barMarkup();
+			initPanelMotionState();
+			await settle();
+			triggers[ 1 ].setAttribute( 'aria-expanded', 'false' );
+			triggers[ 0 ].setAttribute( 'aria-expanded', 'true' );
+			await settle();
+			expect( panels[ 0 ].hasAttribute( 'inert' ) ).toBe( false );
+			expect( panels[ 1 ].hasAttribute( 'inert' ) ).toBe( false );
+		} );
 	} );
 } );

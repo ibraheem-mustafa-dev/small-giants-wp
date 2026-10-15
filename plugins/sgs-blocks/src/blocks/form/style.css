@@ -253,6 +253,23 @@
 	display: none;
 }
 
+/* Entrance animation — fade in and slide up when a step becomes active. A form with a
+   `state` entrance plays its `step-changed` motion instead (view.js adds no class). */
+.sgs-form-step--entering:where(:not([data-sgs-me~="state"])) {
+	animation: sgs-step-enter 0.2s ease forwards;
+}
+
+@keyframes sgs-step-enter {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
 /* Progress bar width transition. */
 .sgs-form__progress-track {
 	transition: width var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--default, ease);
@@ -260,6 +277,10 @@
 
 /* Honour the user's motion preference. */
 @media (prefers-reduced-motion: reduce) {
+	.sgs-form-step--entering {
+		animation: none;
+	}
+
 	.sgs-form__progress-track {
 		transition: none;
 	}

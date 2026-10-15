@@ -582,13 +582,42 @@
 }
 
 /* ===== Step transition =====
- * A step change plays the block's `step-changed` motion state, published by
- * view.js with `data-sgs-dir` forward or back (Spec 38A FR-38A-53); the
- * motion itself is set in the Motion panel.
+ * Scoped to .sgs-form-step INSIDE a choice-flow instance only — sgs/form-step
+ * is a shared inert marker also used by sgs/form, which has its own,
+ * unrelated show/hide + transition mechanism; this rule must never leak
+ * into that context.
+ *
+ * `.is-entering` is the PRE-transition state (flow-steps.js showStepByIndex())
+ * — added before a step is un-hidden, removed one animation frame later.
+ * Removing it is what triggers the transition into this rule's own resting
+ * state (opacity:1, no translate). A flow with a `state` entrance plays its
+ * `step-changed` motion instead (view.js, Spec 38A FR-38A-53): these rules are
+ * gated off it, and flow-steps.js adds no class.
  */
+.sgs-choice-flow:where(:not([data-sgs-me~="state"]):not(:has([data-sgs-me~="state"]))) .sgs-form-step {
+	opacity: 1;
+	transform: translateY(0);
+	transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+
+.sgs-choice-flow:where(:not([data-sgs-me~="state"]):not(:has([data-sgs-me~="state"]))) .sgs-form-step.is-entering {
+	opacity: 0;
+	transform: translateY(8px);
+	transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
+	.sgs-choice-flow:where(:not([data-sgs-me~="state"]):not(:has([data-sgs-me~="state"]))) .sgs-form-step {
+		transition-duration: 0.01ms !important;
+	}
+
 	.sgs-choice-flow__progress-fill {
 		transition: none;
+	}
+
+	.sgs-choice-flow:where(:not([data-sgs-me~="state"]):not(:has([data-sgs-me~="state"]))) .sgs-form-step.is-entering {
+		opacity: 1;
+		transform: none;
 	}
 }
 
@@ -1451,6 +1480,16 @@
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__inner {
 		padding: 40px 44px 56px;
 	}
+}
+
+/* A step rises in over 0.4s (compact keeps its own 220ms; reduced motion
+   is handled globally above for `.sgs-form-step`). */
+.sgs-choice-flow--layout-showcase:where(:not([data-sgs-me~="state"]):not(:has([data-sgs-me~="state"]))) .sgs-form-step {
+	transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.sgs-choice-flow--layout-showcase:where(:not([data-sgs-me~="state"]):not(:has([data-sgs-me~="state"]))) .sgs-form-step.is-entering {
+	transform: translateY(18px);
 }
 
 /* ----- Footer bar ----- */

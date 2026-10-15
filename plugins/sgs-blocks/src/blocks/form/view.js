@@ -11,6 +11,7 @@ import { store, getContext, getElement, withSyncEvent } from '@wordpress/interac
 import {
 	pulseState,
 	setState,
+	hasStateMotion,
 	publishStepChange,
 	preloadMotionState,
 } from '../../shared/motion-state-publish.js';
@@ -516,21 +517,32 @@ const { state } = store( 'sgs/form', {
 /**
  * Show/hide form steps and trigger entrance animation on the active step.
  *
- * Uses a CSS class (sgs-form-step--hidden) rather than the hidden attribute.
- * The step change's motion is the block's `step-changed` state, published by
- * the caller (Spec 38A FR-38A-53), not a class this function adds.
+ * Uses a CSS class (sgs-form-step--hidden) rather than the hidden attribute
+ * so that the entering step can animate in via CSS keyframe. A form with a
+ * `state` entrance skips that class: its step change is the block's
+ * `step-changed` state, published by the caller (Spec 38A FR-38A-53).
  *
  * @param {HTMLElement} formRoot    The form wrapper element.
  * @param {number}      currentStep Zero-based index of the step to show.
  */
 function updateStepVisibility( formRoot, currentStep ) {
 	const steps = formRoot.querySelectorAll( '.sgs-form-step' );
+	// A form on the state-motion model plays `step-changed`; every other form keeps the original fade-up.
+	const onModel = hasStateMotion( formRoot );
 
 	steps.forEach( ( step, index ) => {
 		if ( index === currentStep ) {
 			step.classList.remove( 'sgs-form-step--hidden' );
+			if ( ! onModel ) {
+				// Re-trigger the entrance animation by removing and re-adding the class.
+				step.classList.remove( 'sgs-form-step--entering' );
+				// Force reflow so the animation restarts.
+				void step.offsetWidth; // eslint-disable-line no-void
+				step.classList.add( 'sgs-form-step--entering' );
+			}
 		} else {
 			step.classList.add( 'sgs-form-step--hidden' );
+			step.classList.remove( 'sgs-form-step--entering' );
 		}
 	} );
 

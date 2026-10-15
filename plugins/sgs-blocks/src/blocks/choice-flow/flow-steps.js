@@ -26,6 +26,7 @@ import {
 	CONTINUE_HINT_SELECTOR,
 	STEP_CHANGE_EVENT,
 } from './flow-constants.js';
+import { hasStateMotion } from '../../shared/motion-state-publish.js';
 import { updateStepPosition } from './flow-progress.js';
 import { markStepReached } from './flow-reached.js';
 import { refreshPricePanel } from './pricing.js';
@@ -201,10 +202,25 @@ export function showStepByIndex( flowRoot, targetIndex ) {
 	const steps = getSteps( flowRoot );
 	const targetStepEl = steps[ targetIndex ];
 	const fromIndex = steps.findIndex( ( stepEl ) => ! stepEl.hidden );
+	// A flow with a `state` entrance plays `step-changed`; every other flow keeps the original rise-in.
+	const classic = ! hasStateMotion( flowRoot );
+
+	// Snap the target step to its pre-transition state BEFORE un-hiding it,
+	// so the CSS opacity+translate transition plays on reveal (removed one
+	// rAF later, which is what actually triggers it).
+	if ( classic && targetStepEl ) {
+		targetStepEl.classList.add( 'is-entering' );
+	}
 
 	steps.forEach( ( stepEl, index ) => {
 		stepEl.hidden = index !== targetIndex;
 	} );
+
+	if ( classic && targetStepEl ) {
+		requestAnimationFrame( () => {
+			targetStepEl.classList.remove( 'is-entering' );
+		} );
+	}
 
 	if ( steps.length > 0 ) {
 		updateStepPosition( flowRoot, steps, targetIndex );
