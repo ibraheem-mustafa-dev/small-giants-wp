@@ -125,7 +125,7 @@ namespace {
 					$slug = substr( (string) $name, strpos( (string) $name, '/' ) + 1 );
 					$file = dirname( __DIR__, 3 ) . '/src/blocks/' . $slug . '/block.json';
 					$json = is_readable( $file ) ? json_decode( (string) file_get_contents( $file ), true ) : null;
-					$this->types[ $name ] = is_array( $json ) ? (object) array( 'supports' => $json['supports'] ?? array() ) : null;
+					$this->types[ $name ] = is_array( $json ) ? (object) array( 'supports' => $json['supports'] ?? array(), 'attributes' => $json['attributes'] ?? array() ) : null;
 				}
 				return $this->types[ $name ];
 			}

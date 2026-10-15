@@ -28,6 +28,7 @@ import {
 	writeStyle,
 } from './canvas-dom';
 import { declaredStates } from './trigger-rules';
+import { shadowValues } from './emit-ring';
 import { registry } from './replay';
 
 export { replay, canReplay, REPLAY_REDUCED_NOTICE } from './replay';
@@ -47,6 +48,11 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 		( select ) => Boolean( select( 'core/block-editor' )?.getSettings?.()?.__unstableIsPreviewMode ),
 		[]
 	);
+	// Only the attributes that decide the hover ring's refusal (the shadow attributes) reach the options, so editing
+	// anything else does not re-emit the block's motion.
+	const shadows = JSON.stringify(
+		shadowValues( getBlockType( name )?.supports?.sgs?.elements, attributes )
+	);
 	const options = useMemo( () => {
 		const sgs = getBlockType( name )?.supports?.sgs || {};
 		return {
@@ -55,8 +61,9 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 			animationItems: sgs.animationItems || '',
 			states: declaredStates( sgs.motion ),
 			root: canvasRootSelector( clientId ),
+			attributes: JSON.parse( shadows ),
 		};
-	}, [ name, clientId ] );
+	}, [ name, clientId, shadows ] );
 
 	useEffect( () => {
 		if ( preview || ( ! motion && ! linked ) ) {

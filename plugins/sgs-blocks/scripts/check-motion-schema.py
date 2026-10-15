@@ -62,7 +62,7 @@ PER_DEVICE_REQUIRED = {"duration", "distance", "angle"}
 ENTRY_KEYS = {"$ref", "description", "title", "default", "examples", "$comment", "enum", "const",
               "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "multipleOf"}
 FIELD_META_KEYS = {"fieldType", "cssProperty", "state", "perDevice"}
-SYNTAXES = {"<length>", "<number>", "<angle>", "<percentage>", "<length-percentage>", "<length> | none"}
+SYNTAXES = {"<length>", "<number>", "<angle>", "<percentage>", "<length-percentage>", "<length> | none", "<color>"}
 PLACEHOLDER = re.compile(r"<[A-Za-z]+>")
 # The unit-bearing field types: a field narrowing one carries x-sgs-range {min, max, unit} in this base unit.
 RANGE_BASE = {"duration": "ms", "distance": "px", "angle": "deg"}

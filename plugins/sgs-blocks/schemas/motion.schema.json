@@ -741,7 +741,8 @@
 				"scale",
 				"opacity",
 				"filter",
-				"padding-inline-start"
+				"padding-inline-start",
+				"box-shadow"
 			]
 		},
 		"magnet": {
@@ -1325,6 +1326,28 @@
 							"name": "--sgs-mh-indent",
 							"syntax": "<length>",
 							"initial": "0px"
+						}
+					]
+				}
+			]
+		},
+		{
+			"channel": "box-shadow",
+			"composition": "single-owner",
+			"formula": "box-shadow: 0 0 0 var(--sgs-mh-ring) var(--sgs-mh-ring-c)",
+			"owners": [
+				{
+					"owner": "hoverState",
+					"properties": [
+						{
+							"name": "--sgs-mh-ring",
+							"syntax": "<length>",
+							"initial": "0px"
+						},
+						{
+							"name": "--sgs-mh-ring-c",
+							"syntax": "<color>",
+							"initial": "transparent"
 						}
 					]
 				}

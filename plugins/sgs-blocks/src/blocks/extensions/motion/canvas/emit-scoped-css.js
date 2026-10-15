@@ -3,7 +3,9 @@
  * `includes/motion/` (`Sgs_Motion_Document::sanitise`, `Sgs_Motion_Targets::resolve`, `Sgs_Motion_Layer_Drops::resolve`,
  * `Sgs_Motion_Shared_Element`, `Sgs_Motion_Emitter::emit` with the open and state trigger rules), so the canvas writes
  * the same scoped custom properties, `transition` lists, per-device media queries and data attributes as the page,
- * and the form Focus state's field rules (`emit-focus.js`, refused off the `sgs/form` root as `focus-not-form`).
+ * and the form Focus state's field rules (`emit-focus.js`, refused off the `sgs/form` root as `focus-not-form`), and
+ * the hover ring (a `box-shadow` channel; its values are dropped on an element whose block sets a shadow, as
+ * `ring-resting-shadow`, `emit-ring.js`).
  * `tests/js/motion-canvas-emitter-parity.test.js` compares this output with the PHP output on shared fixtures
  * (`tests/php/fixtures/motion-canvas-emitter-dump.php`).
  *
@@ -48,6 +50,7 @@ import { sanitiseDocument } from './document-sanitise';
 import { resolveLayerDrops } from './layer-drops';
 import { stripShared } from './shared-element';
 import { emitFocus, focusAllowed, FOCUS_REFUSAL } from './emit-focus';
+import { hasRing, RING_REFUSAL, ringPaints, ringRefused, stripRing } from './emit-ring';
 
 /** Hover colour and shadow properties whose timing the hover state owns (FR-38A-7). */
 const HOVER_PAINT = [ 'color', 'background-color', 'border-color', 'box-shadow' ];
@@ -287,11 +290,13 @@ function usesSource( targets, source ) {
  * @param {Object} options `blockName`, `elements` (`supports.sgs.elements`), `root` (the scoped root selector),
  *                         `states` (the block's declared states), `losers` (target => the target it yields to) and
  *                         `context` (`lcp`, `suppressEntrance`) for every target, and `animationItems` (the block's
- *                         `supports.sgs.animationItems`, which with the `item` part names its repeated items).
+ *                         `supports.sgs.animationItems`, which with the `item` part names its repeated items) and
+ *                         `attributes` (the block's attributes, so a shadowed element drops the hover ring; without them
+ *                         no ring is refused).
  * @return {{css:string,plans:Array,rootAttrs:Object,dropped:Array,itemMatches?:Array}} Empty for an absent or invalid
  *         attribute; `itemMatches` (the elements to mark `data-sgs-mitem`) only when a hover layer uses source item.
  */
-export function emitScopedCss( motion, { blockName, elements, root, states = [], losers = {}, context = {}, animationItems = '' } ) {
+export function emitScopedCss( motion, { blockName, elements, root, states = [], losers = {}, context = {}, animationItems = '', attributes } ) {
 	const out = { css: '', plans: [], rootAttrs: {}, dropped: [] };
 	const doc = sanitiseDocument( motion );
 	const targets = doc.elements;
@@ -319,6 +324,17 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 			const hover = { ...element.hover };
 			delete hover.focus;
 			element = { ...element, hover };
+		}
+		const state = element?.hover?.state;
+		if ( state && typeof state === 'object' && ! Array.isArray( state ) && hasRing( state ) ) {
+			// The ring is a `box-shadow`: a shadowed element drops it (FR-38A-42); an invisible ring is dropped too.
+			const refused = Boolean( attributes ) && ringRefused( elements, target, attributes );
+			if ( refused || ! ringPaints( state ) ) {
+				element = { ...element, hover: { ...element.hover, state: stripRing( state ) } };
+			}
+			if ( refused ) {
+				out.dropped.push( { target, id: RING_REFUSAL, layer: 'hover.state' } );
+			}
 		}
 		const report = ( drop ) => out.dropped.push( { target, layer: 'entrance.base', ...drop } );
 		const emitted = emitTarget( element, resolved.selector, { ...context, states, noTransition: loser, report } );

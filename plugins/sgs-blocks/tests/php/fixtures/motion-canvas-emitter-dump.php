@@ -79,6 +79,7 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 				'no_transition'     => isset( $sgs_losers[ $sgs_target ] ),
 				'block'             => $sgs_name,
 				'target'            => $sgs_target,
+				'attributes'        => is_array( $sgs_case['attributes'] ?? null ) ? $sgs_case['attributes'] : array(),
 			)
 		);
 		$sgs_result['css']    .= $sgs_emitted['css'];

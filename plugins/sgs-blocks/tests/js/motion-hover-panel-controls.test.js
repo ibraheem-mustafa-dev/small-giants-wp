@@ -15,7 +15,10 @@ jest.mock( '@wordpress/icons', () => ( {
 jest.mock( '@wordpress/data', () => ( {
 	...jest.requireActual( '@wordpress/data' ),
 	useSelect: ( fn ) =>
-		fn( () => ( { getDeviceType: () => global.__sgsDevice } ) ),
+		fn( () => ( {
+			getDeviceType: () => global.__sgsDevice,
+			getBlockAttributes: () => global.__sgsAttrs,
+		} ) ),
 } ) );
 
 const React = require( 'react' );
@@ -38,7 +41,7 @@ let host;
 let reactRoot;
 let current; // the motion value the mounted panel last wrote
 
-const Panel = ( { initial, name } ) => {
+const Panel = ( { initial, name, elements } ) => {
 	const [ motion, setMotion ] = React.useState( initial );
 	current = motion;
 	const layers = useMotionLayers( motion, ( attributes ) =>
@@ -46,17 +49,18 @@ const Panel = ( { initial, name } ) => {
 	);
 	return React.createElement( HoverPanel, {
 		blockName: name,
-		elements: null,
+		clientId: 'c1',
+		elements: elements ?? null,
 		motion,
 		layers,
 	} );
 };
-const mount = ( initial, name = 'sgs/hero' ) => {
+const mount = ( initial, name = 'sgs/hero', elements ) => {
 	host = document.createElement( 'div' );
 	document.body.appendChild( host );
 	reactRoot = createRoot( host );
 	act( () =>
-		reactRoot.render( React.createElement( Panel, { initial, name } ) )
+		reactRoot.render( React.createElement( Panel, { initial, name, elements } ) )
 	);
 };
 const byLabel = ( label, selector = '[aria-label]' ) =>
@@ -119,6 +123,7 @@ const SCALE = {
 
 beforeEach( () => {
 	global.__sgsDevice = 'Desktop';
+	global.__sgsAttrs = {};
 } );
 afterEach( () => {
 	act( () => reactRoot.unmount() );
@@ -355,5 +360,39 @@ describe( 'the Rotate driver switch control', () => {
 		expect( stateOf().values.followPointer ).toBeUndefined();
 		expect( stateOf().values.maxAngle ).toBeUndefined();
 		expect( host.querySelector( '[aria-label="Axis lock"]' ) ).toBeNull();
+	} );
+} );
+
+describe( 'the hover ring (FR-38A-42)', () => {
+	// The hero's own declaration: its wrapper element paints `shadow` as a box-shadow.
+	const HERO_ELEMENTS = require( '../../src/blocks/hero/block.json' ).supports
+		.sgs.elements;
+	const REFUSAL = 'a hover ring would replace it';
+	const ringField = () => host.querySelector( '[aria-label="Ring thickness"]' );
+	const hasColour = () =>
+		host.querySelector( '.sgs-motion-hover__group--ring .sgs-motion-atom--colour' ) !== null;
+
+	it( 'draws the ring thickness and colour on a block with no shadow set', () => {
+		global.__sgsAttrs = { shadow: '' };
+		mount( withState( { ...SCALE } ), 'sgs/hero', HERO_ELEMENTS );
+		expect( ringField() ).not.toBeNull();
+		expect( hasColour() ).toBe( true );
+		expect( host.textContent ).not.toContain( REFUSAL );
+	} );
+
+	it( 'says why and draws no ring fields on a block whose shadow is set', () => {
+		global.__sgsAttrs = { shadow: 'md' };
+		mount( withState( { ...SCALE } ), 'sgs/hero', HERO_ELEMENTS );
+		expect( ringField() ).toBeNull();
+		expect( hasColour() ).toBe( false );
+		expect( host.textContent ).toContain( REFUSAL );
+		expect( host.textContent ).toContain( 'Clear the shadow to use a ring' );
+	} );
+
+	it( 'treats a shadow of none as no shadow', () => {
+		global.__sgsAttrs = { shadow: 'none' };
+		mount( withState( { ...SCALE } ), 'sgs/hero', HERO_ELEMENTS );
+		expect( ringField() ).not.toBeNull();
+		expect( host.textContent ).not.toContain( REFUSAL );
 	} );
 } );

@@ -22,7 +22,8 @@ import TargetRow from './layers/TargetRow';
 import { RestampConfirm, useRestamp } from './layers/restamp';
 import { hoverActions } from './hover/hover-actions';
 import useDrivenBy, { hoverLayerRefs } from './hover/use-driven-by';
-import { HOVER_GROUPS } from './hover/hover-fields';
+import { HOVER_GROUPS, RING_KEYS } from './hover/hover-fields';
+import useRingRefused from './hover/use-ring-refused';
 import {
 	choiceFor,
 	familyOf,
@@ -43,13 +44,15 @@ const HOVER_CHOICES = hoverPresetChoices().filter(
 /**
  * @param {Object}           props
  * @param {string}           props.blockName The block's name.
+ * @param {string}           props.clientId  The block's client id (its attributes decide whether the ring is offered).
  * @param {Object|null}      props.elements  The block's `supports.sgs.elements`.
  * @param {Object|undefined} props.motion    The block's motion value.
  * @param {Object}           props.layers    The `useMotionLayers` result.
  * @return {Element} The panel.
  */
-export default function HoverPanel( { blockName, elements, motion, layers } ) {
+export default function HoverPanel( { blockName, clientId, elements, motion, layers } ) {
 	const [ target, setTarget ] = useState( ROOT_TARGET );
+	const ringRefused = useRingRefused( clientId, elements, target );
 	const [ notice, setNotice ] = useState( null );
 	const flow = useRestamp( layers );
 	const drive = useDrivenBy( layers, target, setNotice );
@@ -157,6 +160,7 @@ export default function HoverPanel( { blockName, elements, motion, layers } ) {
 							layer={ layer }
 							defName="HoverStateValues"
 							groups={ HOVER_GROUPS }
+							omitKeys={ ringRefused ? RING_KEYS : [] }
 							onLayer={ actions.editState }
 						/>
 						<Button

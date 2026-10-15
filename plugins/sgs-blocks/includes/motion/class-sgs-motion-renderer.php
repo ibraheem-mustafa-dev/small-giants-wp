@@ -360,6 +360,7 @@ final class Sgs_Motion_Renderer {
 					'no_transition'     => isset( $losers[ $target ] ),
 					'block'             => $name,
 					'target'            => $target,
+					'attributes'        => $attrs,
 				)
 			);
 			$css      .= $emitted['css'];

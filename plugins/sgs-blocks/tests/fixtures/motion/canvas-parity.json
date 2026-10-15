@@ -1052,5 +1052,165 @@
 		"rootAttrs": {},
 		"losers": {},
 		"itemMatches": []
+	},
+	{
+		"name": "hover ring on an unshadowed block",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ring:4px;--sgs-mh-to-ring-c:#0A7EA8;transition:--sgs-mh-ring 250ms var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ring-c 250ms var(--wp--custom--easing--ease-out) 0ms, color 250ms var(--wp--custom--easing--ease-out) 0ms, background-color 250ms var(--wp--custom--easing--ease-out) 0ms, border-color 250ms var(--wp--custom--easing--ease-out) 0ms, box-shadow 250ms var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "box-shadow"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring with a preset colour slug and a per-device spread",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ring:3px;--sgs-mh-to-ring-c:var(--wp--preset--color--accent, currentColor);transition:--sgs-mh-ring var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ring-c var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-mh-to-ring:2px;}}@media (max-width:767px){.sgs-m-0123456789{--sgs-mh-to-ring:0px;}}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "box-shadow"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring dropped at a zero spread",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring dropped with no colour",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring refused on a block that sets a shadow",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty 250ms var(--wp--custom--easing--ease-out) 0ms, color 250ms var(--wp--custom--easing--ease-out) 0ms, background-color 250ms var(--wp--custom--easing--ease-out) 0ms, border-color 250ms var(--wp--custom--easing--ease-out) 0ms, box-shadow 250ms var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "wrapper",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring refused through the root target on a shadowed wrapper",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-s:1.02;transition:--sgs-mh-s 250ms var(--wp--custom--easing--ease-out) 0ms, color 250ms var(--wp--custom--easing--ease-out) 0ms, background-color 250ms var(--wp--custom--easing--ease-out) 0ms, border-color 250ms var(--wp--custom--easing--ease-out) 0ms, box-shadow 250ms var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring kept when the block's shadow is none",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ring:4px;--sgs-mh-to-ring-c:#0A7EA8;transition:--sgs-mh-ring 250ms var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ring-c 250ms var(--wp--custom--easing--ease-out) 0ms, color 250ms var(--wp--custom--easing--ease-out) 0ms, background-color 250ms var(--wp--custom--easing--ease-out) 0ms, border-color 250ms var(--wp--custom--easing--ease-out) 0ms, box-shadow 250ms var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "wrapper",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "box-shadow"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring refused by a hover shadow",
+		"css": ".sgs-m-0123456789{transition:color 250ms var(--wp--custom--easing--ease-out) 0ms, background-color 250ms var(--wp--custom--easing--ease-out) 0ms, border-color 250ms var(--wp--custom--easing--ease-out) 0ms, box-shadow 250ms var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "text",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring refused by the native shadow support",
+		"css": ".sgs-m-0123456789{transition:color 250ms var(--wp--custom--easing--ease-out) 0ms, background-color 250ms var(--wp--custom--easing--ease-out) 0ms, border-color 250ms var(--wp--custom--easing--ease-out) 0ms, box-shadow 250ms var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "box",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
 	}
 ]

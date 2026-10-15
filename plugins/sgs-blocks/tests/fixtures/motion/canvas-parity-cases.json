@@ -1602,6 +1602,234 @@
 			},
 			"root": ".sgs-m-0123456789",
 			"context": {}
+		},
+		{
+			"name": "hover ring on an unshadowed block",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"ringColour": "#0A7EA8",
+									"duration": 250
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "hover ring with a preset colour slug and a per-device spread",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 3,
+									"ringColour": "accent"
+								},
+								"devices": {
+									"tablet": {
+										"ringSpread": 2
+									},
+									"mobile": {
+										"ringSpread": 0
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "hover ring dropped at a zero spread",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 0,
+									"ringColour": "#0A7EA8",
+									"translateY": -4
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "hover ring dropped with no colour",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"translateY": -4
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "hover ring refused on a block that sets a shadow",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"wrapper": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"ringColour": "#0A7EA8",
+									"duration": 250,
+									"translateY": -4
+								},
+								"devices": {
+									"tablet": {
+										"ringSpread": 2
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {},
+			"attributes": {
+				"shadow": "md"
+			}
+		},
+		{
+			"name": "hover ring refused through the root target on a shadowed wrapper",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"ringColour": "#0A7EA8",
+									"duration": 250,
+									"scale": 1.02
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {},
+			"attributes": {
+				"shadow": "lg"
+			}
+		},
+		{
+			"name": "hover ring kept when the block's shadow is none",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"wrapper": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"ringColour": "#0A7EA8",
+									"duration": 250
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {},
+			"attributes": {
+				"shadow": "none"
+			}
+		},
+		{
+			"name": "hover ring refused by a hover shadow",
+			"block": "sgs/text",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"text": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"ringColour": "#0A7EA8",
+									"duration": 250
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {},
+			"attributes": {
+				"boxShadowHover": "lg"
+			}
+		},
+		{
+			"name": "hover ring refused by the native shadow support",
+			"block": "sgs/info-box",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"box": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"ringColour": "#0A7EA8",
+									"duration": 250
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {},
+			"attributes": {
+				"style": {
+					"shadow": "var(--wp--preset--shadow--natural)"
+				}
+			}
 		}
 	]
 }

@@ -63,11 +63,18 @@ export const FIELD_LABELS = Object.freeze( {
 
 /**
  * Fields the schema holds that the panel does not offer. `perspectiveOn` is hidden, so perspective always applies to
- * the element itself, until FR-38A-41's real-Safari check shows that putting it on the parent works. `ringSpread`
- * and `ringColour` are hidden until the ring's box-shadow paint rule and the resting-shadow refusal exist (build plan,
- * M3.9 ring bullet): the emitter writes their values, but nothing paints them yet, so a control would do nothing.
+ * the element itself, until FR-38A-41's real-Safari check shows that putting it on the parent works.
  */
-export const HIDDEN_KEYS = Object.freeze( [ 'perspectiveOn', 'ringSpread', 'ringColour' ] );
+export const HIDDEN_KEYS = Object.freeze( [ 'perspectiveOn' ] );
+
+/** The Hover panel's message in place of the ring fields on an element whose block sets a shadow (FR-38A-42). */
+export const RING_REFUSAL_MESSAGE = __(
+	'This element already has a shadow, and a hover ring would replace it, so the ring is not offered here. Clear the shadow to use a ring.',
+	'sgs-blocks'
+);
+
+/** The ring fields, which the Hover panel leaves out on a shadowed element. */
+export const RING_KEYS = Object.freeze( [ 'ringSpread', 'ringColour' ] );
 
 /** The groups of the hover state's Fine-tune, in order. */
 export const HOVER_GROUPS = Object.freeze( [
@@ -107,6 +114,7 @@ export const HOVER_GROUPS = Object.freeze( [
 		id: 'ring',
 		label: __( 'Ring', 'sgs-blocks' ),
 		keys: [ 'ringSpread', 'ringColour' ],
+		refusable: true,
 	},
 	{
 		id: 'indent',
@@ -146,9 +154,12 @@ export const FOCUS_GROUPS = Object.freeze( [
  * @param {string}  defName The values `$def` (`HoverStateValues`).
  * @param {Object}  groups  `HOVER_GROUPS` or `FOCUS_GROUPS`.
  * @param {Object=} root    The `$defs` to read (tests pass a changed copy).
- * @return {{id: string, label: string, fields: Object[], driver: (Object|null)}[]} The groups with their fields.
+ * @param {string[]=} omit  Keys left out for this element. A group marked `refusable` whose keys are left out stays in
+ *                          the list with no fields and `refused: true`, so the panel can say why.
+ * @return {{id: string, label: string, fields: Object[], driver: (Object|null), refused: boolean}[]} The groups with
+ *         their fields.
  */
-export function fieldGroups( defName, groups, root = SCHEMA ) {
+export function fieldGroups( defName, groups, root = SCHEMA, omit = [] ) {
 	const properties = root[ defName ]?.properties || {};
 	const fieldFor = ( key ) => {
 		const node = properties[ key ];
@@ -169,7 +180,8 @@ export function fieldGroups( defName, groups, root = SCHEMA ) {
 				( key ) =>
 					properties[ key ] &&
 					FIELD_LABELS[ key ] &&
-					! HIDDEN_KEYS.includes( key )
+					! HIDDEN_KEYS.includes( key ) &&
+					! omit.includes( key )
 			)
 			.map( fieldFor );
 	return groups
@@ -178,6 +190,9 @@ export function fieldGroups( defName, groups, root = SCHEMA ) {
 			return {
 				id: group.id,
 				label: group.label,
+				refused:
+					group.refusable === true &&
+					group.keys.some( ( key ) => omit.includes( key ) ),
 				fields: fieldsOf( group.keys ),
 				driver: driven
 					? {
@@ -188,7 +203,10 @@ export function fieldGroups( defName, groups, root = SCHEMA ) {
 					: null,
 			};
 		} )
-		.filter( ( group ) => group.fields.length > 0 || group.driver );
+		.filter(
+			( group ) =>
+				group.fields.length > 0 || group.driver || group.refused
+		);
 }
 
 /**

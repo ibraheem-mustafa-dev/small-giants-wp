@@ -35,6 +35,21 @@ const GOLDEN = JSON.parse(
 );
 const EMPTY = { css: '', plans: [], rootAttrs: {}, dropped: [] };
 
+// The editor hands a block its attributes with the `block.json` defaults in them; the PHP guard reads the same defaults.
+const attributesOf = ( c ) => {
+	const slug = c.block.slice( c.block.indexOf( '/' ) + 1 );
+	const defs = JSON.parse(
+		fs.readFileSync( path.join( PLUGIN, 'src/blocks', slug, 'block.json' ), 'utf8' )
+	).attributes;
+	const defaults = {};
+	Object.entries( defs ).forEach( ( [ key, def ] ) => {
+		if ( def.default !== undefined ) {
+			defaults[ key ] = def.default;
+		}
+	} );
+	return { ...defaults, ...( c.attributes || {} ) };
+};
+
 const blockSgs = ( name ) => {
 	const slug = name.slice( name.indexOf( '/' ) + 1 );
 	const json = JSON.parse(
@@ -69,6 +84,7 @@ const jsResult = ( c ) => {
 		animationItems: sgs.animationItems || '',
 		states: declaredStates( sgs.motion ),
 		root: c.root,
+		attributes: attributesOf( c ),
 		context: {
 			lcp: Boolean( c.context.lcp ),
 			suppressEntrance: Boolean( c.context.suppress_entrance ),
@@ -142,6 +158,30 @@ describe( 'motion editor-canvas emitter parity', () => {
 		expect( plans.some( ( p ) => p.attrs[ 'data-sgs-me-keyframes' ] ) ).toBe( true );
 		expect( js.some( ( r ) => r.rootAttrs[ 'data-sgs-mroot' ] === '' ) ).toBe( true );
 		expect( js.some( ( r ) => Object.keys( r.losers ).length > 0 ) ).toBe( true );
+	} );
+
+	it( 'the hover ring: painted on an unshadowed block, dropped on a shadowed one, at a zero spread and with no colour', () => {
+		const css = ( name ) => js.find( ( r ) => r.name === name ).css;
+		const painted = css( 'hover ring on an unshadowed block' );
+		expect( painted ).toContain( '--sgs-mh-to-ring:4px;' );
+		expect( painted ).toContain( '--sgs-mh-to-ring-c:#0A7EA8;' );
+		expect( painted ).toMatch( /box-shadow 250ms/ );
+		expect(
+			js.find( ( r ) => r.name === 'hover ring on an unshadowed block' ).plans[ 0 ].attrs[ 'data-sgs-mc' ]
+		).toContain( 'box-shadow' );
+		expect( css( 'hover ring with a preset colour slug and a per-device spread' ) ).toMatch(
+			/@media \(max-width:767px\)\{[^}]*--sgs-mh-to-ring:0px/
+		);
+		[
+			'hover ring dropped at a zero spread',
+			'hover ring dropped with no colour',
+			'hover ring refused on a block that sets a shadow',
+			'hover ring refused through the root target on a shadowed wrapper',
+			'hover ring refused by a hover shadow',
+			'hover ring refused by the native shadow support',
+		].forEach( ( name ) => expect( css( name ) ).not.toContain( '--sgs-mh-to-ring' ) );
+		expect( css( "hover ring kept when the block's shadow is none" ) ).toContain( '--sgs-mh-to-ring:4px;' );
+		expect( css( 'hover ring refused on a block that sets a shadow' ) ).toContain( '--sgs-mh-to-ty:' );
 	} );
 
 	it( 'two parts on one element: the earlier-declared part keeps the hover state and entrance', () => {

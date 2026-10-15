@@ -77,6 +77,8 @@
 @property --sgs-mh-gray { syntax: '<number>'; inherits: false; initial-value: 0; }
 @property --sgs-mh-bright { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-mh-indent { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-mh-ring { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-mh-ring-c { syntax: '<color>'; inherits: false; initial-value: transparent; }
 @property --sgs-me-clip-t { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
 @property --sgs-me-clip-r { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
 @property --sgs-me-clip-b { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
@@ -114,6 +116,9 @@
 }
 [data-sgs-mc~="padding-inline-start"] {
 	padding-inline-start: calc(var(--sgs-pad-start-rest, 0px) + var(--sgs-mh-indent));
+}
+[data-sgs-mc~="box-shadow"] {
+	box-shadow: 0 0 0 var(--sgs-mh-ring) var(--sgs-mh-ring-c);
 }
 [data-sgs-mc~="background-position"] {
 	background-position: calc(50% + var(--sgs-plx-bg-x)) calc(50% + var(--sgs-plx-bg-y));

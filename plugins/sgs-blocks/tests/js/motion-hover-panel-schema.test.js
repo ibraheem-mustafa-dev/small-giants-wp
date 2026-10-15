@@ -1,6 +1,6 @@
 /**
  * The Hover panel's schema-dependent parts (Spec 38A §5.1): every hover-state field is drawn and labelled, the ring and
- * the Focus state are drawn only when the schema holds them, one timing drives every property the state changes, and
+ * the Focus state are drawn only when the schema holds them (the ring also only on an element with no shadow), one timing drives every property the state changes, and
  * the panel registers itself in slot 10. Each case has a positive and a negative control.
  */
 const {
@@ -87,12 +87,23 @@ describe( 'fields the schema may or may not hold', () => {
 		].forEach( ( key ) => expect( drawn ).toContain( key ) );
 	} );
 
-	it( 'holds the ring back until it paints, though the schema holds its fields', () => {
-		const today = keysOf( fieldGroups( 'HoverStateValues', HOVER_GROUPS ) );
-		expect( 'ringSpread' in realDefs.$defs.HoverStateValues.properties ).toBe( true );
-		expect( HIDDEN_KEYS ).toEqual( expect.arrayContaining( [ 'ringSpread', 'ringColour' ] ) );
-		expect( today ).not.toContain( 'ringSpread' );
-		expect( today ).not.toContain( 'ringColour' );
+	it( 'draws the ring fields, and leaves them out of a shadowed element with the group kept to say why', () => {
+		const drawn = keysOf( fieldGroups( 'HoverStateValues', HOVER_GROUPS ) );
+		expect( HIDDEN_KEYS ).toEqual( [ 'perspectiveOn' ] );
+		expect( drawn ).toEqual( expect.arrayContaining( [ 'ringSpread', 'ringColour' ] ) );
+		const omitted = fieldGroups(
+			'HoverStateValues',
+			HOVER_GROUPS,
+			undefined,
+			[ 'ringSpread', 'ringColour' ]
+		);
+		expect( keysOf( omitted ) ).not.toContain( 'ringSpread' );
+		expect( keysOf( omitted ) ).not.toContain( 'ringColour' );
+		expect( omitted.find( ( group ) => group.id === 'ring' ) ).toMatchObject( {
+			fields: [],
+			refused: true,
+		} );
+		expect( omitted.find( ( group ) => group.id === 'look' ).refused ).toBe( false );
 	} );
 
 	it( 'offers the Focus state on sgs/form only, and only when the schema declares its list', () => {

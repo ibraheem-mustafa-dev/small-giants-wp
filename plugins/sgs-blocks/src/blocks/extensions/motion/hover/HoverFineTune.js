@@ -8,7 +8,7 @@
 
 import { __ } from '@wordpress/i18n';
 import ChoiceAtom from '../../../../components/motion/ChoiceAtom';
-import { fieldGroups } from './hover-fields';
+import { fieldGroups, RING_REFUSAL_MESSAGE } from './hover-fields';
 import { driverOf, withDriver } from './hover-write';
 import HoverFieldRow from './HoverFieldRow';
 
@@ -34,6 +34,7 @@ function Fields( { fields, layer, onLayer } ) {
  * @param {string}   props.defName The values `$def` the layer holds (`HoverStateValues`).
  * @param {Object[]} props.groups  `HOVER_GROUPS` or `FOCUS_GROUPS`.
  * @param {number}   props.level   The heading level of a group (3 under the panel, 4 under the Focus heading).
+ * @param {string[]} props.omitKeys Keys not offered on this element; the ring group says why when its keys are left out.
  * @param {Function} props.onLayer Receives the edited layer.
  * @return {Element} The fields.
  */
@@ -42,12 +43,13 @@ export default function HoverFineTune( {
 	defName,
 	groups,
 	level = 3,
+	omitKeys = [],
 	onLayer,
 } ) {
 	const Heading = `h${ level }`;
 	return (
 		<>
-			{ fieldGroups( defName, groups ).map( ( group ) => {
+			{ fieldGroups( defName, groups, undefined, omitKeys ).map( ( group ) => {
 				const { driver } = group;
 				const mode = driver ? driverOf( layer, driver ) : null;
 				return (
@@ -58,6 +60,14 @@ export default function HoverFineTune( {
 						<Heading className="sgs-motion-hover__heading">
 							{ group.label }
 						</Heading>
+						{ group.refused && (
+							<p
+								className="sgs-motion-atom__help sgs-motion-hover__refusal"
+								role="note"
+							>
+								{ RING_REFUSAL_MESSAGE }
+							</p>
+						) }
 						<Fields
 							fields={ group.fields }
 							layer={ layer }

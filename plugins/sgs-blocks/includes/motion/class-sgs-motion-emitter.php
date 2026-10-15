@@ -21,6 +21,8 @@
  *   `sgs_motion_entrance_css` filter appends a trigger's own rules (`Sgs_Motion_Trigger_Open_State`).
  * - `transition`: only the owners present on the element, each with its own duration, easing and delay (the hover
  *   state's list also carries `color`, `background-color`, `border-color` and `box-shadow`), never `all`.
+ * - The hover ring (`ringSpread`, `ringColour`): a `box-shadow` painted by the stylesheet's `box-shadow` channel from the
+ *   two owner properties; dropped on an element whose block sets a shadow (`Sgs_Motion_Ring_Guard`).
  * - The form Focus state (`hover.focus`, `sgs/form` root only): its field-control rules (`Sgs_Motion_Focus_State`).
  *
  * Desktop values sit in the base rule; Tablet and Mobile overrides sit in `@media (max-width:1023px)` and
@@ -53,7 +55,7 @@ final class Sgs_Motion_Emitter {
 	 *
 	 * @param array<string,mixed> $element  The resolved element (refusals already dropped).
 	 * @param string              $selector The target's scoped selector.
-	 * @param array<string,mixed> $context  `lcp` (bool), `suppress_entrance` (bool), `no_transition` (bool: a target
+	 * @param array<string,mixed> $context  `lcp` (bool), `suppress_entrance` (bool), `attributes` (the block's stored attributes, for the ring guard), `no_transition` (bool: a target
 	 *                                      that shares its element with an earlier-declared one writes no `transition`,
 	 *                                      `Sgs_Motion_Shared_Element`), `block`, `target`.
 	 * @return array{css:string,attrs:array<string,string>,entrance:bool}
@@ -64,6 +66,27 @@ final class Sgs_Motion_Emitter {
 		$channels = array();
 		$trans    = array_fill_keys( self::TIERS, array() );
 		$state    = $element['hover']['state'] ?? null;
+		if ( is_array( $state ) && Sgs_Motion_Ring_Guard::has_ring( $state ) ) {
+			// The ring is a `box-shadow`: it would replace the element's own shadow on hover (FR-38A-42), so a shadowed
+			// element drops it; an invisible ring (no colour, or a zero spread on every device) is dropped too.
+			$block   = (string) ( $context['block'] ?? '' );
+			$target  = (string) ( $context['target'] ?? '' );
+			$refused = is_array( $context['attributes'] ?? null ) && Sgs_Motion_Ring_Guard::refused( $block, $target, $context['attributes'] );
+			if ( $refused || ! Sgs_Motion_Ring_Guard::paints( $state ) ) {
+				$state = Sgs_Motion_Ring_Guard::strip( $state );
+			}
+			if ( $refused ) {
+				do_action(
+					'sgs_motion_layer_dropped',
+					$block,
+					$target,
+					array(
+						'id'    => Sgs_Motion_Ring_Guard::REFUSAL,
+						'layer' => 'hover.state',
+					)
+				);
+			}
+		}
 		if ( is_array( $state ) ) {
 			$attrs['data-sgs-mh'] = (string) ( $state['source'] ?? 'self' );
 			self::hover_state( $state, $decls, $trans, $channels );
