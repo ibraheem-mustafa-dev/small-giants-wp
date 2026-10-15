@@ -18,6 +18,9 @@ const {
 	registerOnAddRule,
 	stampLayer,
 } = require( '../../src/blocks/extensions/motion/layers/stamp' );
+const {
+	newLayerId,
+} = require( '../../src/blocks/extensions/motion/layers/layer-lists' );
 
 const LAYER_ID = /^[a-z0-9][a-z0-9-]{0,31}$/;
 
@@ -168,24 +171,18 @@ describe( 'adding, reordering and removing layers on one element', () => {
 	} );
 
 	it( 'never reuses an id held on the element', () => {
-		const held = {
-			v: 1,
-			elements: {
-				root: {
-					entrance: {
-						text: [ { id: 'scramble-000001', effect: 'scramble' } ],
-					},
-				},
-			},
-		};
+		// The generator alone: which effects may share an element is the refusals' job, tested in motion-refusals.
 		const draws = [ 1.5 / 36 ** 6, 2.5 / 36 ** 6 ];
-		const result = added(
-			addLayer( held, 'root', 'effects', {
-				effect: 'scramble',
-				random: () => draws.shift(),
-			} )
+		const id = newLayerId(
+			'scramble',
+			[ 'scramble-000001' ],
+			() => draws.shift()
 		);
-		expect( result.layer.id ).toBe( 'scramble-000002' );
+		expect( id ).toBe( 'scramble-000002' );
+		const free = [ 1.5 / 36 ** 6 ];
+		expect( newLayerId( 'scramble', [], () => free.shift() ) ).toBe(
+			'scramble-000001'
+		);
 	} );
 } );
 
