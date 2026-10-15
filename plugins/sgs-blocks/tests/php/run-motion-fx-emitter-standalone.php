@@ -141,9 +141,9 @@ namespace {
 		$js_hold[ $pair[1] ] = 0 + $pair[2];
 	}
 	fx_check( array() !== $js_hold && \SGS\Blocks\Motion\Sgs_Motion_Legacy_Fx_Value::LEGACY_HOLD == $js_hold, 'the migration LEGACY_HOLD equals pin-scrub-params.js HOLD_FRACTIONS: ' . json_encode( $js_hold ) );
-	preg_match( '/export function resolveTrigger\b.*?\n\}/s', (string) file_get_contents( $src . 'shared/effects/gsap/provider.js' ), $m );
+	preg_match( '/export function resolveTrigger\b.*?\n\}/s', (string) file_get_contents( $src . 'shared/effects/gsap/provider-resolvers.js' ), $m );
 	preg_match_all( "/'(load|scroll|hover|[a-z]+)'/", $m[0] ?? '', $words );
-	fx_check( array() === array_diff( Grammar::RUNTIME_TRIGGERS, $words[1] ) && array() === array_diff( array_unique( $words[1] ), Grammar::RUNTIME_TRIGGERS ), 'RUNTIME_TRIGGERS equals the words provider.js resolveTrigger reads: ' . json_encode( array_values( array_unique( $words[1] ) ) ) );
+	fx_check( array() === array_diff( Grammar::RUNTIME_TRIGGERS, $words[1] ) && array() === array_diff( array_unique( $words[1] ), Grammar::RUNTIME_TRIGGERS ), 'RUNTIME_TRIGGERS equals the words provider-resolvers.js resolveTrigger reads: ' . json_encode( array_values( array_unique( $words[1] ) ) ) );
 	preg_match( '/export function triggerOf\b.*?\n\}/s', (string) file_get_contents( $src . 'shared/effects/fx-ripple.js' ), $m );
 	preg_match_all( "/'(pointerdown|click|[a-z]+)'/", $m[0] ?? '', $words );
 	fx_check( array() !== $words[1] && array() === array_diff( Grammar::POINTER_TRIGGERS, $words[1] ) && array() === array_diff( array_unique( $words[1] ), Grammar::POINTER_TRIGGERS ), 'POINTER_TRIGGERS equals the words fx-ripple.js triggerOf reads: ' . json_encode( array_values( array_unique( $words[1] ) ) ) );

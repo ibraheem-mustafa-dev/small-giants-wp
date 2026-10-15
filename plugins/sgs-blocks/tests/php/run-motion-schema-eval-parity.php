@@ -111,7 +111,10 @@ $cleanup = static function () use ( $tmp ): void {
 	rmdir( $tmp );
 };
 
-file_put_contents( $tmp . '/schema-eval.mjs', (string) file_get_contents( $plugin . '/src/components/motion/field-types/schema-eval.js' ) );
+// The evaluator imports its value helpers from a sibling module; both are copied as `.mjs` so Node reads them as ES modules.
+$eval_dir = $plugin . '/src/components/motion/field-types/';
+file_put_contents( $tmp . '/schema-eval.mjs', str_replace( "'./schema-eval-values'", "'./schema-eval-values.mjs'", (string) file_get_contents( $eval_dir . 'schema-eval.js' ) ) );
+file_put_contents( $tmp . '/schema-eval-values.mjs', (string) file_get_contents( $eval_dir . 'schema-eval-values.js' ) );
 file_put_contents( $tmp . '/run.mjs', $node_script );
 $payload = array(
 	'defs'  => $defs,

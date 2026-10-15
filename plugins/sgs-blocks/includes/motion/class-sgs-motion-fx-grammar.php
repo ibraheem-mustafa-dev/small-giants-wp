@@ -34,7 +34,7 @@ final class Sgs_Motion_Fx_Grammar {
 
 	/**
 	 * Layer triggers the shipped runtimes read from `data-sgs-fx-trigger`; any other is left to the module default.
-	 * Twin: `src/shared/effects/gsap/provider.js::resolveTrigger` (`load`, `hover`, else `scroll`).
+	 * Twin: `src/shared/effects/gsap/provider-resolvers.js::resolveTrigger` (`load`, `hover`, else `scroll`).
 	 */
 	const RUNTIME_TRIGGERS = array( 'load', 'scroll', 'hover' );
 
