@@ -31,7 +31,7 @@
     "shared/effects/gsap/fx-scramble.js": 625,
     "shared/effects/gsap/fx-scrub.js": 653,
     "shared/effects/gsap/fx-split-reveal.js": 756,
-    "shared/effects/gsap/provider.js": 1209,
+    "shared/effects/gsap/provider.js": 2019,
     "shared/effects/smooth-scroll.js": 5986,
     "vendor-modules/gsap-core.js": 26976,
     "vendor-modules/gsap-draggable.js": 13034,
