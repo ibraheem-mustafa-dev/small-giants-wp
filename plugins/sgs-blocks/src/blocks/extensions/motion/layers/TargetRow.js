@@ -42,7 +42,8 @@ export function targetRowOptions( elements, motion, panel ) {
 				key.slice( CUSTOM_PREFIX.length )
 			),
 		} ) );
-	return [ ...targetOptions( elements ), ...custom ].map( ( option ) => ( {
+	const held = Object.keys( motion?.elements || {} );
+	return [ ...targetOptions( elements, held ), ...custom ].map( ( option ) => ( {
 		value: option.value,
 		label: marked.includes( option.value )
 			? `${ option.label } ${ DOT }`
@@ -82,7 +83,7 @@ export default function TargetRow( {
 			options={ options }
 			value={ value || ROOT_TARGET }
 			onChange={ ( next ) => onChange( next || ROOT_TARGET ) }
-			emptyLabel={ options[ 0 ].label }
+			emptyLabel={ null }
 		/>
 	);
 }

@@ -337,6 +337,15 @@ def check_effects(schema: dict, defs: dict) -> list[str]:
         for s in e.get("slots") or []:
             if not s.get("slot") or not s.get("label"):
                 errors.append(f"effects: {slug} has a slot without its name or label")
+        # runtimeTiming: the custom properties the effect's runtime writes to time its owner properties (the emitter's
+        # transition entries read them instead of a fixed duration).
+        timing = e.get("runtimeTiming")
+        if timing is not None and not (
+            isinstance(timing, dict)
+            and set(timing) == {"duration", "easing"}
+            and all(isinstance(v, str) and re.fullmatch(r"--[a-z0-9-]+", v) for v in timing.values())
+        ):
+            errors.append(f"effects: {slug} runtimeTiming must be {{duration, easing}} custom property names")
     return errors
 
 
@@ -425,6 +434,10 @@ def _plant_string_range(s: dict) -> None:
     s["$defs"]["HoverStateValues"]["properties"]["maxAngle"]["x-sgs-range"]["max"] = 90
 
 
+def _plant_runtime_timing(s: dict) -> None:
+    s["x-sgs-effects"]["magnet"]["runtimeTiming"] = {"duration": "sgs-mag-dur"}
+
+
 def cmd_self_test() -> int:
     original = json.loads(SCHEMA.read_text(encoding="utf-8"))
     # Each plant must be caught by its own rule, named by the error's prefix.
@@ -439,6 +452,7 @@ def cmd_self_test() -> int:
         ("an injected-layer cap of 3", _plant_injected_max, "spec-limits:"),
         ("a hover state trigger enum widened with click", _plant_hover_trigger, "spec-triggers:"),
         ("an x-sgs-range wider than its field's maximum", _plant_string_range, "field-range:"),
+        ("a runtimeTiming without its easing property", _plant_runtime_timing, "effects:"),
     ]
     ok = True
     with tempfile.TemporaryDirectory() as tmp:

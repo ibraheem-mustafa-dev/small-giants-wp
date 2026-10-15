@@ -55,6 +55,19 @@ final class Sgs_Motion_Loop_Delays {
 	/** Most items one loop is given rules for. */
 	const MAX_ITEMS = 200;
 
+	/**
+	 * The stagger settings a container has not set: the twin of `src/components/motion/StaggerHelper.js::STAGGER_DEFAULTS`
+	 * (less `apply`, which writes no delay) and of `scripts/check-motion-stagger-drift.py::DEFAULTS`. Parity:
+	 * `tests/php/run-motion-delegate-standalone.php`. `cap` has no default (no ceiling).
+	 */
+	const DEFAULTS = array(
+		'offset'     => 0,
+		'step'       => 80,
+		'order'      => 'row-first',
+		'perRow'     => true,
+		'closeOrder' => 'same',
+	);
+
 	/** Void elements, which never open a nesting level. */
 	const VOID = array( 'AREA', 'BASE', 'BR', 'COL', 'EMBED', 'HR', 'IMG', 'INPUT', 'LINK', 'META', 'SOURCE', 'TRACK', 'WBR' );
 
@@ -157,11 +170,12 @@ final class Sgs_Motion_Loop_Delays {
 		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $device ) {
 			$columns[ $device ] = $grid ? Sgs_Motion_Stagger::columns_for_block( 'sgs/post-grid', $attributes, $device ) : 1;
 		}
-		$delays = self::device_delays( $stagger, $count, $columns );
+		$inherit = Sgs_Motion_Loop_Inherit::item_entrance( 'sgs/post-grid', $uid, $attributes, '.sgs-post-grid__card' );
+		$delays  = self::device_delays( $stagger, $count, $columns );
 		if ( null === $delays ) {
-			return null;
+			return $inherit;
 		}
-		return self::collect( self::rules( '.' . $uid . ' .sgs-post-grid__card', $delays, true, self::close_delays( $attributes, $stagger, $delays ) ), $uid . '-loop' );
+		return (string) $inherit . self::collect( self::rules( '.' . $uid . ' .sgs-post-grid__card', $delays, true, self::close_delays( $attributes, $stagger, $delays ) ), $uid . '-loop' );
 	}
 
 	/**
@@ -176,6 +190,9 @@ final class Sgs_Motion_Loop_Delays {
 	 * @param array<string,mixed> $attributes    The block's attributes.
 	 * @param int                 $count         Items rendered.
 	 * @param string              $item_selector Class selector of one item under the root, for example `.sgs-card-grid__item`.
+	 * With the stagger's `apply` on, an item part with no entrance of its own also takes the container's entrance
+	 * (`Sgs_Motion_Loop_Inherit::item_entrance`); `apply` off leaves the delays exactly as they are.
+	 *
 	 * @return string|null Null when the block has no stagger (do not tag the items); otherwise the `<style>` tag to echo
 	 *                     before the block (an empty string when the rules went to the front-end collector).
 	 */
@@ -188,11 +205,12 @@ final class Sgs_Motion_Loop_Delays {
 		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $device ) {
 			$columns[ $device ] = Sgs_Motion_Stagger::columns_for_block( $block_name, $attributes, $device );
 		}
-		$delays = self::device_delays( $stagger, $count, $columns );
+		$inherit = Sgs_Motion_Loop_Inherit::item_entrance( $block_name, $uid, $attributes, $item_selector );
+		$delays  = self::device_delays( $stagger, $count, $columns );
 		if ( null === $delays ) {
-			return null;
+			return $inherit;
 		}
-		return self::collect( self::rules( '.' . $uid . ' ' . $item_selector, $delays, true, self::close_delays( $attributes, $stagger, $delays ) ), $uid . '-loop' );
+		return (string) $inherit . self::collect( self::rules( '.' . $uid . ' ' . $item_selector, $delays, true, self::close_delays( $attributes, $stagger, $delays ) ), $uid . '-loop' );
 	}
 
 	/**
@@ -263,9 +281,10 @@ final class Sgs_Motion_Loop_Delays {
 	}
 
 	/**
-	 * Accept a non-empty stagger settings array. `apply` is not an off switch: it only decides, in the editor helper,
-	 * whether a child with no entrance of its own takes the container's (`stagger-write.js`), so it never stops the
-	 * per-item delays.
+	 * Accept a non-empty stagger settings array, its unset keys filled from `DEFAULTS` (a stagger stored with only the
+	 * keys the client touched plays as the editor shows it). `apply` is not an off switch: it only decides whether an
+	 * item with no entrance of its own takes the container's (`stagger-write.js`, `Sgs_Motion_Loop_Inherit`), so it
+	 * never stops the per-item delays.
 	 *
 	 * @param mixed $stagger Raw value.
 	 * @return array<string,mixed>|null Settings keys only, or null.
@@ -274,7 +293,7 @@ final class Sgs_Motion_Loop_Delays {
 		if ( ! is_array( $stagger ) || array() === $stagger ) {
 			return null;
 		}
-		return array_intersect_key( $stagger, array_flip( array( 'offset', 'step', 'order', 'perRow', 'cap', 'closeOrder' ) ) );
+		return array_merge( self::DEFAULTS, array_intersect_key( $stagger, array_flip( array( 'offset', 'step', 'order', 'perRow', 'cap', 'closeOrder' ) ) ) );
 	}
 
 	/**

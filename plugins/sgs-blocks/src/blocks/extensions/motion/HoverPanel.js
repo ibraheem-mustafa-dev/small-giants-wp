@@ -13,6 +13,7 @@
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { Button, Notice, PanelBody } from '@wordpress/components';
+import { getBlockType } from '@wordpress/blocks';
 import ChoiceAtom from '../../../components/motion/ChoiceAtom';
 import IntensityPicker from '../../../components/motion/IntensityPicker';
 import { ROOT_TARGET } from '../../../components/motion/TargetPicker';
@@ -23,11 +24,11 @@ import { hoverActions } from './hover/hover-actions';
 import useDrivenBy, { hoverLayerRefs } from './hover/use-driven-by';
 import { HOVER_GROUPS } from './hover/hover-fields';
 import {
-	SOURCE_OPTIONS,
 	choiceFor,
 	familyOf,
 	hoverPresetChoices,
 	intensityOf,
+	sourceOptionsFor,
 } from './hover/hover-write';
 import HoverEffects from './hover/HoverEffects';
 import HoverFineTune from './hover/HoverFineTune';
@@ -105,7 +106,15 @@ export default function HoverPanel( { blockName, elements, motion, layers } ) {
 			{ hoverRefs.length > 0 && (
 				<ChoiceAtom
 					label={ __( 'Driven by', 'sgs-blocks' ) }
-					options={ SOURCE_OPTIONS }
+					options={ sourceOptionsFor( {
+						blockName,
+						elements,
+						animationItems:
+							getBlockType( blockName )?.supports?.sgs
+								?.animationItems,
+						target,
+						current: hoverRefs[ 0 ].layer.source,
+					} ) }
 					value={ hoverRefs[ 0 ].layer.source ?? 'self' }
 					onChange={ ( source ) =>
 						actions.chooseSource( source || 'self' )

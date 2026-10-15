@@ -55,10 +55,12 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 		'losers'    => (object) $sgs_losers,
 	);
 	$sgs_uses_root = false;
+	$sgs_uses_item = false;
 	foreach ( $sgs_targets as $sgs_target => $sgs_element ) {
 		$sgs_target = (string) $sgs_target;
 		foreach ( array_merge( array( $sgs_element['hover']['state'] ?? array() ), $sgs_element['hover']['effects'] ?? array() ) as $sgs_layer ) {
 			$sgs_uses_root = $sgs_uses_root || ( is_array( $sgs_layer ) && 'root' === ( $sgs_layer['source'] ?? null ) );
+			$sgs_uses_item = $sgs_uses_item || ( is_array( $sgs_layer ) && 'item' === ( $sgs_layer['source'] ?? null ) );
 		}
 		$sgs_resolved = Sgs_Motion_Targets::resolve( $sgs_name, $sgs_scope, $sgs_target, (array) $sgs_element );
 		if ( null === $sgs_resolved ) {
@@ -92,6 +94,9 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 		$sgs_result['rootAttrs']['data-sgs-mroot'] = '';
 	}
 	$sgs_result['rootAttrs'] = (object) $sgs_result['rootAttrs'];
+	if ( $sgs_uses_item ) {
+		$sgs_result['itemMatches'] = Sgs_Motion_Targets::item_matches( $sgs_name );
+	}
 	$sgs_out[]               = $sgs_result;
 }
 

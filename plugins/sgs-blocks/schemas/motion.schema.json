@@ -602,6 +602,10 @@
 			],
 			"values": "#/$defs/MagnetValues",
 			"devices": "#/$defs/MagnetDeviceSet",
+			"runtimeTiming": {
+				"duration": "--sgs-mag-dur",
+				"easing": "--sgs-mag-ease"
+			},
 			"slots": []
 		},
 		"ripple": {

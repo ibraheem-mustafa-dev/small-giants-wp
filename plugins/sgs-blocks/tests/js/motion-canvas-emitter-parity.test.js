@@ -66,6 +66,7 @@ const jsResult = ( c ) => {
 	const out = planCanvas( rootOf( c ), motionOf( c ), {
 		blockName: c.block,
 		elements: sgs.elements || {},
+		animationItems: sgs.animationItems || '',
 		states: declaredStates( sgs.motion ),
 		root: c.root,
 		context: {
@@ -85,6 +86,7 @@ const jsResult = ( c ) => {
 		} ) ),
 		rootAttrs: out.rootAttrs,
 		losers: out.losers,
+		...( out.itemMatches ? { itemMatches: out.itemMatches } : {} ),
 	};
 };
 

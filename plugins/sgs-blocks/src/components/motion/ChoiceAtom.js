@@ -27,7 +27,8 @@ const humanise = ( value ) => {
  * @param {Array}       [props.options]     `[ { value, label } ]`; defaults to the node's `enum`, with the value as its label.
  * @param {Object|null} [props.fieldNode]   The field's schema node (its `enum`).
  * @param {unknown}     [props.presetValue] The preset's stamped value; a differing value shows the Customised tag.
- * @param {string}      [props.emptyLabel]  Label of the unset option in the select form.
+ * @param {string|null} [props.emptyLabel]  Label of the unset option in the select form; `null` leaves the option out
+ *                                          (a caller whose value can never be unset).
  * @param {string}      [props.help]        Hint text.
  * @return {Element} The control.
  */
@@ -102,7 +103,11 @@ export default function ChoiceAtom( {
 				<SelectControl
 					label={ label }
 					value={ current }
-					options={ [ { label: emptyLabel, value: '' }, ...listed ] }
+					options={
+						emptyLabel === null
+							? listed
+							: [ { label: emptyLabel, value: '' }, ...listed ]
+					}
 					onChange={ choose }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize

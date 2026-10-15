@@ -52,6 +52,7 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 		return {
 			blockName: name,
 			elements: sgs.elements || {},
+			animationItems: sgs.animationItems || '',
 			states: declaredStates( sgs.motion ),
 			root: canvasRootSelector( clientId ),
 		};

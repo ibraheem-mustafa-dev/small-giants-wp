@@ -107,6 +107,19 @@ export function ownerWrites( owner ) {
 }
 
 /**
+ * An effect's runtime-written timing (`x-sgs-effects[effect].runtimeTiming`): the custom properties its script writes
+ * for duration and easing, so the transition reads them instead of fixed per-device values
+ * (`Sgs_Motion_Emitter::effect_transition`).
+ *
+ * @param {string} effect Effect slug.
+ * @return {{duration:string,easing:string}|null} The property names, or null.
+ */
+export function effectRuntimeTiming( effect ) {
+	const timing = EFFECTS[ effect ]?.runtimeTiming;
+	return timing && timing.duration && timing.easing ? timing : null;
+}
+
+/**
  * The channels an effect layer writes (`Sgs_Motion_Emitter::effect_channels`): its effect's `channels`, narrowed by
  * an optional `select` (`{field, true, false}`) to the list matching the layer's desktop boolean value, so parallax
  * writes `background-position` only when its `background` switch is on and `translate` otherwise.

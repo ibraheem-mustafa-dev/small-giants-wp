@@ -20,6 +20,7 @@ import {
 	MH_PREFIX,
 	orderedChannels,
 	ownerProperties,
+	effectRuntimeTiming,
 	layerWrites,
 	propertyChannels,
 	rules,
@@ -42,7 +43,7 @@ import {
 } from './emit-rotation';
 import { emitEntrance } from './emit-entrance';
 import { triggerCss } from './trigger-rules';
-import { resolveTarget } from './resolve-target';
+import { itemMatches, resolveTarget } from './resolve-target';
 import { sanitiseDocument } from './document-sanitise';
 import { resolveLayerDrops } from './layer-drops';
 import { stripShared } from './shared-element';
@@ -189,6 +190,13 @@ function effectTransition( layer, trans ) {
 	if ( easeKey !== null && tiers.desktop[ easeKey ] !== undefined && tiers.desktop[ easeKey ] !== null ) {
 		easing = valueCss( def, easeKey, tiers.desktop[ easeKey ] ) ?? easing;
 	}
+	const runtime = effectRuntimeTiming( effect );
+	if ( runtime ) {
+		props.forEach( ( prop ) =>
+			trans.desktop.push( `${ prop } var(${ runtime.duration }, 0ms) var(${ runtime.easing }, ${ easing }) 0ms` )
+		);
+		return;
+	}
 	TIERS.forEach( ( tier ) => {
 		let changed = tier === 'desktop';
 		if ( durKey !== null && tiers[ tier ][ durKey ] !== undefined && tiers[ tier ][ durKey ] !== null ) {
@@ -256,6 +264,21 @@ export function emitTarget( element, selector, context = {} ) {
 }
 
 /**
+ * Whether any hover layer in the stored targets uses this source.
+ *
+ * @param {Object} targets The stored `elements` map.
+ * @param {string} source  `root`, `group` or `item`.
+ * @return {boolean} True when a hover state or effect names the source.
+ */
+function usesSource( targets, source ) {
+	return Object.values( targets ).some( ( element ) =>
+		[ element?.hover?.state, ...listOf( element?.hover?.effects ) ].some(
+			( layer ) => layer && typeof layer === 'object' && layer.source === source
+		)
+	);
+}
+
+/**
  * Emit a whole block's motion: sanitise the document, then for each resolvable target (in stored order) drop refused
  * layers and, for a target that shares its element with an earlier-declared one (`losers`, found in the canvas DOM by
  * `shared-element.js`), its hover state and entrance; emit its CSS and data attributes.
@@ -263,10 +286,12 @@ export function emitTarget( element, selector, context = {} ) {
  * @param {Object} motion  The stored motion attribute.
  * @param {Object} options `blockName`, `elements` (`supports.sgs.elements`), `root` (the scoped root selector),
  *                         `states` (the block's declared states), `losers` (target => the target it yields to) and
- *                         `context` (`lcp`, `suppressEntrance`) for every target.
- * @return {{css:string,plans:Array,rootAttrs:Object,dropped:Array}} Empty for an absent or invalid attribute.
+ *                         `context` (`lcp`, `suppressEntrance`) for every target, and `animationItems` (the block's
+ *                         `supports.sgs.animationItems`, which with the `item` part names its repeated items).
+ * @return {{css:string,plans:Array,rootAttrs:Object,dropped:Array,itemMatches?:Array}} Empty for an absent or invalid
+ *         attribute; `itemMatches` (the elements to mark `data-sgs-mitem`) only when a hover layer uses source item.
  */
-export function emitScopedCss( motion, { blockName, elements, root, states = [], losers = {}, context = {} } ) {
+export function emitScopedCss( motion, { blockName, elements, root, states = [], losers = {}, context = {}, animationItems = '' } ) {
 	const out = { css: '', plans: [], rootAttrs: {}, dropped: [] };
 	const doc = sanitiseDocument( motion );
 	const targets = doc.elements;
@@ -300,13 +325,12 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 		out.css += emitted.css;
 		out.plans.push( { target, ...resolved, attrs: emitted.attrs, entrance: emitted.entrance } );
 	} );
-	const usesRoot = Object.values( targets ).some( ( element ) =>
-		[ element?.hover?.state, ...listOf( element?.hover?.effects ) ].some(
-			( layer ) => layer && typeof layer === 'object' && layer.source === 'root'
-		)
-	);
+	const usesRoot = usesSource( targets, 'root' );
 	if ( usesRoot ) {
 		out.rootAttrs[ 'data-sgs-mroot' ] = '';
+	}
+	if ( usesSource( targets, 'item' ) ) {
+		out.itemMatches = itemMatches( blockName, elements, animationItems );
 	}
 	return out;
 }

@@ -33,7 +33,7 @@ const HOVER_MEDIA = '(hover: hover) and (pointer: fine)';
 const TOUCH_GUARD = ':where(:root:not(.sgs-touch-input))';
 const REDUCE = '(prefers-reduced-motion: reduce)';
 const NO_PREFERENCE = '(prefers-reduced-motion: no-preference)';
-const ENGAGEMENT_FLAG = /^--sgs-mh-(?:root-|group-)?on$/;
+const ENGAGEMENT_FLAG = /^--sgs-mh-(?:root-|group-|item-)?on$/;
 
 const norm = ( value ) => value.replace( /\s+/g, ' ' ).replace( /\(\s+/g, '(' ).replace( /\s+\)/g, ')' ).trim();
 
@@ -173,14 +173,14 @@ function contractErrors( css ) {
 	}
 
 	const selectorSet = rules.map( ( r ) => r.selector );
-	for ( const needed of [ '[data-sgs-hover-group]:hover', '[data-sgs-hover-group]:focus-within', '[data-sgs-mroot]:hover', '[data-sgs-mroot]:focus-within', '[data-sgs-mh="self"]:focus-visible' ] ) {
+	for ( const needed of [ '[data-sgs-hover-group]:hover', '[data-sgs-hover-group]:focus-within', '[data-sgs-mroot]:hover', '[data-sgs-mroot]:focus-within', '[data-sgs-mitem]:hover', '[data-sgs-mitem]:focus-within', '[data-sgs-mh="self"]:focus-visible' ] ) {
 		if ( ! selectorSet.some( ( s ) => s.endsWith( needed ) ) ) {
 			errors.push( `source selector missing: ${ needed }` );
 		}
 	}
 	const reads = ( sel, prop, fragment ) => rules.some( ( r ) => r.selector === sel && decls( r )[ prop ]?.value.includes( fragment ) );
-	if ( ! reads( '[data-sgs-mh="group"]', '--sgs-mh-on', '--sgs-mh-group-on' ) || ! reads( '[data-sgs-mh="root"]', '--sgs-mh-on', '--sgs-mh-root-on' ) ) {
-		errors.push( 'group or root targets do not read their source flag' );
+	if ( ! reads( '[data-sgs-mh="group"]', '--sgs-mh-on', '--sgs-mh-group-on' ) || ! reads( '[data-sgs-mh="root"]', '--sgs-mh-on', '--sgs-mh-root-on' ) || ! reads( '[data-sgs-mh="item"]', '--sgs-mh-on', '--sgs-mh-item-on' ) ) {
+		errors.push( 'group, root or item targets do not read their source flag' );
 	}
 
 	errors.push( ...inputErrors( root, rules ) );
@@ -310,6 +310,7 @@ describe( 'negative controls: each planted fault is caught', () => {
 		'an unguarded hover that moves': [ /@media \(hover: hover\)/, '[data-sgs-mh]:hover { translate: 0 -4px; }\n@media (hover: hover)' ],
 		'a hidden start without the ready class': [ /\.sgs-motion-ready \[data-sgs-me~="scroll"\]:not\(\[data-sgs-in\]\)\[data-sgs-me~="opacity"\]/, '[data-sgs-me~="scroll"][data-sgs-me~="opacity"]' ],
 		'a keyframe with a plain opacity': [ /(--sgs-me-op: var\(--sgs-me-from-op, 1\);\s*)opacity: [^;]*;/, '$1opacity: 0;' ],
+		'a missing item hover selector': [ /:where\(:root:not\(\.sgs-touch-input\)\) \[data-sgs-mitem\]:hover \{[^}]*\}/, '' ],
 		'a missing hover-group selector': [ /:where\(:root:not\(\.sgs-touch-input\)\) \[data-sgs-hover-group\]:hover \{[^}]*\}/, '' ],
 		'reduced motion that keeps hover movement': [ /--sgs-mh-s: 1;\n\t\}\n\t:is/, '}\n\t:is' ],
 		'a persistent channel off its formula': [ /\[data-sgs-mc~="scale"\] \{\n\tscale: [^;]*;/, '[data-sgs-mc~="scale"] {\n\tscale: var(--sgs-mh-s);' ],

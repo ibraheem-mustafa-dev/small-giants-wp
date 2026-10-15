@@ -124,7 +124,7 @@ final class Sgs_Motion_Renderer {
 	 */
 	private static function note_features( array $attrs, bool $layers ): void {
 		$css = $layers;
-		foreach ( array( 'data-sgs-mh', 'data-sgs-mc', 'data-sgs-me', 'data-sgs-hover-group', 'data-sgs-mroot' ) as $key ) {
+		foreach ( array( 'data-sgs-mh', 'data-sgs-mc', 'data-sgs-me', 'data-sgs-hover-group', 'data-sgs-mroot', 'data-sgs-mitem' ) as $key ) {
 			$css = $css || isset( $attrs[ $key ] );
 		}
 		if ( $css ) {
@@ -272,7 +272,7 @@ final class Sgs_Motion_Renderer {
 	 * Whether any hover layer in the document uses this source.
 	 *
 	 * @param array<string,mixed> $doc    Sanitised document.
-	 * @param string              $source `root` or `group`.
+	 * @param string              $source `root`, `group` or `item`.
 	 * @return bool
 	 */
 	private static function uses_source( array $doc, string $source ): bool {
@@ -377,6 +377,25 @@ final class Sgs_Motion_Renderer {
 				'attrs'  => $emitted['attrs'],
 				'layers' => $layers,
 			);
+		}
+		if ( self::uses_source( $doc, 'item' ) ) {
+			foreach ( Sgs_Motion_Targets::item_matches( $name ) as $item ) {
+				if ( $item['root'] ) {
+					$root_attrs['data-sgs-mitem'] = '';
+					continue;
+				}
+				$plans[] = array(
+					'match'  => array(
+						'root'    => false,
+						'classes' => $item['classes'],
+						'tag'     => null,
+						'child'   => false,
+					),
+					'attrs'  => array( 'data-sgs-mitem' => '' ),
+					'layers' => array(),
+				);
+				self::note_features( array( 'data-sgs-mitem' => '' ), false );
+			}
 		}
 		self::note_features( $root_attrs, false );
 		Sgs_Motion_Assets::enqueue_used();

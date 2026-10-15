@@ -272,7 +272,7 @@ export function stampAttrs( el, attrs, written ) {
  * Stamp a block's resting markers: the root attributes and every plan's attributes except the entrance ones.
  *
  * @param {Element} rootEl  Block element.
- * @param {Object}  emitted `emitScopedCss()` output plus `rootAttrs`.
+ * @param {Object}  emitted `emitScopedCss()` output plus `rootAttrs` (its `itemMatches` are stamped `data-sgs-mitem`).
  * @return {Map<Element,Set<string>>} Every element stamped and the names written on it.
  */
 export function stamp( rootEl, emitted ) {
@@ -290,6 +290,12 @@ export function stamp( rootEl, emitted ) {
 		} );
 		planElements( rootEl, plan ).forEach( ( el ) => {
 			stampAttrs( el, resting, written );
+			note( el );
+		} );
+	} );
+	( emitted.itemMatches || [] ).forEach( ( match ) => {
+		planElements( rootEl, match ).forEach( ( el ) => {
+			stampAttrs( el, { 'data-sgs-mitem': '' }, written );
 			note( el );
 		} );
 	} );

@@ -51,8 +51,21 @@
         }
       },
       "containerKind": "layout",
-      "animationItems": ".sgs-card-grid__item, .sgs-product-card",
+      "animationItems": ".sgs-card-grid__item, .sgs-product-card, .wp-block-sgs-product-card",
       "_comment_animationItems": "The grid's entrance plays tile by tile: each card takes the block's Animation settings and the grid's staggerDelay (attrMap anim:stagger) is the step between them (includes/animation-stagger.php, assets/js/animation-entrance-timing.js). Replaces a fixed scroll-linked tile rule that read none of the settings.",
+      "motionDelegate": {
+        "attribute": "source",
+        "values": [ "wc-product", "cpt-collection" ],
+        "block": "sgs/product-card",
+        "parts": {
+          "item": "root",
+          "title": "title",
+          "image": "image",
+          "body": "body",
+          "noImageLabel": "noImageLabel"
+        }
+      },
+      "_comment_motionDelegate": "Spec 38A §6.2 delegated parts. In these source modes each result renders as its own sgs/product-card, so the grid's motion on a mapped part moves onto that part of every card (grid part -> card target; the card's own motion wins); the grid's other parts are not offered in these modes. Read by includes/motion/class-sgs-motion-delegate.php and src/blocks/extensions/motion/delegate-parts.js.",
       "collection": true,
       "scalarStylingLift": true,
       "imageControls": true,

@@ -184,6 +184,42 @@ export function resolveTarget( blockName, elements, root, target, element ) {
 }
 
 /**
+ * The elements that are a block's repeated items, for a hover state whose source is `item`: the twin of
+ * `Sgs_Motion_Targets::item_matches()`. The classes come from `supports.sgs.animationItems` (a comma list of single
+ * classes, so a delegated child block's root counts) and from the `item` part the block declares (the root itself when
+ * that part is a wrapper).
+ *
+ * @param {string} blockName      Block name.
+ * @param {Object} elements       `supports.sgs.elements`.
+ * @param {string} animationItems `supports.sgs.animationItems`.
+ * @return {{root:boolean,classes:string[]}[]} Empty when the block declares no item.
+ */
+export function itemMatches( blockName, elements, animationItems = '' ) {
+	const matches = new Map();
+	( typeof animationItems === 'string' ? animationItems : '' )
+		.split( ',' )
+		.map( ( token ) => token.trim() )
+		.filter( ( token ) => /^\.[A-Za-z][A-Za-z0-9_-]*$/.test( token ) )
+		.forEach( ( token ) =>
+			matches.set( token.slice( 1 ), { root: false, classes: [ token.slice( 1 ) ] } )
+		);
+	const parts = motionParts( elements );
+	if ( Object.prototype.hasOwnProperty.call( parts, 'item' ) ) {
+		if ( parts.item ) {
+			matches.set( 'root', { root: true, classes: [] } );
+		} else {
+			const declared = declaredSelector( elements, 'item' );
+			const classes =
+				declared !== ''
+					? lastCompound( declared ).classes
+					: [ partClass( blockName, 'item' ) ];
+			matches.set( classes.join( '.' ), { root: false, classes } );
+		}
+	}
+	return [ ...matches.values() ];
+}
+
+/**
  * The classes of the band the container wrapper prints as the root's direct child.
  *
  * @param {string} blockName Block name.

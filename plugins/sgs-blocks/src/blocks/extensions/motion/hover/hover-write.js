@@ -14,6 +14,7 @@ import presetFile from '../../../../components/motion/generated-motion-presets.j
 import { sameValue } from '../../../../components/motion/atom-utils';
 import { intensityRowsFor } from '../../../../components/motion/IntensityPicker';
 import { editField, valueAtPath, presetBySlug } from '../layers/stamp';
+import { itemMatches, motionParts } from '../canvas/resolve-target';
 
 export const STATE_LIST = 'hover.state';
 export const EFFECTS_LIST = 'hover.effects';
@@ -27,6 +28,42 @@ export const SOURCE_OPTIONS = Object.freeze( [
 	{ value: 'root', label: __( 'Whole block hovered', 'sgs-blocks' ) },
 	{ value: 'group', label: __( 'Group hovered', 'sgs-blocks' ) },
 ] );
+
+const ITEM_OPTION = Object.freeze( {
+	value: 'item',
+	label: __( 'Card hovered', 'sgs-blocks' ),
+} );
+
+/**
+ * The "Driven by" choices for a target. "Card hovered" (source `item`: the repeated item the part sits in, so one card's
+ * hover never moves another card's part) is offered only for a declared part of a block that has repeated items (an
+ * `item` part, or `supports.sgs.animationItems` for items a child block renders); a layer already stored with it keeps
+ * the choice.
+ *
+ * @param {Object}      args
+ * @param {string}      args.blockName      The block's name.
+ * @param {Object|null} args.elements       The block's `supports.sgs.elements`.
+ * @param {string}      [args.animationItems] The block's `supports.sgs.animationItems`.
+ * @param {string}      args.target         The chosen target key.
+ * @param {string}      [args.current]      The source stored on the target's hover layers.
+ * @return {{value: string, label: string}[]} The choices.
+ */
+export function sourceOptionsFor( {
+	blockName,
+	elements,
+	animationItems = '',
+	target,
+	current,
+} ) {
+	const parts = motionParts( elements );
+	const insideItem =
+		Object.prototype.hasOwnProperty.call( parts, target ) &&
+		parts[ target ] === false &&
+		itemMatches( blockName, elements, animationItems ).length > 0;
+	return insideItem || current === 'item'
+		? [ ...SOURCE_OPTIONS, ITEM_OPTION ]
+		: SOURCE_OPTIONS;
+}
 
 /**
  * The hover presets the Hover state choice offers: the preset rows of the hover panel that are not an effect's.
@@ -84,7 +121,7 @@ export function familyOf( layer ) {
  * The layer driven by another element: `self` is the default and stores nothing.
  *
  * @param {Object} layer  The layer.
- * @param {string} source `self`, `root` or `group`.
+ * @param {string} source `self`, `root`, `group` or `item`.
  * @return {Object} The layer.
  */
 export function withSource( layer, source ) {

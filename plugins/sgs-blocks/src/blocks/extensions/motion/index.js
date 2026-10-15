@@ -10,8 +10,10 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
+import { getBlockType } from '@wordpress/blocks';
 import { MOTION_ATTRIBUTE_NAME } from './register';
 import { blockHasMotion } from './support-cache';
+import { delegateConfig } from './delegate-parts';
 import MotionPanels from './MotionPanels';
 import './motion-panels.scss';
 import './layers/stamp-ambient-float';
@@ -22,6 +24,27 @@ import './EffectsPanel';
 import './stories';
 
 export { blockHasMotion };
+
+/**
+ * The value of the attribute that switches a block's source mode (`supports.sgs.motionDelegate.attribute`), or
+ * undefined for a block without one, read per block name once.
+ *
+ * @param {string} name       Block name.
+ * @param {Object} attributes The block's attributes.
+ * @return {*} The attribute's value.
+ */
+function delegateValueOf( name, attributes ) {
+	if ( ! delegateAttributeByName.has( name ) ) {
+		delegateAttributeByName.set(
+			name,
+			delegateConfig( getBlockType( name )?.supports?.sgs )?.attribute ?? null
+		);
+	}
+	const attribute = delegateAttributeByName.get( name );
+	return attribute === null ? undefined : attributes?.[ attribute ];
+}
+
+const delegateAttributeByName = new Map();
 
 const withMotionPanels = createHigherOrderComponent(
 	( BlockEdit ) =>
@@ -37,6 +60,7 @@ const withMotionPanels = createHigherOrderComponent(
 						clientId={ props.clientId }
 						motion={ props.attributes[ MOTION_ATTRIBUTE_NAME ] }
 						setAttributes={ props.setAttributes }
+						delegateValue={ delegateValueOf( props.name, props.attributes ) }
 					/>
 				</>
 			);

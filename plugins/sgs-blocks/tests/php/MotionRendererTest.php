@@ -358,6 +358,47 @@ final class MotionRendererTest extends TestCase {
 		$this->assertStringContainsString( 'data-sgs-mh="root"', $out );
 	}
 
+	private function render_grid( string $source ): string {
+		$html = '<div class="wp-block-sgs-card-grid"><div class="sgs-card-grid__item" id="a"><h3 class="sgs-card-grid__title">A</h3></div>'
+			. '<article class="sgs-product-card" id="b"><h3 class="sgs-product-card__title">B</h3></article>'
+			. '<h3 class="sgs-card-grid__title" id="outside">C</h3></div>';
+		return sgs_test_render_motion_block(
+			array(
+				'blockName' => 'sgs/card-grid',
+				'attrs'     => array(
+					'sgsMotion' => array(
+						'v'        => 1,
+						'elements' => array( 'title' => array( 'hover' => array( 'state' => array( 'source' => $source, 'values' => array( 'scale' => 1.05 ) ) ) ) ),
+					),
+				),
+			),
+			$html
+		);
+	}
+
+	public function test_item_source_marks_each_item_and_the_part_reads_its_flag(): void {
+		$out = $this->render_grid( 'item' );
+		$this->assertMatchesRegularExpression( '/<div data-sgs-mitem="" class="sgs-card-grid__item"/', $out, 'a declared item part is marked' );
+		$this->assertMatchesRegularExpression( '/<article data-sgs-mitem="" class="sgs-product-card"/', $out, 'a delegated child block root named by animationItems is marked' );
+		$this->assertSame( 2, substr_count( $out, 'data-sgs-mitem' ), 'only the items are marked, not the block root or a part' );
+		$this->assertStringNotContainsString( 'data-sgs-mroot', $out );
+		$this->assertSame( 2, substr_count( $out, 'data-sgs-mh="item"' ), 'each block title is a target of the item source' );
+		$this->assertStringContainsString( 'sgs-card-grid__title', $this->css() );
+	}
+
+	public function test_other_sources_mark_no_item(): void {
+		foreach ( array( 'self', 'root', 'group' ) as $source ) {
+			$this->assertStringNotContainsString( 'data-sgs-mitem', $this->render_grid( $source ), $source );
+			Sgs_Motion_Renderer::reset();
+		}
+	}
+
+	public function test_item_source_on_a_block_without_items_marks_nothing(): void {
+		$out = $this->render( self::media_hover( array( 'scale' => 1.04 ), array(), 'item' ) );
+		$this->assertStringNotContainsString( 'data-sgs-mitem', $out );
+		$this->assertStringContainsString( 'data-sgs-mh="item"', $out );
+	}
+
 	public function test_hover_group_marking_and_group_hover_colours(): void {
 		$group = $this->render( array(), self::CARD, array( 'sgsBlockLink' => 'https://example.test/' ) );
 		$this->assertStringContainsString( 'data-sgs-hover-group', $group, 'a whole-block link makes the block a hover group' );

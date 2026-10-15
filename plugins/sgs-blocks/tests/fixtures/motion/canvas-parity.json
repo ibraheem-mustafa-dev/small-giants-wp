@@ -325,7 +325,7 @@
 	},
 	{
 		"name": "three panels stacked",
-		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--sm));--sgs-mh-to-s:1.04;--sgs-persp-self:1000px;--sgs-tilt-max:8deg;--sgs-tilt-lock:none;--sgs-rx-rest:4deg;--sgs-mh-to-ry:6deg;--sgs-me-from-op:0;--sgs-me-from-ty:var(--wp--custom--entrance--distance);--sgs-me-from-rx:-12deg;--sgs-me-to-op:1;--sgs-me-to-ty:0px;--sgs-me-to-rx:0deg;--sgs-me-dur:var(--wp--custom--entrance--duration);--sgs-me-delay:0ms;--sgs-me-ease:var(--wp--custom--entrance--easing);--sgs-me-start:6%;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ry var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-mag-x 250ms cubic-bezier(0.16, 0.84, 0.32, 1) 0ms, --sgs-mag-y 250ms cubic-bezier(0.16, 0.84, 0.32, 1) 0ms, --sgs-sheen-x 750ms ease-out 0ms;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-tilt-max:6deg;--sgs-me-from-ty:16px;}}@media (max-width:767px){.sgs-m-0123456789{--sgs-mh-to-ty:-2px;--sgs-me-from-ty:8px;}}",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--sm));--sgs-mh-to-s:1.04;--sgs-persp-self:1000px;--sgs-tilt-max:8deg;--sgs-tilt-lock:none;--sgs-rx-rest:4deg;--sgs-mh-to-ry:6deg;--sgs-me-from-op:0;--sgs-me-from-ty:var(--wp--custom--entrance--distance);--sgs-me-from-rx:-12deg;--sgs-me-to-op:1;--sgs-me-to-ty:0px;--sgs-me-to-rx:0deg;--sgs-me-dur:var(--wp--custom--entrance--duration);--sgs-me-delay:0ms;--sgs-me-ease:var(--wp--custom--entrance--easing);--sgs-me-start:6%;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ry var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-mag-x var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, cubic-bezier(0.16, 0.84, 0.32, 1)) 0ms, --sgs-mag-y var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, cubic-bezier(0.16, 0.84, 0.32, 1)) 0ms, --sgs-sheen-x 750ms ease-out 0ms;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-tilt-max:6deg;--sgs-me-from-ty:16px;}}@media (max-width:767px){.sgs-m-0123456789{--sgs-mh-to-ty:-2px;--sgs-me-from-ty:8px;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -494,7 +494,7 @@
 	},
 	{
 		"name": "hover effect per device duration",
-		"css": ".sgs-m-0123456789{transition:--sgs-mag-x var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, --sgs-mag-y var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms;}",
+		"css": ".sgs-m-0123456789{transition:--sgs-mag-x var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, var(--wp--custom--easing--ease-out)) 0ms, --sgs-mag-y var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, var(--wp--custom--easing--ease-out)) 0ms;}",
 		"plans": [
 			{
 				"target": "root",
@@ -621,7 +621,7 @@
 	},
 	{
 		"name": "many effects",
-		"css": ".sgs-m-0123456789{transition:--sgs-mag-x var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, --sgs-mag-y var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, --sgs-sheen-x var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms;}",
+		"css": ".sgs-m-0123456789{transition:--sgs-mag-x var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, var(--wp--custom--easing--ease-out)) 0ms, --sgs-mag-y var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, var(--wp--custom--easing--ease-out)) 0ms, --sgs-sheen-x var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms;}",
 		"plans": [
 			{
 				"target": "root",
@@ -638,7 +638,7 @@
 	},
 	{
 		"name": "state plus magnet translate",
-		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mag-x var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms, --sgs-mag-y var(--wp--custom--duration--medium) var(--wp--custom--easing--ease-out) 0ms;}",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mag-x var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, var(--wp--custom--easing--ease-out)) 0ms, --sgs-mag-y var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, var(--wp--custom--easing--ease-out)) 0ms;}",
 		"plans": [
 			{
 				"target": "root",
@@ -945,5 +945,112 @@
 		],
 		"rootAttrs": {},
 		"losers": {}
+	},
+	{
+		"name": "hover source item on a delegated grid part",
+		"css": ".sgs-m-0123456789 .sgs-card-grid__title{--sgs-mh-to-s:1.05;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "title",
+				"selector": ".sgs-m-0123456789 .sgs-card-grid__title",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "item",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {},
+		"itemMatches": [
+			{
+				"root": false,
+				"classes": [
+					"sgs-card-grid__item"
+				]
+			},
+			{
+				"root": false,
+				"classes": [
+					"sgs-product-card"
+				]
+			},
+			{
+				"root": false,
+				"classes": [
+					"wp-block-sgs-product-card"
+				]
+			}
+		]
+	},
+	{
+		"name": "hover source item on a block with an item part",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-s:1.05;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "item",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {},
+		"itemMatches": [
+			{
+				"root": false,
+				"classes": [
+					"sgs-gallery__item"
+				]
+			}
+		]
+	},
+	{
+		"name": "hover source item on a block whose item is the root",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-s:1.05;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "item",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {},
+		"itemMatches": [
+			{
+				"root": true,
+				"classes": []
+			}
+		]
+	},
+	{
+		"name": "hover source item on a block with no item",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-s:1.05;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "media",
+				"selector": ".sgs-m-0123456789 .sgs-hero__media",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "item",
+					"data-sgs-mc": "scale"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {},
+		"itemMatches": []
 	}
 ]

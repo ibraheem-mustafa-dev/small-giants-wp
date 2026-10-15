@@ -29,8 +29,8 @@ const presetFile = require( '../../src/components/motion/generated-motion-preset
 const defs = require( '../../src/components/motion/generated-motion-defs.json' );
 const fxMeta = require( '../../src/blocks/extensions/generated-fx-effect-meta.json' );
 
-const infoBox = JSON.parse(
-	fs.readFileSync( path.join( __dirname, '..', '..', 'src', 'blocks', 'info-box', 'block.json' ), 'utf8' )
+const quoteBlock = JSON.parse(
+	fs.readFileSync( path.join( __dirname, '..', '..', 'src', 'blocks', 'quote', 'block.json' ), 'utf8' )
 );
 
 let container;
@@ -77,15 +77,16 @@ function mount( Atom, props, initial ) {
 }
 
 describe( 'the target picker', () => {
-	it( 'for sgs/info-box lists root plus exactly the parts the block declares as targets', () => {
-		const elements = infoBox.supports.sgs.elements;
-		const declared = Object.keys( elements ).filter( ( key ) => elements[ key ].motion !== false );
+	it( 'for sgs/quote lists root plus exactly the parts the block declares as targets', () => {
+		const elements = quoteBlock.supports.sgs.elements;
+		// A wrapper part (`isWrapper`) is the root under another name, so it is not offered a second time.
+		const declared = Object.keys( elements ).filter( ( key ) => elements[ key ].motion !== false && elements[ key ].isWrapper !== true );
 		const excluded = Object.keys( elements ).filter( ( key ) => elements[ key ].motion === false );
 		expect( declared.length ).toBeGreaterThan( 0 );
 		// A part marked `"motion": false` (Spec 38A §6.2) is never offered.
 		expect( excluded.length ).toBeGreaterThan( 0 );
-		expect( targetOptions( infoBox.supports.sgs.elements ).map( ( o ) => o.value ) ).toEqual( [ 'root', ...declared ] );
-		mount( TargetPicker, { elements: infoBox.supports.sgs.elements }, 'root' );
+		expect( targetOptions( quoteBlock.supports.sgs.elements ).map( ( o ) => o.value ) ).toEqual( [ 'root', ...declared ] );
+		mount( TargetPicker, { elements: quoteBlock.supports.sgs.elements }, 'root' );
 		expect( shownOptions() ).toEqual( [ 'root', ...declared ] );
 	} );
 

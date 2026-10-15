@@ -81,6 +81,52 @@ final class Sgs_Motion_Targets {
 	}
 
 	/**
+	 * The elements that are a block's repeated items, for a hover state whose source is `item`: what the stylesheet marks
+	 * with `data-sgs-mitem` so the nearest one drives its parts' hover. The classes come from
+	 * `supports.sgs.animationItems` (a comma list of single classes, so a delegated child block's root counts) and from
+	 * the `item` part the block declares (the root itself when that part is a wrapper).
+	 *
+	 * @param string $block_name Block name.
+	 * @return array<int,array{root:bool,classes:array<int,string>}> Empty when the block declares no item.
+	 */
+	public static function item_matches( string $block_name ): array {
+		if ( ! class_exists( '\WP_Block_Type_Registry' ) ) {
+			return array();
+		}
+		$type    = \WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
+		$listed  = is_object( $type ) && isset( $type->supports['sgs']['animationItems'] ) && is_string( $type->supports['sgs']['animationItems'] )
+			? $type->supports['sgs']['animationItems']
+			: '';
+		$matches = array();
+		foreach ( explode( ',', $listed ) as $token ) {
+			$token = trim( $token );
+			if ( 1 === preg_match( '/^\.[A-Za-z][A-Za-z0-9_-]*$/', $token ) ) {
+				$matches[ substr( $token, 1 ) ] = array(
+					'root'    => false,
+					'classes' => array( substr( $token, 1 ) ),
+				);
+			}
+		}
+		$parts = self::parts( $block_name );
+		if ( array_key_exists( 'item', $parts ) ) {
+			if ( $parts['item'] ) {
+				$matches['root'] = array(
+					'root'    => true,
+					'classes' => array(),
+				);
+			} else {
+				$declared = self::declared_selector( $block_name, 'item' );
+				$classes  = '' !== $declared ? Sgs_Motion_Custom_Target::last_compound( $declared )['classes'] : array( self::part_class( $block_name, 'item' ) );
+				$matches[ implode( '.', $classes ) ] = array(
+					'root'    => false,
+					'classes' => $classes,
+				);
+			}
+		}
+		return array_values( $matches );
+	}
+
+	/**
 	 * Resolve one target.
 	 *
 	 * @param string              $block_name Block name.

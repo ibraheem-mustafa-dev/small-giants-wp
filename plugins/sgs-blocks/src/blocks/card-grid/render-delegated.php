@@ -136,6 +136,11 @@ defined( 'ABSPATH' ) || exit;
 	// ── Render each result as an sgs/product-card ───────────────────────────
 	// Mirror of the former content-collection render.php §6 — render_block()
 	// returns fully-rendered, escaped markup (house pattern file:render.php:242).
+	// Spec 38A §6.2 delegated parts: the grid's own parts are never printed in
+	// this mode, so the grid's motion on its mapped parts (block.json
+	// supports.sgs.motionDelegate) becomes each card's own motion, and with the
+	// stagger's apply on, a card with no entrance takes the grid's.
+	$card_grid_child_motion = \SGS\Blocks\Motion\Sgs_Motion_Delegate::child_motion( 'sgs/card-grid', $attributes );
 	ob_start();
 
 	if ( $is_cpt_collection ) {
@@ -170,6 +175,9 @@ defined( 'ABSPATH' ) || exit;
 				// showLadder: false on browsing grids — price + per-unit note only.
 				'showLadder'   => isset( $attributes['showLadder'] ) ? (bool) $attributes['showLadder'] : false,
 			);
+			if ( null !== $card_grid_child_motion ) {
+				$card_attrs['sgsMotion'] = $card_grid_child_motion;
+			}
 
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
 			echo render_block(
@@ -186,6 +194,9 @@ defined( 'ABSPATH' ) || exit;
 				'productId'  => absint( $wc_product_id ),
 				'showLadder' => (bool) ( $attributes['productShowLadder'] ?? false ),
 			);
+			if ( null !== $card_grid_child_motion ) {
+				$card_attrs['sgsMotion'] = $card_grid_child_motion;
+			}
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
 			echo render_block(
 				array(
@@ -196,15 +207,25 @@ defined( 'ABSPATH' ) || exit;
 		endforeach;
 	}
 
+	$wc_cards_html = (string) ob_get_clean();
+
+	// Item-array stagger (Spec 38A FR-38A-26) on the delegated cards: each card's
+	// root (product-card's wrapper class) gets its loop index and one scoped
+	// delay rule, as render.php does for manual cards. Null (no stagger) leaves
+	// the cards untagged.
+	$wc_cards_tagged      = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $wc_cards_html, 'wp-block-sgs-product-card' );
+	$card_grid_loop_style = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/card-grid', $uid, $attributes, $wc_cards_tagged['count'], '.wp-block-sgs-product-card' );
+	if ( null !== $card_grid_loop_style ) {
+		$wc_cards_html = $wc_cards_tagged['html'];
+	}
+
 	// Pagination sits INSIDE the block wrapper but after the cards. Empty string
-	// in wc-product mode and whenever there is a single page.
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Grid_Pagination::render() escapes every interpolated value internally.
-	echo $pagination_html;
+	// in wc-product mode and whenever there is a single page. Grid_Pagination::render()
+	// escapes every interpolated value internally.
+	$wc_inner_html = $wc_cards_html . $pagination_html;
 
-	$wc_inner_html = ob_get_clean();
-
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $card_grid_native_style_tag built from pre-sanitised values only (wp_strip_all_tags applied above).
-	echo $card_grid_native_style_tag;
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the loop style is CSS Sgs_Motion_Loop_Delays builds from integers and a validated selector; $card_grid_native_style_tag built from pre-sanitised values only (wp_strip_all_tags applied above).
+	echo (string) $card_grid_loop_style . $card_grid_native_style_tag;
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes internally.
 	echo SGS_Container_Wrapper::render( $attributes, $block, $wc_inner_html, 'layout', $wc_wrapper_opts );
 

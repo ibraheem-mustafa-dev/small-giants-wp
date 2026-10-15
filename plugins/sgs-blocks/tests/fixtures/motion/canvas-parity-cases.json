@@ -1518,6 +1518,90 @@
 			},
 			"root": ".sgs-m-0123456789",
 			"context": {}
+		},
+		{
+			"name": "hover source item on a delegated grid part",
+			"block": "sgs/card-grid",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"title": {
+						"hover": {
+							"state": {
+								"values": {
+									"scale": 1.05
+								},
+								"source": "item"
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "hover source item on a block with an item part",
+			"block": "sgs/gallery",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"scale": 1.05
+								},
+								"source": "item"
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "hover source item on a block whose item is the root",
+			"block": "sgs/product-faq-item",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"scale": 1.05
+								},
+								"source": "item"
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "hover source item on a block with no item",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"media": {
+						"hover": {
+							"state": {
+								"values": {
+									"scale": 1.05
+								},
+								"source": "item"
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
 		}
 	]
 }

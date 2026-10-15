@@ -302,7 +302,10 @@ final class Sgs_Motion_Emitter {
 
 	/**
 	 * A hover effect's own return transition: its owner properties (from `x-sgs-channels`) on its stored duration and easing
-	 * fields (keyed `duration`/`easing`, else ending `Duration`/`Easing`).
+	 * fields (keyed `duration`/`easing`, else ending `Duration`/`Easing`). An effect whose `x-sgs-effects` row names
+	 * `runtimeTiming` has its runtime time those properties (the magnet writes 0ms while the pointer tracks and the
+	 * return duration on release): its entries read the runtime's custom properties, falling back to no duration and the
+	 * stored easing, once for every tier, since the runtime reads each tier's stored value from the data attribute.
 	 *
 	 * @param array<string,mixed>             $layer A hover effect layer.
 	 * @param array<string,array<int,string>> $trans Per-tier transition entries (by reference).
@@ -333,6 +336,13 @@ final class Sgs_Motion_Emitter {
 		$tiers    = self::tier_values( $layer );
 		if ( null !== $ease_key && isset( $tiers['desktop'][ $ease_key ] ) ) {
 			$easing = self::value_css( $def, $ease_key, $tiers['desktop'][ $ease_key ] ) ?? $easing;
+		}
+		$runtime = Sgs_Motion_Field_Types::schema()['x-sgs-effects'][ $effect ]['runtimeTiming'] ?? null;
+		if ( is_array( $runtime ) && isset( $runtime['duration'], $runtime['easing'] ) ) {
+			foreach ( $props as $prop ) {
+				$trans['desktop'][] = $prop . ' var(' . $runtime['duration'] . ', 0ms) var(' . $runtime['easing'] . ', ' . $easing . ') 0ms';
+			}
+			return;
 		}
 		foreach ( self::TIERS as $tier ) {
 			$changed = 'desktop' === $tier;

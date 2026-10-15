@@ -4,7 +4,7 @@
  * Every generic motion rule lives here; per-instance values come from the renderer's scoped custom properties
  * (includes/motion/), never a `style` attribute. The contract with the renderer:
  *
- *   data-sgs-mh="self|root|group"    the target holds a hover state; the value is its source (§6.2)
+ *   data-sgs-mh="self|root|group|item"    the target holds a hover state; the value is its source (§6.2)
  *   --sgs-mh-to-<tx|ty|rot|rx|ry|s|op|blur|gray|bright|indent|ring|ring-c>
  *                                     the hover state's to-values (plain, unregistered; per device). Each rotate
  *                                     to-value (Z, X, Y) is the hover angle minus its rest angle (§10)
@@ -14,6 +14,7 @@
  *   --sgs-persp-self                  the element's one perspective (a length, or none), read by the transform channel
  *   data-sgs-mroot                    a block root whose targets use source root
  *   data-sgs-hover-group              the hover-group block (source group reads the nearest one)
+ *   data-sgs-mitem                    a repeated item of a block whose targets use source item (the nearest one drives)
  *   data-sgs-mc="<channels>"          the persistent channels of the element's non-entrance owners, as the schema's
  *                                     x-sgs-writes names them (translate rotate scale opacity filter transform
  *                                     background-position ::before ::after injected)
@@ -120,22 +121,26 @@
 
 /* ── Hover state (§9, FR-38A-17): the hover values are the to-values times an engagement flag. The flag is set by
    the source's :hover only inside the pointer guard (and the touch-input guard, includes/helpers-hover-state.php),
-   and by :focus-visible / :focus-within outside it, so keyboard users get the same result. Root and group flags
-   inherit, and every root and group resets its own to 0, so a target follows its NEAREST root or group. ── */
+   and by :focus-visible / :focus-within outside it, so keyboard users get the same result. Root, group and item flags
+   inherit, and every root, group and item resets its own to 0, so a target follows its NEAREST root, group or item. ── */
 [data-sgs-mh] { --sgs-mh-on: 0; }
 [data-sgs-mh="root"] { --sgs-mh-on: var(--sgs-mh-root-on, 0); }
 [data-sgs-mh="group"] { --sgs-mh-on: var(--sgs-mh-group-on, 0); }
+[data-sgs-mh="item"] { --sgs-mh-on: var(--sgs-mh-item-on, 0); }
 [data-sgs-mroot] { --sgs-mh-root-on: 0; }
 [data-sgs-hover-group] { --sgs-mh-group-on: 0; }
+[data-sgs-mitem] { --sgs-mh-item-on: 0; }
 
 [data-sgs-mh="self"]:focus-visible { --sgs-mh-on: 1; }
 [data-sgs-mroot]:focus-within { --sgs-mh-root-on: 1; }
 [data-sgs-hover-group]:focus-within { --sgs-mh-group-on: 1; }
+[data-sgs-mitem]:focus-within { --sgs-mh-item-on: 1; }
 
 @media (hover: hover) and (pointer: fine) {
 	:where(:root:not(.sgs-touch-input)) [data-sgs-mh="self"]:hover { --sgs-mh-on: 1; }
 	:where(:root:not(.sgs-touch-input)) [data-sgs-mroot]:hover { --sgs-mh-root-on: 1; }
 	:where(:root:not(.sgs-touch-input)) [data-sgs-hover-group]:hover { --sgs-mh-group-on: 1; }
+	:where(:root:not(.sgs-touch-input)) [data-sgs-mitem]:hover { --sgs-mh-item-on: 1; }
 }
 
 [data-sgs-mh] {
