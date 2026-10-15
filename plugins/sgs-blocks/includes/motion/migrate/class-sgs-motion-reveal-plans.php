@@ -35,9 +35,8 @@ final class Sgs_Motion_Reveal_Plans {
 	const TIMELINE_ENTRY_PART = 'entry';
 
 	/**
-	 * The buybox main photo part. `sgs/buybox` declares no such target today (its parts are listed by
-	 * `SELECT target FROM motion_targets WHERE block_slug = 'sgs/buybox'`), so the layer is stored and stays inert until
-	 * the block declares a part with this key on `.product-card__media .product-card-img`.
+	 * The buybox main photo part. `sgs/buybox` declares it in `block.json::supports.sgs.elements` on
+	 * `.sgs-buybox__main-photo`, the class `gallery-col.php` prints on the main `<img>`, so the layer targets the photo.
 	 */
 	const BUYBOX_PHOTO_PART = 'main-photo';
 

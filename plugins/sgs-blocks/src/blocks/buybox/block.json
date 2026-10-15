@@ -196,6 +196,13 @@
 					},
 					"_note": "The thumbnail rail buttons (.product-card__thumb). A per-device thumbsPerRow fluid grid (0 = the fixed 64px scrolling rail) with thumbGap and thumbStripOffset, plus the shared border pair on SgsBorderControl: galleryThumbBorderWidth (box), galleryThumbBorderStyle, galleryThumbBorderColour / Hover / Current (Current is the selected [aria-current=true] thumbnail) and galleryThumbBorderRadius (a flat corner object, single tier), and the selected thumbnail's scale. Emitted per instance by extras.php::sgs_buybox_extras_scoped_css through sgs_border_states_css(). Empty width, colours and radius, and scale 105, keep the stylesheet defaults (2px transparent border, primary-token selected border, the main image's radius, scale 1.05); scale 100 turns the selected scale off."
 				},
+				"main-photo": {
+					"selector": ".sgs-buybox__main-photo",
+					"label": "Main photo",
+					"order": 19,
+					"clusters": [],
+					"_note": "The main gallery photo (.sgs-buybox__main-photo), a motion part: the target of a photo entrance."
+				},
 				"valueLadder": {
 					"selector": ".buybox__value-ladder",
 					"label": "Value ladder",

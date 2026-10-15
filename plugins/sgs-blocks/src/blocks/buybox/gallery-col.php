@@ -47,8 +47,9 @@ $buybox_def_img_h = ( ! empty( $buybox_def_gallery[0]['h'] ) ) ? (int) $buybox_d
 // file's scope via require(), same as every other render.php variable this
 // partial already reads ($buybox_def_gallery, $buybox_img_src, etc.).
 // Guarded so a request that reaches this partial before the class autoloads
-// still renders with the plain 'product-card-img' class.
-$buybox_main_img_classes  = 'product-card-img';
+// still renders with the plain 'product-card-img' class and the
+// 'sgs-buybox__main-photo' motion part class.
+$buybox_main_img_classes  = 'product-card-img sgs-buybox__main-photo';
 $buybox_thumb_img_classes = '';
 if ( class_exists( 'SGS_Media_Element' ) ) {
 	$buybox_main_img_classes  .= ' ' . implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $uid, 'main' ) ) );
