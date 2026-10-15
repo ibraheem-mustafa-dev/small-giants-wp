@@ -389,6 +389,32 @@ namespace SGS\Blocks\Motion {
 	$oc_open    = Sgs_Motion_Stagger::compute_delays( array_merge( $oc_stagger, array( 'count' => 4, 'columns' => 1 ) ) );
 	ok( 'reversed' === ( $oc_stagger['closeOrder'] ?? null ) && ! isset( base_of( $oc['0/0'], 'item' )['close']['closeDelay'] ) && array( 165, 110, 55, 0 ) === Sgs_Motion_Stagger::compute_close_delays( $oc_open, $oc_stagger['closeOrder'] ) && false === strpos( reasons( $oc['0'] ), 'close together' ) && patches_valid( $oc ), 'reverse-on-close on a menu: the menu stores closeOrder reversed (its render writes 165, 110, 55, 0 for four items), schema-valid, nothing reported' );
 
+	// 6b. A capped reverse-on-close menu: the old ladder was min((n-1-i) x step, cap) counted from the end, the menu's
+	// render mirrors the open delays (high + low - d); with a cap below (n-1) x step they differ, and n (the live
+	// menu's length) is unknown at migration time, so every capped reversed menu is reported.
+	$old_ladder = array_map( static fn( $i ) => min( ( 5 - $i ) * 50, 150 ), range( 0, 5 ) );
+	$new_mirror = Sgs_Motion_Stagger::compute_close_delays( Sgs_Motion_Stagger::compute_delays( array( 'count' => 6, 'columns' => 1, 'offset' => 0, 'step' => 50, 'order' => 'row-first', 'perRow' => false, 'cap' => 150 ) ), 'reversed' );
+	ok( array( 150, 150, 150, 100, 50, 0 ) === $old_ladder && array( 150, 100, 50, 0, 0, 0 ) === $new_mirror, 'the two close ladders differ for six items at step 50, cap 150 (the premise of the report)', json_encode( array( $old_ladder, $new_mirror ) ) );
+	$cm   = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'itemStagger' => 50, 'itemStaggerMax' => 150, 'itemStaggerOnClose' => true ), array( blk( 'sgs/nav-drawer-menu' ) ) ) ) );
+	$rows = array_values( array_filter( $cm['0']['reported'], static fn( $r ) => 'itemStaggerOnClose' === $r['attr'] ) );
+	ok( 1 === count( $rows ) && false !== strpos( $rows[0]['reason'], '150' ) && false !== strpos( $rows[0]['reason'], 'mirror' ), 'a capped reverse-on-close menu is reported on itemStaggerOnClose, naming the cap and the mirrored close', reasons( $cm['0'] ) );
+
+	// 6c. The panel's transform origin: the model path takes it from the `auto` shape for the anchor
+	// (helpers-nav-drawer-motion-model.php::sgs_nav_drawer_motion_origin_css), the old path from the resolved shape.
+	$so = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'anchor' => array( 'desktop' => 'header' ), 'entryAnimation' => array( 'desktop' => 'scale' ) ) ) ) );
+	ok( false !== strpos( reasons( $so['0'] ), 'origin' ) && false !== strpos( reasons( $so['0'] ), 'top center' ), 'an explicit scale on a header anchor is reported: it scaled from the centre and will scale from top center', reasons( $so['0'] ) );
+	$solo_origin = $mapper->map( 'sgs/nav-drawer', array( 'anchor' => array( 'desktop' => 'header' ), 'entryAnimation' => array( 'desktop' => 'scale' ) ) );
+	ok( false !== strpos( implode( ' ', array_column( $solo_origin['reported'], 'reason' ) ), 'top center' ), 'map() without the group pass reports the same origin change' );
+	$quiet = array(
+		'auto on a trigger anchor (corner-scale, top right either way)' => array( 'anchor' => array( 'desktop' => 'trigger' ), 'entryDuration' => 250 ),
+		'an explicit scale on a centred anchor (center either way)'     => array( 'anchor' => array( 'desktop' => 'centred' ), 'entryAnimation' => array( 'desktop' => 'scale' ) ),
+		'a slide-down on a header anchor (no scale, the origin is inert)' => array( 'anchor' => array( 'desktop' => 'header' ), 'entryAnimation' => array( 'desktop' => 'slide-down' ) ),
+	);
+	foreach ( $quiet as $label => $attrs ) {
+		$q = $mapper->map_groups( array( blk( 'sgs/nav-drawer', $attrs ) ) );
+		ok( false === strpos( reasons( $q['0'] ), 'origin' ), "no origin report for $label", reasons( $q['0'] ) );
+	}
+
 	// 7. map() without the group pass: the panel only.
 	$solo = $mapper->map( 'sgs/nav-drawer', $measured );
 	ok( isset( $solo['motion']['elements']['root'] ) && ! in_array( 'itemStagger', $solo['consumed'], true ) && false !== strpos( implode( ' ', array_column( $solo['reported'], 'reason' ) ), 'group pass' ), 'map() alone stores the panel and leaves the item attributes in place, reported' );

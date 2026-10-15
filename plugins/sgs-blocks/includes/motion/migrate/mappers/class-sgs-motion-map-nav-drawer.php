@@ -23,6 +23,10 @@
  *   from `Sgs_Motion_Stagger::compute_delays` (the container also stores the helper settings) and, with
  *   `itemStaggerOnClose`, close delays in reverse order, `min((count - 1 - i) × step, cap)` as the old ladder did.
  *
+ * Where the swept drawer plays differently on purpose, a reported row says so (`Sgs_Motion_Legacy_Nav_Drawer_Notes`): a
+ * capped reverse-on-close menu (the old close ladder counted from the end before its cap, the menu's render mirrors
+ * the open delays) and a scaling panel whose transform origin moves (the model takes it from the anchor's `auto` shape).
+ *
  * Children whose delays are not the helper's positional values are marked `customised: values.delay`, so a re-run of
  * the drawer's helper skips them. A child with the ambient `sgs-drift` class never took the entrance and is skipped; a
  * child with no motion support is reported. Values with no destination are reported, never approximated
@@ -40,6 +44,7 @@ require_once dirname( __DIR__ ) . '/interface-sgs-motion-mapper.php';
 require_once dirname( __DIR__ ) . '/interface-sgs-motion-group-mapper.php';
 require_once dirname( __DIR__ ) . '/class-sgs-motion-legacy-nav-drawer.php';
 require_once dirname( __DIR__ ) . '/class-sgs-motion-legacy-nav-drawer-items.php';
+require_once dirname( __DIR__ ) . '/class-sgs-motion-legacy-nav-drawer-notes.php';
 require_once dirname( __DIR__, 2 ) . '/class-sgs-motion-stagger.php';
 
 /**
@@ -105,6 +110,10 @@ final class Sgs_Motion_Map_Nav_Drawer implements Sgs_Motion_Mapper_Interface, Sg
 	public function map( string $block_name, array $attrs ): array {
 		$panel    = Sgs_Motion_Legacy_Nav_Drawer::panel( $attrs );
 		$reported = $panel['reported'];
+		$origin   = Sgs_Motion_Legacy_Nav_Drawer_Notes::origin_row( $attrs, $panel['consumed'] );
+		if ( null !== $origin ) {
+			$reported[] = $origin;
+		}
 		foreach ( Sgs_Motion_Legacy_Nav_Drawer::ITEM_ATTRS as $key ) {
 			if ( array_key_exists( $key, $attrs ) ) {
 				$reported[] = Sgs_Motion_Legacy_Nav_Drawer::row( $key, $attrs[ $key ], 'left in place: the item delays need the drawer\'s child blocks (the group pass)', false );
@@ -161,6 +170,10 @@ final class Sgs_Motion_Map_Nav_Drawer implements Sgs_Motion_Mapper_Interface, Sg
 		$panel    = Sgs_Motion_Legacy_Nav_Drawer::panel( $attrs );
 		$items    = Sgs_Motion_Legacy_Nav_Drawer_Items::items( $attrs );
 		$reported = array_merge( $panel['reported'], $items['reported'] );
+		$origin   = Sgs_Motion_Legacy_Nav_Drawer_Notes::origin_row( $attrs, $panel['consumed'] );
+		if ( null !== $origin ) {
+			$reported[] = $origin;
+		}
 		$settings = null;
 		if ( null !== $items['layer'] ) {
 			$settings = self::helper_settings( $items );
@@ -249,6 +262,10 @@ final class Sgs_Motion_Map_Nav_Drawer implements Sgs_Motion_Mapper_Interface, Sg
 				$layer = Sgs_Motion_Legacy_Nav_Drawer_Items::item_layer( $items, 0, $items['reversed'] ? 0 : null, false );
 				unset( $layer['values']['delay'], $layer['close']['closeDelay'] );
 				$patches[ $here ] = self::patch( array( 'item' => $layer ), self::helper_settings( $items ) );
+				$close_row        = Sgs_Motion_Legacy_Nav_Drawer_Notes::menu_close_row( $items );
+				if ( null !== $close_row ) {
+					$reported[] = $close_row;
+				}
 				continue;
 			}
 			if ( $items['groups'] && self::CONTAINER === $name ) {

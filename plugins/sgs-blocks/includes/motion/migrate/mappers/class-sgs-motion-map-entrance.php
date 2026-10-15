@@ -8,8 +8,14 @@
  * 1. `map_groups()` (`Sgs_Motion_Group_Mapper_Interface`) runs over a post's whole block tree FIRST. For every animated
  *    block a step reaches it computes the delay the browser used to compute (`Sgs_Motion_Legacy_Stagger`, frozen in
  *    `tests/fixtures/motion/legacy-stagger-offset.json`), adds the block's own `sgsAnimationDelay` and stores the sum in
- *    that block's `entrance.base.values.delay` (a child with a delay of its own is marked `customised: values.delay`, so
- *    the helper's re-run skips it). A block carrying `sgsAnimationStaggerChildren` gets `motion.stagger`: `step` the old
+ *    that block's `entrance.base.values.delay`. The old stagger counted only a group's ANIMATED blocks, through any
+ *    wrappers; the editor's re-run (`stagger/use-stagger-rerun.js`) counts every DIRECT child of the container, animated
+ *    or not, so a stored delay and the helper's delay for that child's position can differ (Heading, Spacer, Card at
+ *    step 100: the Card stores 100, the helper says 200). Every direct child whose stored delay differs from the
+ *    helper's at a tier is marked `customised` on that tier (`values.delay`, `devices.tablet.delay`,
+ *    `devices.mobile.delay`), so a later insert or move keeps the old delay; a child the re-run does not write (one
+ *    nested inside a wrapper, or whose entrance sits on an item part) needs no mark. A block carrying
+ *    `sgsAnimationStaggerChildren` gets `motion.stagger`: `step` the old
  *    step, `offset` 0, `order` row-first, `perRow` false (the old stagger never restarted per row), `cap` the old
  *    maximum position times the step, and `apply` false (every child already carries its own entrance, so the helper has
  *    nothing to stamp). A `cap` above the schema's 20000ms ceiling is left out and reported; the stored delays are exact.
@@ -153,10 +159,72 @@ final class Sgs_Motion_Map_Entrance implements Sgs_Motion_Mapper_Interface, Sgs_
 			$patch['reported'] = array_merge( $patch['reported'], $helper['reported'] );
 			$patches[ $path ]  = $patch;
 		}
+		foreach ( $plan['owners'] as $path => $owner ) {
+			self::keep_positions( $patches, $index, $path );
+		}
 		foreach ( $patches as $path => $patch ) {
 			$patches[ $path ]['consumed'] = array_values( array_unique( $patch['consumed'] ) );
 		}
 		return $patches;
+	}
+
+	/**
+	 * Mark `customised`, per tier, every delay of an owner's direct children that the editor's re-run would rewrite.
+	 *
+	 * The re-run (`entrance/stagger-write.js::staggerUpdates`) gives direct child j the helper's delay for position j
+	 * among ALL the container's direct children, at each tier, and keeps a tier whose path is in the child's
+	 * `customised`; it writes only a child that holds a root entrance (the stored helper has `apply` false).
+	 *
+	 * @param array<string,array<string,mixed>>                          $patches Patches by block path (changed in place).
+	 * @param array<string,array{name:string,attrs:array<string,mixed>}> $index   The post's blocks by path.
+	 * @param string                                                     $owner   The owner's path.
+	 */
+	private static function keep_positions( array &$patches, array $index, string $owner ): void {
+		$settings = $patches[ $owner ]['motion']['stagger'] ?? null;
+		if ( ! is_array( $settings ) ) {
+			return;
+		}
+		$kids = array();
+		foreach ( array_keys( $index ) as $path ) {
+			$path = (string) $path;
+			if ( 0 === strpos( $path, $owner . '/' ) && false === strpos( substr( $path, strlen( $owner ) + 1 ), '/' ) ) {
+				$kids[ (int) substr( $path, strlen( $owner ) + 1 ) ] = $path;
+			}
+		}
+		ksort( $kids );
+		$kids  = array_values( $kids );
+		$tiers = array(
+			'desktop' => 'values.delay',
+			'tablet'  => 'devices.tablet.delay',
+			'mobile'  => 'devices.mobile.delay',
+		);
+		$owner_block = $index[ $owner ];
+		$helper      = array();
+		foreach ( array_keys( $tiers ) as $tier ) {
+			$helper[ $tier ] = Sgs_Motion_Stagger::compute_delays(
+				$settings + array(
+					'count'   => count( $kids ),
+					'columns' => Sgs_Motion_Stagger::columns_for_block( $owner_block['name'], $owner_block['attrs'], $tier ),
+				)
+			);
+		}
+		foreach ( $kids as $j => $path ) {
+			$base = $patches[ $path ]['motion']['elements']['root']['entrance']['base'] ?? null;
+			if ( ! is_array( $base ) ) {
+				continue;
+			}
+			$marks  = isset( $base['customised'] ) && is_array( $base['customised'] ) ? $base['customised'] : array();
+			$stored = (int) ( $base['values']['delay'] ?? 0 );
+			foreach ( $tiers as $tier => $key ) {
+				$stored = 'desktop' === $tier ? $stored : (int) ( $base['devices'][ $tier ]['delay'] ?? $stored );
+				if ( $helper[ $tier ][ $j ] !== $stored && ! in_array( $key, $marks, true ) ) {
+					$marks[] = $key;
+				}
+			}
+			if ( array() !== $marks ) {
+				$patches[ $path ]['motion']['elements']['root']['entrance']['base']['customised'] = $marks;
+			}
+		}
 	}
 
 	/**

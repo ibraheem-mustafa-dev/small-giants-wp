@@ -264,7 +264,27 @@ namespace SGS\Blocks\Motion {
 	ok( in_array( 'elements.root.hover.state.values.scale', $keys, true ), 'an out-of-range hover scale is flagged by its full key' );
 	$by_key = array_column( $flag['flags'], null, 'key' );
 	ok( 99999 === ( $by_key['stagger.offset']['before'] ?? null ) && array_key_exists( 'after', $by_key['stagger.offset'] ?? array() ) && null === $by_key['stagger.offset']['after'], 'the flag records the value as mapped and the value after sanitising' );
-	ok( false !== strpos( $flag['content'], '"step":120' ) && false === strpos( $flag['content'], '99999' ), 'the stored document holds only what the schema allows' );
+	$flag_doc = (string) json_encode( parse_blocks( $flag['content'] )[0]['attrs']['sgsMotion'] ?? array() );
+	ok( false !== strpos( $flag_doc, '"step":120' ) && false === strpos( $flag_doc, '99999' ), 'the stored document holds only what the schema allows' );
+
+	// 3c. An attribute is consumed only when the value that carried it survives sanitising. The fixture mapper says
+	// nothing about which consumed attribute feeds which path, so a mapper whose fragment lost any value to the
+	// sanitiser keeps every attribute it consumed on that block, each reported as not consumed. A value beaten by one
+	// already stored is the stored-wins rule (section 5, and the hover, marquee and tilt runners): consumed, flagged.
+	$attrs_of = static function ( array $diff ): array {
+		return parse_blocks( $diff['content'] )[0]['attrs'] ?? array();
+	};
+	$rows_of  = static function ( array $diff ): array {
+		return array_column( $diff['reported'], null, 'attr' );
+	};
+	$dropped = $runner->migrate_content( '<!-- wp:sgs/container {"sgsFixtureStep":120,"sgsFixtureOffset":99999} /-->' );
+	$kept    = $attrs_of( $dropped );
+	$rows    = $rows_of( $dropped );
+	ok( 99999 === ( $kept['sgsFixtureOffset'] ?? null ) && 120 === ( $kept['sgsFixtureStep'] ?? null ) && 120 === ( $kept['sgsMotion']['stagger']['step'] ?? null ), 'a value the sanitiser drops (offset 99999): the mapper\'s consumed attributes stay on the block; what survived is still stored', json_encode( $kept ) );
+	ok( false === ( $rows['sgsFixtureOffset']['consumed'] ?? null ) && false === ( $rows['sgsFixtureStep']['consumed'] ?? null ) && 'fixture' === ( $rows['sgsFixtureOffset']['family'] ?? '' ) && false !== strpos( (string) ( $rows['sgsFixtureOffset']['reason'] ?? '' ), 'stagger.offset' ), 'each kept attribute is reported as not consumed, naming the lost path', json_encode( $dropped['reported'] ) );
+	ok( array() === ( $dropped['changes'][0]['consumed'] ?? array( 'missing' ) ), 'the change row lists no consumed attribute', json_encode( $dropped['changes'] ) );
+	$whole = $runner->migrate_content( '<!-- wp:sgs/container {"sgsFixtureStep":120} /-->' );
+	ok( ! isset( $attrs_of( $whole )['sgsFixtureStep'] ) && array() === $whole['reported'], 'control: a fragment that survives whole consumes its attribute and reports nothing' );
 
 	// 4. A post with no old attributes yields no diff.
 	$clean = '<!-- wp:sgs/container {"align":"wide"} /-->' . "\n" . '<!-- wp:paragraph --><p>Hello</p><!-- /wp:paragraph -->';

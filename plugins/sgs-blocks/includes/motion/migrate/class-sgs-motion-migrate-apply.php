@@ -1,8 +1,15 @@
 <?php
 /**
  * Applies mapper results to one parsed block for the motion migration runner (Spec 38A §13.2, FR-38A-32): merges the
- * fragments into the block's `sgsMotion`, removes the consumed attributes, sets renamed attributes, sanitises the
- * result against the shipped schema and records the change, the flags and the mapper-reported rows in the run state.
+ * fragments into the block's `sgsMotion`, sanitises the result against the shipped schema, removes the consumed
+ * attributes, sets renamed attributes and records the change, the flags and the mapper-reported rows in the run state.
+ *
+ * An attribute is removed only when the value that carried it is stored or was deliberately overridden. A mapper names
+ * the attributes it consumed but not which fragment path each one fed, so when ANY value of a mapper's fragment that
+ * survived the merge is then dropped or changed by the sanitiser, every attribute that mapper consumed on the block
+ * stays, each with a `reported` row (`consumed` false) naming the lost paths. A value beaten in the merge by one already
+ * stored is not a loss: the stored value is the newer choice and renders, the clash is flagged, and the attribute is
+ * consumed.
  * The group pass and the per-block pass both come through here, so a result is applied the same way from either.
  *
  * @package SGS\Blocks
@@ -79,11 +86,9 @@ final class Sgs_Motion_Migrate_Apply {
 		$attrs     = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
 		$fragments = array_column( $results, 'motion' );
 		$families  = array_column( $results, 'family' );
-		$consumed  = array();
 		$set       = array();
 		foreach ( $results as $result ) {
-			$consumed = array_merge( $consumed, $result['consumed'] );
-			$set      = array_merge( $set, $result['attrs'] );
+			$set = array_merge( $set, $result['attrs'] );
 		}
 		$existing = isset( $attrs['sgsMotion'] ) && is_array( $attrs['sgsMotion'] ) ? $attrs['sgsMotion'] : array();
 		$merged   = $existing;
@@ -99,7 +104,8 @@ final class Sgs_Motion_Migrate_Apply {
 		foreach ( Sgs_Motion_Migrate_Merge::differences( $merged, $clean ) as $diff ) {
 			$run['flags'][] = self::flag( $path, $name, $diff['key'], $diff['before'], $diff['after'] );
 		}
-		foreach ( array_unique( $consumed ) as $attr ) {
+		$consumed = self::surviving_consumed( $results, $merged, $clean, $attrs, $path, $name, $run );
+		foreach ( $consumed as $attr ) {
 			unset( $attrs[ $attr ] );
 		}
 		foreach ( $set as $attr => $value ) {
@@ -115,8 +121,52 @@ final class Sgs_Motion_Migrate_Apply {
 			$attrs['sgsMotion'] = $clean;
 		}
 		$block['attrs'] = $attrs;
-		self::record_change( $run, $path, $name, $families, array_values( array_unique( $consumed ) ), $clean );
+		self::record_change( $run, $path, $name, $families, $consumed, $clean );
 		return true;
+	}
+
+	/**
+	 * The consumed attributes whose carrying values the sanitiser kept; the others are reported.
+	 *
+	 * @param array<int,array<string,mixed>> $results Results from `result()`.
+	 * @param array<string,mixed>            $merged  The merged `sgsMotion` before sanitising.
+	 * @param array<string,mixed>            $clean   The sanitised, merged `sgsMotion`.
+	 * @param array<string,mixed>            $attrs   The block's attributes (the reported value is read from here).
+	 * @param string                         $path    Block path.
+	 * @param string                         $name    Block name.
+	 * @param array<string,mixed>            $run     Run state (reported rows appended).
+	 * @return string[] Attributes to remove.
+	 */
+	private static function surviving_consumed( array $results, array $merged, array $clean, array $attrs, string $path, string $name, array &$run ): array {
+		$remove = array();
+		$keep   = array();
+		foreach ( $results as $result ) {
+			$lost = array();
+			if ( array() !== $result['motion'] ) {
+				$overridden = array_column( Sgs_Motion_Migrate_Merge::conflicts( $result['motion'], $merged, '' ), 'key' );
+				$lost       = array_values( array_diff( array_column( Sgs_Motion_Migrate_Merge::conflicts( $result['motion'], $clean, '' ), 'key' ), $overridden ) );
+			}
+			if ( array() === $lost ) {
+				$remove = array_merge( $remove, $result['consumed'] );
+				continue;
+			}
+			foreach ( $result['consumed'] as $attr ) {
+				if ( ! array_key_exists( $attr, $attrs ) || isset( $keep[ $attr ] ) ) {
+					continue;
+				}
+				$keep[ $attr ]     = true;
+				$run['reported'][] = array(
+					'path'     => $path,
+					'block'    => $name,
+					'family'   => $result['family'],
+					'attr'     => $attr,
+					'value'    => $attrs[ $attr ],
+					'reason'   => 'left in place: the mapped value at ' . implode( ', ', $lost ) . ' was dropped or changed by the schema, and the mapper does not say which of its consumed attributes fed it',
+					'consumed' => false,
+				);
+			}
+		}
+		return array_values( array_diff( array_unique( $remove ), array_keys( $keep ) ) );
 	}
 
 	/**

@@ -11,8 +11,10 @@
  * test `tests/php/run-motion-map-entrance-standalone.php` compares this class with every row of it.
  *
  * The delay arithmetic goes through `Sgs_Motion_Stagger::compute_delays` (a single column, offset 0, `cap` =
- * `max * step`), the same function the editor helper and the renderer use, so the stored values and a later helper
- * re-run agree.
+ * `max * step`), the same function the editor helper and the renderer use. The POSITION is not the helper's: this
+ * class counts a group's animated blocks through any wrappers, while the helper's re-run counts every direct child,
+ * so a stored delay can differ from the re-run's; the entrance mapper marks each such tier `customised`
+ * (`Sgs_Motion_Map_Entrance::keep_positions`) so the re-run keeps it.
  *
  * Position rules, as the browser applied them:
  * - a block with its OWN step is positioned among "peers": walking up at most four ancestor levels, the first level

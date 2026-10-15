@@ -249,6 +249,14 @@ namespace SGS\Blocks\Motion {
 	ok( array() === $zero['motion'] && array( 'iconRotation' ) === $zero['consumed'], 'iconRotation 0 (cross-fade) has no layer and is consumed' );
 	$over = $mapper->map( 'sgs/accordion', array( 'iconRotation' => 720 ) );
 	ok( 360 === ( base_of( $over, 'turning-icon' )['values']['to']['rotate'] ?? null ) && false !== strpos( reasons( $over ), 'clamped' ), 'an angle over 360 is stored as rendered (360) and reported', reasons( $over ) );
+	// 3b. The old turn was a rotate transition on [open] (back smoothly on close; an item open at first paint shows it
+	// turned with no animation). The `state` entrance plays on add only, snaps back on clear and plays on load for an
+	// item open at start-up, so every mapped accordion reports both differences.
+	foreach ( array( 'iconRotation 45' => $turn, 'iconRotation 720 (clamped)' => $over ) as $label => $mapped ) {
+		$why = reasons( $mapped );
+		ok( false !== strpos( $why, 'snaps back' ) && false !== strpos( $why, 'open at load' ) && false !== strpos( $why, 'iconRotation' ), "$label: the close snap and the play-at-load differences are reported", $why );
+	}
+	ok( false === strpos( reasons( $zero ), 'snaps back' ), 'control: iconRotation 0 maps no layer and reports no turn difference' );
 	$word = $mapper->map( 'sgs/accordion', array( 'iconRotation' => 'quarter' ) );
 	ok( array() === $word['motion'] && array() === $word['consumed'] && false !== strpos( reasons( $word ), 'not a number' ), 'a non-number is reported and kept', reasons( $word ) );
 

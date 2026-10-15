@@ -19,7 +19,10 @@
  *   three attributes are consumed and reported as inert, with no layer.
  * - `sgs/accordion` `iconRotation` (degrees, 0 to 360) to a layer on the `turning-icon` part: trigger `state`, state
  *   `expanded`, a `to` rotation of that angle over the medium duration and default easing tokens the old transition read.
- *   `0` (cross-fade, the default) has no layer and is consumed.
+ *   `0` (cross-fade, the default) has no layer and is consumed. Two differences are reported on every mapped accordion:
+ *   the old turn was a `rotate` transition on `[open]`, so it turned back smoothly on close and an item open at first
+ *   paint showed it turned with no animation; the `state` entrance plays only when `expanded` is added, snaps back when
+ *   it is cleared, and plays at load for an item open at start-up.
  *
  * A value with no exact destination is reported and its attributes stay, so the block keeps its old behaviour.
  *
@@ -222,6 +225,7 @@ final class Sgs_Motion_Map_State implements Sgs_Motion_Mapper_Interface {
 				'easing'   => 'token:easing.default',
 			),
 		);
+		$reported[] = self::row( 'iconRotation', $attrs['iconRotation'], 'changed: the old turn was a rotate transition on [open]; the expanded entrance plays when the state is added only, so on close the icon snaps back instead of turning back, and an item open at load now plays the turn at load where it used to show it already turned (until the state model gains close values)', true );
 		return self::result( self::fragment( 'turning-icon', $layer ), array( 'iconRotation' ), $reported );
 	}
 

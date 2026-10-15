@@ -192,6 +192,44 @@ namespace SGS\Blocks\Motion {
 		return array( 'content' => $result['content'], 'patches' => $patches, 'flags' => $result['flags'], 'changed' => array() !== $patches || $result['changed'] );
 	}
 
+	/**
+	 * The writes the editor's stagger re-run would make to an owner's direct children, modelled on
+	 * stagger-write.js::staggerUpdates and ::writeSeries for the row-first, no-restart settings the mapper stores: the
+	 * helper's delay for direct child j is min( offset + j * step, cap ) at every tier; a tier listed in the child's
+	 * `customised` keeps its stored value, any other tier whose stored (inherited) delay differs is rewritten.
+	 *
+	 * @return array<string,array<string,int>> Rewritten tiers by child path: tier => the helper's delay.
+	 */
+	function rerun_rewrites( array $patches, array $tree, string $owner ): array {
+		$settings = $patches[ $owner ]['motion']['stagger'] ?? null;
+		if ( null === $settings ) {
+			return array();
+		}
+		$node = array( 'innerBlocks' => $tree );
+		foreach ( explode( '/', $owner ) as $i ) {
+			$node = $node['innerBlocks'][ (int) $i ];
+		}
+		$kids  = array_keys( $node['innerBlocks'] );
+		$paths = array( 'desktop' => 'values.delay', 'tablet' => 'devices.tablet.delay', 'mobile' => 'devices.mobile.delay' );
+		$out   = array();
+		foreach ( $kids as $j => $i ) {
+			$path = $owner . '/' . $i;
+			$base = isset( $patches[ $path ] ) ? ( $patches[ $path ]['motion']['elements']['root']['entrance']['base'] ?? null ) : null;
+			if ( null === $base ) {
+				continue;
+			}
+			$helper = min( (int) ( $settings['offset'] ?? 0 ) + $j * (int) $settings['step'], $settings['cap'] ?? PHP_INT_MAX );
+			$stored = (int) ( $base['values']['delay'] ?? 0 );
+			foreach ( $paths as $tier => $key ) {
+				$stored = 'desktop' === $tier ? $stored : (int) ( $base['devices'][ $tier ]['delay'] ?? $stored );
+				if ( ! in_array( $key, $base['customised'] ?? array(), true ) && $helper !== $stored ) {
+					$out[ $path ][ $tier ] = $helper;
+				}
+			}
+		}
+		return $out;
+	}
+
 	/** Every patch fragment must survive the shipped schema untouched. */
 	function patches_valid( array $patches ): bool {
 		foreach ( $patches as $patch ) {
@@ -344,10 +382,23 @@ namespace SGS\Blocks\Motion {
 	// 2c. Own delay adds to the stagger and is marked customised; a cap above the schema ceiling is reported.
 	$patches = $mapper->map_groups( array( blk( 'sgs/container', array( 'sgsAnimationStaggerChildren' => '70' ), array( blk( 'a/b', array( 'sgsAnimation' => 'fade-in' ) ), blk( 'a/b', array( 'sgsAnimation' => 'fade-in' ) ), blk( 'a/b', array( 'sgsAnimation' => 'fade-in', 'sgsAnimationDelay' => '200' ) ) ) ) ) );
 	$third   = base_of( $patches['0/2']['motion'] );
-	ok( 340 === ( $third['values']['delay'] ?? null ) && array( 'values.delay' ) === ( $third['customised'] ?? null ), 'an own delay of 200 plus position 2 x 70 stores 340 and is marked customised' );
+	ok( 340 === ( $third['values']['delay'] ?? null ) && array( 'values.delay', 'devices.tablet.delay', 'devices.mobile.delay' ) === ( $third['customised'] ?? null ), 'an own delay of 200 plus position 2 x 70 stores 340 and is marked customised on every tier' );
 	ok( ! isset( base_of( $patches['0/1']['motion'] )['customised'] ), 'a child with no own delay is not marked customised' );
 	$patches = $mapper->map_groups( array( blk( 'sgs/container', array( 'sgsAnimationStaggerChildren' => '1000', 'sgsAnimationStaggerMax' => '50' ), array( blk( 'a/b', array( 'sgsAnimation' => 'fade-in' ) ) ) ) ) );
 	ok( ! isset( $patches['0']['motion']['stagger']['cap'] ) && 1000 === $patches['0']['motion']['stagger']['step'] && 'sgsAnimationStaggerMax' === ( $patches['0']['reported'][0]['attr'] ?? '' ), 'a cap above 20000ms is left out of the helper and reported (step 1000, max 50)' );
+
+	// 2d. The editor re-run (use-stagger-rerun.js -> stagger-write.js::staggerUpdates) counts EVERY direct child, while
+	// the old stagger counted only the animated ones; a child whose stored delay differs from its direct-child
+	// position's helper delay must be marked customised on every tier the re-run would otherwise rewrite.
+	$tree    = array( blk( 'sgs/container', array( 'sgsAnimationStaggerChildren' => '100' ), array( blk( 'sgs/heading', array( 'sgsAnimation' => 'fade-in' ) ), blk( 'sgs/spacer' ), blk( 'sgs/card', array( 'sgsAnimation' => 'fade-in' ) ) ) ) );
+	$patches = $mapper->map_groups( $tree );
+	$card    = base_of( $patches['0/2']['motion'] );
+	$redone  = rerun_rewrites( $patches, $tree, '0' );
+	ok( 100 === ( $card['values']['delay'] ?? null ) && array() === $redone, 'Heading, Spacer (not animated), Card at step 100: Card stores the old 100ms and a re-run rewrites nothing', json_encode( array( 'card' => $card, 'rewrites' => $redone ) ) );
+	ok( ! isset( base_of( $patches['0/0']['motion'] )['customised'] ) && patches_valid( $patches ), 'the Heading at position 0 (0ms either way) is not marked, and every fragment is schema-valid' );
+	$patches = $mapper->map_groups( array( blk( 'sgs/container', array( 'sgsAnimationStaggerChildren' => '70' ), array( blk( 'a/b', array( 'sgsAnimation' => 'fade-in' ) ), blk( 'a/b', array( 'sgsAnimation' => 'fade-in' ) ), blk( 'a/b', array( 'sgsAnimation' => 'fade-in', 'sgsAnimationDelay' => '200' ) ) ) ) ) );
+	$redone  = rerun_rewrites( $patches, array( blk( 'sgs/container', array(), array( blk( 'a/b' ), blk( 'a/b' ), blk( 'a/b' ) ) ) ), '0' );
+	ok( array() === $redone, 'an own delay (340ms against a helper 140ms) survives the re-run on Tablet and Mobile too', json_encode( $redone ) );
 
 	// 3. The attribute families, one by one (each through map(): the group pass has run).
 	$map = static fn( array $attrs, string $block = 'sgs/hero' ): array => $mapper->map( $block, $attrs );
