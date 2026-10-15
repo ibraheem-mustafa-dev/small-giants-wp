@@ -67,14 +67,15 @@ describe( 'split reveal and scramble on one part (§5.2)', () => {
 		expect( ruleText( 'text-rewrite-hover' ) ).toBe( TEXT );
 	} );
 
-	it( 'adds split reveal with draw, and scramble on a different part', () => {
+	it( 'adds split reveal, draw on another part, and scramble on a third', () => {
+		// A part is text or SVG, so draw sits on its own part (two scroll-driven text effects share scroll settings).
 		let motion = ok(
 			addLayer( undefined, 'title', 'entrance.text', {
 				effect: 'split-reveal',
 			} )
 		);
 		motion = ok(
-			addLayer( motion, 'title', 'entrance.text', { effect: 'draw' } )
+			addLayer( motion, 'icon', 'entrance.text', { effect: 'draw' } )
 		);
 		ok(
 			addLayer( motion, 'subtitle', 'entrance.text', {
