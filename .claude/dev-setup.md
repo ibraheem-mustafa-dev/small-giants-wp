@@ -148,6 +148,7 @@ Three 0-byte `sgs-framework.db` stubs exist on disk (repo root, `plugins/sgs-blo
 
 **`fx_effects`**
 
+- Rows: one per effect, declared in `plugins/sgs-blocks/scripts/seed_motion_fx_data.py::FX_EFFECTS` and written by `seed-motion-fx-registry.py`, the table's only writer; a reseed deletes any row that list no longer declares (a renamed or removed effect).
 - `tier`: The Spec 38 four-tier motion doctrine: V vanilla / G GSAP / H helper / W WebGL substrate.
 - `owns_scroll_transform`: Marks effects that claim the scroll transform — the mutual-exclusion axis for combining effects on one element.
 - `requires`: What an effect needs from a block (text/svg/svg-subtree/section/item-set/track/surface/image/none). LIVE — generate-fx-qualifying-blocks.py matches it against each block's provision. The value none is real, meaning any block qualifies — NOT a null-substitute. The svg vs svg-subtree split exists because under-specifying here once offered MorphSVG on blocks carrying only a background SVG.

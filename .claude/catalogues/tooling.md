@@ -19,8 +19,8 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 384 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 621 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 389 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 641 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -28,7 +28,7 @@ Worktrees under `.claude/worktrees/` mirror this tree — never cite them as a s
 
 ### The prebuild gate chain — what actually blocks a build
 
-Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution order. ⛔ **These are TWO tiers, not one chain.** The five generators and the `fast` tier run on every build. The `full` tier — `check-dead-api-calls`, `check-render-undefined-vars`, `check-render-undefined-vars-selftest`, `inspector-scan-run`, `audit-block-file-consistency`, `wiring-fingerprint-tests`, `wiring-fingerprint-mutation-proof`, `survey-spacing-defaults`, `survey-spacing-defaults-selftest` — was measured at 76.1% of the old chain's time and now runs PRE-DEPLOY only, via `build-deploy.py`'s `step_gate_full()`. Every gate that blocked before still blocks; only the timing changed. Run `npm run gate:list` for each gate's tier and measured cost, and `npm run gate:wired` to prove the `full` tier is still reachable. This chain is what `npm run build` runs first, and what every `/handoff` and deploy relies on. Each entry's purpose is quoted from the script's own header.
+Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution order. ⛔ **These are TWO tiers, not one chain.** The five generators and the `fast` tier run on every build. The `full` tier — `check-dead-api-calls`, `check-render-undefined-vars`, `check-render-undefined-vars-selftest`, `inspector-scan-run`, `audit-block-file-consistency`, `wiring-fingerprint-tests`, `wiring-fingerprint-mutation-proof`, `survey-spacing-defaults`, `survey-spacing-defaults-selftest`, `run-motion-gates`, `migrate-core-blocks-tests` — was measured at 76.1% of the old chain's time and now runs PRE-DEPLOY only, via `build-deploy.py`'s `step_gate_full()`. Every gate that blocked before still blocks; only the timing changed. Run `npm run gate:list` for each gate's tier and measured cost, and `npm run gate:wired` to prove the `full` tier is still reachable. This chain is what `npm run build` runs first, and what every `/handoff` and deploy relies on. Each entry's purpose is quoted from the script's own header.
 
 | # | Script | Purpose (from its own header) |
 |---|---|---|
@@ -171,14 +171,17 @@ Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution
 | 137 | `check-snapshot-palette-roster.py` | : every client snapshot carries the whole framework palette roster |
 | 138 | `test-custom-css-scope-js.mjs` | The editor's custom-CSS scoper against the SAME table the PHP scoper is tested against |
 | 139 | `migrate-section-gutter-tokens.py` | Per-tier section padding and gutter tokens (Spec 32 FR-32-15), added to the framework theme.json and every |
-| 140 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 141 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 142 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 143 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
-| 144 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
-| 145 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
+| 140 | `check-link-source-adoption.py` | every shared link field offers the link source choice. |
+| 141 | `check-motion-pause-control.py` | content that moves on its own carries the shared pause control. |
+| 142 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 143 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 144 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 145 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 146 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
+| 147 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
+| 148 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
 
-**145 gating scripts.** Regenerate this whole section with:
+**148 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -186,7 +189,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (145 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 145 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (148 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 148 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -374,8 +377,10 @@ Every field below is extracted from the script's own executable code (regex over
 - Non-zero exit sites found: SystemExit(non-zero on failure)
 
 **`plugins/sgs-blocks/scripts/check-fx-registration.py`** (build)
-- Reads: `blank.registry_path`, `blank.webpack_path`, `target_path`
+- Reads: `schema_path`, `sqlite3:f"file:{db.as_posix(`, `target_path`
 - Writes: **read-only** — no write call site found in source
+- DB tables (sgs-framework.db): fx_effects
+- Env vars read: `SGS_FRAMEWORK_DB`
 - Non-zero exit sites found: 1
 
 **`plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js`** (build)
@@ -418,6 +423,14 @@ Every field below is extracted from the script's own executable code (regex over
 - CLI flags read: `--check`, `--self-test`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`plugins/sgs-blocks/scripts/check-link-source-adoption.py`** (build)
+- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- DB tables (sgs-framework.db): plugins
+- CLI flags read: `--check`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/check-media-atom-purity.js`** (build)
 - Reads: `loader`
 - Writes: **read-only** — no write call site found in source
@@ -432,6 +445,14 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: exit(1)
+
+**`plugins/sgs-blocks/scripts/check-motion-pause-control.py`** (build)
+- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
+- Reads: `meta_path`, `style_path`
+- Writes: **read-only** — no write call site found in source
+- DB tables (sgs-framework.db): plugins
+- CLI flags read: `--check`, `--fix`, `--json`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/check-nested-global-settings.py`** (build)
 - Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]; `REPO` = PLUGIN.parents[1]; `ROOTS` = [PLUGIN / "includes", PLUGIN / "src", REPO / "theme" / "sgs-theme"]
@@ -888,6 +909,12 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`plugins/sgs-blocks/scripts/run-motion-gates.py`** (build)
+- Path constants: `SCRIPTS` = Path(__file__).resolve().parent; `REPO` = SCRIPTS.parents[2]
+- Reads: `script`
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/scrim/check-scrim.py`** (build)
 - Path constants: `HERE` = Path(__file__).resolve().parent           # plugins/sgs-blocks/scripts/scrim/; `PLUGIN` = HERE.parents[1]                          # plugins/sgs-blocks/
 - Reads: `inc`, `style`
@@ -1054,7 +1081,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 568 scripts
+#### `plugins/sgs-blocks/scripts/` — 594 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1118,7 +1145,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-exit-guards.py` | manifest | Fail when a PHP file's direct-access guard names a constant WordPress never defines. |
 | `check-extension-roster.js` | manifest+script-call | Fails when src/blocks/extensions/extension-roster.json drifts from the code it describes. The roster feeds… |
 | `check-fx-list-drift.py` | manifest+npm+script-call | the three-list (plus field-type triad) fx drift gate. |
-| `check-fx-registration.py` | manifest | every shipped fx module is registered everywhere it must be. |
+| `check-fx-registration.py` | manifest+script-call | every shipped fx module is registered everywhere it must be. |
 | `check-hardcoded-render-defaults.js` | manifest+npm+script-call | STRUCTURAL GUARD (Gate B) — stops the "hardcoded render default" class of bug (F3) from regressing. An F3 violation occurs when a block declares an… |
 | `check-hover-state-classification.py` | manifest+npm+script-call | Gate: a `*Hover` attribute that carries a real CSS property MUST be classified |
 | `check-id-scoped-emits.js` | manifest+npm+script-call | STRUCTURAL GUARD — ID-scoped CSS selector emissions. |
@@ -1127,13 +1154,19 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-interaction-only-css.py` | manifest+script-call | visual-diff-gate helper. |
 | `check-jsonld-flags.py` | manifest+npm | guard the ONE json_encode flag combination that is unsafe. |
 | `check-ksort-before-hash.py` | manifest+npm+script-call | STOP-NO-KSORT gate — never reorder $attributes before it is hashed into a uid. |
+| `check-link-source-adoption.py` | manifest | every shared link field offers the link source choice. |
 | `check-markup-neutral.py` | manifest+script-call | visual-diff-gate helper. |
 | `check-media-atom-purity.js` | manifest+npm+script-call | Gate: a media atom's LOGIC module must be importable by plain Node. |
 | `check-media-breakpoints.js` | manifest+npm | Gate: the media-element stylesheet's breakpoints must match the ONE source. |
 | `check-media-disclosure-coverage.js` | manifest | Gate: every media atom's `disclosure()` is exercised against REAL fixtures derived from its own `requires` map in registry.js — not a static scan. |
 | `check-motion-atoms.py` | — | one control kit, one sanitiser per field type (Spec 38A FR-38A-54, FR-38A-56). |
 | `check-motion-bundle-budget.py` | manifest+npm+script-call | Spec 38 (Motion System) Tier G bundle-size budget gate. |
+| `check-motion-db-rows.py` | manifest+script-call | every motion field and every declared part has a row in `motion_field_rows` (Spec 38A FR-38A-3). |
+| `check-motion-paint-slots.py` | — | every paint slot has one owner or a refusal (Spec 38A FR-38A-49, section 10). |
+| `check-motion-part-selectors.py` | — | every declared motion part reaches an element (Spec 38A section 6.2, FR-38A-16). |
+| `check-motion-pause-control.py` | manifest+npm | content that moves on its own carries the shared pause control. |
 | `check-motion-schema.py` | script-call | the sgsMotion schema is well formed and complete (Spec 38A FR-38A-2, FR-38A-55). |
+| `check-motion-style-writes.py` | — | front-end motion scripts write custom properties only (Spec 38A FR-38A-47). |
 | `check-motion-token-consumers.py` | script-call | motion tokens and their readers agree (Spec 38A section 7, FR-38A-14, FR-38A-15). |
 | `check-nested-global-settings.py` | manifest | reject nested-path wp_get_global_settings() reads. |
 | `check-no-core-blocks.py` | manifest+script-call | Prebuild gate: NO banned core blocks in theme pattern/part/template FILES. |
@@ -1216,6 +1249,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `dbschema/sandbox.py` | manifest+script-call | Run DB-touching scripts against a throwaway database, never the live one. |
 | `dbschema/seed-motion-shape-signatures.py` | manifest+script-call | Seed ``motion_shape_signatures`` — Tier V CSS-shape lookup table. |
 | `dbschema/seed_history.py` | manifest+script-call | Record the last N seeding runs' row counts and REPORT what moved unexpectedly. |
+| `dbschema/seed_motion_fields.py` | script-call | - seeds `motion_targets` and `motion_fields` (Spec 38A FR-38A-3, section 6.4). |
 | `dbschema/seed_reference_data.py` | manifest+script-call | - idempotent seeders for the framework DB's reference tables. |
 | `dbschema/wp_reference_archive.py` | manifest+script-call | Preserve the ORPHANED WordPress reference corpus (`hooks` + `docs`). |
 | `dead-api-checker/tokenize-calls.php` | manifest+script-call | Tokenize-calls.php |
@@ -1258,6 +1292,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `fanout-shadow-lift-attr.py` | manifest | adds the `shadowLiftOnHover` block-level switch (boolean, |
 | `fanout-surface-ground-attrs.py` | manifest+script-call | U-1 commit 4e fan-out of `surfaceBlur` / |
 | `fix-render-tier-object-spacing.py` | manifest+script-call | One-off fix (2026-09-06): render.php CSS-emission side of the tier-object |
+| `fx_registration_core.py` | script-call | the parsing core of check-fx-registration.py: the tree under test (`Tree`), the |
 | `generate-attr-role-map.py` | manifest+script-call | Spec 35 orphan-triage support. Dumps `block_attributes.role` for every |
 | `generate-block-reference.py` | manifest+script-call | SGS Blocks Reference Generator |
 | `generate-extension-attributes.js` | commit-gate+manifest+npm+script-call | Single source of truth for the cross-block `sgs*` editor-extension attributes. |
@@ -1268,6 +1303,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `generate-markup-examples.py` | manifest+script-call | Generate markup examples for all 69 SGS blocks with block.json files. |
 | `generate-media-attributes.mjs` | manifest+npm+script-call | Single source of truth for the media attribute TYPE map, JS -> PHP. |
 | `generate-media-stylesheet.mjs` | manifest+npm+script-call | Concatenate the media-atom CSS partials into the one enqueued stylesheet. |
+| `generate-motion-editor-defs.py` | script-call | - writes src/components/motion/generated-motion-defs.json. |
 | `generate-motion-presets-json.py` | script-call | - writes src/components/motion/generated-motion-presets.json. |
 | `generate-svg-allowlist.js` | manifest+npm+script-call | Single source of truth for the SVG sanitiser allowlist, PHP -> JS. |
 | `generate-tooling-catalogue.py` | manifest+script-call | DERIVE the tooling catalogue in .claude/catalogues/tooling.md. |
@@ -1331,6 +1367,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `inspector-scan/rules/43-colour-only-state-indicator.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
 | `inspector-scan/rules/44-help-text-not-described.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
 | `inspector-scan/rules/45-typography-full-replacement.js` | manifest | GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "Block Customisation Standard" item 2 (Bean R-22-13, 2026-06-11) +… |
+| `inspector-scan/rules/46-inspector-fill-crosses-tab.js` | manifest | An inspector fill nested inside a fill that belongs to a DIFFERENT inspector tab never renders. |
 | `inspector-scan/run.js` | manifest+npm+script-call+skill+test-import | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… ⚠ **header disputes this — it IS wired** |
 | `lib/block-source-files.js` | manifest+script-call | Block source-file resolver shared by the gate scripts. |
 | `lib/block_source_files.py` | manifest+script-call | Block source-file resolver shared by the gate scripts. |
@@ -1364,12 +1401,12 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrate-box-control-presets.py` | manifest+script-call | - roll the C16 spacing-preset dropdown out from its |
 | `migrate-box-longhands.py` | manifest+npm+script-call | CR6: move padding, margin and corner-radius boxes off the shorthands that zero-fill unset sides. |
 | `migrate-colour-picker-to-panel.py` | manifest | - migrate raw <DesignTokenPicker> colour mounts in a |
-| `migrate-core-blocks/block_parser.py` | manifest+script-call | Span-preserving WordPress block-comment parser. |
+| `migrate-core-blocks/block_parser.py` | manifest+script-call+test-import | Span-preserving WordPress block-comment parser. |
 | `migrate-core-blocks/build_register.py` | manifest+script-call | Track C register builder — read-only survey of replaceable core blocks. |
 | `migrate-core-blocks/capture-page.js` | manifest | Generic Track C first-paint capture: screenshots a URL at 375/768/1440 into reports/visual-diff/ and flags horizontal overflow. |
 | `migrate-core-blocks/contract.py` | manifest+script-call | Shared contract between the migration driver and pairing modules. |
-| `migrate-core-blocks/driver.py` | manifest+script-call | Track C migration driver — swaps core blocks for their SGS replacements. |
-| `migrate-core-blocks/lint-page.py` | manifest+script-call | Lint (and optionally fix) banned core blocks in a PAGE's block markup. |
+| `migrate-core-blocks/driver.py` | manifest+script-call+test-import | Track C migration driver — swaps core blocks for their SGS replacements. |
+| `migrate-core-blocks/lint-page.py` | manifest+script-call+test-import | Lint (and optionally fix) banned core blocks in a PAGE's block markup. |
 | `migrate-core-blocks/migrate-details-to-accordion.py` | manifest | core/details -> sgs/accordion + sgs/accordion-item (N sibling details -> 1 accordion). |
 | `migrate-core-blocks/pairings/__init__.py` | manifest+script-call |  |
 | `migrate-core-blocks/pairings/button_pairing.py` | manifest+script-call+script-call(dynamic) | core/button -> sgs/button transformer (Track C pairing module). |
@@ -1381,6 +1418,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrate-core-blocks/pairings/heading_pairing.py` | manifest+script-call(dynamic) | core/heading → sgs/heading transformer (Track C pairing module). |
 | `migrate-core-blocks/pairings/image_pairing.py` | manifest+script-call(dynamic) | core/image → sgs/media transformer (Track C pairing module). |
 | `migrate-core-blocks/pairings/latest_posts_pairing.py` | manifest+script-call+script-call(dynamic) | core/latest-posts → sgs/post-grid transformer (Track C pairing module). |
+| `migrate-core-blocks/pairings/list_item_pairing.py` | script-call+script-call(dynamic) | core/list-item -> sgs/icon-list: REFUSE every standalone instance. |
+| `migrate-core-blocks/pairings/list_pairing.py` | manifest+script-call+script-call(dynamic)+test-import | core/list (with its core/list-item children) -> sgs/icon-list (Track C pairing module). |
 | `migrate-core-blocks/pairings/paragraph_pairing.py` | manifest+script-call(dynamic) | core/paragraph → sgs/text transformer (Track C pairing module). |
 | `migrate-core-blocks/pairings/post_template_pairing.py` | manifest+script-call(dynamic) | core/post-template -> sgs/post-grid — REFUSE-ALL (no standalone target exists). |
 | `migrate-core-blocks/pairings/query_pairing.py` | manifest+script-call+script-call(dynamic) | core/query -> sgs/post-grid — REFUSE-ALL (design-decision gap, not a bug). |
@@ -1403,7 +1442,9 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrate-core-blocks/probe-text-equivalence.js` | manifest | Content-keyed typography equivalence probe (rule 4a). |
 | `migrate-core-blocks/publish-pattern-pair.py` | manifest | Publish a BEFORE/AFTER canary page pair for a migrated pattern file. |
 | `migrate-core-blocks/upgrade-button-presets.py` | manifest | One-shot: upgrade already-emitted sgs/button instances to use PRESETS. |
+| `migrate-easing-option-lists.js` | — | (Spec 38A FR-38A-54, unit M1.9). |
 | `migrate-length-sanitiser.py` | manifest+script-call | Move every LENGTH-valued call site from the crude sanitiser to the hardened one. |
+| `migrate-motion/migrate_motion.py` | — | Detector for the old motion attributes (Spec 38A section 13, FR-38A-31). |
 | `migrate-motion-helpers.py` | — | retire `sgs_motion_valid_cubic_bezier` and `sgs_motion_ms` (Spec 38A FR-38A-55). |
 | `migrate-motion-support.py` | — | Declare `supports.sgs.motion: true` in every block.json that can carry the motion model (Spec 38A FR-38A-1). |
 | `migrate-palette-roster-slugs.py` | script-call | Palette roster migration (Spec 32 FR-32-14): five palette slugs for heading text, link, link hover |
@@ -1432,6 +1473,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrations/2026-09-14-nav-menu-split-classify-sentinels.php` | script-call | Test-value generator for `2026-09-14-nav-menu-split-classify-harness.php`. |
 | `migrations/2026-09-14-nav-menu-split-classify.py` | manifest+script-call | deterministic bar / drawer / both verdict for every |
 | `migrations/2026-09-14-nav-menu-split.py` | manifest | census + codemod for splitting `sgs/nav-menu` into |
+| `migrations/2026-10-13-motion-fields-tables.py` | manifest+script-call | - Spec 38A FR-38A-3 (DB clause), decision 3 option B. |
 | `migrations/2026-10-13-motion-presets-and-fx-columns.py` | manifest+script-call | - Spec 38A FR-38A-6 (DB clauses). |
 | `motion-qa/probe-carousel-loop.mjs` | manifest | Live probe — looping carousels (Spec 38, Bean's independent-control ruling). |
 | `motion-qa/probe-cursor-field.mjs` | manifest+script-call | Live probe — cursor-reactive field (Spec 38 §3.3, FR-38-25). |
@@ -1440,6 +1482,10 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `motion-qa/probe-horizontal-panel-focus.mjs` | manifest | Horizontal-panel keyboard-focus probe — Spec 38 FR-38-8 follow-up |
 | `motion-qa/probe-horizontal-panel.js` | manifest+script-call | Horizontal-panel travel probe — Spec 38 FR-38-8. |
 | `motion-qa/probe-morph-geometry.mjs` | manifest+npm+script-call | D452 close-out (2026-08-21) — does `fx-morph` actually morph on the live canary? |
+| `motion-qa/probe-motion-model-entrance.mjs` | script-call | Entrance, reveal, keyframes, scroll-driver and asset-loading checks for probe-motion-model.mjs (Spec 38A unit M2.9). |
+| `motion-qa/probe-motion-model-hover.mjs` | script-call | Hover, focus, tilt, reduced-motion and inline-style checks for probe-motion-model.mjs (Spec 38A unit M2.9). |
+| `motion-qa/probe-motion-model-lib.mjs` | script-call | Shared helpers for probe-motion-model.mjs (Spec 38A unit M2.9): argument parsing, site lookup, fixture schema validation, the result reporter and the… |
+| `motion-qa/probe-motion-model.mjs` | script-call | Spec 38A unit M2.9: live acceptance of the motion model on a deployed site. |
 | `motion-qa/probe-motion-path-repeat.mjs` | manifest+npm+script-call | D451 close-out (2026-08-21) — does motion-path re-animate on a SECOND downward pass? |
 | `motion-qa/probe-motion-support.mjs` | — | Editor probe: the motion support registers `sgsMotion` for blocks that declare it and for no others (Spec 38A FR-38A-1). |
 | `motion-qa/probe-reduced-motion.mjs` | manifest+script-call | Horizontal panel — reduced-motion arm probe. Spec 38 FR-38-8 / §10. |
@@ -1486,6 +1532,12 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `pattern-classify.py` | manifest+script-call+skill | SGS Pattern Classifier |
 | `pattern-fingerprint.py` | manifest+script-call+skill | Compute a deterministic fingerprint for an HTML pattern + CSS bundle. |
 | `pattern-register.py` | manifest+script-call+skill | Pattern registration orchestrator — Step 6 of /sgs-clone pipeline. 2026-05-06. |
+| `perf/lib/args.mjs` | manifest+script-call+skill+test-import | Command-line flags and the credentials file for the editor typing harness. |
+| `perf/lib/config.mjs` | manifest+script-call+skill | Paths and constants shared by the editor typing harness (measure-editor-typing.mjs) and its lib/ modules. |
+| `perf/lib/editor-session.mjs` | script-call | Browser work for the editor typing harness: opening the editor, one timed typing run, and the reads that prove the page was not saved and which… |
+| `perf/lib/output.mjs` | manifest+script-call+skill | Console output for the editor typing harness: the run summary and the comparison against a baseline file. |
+| `perf/lib/recorder.mjs` | script-call | /* eslint-disable no-undef */ |
+| `perf/lib/stats.mjs` | manifest+script-call | Statistics for the editor typing harness: median, percentile, rounding and the per-run summary. |
 | `perf/measure-editor-typing.mjs` | script-call | FR-38A-29 — editor typing performance: p95 keystroke-to-paint latency and JS heap after a minute of typing on a 200-block page in the real block… |
 | `perf/measure-frame-cost.mjs` | manifest | Q6 (generative-background engine) — what does a frame of the WebGL folded-ribbon layer actually cost? |
 | `placement-reach.py` | manifest+npm+script-call | how far does THE PLACEMENT RULE actually reach? |
@@ -1517,7 +1569,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `row-fit-sweep.mjs` | manifest | row-fit-sweep — reusable Playwright width-sweep verification harness. |
 | `run-gates.py` | commit-gate+manifest+npm+script-call+test-import | the consolidated gate runner. |
 | `run-motion-fx-generators.js` | manifest+npm+script-call | motion-fx generator chain (seed-motion-fx-registry.py, generate-fx-effects-php.py, generate-fx-qualifying-blocks.py, generate-motion-presets-json.py). |
-| `run-motion-gates.py` | — | run every motion gate and print one table (Spec 38A phase M1). |
+| `run-motion-gates.py` | manifest+npm | run every motion gate and print one table (Spec 38A phase M1). |
 | `scan-component-adoption.js` | manifest+script-call | WHY THIS EXISTS |
 | `scrim/check-scrim.py` | manifest | the viewport-scrim detector (Wave 3C U-2, family M-14). |
 | `seed-48-sku-fixture-v2.php` | — | SGS 48-SKU Fixture — v2 ADDITIVE presentation-meta seeder (Spec 27 Phase 2). |
@@ -1525,6 +1577,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `seed-component-adoption.py` | manifest+script-call | write the unification ADOPTION LEDGER to `components`. |
 | `seed-composition-roles.py` | manifest+script-call | idempotent corrections to block_composition.composition_role. |
 | `seed-motion-fx-registry.py` | manifest+script-call | idempotent editorial seeder for the Spec 38 motion system. |
+| `seed_motion_fx_data.py` | script-call | the data seed-motion-fx-registry.py writes: FX_EFFECTS (one row per fx_effects effect) |
 | `sgs-update-v2.py` | manifest+script-call+test-import | 13-stage holistic refresh of the SGS framework knowledge base. |
 | `shadow-fallback/run.js` | manifest+npm+script-call+skill+test-import | Forced-colours shadow fallback for static stylesheets: census, fix and gate in one script. |
 | `shadow-fallback/transform.js` | manifest+script-call+skill+test-import | Forced-colours shadow fallback for STATIC stylesheets (Wave 3C U-1 commit 4f-1). |
@@ -1586,7 +1639,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `theme-extractor/schema_validate.py` | manifest+script-call | theme.json v3 structural validation (Spec 33 FR-33-7). |
 | `theme-extractor/site_palette.py` | manifest+script-call | Spec 33 declared-design overlay: a per-site palette built from what a draft DECLARES. |
 | `theme-extractor/token_map.py` | manifest+script-call | declared-CSS parsing for the Spec 33 extractor (tinycss2, not regex). |
-| `theme-extractor/typography.py` | manifest+script-call | base + heading typography from COMPUTED nodes (Spec 33 FR-33-3, the drift-killer). |
+| `theme-extractor/typography.py` | manifest+script-call+test-import | base + heading typography from COMPUTED nodes (Spec 33 FR-33-3, the drift-killer). |
 | `theme-extractor/usage_census.py` | manifest+script-call | Colour usage census for a draft's HTML and JavaScript. |
 | `theme-extractor/usage_js.py` | manifest+script-call | Quote-aware bracket structure of a draft's script, for the colour census' JS-bound scan. |
 | `theme-extractor/usage_roles.py` | manifest+script-call | Spec 33 usage-proposed fallback roles: neutral palette slots a README's wording did not fill. |
@@ -1627,7 +1680,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_scan.py` | manifest+script-call | The scan: every SGS block attribute (DB `source='sgs'`) through the paint |
 | `wiring-fingerprint/wf_tokens.py` | manifest+script-call | Channel tokens: what one PHP statement emits. |
 
-#### `scripts/` — 211 scripts
+#### `scripts/` — 214 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1637,6 +1690,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-spec-id-landing.py` | manifest | Prove every ID the Spec 32 and Spec 47 section ledgers carry lands in a live spec. |
 | `computed-route/answer-sheet.mjs` | script-call | Answer-sheet scorer (Spec 48 route-accuracy R1). |
 | `computed-route/calibrate.mjs` | script-call+skill | Block calibration command (FR-47-2). |
+| `computed-route/check-approved.mjs` | — | The skeleton rules measured against the client's approved review outcomes (Spec 48 FR-48-6): node scripts/computed-route/check-approved.mjs <client>… |
 | `computed-route/check-refs.mjs` | — | Checks that every draft link of a skeleton names exactly one draft element (Spec 48 §3.4, R-47-4). |
 | `computed-route/confirm-canvas.mjs` | script-call | Live confirmation of lib/triage.mjs::canvasSettable's claims, BY FAMILY, read-only. |
 | `computed-route/data/runtimes/8fe7df74405f.support.js` | manifest | GENERATED from dc-runtime/src/*.ts — do not edit. Rebuild with `cd dc-runtime && bun run build`. |
@@ -1759,7 +1813,9 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/skeleton-inventory.mjs` | script-call | Skeleton writer step 1 (Spec 48 §3.4): the inventory of a draft surface. Every element the draft runtime stamped |
 | `computed-route/lib/skeleton-model.mjs` | script-call | The skeleton writer's reading of an inventory (lib/skeleton-inventory.mjs): the element tree, which elements are parts of another (a glyph and… |
 | `computed-route/lib/skeleton-propose.mjs` | script-call | Skeleton writer step 2 (Spec 48 §3.4): the inventory (lib/skeleton-inventory.mjs) to a Fill skeleton and a proposal. |
+| `computed-route/lib/skeleton-rerun.mjs` | script-call | The skeleton step again, offline (Spec 48 FR-48-6): every surface proposed afresh from the inventories the last intake run saved… |
 | `computed-route/lib/skeleton-review.mjs` | script-call | Skeleton writer step 3 (Spec 48 §3.4): the review table Bean reads. One row per draft element: its key, tag and attributes, words, the draft's own… |
+| `computed-route/lib/skeleton-rules.mjs` | manifest+script-call | Skeleton writer step 2a, the standing rules (Spec 48 FR-48-6, the rules from Bean's review of 2026-10-13): framework-wide verdicts that settle an… |
 | `computed-route/lib/solve-groups.mjs` | script-call | Two readings of Solve's surviving rows, built from the rows and never replacing them (the per-width tables stay). |
 | `computed-route/lib/solve-report.mjs` | script-call | Writes Solve's report (FR-47-3): solve-report.json (everything) and solve-report.md (counts per class, every write with its before and after values… |
 | `computed-route/lib/solve-rows.mjs` | manifest+script-call | Solve's reading of a walker report (FR-47-3): which open rows it may write, the draft value at every width for each |

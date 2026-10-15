@@ -4,10 +4,10 @@ spec_id: 38A
 spec_version: "1.7"
 title: "SGS motion model: three layered motion panels per element, stored values, token-backed presets, stagger and runtime"
 project: small-giants-wp
-status: approved design, M1 foundations built, M2 renderer and shared stylesheet built
+status: approved design, M1 foundations built, M2 renderer and shared stylesheet built, wave 11 built (M3.W effect stylesheet convention, M3.1 effect rows and the modular Rotate, M6.1 migration core; Gate 4 passed 2026-10-13)
 authors: Bean + Claude
 session_date: 2026-10-12
-last_verified: 2026-10-13
+last_verified: 2026-10-15
 parent_spec: Spec 38 (`.claude/specs/38-SGS-MOTION-SYSTEM.md`, the tier doctrine and effect roster)
 status_history:
   - "2026-10-12: v1.0, design approved by Bean (decisions D1 to D7 of the research report), not built"
@@ -184,7 +184,7 @@ The Effects panel holds an ordered list of effects, each with its own parameters
 
 ### 5.4 Per-effect control sets
 
-Source: the per-effect audit `.claude/reports/2026-10-12-motion-effects-audit.md` (code read, DB queried, drafts read). Every `fx_effects` row (22, `SELECT effect FROM fx_effects`), every non-fx motion surface and every new effect has one row. Each row's controls are built from the §5.3 kit; every value listed under "hard-coded today" becomes a stored parameter with that value as its Standard default unless the line says otherwise. Intensity changes travel, angle, radius and range only, never trigger or target (FR-38A-46); "hidden" means the effect has no travel, angle, radius or range to scale, so the Intensity row is not shown. The three numbers are the seeded `motion_presets` values (Subtle / Standard / Bold).
+Source: the per-effect audit `.claude/reports/2026-10-12-motion-effects-audit.md` (code read, DB queried, drafts read). Every `fx_effects` row (31 since M3.1 seeded the nine effects that had none, `SELECT effect FROM fx_effects`), every non-fx motion surface and every new effect has one row. Each row's controls are built from the §5.3 kit; every value listed under "hard-coded today" becomes a stored parameter with that value as its Standard default unless the line says otherwise. Intensity changes travel, angle, radius and range only, never trigger or target (FR-38A-46); "hidden" means the effect has no travel, angle, radius or range to scale, so the Intensity row is not shown. The three numbers are the seeded `motion_presets` values (Subtle / Standard / Bold).
 
 **Targeting levels.** *Block*: the effect attaches to the block root only (pins, tracks, site-level). *Surface*: a part that paints a background (root or a declared background or media part). *Part*: any declared part the registry row allows (`supports.sgs.elements`).
 
@@ -213,7 +213,7 @@ Source: the per-effect audit `.claude/reports/2026-10-12-motion-effects-audit.md
 | `generative-background` | Effects | W | Surface | hidden (its controls are looks) |
 | `lottie` | Effects | H | Part | hidden |
 | `parallax` | Effects | V | Part | speed ratio 0.05 / 0.1 / 0.2 |
-| `tilt` | Hover | V | Part | max angle 4 / 8 / 12deg |
+| Follow pointer (the hover state's Rotate driver, formerly tilt; its glare is the separate `glare` effect) | Hover | V | Part | max angle 4 / 8 / 12deg |
 | `ripple` | Effects | V | Part | size factor 1.6 / 2.2 / 2.8 |
 | hover scale and image zoom | Hover | V | Part | scale 1.02 / 1.05 / 1.1 |
 | hover rotate and translate | Hover | V | Part | translate 2 / 6 / 12px; rotate 1 / 3 / 6deg |

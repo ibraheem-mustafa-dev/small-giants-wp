@@ -95,6 +95,10 @@ Replaces the site-wide add-on price list from a JSON file, through the same norm
 
 `sync` downloads every `google: true` font family in the active `theme.json` that has no local face, now instead of waiting for cron; it errors if the `sgs_google_fonts_self_host` filter has turned self-hosting off, and reports each family or its failure. `status` lists installed and failed self-hosted families.
 
+### `wp sgs motion-migrate [--dry-run | --apply [--allow-flagged] | --rollback=<file> | --list-families] [--post=<id>] [--post_type=<types>]`
+
+Moves stored old motion attributes onto the block's `sgsMotion` document (Spec 38A FR-38A-32), through the mappers in `plugins/sgs-blocks/includes/motion/migrate/mappers/` (one file per family, `class-sgs-motion-map-<family>.php`; `--list-families` lists them). `--dry-run` is the default and writes nothing: it prints each post's per-block change and every flag (a value the schema sanitiser dropped, or a stored value that overrides a mapped one). `--apply` backs every post up first to a randomly named JSON file outside the web root, skips flagged posts unless `--allow-flagged` and posts open in the editor, replaces only the migrated block comments' attribute JSON, writes through `$wpdb->update` plus `clean_post_cache` (never `wp_update_post`, so a product is never re-saved into draft), reads each write back and compares published counts per post type. `--rollback=<file>` restores a backup. Post types are every registered type minus `build-deploy.py::NON_BLOCK_POST_TYPES`. The read-only census of what remains is `python plugins/sgs-blocks/scripts/migrate-motion/migrate_motion.py --survey --target <site>`.
+
 ## Cheatsheet
 
 ```bash
