@@ -5,6 +5,7 @@
  */
 const {
 	FIELD_LABELS,
+	HIDDEN_KEYS,
 	HOVER_GROUPS,
 	fieldGroups,
 	undrawnKeys,
@@ -39,7 +40,7 @@ describe( 'fields the schema may or may not hold', () => {
 		Object.keys( realDefs.$defs.HoverStateValues.properties ).forEach(
 			( key ) => {
 				expect( FIELD_LABELS[ key ] ).toBeDefined();
-				if ( key !== 'perspectiveOn' ) {
+				if ( ! HIDDEN_KEYS.includes( key ) ) {
 					expect( drawn ).toContain( key );
 				}
 			}
@@ -86,28 +87,12 @@ describe( 'fields the schema may or may not hold', () => {
 		].forEach( ( key ) => expect( drawn ).toContain( key ) );
 	} );
 
-	it( 'draws the ring only when the schema holds its fields', () => {
+	it( 'holds the ring back until it paints, though the schema holds its fields', () => {
 		const today = keysOf( fieldGroups( 'HoverStateValues', HOVER_GROUPS ) );
-		const ringHeld =
-			'ringSpread' in realDefs.$defs.HoverStateValues.properties;
-		expect( today.includes( 'ringSpread' ) ).toBe( ringHeld );
-		const copy = JSON.parse( JSON.stringify( realDefs.$defs ) );
-		copy.HoverStateValues.properties.ringSpread = {
-			$ref: '#/$defs/distance',
-			minimum: 0,
-			maximum: 32,
-			'x-sgs-field': { fieldType: 'distance', perDevice: true },
-		};
-		copy.HoverStateValues.properties.ringColour = {
-			$ref: '#/$defs/colourReference',
-			'x-sgs-field': { fieldType: 'colourReference', perDevice: false },
-		};
-		const withRing = keysOf(
-			fieldGroups( 'HoverStateValues', HOVER_GROUPS, copy )
-		);
-		expect( withRing ).toEqual(
-			expect.arrayContaining( [ 'ringSpread', 'ringColour' ] )
-		);
+		expect( 'ringSpread' in realDefs.$defs.HoverStateValues.properties ).toBe( true );
+		expect( HIDDEN_KEYS ).toEqual( expect.arrayContaining( [ 'ringSpread', 'ringColour' ] ) );
+		expect( today ).not.toContain( 'ringSpread' );
+		expect( today ).not.toContain( 'ringColour' );
 	} );
 
 	it( 'offers the Focus state on sgs/form only, and only when the schema declares its list', () => {
