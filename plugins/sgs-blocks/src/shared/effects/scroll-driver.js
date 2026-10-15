@@ -19,6 +19,10 @@
  * A missing or unknown value means `view`. `observe()` registers an element
  * without the attribute.
  *
+ * A `page` registration also writes `--sgs-scroll-y`: the scrolled distance in
+ * whole px (`500px` at scrollY 500, never below 0), so an effect can multiply
+ * pixels by a ratio instead of scaling a 0 to 1 share (FR-38A-43).
+ *
  * Under `prefers-reduced-motion: reduce` nothing is written and any written
  * value is removed, except on information elements (`information: true` or
  * `data-sgs-scroll-information`): a progress indicator reports position rather
@@ -26,7 +30,9 @@
  * direction is honoured, and the scroll listener keeps running while any
  * information element is observed.
  *
- * `observe()` also takes `onUpdate( el, progress )`, called after each
+ * `observe()` also takes `measure( el )`, returning `{ top, height }` for the measured element in place of its
+ * bounding rect (an element the consumer translates would otherwise feed its own movement back into its progress).
+ * It also takes `onUpdate( el, progress )`, called after each
  * computation so a consumer can render text from the same number without a
  * second rAF; the driver stays the only writer of the property.
  *
@@ -34,16 +40,19 @@
  */
 
 const PROPERTY = '--sgs-scroll-progress';
+const DISTANCE_PROPERTY = '--sgs-scroll-y';
 const SELECTOR = '[data-sgs-scroll]';
 const REDUCED_QUERY = '(prefers-reduced-motion: reduce)';
 
 const SECTION_PARENTS =
 	'.entry-content, .wp-block-post-content, main, .is-root-container';
 
-/** @type {Map<Element, {basis: 'page'|'view'|'section', measureEl: Element, information: boolean, onUpdate: (Function|null)}>} */
+/** @type {Map<Element, {basis: 'page'|'view'|'section', measureEl: Element, measure: (Function|null), information: boolean, onUpdate: (Function|null)}>} */
 const observed = new Map();
 /** @type {WeakMap<Element, string>} */
 const lastWritten = new WeakMap();
+/** @type {WeakMap<Element, string>} */
+const lastDistance = new WeakMap();
 
 let frame = 0;
 let listening = false;
@@ -100,13 +109,27 @@ function pageProgress() {
 	return clamp( top / range );
 }
 
-function viewProgress( el ) {
-	const rect = el.getBoundingClientRect();
+function viewProgress( rect ) {
 	const span = window.innerHeight + rect.height;
 	if ( span <= 0 ) {
 		return 0;
 	}
 	return clamp( ( window.innerHeight - rect.top ) / span );
+}
+
+function scrolledDistance() {
+	const root = document.documentElement;
+	const top = window.scrollY || root.scrollTop || 0;
+	return Number.isFinite( top ) ? Math.max( 0, Math.round( top ) ) : 0;
+}
+
+function writeDistance( el, distance ) {
+	const text = distance + 'px';
+	if ( lastDistance.get( el ) === text ) {
+		return;
+	}
+	lastDistance.set( el, text );
+	el.style.setProperty( DISTANCE_PROPERTY, text );
 }
 
 function write( el, progress ) {
@@ -121,6 +144,8 @@ function write( el, progress ) {
 function clear( el ) {
 	lastWritten.delete( el );
 	el.style.removeProperty( PROPERTY );
+	lastDistance.delete( el );
+	el.style.removeProperty( DISTANCE_PROPERTY );
 }
 
 /**
@@ -130,13 +155,23 @@ export function update() {
 	frame = 0;
 	const reduced = isReduced();
 	const page = pageProgress();
+	const distance = scrolledDistance();
 	observed.forEach( ( entry, el ) => {
 		if ( reduced && ! entry.information ) {
 			return;
 		}
 		const progress =
-			'page' === entry.basis ? page : viewProgress( entry.measureEl );
+			'page' === entry.basis
+				? page
+				: viewProgress(
+						entry.measure
+							? entry.measure( entry.measureEl )
+							: entry.measureEl.getBoundingClientRect()
+				  );
 		write( el, progress );
+		if ( 'page' === entry.basis ) {
+			writeDistance( el, distance );
+		}
 		if ( entry.onUpdate ) {
 			entry.onUpdate( el, clamp( progress ) );
 		}
@@ -205,6 +240,8 @@ function unlisten() {
  * @param {string}   [options.basis]       `page`, `view` or `section`.
  * @param {boolean}  [options.information] Keep writing under reduced motion.
  * @param {Function} [options.onUpdate]    Called with (el, progress) after each computation.
+ * @param {Function} [options.measure]     Returns `{ top, height }` for the measured element in place of its bounding
+ *                                         rect, so an element a consumer moves can be measured at rest.
  */
 export function observe( el, options = {} ) {
 	if ( ! el || 1 !== el.nodeType ) {
@@ -219,6 +256,7 @@ export function observe( el, options = {} ) {
 	observed.set( el, {
 		basis,
 		measureEl: 'section' === basis ? resolveSection( el ) : el,
+		measure: 'function' === typeof options.measure ? options.measure : null,
 		information,
 		onUpdate:
 			'function' === typeof options.onUpdate ? options.onUpdate : null,

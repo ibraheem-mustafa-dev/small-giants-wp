@@ -422,6 +422,15 @@ class SGS_Motion_Registry {
 			'path' => 'build/shared/effects/fx-glare.js',
 			'deps' => array(),
 		),
+
+		/*
+		 * Parallax (Tier V, Spec 38A FR-38A-43): registers each target with the shared scroll driver, which writes the
+		 * scrolled distance or in-view progress; fx-parallax.css turns it into `--sgs-plx-*` for the translate channel.
+		 */
+		'@sgs/fx-parallax'         => array(
+			'path' => 'build/shared/effects/fx-parallax.js',
+			'deps' => array( '@sgs/scroll-driver' ),
+		),
 	);
 
 	/**

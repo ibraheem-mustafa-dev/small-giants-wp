@@ -1,0 +1,67 @@
+/**
+ * SGS motion — parallax (Spec 38A FR-38A-43). Tier V.
+ *
+ * The PAINTING half. `@sgs/scroll-driver` and `src/shared/effects/fx-parallax.js`
+ * write custom-property VALUES only (FR-38A-47); every calculation lives here and
+ * no declaration touches `transform` or `translate`: the offset is written to the
+ * registered owner properties `--sgs-plx-y`, `--sgs-plx-x`, `--sgs-plx-bg-y` and
+ * `--sgs-plx-bg-x` (motion.css), which the `translate` and `background-position`
+ * channels compose with every other owner of the same element.
+ *
+ *   offset = round( clamp( -limit, distance x ratio, limit ), 1px )
+ *
+ * distance  page basis: `--sgs-scroll-y`, the scrolled px (the driver); view basis:
+ *           `--sgs-fx-parallax-travel`, px from the centred rest position (fx-parallax.js).
+ * ratio     `--sgs-fx-parallax-ratio` (the emitter writes it per device; -1 to 1).
+ * limit     `--sgs-fx-parallax-clamp` (the emitter writes it per device); with no
+ *           clamp the limit is 100000px, which no page reaches.
+ *
+ * A missing value reads as rest: no ratio means 0, no driver value means 0px, so
+ * with JS blocked the part sits at its natural position. Reduced motion pins the
+ * offset to 0px here as well as in the driver, so a switch takes effect at once.
+ * An element with no `data-sgs-fx-parallax-basis` uses the view basis (the
+ * driver's rule for an unknown basis).
+ */
+
+:where( [data-sgs-fx~="parallax"] ) {
+	/* A part this effect moves must never be the browser's scroll anchor: Firefox treats its moving position as
+	   layout shift and re-scrolls the page against it, so the scrolled distance feeds back into itself. */
+	overflow-anchor: none;
+	--sgs-fx-plx-distance: var( --sgs-fx-parallax-travel, 0px );
+	--sgs-fx-plx-limit: var( --sgs-fx-parallax-clamp, 100000px );
+	--sgs-fx-plx-offset: round(
+		clamp(
+			calc( -1 * var( --sgs-fx-plx-limit ) ),
+			calc( var( --sgs-fx-plx-distance ) * var( --sgs-fx-parallax-ratio, 0 ) ),
+			var( --sgs-fx-plx-limit )
+		),
+		1px
+	);
+}
+
+:where( [data-sgs-fx~="parallax"][data-sgs-fx-parallax-basis="page"] ) {
+	--sgs-fx-plx-distance: var( --sgs-scroll-y, 0px );
+}
+
+/* Axis y (the default) moves the part, or its background when the background switch is on. */
+:where( [data-sgs-fx~="parallax"]:not( [data-sgs-fx-parallax-axis="x"], [data-sgs-fx-parallax-background="true"] ) ) {
+	--sgs-plx-y: var( --sgs-fx-plx-offset );
+}
+
+:where( [data-sgs-fx~="parallax"][data-sgs-fx-parallax-axis="x"]:not( [data-sgs-fx-parallax-background="true"] ) ) {
+	--sgs-plx-x: var( --sgs-fx-plx-offset );
+}
+
+:where( [data-sgs-fx~="parallax"][data-sgs-fx-parallax-background="true"]:not( [data-sgs-fx-parallax-axis="x"] ) ) {
+	--sgs-plx-bg-y: var( --sgs-fx-plx-offset );
+}
+
+:where( [data-sgs-fx~="parallax"][data-sgs-fx-parallax-background="true"][data-sgs-fx-parallax-axis="x"] ) {
+	--sgs-plx-bg-x: var( --sgs-fx-plx-offset );
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	:where( [data-sgs-fx~="parallax"] ) {
+		--sgs-fx-plx-offset: 0px;
+	}
+}

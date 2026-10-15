@@ -1,0 +1,291 @@
+[
+	{
+		"name": "sgs/hero",
+		"attributes": {
+			"variant": "split",
+			"splitMediaType": "image",
+			"splitMediaImageUrl": "https://picsum.photos/id/1015/1200/800.jpg",
+			"splitMediaImageAlt": "A river valley seen from above",
+			"minHeight": {
+				"desktop": "520px",
+				"mobile": "420px"
+			},
+			"className": "m38-hero",
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"media": {
+						"effects": [
+							{
+								"id": "parallax",
+								"effect": "parallax",
+								"values": {
+									"speedRatio": -0.06,
+									"basis": "page"
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "The split media drifts up as the page scrolls",
+					"level": "h1"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Ratio -0.06 on the page basis: minus 30px at scrollY 500."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m38-fast",
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"effects": [
+							{
+								"id": "parallax",
+								"effect": "parallax",
+								"values": {
+									"speedRatio": 0.18,
+									"basis": "page"
+								}
+							}
+						]
+					}
+				}
+			},
+			"minHeight": {
+				"desktop": "160px"
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "A block root with ratio 0.18 on the page basis: 90px at scrollY 500."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m38-frame",
+			"minHeight": {
+				"desktop": "320px"
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/media",
+				"attributes": {
+					"mediaType": "image",
+					"imageUrl": "https://picsum.photos/id/1015/1200/800.jpg",
+					"imageAlt": "A river valley seen from above",
+					"imageHeight": 280,
+					"className": "m38-image-host",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"media": {
+								"effects": [
+									{
+										"id": "parallax",
+										"effect": "parallax",
+										"values": {
+											"speedRatio": -0.06,
+											"basis": "page"
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m38-clamped",
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"effects": [
+							{
+								"id": "parallax",
+								"effect": "parallax",
+								"values": {
+									"speedRatio": 0.18,
+									"basis": "page",
+									"clamp": 40
+								}
+							}
+						]
+					}
+				}
+			},
+			"minHeight": {
+				"desktop": "160px"
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Ratio 0.18 with a 40px clamp: the travel stops at 40px."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m38-control",
+			"minHeight": {
+				"desktop": "160px"
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Negative control: no parallax layer, so it never moves."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "1600px",
+					"right": "24px",
+					"bottom": "1600px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "1600px",
+					"right": "24px",
+					"bottom": "1600px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "1600px",
+					"right": "24px",
+					"bottom": "1600px",
+					"left": "24px"
+				}
+			},
+			"className": "m38-spacer"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Scroll space so the page reaches scrollY 1500 at every width."
+				}
+			}
+		]
+	}
+]
