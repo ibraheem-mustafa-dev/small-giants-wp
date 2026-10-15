@@ -235,7 +235,7 @@ namespace SGS\Blocks\Motion {
 	$p     = $mapper->map_groups( array( blk( 'sgs/nav-drawer', $measured, array( blk( 'sgs/nav-drawer-menu', array( 'ref' => 0 ) ), blk( 'sgs/responsive-logo', array( 'width' => 140 ) ) ) ) ) );
 	$panel = base_of( $p['0'] );
 	ok( array( 'trigger' => 'open', 'values' => array( 'from' => array( 'translateX' => '-100%' ), 'to' => array( 'translateX' => 0 ), 'duration' => 300, 'easing' => 'ease-out' ), 'close' => array( 'closeDuration' => 300, 'closeEasing' => 'ease-out' ) ) === $panel, 'the panel slides in from -100% over 300ms with no fade and closes over its stored 300ms', json_encode( $panel ) );
-	ok( array( 'apply' => false, 'offset' => 0, 'step' => 55, 'order' => 'row-first', 'perRow' => false, 'cap' => 320 ) === ( $p['0']['motion']['stagger'] ?? null ), 'the drawer stores the helper settings: step 55, cap 320, no row restart' );
+	ok( array( 'apply' => false, 'offset' => 0, 'step' => 55, 'order' => 'row-first', 'perRow' => false, 'cap' => 320, 'closeOrder' => 'together' ) === ( $p['0']['motion']['stagger'] ?? null ), 'the drawer stores the helper settings: step 55, cap 320, no row restart, closing all at once (close in order off)' );
 	$menu = base_of( $p['0/0'], 'item' );
 	ok( array( 'trigger' => 'open', 'values' => array( 'from' => array( 'opacity' => 0, 'translateY' => 'token:entrance.distance' ), 'to' => array( 'opacity' => 1, 'translateY' => 0 ), 'duration' => 300, 'easing' => 'token:entrance.easing' ), 'close' => array( 'to' => array( 'opacity' => 1, 'translateY' => 0 ), 'closeDuration' => 0 ) ) === $menu, 'the menu items rise with the entrance distance and easing tokens, take the panel duration and hold still while the panel closes', json_encode( $menu ) );
 	$menu_stagger = $p['0/0']['motion']['stagger'] ?? array();
@@ -388,6 +388,10 @@ namespace SGS\Blocks\Motion {
 	$oc_stagger = $oc['0/0']['motion']['stagger'] ?? array();
 	$oc_open    = Sgs_Motion_Stagger::compute_delays( array_merge( $oc_stagger, array( 'count' => 4, 'columns' => 1 ) ) );
 	ok( 'reversed' === ( $oc_stagger['closeOrder'] ?? null ) && ! isset( base_of( $oc['0/0'], 'item' )['close']['closeDelay'] ) && array( 165, 110, 55, 0 ) === Sgs_Motion_Stagger::compute_close_delays( $oc_open, $oc_stagger['closeOrder'] ) && false === strpos( reasons( $oc['0'] ), 'close together' ) && patches_valid( $oc ), 'reverse-on-close on a menu: the menu stores closeOrder reversed (its render writes 165, 110, 55, 0 for four items), schema-valid, nothing reported' );
+	$tg         = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'itemStagger' => 55 ), array( blk( 'sgs/nav-drawer-menu' ), blk( 'sgs/container', array(), array( blk( 'sgs/button' ), blk( 'sgs/button' ) ) ) ) ) ) );
+	$tg_stagger = $tg['0/0']['motion']['stagger'] ?? array();
+	$tg_open    = Sgs_Motion_Stagger::compute_delays( array_merge( $tg_stagger, array( 'count' => 7, 'columns' => 1 ) ) );
+	ok( 'together' === ( $tg_stagger['closeOrder'] ?? null ) && 'together' === ( $tg['0']['motion']['stagger']['closeOrder'] ?? null ) && array_fill( 0, 7, 0 ) === Sgs_Motion_Stagger::compute_close_delays( $tg_open, $tg_stagger['closeOrder'] ) && 0 === ( base_of( $tg['0/0'], 'item' )['close']['closeDuration'] ?? null ) && patches_valid( $tg ), 'close in order off: the menu and the drawer store closeOrder together, so a seven-item menu closes with every delay 0 and no hold, schema-valid' );
 
 	// 6b. A capped reverse-on-close menu: the old ladder was min((n-1-i) x step, cap) counted from the end, the menu's
 	// render mirrors the open delays (high + low - d); with a cap below (n-1) x step they differ, and n (the live

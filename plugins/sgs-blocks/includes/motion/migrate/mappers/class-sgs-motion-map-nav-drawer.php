@@ -228,9 +228,8 @@ final class Sgs_Motion_Map_Nav_Drawer implements Sgs_Motion_Mapper_Interface, Sg
 		if ( $items['cap'] > 0 ) {
 			$settings['cap'] = $items['cap'];
 		}
-		if ( $items['reversed'] ) {
-			$settings['closeOrder'] = 'reversed';
-		}
+		// The old drawer either closed its items last-first or closed them all at once with no hold.
+		$settings['closeOrder'] = $items['reversed'] ? 'reversed' : 'together';
 		return $settings;
 	}
 

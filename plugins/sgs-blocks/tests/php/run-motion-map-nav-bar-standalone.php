@@ -225,7 +225,7 @@ namespace SGS\Blocks\Motion {
 	$item = base_of( $p, 'subitem' );
 	ok( array( 'trigger' => 'open', 'values' => array( 'from' => array( 'opacity' => 0, 'translateY' => 8 ), 'to' => array( 'opacity' => 1, 'translateY' => 0 ), 'duration' => 460, 'easing' => $drafts ), 'close' => array( 'to' => array( 'opacity' => 1, 'translateY' => 0 ), 'closeDuration' => 0 ) ) === $item, 'each item rises 8px over its own 460ms on the panel curve and holds still while the panel closes', json_encode( $item ) );
 	ok( $item === base_of( $p, 'mega-item' ) && null === base_of( $p, 'mega-row' ), 'the mega panel columns take the same item entrance (scope columns); the rows take none' );
-	ok( array( 'offset' => 0, 'step' => 26, 'order' => 'row-first', 'perRow' => false, 'cap' => 320 ) === ( $p['motion']['stagger'] ?? null ), 'the bar stores the stagger settings: step 26, cap 320, no apply flag (server-rendered items)', json_encode( $p['motion']['stagger'] ?? null ) );
+	ok( array( 'offset' => 0, 'step' => 26, 'order' => 'row-first', 'perRow' => false, 'cap' => 320, 'closeOrder' => 'together' ) === ( $p['motion']['stagger'] ?? null ), 'the bar stores the stagger settings: step 26, cap 320, no apply flag (server-rendered items), items closing all at once as the old panels did', json_encode( $p['motion']['stagger'] ?? null ) );
 	$served = Sgs_Motion_Stagger::compute_delays( array_merge( $p['motion']['stagger'] ?? array(), array( 'count' => 15, 'columns' => 1 ) ) );
 	ok( array( 0, 26, 52, 78, 104, 130, 156, 182, 208, 234, 260, 286, 312, 320, 320 ) === $served, 'fifteen items get 0, 26 ... 312, then 320 (the U-5 measured 26ms step capped at 320ms)', json_encode( $served ) );
 	$old = array();

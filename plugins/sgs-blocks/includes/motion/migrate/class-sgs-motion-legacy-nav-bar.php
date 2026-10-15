@@ -256,6 +256,8 @@ final class Sgs_Motion_Legacy_Nav_Bar {
 		if ( $read['cap'] > 0 ) {
 			$settings['cap'] = $read['cap'];
 		}
+		// The old panels closed with every item at rest at once, so no item waits out its open delay on close.
+		$settings['closeOrder'] = 'together';
 		return $settings;
 	}
 
