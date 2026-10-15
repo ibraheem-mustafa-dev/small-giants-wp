@@ -2230,13 +2230,16 @@ def main() -> int:
             print("[ABORTED] reason: build-dir-missing", flush=True)
             return 1
     else:
-        if deploy_blocks:
+        # gate:full reads the plugin build (check-motion-bundle-budget refuses a
+        # missing build/), so a --theme-only deploy still builds when it runs;
+        # only the upload is scoped to the theme.
+        if deploy_blocks or not args.skip_gate_full:
             rc = step_build(args.dry_run)
             if rc != 0:
                 print(f"[ABORTED] reason: build-failed (exit {rc})", flush=True)
                 return 1
         else:
-            log("[1/5] npm run build: SKIPPED (--theme-only)")
+            log("[1/5] npm run build: SKIPPED (--theme-only --skip-gate-full)")
 
     # Pre-deploy heavyweight gate tier. Runs before tar so an abort costs
     # nothing. See step_gate_full()'s docstring for why omitting it would
