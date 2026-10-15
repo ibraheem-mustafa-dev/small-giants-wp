@@ -28,6 +28,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
 import { isExtensionHidden } from './hide-extensions';
+import { hasMotionSupport } from './motion/register';
 import { InspectorControls } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -120,6 +121,11 @@ const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 		// Per-block opt-out (supports.sgs.hideExtensions): a logo wall, form
 		// field etc. has no use for parallax.
 		if ( isExtensionHidden( name, 'parallax' ) ) {
+			return <BlockEdit { ...props } />;
+		}
+
+		// A block with the motion support sets parallax in the motion Effects panel (Spec 38A).
+		if ( hasMotionSupport( blockType ) ) {
 			return <BlockEdit { ...props } />;
 		}
 

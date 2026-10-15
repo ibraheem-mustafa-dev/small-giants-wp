@@ -47,6 +47,8 @@ import { useSelect } from '@wordpress/data';
 import { useState, useEffect, useMemo } from '@wordpress/element';
 import { DesignTokenPicker, resolveColourToken } from '../../components';
 import { isExtensionHidden } from './hide-extensions';
+import { getBlockType } from '@wordpress/blocks';
+import { hasMotionSupport } from './motion/register';
 import qualifyingBlocks from './generated-fx-qualifying-blocks.json';
 import fxEffectMeta from './generated-fx-effect-meta.json';
 import fxPresets from './fx-presets.json';
@@ -533,7 +535,7 @@ function fxOwnsScrollTransform( effect ) {
 /**
  * The parameters a preset governs for one effect.
  *
- * Read from `fx-presets.json`, so "which params does Dramatic set" is a data
+ * Read from `fx-presets.json`, so "which params does Bold set" is a data
  * question. Every level of an effect declares the SAME key set (the file's own
  * `_precedence` contract — a preset writes its whole governed set including
  * nulls, so switching levels cannot leave the previous level's values behind),
@@ -1776,8 +1778,11 @@ const FX_GEN_HUE_SPREAD_WARNING_THRESHOLD = 30;
 const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
 		const { name, attributes, setAttributes, isSelected } = props;
+		// A block with the motion support edits its effects in the motion panels (Spec 38A).
 		const qualifies =
-			shouldHaveFx( name ) && ! isExtensionHidden( name, 'fx' );
+			shouldHaveFx( name ) &&
+			! isExtensionHidden( name, 'fx' ) &&
+			! hasMotionSupport( getBlockType( name ) );
 
 		/*
 		 * Called UNCONDITIONALLY, above both early returns below — `isSelected`

@@ -43,6 +43,7 @@ import { useShadowPresetOptions } from '../../../components/shadow-control/useSh
 import { isExtensionHidden, isExtensionEnabled, isExtensionFlagged } from '../hide-extensions';
 import { resolveHoverExcludedControls } from './resolve';
 import { addHoverAttributes } from './attributes';
+import { hasMotionSupport } from '../motion/register';
 import HoverPanel from './panels/HoverPanel';
 import BlockLinkPanel from './panels/BlockLinkPanel';
 import ClickPanel from './panels/ClickPanel';
@@ -74,6 +75,9 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		// everywhere unless a block opts out, e.g. a logo wall hiding
 		// ['clickEffects'] to avoid irrelevant-panel clutter (sgs/brand-strip,
 		// 2026-07-18).
+		// A block with the motion support edits hover and click motion in the motion panels (Spec 38A): the Hover
+		// panel keeps only its non-motion controls (hover shadow, focus ring) and the Click panel is hidden.
+		const motionOwned = hasMotionSupport( type );
 		const hideHover = ! isExtensionEnabled( name, 'hover' );
 		const hideBlockLink = ! isExtensionEnabled( name, 'blockLink' );
 		// A block that resolves its own link destination at render time
@@ -87,7 +91,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		// only, and render.php applies the link with no attribute to read.
 		const hasAlwaysLink = isExtensionFlagged( name, 'blockLinkAlways' );
 		const autoUrlHelp = String( type?.supports?.sgs?.blockLinkAutoHelp || '' );
-		const hideClick = isExtensionHidden( name, 'clickEffects' );
+		const hideClick = isExtensionHidden( name, 'clickEffects' ) || motionOwned;
 
 		// Gate A cleanup (D808 follow-up): suppress ONLY the two toggles a
 		// block has declared as excluded (no image element to bind to) —
@@ -196,6 +200,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 				<InspectorControls group="styles">
 					{ ! hideHover && (
 						<HoverPanel
+							motionOwned={ motionOwned }
 							hideShadowPicker={ hideShadowPicker }
 							hideImageZoom={ hideImageZoom }
 							hideGrayscale={ hideGrayscale }

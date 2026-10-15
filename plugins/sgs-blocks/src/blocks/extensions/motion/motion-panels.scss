@@ -1,0 +1,17 @@
+/**
+ * Motion panels (Spec 38A): the layer list's buttons, the Add effect menu (rendered in a popover outside the list)
+ * and the re-stamp confirmation meet the 44px touch target.
+ */
+.sgs-motion-layers .components-button,
+.sgs-motion-layers__menu .components-button,
+.sgs-motion-layer__confirm .components-button {
+	min-height: 44px;
+	min-width: 44px;
+}
+
+/* The visible number is the position; the list keeps its semantics without a second marker. */
+.sgs-motion-layers__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}

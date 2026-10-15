@@ -24,6 +24,8 @@ import { isValidCubicBezier } from '../../../../components/MotionEasingControl';
 
 /**
  * @param {Object}   props
+ * @param {boolean}  props.motionOwned      The block edits hover motion in the motion panels (Spec 38A): only the
+ *                                          hover shadow and the focus ring show here.
  * @param {boolean}  props.hideShadowPicker
  * @param {boolean}  props.hideImageZoom
  * @param {boolean}  props.hideGrayscale
@@ -51,6 +53,7 @@ import { isValidCubicBezier } from '../../../../components/MotionEasingControl';
  * @param {Function} props.setAttributes
  */
 export default function HoverPanel( {
+	motionOwned = false,
 	hideShadowPicker,
 	hideImageZoom,
 	hideGrayscale,
@@ -93,6 +96,8 @@ export default function HoverPanel( {
 			title={ __( 'Hover Effects', 'sgs-blocks' ) }
 			initialOpen={ false }
 		>
+			{ ! motionOwned && (
+			<>
 			<SelectControl
 				label={ __( 'Hover scale', 'sgs-blocks' ) }
 				help={ __( 'Scale the block up on hover using a preset value.', 'sgs-blocks' ) }
@@ -126,6 +131,8 @@ export default function HoverPanel( {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+			</>
+			) }
 			{ hideShadowPicker ? (
 				<p className="sgs-hover-effects__shadow-note" style={ { fontSize: '12px', fontStyle: 'italic', color: '#757575' } }>
 					{ __( 'This block’s Shadow panel already has a hover shadow setting — see “Hover shadow” there.', 'sgs-blocks' ) }
@@ -156,6 +163,8 @@ export default function HoverPanel( {
 					) }
 				</>
 			) }
+			{ ! motionOwned && (
+			<>
 			{ ! hideImageZoom && (
 			<ToggleControl
 				label={ __( 'Zoom image on hover', 'sgs-blocks' ) }
@@ -293,12 +302,16 @@ export default function HoverPanel( {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+			</>
+			) }
 			<ToggleControl
 				label={ __( 'Show focus ring on keyboard focus', 'sgs-blocks' ) }
 				help={ __( 'Adds a visible focus ring (3px primary glow at 0.4 alpha) when keyboard-tabbed to. Recommended on for any clickable block.', 'sgs-blocks' ) }
 				checked={ sgsFocusRing }
 				onChange={ ( val ) => setAttributes( { sgsFocusRing: val } ) }
 			/>
+			{ ! motionOwned && (
+			<>
 			<RangeControl
 				label={ __( 'Hover opacity', 'sgs-blocks' ) }
 				help={ __( 'Fades the block on hover. 0 = no fade, 1 = fully opaque (no visible change).', 'sgs-blocks' ) }
@@ -322,6 +335,8 @@ export default function HoverPanel( {
 				onChange={ ( val ) => setAttributes( { sgsHoverIndent: val || '' } ) }
 				presets={ false }
 			/>
+			</>
+			) }
 		</PanelBody>
 	);
 }

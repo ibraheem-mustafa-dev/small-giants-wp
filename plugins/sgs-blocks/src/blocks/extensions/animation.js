@@ -18,6 +18,8 @@ import { __ } from '@wordpress/i18n';
 import { AnimationControl } from '../../components';
 import EntranceStaggerControls from '../../components/EntranceStaggerControls';
 import { isExtensionHidden } from './hide-extensions';
+import { getBlockType } from '@wordpress/blocks';
+import { hasMotionSupport } from './motion/register';
 
 /**
  * Human-readable labels for each animation type.
@@ -129,9 +131,11 @@ addFilter(
 
 const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
+		// A block with the motion support edits its entrance in the motion panels (Spec 38A).
 		if (
 			! shouldHaveAnimation( props.name ) ||
-			isExtensionHidden( props.name, 'animation' )
+			isExtensionHidden( props.name, 'animation' ) ||
+			hasMotionSupport( getBlockType( props.name ) )
 		) {
 			return <BlockEdit { ...props } />;
 		}
