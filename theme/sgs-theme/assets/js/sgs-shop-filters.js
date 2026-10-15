@@ -138,12 +138,12 @@
 		}
 		dialog.appendChild( scrollWrap );
 
-		// Extract the header (which was inserted as the aside's first child by
-		// ensureParts) and move it outside the scroll region so it stays pinned
-		// at the top, exactly as the sheet-footer stays pinned at the bottom.
+		// Move the header outside the scroll region so it stays pinned at the
+		// top, exactly as the sheet-footer stays pinned at the bottom. It can sit
+		// at any depth (sgs/container wraps its children in an inner div), and
+		// insertBefore detaches it from whichever parent holds it.
 		const header = scrollWrap.querySelector( '.sgs-shop-filters__header' );
 		if ( header ) {
-			scrollWrap.removeChild( header );
 			dialog.insertBefore( header, scrollWrap );
 		}
 
