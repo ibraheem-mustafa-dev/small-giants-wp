@@ -214,6 +214,15 @@ final class Sgs_Motion_Migrate_Runner {
 				'reported' => $reported,
 			);
 		}
+		if ( $patched === $content ) {
+			return array(
+				'content'  => $content,
+				'changed'  => false,
+				'changes'  => array(),
+				'flags'    => $flags,
+				'reported' => $reported,
+			);
+		}
 		return array(
 			'content'  => $patched,
 			'changed'  => true,

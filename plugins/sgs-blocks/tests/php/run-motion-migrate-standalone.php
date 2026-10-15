@@ -181,6 +181,23 @@ namespace SGS\Blocks\Motion {
 	final class Sgs_Motion_Map_Fixture extends Fixture_Mapper {
 	}
 
+	/** Fixture-only mapper that only reports: `sgsFixtureStuck` has no destination, so nothing is consumed or mapped. */
+	class Reporting_Mapper implements Sgs_Motion_Mapper_Interface {
+		public function family(): string {
+			return 'reporting';
+		}
+		public function handles( string $block_name, array $attrs ): bool {
+			return isset( $attrs['sgsFixtureStuck'] );
+		}
+		public function map( string $block_name, array $attrs ): array {
+			return array(
+				'motion'   => array(),
+				'consumed' => array(),
+				'reported' => array( array( 'attr' => 'sgsFixtureStuck', 'value' => $attrs['sgsFixtureStuck'], 'reason' => 'no destination', 'consumed' => false ) ),
+			);
+		}
+	}
+
 	/** Wraps the real entrance mapper and records every block the per-block pass hands it (the double-apply probe). */
 	final class Spy_Entrance implements Sgs_Motion_Mapper_Interface, Sgs_Motion_Group_Mapper_Interface {
 		public $mapped = array();
@@ -253,6 +270,9 @@ namespace SGS\Blocks\Motion {
 	$clean = '<!-- wp:sgs/container {"align":"wide"} /-->' . "\n" . '<!-- wp:paragraph --><p>Hello</p><!-- /wp:paragraph -->';
 	$none  = $runner->migrate_content( $clean );
 	ok( ! $none['changed'] && array() === $none['changes'] && array() === $none['flags'] && $none['content'] === $clean, 'a post with no old attributes yields no diff and identical content' );
+	$stuck_post = '<!-- wp:sgs/container {"sgsFixtureStuck":1,"align":"wide"} /-->';
+	$stuck      = ( new Sgs_Motion_Migrate_Runner( array( new Reporting_Mapper() ) ) )->migrate_content( $stuck_post );
+	ok( ! $stuck['changed'] && array() === $stuck['changes'] && $stuck['content'] === $stuck_post && array( 'sgsFixtureStuck' ) === array_column( $stuck['reported'], 'attr' ), 'a block with only reported attributes gives changed false, identical content, and still reports the attribute' );
 
 	// 5. A stored sgsMotion value wins over the mapped one.
 	$mixed = '<!-- wp:sgs/container {"sgsFixtureStep":120,"sgsMotion":{"v":1,"elements":{"root":{"hover":{"state":{"values":{"scale":1.2}}}}},"stagger":{"step":300}}} /-->';

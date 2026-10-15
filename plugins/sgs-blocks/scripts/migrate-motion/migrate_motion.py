@@ -56,6 +56,7 @@ MAPPER_PREFIX = 'class-sgs-motion-map-'
 # `blocks` None = any block; a tuple = only those blocks (the same name elsewhere is unrecognised).
 # Section 13.1 and the 13.2 table are the source of every row.
 _CARD = ('sgs/card-grid', 'sgs/gallery', 'sgs/testimonial')
+_OWN_HOVER = ('sgs/heading', 'sgs/text', 'sgs/quote', 'sgs/button')
 _STAGGER_BLOCKS = ('sgs/container', 'sgs/google-reviews', 'sgs/info-box', 'sgs/media', 'sgs/pricing-table',
                    'sgs/product-card', 'sgs/team-member', 'sgs/whatsapp-cta')
 CATALOGUE = [
@@ -64,11 +65,23 @@ CATALOGUE = [
     (('sgsAnimation', 'sgsAnimationDelay', 'sgsAnimationDistance', 'sgsAnimationDuration', 'sgsAnimationEasing',
       'sgsAnimationStart', 'sgsAnimationTrigger', 'sgsAnimationStagger', 'sgsAnimationStaggerChildren',
       'sgsAnimationStaggerMax'), 'entrance', None),
+    # The icon family comes before the hover rows: a name both families use (scaleHover, transitionDuration, ...) is the
+    # icon family's on sgs/icon and sgs/social-icons, and the hover family's elsewhere (`lookup` skips an out-of-scope row).
+    (('scaleHover', 'offsetXHover', 'offsetYHover', 'iconRotateHover', 'opacityHover', 'transitionDuration', 'paintDuration',
+      'transitionEasing', 'transitionEasingCustom', 'shadowLiftOnHover'), 'icon', ('sgs/icon',)),
+    (('childIconScaleHover', 'childIconOffsetXHover', 'childIconOffsetYHover', 'childIconRotateHover',
+      'childIconTransitionDuration', 'childIconPaintDuration', 'childIconTransitionEasing',
+      'childIconTransitionEasingCustom', 'childIconShadowLiftOnHover'), 'icon', ('sgs/social-icons',)),
     (('sgsHoverDuration', 'sgsHoverDurationMs', 'sgsHoverEasing', 'sgsHoverEasingCustom', 'sgsHoverImageZoom',
       'shadowLiftOnHover', 'sgsHoverShadow', 'sgsHoverShadowCustom', 'shadowHoverColour',
       'scaleHover', 'effectHover', 'sgsHoverLift', 'sgsHoverIndent', 'sgsHoverOpacity', 'sgsHoverGrayscale',
       'sgsHoverBorderAccent'), 'hover', None),
     (re.compile(r'^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)'), 'hover', None),
+    # Where the transition pair times the block's own hover (the hover mapper's OWN_HOVER_BLOCKS); on every other block it
+    # times unrelated transitions (sliders, tabs, overlays) and stays.
+    (('transitionDuration', 'transitionEasing'), 'hover', _OWN_HOVER),
+    (('transitionEasingCustom', 'scaleHoverTarget', 'opacityHover', 'liftHover'), 'hover', ('sgs/button',)),
+    (('imageZoomHover',), 'hover', ('sgs/card-grid', 'sgs/gallery', 'sgs/post-grid', 'sgs/team-member')),
     (('sgsHoverTilt3D',), 'tilt', None),
     (('sgsClickEffect', 'sgsClickRippleColour', 'sgsClickRippleDuration'), 'ripple', None),
     (('sgsParallax', 'sgsParallaxStrength', 'bgParallax', 'splitMediaParallax', 'parallaxStrength'), 'parallax', None),
@@ -123,6 +136,13 @@ def load_db_attrs():
         return None
 
 
+def row_key(rows, attr, family):
+    """The dict key of an attribute's row: the name, or `name [family]` when another family already holds the name."""
+    if attr in rows and rows[attr]['family'] != family:
+        return '%s [%s]' % (attr, family)
+    return attr
+
+
 def catalogue_rows(families, db_attrs):
     """One zero-count row per catalogued attribute; prefix rows expand from the framework DB when it is available."""
     rows = {}
@@ -132,7 +152,7 @@ def catalogue_rows(families, db_attrs):
         else:
             expanded = list(names)
         for attr in expanded:
-            rows.setdefault(attr, {'attr': attr, 'family': family, 'destination': family if family in families else 'unmapped',
+            rows.setdefault(row_key(rows, attr, family), {'attr': attr, 'family': family, 'destination': family if family in families else 'unmapped',
                                    'scope': list(blocks) if blocks else 'any block', 'count': 0, 'posts': set(),
                                    'blocks': set(), 'post_types': set()})
             if attr in RENAMES:
@@ -147,14 +167,16 @@ def mapper_families(directory=MAPPERS_DIR):
 
 def lookup(block, attr):
     """(family, status) for one attribute; status is 'found', 'unrecognised' or None."""
+    out_of_scope = False
     for names, family, blocks in CATALOGUE:
         hit = names.match(attr) if hasattr(names, 'match') else attr in names
         if not hit:
             continue
         if blocks is not None and block not in blocks:
-            return None, 'unrecognised'
+            out_of_scope = True  # a later row may name this attribute for this block
+            continue
         return family, 'found'
-    if attr not in NEVER_MOTION and BROAD.search(attr):
+    if out_of_scope or (attr not in NEVER_MOTION and BROAD.search(attr)):
         return None, 'unrecognised'
     return None, None
 
@@ -194,7 +216,7 @@ def survey(posts, families, db_attrs=None):
                 if status == 'unrecognised':
                     row = unrec.setdefault(attr, {'attr': attr, 'count': 0, 'posts': set(), 'blocks': set()})
                 else:
-                    row = found.setdefault(attr, {'attr': attr, 'family': family,
+                    row = found.setdefault(row_key(found, attr, family), {'attr': attr, 'family': family,
                                                   'destination': family if family in families else 'unmapped',
                                                   'scope': 'any block', 'count': 0, 'posts': set(), 'blocks': set(),
                                                   'post_types': set()})
@@ -329,7 +351,8 @@ def self_test():
             failures.append(label)
 
     res = survey(FIXTURE, {'hover'}, ['bgHoverZoomScale', 'fxMorph', 'sgsHoverScaleX'])
-    attrs = {r['attr']: r for r in res['attributes']}
+    # A name two families use has one row each; the used row (higher count) is the one these checks read.
+    attrs = {r['attr']: r for r in sorted(res['attributes'], key=lambda r: r['count'])}
     expect({'sgsAnimation', 'sgsHoverLift', 'entryAnimation', 'itemStagger'} <= set(attrs) and 1 in attrs['sgsHoverLift']['posts'],
            'an old attribute in an sgs_header post is found')
     expect(attrs['shadowLiftOnHover']['post_types'] == ['product'] and 'fxScramble' in attrs and 'sgsParallax' in attrs,
@@ -361,6 +384,25 @@ def self_test():
     srow = [r for r in shadow['attributes'] if r['count']]
     expect(len(srow) == 1 and srow[0]['attr'] == 'shadowHoverColour' and srow[0]['rename_to'] == 'shadowColourHover',
            'only the rename-losing shadow colour name counts, with its target; the surviving name is not an old attribute')
+    icon = survey([{'ID': 11, 'post_type': 'page', 'post_content':
+                    '<!-- wp:sgs/icon {"offsetYHover":2,"scaleHover":1.2,"transitionDuration":200} /-->'
+                    '<!-- wp:sgs/social-icons {"childIconScaleHover":1.3} /-->'
+                    '<!-- wp:sgs/heading {"scaleHover":1.1,"transitionDuration":300} /-->'
+                    '<!-- wp:sgs/hero {"transitionDuration":"300"} /-->'
+                    '<!-- wp:sgs/team-member {"imageZoomHover":true} /-->'}], {'hover', 'icon'})
+    used = {(r['attr'], r['family']): r for r in icon['attributes'] if r['count']}
+    expect(used[('offsetYHover', 'icon')]['destination'] == 'icon' and used[('childIconScaleHover', 'icon')]['destination'] == 'icon',
+           'an icon attribute reads destination icon when the icon mapper exists')
+    expect(used[('scaleHover', 'icon')]['blocks'] == ['sgs/icon'] and used[('scaleHover', 'hover')]['blocks'] == ['sgs/heading']
+           and used[('transitionDuration', 'icon')]['blocks'] == ['sgs/icon']
+           and used[('transitionDuration', 'hover')]['blocks'] == ['sgs/heading'],
+           'a name both families use belongs to the icon family on sgs/icon and to the hover family on sgs/heading')
+    expect(used[('imageZoomHover', 'hover')]['blocks'] == ['sgs/team-member']
+           and [(r['attr'], r['blocks']) for r in icon['unrecognised']] == [('transitionDuration', ['sgs/hero'])],
+           'imageZoomHover is hover; transitionDuration on a block where it times unrelated transitions is unrecognised, not hover')
+    expect(survey([{'ID': 12, 'post_type': 'page', 'post_content': '<!-- wp:sgs/icon {"offsetYHover":2} /-->'}], {'hover'})
+           ['attributes'][[r['attr'] for r in survey([], {'hover'})['attributes']].index('offsetYHover')]['destination'] == 'unmapped',
+           'an icon attribute reads unmapped while the icon mapper file is missing')
     expect(check(res) == 1, '--check exits 1 while old attributes remain')
     clean = survey([FIXTURE[3]], set())
     expect(check(clean) == 0, '--check exits 0 on content with only sgsMotion')
