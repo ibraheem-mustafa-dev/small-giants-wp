@@ -15,7 +15,12 @@
  *    the collector never flushes, the same CSS stays in a `<style>` tag inside the block as every SGS block's does);
  * 5. writes the data attributes on each target element with `WP_HTML_Tag_Processor` (`data-sgs-mh`, `data-sgs-mc`,
  *    `data-sgs-me`, `data-sgs-me-keyframes`), the scope class `sgs-m-<hash>` and `data-sgs-mroot` on the root, and
- *    appends at most two `<span class="sgs-motion-layer" aria-hidden="true">` per element for injected-slot owners.
+ *    appends at most two `<span class="sgs-motion-layer" aria-hidden="true">` per element for injected-slot owners;
+ * 6. writes each element's effect layers as the `data-sgs-fx` runtime grammar (`Sgs_Motion_Fx_Emitter`) on the same
+ *    target element. Every element that resolves to the root (the root itself and an `isWrapper` part) adds its
+ *    effects to the root's own attribute set, so two such elements join their `data-sgs-fx` lists instead of the
+ *    later one overwriting the earlier. Effect value fields that name a custom property are written into the same
+ *    scoped CSS, per device tier (`Sgs_Motion_Effect_Properties`).
  *
  * The LCP rule (§9): a `load` entrance in the page's first top-level section (the first top-level block of the main
  * content, filterable through `sgs_motion_is_first_section`) or on an `<img fetchpriority="high">` keeps its
@@ -352,15 +357,22 @@ final class Sgs_Motion_Renderer {
 				array(
 					'lcp'               => $frame['first'] || $lcp_image,
 					'suppress_entrance' => $suppress,
+					'no_transition'     => isset( $losers[ $target ] ),
 					'block'             => $name,
 					'target'            => $target,
-					'no_transition'     => isset( $losers[ $target ] ),
 				)
 			);
 			$css      .= $emitted['css'];
-			$layers    = Sgs_Motion_Layer_Drops::injected_layers( $element );
+			$css      .= Sgs_Motion_Effect_Properties::css( $element, $resolved['selector'] );
+			$fx_attrs  = Sgs_Motion_Fx_Emitter::attrs( $element, $name, $target );
+			if ( $resolved['match']['root'] ) {
+				$root_attrs = Sgs_Motion_Fx_Emitter::merge( $root_attrs, $fx_attrs, $name, $target );
+			} else {
+				$emitted['attrs'] = Sgs_Motion_Fx_Emitter::merge( $emitted['attrs'], $fx_attrs, $name, $target );
+			}
+			$layers = Sgs_Motion_Layer_Drops::injected_layers( $element );
 			self::note_features( $emitted['attrs'], array() !== $layers );
-			$plans[]   = array(
+			$plans[] = array(
 				'match'  => $resolved['match'],
 				'attrs'  => $emitted['attrs'],
 				'layers' => $layers,
