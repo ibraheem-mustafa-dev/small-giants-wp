@@ -122,6 +122,9 @@ def compute_close_delays(delays: list[int], direction: str = "same") -> list[int
 
 def columns_at(block: str, attrs: dict, tier: str, grid: dict) -> int | None:
     """The container's stored grid columns at a tier (entrance-facts.js::columnsAt)."""
+    # A block with a layout choice has columns only in its grid layout; any other layout is one column (section 8).
+    if isinstance(attrs.get("layout"), str) and attrs["layout"] != "grid":
+        return None
     attribute = grid.get(block, {}).get(tier)
     stored = attrs.get(attribute) if attribute else None
     if isinstance(stored, (int, float)) and not isinstance(stored, bool):

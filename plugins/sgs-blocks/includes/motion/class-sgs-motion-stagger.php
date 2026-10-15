@@ -117,8 +117,9 @@ final class Sgs_Motion_Stagger {
 	 * The attribute name comes from the generated data file (`includes/motion/data/stagger-grid-columns.php`, built from
 	 * the framework DB's layout/column role), because the editor-side JSON lives under `src/`, which the deploy
 	 * excludes. A tier-object value ({desktop, tablet, mobile}) is read at the device with tablet inheriting desktop
-	 * and mobile inheriting tablet; a plain number is used as it stands. A block with no grid-columns attribute, an
-	 * unknown device or an unusable value gives 1 (a single column, no row restart).
+	 * and mobile inheriting tablet; a plain number is used as it stands. A string `layout` other than `grid` (a stack,
+	 * list, masonry or carousel) is one column. A block with no grid-columns attribute, an unknown device or an unusable
+	 * value gives 1 (a single column, no row restart).
 	 *
 	 * @param string              $block_name Block slug, for example `sgs/container`.
 	 * @param array<string,mixed> $attrs      The block's attributes.
@@ -126,6 +127,11 @@ final class Sgs_Motion_Stagger {
 	 * @return int The column count, at least 1.
 	 */
 	public static function columns_for_block( string $block_name, array $attrs, string $device ): int {
+		// A block with a layout choice has columns only in its grid layout; any other layout is one column (§8), the
+		// same rule as `entrance-facts.js::columnsAt`.
+		if ( isset( $attrs['layout'] ) && is_string( $attrs['layout'] ) && 'grid' !== $attrs['layout'] ) {
+			return 1;
+		}
 		if ( null === self::$column_attributes ) {
 			$data                    = require __DIR__ . '/data/stagger-grid-columns.php';
 			self::$column_attributes = is_array( $data ) ? $data : array();

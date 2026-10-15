@@ -66,6 +66,10 @@ ok( 1 === Sgs_Motion_Stagger::columns_for_block( 'sgs/container', array(), 'desk
 ok( 1 === Sgs_Motion_Stagger::columns_for_block( 'sgs/heading', array( 'columns' => 4 ), 'desktop' ), 'columns_for_block: a block with no grid-columns attribute gives 1' );
 ok( 1 === Sgs_Motion_Stagger::columns_for_block( 'sgs/container', $tiers, 'watch' ), 'columns_for_block: unknown device gives 1' );
 ok( 1 === Sgs_Motion_Stagger::columns_for_block( 'sgs/container', array( 'columns' => 'wide' ), 'desktop' ), 'columns_for_block: unusable value gives 1' );
+$stack = array( 'layout' => 'stack', 'columns' => array( 'desktop' => 2, 'tablet' => 2, 'mobile' => 1 ) );
+ok( 1 === Sgs_Motion_Stagger::columns_for_block( 'sgs/container', $stack, 'desktop' ), 'columns_for_block: a stacked container is one column whatever its stored columns' );
+ok( array( 0, 80, 160, 240 ) === Sgs_Motion_Stagger::compute_delays( array( 'count' => 4, 'columns' => Sgs_Motion_Stagger::columns_for_block( 'sgs/container', $stack, 'desktop' ), 'step' => 80 ) ), 'a stacked container of four runs one ladder: 0, 80, 160, 240' );
+ok( 2 === Sgs_Motion_Stagger::columns_for_block( 'sgs/container', array_merge( $stack, array( 'layout' => 'grid' ) ), 'desktop' ), 'columns_for_block: the same container as a grid reads its columns' );
 
 echo "\n{$passes} passed, {$failures} failed\n";
 exit( $failures > 0 ? 1 : 0 );
