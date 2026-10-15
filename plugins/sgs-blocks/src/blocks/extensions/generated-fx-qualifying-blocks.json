@@ -2,6 +2,7 @@
 	"sgs/account": [
 		"ambient-float",
 		"carousel-loop",
+		"curtain",
 		"draggable",
 		"follow-pointer",
 		"glare",
@@ -19,6 +20,7 @@
 	"sgs/before-after": [
 		"ambient-float",
 		"carousel-loop",
+		"curtain",
 		"draggable",
 		"follow-pointer",
 		"glare",
@@ -36,6 +38,7 @@
 	],
 	"sgs/button": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -54,6 +57,7 @@
 	"sgs/buybox": [
 		"ambient-float",
 		"carousel-loop",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -70,6 +74,7 @@
 	],
 	"sgs/choice-flow-result": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -87,6 +92,7 @@
 	],
 	"sgs/collapsible-text": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -105,6 +111,7 @@
 	"sgs/container": [
 		"ambient-float",
 		"cursor-field",
+		"curtain",
 		"draw",
 		"follow-pointer",
 		"generative-background",
@@ -128,6 +135,7 @@
 	],
 	"sgs/counter": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -145,6 +153,7 @@
 	],
 	"sgs/decorative-image": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -162,6 +171,7 @@
 	"sgs/gallery": [
 		"ambient-float",
 		"carousel-loop",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -179,6 +189,7 @@
 	"sgs/google-reviews": [
 		"ambient-float",
 		"carousel-loop",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -195,6 +206,7 @@
 	],
 	"sgs/heading": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -213,6 +225,7 @@
 	"sgs/hero": [
 		"ambient-float",
 		"cursor-field",
+		"curtain",
 		"draw",
 		"follow-pointer",
 		"generative-background",
@@ -237,6 +250,7 @@
 	],
 	"sgs/icon": [
 		"ambient-float",
+		"curtain",
 		"draw",
 		"follow-pointer",
 		"glare",
@@ -254,6 +268,7 @@
 	],
 	"sgs/image-sequence": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"image-sequence",
@@ -272,6 +287,7 @@
 	"sgs/info-box": [
 		"ambient-float",
 		"cursor-field",
+		"curtain",
 		"follow-pointer",
 		"generative-background",
 		"glare",
@@ -293,6 +309,7 @@
 	],
 	"sgs/label": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -311,6 +328,7 @@
 	"sgs/multi-button": [
 		"ambient-float",
 		"cursor-field",
+		"curtain",
 		"draw",
 		"follow-pointer",
 		"generative-background",
@@ -333,6 +351,7 @@
 	"sgs/physics-canvas": [
 		"ambient-float",
 		"cursor-field",
+		"curtain",
 		"draw",
 		"follow-pointer",
 		"generative-background",
@@ -357,6 +376,7 @@
 	"sgs/post-grid": [
 		"ambient-float",
 		"carousel-loop",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -373,6 +393,7 @@
 	],
 	"sgs/pricing-table": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -390,6 +411,7 @@
 	],
 	"sgs/product-card": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -409,6 +431,7 @@
 	"sgs/product-faq": [
 		"ambient-float",
 		"cursor-field",
+		"curtain",
 		"follow-pointer",
 		"generative-background",
 		"glare",
@@ -430,6 +453,7 @@
 	],
 	"sgs/quote": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -447,6 +471,7 @@
 	],
 	"sgs/responsive-logo": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -464,6 +489,7 @@
 	],
 	"sgs/separator": [
 		"ambient-float",
+		"curtain",
 		"draw",
 		"follow-pointer",
 		"glare",
@@ -481,6 +507,7 @@
 	],
 	"sgs/team-member": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -500,6 +527,7 @@
 	"sgs/testimonial": [
 		"ambient-float",
 		"cursor-field",
+		"curtain",
 		"follow-pointer",
 		"generative-background",
 		"glare",
@@ -522,6 +550,7 @@
 	],
 	"sgs/text": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -540,6 +569,7 @@
 	"sgs/timeline": [
 		"ambient-float",
 		"carousel-loop",
+		"curtain",
 		"draggable",
 		"follow-pointer",
 		"glare",
@@ -559,6 +589,7 @@
 	"sgs/trust-bar": [
 		"ambient-float",
 		"cursor-field",
+		"curtain",
 		"draw",
 		"follow-pointer",
 		"generative-background",
@@ -587,6 +618,7 @@
 	"sgs/trustpilot-reviews": [
 		"ambient-float",
 		"carousel-loop",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -603,6 +635,7 @@
 	],
 	"sgs/whatsapp-cta": [
 		"ambient-float",
+		"curtain",
 		"follow-pointer",
 		"glare",
 		"lottie",
@@ -621,6 +654,7 @@
 	"sgs/wishlist-panel": [
 		"ambient-float",
 		"carousel-loop",
+		"curtain",
 		"draggable",
 		"follow-pointer",
 		"glare",

@@ -76,6 +76,32 @@
 			"hover"
 		]
 	},
+	"curtain": {
+		"in_picker": false,
+		"owned_properties": {
+			"channels": [
+				"injected"
+			],
+			"properties": [],
+			"slots": [
+				{
+					"label": "Curtain",
+					"slot": "injected"
+				}
+			]
+		},
+		"owns_scroll_transform": false,
+		"panels": [
+			"entrance"
+		],
+		"pins": false,
+		"target_level": [
+			"part"
+		],
+		"triggers": [
+			"open"
+		]
+	},
 	"draggable": {
 		"in_picker": false,
 		"owned_properties": {
