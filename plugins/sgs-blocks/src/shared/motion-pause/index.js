@@ -123,19 +123,25 @@ export function initMotionPause( root, options = {} ) {
 			sync();
 		}
 	} );
-	root.addEventListener( 'focusin', () => {
-		focused = true;
-		sync();
-	} );
-	root.addEventListener( 'focusout', ( event ) => {
-		// Focus moving to another element inside the region is not leaving it.
-		if ( event.relatedTarget instanceof Node && root.contains( event.relatedTarget ) ) {
-			return;
-		}
-		focused = false;
-		releasePlay();
-		sync();
-	} );
+	// The focus region is the root plus any element added with `addFocusRegion()` (a pause button placed outside the
+	// root); focus moving between them is not leaving it.
+	const regions = [ root ];
+	const inRegion = ( node ) => node instanceof Node && regions.some( ( region ) => region.contains( node ) );
+	const listenForFocus = ( region ) => {
+		region.addEventListener( 'focusin', () => {
+			focused = true;
+			sync();
+		} );
+		region.addEventListener( 'focusout', ( event ) => {
+			if ( inRegion( event.relatedTarget ) ) {
+				return;
+			}
+			focused = false;
+			releasePlay();
+			sync();
+		} );
+	};
+	listenForFocus( root );
 
 	return {
 		isPaused,
@@ -156,6 +162,17 @@ export function initMotionPause( root, options = {} ) {
 		/** A deliberate play. */
 		play() {
 			setUserPaused( false );
+		},
+		/**
+		 * Count focus inside another element as focus inside the region.
+		 *
+		 * @param {HTMLElement} region An element outside the root that belongs to the moving region.
+		 */
+		addFocusRegion( region ) {
+			if ( region instanceof Node && ! inRegion( region ) ) {
+				regions.push( region );
+				listenForFocus( region );
+			}
 		},
 	};
 }

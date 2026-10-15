@@ -133,6 +133,25 @@ describe( 'the pause button', () => {
 		expect( button.hidden ).toBe( false );
 	} );
 
+	test( 'on an element that is its own block root, focus on the button (placed after it) pauses the loop', () => {
+		document.body.innerHTML =
+			'<div class="sgs-wrap"><h2 class="wp-block-sgs-heading" data-sgs-fx="ambient-float">Float</h2><a href="#y">next</a></div>';
+		const el = document.querySelector( 'h2' );
+		loopControl.registerLoop( el, { pauseControl: true } );
+		const button = el.nextElementSibling;
+		expect( button.matches( 'button.sgs-motion-pause' ) ).toBe( true );
+		button.dispatchEvent( new FocusEvent( 'focusin', { bubbles: true } ) );
+		expect( el.hasAttribute( PAUSED ) ).toBe( true );
+		button.dispatchEvent(
+			new FocusEvent( 'focusout', { bubbles: true, relatedTarget: el } )
+		);
+		expect( el.hasAttribute( PAUSED ) ).toBe( true );
+		el.dispatchEvent(
+			new FocusEvent( 'focusout', { bubbles: true, relatedTarget: document.querySelector( 'a' ) } )
+		);
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+	} );
+
 	test( 'a separate root gets its own button', () => {
 		const [ a, b ] = build( 2 );
 		loopControl.registerLoop( floatIn( a ), { pauseControl: true } );

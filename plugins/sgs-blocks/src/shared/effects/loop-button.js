@@ -64,7 +64,10 @@ export function ensureButton( group, root, el, label, reduced ) {
 		button.setAttribute( 'aria-pressed', pressed ? 'false' : 'true' );
 	} );
 	if ( root === el ) {
+		// Placed outside the moving element so it stays still, which also puts it outside the root: focus on it
+		// still pauses the loop (WCAG 2.2.2).
 		el.after( button );
+		group.controller.addFocusRegion( button );
 	} else {
 		root.appendChild( button );
 	}
