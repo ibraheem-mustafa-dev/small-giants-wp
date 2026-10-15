@@ -9,7 +9,8 @@
  */
 
 import { __, sprintf } from '@wordpress/i18n';
-import { Button, SelectControl } from '@wordpress/components';
+import { Button } from '@wordpress/components';
+import ChoiceAtom from '../../../../components/motion/ChoiceAtom';
 import defs from '../../../../components/motion/motion-defs';
 import PropertyRowAtom from '../../../../components/motion/PropertyRowAtom';
 import PerDeviceAtom from '../../../../components/motion/PerDeviceAtom';
@@ -151,19 +152,14 @@ function MoveRows( { layer, tier, editor } ) {
 				/>
 			) ) }
 			{ tier === 'desktop' && unused.length > 0 && (
-				<SelectControl
+				<ChoiceAtom
 					label={ __( 'Add a value to animate', 'sgs-blocks' ) }
-					value=""
-					options={ [
-						{
-							label: __( 'Choose a property', 'sgs-blocks' ),
-							value: '',
-						},
-						...unused.map( ( key ) => ( {
-							label: MOVE_LABELS[ key ],
-							value: key,
-						} ) ),
-					] }
+					value={ undefined }
+					emptyLabel={ __( 'Choose a property', 'sgs-blocks' ) }
+					options={ unused.map( ( key ) => ( {
+						label: MOVE_LABELS[ key ],
+						value: key,
+					} ) ) }
 					onChange={ ( key ) => {
 						if ( key ) {
 							const { from, to } = moveDefaults( key );
@@ -173,8 +169,6 @@ function MoveRows( { layer, tier, editor } ) {
 							] );
 						}
 					} }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
 				/>
 			) }
 			{ used.length === 0 && (

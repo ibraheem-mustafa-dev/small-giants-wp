@@ -52,7 +52,7 @@ import {
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { sanitiseSvg, svgBackgroundPreview, backgroundPreview, wrapperToneClass, surfaceBackdropPreview, OVERLAY_BLEND_MODES } from '../../utils';
 import { heroCanvasPreview, splitMediaAtTier } from './canvas-preview';
-import { namesBand } from '../extensions/motion/canvas/resolve-target';
+import { motionNamesBand } from '../extensions/motion/canvas/resolve-target';
 import { getBlockType } from '@wordpress/blocks';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
@@ -514,7 +514,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const { hasBandProps: bandFromProps, bandStyle: contentBandStyle } = heroPreview.band;
 	// A motion layer on the band part (`content-band`, `inner`; Spec 38A §6.2) forces the band, as
 	// `Sgs_Motion_Targets::names_band()` does on the page; split passes wrap_inner=false there too.
-	const showContentBand = bandFromProps || ( ! isSplit && namesBand( attributes.sgsMotion, 'sgs/hero', getBlockType( 'sgs/hero' )?.supports?.sgs?.elements || {} ) );
+	const showContentBand = bandFromProps || ( ! isSplit && motionNamesBand( attributes, 'sgs/hero', getBlockType( 'sgs/hero' )?.supports?.sgs?.elements || {} ) );
 
 	// Split-image preview style — mirrors render.php's scoped `.sgs-hero__split-image`
 	// CSS builder (render.php:576-626, 561-573) for the Phase-1 image-display

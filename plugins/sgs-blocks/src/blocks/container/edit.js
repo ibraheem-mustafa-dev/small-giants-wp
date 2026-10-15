@@ -23,7 +23,7 @@ import { resolveOnTiers } from "../../utils/responsive";
 import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, backgroundPreview, svgBackgroundPreview, tierBoxLonghands, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, flattenPresetSetting, separatorsFlowPreview, typographyPreviewStyle, textIndentPreviewCss, sgsBorderPreview } from "../../utils";
 import ShapeDividerPreview from "../../components/ShapeDividerPreview";
 import { gridItemVars, gridItemStateCss } from "./grid-item-preview";
-import { namesBand } from "../extensions/motion/canvas/resolve-target";
+import { motionNamesBand } from "../extensions/motion/canvas/resolve-target";
 import { getBlockType } from "@wordpress/blocks";
 import { containerColumnsPreview, containerRowsPreview, bandMarginPreview } from "./layout-preview";
 import {
@@ -332,7 +332,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   }
   // A motion layer on the band part (`content-band`, `inner`; Spec 38A §6.2) needs the band, so it forces it here as
   // `Sgs_Motion_Targets::names_band()` forces it in the container wrapper on the page.
-  const hasBandProps = bandFromProps || namesBand( attributes.sgsMotion, name, getBlockType( name )?.supports?.sgs?.elements || {} );
+  const hasBandProps = bandFromProps || motionNamesBand( attributes, name, getBlockType( name )?.supports?.sgs?.elements || {} );
   Object.assign( bandStyle, bandMargin );
   if ( "grid" === layout && hasBandProps && style.gridTemplateRows !== undefined ) {
     bandStyle.gridTemplateRows = style.gridTemplateRows;

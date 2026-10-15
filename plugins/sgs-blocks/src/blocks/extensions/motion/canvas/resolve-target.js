@@ -11,6 +11,7 @@
  *
  * @package SGS\Blocks
  */
+import { MOTION_ATTRIBUTE_NAME } from '../register';
 
 const DECLARED_RE = /^\.[A-Za-z][A-Za-z0-9_-]*( \.[A-Za-z][A-Za-z0-9_-]*)*$/;
 
@@ -212,4 +213,17 @@ export function namesBand( motion, blockName, elements ) {
 		const cls = declared !== '' ? declared.slice( 1 ) : partClass( blockName, part );
 		return bandClasses( blockName ).includes( cls );
 	} );
+}
+
+/**
+ * `namesBand()` read from a block's attributes, so a block's edit file can force its band without reading the motion
+ * attribute itself (that read belongs to the motion layer, `scripts/check-motion-atoms.py`).
+ *
+ * @param {Object} attributes The block's attributes.
+ * @param {string} blockName  Block name.
+ * @param {Object} elements   `supports.sgs.elements`.
+ * @return {boolean} True when a band part carries a layer.
+ */
+export function motionNamesBand( attributes, blockName, elements ) {
+	return namesBand( attributes?.[ MOTION_ATTRIBUTE_NAME ], blockName, elements );
 }
