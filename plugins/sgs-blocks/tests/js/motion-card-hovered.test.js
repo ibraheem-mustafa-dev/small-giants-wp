@@ -20,6 +20,7 @@ jest.mock( '@wordpress/data', () => ( {
 const fs = require( 'fs' );
 const path = require( 'path' );
 const React = require( 'react' );
+const { choiceLabels, pickChoice } = require( './motion-choice-helpers' );
 const { act } = React;
 const { createRoot } = require( 'react-dom/client' );
 const {
@@ -74,11 +75,6 @@ const byLabel = ( label, selector ) =>
 	[ ...host.querySelectorAll( selector ) ].find(
 		( el ) => el.getAttribute( 'aria-label' ) === label
 	);
-const radioButtons = ( group ) => [
-	...byLabel( group, '[role="radiogroup"]' ).querySelectorAll(
-		'[role="radio"]'
-	),
-];
 const optionValues = ( label ) =>
 	[ ...byLabel( label, 'select' ).querySelectorAll( 'option' ) ].map(
 		( option ) => option.value
@@ -235,28 +231,23 @@ describe( 'Card hovered', () => {
 		mountPanel();
 		choose( 'Target', 'title' );
 		choose( 'Hover state', 'hover-lift' );
-		expect( radioButtons( 'Driven by' ).map( ( b ) => b.textContent ) ).toEqual(
-			[
-				'This element',
-				'Whole block hovered',
-				'Group hovered',
-				'Card hovered',
-			]
-		);
-		const button = radioButtons( 'Driven by' ).find(
-			( el ) => el.textContent === 'Card hovered'
-		);
-		act( () =>
-			button.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) )
-		);
+		expect( choiceLabels( host, 'Driven by' ) ).toEqual( [
+			'This element',
+			'Whole block hovered',
+			'Group hovered',
+			'Card hovered',
+		] );
+		pickChoice( host, 'Driven by', 'Card hovered' );
 		expect( current.elements.title.hover.state.source ).toBe( 'item' );
 	} );
 
 	it( 'is not shown in the panel for the whole block', () => {
 		mountPanel();
 		choose( 'Hover state', 'hover-lift' );
-		expect( radioButtons( 'Driven by' ).map( ( b ) => b.textContent ) ).toEqual(
-			[ 'This element', 'Whole block hovered', 'Group hovered' ]
-		);
+		expect( choiceLabels( host, 'Driven by' ) ).toEqual( [
+			'This element',
+			'Whole block hovered',
+			'Group hovered',
+		] );
 	} );
 } );

@@ -162,7 +162,7 @@ describe( 'Fine-tune writes', () => {
 		mount( {} );
 		pick( 'Title' );
 		await click( buttonText( 'Split reveal' ) );
-		const triggers = H.all( '[data-option]' ).map( ( node ) => node.textContent );
+		const triggers = H.optionsOf( 'Trigger' );
 		expect( triggers ).toEqual( expect.arrayContaining( [ 'Page load', 'Scroll into view' ] ) );
 		expect( triggers ).not.toContain( 'Panel opens' );
 		expect( triggers ).not.toContain( 'State' );

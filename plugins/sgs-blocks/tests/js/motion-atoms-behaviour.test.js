@@ -10,6 +10,7 @@ const React = require( 'react' );
 const { createRoot } = require( 'react-dom/client' );
 const { act } = require( 'react' );
 const { setText, click } = require( './motion-atoms-harness' );
+const { choiceOptions, pickChoice } = require( './motion-choice-helpers' );
 
 const h = React.createElement;
 
@@ -52,11 +53,7 @@ const alertText = () => q( '[role="alert"]' )?.textContent || '';
 const buttonNamed = ( text ) => [ ...container.querySelectorAll( 'button' ) ].find( ( b ) => b.textContent === text );
 
 /** The option values a choice shows, whether it rendered as a segmented group or a select. */
-function shownOptions() {
-	const radios = [ ...container.querySelectorAll( '[role="radio"]' ) ].map( ( b ) => b.dataset.option );
-	const select = [ ...container.querySelectorAll( 'select option' ) ].map( ( o ) => o.value ).filter( Boolean );
-	return radios.length ? radios : select;
-}
+const shownOptions = ( label ) => choiceOptions( container, label ).map( ( option ) => option.value );
 
 /** Mounts an atom over controlled state; returns what it emitted. */
 function mount( Atom, props, initial ) {
@@ -87,7 +84,7 @@ describe( 'the target picker', () => {
 		expect( excluded.length ).toBeGreaterThan( 0 );
 		expect( targetOptions( quoteBlock.supports.sgs.elements ).map( ( o ) => o.value ) ).toEqual( [ 'root', ...declared ] );
 		mount( TargetPicker, { elements: quoteBlock.supports.sgs.elements }, 'root' );
-		expect( shownOptions() ).toEqual( [ 'root', ...declared ] );
+		expect( shownOptions( 'Animate' ) ).toEqual( [ 'root', ...declared ] );
 	} );
 
 	it( 'reads the parts from the registered block when given a block name', () => {
@@ -96,7 +93,7 @@ describe( 'the target picker', () => {
 			supports: { sgs: { elements: { title: { label: 'Title', order: 2 }, icon: { label: 'Icon', order: 1 } } } },
 		} );
 		mount( TargetPicker, { blockName: 'sgs/picker-fixture' }, undefined );
-		expect( shownOptions() ).toEqual( [ 'root', 'icon', 'title' ] );
+		expect( shownOptions( 'Animate' ) ).toEqual( [ 'root', 'icon', 'title' ] );
 	} );
 
 	it( 'a block that declares no parts offers the whole block only', () => {
@@ -105,7 +102,7 @@ describe( 'the target picker', () => {
 
 	it( 'choosing a part reports its key, and an unset value reads as root', () => {
 		const emitted = mount( TargetPicker, { elements: { title: { label: 'Title', order: 1 } } }, undefined );
-		click( container.querySelector( '[data-option="title"]' ) );
+		pickChoice( container, 'Animate', 'title' );
 		expect( emitted ).toEqual( [ 'title' ] );
 	} );
 
@@ -137,8 +134,8 @@ describe( 'the trigger picker', () => {
 
 	it( 'renders those triggers and reports the choice', () => {
 		const emitted = mount( TriggerPicker, { panel: 'entrance', effectTriggers: [ 'load', 'scroll' ] }, 'scroll' );
-		expect( shownOptions() ).toEqual( [ 'load', 'scroll' ] );
-		click( container.querySelector( '[data-option="load"]' ) );
+		expect( shownOptions( 'Start when' ) ).toEqual( [ 'load', 'scroll' ] );
+		pickChoice( container, 'Start when', 'load' );
 		expect( emitted ).toEqual( [ 'load' ] );
 	} );
 
@@ -196,8 +193,8 @@ describe( 'the intensity picker', () => {
 				} )
 			)
 		);
-		expect( shownOptions() ).toEqual( [ 'subtle', 'standard', 'bold' ] );
-		click( container.querySelector( '[data-option="bold"]' ) );
+		expect( shownOptions( 'Intensity' ) ).toEqual( [ 'subtle', 'standard', 'bold' ] );
+		pickChoice( container, 'Intensity', 'bold' );
 		expect( emitted ).toEqual( [
 			{ intensity: 'bold', values: { duration: 'token:duration.fast', translateY: rowsOf( 'hover-lift' ).bold.values.translateY } },
 		] );
@@ -277,8 +274,8 @@ describe( 'the stagger helper', () => {
 
 	it( 'offers the orders the schema lists, and Reverse writes the reversed rows', () => {
 		const emitted = helper( {}, { step: 80 } );
-		expect( shownOptions() ).toEqual( defs.$defs.Stagger.properties.order.enum );
-		click( container.querySelector( '[data-option="reverse"]' ) );
+		expect( shownOptions( 'Order' ) ).toEqual( defs.$defs.Stagger.properties.order.enum );
+		pickChoice( container, 'Order', 'reverse' );
 		expect( emitted.at( -1 ).order ).toBe( 'reverse' );
 		click( buttonNamed( 'Write delays' ) );
 		expect( written() ).toEqual( [ 160, 80, 0, 160, 80, 0 ] );

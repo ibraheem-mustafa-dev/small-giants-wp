@@ -108,6 +108,24 @@ describe( 'each atom renders', () => {
 		const many = [ 'a', 'b', 'c', 'd', 'e', 'f' ].map( ( v ) => ( { value: v, label: v } ) );
 		mount( ChoiceAtom, { label: 'Many', options: many } );
 		expect( field( 'select', 'Many' ) ).not.toBeNull();
+		act( () => root.unmount() );
+		root = createRoot( container );
+		const orders = [ 'Row first', 'Column first', 'From centre', 'Reverse', 'Flatten nested items' ];
+		mount( ChoiceAtom, { label: 'Stagger order', options: orders.map( ( l ) => ( { value: l, label: l } ) ) } );
+		expect( q( '[role="radiogroup"]' ) ).toBeNull();
+		expect( field( 'select', 'Stagger order' ) ).not.toBeNull();
+		act( () => root.unmount() );
+		root = createRoot( container );
+		const long = [ 'This element', 'Whole block hovered', 'Group hovered' ];
+		mount( ChoiceAtom, { label: 'Driven', options: long.map( ( l ) => ( { value: l, label: l } ) ) } );
+		expect( q( '[role="radiogroup"]' ) ).toBeNull();
+		expect( field( 'select', 'Driven' ) ).not.toBeNull();
+		act( () => root.unmount() );
+		root = createRoot( container );
+		const four = [ 'a', 'b', 'c', 'd' ].map( ( v ) => ( { value: v, label: v } ) );
+		mount( ChoiceAtom, { label: 'Four short', options: four } );
+		expect( q( '[role="radiogroup"]' ) ).toBeNull();
+		expect( field( 'select', 'Four short' ) ).not.toBeNull();
 	} );
 
 	it( 'Asset, PropertyRow and CustomisedTag', () => {

@@ -81,6 +81,7 @@ export default function HoverFineTune( {
 										'sgs-blocks'
 									) }
 									options={ DRIVER_OPTIONS }
+									emptyLabel={ null }
 									value={ mode }
 									onChange={ ( next ) =>
 										next &&

@@ -7,6 +7,7 @@ const React = require( 'react' );
 const { act } = require( 'react' );
 const { createRoot } = require( 'react-dom/client' );
 const { Simulate } = require( 'react-dom/test-utils' );
+const { optionNode, activateOption, choiceLabels } = require( './motion-choice-helpers' );
 
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -182,10 +183,8 @@ const buttonText = ( text ) =>
 	[ ...container.querySelectorAll( 'button' ) ].find(
 		( b ) => b.textContent.trim() === text
 	);
-const radio = ( text ) =>
-	[ ...container.querySelectorAll( '[role="radio"]' ) ].find(
-		( b ) => b.textContent.trim() === text
-	);
+// An option of any choice field by its label, whether the field rendered as a segmented group or as a select.
+const radio = ( text ) => optionNode( container, text );
 const choose = ( label, value ) =>
 	act( () => Simulate.change( byLabel( label ), { target: { value } } ) );
 // The Target row is a short segmented choice; a marked part reads "Panel •".
@@ -198,6 +197,10 @@ const pick = ( text ) =>
 		)
 	);
 const click = async ( node ) => {
+	if ( node.tagName === 'OPTION' ) {
+		activateOption( node );
+		return;
+	}
 	await act( async () => Simulate.click( node ) );
 };
 const base = ( target = 'root' ) => latest.layers.layersOf( target, 'entrance.base' )[ 0 ];
@@ -231,6 +234,8 @@ module.exports = {
 	byLabel,
 	buttonText,
 	radio,
+	// The option labels the named choice field offers, whether it rendered as a segmented group or a select.
+	optionsOf: ( label ) => choiceLabels( container, label ),
 	choose,
 	pick,
 	click,

@@ -22,6 +22,12 @@ jest.mock( '@wordpress/data', () => ( {
 } ) );
 
 const React = require( 'react' );
+const {
+	choiceControl,
+	choiceLabels,
+	choiceValue,
+	pickChoice,
+} = require( './motion-choice-helpers' );
 const { act } = React;
 const { createRoot } = require( 'react-dom/client' );
 const {
@@ -134,12 +140,12 @@ describe( 'the rendered controls exist and are named', () => {
 	it( 'offers the Hover state select, the Driven by choices and Intensity on a state', () => {
 		mount( withState( { ...SCALE } ) );
 		expect( byLabel( 'Hover state', 'select' ) ).toBeDefined();
-		expect( byLabel( 'Driven by', '[role="radiogroup"]' ) ).toBeDefined();
-		expect(
-			[ 'This element', 'Whole block hovered', 'Group hovered' ].map(
-				( name ) => radio( 'Driven by', name )?.textContent
-			)
-		).toEqual( [ 'This element', 'Whole block hovered', 'Group hovered' ] );
+		expect( choiceControl( host, 'Driven by' ) ).not.toBeNull();
+		expect( choiceLabels( host, 'Driven by' ) ).toEqual( [
+			'This element',
+			'Whole block hovered',
+			'Group hovered',
+		] );
 		expect(
 			byLabel( 'Hover state intensity', '[role="radiogroup"]' )
 		).toBeDefined();
@@ -152,7 +158,7 @@ describe( 'the rendered controls exist and are named', () => {
 
 	it( 'shows no Driven by or Intensity on an element with nothing hovering, and offers the Focus state on sgs/form only', () => {
 		mount( undefined, 'sgs/form' );
-		expect( byLabel( 'Driven by', '[role="radiogroup"]' ) ).toBeUndefined();
+		expect( choiceControl( host, 'Driven by' ) ).toBeNull();
 		expect(
 			byLabel( 'Hover state intensity', '[role="radiogroup"]' )
 		).toBeUndefined();
@@ -241,22 +247,18 @@ describe( 'the Hover state select', () => {
 describe( 'Driven by', () => {
 	it( 'writes source root to the state and both effects when Whole block hovered is chosen', () => {
 		mount( withState( { ...SCALE }, [ SHEEN, MAGNET ] ) );
-		click( radio( 'Driven by', 'Whole block hovered' ) );
+		pickChoice( host, 'Driven by', 'Whole block hovered' );
 		expect( stateOf().source ).toBe( 'root' );
 		expect( effectsOf().map( ( layer ) => layer.source ) ).toEqual( [
 			'root',
 			'root',
 		] );
-		expect(
-			radio( 'Driven by', 'Whole block hovered' ).getAttribute(
-				'aria-checked'
-			)
-		).toBe( 'true' );
+		expect( choiceValue( host, 'Driven by' ) ).toBe( 'root' );
 	} );
 
 	it( 'shows for an element with effects only and writes the source to its effect', () => {
 		mount( withState( undefined, [ SHEEN ] ) );
-		click( radio( 'Driven by', 'Group hovered' ) );
+		pickChoice( host, 'Driven by', 'Group hovered' );
 		expect( effectsOf()[ 0 ].source ).toBe( 'group' );
 		expect( stateOf() ).toBeUndefined();
 	} );
@@ -347,7 +349,7 @@ describe( 'the Rotate driver switch control', () => {
 			} )
 		);
 		expect( byLabel( 'Maximum angle', 'input' ) ).toBeUndefined();
-		click( radio( 'Rotate driven by', 'Follow pointer' ) );
+		pickChoice( host, 'Rotate driven by', 'Follow pointer' );
 		expect( stateOf().values ).toMatchObject( {
 			followPointer: true,
 			maxAngle: 8,
@@ -356,7 +358,7 @@ describe( 'the Rotate driver switch control', () => {
 		expect(
 			host.querySelector( '[aria-label="Axis lock"]' )
 		).not.toBeNull();
-		click( radio( 'Rotate driven by', 'Hover angles' ) );
+		pickChoice( host, 'Rotate driven by', 'Hover angles' );
 		expect( stateOf().values.followPointer ).toBeUndefined();
 		expect( stateOf().values.maxAngle ).toBeUndefined();
 		expect( host.querySelector( '[aria-label="Axis lock"]' ) ).toBeNull();

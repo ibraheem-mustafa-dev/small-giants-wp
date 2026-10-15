@@ -122,6 +122,7 @@ export default function HoverPanel( { blockName, clientId, elements, motion, lay
 					onChange={ ( source ) =>
 						actions.chooseSource( source || 'self' )
 					}
+					emptyLabel={ null }
 				/>
 			) }
 			{ layer && (

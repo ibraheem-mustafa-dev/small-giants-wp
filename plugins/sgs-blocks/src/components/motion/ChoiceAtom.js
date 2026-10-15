@@ -1,6 +1,7 @@
 /**
- * ChoiceAtom: one option out of a list (the `choice` field type). Up to five options show as a segmented
- * `ToggleGroupControl`; more show as a `SelectControl`. The options come from the `options` prop or, failing that, from
+ * ChoiceAtom: one option out of a list (the `choice` field type). Up to three options whose labels fit one row of the
+ * inspector sidebar show as a segmented `ToggleGroupControl`; any other list shows as a `SelectControl`, the same split
+ * `TypographyControls.js` makes (a segmented control gets cramped). The options come from the `options` prop or, failing that, from
  * the field node's `enum`; a value that is not one of them is refused.
  *
  * @package
@@ -12,7 +13,9 @@ import { ToggleGroupControl, ToggleGroupControlOption } from '../primitives';
 import { boundsOf, refusalMessage, useAtomField } from './atom-utils';
 import AtomFrame from './AtomFrame';
 
-const MAX_SEGMENTED = 5;
+const MAX_SEGMENTED = 3;
+// Label characters one segmented row holds in the 280px inspector sidebar at the editor's 13px font.
+const SEGMENTED_CHAR_BUDGET = 24;
 
 const humanise = ( value ) => {
 	const text = value.replace( /-/g, ' ' );
@@ -70,7 +73,10 @@ export default function ChoiceAtom( {
 		}
 	};
 
-	const segmented = listed.length > 0 && listed.length <= MAX_SEGMENTED;
+	const segmented =
+		listed.length > 0 &&
+		listed.length <= MAX_SEGMENTED &&
+		listed.reduce( ( sum, option ) => sum + String( option.label ).length, 0 ) <= SEGMENTED_CHAR_BUDGET;
 	const current = typeof value === 'string' ? value : '';
 
 	return (

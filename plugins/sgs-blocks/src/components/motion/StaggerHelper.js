@@ -182,6 +182,7 @@ export default function StaggerHelper( {
 				fieldNode={ NODES.order }
 				value={ settings.order }
 				onChange={ ( next ) => set( 'order' )( next ) }
+				emptyLabel={ null }
 			/>
 			{ showCloseOrder && (
 				<ChoiceAtom
@@ -194,6 +195,7 @@ export default function StaggerHelper( {
 					fieldNode={ NODES.closeOrder }
 					value={ settings.closeOrder }
 					onChange={ ( next ) => set( 'closeOrder' )( next ) }
+					emptyLabel={ null }
 				/>
 			) }
 			{ hasColumns && 'flatten' !== settings.order && (

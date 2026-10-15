@@ -109,6 +109,7 @@ export default function TriggerPicker( {
 				fieldNode={ { enum: triggers } }
 				value={ value }
 				onChange={ onChange }
+				emptyLabel={ null }
 			/>
 			{ value === 'state' && onStateChange && (
 				<ChoiceAtom
