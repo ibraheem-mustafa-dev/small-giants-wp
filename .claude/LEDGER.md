@@ -76,13 +76,13 @@ Open owed items:
 
 **State (2026-10-15):** S1 to S3b and Gate 4 (2026-10-13) are done; wave 11's detail is in the build plan. Wave 12 (S4) runs as four tracks; each track's bullet in `plans/2026-10-12-spec38a-motion-build.md` holds its commits and open items.
 - **Track L: closed** (handoff `36a319bb0`). Built M5.8 (closed; the scroll-progress probe runs in every deploy, `4885fbca6`), M5.12 to M5.15, M5.16a-c and M6.3, with council fixes `dd5abde72` and `b98ddd044`. Open: live fixtures for FR-38A-37, 44 and 52; a `bgLottie` mapper (needed before M6.5).
-- **Track S: closed.** Built M4.1 to M4.6, M6.2, M6.4 and M5.17. Council fixes 1, 2, 3 and 5 are on main (`44372db1c`). Fix 4 (magnet transition timing) is uncommitted on disk and waits for Track I's canvas twin, so the parity test never goes red on main.
+- **Track S: closed.** Built all nine units (M4.1 to M4.6, M6.2, M6.4, M5.17; the `@sgs/motion-state-loader` makes open and state motion play live) with council fixes `a62541995`, `7640bcd95`, `f5d5ccc10`, `94f12c84d` and `44372db1c`. sandybrown runs `9ec0b8064` (drawer probe 5276: 15 pass, 12 controls red); indus-test runs `fb5145ee9`, where Gate 5b measured stored timings in three engines. Council fix 4 (magnet transition timing) is uncommitted on disk and waits for Track I's canvas twin. Open: 15 items in its plan bullet (chiefly the `closeOrder` `together` schema value, the `tag_children` raw-text depth bug, form-states live acceptance, the buybox `main-photo` part). Next: a Track S follow-up session (prompt with Bean) closes items 1, 14 and 9, then M6.5's prerequisites.
 - **Track E: code done**, with open items in its plan bullet, chiefly recalibrating six live probes for Lenis smooth scroll.
 - **Track I: in progress** (session small-giants-wp-b5); M3.7 is live-proven (`5a8cb0e39`).
 
-**Blockers:** none. **Bean decisions:** whether to migrate stored brand-strip and trust-bar marquees early (until M6.5 they render as static rows on the canary and indus-test); the page-weight budget for a page carrying every effect family (Track E item 3).
+**Blockers:** none. **Bean decisions:** a glance at Track S's Gate 5b screenshots; whether to migrate stored brand-strip and trust-bar marquees early (until M6.5 they render as static rows on the canary and indus-test); the page-weight budget for a page carrying every effect family (Track E item 3).
 
-**Resume from:** Track L's next prompt, `prompts/2026-10-15-spec38a-track-l-live-fixtures.md`; Track I finishing its units and committing fix 4 with the canvas twin.
+**Resume from:** the Track S follow-up prompt; Track L's next prompt, `prompts/2026-10-15-spec38a-track-l-live-fixtures.md`; Track I finishing its units and committing fix 4 with the canvas twin.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
