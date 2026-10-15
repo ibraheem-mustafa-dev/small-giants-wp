@@ -83,7 +83,12 @@
  */
 
 import { Flip } from 'gsap/Flip';
-import { tierG, withMotionAllowed, bootEffect } from '@sgs/motion-provider';
+import {
+	tierG,
+	withMotionAllowed,
+	bootEffect,
+	resolveEase,
+} from '@sgs/motion-provider';
 
 /**
  * How long a burst of mutations must go quiet before Flip runs.
@@ -203,6 +208,24 @@ function touchesProductNode( records, list ) {
 }
 
 /**
+ * The Flip settle options the Fine-tune controls write: duration in seconds
+ * (`data-sgs-fx-duration`, default 0.5) and an ease (`data-sgs-fx-ease`,
+ * default `power2.out`).
+ *
+ * @param {HTMLElement} el Element carrying the data attributes.
+ * @return {{duration: number, ease: *}} Flip.from timing.
+ */
+export function flipTiming( el ) {
+	const raw = el.getAttribute( 'data-sgs-fx-duration' );
+	const parsed = null === raw || '' === raw.trim() ? NaN : parseFloat( raw );
+	const ease = el.getAttribute( 'data-sgs-fx-ease' );
+	return {
+		duration: Number.isFinite( parsed ) ? parsed : 0.5,
+		ease: resolveEase( ease && ease.trim() ? ease.trim() : 'power2.out' ),
+	};
+}
+
+/**
  * Initialise one Product Collection root.
  *
  * @param {HTMLElement} el The element carrying `data-sgs-fx="flip"`.
@@ -286,8 +309,7 @@ export function initFlip( el ) {
 			// `flipTween?.kill()` in the returned teardown already handles it
 			// manually — so call Flip.from() directly.
 			flipTween = Flip.from( state, {
-				duration: 0.5,
-				ease: 'power2.out',
+				...flipTiming( el ),
 				// Per-item stagger, so a re-filter reads as cards resettling one
 				// after another rather than the whole grid snapping as one block.
 				stagger: 0.03,

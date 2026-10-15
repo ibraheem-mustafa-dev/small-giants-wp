@@ -104,8 +104,57 @@
 import { InertiaPlugin } from 'gsap/InertiaPlugin';
 import { tierG, withMotionAllowed, bootEffect } from '@sgs/motion-provider';
 
+/**
+ * Where each draggable parameter of `motion.schema.json::DraggableValues`
+ * arrives: the `x-sgs-field.dataAttr` of that parameter.
+ *
+ * @type {Object<string, string>}
+ */
+const PARAMETER_ATTRS = {
+	'draggable-momentum': 'data-sgs-fx-momentum',
+	'draggable-resistance': 'data-sgs-fx-draggable-resistance',
+	'draggable-threshold': 'data-sgs-fx-draggable-threshold',
+};
+
 /** Pointer travel (px) past which the gesture counts as a drag, not a click. */
 const DRAG_THRESHOLD = 4;
+
+/** InertiaPlugin's own resistance (`gsap.config().resistance`), at ratio 0.5. */
+const INERTIA_RESISTANCE = 100;
+
+/**
+ * The drag threshold: the author's pixel value (0 to 100), else the default.
+ *
+ * @param {HTMLElement} el Element carrying the fx attributes.
+ * @return {number} Pixels of pointer travel before a gesture is a drag.
+ */
+function dragThreshold( el ) {
+	const raw = el.getAttribute( PARAMETER_ATTRS[ 'draggable-threshold' ] );
+	const match =
+		null === raw
+			? null
+			: /^\s*(\d+(?:\.\d+)?|\.\d+)(?:px)?\s*$/.exec( raw );
+	return match ? Math.min( Number( match[ 1 ] ), 100 ) : DRAG_THRESHOLD;
+}
+
+/**
+ * InertiaPlugin's `resistance` for the author's 0 to 1 ratio, or undefined when
+ * unset (the plugin's own default applies). The ratio is exponential around the
+ * plugin default so 0.5 equals it and no ratio reaches 0 (an infinite glide):
+ * 0 is a quarter of the default (long glide), 1 is four times (short glide).
+ *
+ * @param {HTMLElement} el Element carrying the fx attributes.
+ * @return {number|undefined} Resistance in px per second squared.
+ */
+function inertiaResistance( el ) {
+	const raw = el.getAttribute( PARAMETER_ATTRS[ 'draggable-resistance' ] );
+	const ratio = null === raw || '' === raw.trim() ? NaN : Number( raw );
+	if ( ! Number.isFinite( ratio ) ) {
+		return undefined;
+	}
+	const clamped = Math.min( Math.max( ratio, 0 ), 1 );
+	return INERTIA_RESISTANCE * Math.pow( 4, 2 * clamped - 1 );
+}
 
 /**
  * Read the optional momentum opt-out. `data-sgs-fx-momentum="false"` is only
@@ -119,7 +168,7 @@ const DRAG_THRESHOLD = 4;
  * @return {boolean} False only when the operator explicitly disabled it.
  */
 function momentumRequested( el ) {
-	return 'false' !== el.getAttribute( 'data-sgs-fx-momentum' );
+	return 'false' !== el.getAttribute( PARAMETER_ATTRS[ 'draggable-momentum' ] );
 }
 
 /**
@@ -249,6 +298,7 @@ function selectionControl( el ) {
  * @return {Function} Unbind.
  */
 function bindDrag( el, hooks ) {
+	const threshold = dragThreshold( el );
 	const snap = snapControl( el );
 	const selection = selectionControl( el );
 	let dragging = false;
@@ -285,7 +335,7 @@ function bindDrag( el, hooks ) {
 			return;
 		}
 		const delta = event.clientX - startX;
-		if ( ! moved && Math.abs( delta ) < DRAG_THRESHOLD ) {
+		if ( ! moved && Math.abs( delta ) < threshold ) {
 			return;
 		}
 		if ( ! moved ) {
@@ -435,6 +485,7 @@ export function initDraggable( el ) {
 	const revertMomentum = momentumRequested( el )
 		? withMotionAllowed( ( gsap ) => {
 				InertiaPlugin.track( tracker, 'x' );
+				const resistance = inertiaResistance( el );
 				let tween = null;
 
 				momentum = {
@@ -447,6 +498,9 @@ export function initDraggable( el ) {
 						tracker.x = from;
 						tween = gsap.to( tracker, {
 							inertia: {
+								...( undefined === resistance
+									? {}
+									: { resistance } ),
 								x: {
 									velocity:
 										InertiaPlugin.getVelocity( tracker, 'x' ),

@@ -63,8 +63,47 @@ import {
 	withMotionAllowed,
 	bootEffect,
 	resolveStart,
-	resolveScrub,
 } from '@sgs/motion-provider';
+import {
+	readRowVars,
+	readSmoothing,
+	readPixels,
+	readResponsive,
+	rebuildOnTierChange,
+} from './scroll-rows.js';
+
+/**
+ * Where each pin-scrub parameter of `motion.schema.json::PinScrubValues`
+ * arrives: the `x-sgs-field.dataAttr` of that parameter. The pin length is the
+ * relative `end` (`+=100%`).
+ *
+ * @type {Object<string, string>}
+ */
+const PARAMETER_ATTRS = {
+	'pin-scrub-rows': 'data-sgs-fx-pin-scrub-rows',
+	'pin-scrub-stagger': 'data-sgs-fx-stagger',
+	'pin-scrub-hold': 'data-sgs-fx-hold',
+	'pin-scrub-pin-top-offset': 'data-sgs-fx-pin-scrub-pin-top-offset',
+	'pin-scrub-smoothing': 'data-sgs-fx-scrub',
+	'pin-scrub-pin-length': 'data-sgs-fx-end',
+	'pin-scrub-start': 'data-sgs-fx-start',
+};
+
+/**
+ * The per-device custom property of a parameter that has one. It wins over the
+ * attribute (the desktop value) when non-empty.
+ *
+ * @type {Object<string, string>}
+ */
+const CUSTOM_PROPERTIES = {
+	'pin-scrub-start': '--sgs-pin-scrub-start',
+	'pin-scrub-pin-length': '--sgs-pin-scrub-end',
+	'pin-scrub-smoothing': '--sgs-pin-scrub-smoothing',
+	'pin-scrub-hold': '--sgs-pin-scrub-hold',
+};
+
+/** Seconds between one child's entrance and the next, when no step is set. */
+const DEFAULT_STAGGER = 0.15;
 
 /**
  * Read a numeric fx parameter, falling back when absent or unparseable.
@@ -72,30 +111,17 @@ import {
  * exists for this yet) so each effect module stays independently importable.
  *
  * @param {HTMLElement} el       Element carrying the data attributes.
- * @param {string}      name     Attribute suffix (e.g. 'scrub').
+ * @param {string}      attr     Attribute name.
  * @param {number}      fallback Value when unset or not a number.
  * @return {number} The resolved value.
  */
-function numericParam( el, name, fallback ) {
-	const raw = el.getAttribute( `data-sgs-fx-${ name }` );
+function numericParam( el, attr, fallback ) {
+	const raw = el.getAttribute( attr );
 	if ( null === raw || '' === raw.trim() ) {
 		return fallback;
 	}
 	const parsed = parseFloat( raw );
 	return Number.isFinite( parsed ) ? parsed : fallback;
-}
-
-/**
- * Read a string fx parameter, falling back when absent/blank.
- *
- * @param {HTMLElement} el       Element carrying the data attributes.
- * @param {string}      name     Attribute suffix (e.g. 'end').
- * @param {string}      fallback Value when unset.
- * @return {string} The resolved value.
- */
-function stringParam( el, name, fallback ) {
-	const raw = el.getAttribute( `data-sgs-fx-${ name }` );
-	return raw && raw.trim() ? raw.trim() : fallback;
 }
 
 /**
@@ -114,20 +140,22 @@ const CHILD_PRESETS = {
 };
 
 /**
- * Resolve a child's chosen preset, defaulting to `fade-up` for an absent or
- * unrecognised value — see the child-markup contract note above for why this
- * defaults rather than skips.
+ * Resolve a child's from/to targets: its own preset when it names one, else the
+ * section's property rows, else `fade-up` for an absent or unrecognised value (see the child-markup
+ * contract note above for why this defaults rather than skips).
  *
- * @param {HTMLElement} child The participating child element.
- * @return {{from: Object, to: Object}} The preset's from/to tween targets.
+ * @param {HTMLElement}                     child The participating child element.
+ * @param {{from: Object, to: Object}|null} rows  The section's property rows, or null.
+ * @return {{from: Object, to: Object}} The child's from/to tween targets.
  */
-function resolveChildPreset( child ) {
+function resolveChildPreset( child, rows ) {
 	const requested = child.getAttribute( 'data-sgs-fx-child-preset' );
-	return CHILD_PRESETS[ requested ] || CHILD_PRESETS[ 'fade-up' ];
+	return CHILD_PRESETS[ requested ] || rows || CHILD_PRESETS[ 'fade-up' ];
 }
 
 /**
- * How much of the pin is spent holding the finished state, per `data-sgs-fx-hold`.
+ * How much of the pin is spent holding the finished state, per `data-sgs-fx-hold`
+ * (a named step, or the slider's number from 0 to 0.6).
  *
  * Expressed as a FRACTION OF THE PIN rather than a pixel figure, so it scales
  * with whatever pin length the client chose: doubling "how long it stays stuck"
@@ -155,7 +183,17 @@ const HOLD_FRACTIONS = {
  * @return {number} Fraction of the pin spent holding, 0 to <1.
  */
 function resolveHoldFraction( el ) {
-	const raw = ( el.getAttribute( 'data-sgs-fx-hold' ) || '' ).trim();
+	const raw =
+		readResponsive(
+			el,
+			CUSTOM_PROPERTIES[ 'pin-scrub-hold' ],
+			PARAMETER_ATTRS[ 'pin-scrub-hold' ]
+		) || '';
+	const numeric = '' === raw ? NaN : Number( raw );
+	if ( Number.isFinite( numeric ) ) {
+		// The slider's own value (0 to 0.6), beside the named steps.
+		return Math.min( Math.max( numeric, 0 ), 0.6 );
+	}
 	const fraction = HOLD_FRACTIONS[ raw ];
 	// An unset or unrecognised value takes the default rather than 0 — a
 	// missing attribute must not silently mean "no pause", which is the
@@ -252,6 +290,7 @@ function resolveParticipants( el ) {
  */
 export function initPinScrub( el ) {
 	return withMotionAllowed( ( gsap ) => {
+		const build = () => {
 		const children = resolveParticipants( el );
 
 		/*
@@ -288,16 +327,46 @@ export function initPinScrub( el ) {
 				// entitled to it (see resolveStart's docblock): it sets `pin: true`
 				// below, so the section is genuinely parked at the viewport top and
 				// would otherwise sit behind the header for the whole pin.
-				start: () =>
-					resolveStart( el, 'top top', { clearChrome: true } ),
+				start: () => {
+					const authored = readResponsive(
+						el,
+						CUSTOM_PROPERTIES[ 'pin-scrub-start' ],
+						PARAMETER_ATTRS[ 'pin-scrub-start' ]
+					);
+					if ( authored ) {
+						return authored;
+					}
+					const offset = readPixels(
+						el,
+						PARAMETER_ATTRS[ 'pin-scrub-pin-top-offset' ]
+					);
+					if ( null !== offset ) {
+						// The author's pin top offset replaces the header
+						// clearance: the section parks that many pixels
+						// below the viewport top.
+						return offset < 0
+							? `top top-=${ Math.abs( offset ) }`
+							: `top top+=${ offset }`;
+					}
+					return resolveStart( el, 'top top', { clearChrome: true } );
+				},
 				// Pin length: how many viewport-heights the section holds
 				// still while its children's timeline plays out.
-				end: stringParam( el, 'end', '+=100%' ),
+				end:
+					readResponsive(
+						el,
+						CUSTOM_PROPERTIES[ 'pin-scrub-pin-length' ],
+						PARAMETER_ATTRS[ 'pin-scrub-pin-length' ]
+					) || '+=100%',
 				pin: true,
 				// `scrub: true` locks progress to the scrollbar; a number
 				// adds that many seconds of catch-up smoothing (matches the
 				// convention in fx-scrub.js).
-				scrub: resolveScrub( el ),
+				scrub: readSmoothing(
+					el,
+					PARAMETER_ATTRS[ 'pin-scrub-smoothing' ],
+					CUSTOM_PROPERTIES[ 'pin-scrub-smoothing' ]
+				),
 				// Pinning changes document height; a resize (orientation
 				// change, dev-tools toggle, webfont swap reflow) must
 				// re-measure or the pin range drifts from the real layout.
@@ -334,14 +403,24 @@ export function initPinScrub( el ) {
 		 */
 		const hold = resolveHoldFraction( el );
 
+		const rows = readRowVars(
+			el,
+			PARAMETER_ATTRS[ 'pin-scrub-rows' ]
+		);
+		const stagger = numericParam(
+			el,
+			PARAMETER_ATTRS[ 'pin-scrub-stagger' ],
+			DEFAULT_STAGGER
+		);
+
 		children.forEach( ( child, index ) => {
-			const preset = resolveChildPreset( child );
+			const preset = resolveChildPreset( child, rows );
 			// `<` overlaps every child's entrance onto the same scrub range
 			// rather than chaining them end-to-end — a pin's whole point is
 			// that ALL its content is visible and choreographing together,
 			// not paging through children one at a time. Position label
 			// gives each child a slight stagger inside that shared range.
-			timeline.fromTo( child, preset.from, preset.to, index * 0.15 );
+			timeline.fromTo( child, preset.from, preset.to, index * stagger );
 		} );
 
 		/*
@@ -377,7 +456,7 @@ export function initPinScrub( el ) {
 		 *
 		 * The original D453 fix WAS a one-shot, and it loses a race. `scrub`
 		 * is not a one-time jump to the scroll-derived progress: when the
-		 * resolved scrub value is a NUMBER — which `resolveScrub()` returns by
+		 * resolved scrub value is a NUMBER — which `readSmoothing()` returns by
 		 * DEFAULT (1) whenever a block sets no `data-sgs-fx-scrub`, so this is
 		 * the framework's normal configuration, not an edge case —
 		 * ScrollTrigger builds an internal catch-up tween that re-drives the
@@ -523,6 +602,8 @@ export function initPinScrub( el ) {
 			timeline.scrollTrigger?.kill( true, false );
 			timeline.kill();
 		};
+		};
+		return rebuildOnTierChange( build );
 	} );
 }
 

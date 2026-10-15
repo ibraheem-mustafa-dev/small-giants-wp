@@ -87,6 +87,22 @@ import {
 } from '@sgs/motion-provider';
 
 /**
+ * Where each image-sequence parameter of
+ * `motion.schema.json::ImageSequenceValues` arrives: the `x-sgs-field.dataAttr`
+ * of that parameter. The start and end edge and viewport line share one
+ * attribute each (`top 85%`).
+ *
+ * @type {Object<string, string>}
+ */
+const PARAMETER_ATTRS = {
+	'image-sequence-start-element': 'data-sgs-fx-start',
+	'image-sequence-start-viewport': 'data-sgs-fx-start',
+	'image-sequence-end-element': 'data-sgs-fx-end',
+	'image-sequence-end-viewport': 'data-sgs-fx-end',
+	'image-sequence-pin': 'data-sgs-fx-pin',
+};
+
+/**
  * Frames requested per idle-callback slice. Small enough that one slice
  * never monopolises the main thread on a low-end device, large enough that a
  * 300-frame sequence does not need hundreds of scheduling round-trips.
@@ -299,7 +315,8 @@ export function initImageSequence( el ) {
 	const wrapper = el.closest( '.sgs-image-sequence' ) || el.parentElement;
 	const count = Math.max( 1, Math.floor( Number( tier.count ) ) );
 	const pinTarget = wrapper || el;
-	const pinEnabled = 'true' === el.getAttribute( 'data-sgs-fx-pin' );
+	const pinEnabled =
+		'true' === el.getAttribute( PARAMETER_ATTRS[ 'image-sequence-pin' ] );
 
 	return withMotionAllowed( () => {
 		/** @type {Array<HTMLImageElement|null|undefined>} */
@@ -468,14 +485,18 @@ export function initImageSequence( el ) {
 		// the per-instance override this block has always offered. Only the
 		// DEFAULT changes.
 		const resolveVisibilityStart = () => {
-			const authored = el.getAttribute( 'data-sgs-fx-start' );
+			const authored = el.getAttribute(
+				PARAMETER_ATTRS[ 'image-sequence-start-element' ]
+			);
 			if ( authored && authored.trim() ) {
 				return authored.trim();
 			}
 			return computeVisibilityWindow().start;
 		};
 		const resolveVisibilityEnd = () => {
-			const authored = el.getAttribute( 'data-sgs-fx-end' );
+			const authored = el.getAttribute(
+				PARAMETER_ATTRS[ 'image-sequence-end-element' ]
+			);
 			if ( authored && authored.trim() ) {
 				return authored.trim();
 			}

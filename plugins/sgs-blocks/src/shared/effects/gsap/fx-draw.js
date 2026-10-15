@@ -43,7 +43,7 @@ import {
 	resolveTrigger,
 	resolveStart,
 	resolveScrub,
-	bindHoverReplay,
+	resolveEase,
 } from '@sgs/motion-provider';
 
 /**
@@ -77,6 +77,100 @@ function numericParam( el, name, fallback ) {
 	}
 	const parsed = parseFloat( raw );
 	return Number.isFinite( parsed ) ? parsed : fallback;
+}
+
+/**
+ * Read a percentage fx attribute (0 to 100), falling back when absent or
+ * unparseable.
+ *
+ * @param {HTMLElement} el       Element carrying the data attributes.
+ * @param {string}      name     Attribute suffix (e.g. 'draw-from').
+ * @param {number}      fallback Value when unset or not a number.
+ * @return {number} The value clamped to 0..100.
+ */
+function percentParam( el, name, fallback ) {
+	const value = numericParam( el, name, fallback );
+	return Math.min( 100, Math.max( 0, value ) );
+}
+
+/**
+ * The DrawSVG from and to values for the authored range and direction.
+ *
+ * `data-sgs-fx-draw-from` and `-to` are how much of the stroke is drawn at
+ * the start and the end of the tween, as percentages of its length (defaults 0
+ * and 100, so the stroke draws on). They map straight to DrawSVG's single
+ * value form (`'100%'` is the first 100% of the stroke), so `from 100, to 40`
+ * undraws to 40%. `data-sgs-fx-draw-direction="reverse"` anchors the visible
+ * segment at the stroke's far end instead (`'60% 100%'` is the last 40%), so
+ * the stroke draws from its end back towards its start.
+ *
+ * @param {HTMLElement} el Element carrying the data attributes.
+ * @return {{from: string, to: string}} DrawSVG values.
+ */
+export function drawRange( el ) {
+	const from = percentParam( el, 'draw-from', 0 );
+	const to = percentParam( el, 'draw-to', 100 );
+	if ( 'reverse' === el.getAttribute( 'data-sgs-fx-draw-direction' ) ) {
+		return { from: `${ 100 - from }% 100%`, to: `${ 100 - to }% 100%` };
+	}
+	return { from: `${ from }%`, to: `${ to }%` };
+}
+
+/**
+ * Bind a paused draw tween to hover and keyboard focus: it plays forward when
+ * the pointer enters or focus lands inside `el`, and reverses when both the
+ * pointer and focus have left. Reusable for any draw on a part that should
+ * redraw on interaction (the logo hover redraw).
+ *
+ * The caller creates the tween with `paused: true` and `immediateRender:
+ * false`, so an element that is never hovered stays as the server rendered it.
+ *
+ * @param {HTMLElement} el    Element to watch.
+ * @param {Object}      tween The paused draw tween.
+ * @return {Function} Cleanup that detaches the listeners.
+ */
+export function bindDrawHover( el, tween ) {
+	let pointerInside = false;
+	let focusInside = false;
+
+	const settle = () => {
+		if ( pointerInside || focusInside ) {
+			tween.play();
+		} else {
+			tween.reverse();
+		}
+	};
+	const onEnter = () => {
+		pointerInside = true;
+		settle();
+	};
+	const onLeave = () => {
+		pointerInside = false;
+		settle();
+	};
+	const onFocus = () => {
+		focusInside = true;
+		settle();
+	};
+	const onBlur = ( event ) => {
+		if ( event.relatedTarget && el.contains( event.relatedTarget ) ) {
+			return;
+		}
+		focusInside = false;
+		settle();
+	};
+
+	el.addEventListener( 'pointerenter', onEnter );
+	el.addEventListener( 'pointerleave', onLeave );
+	el.addEventListener( 'focusin', onFocus );
+	el.addEventListener( 'focusout', onBlur );
+
+	return () => {
+		el.removeEventListener( 'pointerenter', onEnter );
+		el.removeEventListener( 'pointerleave', onLeave );
+		el.removeEventListener( 'focusin', onFocus );
+		el.removeEventListener( 'focusout', onBlur );
+	};
 }
 
 /**
@@ -122,13 +216,27 @@ export function initDraw( el ) {
 		// SVG failed to inline). Fail-open: return no cleanup and leave the
 		// element exactly as server-rendered — never throw, never retry.
 		if ( ! targets.length ) {
+			// The render layer inlines the SVG named by `data-sgs-fx-draw-asset`
+			// (a logo or media part); naming one that produced no drawable
+			// shape is an authoring fault worth one console line.
+			const asset = el.getAttribute( 'data-sgs-fx-draw-asset' );
+			if ( asset && asset.trim() ) {
+				// eslint-disable-next-line no-console
+				console.warn(
+					`[sgs-fx-draw] data-sgs-fx-draw-asset "${ asset }" has no drawable shape — draw skipped, element stays as rendered.`,
+					el
+				);
+			}
 			return undefined;
 		}
 
 		const trigger = resolveTrigger( el );
-		const ease = el.getAttribute( 'data-sgs-fx-ease' ) || 'power2.inOut';
+		const ease = resolveEase(
+			el.getAttribute( 'data-sgs-fx-ease' ) || 'power2.inOut'
+		);
+		const range = drawRange( el );
 		const common = {
-			drawSVG: '100%',
+			drawSVG: range.to,
 			duration: numericParam( el, 'duration', 1 ),
 			ease,
 		};
@@ -140,7 +248,7 @@ export function initDraw( el ) {
 		 * tracking a scroll position.
 		 *
 		 * `immediateRender: false` on the hover arm is load-bearing, not
-		 * tidiness — see `bindHoverReplay`'s docblock in provider.js. `fromTo`
+		 * tidiness — see `bindDrawHover`'s docblock above. `fromTo`
 		 * renders its FROM state (`drawSVG: '0%'`, undrawn) at once by default,
 		 * so a paused hover tween would undraw the graphic the instant it is
 		 * created; a visitor who never hovers, or cannot (touch, no pointer),
@@ -152,7 +260,7 @@ export function initDraw( el ) {
 			const isHover = 'hover' === trigger;
 			tween = gsap.fromTo(
 				targets,
-				{ drawSVG: '0%' },
+				{ drawSVG: range.from },
 				{
 					...common,
 					paused: isHover,
@@ -161,7 +269,7 @@ export function initDraw( el ) {
 			);
 
 			const unbindHover = isHover
-				? bindHoverReplay( el, tween )
+				? bindDrawHover( el, tween )
 				: undefined;
 
 			return () => {
@@ -177,7 +285,7 @@ export function initDraw( el ) {
 		// one-shot reveal-on-entry.
 		tween = gsap.fromTo(
 			targets,
-			{ drawSVG: '0%' },
+			{ drawSVG: range.from },
 			{
 				...common,
 				scrollTrigger: {

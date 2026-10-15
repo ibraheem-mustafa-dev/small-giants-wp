@@ -84,6 +84,7 @@ import {
 	bootEffect,
 	resolveTrigger,
 	bindHoverReplay,
+	resolveEase,
 } from '@sgs/motion-provider';
 
 /**
@@ -186,6 +187,52 @@ function resolveMorphTarget( el ) {
 }
 
 /**
+ * The IntersectionObserver `rootMargin` for the scroll arm. The start line
+ * (`data-sgs-fx-morph-start-line`, 0 to 100, the viewport line the element's
+ * top must reach) defaults to 85, which is today's `-15%` bottom margin.
+ *
+ * @param {HTMLElement} el Element carrying the data attributes.
+ * @return {string} A rootMargin string.
+ */
+export function startLineMargin( el ) {
+	const raw = el.getAttribute( 'data-sgs-fx-morph-start-line' );
+	const parsed = null === raw ? NaN : parseFloat( raw );
+	const line = Number.isFinite( parsed )
+		? Math.min( 100, Math.max( 0, parsed ) )
+		: 85;
+	return `0px 0px -${ 100 - line }% 0px`;
+}
+
+/**
+ * Name the render-layer inputs behind a skipped morph. The shape preset
+ * (`data-sgs-fx-shape`) and the two uploaded shapes
+ * (`data-sgs-fx-shape-asset-from`, `-to`) are expanded into the target
+ * selector by the render layer; when no target resulted, say which inputs
+ * were set so the cause is visible.
+ *
+ * @param {HTMLElement} el Element carrying the data attributes.
+ */
+function warnMissingShape( el ) {
+	const named = [
+		'data-sgs-fx-shape',
+		'data-sgs-fx-shape-asset-from',
+		'data-sgs-fx-shape-asset-to',
+	]
+		.map( ( name ) => [ name, el.getAttribute( name ) ] )
+		.filter( ( [ , value ] ) => value && value.trim() )
+		.map( ( [ name, value ] ) => `${ name }="${ value }"` );
+	if ( named.length && ! el.hasAttribute( 'data-sgs-fx-morph-target' ) ) {
+		// eslint-disable-next-line no-console
+		console.warn(
+			`[sgs-fx-morph] ${ named.join(
+				', '
+			) } produced no data-sgs-fx-morph-target — morph skipped, element stays at its rendered shape.`,
+			el
+		);
+	}
+}
+
+/**
  * Initialise one morphing element.
  *
  * The asset gate runs BEFORE `withMotionAllowed`, deliberately: a missing
@@ -201,6 +248,7 @@ function resolveMorphTarget( el ) {
 export function initMorph( el ) {
 	const target = resolveMorphTarget( el );
 	if ( ! target ) {
+		warnMissingShape( el );
 		return undefined;
 	}
 
@@ -214,7 +262,9 @@ export function initMorph( el ) {
 			// the plugin.
 			morphSVG: target,
 			duration: numericParam( el, 'duration', 0.8 ),
-			ease: el.getAttribute( 'data-sgs-fx-ease' ) || 'power2.inOut',
+			ease: resolveEase(
+				el.getAttribute( 'data-sgs-fx-ease' ) || 'power2.inOut'
+			),
 		};
 
 		let tween;
@@ -273,7 +323,7 @@ export function initMorph( el ) {
 				// Fires a little before the shape is fully in view, roughly
 				// matching the `'top 85%'` default the ScrollTrigger-based
 				// siblings use for their own scroll-triggered arms.
-				{ rootMargin: '0px 0px -15% 0px' }
+				{ rootMargin: startLineMargin( el ) }
 			);
 			observer.observe( el );
 		}

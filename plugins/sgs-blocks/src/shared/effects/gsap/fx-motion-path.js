@@ -147,6 +147,7 @@ import {
 	bootEffect,
 	resolveStart,
 	resolveScrub,
+	resolveEase,
 } from '@sgs/motion-provider';
 
 /**
@@ -236,6 +237,69 @@ function resolvePathTarget( el ) {
 }
 
 /**
+ * A ratio fx attribute (0 to 1), or the fallback when absent or unparseable.
+ *
+ * @param {HTMLElement} el       Element carrying the data attributes.
+ * @param {string}      name     Full attribute name.
+ * @param {number}      fallback Value when unset or not a number.
+ * @return {number} The value clamped to 0..1.
+ */
+function ratioParam( el, name, fallback ) {
+	const raw = el.getAttribute( name );
+	const parsed = null === raw || '' === raw.trim() ? NaN : parseFloat( raw );
+	return Number.isFinite( parsed )
+		? Math.min( 1, Math.max( 0, parsed ) )
+		: fallback;
+}
+
+/**
+ * The `motionPath` range and origin the Fine-tune controls write: progress
+ * range `data-sgs-fx-motion-path-range-start` and `-range-end` (defaults 0
+ * and 1) and the traveller's alignment origin `-origin-x` and `-origin-y`
+ * (defaults 0.5 and 0.5).
+ *
+ * @param {HTMLElement} el Element carrying the data attributes.
+ * @return {{start: number, end: number, alignOrigin: number[]}} Path config keys.
+ */
+export function pathRange( el ) {
+	return {
+		alignOrigin: [
+			ratioParam( el, 'data-sgs-fx-motion-path-origin-x', 0.5 ),
+			ratioParam( el, 'data-sgs-fx-motion-path-origin-y', 0.5 ),
+		],
+		start: ratioParam( el, 'data-sgs-fx-motion-path-range-start', 0 ),
+		end: ratioParam( el, 'data-sgs-fx-motion-path-range-end', 1 ),
+	};
+}
+
+/**
+ * Name the render-layer inputs behind a skipped motion path. The route preset
+ * (`data-sgs-fx-path`) and the uploaded route (`data-sgs-fx-path-asset`) are
+ * expanded into the target selector by the render layer; when no target
+ * resulted, say which inputs were set so the cause is visible.
+ *
+ * @param {HTMLElement} el Element carrying the data attributes.
+ */
+function warnMissingRoute( el ) {
+	const named = [ 'data-sgs-fx-path', 'data-sgs-fx-path-asset' ]
+		.map( ( name ) => [ name, el.getAttribute( name ) ] )
+		.filter( ( [ , value ] ) => value && value.trim() )
+		.map( ( [ name, value ] ) => `${ name }="${ value }"` );
+	if (
+		named.length &&
+		! el.hasAttribute( 'data-sgs-fx-motion-path-target' )
+	) {
+		// eslint-disable-next-line no-console
+		console.warn(
+			`[sgs-fx-motion-path] ${ named.join(
+				', '
+			) } produced no data-sgs-fx-motion-path-target — motion path skipped, element stays at its rendered position.`,
+			el
+		);
+	}
+}
+
+/**
  * Initialise one scroll-scrubbed travelling element.
  *
  * The asset gate runs BEFORE `withMotionAllowed`, deliberately: a missing
@@ -258,11 +322,15 @@ function resolvePathTarget( el ) {
 export function initMotionPath( el ) {
 	const path = resolvePathTarget( el );
 	if ( ! path ) {
+		warnMissingRoute( el );
 		return undefined;
 	}
 
 	return withMotionAllowed( ( gsap ) => {
-		const ease = el.getAttribute( 'data-sgs-fx-ease' ) || 'none';
+		const ease = resolveEase(
+			el.getAttribute( 'data-sgs-fx-ease' ) || 'none'
+		);
+		const range = pathRange( el );
 
 		const tween = gsap.to( el, {
 			motionPath: {
@@ -271,12 +339,12 @@ export function initMotionPath( el ) {
 				// offsets from wherever the traveller happened to render —
 				// see authoring contract point 3 in the file docblock.
 				align: path,
-				alignOrigin: [ 0.5, 0.5 ],
+				alignOrigin: range.alignOrigin,
 				autoRotate:
 					'false' !==
 					el.getAttribute( 'data-sgs-fx-motion-path-rotate' ),
-				start: 0,
-				end: 1,
+				start: range.start,
+				end: range.end,
 			},
 			// `ease: 'none'` is the correct default for a SCRUBBED tween —
 			// progress must map linearly to scroll position, not accelerate/

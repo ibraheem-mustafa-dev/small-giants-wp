@@ -55,6 +55,7 @@ import {
 	bootEffect,
 	resolveTrigger,
 	bindHoverReplay,
+	resolveEase,
 } from '@sgs/motion-provider';
 
 /**
@@ -77,6 +78,104 @@ function numericParam( el, name, fallback ) {
 	}
 	const parsed = parseFloat( raw );
 	return Number.isFinite( parsed ) ? parsed : fallback;
+}
+
+/**
+ * Read a string fx parameter, or null when absent or blank.
+ *
+ * @param {HTMLElement} el   Element carrying the data attributes.
+ * @param {string}      name Full attribute name.
+ * @return {string|null} The trimmed value.
+ */
+function textParam( el, name ) {
+	const raw = el.getAttribute( name );
+	return null === raw || '' === raw.trim() ? null : raw.trim();
+}
+
+/**
+ * The from-state the entrance starts every unit in.
+ *
+ * Defaults are today's `opacity: 0, y: '0.6em'`. Each Fine-tune field the PHP
+ * emitter writes (`data-sgs-fx-split-reveal-from-*`) replaces its default, and
+ * blur and rotate join the state only when authored.
+ *
+ * @param {HTMLElement} el Element carrying the data attributes.
+ * @return {Object} GSAP from-vars.
+ */
+export function fromStateParams( el ) {
+	const opacity = parseFloat(
+		textParam( el, 'data-sgs-fx-split-reveal-from-opacity' )
+	);
+	const state = {
+		opacity: Number.isFinite( opacity ) ? opacity : 0,
+		y:
+			textParam( el, 'data-sgs-fx-split-reveal-from-translate-y' ) ||
+			'0.6em',
+	};
+	const blur = textParam( el, 'data-sgs-fx-split-reveal-from-blur' );
+	if ( blur ) {
+		state.filter = `blur(${ blur })`;
+	}
+	const rotate = textParam( el, 'data-sgs-fx-split-reveal-from-rotate' );
+	if ( rotate ) {
+		state.rotation = rotate;
+	}
+	return state;
+}
+
+/**
+ * A repeatable shuffle of 0..count-1 from a stored seed (mulberry32), so a
+ * random stagger order is the same on every load.
+ *
+ * @param {number} count Number of units.
+ * @param {number} seed  Stored seed.
+ * @return {number[]} The rank each unit plays at.
+ */
+/* eslint-disable no-bitwise -- mulberry32 needs 32-bit integer arithmetic. */
+export function seededRanks( count, seed ) {
+	let state = seed >>> 0;
+	const next = () => {
+		state = ( state + 0x6d2b79f5 ) >>> 0;
+		let t = state;
+		t = Math.imul( t ^ ( t >>> 15 ), t | 1 );
+		t ^= t + Math.imul( t ^ ( t >>> 7 ), t | 61 );
+		return ( ( t ^ ( t >>> 14 ) ) >>> 0 ) / 4294967296;
+	};
+	const ranks = Array.from( { length: count }, ( _, i ) => i );
+	for ( let i = count - 1; i > 0; i-- ) {
+		const j = Math.floor( next() * ( i + 1 ) );
+		[ ranks[ i ], ranks[ j ] ] = [ ranks[ j ], ranks[ i ] ];
+	}
+	return ranks;
+}
+/* eslint-enable no-bitwise */
+
+/**
+ * The GSAP `stagger` value: the plain step by default, or a step with an order
+ * (`start`, `end`, `centre`, `random`) when one is authored. A random order
+ * with a stored seed is a fixed shuffle; without a seed GSAP shuffles per load.
+ *
+ * @param {HTMLElement} el    Element carrying the data attributes.
+ * @param {number}      each  Step between units, in seconds.
+ * @param {number}      count Number of units being staggered.
+ * @return {number|Object|Function} A GSAP stagger value.
+ */
+export function staggerParam( el, each, count ) {
+	const order = textParam( el, 'data-sgs-fx-split-reveal-stagger-order' );
+	if ( ! [ 'start', 'end', 'centre', 'random' ].includes( order ) ) {
+		return each;
+	}
+	if ( 'random' === order ) {
+		const seed = parseFloat(
+			textParam( el, 'data-sgs-fx-split-reveal-seed' )
+		);
+		if ( Number.isFinite( seed ) ) {
+			const ranks = seededRanks( count, seed );
+			return ( index ) => ranks[ index ] * each;
+		}
+		return { each, from: 'random' };
+	}
+	return { each, from: 'centre' === order ? 'center' : order };
 }
 
 /**
@@ -209,11 +308,16 @@ export function initSplitReveal( el ) {
 				const targets = self[ splitType ] || self.words;
 
 				const common = {
-					opacity: 0,
-					y: '0.6em',
+					...fromStateParams( el ),
 					duration: numericParam( el, 'duration', 0.6 ),
-					stagger: numericParam( el, 'stagger', 0.03 ),
-					ease: el.getAttribute( 'data-sgs-fx-ease' ) || 'power2.out',
+					stagger: staggerParam(
+						el,
+						numericParam( el, 'stagger', 0.03 ),
+						targets.length
+					),
+					ease: resolveEase(
+						el.getAttribute( 'data-sgs-fx-ease' ) || 'power2.out'
+					),
 				};
 
 				/*
@@ -246,7 +350,13 @@ export function initSplitReveal( el ) {
 						// was previously `-trigger`, which nothing writes, so
 						// the control silently did nothing and every instance
 						// used the hardcoded default below.
-						start: el.getAttribute( 'data-sgs-fx-start' ) || 'top 85%',
+						start:
+							el.getAttribute( 'data-sgs-fx-start' ) || 'top 85%',
+						// `data-sgs-fx-end` — the end line of the range; omitted
+						// when unset so ScrollTrigger keeps its own default.
+						...( textParam( el, 'data-sgs-fx-end' )
+							? { end: textParam( el, 'data-sgs-fx-end' ) }
+							: {} ),
 					},
 				} );
 

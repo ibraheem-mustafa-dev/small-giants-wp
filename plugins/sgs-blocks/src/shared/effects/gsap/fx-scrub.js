@@ -25,10 +25,62 @@ import {
 	tierG,
 	withMotionAllowed,
 	bootEffect,
-	resolveScrub,
+	resolveEase,
 	resolveTrigger,
 	bindHoverReplay,
 } from '@sgs/motion-provider';
+import {
+	readRowVars,
+	readSmoothing,
+	readResponsive,
+	rebuildOnTierChange,
+} from './scroll-rows.js';
+
+/**
+ * Where each scrub parameter of `motion.schema.json::ScrubValues` arrives: the
+ * `x-sgs-field.dataAttr` of that parameter. The start and end edge and viewport
+ * line share one attribute each (`top 85%`).
+ *
+ * @type {Object<string, string>}
+ */
+const PARAMETER_ATTRS = {
+	'scrub-rows': 'data-sgs-fx-scrub-rows',
+	'scrub-start-element': 'data-sgs-fx-start',
+	'scrub-start-viewport': 'data-sgs-fx-start',
+	'scrub-end-element': 'data-sgs-fx-end',
+	'scrub-end-viewport': 'data-sgs-fx-end',
+	'scrub-smoothing': 'data-sgs-fx-scrub',
+	'scrub-easing': 'data-sgs-fx-ease',
+};
+
+/**
+ * The per-device custom property of a parameter that has one. It wins over the
+ * attribute (the desktop value) when non-empty.
+ *
+ * @type {Object<string, string>}
+ */
+const CUSTOM_PROPERTIES = {
+	'scrub-start-element': '--sgs-scrub-start',
+	'scrub-end-element': '--sgs-scrub-end',
+	'scrub-smoothing': '--sgs-scrub-smoothing',
+};
+
+/** The tween an element with no property rows plays. */
+const DEFAULT_ROWS = {
+	from: { opacity: 0, y: 40 },
+	to: { opacity: 1, y: 0 },
+};
+
+/**
+ * Read one parameter's attribute, or null when unset or blank.
+ *
+ * @param {HTMLElement} el Element carrying the data attributes.
+ * @param {string}      id Schema parameter id.
+ * @return {string|null} The trimmed value.
+ */
+function readParameter( el, id ) {
+	return readResponsive( el, CUSTOM_PROPERTIES[ id ], PARAMETER_ATTRS[ id ] );
+}
 
 /**
  * Read a numeric fx parameter, falling back when absent or unparseable.
@@ -55,8 +107,11 @@ function numericParam( el, name, fallback ) {
  */
 export function initScrub( el ) {
 	return withMotionAllowed( ( gsap ) => {
+		const build = () => {
 		const trigger = resolveTrigger( el );
-		const ease = el.getAttribute( 'data-sgs-fx-ease' ) || 'none';
+		const ease = resolveEase( readParameter( el, 'scrub-easing' ) || 'none' );
+		const rows =
+			readRowVars( el, PARAMETER_ATTRS[ 'scrub-rows' ] ) || DEFAULT_ROWS;
 
 		/*
 		 * `load` and `hover` drop the ScrollTrigger entirely — the tween PLAYS
@@ -67,10 +122,9 @@ export function initScrub( el ) {
 			const isHover = 'hover' === trigger;
 			const played = gsap.fromTo(
 				el,
-				{ opacity: 0, y: 40 },
+				rows.from,
 				{
-					opacity: 1,
-					y: 0,
+					...rows.to,
 					// A scrubbed tween takes its duration from the scroll
 					// distance; a played one needs a real duration. The house
 					// default (provider.js `gsap.defaults`) applies unless the
@@ -97,18 +151,21 @@ export function initScrub( el ) {
 
 		const tween = gsap.fromTo(
 			el,
-			{ opacity: 0, y: 40 },
+			rows.from,
 			{
-				opacity: 1,
-				y: 0,
+				...rows.to,
 				ease,
 				scrollTrigger: {
 					trigger: el,
-					start: el.getAttribute( 'data-sgs-fx-start' ) || 'top 85%',
-					end: el.getAttribute( 'data-sgs-fx-end' ) || 'top 40%',
+					start: readParameter( el, 'scrub-start-element' ) || 'top 85%',
+					end: readParameter( el, 'scrub-end-element' ) || 'top 40%',
 					// `scrub: true` locks progress to the scrollbar; a number
 					// adds that many seconds of catch-up smoothing.
-					scrub: resolveScrub( el ),
+					scrub: readSmoothing(
+						el,
+						PARAMETER_ATTRS[ 'scrub-smoothing' ],
+						CUSTOM_PROPERTIES[ 'scrub-smoothing' ]
+					),
 				},
 			}
 		);
@@ -130,7 +187,7 @@ export function initScrub( el ) {
 		 * shapes without needing to know which one applies.
 		 *
 		 * A HELD state, not a one-shot, for the same reason as pin-scrub:
-		 * `resolveScrub()` (provider.js) returns the NUMBER `1` whenever the
+		 * `readSmoothing()` returns the NUMBER `1` whenever the
 		 * block sets no `data-sgs-fx-scrub` — the framework's default, not an
 		 * edge case — so ScrollTrigger builds an internal catch-up
 		 * `scrubTween` that re-drives `totalProgress` toward the scroll value
@@ -139,7 +196,7 @@ export function initScrub( el ) {
 		 * overwritten on the very next scroll frame with no self-recovery —
 		 * the exact race D453 measured `timeline.progress(1)` losing on
 		 * pin-scrub, and this tween sits behind the identical `scrub:
-		 * resolveScrub(el)` config.
+		 * readSmoothing(el)` config.
 		 *
 		 * `gsap.ticker.add(holdComplete)` is appended (not `prioritize:true`),
 		 * so per D453's M2 (verified against the installed gsap.js source) it
@@ -225,6 +282,8 @@ export function initScrub( el ) {
 			tween.scrollTrigger?.kill( true, false );
 			tween.kill();
 		};
+		};
+		return rebuildOnTierChange( build );
 	} );
 }
 

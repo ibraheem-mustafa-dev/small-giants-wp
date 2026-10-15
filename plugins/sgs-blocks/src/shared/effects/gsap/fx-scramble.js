@@ -73,6 +73,7 @@ import {
 	bootEffect,
 	resolveTrigger,
 	bindHoverReplay,
+	resolveEase,
 } from '@sgs/motion-provider';
 
 /**
@@ -95,6 +96,51 @@ function numericParam( el, name, fallback ) {
 	}
 	const parsed = parseFloat( raw );
 	return Number.isFinite( parsed ) ? parsed : fallback;
+}
+
+/**
+ * ScrambleText `chars` values for the authored character set. An unset or
+ * unrecognised set returns undefined so GSAP's own default set applies.
+ */
+const CHARSETS = {
+	upper: 'upperCase',
+	lower: 'lowerCase',
+	digits: '0123456789',
+};
+
+/**
+ * Read a trimmed string fx attribute, or null when absent or blank.
+ *
+ * @param {HTMLElement} el   Element carrying the data attributes.
+ * @param {string}      name Full attribute name.
+ * @return {string|null} The trimmed value.
+ */
+function textParam( el, name ) {
+	const raw = el.getAttribute( name );
+	return null === raw || '' === raw.trim() ? null : raw.trim();
+}
+
+/**
+ * The extra `scrambleText` keys the Fine-tune controls write: the character
+ * set (`data-sgs-fx-scramble-charset`) and the reveal delay in milliseconds
+ * (`data-sgs-fx-scramble-reveal-delay`, handed to the plugin in seconds).
+ *
+ * @param {HTMLElement} el Element carrying the data attributes.
+ * @return {Object} Keys to merge into the `scrambleText` config.
+ */
+export function scrambleOptions( el ) {
+	const options = {};
+	const chars = CHARSETS[ textParam( el, 'data-sgs-fx-scramble-charset' ) ];
+	if ( chars ) {
+		options.chars = chars;
+	}
+	const delay = parseFloat(
+		textParam( el, 'data-sgs-fx-scramble-reveal-delay' )
+	);
+	if ( Number.isFinite( delay ) && delay > 0 ) {
+		options.revealDelay = delay / 1000;
+	}
+	return options;
 }
 
 /**
@@ -156,7 +202,9 @@ export function initScramble( el ) {
 
 		const common = {
 			duration: numericParam( el, 'duration', 1.2 ),
-			ease: el.getAttribute( 'data-sgs-fx-ease' ) || 'none',
+			ease: resolveEase(
+				el.getAttribute( 'data-sgs-fx-ease' ) || 'none'
+			),
 			scrambleText: {
 				text: originalText,
 				// `tweenLength: false` keeps the string at its FINAL length
@@ -166,6 +214,7 @@ export function initScramble( el ) {
 				// heading mid-animation — a layout-shift the visual effect
 				// does not need to justify.
 				tweenLength: false,
+				...scrambleOptions( el ),
 			},
 		};
 
@@ -198,6 +247,11 @@ export function initScramble( el ) {
 					// "Start position" control writes (§11.2). Mirrors the
 					// same read in `fx-split-reveal.js`.
 					start: el.getAttribute( 'data-sgs-fx-start' ) || 'top 85%',
+					// `data-sgs-fx-end` — omitted when unset so ScrollTrigger
+					// keeps its own default.
+					...( textParam( el, 'data-sgs-fx-end' )
+						? { end: textParam( el, 'data-sgs-fx-end' ) }
+						: {} ),
 				},
 			} );
 		}
