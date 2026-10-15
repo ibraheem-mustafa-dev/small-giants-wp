@@ -256,9 +256,17 @@ export function createMarquee( root ) {
 			return;
 		}
 		const vertical = VERTICAL.includes( settings.direction );
+		// The set is measured in the running layout: a block can keep the set out of its static layout until the
+		// marquee runs (the trust bar's track is `display: contents` until then), so the marks go on first.
+		root.setAttribute( 'data-sgs-marquee', 'on' );
+		lane.setAttribute( 'data-sgs-marquee-lane', 'on' );
 		const { size, view } = measure( vertical );
 		if ( size <= 0 ) {
-			// Not laid out yet (a hidden ancestor, an image still loading); the resize observer calls back in.
+			// Not laid out yet (a hidden ancestor, an image still loading); the resize observer calls back in. A block
+			// that is not running yet goes back to its static layout meanwhile.
+			if ( 0 === loops.length ) {
+				unmark();
+			}
 			return;
 		}
 		if (

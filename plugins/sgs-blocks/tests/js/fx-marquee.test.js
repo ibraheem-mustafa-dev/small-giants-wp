@@ -160,6 +160,9 @@ beforeEach( () => {
 					el.hasAttribute( 'data-sgs-marquee-clone' )
 			);
 			const index = copies.indexOf( this );
+			if ( layout.boxOnlyWhenOn && ! this.closest( '[data-sgs-marquee="on"]' ) ) {
+				return { width: 0, height: 0, left: 0, top: 0 };
+			}
 			return {
 				width: layout.set,
 				height: layout.height,
@@ -245,6 +248,26 @@ describe( 'marquee speed in px/s', () => {
 		const before = animations.length;
 		resizeObservers[ 0 ].fire();
 		expect( animations ).toHaveLength( before );
+	} );
+} );
+
+describe( 'a set with no box until the marquee runs', () => {
+	test( 'the block is switched to its running layout before the set is measured, so the marquee starts', async () => {
+		layout.boxOnlyWhenOn = true;
+		const { root } = mount( { attrs: 'data-sgs-fx-marquee-speed="100"', rootClass: 'wp-block-sgs-trust-bar' } );
+		await boot();
+		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
+		expect( live() ).toHaveLength( 3 );
+		expect( animations[ 0 ].options.duration ).toBe( 4000 );
+	} );
+
+	test( 'NEGATIVE CONTROL: a set that still has no size is left static, with the running marks removed', async () => {
+		layout.set = 0;
+		const { root, track } = mount( { attrs: 'data-sgs-fx-marquee-speed="100"' } );
+		await boot();
+		expect( root.hasAttribute( 'data-sgs-marquee' ) ).toBe( false );
+		expect( track.hasAttribute( 'data-sgs-marquee-lane' ) ).toBe( false );
+		expect( live() ).toHaveLength( 0 );
 	} );
 } );
 
