@@ -366,6 +366,20 @@
 						}
 					},
 					"_note": "The type-agnostic base class emitted by sgs_tier_media_render() — carries `sgs-hero__split-media` plus `--{tier}` and `--{type}` modifiers on EVERY tier node whatever its type. It OWNS the whole splitMedia* control family as of 2026-08-27 (commit 33816708e): width, height, border-radius, border-color/style/width, padding, object-fit and object-position all emit scoped to this class in render.php, which is what lets a video or SVG tier honour them. object-fit/object-position emit on the compound `.sgs-hero__split-media--image,.sgs-hero__split-media--video` selector — replaced-element properties do nothing on the <span> wrapping inline SVG — and a BEM MODIFIER is never an element, so the classifier's deriver cuts at the `--` and still resolves here. ⛔ WHY THIS MAP MOVED: it lived on split-image, which pinned 16 block_attributes.css_element rows to a class those properties no longer paint on. The tier variants (splitMediaPaddingTablet, splitMediaObjectPositionMobile, …) were already correct because they carry no attrMap key and fall through to selector derivation — that split is what exposed the stale manifest. `css:max-width` added 2026-09-05 (db-consistency residual close-out), routed to `splitMediaMaxWidth` (object + `splitMediaMaxWidthUnit` sibling, desktop-tier only) — the object+unit pair is strictly MORE expressive than a bare percentage (it can express one via `splitMediaMaxWidthUnit: '%'`), so nothing is lost. `splitMediaMaxWidthPercent` (a bare-percentage duplicate of this same capability, emitted second so it won the cascade when both were set) was DELETED 2026-09-07 — this attr is now the sole max-width writer for split media."
+				},
+				"background": {
+					"selector": ".sgs-hero__bg-img",
+					"label": "Background image",
+					"order": 14,
+					"clusters": [],
+					"_note": "`.sgs-hero__bg-img`, the <img> hero prints for its standard background image (hero paints its own and nulls backgroundImage before the wrapper). A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+				},
+				"svg-bg": {
+					"selector": ".sgs-container__svg-bg",
+					"label": "Background SVG",
+					"order": 15,
+					"clusters": [],
+					"_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so an SVG loop or `draw` effect layer reaches the SVG alone; it declares no style clusters because its look is governed by the bgSvg* controls."
 				}
 			}
 		}

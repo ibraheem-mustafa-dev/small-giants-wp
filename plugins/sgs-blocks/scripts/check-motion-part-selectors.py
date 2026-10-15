@@ -103,6 +103,13 @@ LEGACY_ROOTS = {
     "countdown-timer": ("sgs-countdown__",),
     "table-of-contents": ("sgs-toc__",),
     "business-info": ("sgs-business-hours__",),
+    # The six composites that print the container wrapper's background layers as their own `background` / `svg-bg` parts.
+    "site-header": ("sgs-container__image-bg", "sgs-container__svg-bg"),
+    "site-footer": ("sgs-container__image-bg", "sgs-container__svg-bg"),
+    "trust-bar": ("sgs-container__image-bg", "sgs-container__svg-bg"),
+    "physics-canvas": ("sgs-container__image-bg", "sgs-container__svg-bg"),
+    "multi-button": ("sgs-container__image-bg", "sgs-container__svg-bg"),
+    "hero": ("sgs-container__image-bg", "sgs-container__svg-bg"),
 }
 SELECTOR_OK = re.compile(r"^\.[A-Za-z][A-Za-z0-9_-]*(?: \.[A-Za-z][A-Za-z0-9_-]*)*$")
 

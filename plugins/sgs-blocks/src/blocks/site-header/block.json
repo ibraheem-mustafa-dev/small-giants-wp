@@ -149,6 +149,20 @@
 					"order": 4,
 					"clusters": [],
 					"_note": "Background image/video (backgroundImage*/bgVideo*), background SVG (bgSvg*), overlay gradient (overlayGradient*/backgroundOverlay*), Ken Burns, and shape dividers (shapeDivider*) are governed by dedicated controls outside the Text/Fill/Layout style clusters, so this element declares none. Mirrors sgs/container's `decorative` element."
+				},
+				"background": {
+					"selector": ".sgs-container__image-bg",
+					"label": "Background image",
+					"order": 5,
+					"clusters": [],
+					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+				},
+				"svg-bg": {
+					"selector": ".sgs-container__svg-bg",
+					"label": "Background SVG",
+					"order": 6,
+					"clusters": [],
+					"_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so an SVG loop or `draw` effect layer reaches the SVG alone; it declares no style clusters because its look is governed by the bgSvg* controls."
 				}
 			}
 		}
