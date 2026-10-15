@@ -99,6 +99,41 @@ async function waitForEditor( page, timeout ) {
 }
 
 /**
+ * Why a saved or reloaded block list is not the built tree: '' when the top-level block names match in order.
+ * A page whose saved content is empty reloads in the editor as the page template's blocks, so a reload that merely
+ * "settles" proves nothing unless the top-level blocks are the ones that were built.
+ *
+ * @param {string[]} built Top-level block names of the tree.
+ * @param {string[]} got   Top-level block names read back.
+ * @return {string} The reason, or ''.
+ */
+function topLevelMismatch( built, got ) {
+	if ( built.length === got.length && built.every( ( n, i ) => n === got[ i ] ) ) return '';
+	return `top-level blocks are [${ got.join( ', ' ) || 'none' }], the build has [${ built.join( ', ' ) }]`;
+}
+
+/**
+ * Read the post back from the SERVER (REST, context=edit, never the editor's own state) and judge it.
+ *
+ * @param {Object}   page  Playwright page on the post editor (anything with an `evaluate`).
+ * @param {number}   id    The saved post ID.
+ * @param {string[]} built Top-level block names of the tree.
+ * @return {Promise<string>} The reason the saved content is wrong, or ''.
+ */
+async function verifySavedPost( page, id, built ) {
+	const read = await page.evaluate( async ( postId ) => {
+		const type = window.wp.data.select( 'core/editor' ).getCurrentPostType();
+		const info = await window.wp.apiFetch( { path: `/wp/v2/types/${ type }?context=edit` } );
+		const post = await window.wp.apiFetch( { path: `/wp/v2/${ info.rest_base }/${ postId }?context=edit` } );
+		const raw = ( post.content && post.content.raw ) || '';
+		return { length: raw.length, names: raw.trim() ? window.wp.blocks.parse( raw ).map( ( b ) => b.name ) : [] };
+	}, id );
+	if ( read.length === 0 ) return `the server holds empty content for post ${ id } (the save was lost)`;
+	const why = topLevelMismatch( built, read.names );
+	return why ? `the content saved on the server for post ${ id } is not the build: ${ why }` : '';
+}
+
+/**
  * Save this site's own copy of a theme template part or template through the REST route the Site Editor uses,
  * then read it back: every block must parse valid and serialise to what was saved.
  *
@@ -160,6 +195,13 @@ async function buildTemplate( page, tree, route, slug, dryRun ) {
 		};
 		step = 'read back';
 		let back = await readBack();
+		// An empty or foreign saved template must fail, never become the settling baseline.
+		const builtNames = t.map( ( b ) => b.name );
+		const topNames = ( text ) => window.wp.blocks.parse( text ).map( ( b ) => b.name );
+		const sameTop = ( text ) => builtNames.length === topNames( text ).length && builtNames.every( ( n, i ) => n === topNames( text )[ i ] );
+		if ( ! sameTop( back.text ) ) {
+			return { ok: false, code: 5, step, retried, error: `the saved ${ r } content on the server is not the build: top-level blocks are [${ topNames( back.text ).join( ', ' ) || 'none' }], the build has [${ builtNames.join( ', ' ) }]` };
+		}
 		// WordPress normalises on save (it adds "theme" to template-part blocks): save the settled
 		// text once more; content that then holds still is fine, content that keeps changing is a fault.
 		let normalised = false;
@@ -449,14 +491,19 @@ async function main() {
 				} );
 				const blocks = window.wp.data.select( 'core/block-editor' ).getBlocks();
 				walk( blocks );
-				return { invalid, serialised: window.wp.blocks.serialize( blocks ) };
+				return { invalid, serialised: window.wp.blocks.serialize( blocks ), names: blocks.map( ( b ) => b.name ) };
 			} );
 		};
 
+		const builtNames = tree.map( ( b ) => b.name );
 		const saved = await save();
 		if ( saved.error ) fail( 5, `save error: ${ saved.error }` );
+		const lost = await verifySavedPost( page, saved.id, builtNames );
+		if ( lost ) fail( 5, lost );
 		let expected = built.serialised;
 		let check = await reload( saved.id );
+		const foreign = topLevelMismatch( builtNames, check.names );
+		if ( foreign ) fail( 6, `the reloaded editor does not show the build: ${ foreign }` );
 		// A block's editor may tidy its own attributes when it first mounts (drop an
 		// empty object, add an item key). Save that once and reload again: content
 		// that settles is fine; content that keeps changing is a real fault.
@@ -465,6 +512,8 @@ async function main() {
 			const first = check.serialised;
 			const resaved = await save();
 			if ( resaved.error ) fail( 5, `save error on the settling save: ${ resaved.error }` );
+			const lostAgain = await verifySavedPost( page, saved.id, builtNames );
+			if ( lostAgain ) fail( 5, lostAgain );
 			normalised = true;
 			expected = first;
 			check = await reload( saved.id );
@@ -487,4 +536,4 @@ if ( require.main === module ) {
 	main().catch( ( e ) => fail( 1, e.stack || e.message ) );
 }
 
-module.exports = { buildTemplate };
+module.exports = { buildTemplate, topLevelMismatch, verifySavedPost };

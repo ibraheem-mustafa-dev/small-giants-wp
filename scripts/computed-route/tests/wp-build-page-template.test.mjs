@@ -13,7 +13,7 @@ const { buildTemplate } = require( '../../wp-build-page.js' );
 const DB_DOWN = { code: 'wp_die', message: '<h1>Error establishing a database connection</h1>', data: { status: 500 } };
 
 // A fake WordPress: saving stores the content, reading returns it. `failures` maps a call number to the rejection it gets.
-function fakePage( failures ) {
+function fakePage( failures, drop = false ) {
 	let stored = '';
 	let calls = 0;
 	const wp = {
@@ -31,7 +31,7 @@ function fakePage( failures ) {
 				return [ { stylesheet: 'sgs-theme' } ];
 			}
 			if ( 'POST' === method ) {
-				stored = data.content;
+				stored = drop ? '' : data.content;
 				return {};
 			}
 			return { source: 'custom', content: { raw: stored } };
@@ -89,4 +89,44 @@ test( 'not over-retrying: a client error (a 4xx) fails at once, with no retry', 
 	assert.equal( r.step, 'active theme' );
 	assert.equal( page.calls(), 1 );
 	assert.match( r.error, /rest_forbidden/ );
+} );
+
+// The tool once reported ok for a page whose save was lost: the reload showed the page template's blocks, the settling
+// save adopted them as the baseline, and nothing compared them with the build. The server read-back and the top-level
+// check below refuse that.
+const { topLevelMismatch, verifySavedPost } = require( '../../wp-build-page.js' );
+
+function fakeEditorPage( rawOnServer ) {
+	const wp = {
+		data: { select: () => ( { getCurrentPostType: () => 'page' } ) },
+		blocks: { parse: ( text ) => [ ...text.matchAll( /<!-- wp:(\S+) \/-->/g ) ].map( ( m ) => ( { name: m[ 1 ] } ) ) },
+		apiFetch: async ( { path } ) => ( path.startsWith( '/wp/v2/types/' ) ? { rest_base: 'pages' } : { content: { raw: rawOnServer } } ),
+	};
+	return { evaluate: async ( fn, arg ) => { globalThis.window = { wp }; try { return await fn( arg ); } finally { delete globalThis.window; } } };
+}
+
+test( 'topLevelMismatch: equal names pass; a template view, a missing block and a different order are refused', () => {
+	assert.equal( topLevelMismatch( [ 'sgs/container', 'sgs/heading' ], [ 'sgs/container', 'sgs/heading' ] ), '' );
+	assert.match( topLevelMismatch( [ 'sgs/container' ], [ 'core/template-part', 'core/paragraph' ] ), /core\/template-part/ );
+	assert.notEqual( topLevelMismatch( [ 'a', 'b' ], [ 'a' ] ), '' );
+	assert.notEqual( topLevelMismatch( [ 'a', 'b' ], [ 'b', 'a' ] ), '' );
+	assert.notEqual( topLevelMismatch( [ 'a' ], [] ), '' );
+} );
+
+test( 'verifySavedPost: empty server content is a lost save', async () => {
+	assert.match( await verifySavedPost( fakeEditorPage( '' ), 5287, [ 'sgs/container' ] ), /empty content/ );
+} );
+
+test( 'verifySavedPost: other blocks on the server are refused, the built blocks pass', async () => {
+	assert.match( await verifySavedPost( fakeEditorPage( '<!-- wp:template-part /-->' ), 5287, [ 'sgs/container' ] ), /not the build/ );
+	assert.equal( await verifySavedPost( fakeEditorPage( '<!-- wp:sgs/container /-->' ), 5287, [ 'sgs/container' ] ), '' );
+} );
+
+test( 'buildTemplate: a template whose save is lost fails with exit 5 instead of settling on nothing', async () => {
+	const r = await buildTemplate( fakePage( {}, true ), tree, 'templates', 'archive-product', false );
+	assert.equal( r.ok, false, JSON.stringify( r ) );
+	assert.equal( r.code, 5 );
+	assert.match( r.error, /not the build/ );
+	const kept = await buildTemplate( fakePage( {} ), tree, 'templates', 'archive-product', false );
+	assert.equal( kept.ok, true, 'control: the same build with the content kept is ok' );
 } );
