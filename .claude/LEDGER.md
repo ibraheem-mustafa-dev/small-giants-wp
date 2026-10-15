@@ -82,7 +82,7 @@ Open owed items:
 
 **Blockers:** none. **Bean decisions:** none open. Ruled 2026-10-15: Gate 5b's glance passed; stored brand-strip and trust-bar marquees wait for M6.5 (static rows until then); the all-effects stress page's weight is accepted.
 
-**Resume from:** the Track S follow-up prompt; Track L's next prompt, `prompts/2026-10-15-spec38a-track-l-live-fixtures.md`; Track I's carried-items bullet in `plans/2026-10-12-spec38a-motion-build.md`, starting with an agent-run Gate 5 re-check.
+**Resume from:** the Track S follow-up prompt, `prompts/2026-10-15-spec38a-track-s-follow-up.md`; Track L's next prompt, `prompts/2026-10-15-spec38a-track-l-live-fixtures.md`; Track I's carried-items bullet in `plans/2026-10-12-spec38a-motion-build.md`, starting with an agent-run Gate 5 re-check.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
