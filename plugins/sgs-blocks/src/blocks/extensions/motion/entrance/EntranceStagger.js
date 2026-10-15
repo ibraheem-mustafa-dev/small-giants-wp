@@ -8,25 +8,17 @@
 
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { getBlockType } from '@wordpress/blocks';
 import { useDispatch, useRegistry, useSelect } from '@wordpress/data';
-import StaggerHelper, {
-	effectiveStagger,
-} from '../../../../components/motion/StaggerHelper';
-import { MOTION_ATTRIBUTE_NAME, hasMotionSupport } from '../register';
+import StaggerHelper from '../../../../components/motion/StaggerHelper';
+import { MOTION_ATTRIBUTE_NAME } from '../register';
 import {
 	BASE_LIST,
 	EDITOR_STORE,
 	TIERS,
 	columnsAt,
 	hasServerItems,
-	triggerFacts,
 } from './entrance-facts';
-import {
-	childMotionWithDelay,
-	delaysByTier,
-	withStagger,
-} from './stagger-write';
+import { staggerUpdates, withStagger } from './stagger-write';
 
 /**
  * @param {Object}           props
@@ -65,31 +57,12 @@ export default function EntranceStagger( {
 
 	const writeDelays = ( ignored, settings ) => {
 		const children = registry.select( EDITOR_STORE ).getBlocks( clientId );
-		const delays = delaysByTier( {
-			count: children.length,
-			columnsByTier,
-			settings: effectiveStagger( settings ),
-		} );
 		const template = layers.layersOf( 'root', BASE_LIST )[ 0 ];
-		const updates = {};
-		children.forEach( ( child, index ) => {
-			if ( ! hasMotionSupport( getBlockType( child.name ) ) ) {
-				return;
-			}
-			const written = childMotionWithDelay(
-				child.attributes?.[ MOTION_ATTRIBUTE_NAME ],
-				template,
-				Object.fromEntries(
-					TIERS.map( ( name ) => [ name, delays[ name ][ index ] ] )
-				),
-				Boolean( settings.apply ),
-				triggerFacts( child.name, 'root' )
-			);
-			if ( written ) {
-				updates[ child.clientId ] = {
-					[ MOTION_ATTRIBUTE_NAME ]: written,
-				};
-			}
+		const updates = staggerUpdates( {
+			children,
+			columnsByTier,
+			settings,
+			template,
 		} );
 		const ids = Object.keys( updates );
 		if ( ids.length ) {

@@ -7,13 +7,15 @@
  * @package
  */
 
+import { getBlockType } from '@wordpress/blocks';
 import defs from '../../../../components/motion/motion-defs';
 import { computeStaggerDelays } from '../../../../components/motion/stagger-delays';
 import { effectiveStagger } from '../../../../components/motion/StaggerHelper';
 import { elementOf, withElement, withList } from '../layers/layer-lists';
 import { layerProblem } from '../layers/stamp';
 import { layersAt } from '../layers/refusals';
-import { BASE_LIST, TIERS } from './entrance-facts';
+import { MOTION_ATTRIBUTE_NAME, hasMotionSupport } from '../register';
+import { BASE_LIST, TIERS, triggerFacts } from './entrance-facts';
 import { pruneLayer, withTrigger } from './layer-edit';
 
 const SCHEMA_VERSION = defs.$defs.schemaVersion.const;
@@ -171,4 +173,49 @@ export function childMotionWithDelay(
 		'root',
 		withList( element, BASE_LIST, [ layer ] )
 	);
+}
+
+/**
+ * The attribute updates that give every child its position's delay at every tier: the helper's write, shared by the
+ * Write delays button and the re-run when children change (`../stagger/use-stagger-rerun.js`).
+ *
+ * @param {Object}                 args
+ * @param {Object[]}               args.children      The container's inner blocks, in order (`name`, `clientId`, `attributes`).
+ * @param {Object<string,?number>} args.columnsByTier The container's stored columns per tier.
+ * @param {Object|undefined}       args.settings      The helper's stored settings (`apply` decides whether a child with no
+ *                                                    entrance takes the template).
+ * @param {Object|undefined}       args.template      The container's own entrance layer.
+ * @return {Object<string,Object>} `{ [childClientId]: { sgsMotion } }` for each child the helper changes; a child that
+ *                                 cannot carry a delay is left out.
+ */
+export function staggerUpdates( {
+	children,
+	columnsByTier,
+	settings,
+	template,
+} ) {
+	const delays = delaysByTier( {
+		count: children.length,
+		columnsByTier,
+		settings: effectiveStagger( settings ),
+	} );
+	const updates = {};
+	children.forEach( ( child, index ) => {
+		if ( ! hasMotionSupport( getBlockType( child.name ) ) ) {
+			return;
+		}
+		const written = childMotionWithDelay(
+			child.attributes?.[ MOTION_ATTRIBUTE_NAME ],
+			template,
+			Object.fromEntries(
+				TIERS.map( ( tier ) => [ tier, delays[ tier ][ index ] ] )
+			),
+			Boolean( settings?.apply ),
+			triggerFacts( child.name, 'root' )
+		);
+		if ( written ) {
+			updates[ child.clientId ] = { [ MOTION_ATTRIBUTE_NAME ]: written };
+		}
+	} );
+	return updates;
 }

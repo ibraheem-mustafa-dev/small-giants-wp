@@ -28,6 +28,7 @@ import { presetBySlug } from './layers/stamp';
 import { RestampConfirm, useRestamp } from './layers/restamp';
 import EntranceFineTune from './entrance/EntranceFineTune';
 import EntranceStagger from './entrance/EntranceStagger';
+import './stagger/with-stagger-rerun';
 import EntranceTextEffects from './entrance/EntranceTextEffects';
 import { layerEditor, problemText, withTrigger } from './entrance/layer-edit';
 import {
