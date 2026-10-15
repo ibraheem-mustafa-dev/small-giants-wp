@@ -484,6 +484,210 @@
 		{
 			"devices": {},
 			"effect": null,
+			"family": "entrance-fade-up",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Fade up travel: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-fade-up-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": "token:distance.md"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-up",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Fade up travel: Standard",
+			"panel": "entrance",
+			"slug": "entrance-fade-up-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": "token:entrance.distance"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-up",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Fade up travel: Bold",
+			"panel": "entrance",
+			"slug": "entrance-fade-up-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": "token:distance.xl"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-down",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Fade down travel: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-fade-down-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": "-token:distance.md"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-down",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Fade down travel: Standard",
+			"panel": "entrance",
+			"slug": "entrance-fade-down-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": "-token:entrance.distance"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-fade-down",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Fade down travel: Bold",
+			"panel": "entrance",
+			"slug": "entrance-fade-down-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": "-token:distance.xl"
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-up",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Slide up travel: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-slide-up-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": 50
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-up",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Slide up travel: Standard",
+			"panel": "entrance",
+			"slug": "entrance-slide-up-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": 100
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-up",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Slide up travel: Bold",
+			"panel": "entrance",
+			"slug": "entrance-slide-up-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": 160
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-down",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Slide down travel: Subtle",
+			"panel": "entrance",
+			"slug": "entrance-slide-down-subtle",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": -50
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-down",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Slide down travel: Standard",
+			"panel": "entrance",
+			"slug": "entrance-slide-down-standard",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": -100
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
+			"family": "entrance-slide-down",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Slide down travel: Bold",
+			"panel": "entrance",
+			"slug": "entrance-slide-down-bold",
+			"target": "part",
+			"trigger": "scroll",
+			"values": {
+				"from": {
+					"translateY": -160
+				}
+			}
+		},
+		{
+			"devices": {},
+			"effect": null,
 			"family": "keyframe-fade-in",
 			"intensity": null,
 			"kind": "keyframe",
@@ -1060,6 +1264,96 @@
 			"slug": "draw-bold",
 			"target": "part",
 			"trigger": "scroll",
+			"values": {
+				"duration": 1600
+			}
+		},
+		{
+			"devices": {},
+			"effect": "scramble",
+			"family": "scramble-hover",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Scramble (Effects): Subtle",
+			"panel": "effects",
+			"slug": "scramble-hover-subtle",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": 800
+			}
+		},
+		{
+			"devices": {},
+			"effect": "scramble",
+			"family": "scramble-hover",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Scramble (Effects): Standard",
+			"panel": "effects",
+			"slug": "scramble-hover-standard",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": 1200
+			}
+		},
+		{
+			"devices": {},
+			"effect": "scramble",
+			"family": "scramble-hover",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Scramble (Effects): Bold",
+			"panel": "effects",
+			"slug": "scramble-hover-bold",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": 1800
+			}
+		},
+		{
+			"devices": {},
+			"effect": "draw",
+			"family": "draw-hover",
+			"intensity": "subtle",
+			"kind": "intensity",
+			"label": "Draw (Effects): Subtle",
+			"panel": "effects",
+			"slug": "draw-hover-subtle",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": 600
+			}
+		},
+		{
+			"devices": {},
+			"effect": "draw",
+			"family": "draw-hover",
+			"intensity": "standard",
+			"kind": "intensity",
+			"label": "Draw (Effects): Standard",
+			"panel": "effects",
+			"slug": "draw-hover-standard",
+			"target": "part",
+			"trigger": "hover",
+			"values": {
+				"duration": 1000
+			}
+		},
+		{
+			"devices": {},
+			"effect": "draw",
+			"family": "draw-hover",
+			"intensity": "bold",
+			"kind": "intensity",
+			"label": "Draw (Effects): Bold",
+			"panel": "effects",
+			"slug": "draw-hover-bold",
+			"target": "part",
+			"trigger": "hover",
 			"values": {
 				"duration": 1600
 			}

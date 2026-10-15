@@ -225,6 +225,7 @@ Source: the per-effect audit `.claude/reports/2026-10-12-motion-effects-audit.md
 | `ken-burns` | Effects | V | Surface | zoom 104 / 108 / 115% |
 | `svg-loop` | Effects | V | Part (SVG) or Surface (background SVG layer) | amplitude 0.5 / 1 / 1.6x |
 | nav panel open and item stagger | Entrance and reveal | V | Part (panel, items) | item travel 8 / 16 / 32px |
+| entrance presets (fade up and down, slide up and down) | Entrance and reveal | V | Part | travel 8 / 28 / 32px on the fades (the 28px Standard is the `entrance.distance` token), 50 / 100 / 160px on the slides; the pure fade-in has nothing to scale and has no Intensity rows |
 
 The per-effect lines (the values each effect hard-codes today, then its Fine-tune controls) are in Appendix A.
 

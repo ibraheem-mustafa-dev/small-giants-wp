@@ -5,6 +5,7 @@
     "hover lift": ["hover-lift"],
     "hover scale and image zoom": ["hover-scale"],
     "hover rotate and translate": ["hover-rotate", "hover-translate"],
-    "nav panel open and item stagger": ["nav-panel-item"]
+    "nav panel open and item stagger": ["nav-panel-item"],
+    "entrance presets": ["entrance-fade-up", "entrance-fade-down", "entrance-slide-up", "entrance-slide-down"]
   }
 }
