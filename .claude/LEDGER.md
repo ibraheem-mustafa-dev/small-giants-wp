@@ -80,7 +80,7 @@ Open owed items:
 - **Track E: code done**, with open items in its plan bullet, chiefly recalibrating six live probes for Lenis smooth scroll. Its QC council's fixes 1, 2, 3 and 5 are on main (`44372db1c`, whose message mislabels them as Track S's); fix 4 (magnet transition timing) landed with Track I's canvas twin in `daf70362f`, parity green.
 - **Track I: in progress** (session small-giants-wp-b5); M3.7 is live-proven (`5a8cb0e39`).
 
-**Blockers:** none. **Bean decisions:** a glance at Track S's Gate 5b screenshots. Ruled 2026-10-15: stored brand-strip and trust-bar marquees wait for M6.5 (static rows until then); the all-effects stress page's weight is accepted.
+**Blockers:** none. **Bean decisions:** none open. Ruled 2026-10-15: Gate 5b's glance passed; stored brand-strip and trust-bar marquees wait for M6.5 (static rows until then); the all-effects stress page's weight is accepted.
 
 **Resume from:** the Track S follow-up prompt; Track L's next prompt, `prompts/2026-10-15-spec38a-track-l-live-fixtures.md`; Track I finishing its units.
 
