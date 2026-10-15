@@ -18,15 +18,18 @@ async function bootEditor( context, editorUrl, writeCounter ) {
 	await page.goto( editorUrl, { waitUntil: 'domcontentloaded', timeout: 120000 } );
 	await page.waitForFunction( () => window.wp && window.wp.data && window.wp.blocks &&
 		window.wp.data.select( 'core/editor' ) && window.wp.data.select( 'core/editor' ).getCurrentPostId() &&
-		window.wp.data.select( 'core/block-editor' ).getGlobalBlockCount() > 0, { timeout: 120000 } );
+		window.wp.data.select( 'core/block-editor' ).getGlobalBlockCount() > 0, undefined, { timeout: 120000 } );
+	// The canary's editor preference can open pages template-locked (the page's blocks then sit inside core/post-content, out of getBlocks()); the measured surface is the post's own blocks, so switch to post-only.
+	await page.evaluate( () => window.wp.data.dispatch( 'core/editor' ).setRenderingMode?.( 'post-only' ) );
+	await page.waitForTimeout( 1500 );
 	await page.evaluate( () => {
 		// The welcome guide and the autosave interval would both interfere; neither changes the typing path.
 		const prefs = window.wp.data.dispatch( 'core/preferences' );
 		if ( prefs ) { prefs.set( 'core/edit-post', 'welcomeGuide', false ); prefs.set( 'core/edit-post', 'fullscreenMode', false ); }
 	} );
-	await page.waitForFunction( () => !! document.querySelector( 'iframe[name="editor-canvas"]' ), { timeout: 60000 } );
+	await page.waitForFunction( () => !! document.querySelector( 'iframe[name="editor-canvas"]' ), undefined, { timeout: 60000 } );
 	const frame = page.frame( { name: 'editor-canvas' } );
-	await frame.waitForFunction( () => document.querySelectorAll( '[data-type="sgs/text"]' ).length > 30, { timeout: 120000 } );
+	await frame.waitForFunction( () => document.querySelectorAll( '[data-type="sgs/text"]' ).length > 30, undefined, { timeout: 120000 } );
 	await page.waitForTimeout( 3000 ); // let async-mode block rendering and the editor's own startup work settle
 	return { page, frame };
 }
@@ -142,7 +145,7 @@ export async function fetchContentHash( context, env, pageId ) {
 	const page = await context.newPage();
 	try {
 		await page.goto( `${ env.url }/wp-admin/post.php?post=${ pageId }&action=edit`, { waitUntil: 'domcontentloaded', timeout: 120000 } );
-		await page.waitForFunction( () => window.wp && window.wp.apiFetch && window.wpApiSettings, { timeout: 120000 } );
+		await page.waitForFunction( () => window.wp && window.wp.apiFetch && window.wpApiSettings, undefined, { timeout: 120000 } );
 		const raw = await page.evaluate( async ( id ) => ( await window.wp.apiFetch( { path: `/wp/v2/pages/${ id }?context=edit` } ) ).content.raw, pageId );
 		return crypto.createHash( 'sha256' ).update( raw ).digest( 'hex' );
 	} finally {
@@ -160,7 +163,7 @@ export async function fetchDeployedPluginVersion( context, env, pageId ) {
 	const page = await context.newPage();
 	try {
 		await page.goto( `${ env.url }/wp-admin/post.php?post=${ pageId }&action=edit`, { waitUntil: 'domcontentloaded', timeout: 120000 } );
-		await page.waitForFunction( () => window.wp && window.wp.apiFetch && window.wpApiSettings, { timeout: 120000 } );
+		await page.waitForFunction( () => window.wp && window.wp.apiFetch && window.wpApiSettings, undefined, { timeout: 120000 } );
 		const ver = await page.evaluate( () => {
 			const link = document.getElementById( 'sgs-extensions-editor-css' );
 			return link ? new URL( link.href ).searchParams.get( 'ver' ) : null;

@@ -1,0 +1,368 @@
+{
+  "meta": {
+    "pageId": 5196,
+    "siteUrl": "https://sandybrown-nightingale-600381.hostingersite.com",
+    "wpVersion": "7.1.3",
+    "harnessCommit": "4fd274f0f681bec50aceedd01dab3ba90bb60e15 plus the editor-session.mjs fixes in the commit that adds this file (post-only rendering mode; waitForFunction timeouts)",
+    "deployedCommit": "a37c39d3b991a23184ab8243ab6060ddfe6f16c6 (2026-10-15T23:29:16+0100)",
+    "deployedPluginVersion": "1792102760",
+    "chromeVersion": "155.0.8059.79",
+    "headless": false,
+    "viewport": "1440x900",
+    "typingSeconds": 60,
+    "keystrokeIntervalMs": "50 + seeded jitter 0-16.7",
+    "warmupRunsDiscarded": 2,
+    "targetBlock": "sgs/text #13 directly inside an sgs/container, in document order",
+    "latencyMethod": "keydown event.timeStamp to the MessageChannel task posted from the next requestAnimationFrame callback, inside the editor canvas iframe",
+    "heapMethod": "CDP Runtime.getHeapUsage after HeapProfiler.collectGarbage, read at the end of the typing minute",
+    "postContentUnchanged": true,
+    "stallMs": 400,
+    "stallRetries": 2,
+    "stallRunsDiscarded": [],
+    "measuredAt": "2026-10-15T23:46:25.619Z",
+    "unit": "M3.11 (FR-38A-29 after-measurement)",
+    "command": "node scripts/perf/measure-editor-typing.mjs --ab --runs 5 --warmup 2 --deploy-target sandybrown --no-effect-check --a-url \"<site>/wp-admin/post.php?post=5196&action=edit\" --b-url \"<site>/wp-admin/post.php?post=5196&action=edit&sgs_motion_support_enabled=0\"",
+    "offSwitch": "temporary mu-plugin wp-content/mu-plugins/sgs-m311-motion-off.php (removed after the run) adding __return_false to sgs_motion_support_enabled only when the request carries sgs_motion_support_enabled=0; toggle verified in the editor: 75 sgs/ block types carry sgsMotion with the support on, 1 with it off (so the harness effect check, which compares attribute name sets, cannot see it; --no-effect-check)",
+    "interleaving": "A, B, A, B ... per run; two warm-up pairs discarded"
+  },
+  "arms": {
+    "on": {
+      "description": "motion support on (as deployed)",
+      "runs": [
+        {
+          "label": "A-1",
+          "p95Ms": 18.73,
+          "p95WholeRunMs": 18.86,
+          "windowP95sMs": [
+            19.59,
+            18.88,
+            18.75,
+            18.7,
+            18.38,
+            18.7
+          ],
+          "medianMs": 14.13,
+          "maxMs": 74.97,
+          "idleP95Ms": 18.84,
+          "idleMedianMs": 14.11,
+          "keystrokes": 1029,
+          "frameIntervalMs": 10,
+          "cpuProbeBeforeMs": 32.21,
+          "cpuProbeAfterMs": 31.8,
+          "heapBytes": 120390568,
+          "heapRawBytes": 157132560,
+          "heapBeforeBytes": 115280104,
+          "slowEvents": 2960,
+          "longTasks": 6,
+          "blockCount": 200,
+          "blockedWrites": 3
+        },
+        {
+          "label": "A-2",
+          "p95Ms": 18.69,
+          "p95WholeRunMs": 18.8,
+          "windowP95sMs": [
+            19.14,
+            19.03,
+            18.79,
+            18.58,
+            18.59,
+            18.58
+          ],
+          "medianMs": 14.22,
+          "maxMs": 53.85,
+          "idleP95Ms": 18.78,
+          "idleMedianMs": 14.2,
+          "keystrokes": 1029,
+          "frameIntervalMs": 10,
+          "cpuProbeBeforeMs": 31.7,
+          "cpuProbeAfterMs": 31.54,
+          "heapBytes": 120288004,
+          "heapRawBytes": 150692456,
+          "heapBeforeBytes": 118616052,
+          "slowEvents": 2964,
+          "longTasks": 5,
+          "blockCount": 200,
+          "blockedWrites": 3
+        },
+        {
+          "label": "A-3",
+          "p95Ms": 18.9,
+          "p95WholeRunMs": 18.91,
+          "windowP95sMs": [
+            19.35,
+            18.93,
+            18.95,
+            18.87,
+            18.46,
+            18.48
+          ],
+          "medianMs": 14.6,
+          "maxMs": 62.53,
+          "idleP95Ms": 18.88,
+          "idleMedianMs": 14.55,
+          "keystrokes": 1029,
+          "frameIntervalMs": 10,
+          "cpuProbeBeforeMs": 31.39,
+          "cpuProbeAfterMs": 31.7,
+          "heapBytes": 120024736,
+          "heapRawBytes": 153284240,
+          "heapBeforeBytes": 115081992,
+          "slowEvents": 2992,
+          "longTasks": 5,
+          "blockCount": 200,
+          "blockedWrites": 3
+        },
+        {
+          "label": "A-4",
+          "p95Ms": 18.66,
+          "p95WholeRunMs": 18.67,
+          "windowP95sMs": [
+            18.95,
+            18.63,
+            18.47,
+            18.82,
+            18.44,
+            18.68
+          ],
+          "medianMs": 14.18,
+          "maxMs": 111.88,
+          "idleP95Ms": 18.65,
+          "idleMedianMs": 14.16,
+          "keystrokes": 1029,
+          "frameIntervalMs": 10,
+          "cpuProbeBeforeMs": 31.54,
+          "cpuProbeAfterMs": 31.64,
+          "heapBytes": 120336720,
+          "heapRawBytes": 135339492,
+          "heapBeforeBytes": 117170008,
+          "slowEvents": 2984,
+          "longTasks": 4,
+          "blockCount": 200,
+          "blockedWrites": 3
+        },
+        {
+          "label": "A-5",
+          "p95Ms": 18.99,
+          "p95WholeRunMs": 19.02,
+          "windowP95sMs": [
+            19.37,
+            19.13,
+            19.15,
+            18.86,
+            18.72,
+            18.66
+          ],
+          "medianMs": 14.55,
+          "maxMs": 71.05,
+          "idleP95Ms": 19,
+          "idleMedianMs": 14.53,
+          "keystrokes": 1029,
+          "frameIntervalMs": 10,
+          "cpuProbeBeforeMs": 32.56,
+          "cpuProbeAfterMs": 31.56,
+          "heapBytes": 120336768,
+          "heapRawBytes": 142782724,
+          "heapBeforeBytes": 115546348,
+          "slowEvents": 2997,
+          "longTasks": 4,
+          "blockCount": 200,
+          "blockedWrites": 3
+        }
+      ],
+      "summary": {
+        "p95Ms": {
+          "median": 18.73,
+          "min": 18.66,
+          "max": 18.99,
+          "spread": 0.0176
+        },
+        "heapBytes": {
+          "median": 120336720,
+          "min": 120024736,
+          "max": 120390568,
+          "spread": 0.003
+        },
+        "frameIntervalMs": 10
+      }
+    },
+    "off": {
+      "description": "sgs_motion_support_enabled returns false",
+      "runs": [
+        {
+          "label": "B-1",
+          "p95Ms": 18.51,
+          "p95WholeRunMs": 18.59,
+          "windowP95sMs": [
+            19.17,
+            18.76,
+            18.61,
+            18.41,
+            18.22,
+            18.17
+          ],
+          "medianMs": 14.08,
+          "maxMs": 104.77,
+          "idleP95Ms": 18.57,
+          "idleMedianMs": 14.05,
+          "keystrokes": 1029,
+          "frameIntervalMs": 10,
+          "cpuProbeBeforeMs": 31.66,
+          "cpuProbeAfterMs": 31.83,
+          "heapBytes": 120048028,
+          "heapRawBytes": 131865328,
+          "heapBeforeBytes": 116459388,
+          "slowEvents": 2982,
+          "longTasks": 4,
+          "blockCount": 200,
+          "blockedWrites": 3
+        },
+        {
+          "label": "B-2",
+          "p95Ms": 18.94,
+          "p95WholeRunMs": 19.16,
+          "windowP95sMs": [
+            20.27,
+            19.74,
+            18.88,
+            19,
+            18.61,
+            18.68
+          ],
+          "medianMs": 14.45,
+          "maxMs": 54.18,
+          "idleP95Ms": 19.12,
+          "idleMedianMs": 14.42,
+          "keystrokes": 1029,
+          "frameIntervalMs": 10,
+          "cpuProbeBeforeMs": 31.49,
+          "cpuProbeAfterMs": 32.24,
+          "heapBytes": 120066980,
+          "heapRawBytes": 137280840,
+          "heapBeforeBytes": 117047192,
+          "slowEvents": 2985,
+          "longTasks": 5,
+          "blockCount": 200,
+          "blockedWrites": 3
+        },
+        {
+          "label": "B-3",
+          "p95Ms": 18.21,
+          "p95WholeRunMs": 18.56,
+          "windowP95sMs": [
+            19.52,
+            18.67,
+            18.2,
+            18.22,
+            18.07,
+            18.19
+          ],
+          "medianMs": 14.07,
+          "maxMs": 147.13,
+          "idleP95Ms": 18.54,
+          "idleMedianMs": 14.05,
+          "keystrokes": 1029,
+          "frameIntervalMs": 10,
+          "cpuProbeBeforeMs": 32.56,
+          "cpuProbeAfterMs": 31.52,
+          "heapBytes": 119932832,
+          "heapRawBytes": 153532012,
+          "heapBeforeBytes": 115946448,
+          "slowEvents": 2939,
+          "longTasks": 7,
+          "blockCount": 200,
+          "blockedWrites": 3
+        },
+        {
+          "label": "B-4",
+          "p95Ms": 18.43,
+          "p95WholeRunMs": 18.66,
+          "windowP95sMs": [
+            18.7,
+            18.34,
+            19.34,
+            18.52,
+            17.79,
+            17.87
+          ],
+          "medianMs": 13.89,
+          "maxMs": 93.18,
+          "idleP95Ms": 18.63,
+          "idleMedianMs": 13.86,
+          "keystrokes": 1029,
+          "frameIntervalMs": 10,
+          "cpuProbeBeforeMs": 32.14,
+          "cpuProbeAfterMs": 31.73,
+          "heapBytes": 120126612,
+          "heapRawBytes": 137758220,
+          "heapBeforeBytes": 115765144,
+          "slowEvents": 2934,
+          "longTasks": 6,
+          "blockCount": 200,
+          "blockedWrites": 3
+        },
+        {
+          "label": "B-5",
+          "p95Ms": 19.27,
+          "p95WholeRunMs": 19.23,
+          "windowP95sMs": [
+            19.84,
+            19.08,
+            19.45,
+            18.42,
+            18.23,
+            19.57
+          ],
+          "medianMs": 14.43,
+          "maxMs": 139.55,
+          "idleP95Ms": 19.21,
+          "idleMedianMs": 14.39,
+          "keystrokes": 1029,
+          "frameIntervalMs": 10,
+          "cpuProbeBeforeMs": 31.57,
+          "cpuProbeAfterMs": 34.02,
+          "heapBytes": 120151580,
+          "heapRawBytes": 139574424,
+          "heapBeforeBytes": 115635668,
+          "slowEvents": 2998,
+          "longTasks": 5,
+          "blockCount": 200,
+          "blockedWrites": 3
+        }
+      ],
+      "summary": {
+        "p95Ms": {
+          "median": 18.51,
+          "min": 18.21,
+          "max": 19.27,
+          "spread": 0.0573
+        },
+        "heapBytes": {
+          "median": 120066980,
+          "min": 119932832,
+          "max": 120151580,
+          "spread": 0.0018
+        },
+        "frameIntervalMs": 10
+      }
+    }
+  },
+  "comparison": {
+    "onVsOffPct": {
+      "p95": 1.19,
+      "heap": 0.22
+    },
+    "onVsM30BaselinePct": {
+      "p95": -7.05,
+      "heap": -0.54,
+      "baselineFile": "editor-typing-baseline.json",
+      "baselineP95Ms": 20.15,
+      "baselineHeapBytes": 120985828
+    },
+    "tolerancePct": 10
+  },
+  "verdict": {
+    "pass": true,
+    "text": "Motion support on is within 10% of off for both p95 latency and heap (primary A/B), and within 10% of the M3.0 baseline (secondary)."
+  }
+}
