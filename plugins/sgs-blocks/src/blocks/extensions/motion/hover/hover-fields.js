@@ -63,9 +63,11 @@ export const FIELD_LABELS = Object.freeze( {
 
 /**
  * Fields the schema holds that the panel does not offer. `perspectiveOn` is hidden, so perspective always applies to
- * the element itself, until FR-38A-41's real-Safari check shows that putting it on the parent works.
+ * the element itself, until FR-38A-41's real-Safari check shows that putting it on the parent works. `ringSpread`
+ * and `ringColour` are hidden until the ring's box-shadow paint rule and the resting-shadow refusal exist (build plan,
+ * M3.9 ring bullet): the emitter writes their values, but nothing paints them yet, so a control would do nothing.
  */
-export const HIDDEN_KEYS = Object.freeze( [ 'perspectiveOn' ] );
+export const HIDDEN_KEYS = Object.freeze( [ 'perspectiveOn', 'ringSpread', 'ringColour' ] );
 
 /** The groups of the hover state's Fine-tune, in order. */
 export const HOVER_GROUPS = Object.freeze( [
