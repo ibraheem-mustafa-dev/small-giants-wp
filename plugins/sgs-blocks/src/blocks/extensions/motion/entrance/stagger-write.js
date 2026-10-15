@@ -2,14 +2,19 @@
  * What the stagger helper writes (Spec 38A §6.2, §8; FR-38A-24): the container's `stagger` settings at the motion
  * root, and on Write delays each child's explicit entrance delay (Desktop in `values.delay`, a Tablet or Mobile delay
  * that differs from the tier above in `devices.<tier>.delay`), so nothing is computed in the browser. The arithmetic is
- * `computeStaggerDelays`; the container's columns decide which children share a visual row at each tier.
+ * `computeStaggerDelays`; the container's columns decide which children share a visual row at each tier. When the
+ * container's entrance opens with a disclosure (trigger `open`), each child's close delay is written the same way
+ * (`close.closeDelay`, then `devices.<tier>.close.closeDelay`), in the open order or reversed (`computeCloseDelays`).
  *
  * @package
  */
 
 import { getBlockType } from '@wordpress/blocks';
 import defs from '../../../../components/motion/motion-defs';
-import { computeStaggerDelays } from '../../../../components/motion/stagger-delays';
+import {
+	computeCloseDelays,
+	computeStaggerDelays,
+} from '../../../../components/motion/stagger-delays';
 import { effectiveStagger } from '../../../../components/motion/StaggerHelper';
 import { elementOf, withElement, withList } from '../layers/layer-lists';
 import { layerProblem } from '../layers/stamp';
@@ -67,27 +72,41 @@ export function delaysByTier( { count, columnsByTier, settings } ) {
 	);
 }
 
+/**
+ * The close delays at every tier, from the open delays.
+ *
+ * @param {Object<string,number[]>} delays     The open delays (`delaysByTier`).
+ * @param {string}                  closeOrder `same` or `reversed`.
+ * @return {Object<string,number[]>} `{ desktop, tablet, mobile }`, each one close delay per child.
+ */
+export function closeDelaysByTier( delays, closeOrder ) {
+	return Object.fromEntries(
+		TIERS.map( ( tier ) => [
+			tier,
+			computeCloseDelays( delays[ tier ], closeOrder ),
+		] )
+	);
+}
+
 // The entrance layer to give a child that has none: the container's, without the container's own delays, and with a
-// trigger the child can use. A child that does not declare the template's `open` part or `state` plays on scroll, and
-// the close values and the state name go with the trigger. The template's customised paths stay, so the child's
-// Customised tags match its copied values.
+// trigger the child can use. A container that opens with a disclosure hands `open` on to every child (the disclosure that
+// opens the container opens its children, whether or not the child lists `open` itself); a `state` trigger goes on only
+// to a child that declares that state, else the child plays on scroll, and the close values and the state name go with
+// the trigger. The template's customised paths stay, so the child's Customised tags match its copied values.
 function inheritedBase( template, facts ) {
 	let base = copy( template );
 	delete base.values?.delay;
+	delete base.close?.closeDelay;
 	Object.values( base.devices || {} ).forEach( ( set ) => {
 		delete set.delay;
+		delete set.close?.closeDelay;
 	} );
 	if ( Array.isArray( base.customised ) ) {
 		base.customised = base.customised.filter(
-			( path ) => ! /(?:^|\.)delay$/.test( path )
+			( path ) => ! /(?:^|\.)(?:delay|closeDelay)$/.test( path )
 		);
 	}
-	const usable =
-		base.trigger === undefined ||
-		[ 'load', 'scroll' ].includes( base.trigger ) ||
-		( base.trigger === 'open' && facts.canOpen ) ||
-		( base.trigger === 'state' && facts.states.includes( base.state ) );
-	if ( ! usable ) {
+	if ( 'state' === base.trigger && ! facts.states.includes( base.state ) ) {
 		base = withTrigger( base, 'scroll', [] );
 	}
 	return base;
@@ -99,16 +118,55 @@ const DELAY_PATHS = Object.freeze( {
 	tablet: 'devices.tablet.delay',
 	mobile: 'devices.mobile.delay',
 } );
+const CLOSE_DELAY_PATHS = Object.freeze( {
+	desktop: 'close.closeDelay',
+	tablet: 'devices.tablet.close.closeDelay',
+	mobile: 'devices.mobile.close.closeDelay',
+} );
+
+// Writes one delay series (the open delay, or the close delay under `close`) into the layer copy: Desktop in full, then a
+// Tablet or Mobile value only where it differs from the tier above as it will play. A tier in `hand` keeps its stored
+// value, which is what the next tier is compared with. `devices` is the copy's device set, changed in place.
+function writeSeries( next, devices, { key, group, delays, hand, paths } ) {
+	const holder = ( tier ) => {
+		const desktop = 'desktop' === tier;
+		const parent = desktop
+			? next
+			: ( devices[ tier ] = { ...( devices[ tier ] || {} ) } );
+		const name = group || ( desktop ? 'values' : null );
+		if ( ! name ) {
+			return parent;
+		}
+		parent[ name ] = { ...( parent[ name ] || {} ) };
+		return parent[ name ];
+	};
+	const effective = {};
+	TIERS.forEach( ( tier, at ) => {
+		const above = effective[ TIERS[ at - 1 ] ];
+		const slot = holder( tier );
+		if ( hand.has( paths[ tier ] ) ) {
+			effective[ tier ] = slot[ key ] ?? ( at ? above : 0 );
+		} else if ( at && delays[ tier ] === above ) {
+			delete slot[ key ];
+			effective[ tier ] = delays[ tier ];
+		} else {
+			slot[ key ] = delays[ tier ];
+			effective[ tier ] = delays[ tier ];
+		}
+	} );
+}
 
 /**
  * A child's motion value with its entrance delays set.
  *
- * @param {Object|undefined} childMotion The child's motion value.
- * @param {Object|undefined} template    The container's own entrance layer, given to a child with none when `apply` is on.
- * @param {Object}           delays      This child's delay at each tier (`{ desktop, tablet, mobile }`).
- * @param {boolean}          apply       Whether a child with no entrance takes the container's.
- * @param {Object}           [facts]     The child block's `entrance-facts.js::triggerFacts` (root target), which decides
- *                                       whether it can play the template's `open` or `state` trigger.
+ * @param {Object|undefined} childMotion   The child's motion value.
+ * @param {Object|undefined} template      The container's own entrance layer, given to a child with none when `apply` is on.
+ * @param {Object}           delays        This child's delay at each tier (`{ desktop, tablet, mobile }`).
+ * @param {boolean}          apply         Whether a child with no entrance takes the container's.
+ * @param {Object}           [facts]       The child block's `entrance-facts.js::triggerFacts` (root target), which decides
+ *                                         whether it can play the template's `state` trigger.
+ * @param {Object}           [closeDelays] This child's close delay at each tier, written when the child's entrance opens
+ *                                         with a disclosure (trigger `open`); none leaves close delays alone.
  * @return {Object|undefined} The child's new motion value, or undefined when the child is left as it is (no entrance to
  *                            carry the delay, every tier customised, or a layer the schema would refuse). A tier whose
  *                            delay is in the child's `customised` keeps its value; the other tiers are written.
@@ -118,7 +176,8 @@ export function childMotionWithDelay(
 	template,
 	delays,
 	apply,
-	facts = { states: [], canOpen: false }
+	facts = { states: [], canOpen: false },
+	closeDelays = undefined
 ) {
 	const element = elementOf( childMotion, 'root' );
 	const own = layersAt( element, BASE_LIST )[ 0 ];
@@ -126,43 +185,38 @@ export function childMotionWithDelay(
 		return undefined;
 	}
 	const next = copy( own || inheritedBase( template, facts ) );
+	const customised = own ? next.customised || [] : [];
 	const hand = new Set(
-		own
-			? ( next.customised || [] ).filter( ( path ) =>
-					path.endsWith( 'delay' )
-			  )
-			: []
+		customised.filter( ( path ) => path.endsWith( 'delay' ) )
 	);
-	if ( TIERS.every( ( tier ) => hand.has( DELAY_PATHS[ tier ] ) ) ) {
+	const closeHand = new Set(
+		customised.filter( ( path ) => path.endsWith( 'closeDelay' ) )
+	);
+	const closing = Boolean( closeDelays ) && 'open' === next.trigger;
+	const openDone = TIERS.every( ( tier ) => hand.has( DELAY_PATHS[ tier ] ) );
+	const closeDone =
+		! closing ||
+		TIERS.every( ( tier ) => closeHand.has( CLOSE_DELAY_PATHS[ tier ] ) );
+	if ( openDone && closeDone ) {
 		return undefined;
 	}
 	next.values = next.values || {};
 	const devices = { ...( next.devices || {} ) };
-	// The delay each tier ends up with, so a tier is compared with the one above as it will actually play.
-	const effective = {};
-	if ( hand.has( DELAY_PATHS.desktop ) ) {
-		effective.desktop = next.values.delay ?? 0;
-	} else {
-		next.values.delay = delays.desktop;
-		effective.desktop = delays.desktop;
-	}
-	[
-		[ 'tablet', 'desktop' ],
-		[ 'mobile', 'tablet' ],
-	].forEach( ( [ tier, above ] ) => {
-		const set = { ...( devices[ tier ] || {} ) };
-		if ( hand.has( DELAY_PATHS[ tier ] ) ) {
-			effective[ tier ] = set.delay ?? effective[ above ];
-			return;
-		}
-		if ( delays[ tier ] === effective[ above ] ) {
-			delete set.delay;
-		} else {
-			set.delay = delays[ tier ];
-		}
-		effective[ tier ] = delays[ tier ];
-		devices[ tier ] = set;
+	writeSeries( next, devices, {
+		key: 'delay',
+		delays,
+		hand,
+		paths: DELAY_PATHS,
 	} );
+	if ( closing ) {
+		writeSeries( next, devices, {
+			key: 'closeDelay',
+			group: 'close',
+			delays: closeDelays,
+			hand: closeHand,
+			paths: CLOSE_DELAY_PATHS,
+		} );
+	}
 	next.devices = devices;
 	const layer = pruneLayer( next );
 	if ( layerProblem( layer, 'EntranceBase' ) ) {
@@ -176,16 +230,44 @@ export function childMotionWithDelay(
 }
 
 /**
+ * The blocks the helper writes delays to, in document order. With the Flatten nested items order the items are the
+ * innermost blocks of every child (a footer whose columns each hold a list of links staggers its links as one run, and
+ * the columns themselves get no delay); every other order takes the container's direct children.
+ *
+ * @param {Object[]} children The container's inner blocks (`innerBlocks` when nested).
+ * @param {string}   order    The helper's order.
+ * @return {Object[]} The items.
+ */
+export function staggerItems( children, order ) {
+	if ( 'flatten' !== order ) {
+		return children;
+	}
+	const leaves = [];
+	const walk = ( blocks ) =>
+		blocks.forEach( ( block ) => {
+			if ( block.innerBlocks?.length ) {
+				walk( block.innerBlocks );
+			} else {
+				leaves.push( block );
+			}
+		} );
+	walk( children );
+	return leaves;
+}
+
+/**
  * The attribute updates that give every child its position's delay at every tier: the helper's write, shared by the
  * Write delays button and the re-run when children change (`../stagger/use-stagger-rerun.js`).
  *
  * @param {Object}                 args
- * @param {Object[]}               args.children      The container's inner blocks, in order (`name`, `clientId`, `attributes`).
+ * @param {Object[]}               args.children      The container's inner blocks, in order (`name`, `clientId`, `attributes`,
+ *                                                    and `innerBlocks` for the Flatten nested items order).
  * @param {Object<string,?number>} args.columnsByTier The container's stored columns per tier.
  * @param {Object|undefined}       args.settings      The helper's stored settings (`apply` decides whether a child with no
  *                                                    entrance takes the template).
- * @param {Object|undefined}       args.template      The container's own entrance layer.
- * @return {Object<string,Object>} `{ [childClientId]: { sgsMotion } }` for each child the helper changes; a child that
+ * @param {Object|undefined}       args.template      The container's own entrance layer; its trigger `open` makes the
+ *                                                    helper write close delays too.
+ * @return {Object<string,Object>} `{ [childClientId]: { [ MOTION_ATTRIBUTE_NAME ]: motion } }` for each child the helper changes; a child that
  *                                 cannot carry a delay is left out.
  */
 export function staggerUpdates( {
@@ -194,24 +276,33 @@ export function staggerUpdates( {
 	settings,
 	template,
 } ) {
+	const stagger = effectiveStagger( settings );
+	const items = staggerItems( children, stagger.order );
 	const delays = delaysByTier( {
-		count: children.length,
+		count: items.length,
 		columnsByTier,
-		settings: effectiveStagger( settings ),
+		settings: stagger,
 	} );
+	const closeDelays =
+		'open' === template?.trigger
+			? closeDelaysByTier( delays, stagger.closeOrder )
+			: null;
 	const updates = {};
-	children.forEach( ( child, index ) => {
+	items.forEach( ( child, index ) => {
 		if ( ! hasMotionSupport( getBlockType( child.name ) ) ) {
 			return;
 		}
+		const at = ( series ) =>
+			Object.fromEntries(
+				TIERS.map( ( tier ) => [ tier, series[ tier ][ index ] ] )
+			);
 		const written = childMotionWithDelay(
 			child.attributes?.[ MOTION_ATTRIBUTE_NAME ],
 			template,
-			Object.fromEntries(
-				TIERS.map( ( tier ) => [ tier, delays[ tier ][ index ] ] )
-			),
+			at( delays ),
 			Boolean( settings?.apply ),
-			triggerFacts( child.name, 'root' )
+			triggerFacts( child.name, 'root' ),
+			closeDelays ? at( closeDelays ) : undefined
 		);
 		if ( written ) {
 			updates[ child.clientId ] = { [ MOTION_ATTRIBUTE_NAME ]: written };

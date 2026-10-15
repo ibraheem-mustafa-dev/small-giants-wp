@@ -377,16 +377,17 @@ describe( 'the stagger helper’s per-child writes', () => {
 		expect( none ).toBeUndefined();
 	} );
 
-	it( 'keeps the template’s trigger when the child supports it, else falls back to scroll with no close values', () => {
+	it( 'hands `open` to every child, and `state` only to a child that declares it, else scroll with no close values', () => {
 		let tpl = E.withTrigger( fade().layer, 'open', [] );
 		tpl = S.editField( tpl, 'close.closeDelay', 90 );
 		const keep = baseOf( W.childMotionWithDelay( undefined, tpl, delays, true, { states: [], canOpen: true } ) );
 		expect( keep.trigger ).toBe( 'open' );
-		expect( keep.close ).toEqual( { closeDelay: 90 } );
-		const drop = baseOf( W.childMotionWithDelay( undefined, tpl, delays, true, { states: [], canOpen: false } ) );
-		expect( drop.trigger ).toBe( 'scroll' );
-		expect( drop.close ).toBeUndefined();
-		expect( drop.customised || [] ).not.toContain( 'close.closeDelay' );
+		// The container's own close delay is not handed on: each child's comes from its position.
+		expect( keep.close ).toBeUndefined();
+		// A child that does not list `open` inherits it too.
+		const inherits = baseOf( W.childMotionWithDelay( undefined, tpl, delays, true, { states: [], canOpen: false } ) );
+		expect( inherits.trigger ).toBe( 'open' );
+		expect( S.layerProblem( inherits, 'EntranceBase' ) ).toBeNull();
 		const state = { ...fade().layer, trigger: 'state', state: 'done' };
 		expect( baseOf( W.childMotionWithDelay( undefined, state, delays, true, { states: [ 'done' ], canOpen: false } ) ).state ).toBe( 'done' );
 		const other = baseOf( W.childMotionWithDelay( undefined, state, delays, true, { states: [ 'idle' ], canOpen: false } ) );

@@ -9,7 +9,9 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { useDispatch, useRegistry, useSelect } from '@wordpress/data';
-import StaggerHelper from '../../../../components/motion/StaggerHelper';
+import StaggerHelper, {
+	effectiveStagger,
+} from '../../../../components/motion/StaggerHelper';
 import { MOTION_ATTRIBUTE_NAME } from '../register';
 import {
 	BASE_LIST,
@@ -18,7 +20,7 @@ import {
 	columnsAt,
 	hasServerItems,
 } from './entrance-facts';
-import { staggerUpdates, withStagger } from './stagger-write';
+import { staggerItems, staggerUpdates, withStagger } from './stagger-write';
 
 /**
  * @param {Object}           props
@@ -38,9 +40,17 @@ export default function EntranceStagger( {
 } ) {
 	const registry = useRegistry();
 	const { updateBlockAttributes } = useDispatch( EDITOR_STORE );
-	const childIds = useSelect(
-		( select ) => select( EDITOR_STORE ).getBlockOrder?.( clientId ) || [],
-		[ clientId ]
+	const order = effectiveStagger( motion?.stagger ).order;
+	// The items the delays go to: the direct children, or with Flatten nested items the innermost blocks of every child.
+	const itemCount = useSelect(
+		( select ) => {
+			const store = select( EDITOR_STORE );
+			return 'flatten' === order
+				? staggerItems( store.getBlocks?.( clientId ) || [], order )
+						.length
+				: ( store.getBlockOrder?.( clientId ) || [] ).length;
+		},
+		[ clientId, order ]
 	);
 	const attributes = useSelect(
 		( select ) => select( EDITOR_STORE ).getBlockAttributes?.( clientId ),
@@ -55,9 +65,10 @@ export default function EntranceStagger( {
 		] )
 	);
 
+	const template = layers.layersOf( 'root', BASE_LIST )[ 0 ];
+
 	const writeDelays = ( ignored, settings ) => {
 		const children = registry.select( EDITOR_STORE ).getBlocks( clientId );
-		const template = layers.layersOf( 'root', BASE_LIST )[ 0 ];
 		const updates = staggerUpdates( {
 			children,
 			columnsByTier,
@@ -95,8 +106,9 @@ export default function EntranceStagger( {
 						[ MOTION_ATTRIBUTE_NAME ]: withStagger( motion, next ),
 					} )
 				}
-				childCount={ childIds.length }
+				childCount={ itemCount }
 				columns={ columnsByTier[ tier ] }
+				showCloseOrder={ 'open' === template?.trigger }
 				emptyMessage={
 					hasServerItems( blockName )
 						? __(

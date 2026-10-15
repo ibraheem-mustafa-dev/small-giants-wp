@@ -32,6 +32,7 @@ export const STAGGER_DEFAULTS = Object.freeze( {
 	step: 80,
 	order: 'row-first',
 	perRow: true,
+	closeOrder: 'same',
 } );
 
 const ORDER_LABELS = Object.freeze( {
@@ -39,6 +40,12 @@ const ORDER_LABELS = Object.freeze( {
 	'column-first': __( 'Column first', 'sgs-blocks' ),
 	'from-centre': __( 'From centre', 'sgs-blocks' ),
 	reverse: __( 'Reverse', 'sgs-blocks' ),
+	flatten: __( 'Flatten nested items', 'sgs-blocks' ),
+} );
+
+const CLOSE_ORDER_LABELS = Object.freeze( {
+	same: __( 'Same', 'sgs-blocks' ),
+	reversed: __( 'Reversed', 'sgs-blocks' ),
 } );
 
 // An exact number of milliseconds: the stagger arithmetic needs a number, so unlike the Duration atom this offers no
@@ -86,12 +93,13 @@ export function effectiveStagger( value ) {
 
 /**
  * @param {Object}      props
- * @param {Object}      [props.value]        The stored `stagger` settings.
- * @param {Function}    props.onChange       Receives the new settings (an unset field is left out).
- * @param {number}      props.childCount     Children (or repeated item parts) the delays are written to.
- * @param {number|null} [props.columns]      The container's stored grid columns at this device; none or 1 hides the row restart.
- * @param {string}      [props.emptyMessage] Replaces "No children to stagger." (a block whose server prints its items).
- * @param {Function}    props.onWriteDelays  Receives `( delays, settings )` when Write delays is pressed.
+ * @param {Object}      [props.value]          The stored `stagger` settings.
+ * @param {Function}    props.onChange         Receives the new settings (an unset field is left out).
+ * @param {number}      props.childCount       Children (or repeated item parts) the delays are written to.
+ * @param {number|null} [props.columns]        The container's stored grid columns at this device; none or 1 hides the row restart.
+ * @param {boolean}     [props.showCloseOrder] Whether to offer the Close order (the container opens with a disclosure).
+ * @param {string}      [props.emptyMessage]   Replaces "No children to stagger." (a block whose server prints its items).
+ * @param {Function}    props.onWriteDelays    Receives `( delays, settings )` when Write delays is pressed.
  * @return {Element} The helper.
  */
 export default function StaggerHelper( {
@@ -99,6 +107,7 @@ export default function StaggerHelper( {
 	onChange,
 	childCount,
 	columns,
+	showCloseOrder = false,
 	emptyMessage,
 	onWriteDelays,
 } ) {
@@ -130,6 +139,12 @@ export default function StaggerHelper( {
 			value: name,
 			label: ORDER_LABELS[ name ] || name,
 		} ) );
+	const closeOrderOptions = (
+		boundsOf( 'choice', NODES.closeOrder ).options || []
+	).map( ( name ) => ( {
+		value: name,
+		label: CLOSE_ORDER_LABELS[ name ] || name,
+	} ) );
 	const shown = delays.slice( 0, PREVIEW_LIMIT ).join( ', ' );
 
 	return (
@@ -168,7 +183,20 @@ export default function StaggerHelper( {
 				value={ settings.order }
 				onChange={ ( next ) => set( 'order' )( next ) }
 			/>
-			{ hasColumns && (
+			{ showCloseOrder && (
+				<ChoiceAtom
+					label={ __( 'Close order', 'sgs-blocks' ) }
+					help={ __(
+						'Whether the children close in the order they opened, or the last to open closes first.',
+						'sgs-blocks'
+					) }
+					options={ closeOrderOptions }
+					fieldNode={ NODES.closeOrder }
+					value={ settings.closeOrder }
+					onChange={ ( next ) => set( 'closeOrder' )( next ) }
+				/>
+			) }
+			{ hasColumns && 'flatten' !== settings.order && (
 				<ToggleControl
 					label={ __( 'Restart each visual row', 'sgs-blocks' ) }
 					checked={ settings.perRow !== false }
