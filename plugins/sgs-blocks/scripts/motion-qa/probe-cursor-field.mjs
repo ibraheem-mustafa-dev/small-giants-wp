@@ -27,9 +27,18 @@
  *      would pass vacuously. The fixture is asserted to contain one.
  *
  * Usage: node scripts/motion-qa/probe-cursor-field.mjs [url]
+ *
+ * The `image-reveal` field type (Spec 38A FR-38A-34) has its own checks in `probe-cursor-field-reveal.mjs`, run from here:
+ *   node scripts/motion-qa/probe-cursor-field.mjs --local [--engine chromium|firefox|webkit ...] [--width 1440|768|375]
+ *   node scripts/motion-qa/probe-cursor-field.mjs --reveal --page <id> [--site sandybrown]
  */
 
 import { chromium } from 'playwright';
+
+if ( process.argv.includes( '--local' ) || process.argv.includes( '--reveal' ) ) {
+	const { main } = await import( './probe-cursor-field-reveal.mjs' );
+	process.exit( await main( process.argv.slice( 2 ).filter( ( a ) => '--reveal' !== a ) ) );
+}
 
 const URL =
 	process.argv[ 2 ] ||

@@ -527,3 +527,107 @@
 		);
 	}
 }
+
+/* ==========================================================================
+ * `image-reveal` (Spec 38A FR-38A-34): an image clipped by an animated circle under the pointer.
+ *
+ * The `::before` paint slot holds the image and the wash; its radius and wash opacity are registered properties set on
+ * the slot itself, so they transition there and never touch the root's own `transition` list (which the renderer owns).
+ * The renderer's uid rule (`.sgs-cf-*[data-sgs-cursor-field]::before`) carries the stored rest and hover values and
+ * out-ranks the defaults below, which are the reference draft's ingredient-card values: radius 0 to 90px, wash 0.5 to 0.3, 0.4s.
+ * The optional ring is the renderer's injected `span.sgs-motion-layer[data-sgs-layer="cursor-field-ring"]`
+ * (aria-hidden), moved by `src/shared/effects/cursor-field-ring.js` through `--sgs-ring-x` and `--sgs-ring-y`.
+ * ========================================================================== */
+
+@property --sgs-cursor-field-radius { syntax: '<length>'; inherits: true; initial-value: 260px; }
+@property --sgs-cursor-field-wash { syntax: '<number>'; inherits: false; initial-value: 0.5; }
+
+[data-sgs-cursor-field="image-reveal"] {
+	--sgs-cursor-field-attachment: scroll;
+	--sgs-cursor-field-pattern-size: cover;
+	--sgs-cursor-field-position: center;
+	--sgs-cursor-field-participant-layer: none;
+}
+
+[data-sgs-cursor-field="image-reveal"]::before {
+	--sgs-cursor-field-radius: 0px;
+	--sgs-cursor-field-wash: 0.5;
+	background-image:
+		linear-gradient(
+			color-mix(in srgb, var(--sgs-cursor-field-wash-colour, #fff) calc(var(--sgs-cursor-field-wash) * 100%), transparent),
+			color-mix(in srgb, var(--sgs-cursor-field-wash-colour, #fff) calc(var(--sgs-cursor-field-wash) * 100%), transparent)
+		),
+		var(--sgs-cursor-field-image, none);
+	background-size: cover;
+	background-repeat: no-repeat;
+	opacity: 1;
+	clip-path: circle(var(--sgs-cursor-field-radius) at var(--sgs-cursor-local-x, 50%) var(--sgs-cursor-local-y, 50%));
+	transition:
+		--sgs-cursor-field-radius var(--sgs-cursor-field-radius-duration, 400ms) var(--sgs-cursor-field-radius-easing, cubic-bezier(0.16, 0.84, 0.32, 1)),
+		--sgs-cursor-field-wash var(--sgs-cursor-field-radius-duration, 400ms) var(--sgs-cursor-field-radius-easing, cubic-bezier(0.16, 0.84, 0.32, 1));
+}
+
+[data-sgs-cursor-field="image-reveal"][data-sgs-cursor-field-feather]::before {
+	--sgs-cursor-field-mask: radial-gradient(
+		circle max(1px, var(--sgs-cursor-field-radius)) at var(--sgs-cursor-local-x, 50%) var(--sgs-cursor-local-y, 50%),
+		#000 max(0px, calc(var(--sgs-cursor-field-radius) - var(--sgs-cursor-field-edge, 0px))),
+		transparent max(1px, var(--sgs-cursor-field-radius))
+	);
+	--sgs-cursor-field-mask-size: 100% 100%;
+}
+
+[data-sgs-cursor-field="image-reveal"]:hover::before {
+	--sgs-cursor-field-radius: 90px;
+	--sgs-cursor-field-wash: 0.3;
+}
+
+/* The ring: its position and scale are registered properties (motion.css) set on the layer, where the lag is a transition. */
+.sgs-motion-layer[data-sgs-layer="cursor-field-ring"] {
+	--sgs-ring-s: 0;
+	transition: --sgs-ring-s var(--sgs-cursor-field-ring-lag, 400ms) var(--sgs-cursor-field-radius-easing, cubic-bezier(0.16, 0.84, 0.32, 1));
+}
+
+.sgs-motion-layer[data-sgs-layer="cursor-field-ring"][data-sgs-ring-live] {
+	transition:
+		--sgs-ring-x var(--sgs-cursor-field-ring-lag, 400ms) ease-out,
+		--sgs-ring-y var(--sgs-cursor-field-ring-lag, 400ms) ease-out,
+		--sgs-ring-s var(--sgs-cursor-field-ring-lag, 400ms) var(--sgs-cursor-field-radius-easing, cubic-bezier(0.16, 0.84, 0.32, 1));
+}
+
+.sgs-motion-layer[data-sgs-layer="cursor-field-ring"]::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	box-sizing: border-box;
+	width: var(--sgs-ring-size, 180px);
+	height: var(--sgs-ring-size, 180px);
+	border: var(--sgs-ring-width, 3px) solid var(--sgs-ring-colour, #fff);
+	border-radius: 50%;
+	box-shadow: var(--sgs-ring-shadow, 0 6px 20px rgba(0, 0, 0, 0.28));
+	margin: calc(var(--sgs-ring-size, 180px) / -2) 0 0 calc(var(--sgs-ring-size, 180px) / -2);
+	translate: var(--sgs-ring-x) var(--sgs-ring-y);
+	scale: var(--sgs-ring-s);
+	pointer-events: none;
+}
+
+[data-sgs-cursor-field]:hover > .sgs-motion-layer[data-sgs-layer="cursor-field-ring"] {
+	--sgs-ring-s: 1;
+}
+
+@media not all and (hover: hover) and (pointer: fine) {
+	.sgs-motion-layer[data-sgs-layer="cursor-field-ring"] {
+		display: none;
+	}
+}
+
+/* Reduced motion keeps the painted rest state and animates nothing: no transition, no ring. */
+@media (prefers-reduced-motion: reduce) {
+	[data-sgs-cursor-field="image-reveal"]::before {
+		transition: none;
+	}
+
+	.sgs-motion-layer[data-sgs-layer="cursor-field-ring"] {
+		display: none;
+	}
+}

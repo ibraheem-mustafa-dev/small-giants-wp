@@ -59,7 +59,7 @@ if ( ! \defined( 'ABSPATH' ) ) {
  *
  * @var string[]
  */
-const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask', 'hue-shift', 'parallax-pattern', 'brick-reveal' );
+const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask', 'hue-shift', 'parallax-pattern', 'brick-reveal', 'image-reveal' );
 
 /**
  * Pointer-pool SHAPES. The empty default is a circle, declared in the
@@ -115,6 +115,149 @@ function sgs_fx_cursor_field_colour( string $value ): string {
 	}
 
 	return '';
+}
+
+/**
+ * A CSS length from a stored value: a bare number is pixels; `px`, `rem` and `em` are kept.
+ *
+ * @param mixed $value Stored value.
+ * @return string The length, or '' when unusable.
+ */
+function sgs_fx_cursor_field_length( $value ): string {
+	$value = \is_string( $value ) ? \trim( $value ) : '';
+	if ( ! \preg_match( '/^(\d{1,4}(?:\.\d{1,3})?)(px|rem|em)?$/', $value, $m ) ) {
+		return '';
+	}
+	return $m[1] . ( $m[2] ?? 'px' );
+}
+
+/**
+ * A number from a stored value within a range, or null when absent or not numeric. Zero is a real value.
+ *
+ * @param mixed $value Stored value.
+ * @param float $min   Lowest allowed.
+ * @param float $max   Highest allowed.
+ * @return float|null
+ */
+function sgs_fx_cursor_field_number( $value, float $min, float $max ): ?float {
+	if ( ! \is_string( $value ) || '' === $value || ! \is_numeric( $value ) ) {
+		return null;
+	}
+	return \max( $min, \min( $max, (float) $value ) );
+}
+
+/**
+ * A media-library image as a CSS `url()`, with every character that could end the string or the rule encoded.
+ *
+ * @param int $id Attachment ID.
+ * @return string The `url("...")` value, or '' when the attachment has no URL.
+ */
+function sgs_fx_cursor_field_image_css( int $id ): string {
+	$url = $id > 0 ? \wp_get_attachment_image_url( $id, 'large' ) : false;
+	if ( ! \is_string( $url ) || '' === $url ) {
+		return '';
+	}
+	$url = \esc_url_raw( $url );
+	$map = array(
+		'"'  => '%22',
+		"'"  => '%27',
+		'\\' => '%5C',
+		'('  => '%28',
+		')'  => '%29',
+		'<'  => '%3C',
+		'>'  => '%3E',
+		"\n" => '',
+		"\r" => '',
+	);
+	return '' === $url ? '' : 'url("' . \strtr( $url, $map ) . '")';
+}
+
+/**
+ * The per-instance CSS of the `image-reveal` field type, read from the same data attributes on the flat and the layer path.
+ *
+ * Returns the declarations for the element itself (`root`), for the `::before` paint slot at rest (`rest`) and while the
+ * pointer is over the element (`hover`). The radius and the wash are written on the paint slot because that is where the
+ * stylesheet transitions them (`assets/css/fx-cursor-field.css`); every value is validated here, never escaped, so none can
+ * leave its declaration.
+ *
+ * @param \WP_HTML_Tag_Processor $p Processor on the block root.
+ * @return array{root:string[],rest:string[],hover:string[],feather:bool}
+ */
+function sgs_fx_cursor_field_reveal( \WP_HTML_Tag_Processor $p ): array {
+	$out  = array(
+		'root'    => array(),
+		'rest'    => array(),
+		'hover'   => array(),
+		'feather' => false,
+	);
+	$attr = static function ( string $name ) use ( $p ) {
+		return $p->get_attribute( $name );
+	};
+
+	$rest = sgs_fx_cursor_field_number( $attr( 'data-sgs-fx-field-radius' ), 0, 1200 );
+	if ( null !== $rest ) {
+		$out['rest'][] = '--sgs-cursor-field-radius:' . $rest . 'px';
+	}
+	$hover = sgs_fx_cursor_field_length( $attr( 'data-sgs-fx-cursor-field-hover-radius' ) );
+	if ( '' !== $hover ) {
+		$out['hover'][] = '--sgs-cursor-field-radius:' . $hover;
+	}
+
+	$start = sgs_fx_cursor_field_number( $attr( 'data-sgs-fx-cursor-field-wash-opacity-start' ), 0, 1 );
+	$end   = sgs_fx_cursor_field_number( $attr( 'data-sgs-fx-cursor-field-wash-opacity-end' ), 0, 1 );
+	if ( null !== $start ) {
+		$out['rest'][] = '--sgs-cursor-field-wash:' . $start;
+	}
+	if ( null !== $end ) {
+		$out['hover'][] = '--sgs-cursor-field-wash:' . $end;
+	}
+	$wash = sgs_fx_cursor_field_colour( (string) $attr( 'data-sgs-fx-cursor-field-wash-colour' ) );
+	if ( '' !== $wash ) {
+		$out['root'][] = '--sgs-cursor-field-wash-colour:' . $wash;
+	}
+
+	$duration = sgs_fx_cursor_field_number( $attr( 'data-sgs-fx-cursor-field-radius-duration' ), 0, 120000 );
+	if ( null !== $duration ) {
+		$out['root'][] = '--sgs-cursor-field-radius-duration:' . $duration . 'ms';
+	}
+	$easing = \trim( (string) $attr( 'data-sgs-fx-cursor-field-radius-easing' ) );
+	if ( \preg_match( '/^(?:linear|ease|ease-in|ease-out|ease-in-out|cubic-bezier\(\s*[-\d.]+\s*,\s*[-\d.]+\s*,\s*[-\d.]+\s*,\s*[-\d.]+\s*\))$/', $easing ) ) {
+		$out['root'][] = '--sgs-cursor-field-radius-easing:' . $easing;
+	}
+
+	$edge = sgs_fx_cursor_field_length( $attr( 'data-sgs-fx-cursor-field-edge' ) );
+	if ( '' !== $edge && (float) $edge > 0 ) {
+		$out['root'][]  = '--sgs-cursor-field-edge:' . $edge;
+		$out['feather'] = true;
+	}
+
+	$image = sgs_fx_cursor_field_image_css( (int) $attr( 'data-sgs-fx-cursor-field-image' ) );
+	if ( '' !== $image ) {
+		$out['root'][] = '--sgs-cursor-field-image:' . $image;
+	}
+
+	if ( \in_array( $attr( 'data-sgs-fx-cursor-field-ring' ), array( 'true', '1' ), true ) ) {
+		$size  = sgs_fx_cursor_field_length( $attr( 'data-sgs-fx-cursor-field-ring-size' ) );
+		$width = sgs_fx_cursor_field_length( $attr( 'data-sgs-fx-cursor-field-ring-width' ) );
+		$ring  = sgs_fx_cursor_field_colour( (string) $attr( 'data-sgs-fx-cursor-field-ring-colour' ) );
+		$lag   = sgs_fx_cursor_field_number( $attr( 'data-sgs-fx-cursor-field-ring-lag' ), 0, 5000 );
+		if ( '' !== $size ) {
+			$out['root'][] = '--sgs-ring-size:' . $size;
+		}
+		if ( '' !== $width ) {
+			$out['root'][] = '--sgs-ring-width:' . $width;
+		}
+		if ( '' !== $ring ) {
+			$out['root'][] = '--sgs-ring-colour:' . $ring;
+		}
+		if ( null !== $lag ) {
+			$out['root'][] = '--sgs-cursor-field-ring-lag:' . $lag . 'ms';
+		}
+		if ( 'false' === $attr( 'data-sgs-fx-cursor-field-ring-shadow' ) ) {
+			$out['root'][] = '--sgs-ring-shadow:none';
+		}
+	}
+	return $out;
 }
 
 /**
@@ -235,7 +378,14 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 		);
 	}
 
-	if ( $radius > 0 ) {
+	// `image-reveal` owns its radius: the rest and hover values go on the paint slot below, not on the root.
+	$reveal = 'image-reveal' === $type ? sgs_fx_cursor_field_reveal( $processor ) : null;
+	if ( null !== $reveal ) {
+		$declarations = \array_merge( $declarations, $reveal['root'] );
+		if ( $reveal['feather'] ) {
+			$processor->set_attribute( 'data-sgs-cursor-field-feather', '1' );
+		}
+	} elseif ( $radius > 0 ) {
 		$declarations[] = \sprintf(
 			'--sgs-cursor-field-radius:%dpx',
 			\max( 40, \min( 1200, $radius ) )
@@ -246,23 +396,31 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 	// the processor only ever saw `$rest`, so returning its output alone would
 	// silently drop the block's own leading <style> and with it every native
 	// supports declaration the style engine emitted.
-	if ( empty( $declarations ) ) {
+	if ( empty( $declarations ) && ( null === $reveal || ( array() === $reveal['rest'] && array() === $reveal['hover'] ) ) ) {
 		return $head . $processor->get_updated_html();
+	}
+
+	// The slot rules are two more selectors in the same uid-scoped `<style>`. Their specificity beats the stylesheet's
+	// defaults, so a stored value always wins; every value was validated, so none is escaped.
+	$slot_rules = '';
+	if ( null !== $reveal ) {
+		$slot_rules .= array() === $reveal['rest'] ? '' : '.%1$s[data-sgs-cursor-field]::before{' . \implode( ';', $reveal['rest'] ) . '}';
+		$slot_rules .= array() === $reveal['hover'] ? '' : '.%1$s[data-sgs-cursor-field]:hover::before{' . \implode( ';', $reveal['hover'] ) . '}';
 	}
 
 	// A per-instance id scopes the rule to THIS block. Derived from the
 	// declarations themselves so two instances configured identically share one
 	// rule rather than emitting a near-duplicate each.
-	$uid = 'sgs-cf-' . \substr( \md5( \implode( ';', $declarations ) ), 0, 8 );
+	$uid = 'sgs-cf-' . \substr( \md5( \implode( ';', $declarations ) . $slot_rules ), 0, 8 );
 
 	$existing = (string) $processor->get_attribute( 'class' );
 	$processor->set_attribute( 'class', \trim( $existing . ' ' . $uid ) );
 
 	return \sprintf(
-		'%1$s<style>.%2$s{%3$s}</style>%4$s',
+		'%1$s<style>%2$s%3$s</style>%4$s',
 		$head,
-		$uid,
-		\esc_html( \implode( ';', $declarations ) ),
+		array() === $declarations ? '' : \sprintf( '.%1$s{%2$s}', $uid, \esc_html( \implode( ';', $declarations ) ) ),
+		\sprintf( $slot_rules, $uid ),
 		$processor->get_updated_html()
 	);
 }

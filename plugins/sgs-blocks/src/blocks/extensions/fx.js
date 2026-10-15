@@ -419,6 +419,10 @@ const FX_FIELD_TYPE_OPTIONS = [
 		label: __( 'Brickwork — reveals brick tiling beneath', 'sgs-blocks' ),
 		value: 'brick-reveal',
 	},
+	{
+		label: __( 'Image reveal — a photo revealed under the cursor', 'sgs-blocks' ),
+		value: 'image-reveal',
+	},
 ];
 
 /**

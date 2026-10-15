@@ -30,6 +30,7 @@
  */
 
 import { initCursorField } from './cursor-field';
+import { initCursorFieldRings } from './cursor-field-ring';
 
 /** Elements the render layer marked as emitters. */
 const SELECTOR = '[data-sgs-cursor-field]';
@@ -43,9 +44,12 @@ let cleanups = [];
  * @return {void}
  */
 function boot() {
-	document.querySelectorAll( SELECTOR ).forEach( ( el ) => {
+	const els = [ ...document.querySelectorAll( SELECTOR ) ];
+	els.forEach( ( el ) => {
 		cleanups.push( initCursorField( el ) );
 	} );
+	// The `image-reveal` ring layer, when the renderer injected one: its own pointer writer.
+	cleanups.push( initCursorFieldRings( els ) );
 }
 
 /**

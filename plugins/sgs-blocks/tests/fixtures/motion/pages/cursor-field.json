@@ -1,0 +1,149 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"className": "m511-cards"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"padding": {
+						"desktop": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"tablet": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"mobile": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						}
+					},
+					"className": "m511-reveal",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "cf1",
+										"effect": "cursor-field",
+										"values": {
+											"field": "image-reveal",
+											"radius": 0,
+											"hoverRadius": 90,
+											"radiusDuration": 400,
+											"radiusEasing": "cubic-bezier(0.16, 0.84, 0.32, 1)",
+											"edge": 0,
+											"washColour": "#ffffff",
+											"washOpacityStart": 0.5,
+											"washOpacityEnd": 0.3,
+											"ring": true,
+											"ringSize": 180,
+											"ringWidth": 3,
+											"ringColour": "#ffffff",
+											"ringShadow": true,
+											"ringLag": 400
+										}
+									},
+									{
+										"id": "rp1",
+										"effect": "ripple",
+										"trigger": "pointerdown",
+										"values": {
+											"colour": "#ffffff",
+											"duration": 650,
+											"easing": "linear",
+											"sizeFactor": 2.2,
+											"peakOpacity": 0.35
+										}
+									}
+								]
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Image reveal with ring and ripple",
+							"level": 3
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"padding": {
+						"desktop": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"tablet": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"mobile": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						}
+					},
+					"className": "m511-plain",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "cf1",
+										"effect": "cursor-field",
+										"values": {
+											"field": "image-reveal",
+											"radius": 0,
+											"hoverRadius": 90,
+											"radiusDuration": 400,
+											"radiusEasing": "cubic-bezier(0.16, 0.84, 0.32, 1)",
+											"edge": 0,
+											"washColour": "#ffffff",
+											"washOpacityStart": 0.5,
+											"washOpacityEnd": 0.3
+										}
+									}
+								]
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Image reveal alone",
+							"level": 3
+						}
+					}
+				]
+			}
+		]
+	}
+]

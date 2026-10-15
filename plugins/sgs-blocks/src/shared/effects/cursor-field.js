@@ -357,7 +357,12 @@ export function initCursorField( el, opts = {} ) {
 	 * all still see the static resting field (§1.6 fail-open, §9, §10). JS
 	 * turns it off only once JS is confirmed running — the `sgs-js` gate shape.
 	 */
+	// `image-reveal` shows and hides through its own radius transition, never through this opacity.
+	const revealMode = 'image-reveal' === el.getAttribute( EMITTER_ATTR );
 	const setVisible = ( on ) => {
+		if ( revealMode ) {
+			return;
+		}
 		if ( on ) {
 			// REMOVE rather than set 1 — the stylesheet's own default (0.9) is
 			// the resting appearance every field type already shipped with, and
@@ -385,12 +390,12 @@ export function initCursorField( el, opts = {} ) {
 		setVisible( false );
 	}
 
-	const participants = elementSpace ? [] : markParticipants( el );
+	const participants = elementSpace || revealMode ? [] : markParticipants( el );
 
 	// Element-space mode is the single-element `spotlight.js` contract — it
 	// has no participants and therefore nothing for the observer to watch.
 	const participantObserver =
-		! elementSpace && 'undefined' !== typeof window.MutationObserver
+		! elementSpace && ! revealMode && 'undefined' !== typeof window.MutationObserver
 			? observeParticipants( el, participants )
 			: null;
 
