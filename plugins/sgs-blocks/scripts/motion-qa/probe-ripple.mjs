@@ -2,7 +2,7 @@
  * Spec 38A unit M5.9: live acceptance of the ripple effect (FR-38A-45, FR-38A-47, FR-38A-49) on a deployed site.
  *
  * The probe presses the pointer on each fixture button, then pauses the running ripple animation and sets its time, so
- * the samples are exact in every engine. The Indus values are size factor 2.2, white, peak opacity 0.35, 650ms, linear.
+ * the samples are exact in every engine. The reference draft values are size factor 2.2, white, peak opacity 0.35, 650ms, linear.
  * Checks:
  *   ripple-sample:down         the painted circle (the ::after width x its scale) reads max(w, h) x 2.2 x t/650 and the
  *                              opacity 0.35 x (1 - t/650) at t = 0, 325 and 650ms

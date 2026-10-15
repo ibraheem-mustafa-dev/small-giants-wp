@@ -7,7 +7,7 @@
  * (assets/css/motion.css), which clips the band. Nothing is written to a `style` attribute and no script runs.
  *
  * The values arrive as custom properties on the element (the schema's SheenValues cssProperty names), each with the
- * Indus `shine()` value as its fallback, so an element with no stored values still sweeps exactly as the draft does:
+ * reference draft value as its fallback, so an element with no stored values still sweeps exactly as the draft does:
  *   --sgs-sheen-band-width  band width as a share of the element        (default 60%)
  *   --sgs-sheen-angle       the band's skew                             (default -18deg)
  *   --sgs-sheen-colour      the band's centre colour                    (default white)
@@ -16,7 +16,7 @@
  *   --sgs-sheen-easing      the crossing's easing                       (default cubic-bezier(.16,.84,.32,1))
  *
  * `--sgs-sheen-x` (registered in motion.css, <percentage>) is the band's position in its own widths: the keyframes
- * run it from -120% (just left of the element) to 260% (just right of it), the Indus `translateX(-120%)` to
+ * run it from -120% (just left of the element) to 260% (just right of it), the reference `translateX(-120%)` to
  * `translateX(260%)`. At rest the band is parked at -120%, off the element. Each new entry restarts the animation, so
  * the band replays on every hover; leaving mid-sweep parks it again at once.
  */

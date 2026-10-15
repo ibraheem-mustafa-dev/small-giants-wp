@@ -7,7 +7,7 @@
  * `data-sgs-ripple="play"` so `assets/css/fx-ripple.css` runs the circle in the element's `::after` slot. It never
  * writes transform, translate, scale, opacity or filter (FR-38A-47); the stylesheet owns every painted value.
  *
- * Attributes read (the schema's `RippleValues` data attributes; each absent one takes the Indus default):
+ * Attributes read (the schema's `RippleValues` data attributes; each absent one takes the reference default):
  *  - `data-sgs-fx-ripple-size-factor`: diameter as a multiple of the element's larger side (default 2.2).
  *  - `data-sgs-fx-ripple-duration`: milliseconds (default 650).
  *  - `data-sgs-fx-ripple-easing`: a CSS easing (default `ease-out`).

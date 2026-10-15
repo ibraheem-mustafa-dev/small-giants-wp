@@ -2,7 +2,7 @@
  * Spec 38A unit M5.10: acceptance of the sheen sweep (FR-38A-35, FR-38A-49) in real engines.
  *
  * The band is the `::before` of the injected `span.sgs-motion-layer[data-sgs-layer="sheen"]`, animated by
- * `assets/css/fx-sheen.css` (CSS only). The draft is Indus `shine()`: a 60% wide band at skewX(-18deg) that runs from
+ * `assets/css/fx-sheen.css` (CSS only). The reference draft sweep is a 60% wide band at skewX(-18deg) that runs from
  * translateX(-120%) to translateX(260%) of its own width in 750ms on cubic-bezier(.16,.84,.32,1).
  *
  * SAMPLE MODE: after the pointer enters, the running `sgs-sheen-sweep` animation is paused and set to 0, 375 and 750ms,
@@ -72,7 +72,7 @@ export function bezier( [ x1, y1, x2, y2 ], p ) {
 	return at( y1, y2, ( lo + hi ) / 2 );
 }
 
-/** The band's translateX (px) at `ms` into the sweep, for a band `bandPx` wide (Indus shine()). */
+/** The band's translateX (px) at `ms` into the sweep, for a band `bandPx` wide (the reference draft sweep). */
 export function expectedTranslate( ms, bandPx ) {
 	const eased = bezier( EASE, Math.min( 1, Math.max( 0, ms / DURATION ) ) );
 	return ( ( FROM + ( TO - FROM ) * eased ) / 100 ) * bandPx;
