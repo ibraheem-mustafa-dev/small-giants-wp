@@ -1741,9 +1741,6 @@
 					],
 					"effects": [
 						"scramble"
-					],
-					"triggers": [
-						"hover"
 					]
 				},
 				"text": "Split reveal and Scramble both rewrite this text; keep one of them.",

@@ -1,0 +1,39 @@
+{
+	"description": "A split reveal on the title's entrance and a scroll-triggered Scramble in its Effects list: both rewrite the same text, so the later one is refused whatever its trigger (section 5.2).",
+	"expect": {
+		"valid": false,
+		"errors": [],
+		"refusals": [
+			"Split reveal and Scramble both rewrite this text; keep one of them."
+		]
+	},
+	"motion": {
+		"v": 1,
+		"elements": {
+			"title": {
+				"entrance": {
+					"text": [
+						{
+							"id": "t1",
+							"effect": "split-reveal",
+							"trigger": "scroll",
+							"values": {
+								"unit": "words"
+							}
+						}
+					]
+				},
+				"effects": [
+					{
+						"id": "e1",
+						"effect": "scramble",
+						"trigger": "scroll",
+						"values": {
+							"charset": "upper"
+						}
+					}
+				]
+			}
+		}
+	}
+}

@@ -97,38 +97,28 @@ describe( 'split reveal and scramble on one part (§5.2)', () => {
 		} );
 	} );
 
-	it( 'allows an effects-panel scramble on load, and refuses switching it to hover', () => {
-		let motion = ok(
+	it( 'refuses an effects-panel scramble beside an entrance split reveal, whatever its trigger', () => {
+		const motion = ok(
 			addLayer( undefined, 'title', 'entrance.text', {
 				effect: 'split-reveal',
 			} )
 		);
-		const added = addLayer( motion, 'title', 'effects', {
+		for ( const trigger of [ undefined, 'load', 'scroll', 'hover' ] ) {
+			const layer = trigger
+				? { effect: 'scramble', trigger }
+				: { effect: 'scramble' };
+			expect( addLayer( motion, 'title', 'effects', layer ) ).toEqual( {
+				refusal: TEXT,
+			} );
+		}
+	} );
+
+	it( 'negative control: an effects-panel scramble with no split reveal on the part is accepted', () => {
+		const added = addLayer( undefined, 'title', 'effects', {
 			effect: 'scramble',
+			trigger: 'load',
 		} );
-		motion = ok( added );
-		const onLoad = updateLayer(
-			motion,
-			'title',
-			'effects',
-			added.layer.id,
-			{
-				...added.layer,
-				trigger: 'load',
-			}
-		);
-		expect( onLoad.motion ).toBeDefined();
-		const hovered = updateLayer(
-			motion,
-			'title',
-			'effects',
-			added.layer.id,
-			{
-				...added.layer,
-				trigger: 'hover',
-			}
-		);
-		expect( hovered ).toEqual( { refusal: TEXT } );
+		expect( added.motion ).toBeDefined();
 	} );
 } );
 
